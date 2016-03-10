@@ -1,9 +1,7 @@
-/*
- * OCLOperatorFactory.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -13,11 +11,11 @@
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include "OperationMultipleEvalStreamingBSplineOCL.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
-
+base::OperationMultipleEval* createStreamingBSplineOCLConfigured(
+    base::Grid& grid, base::DataMatrix& dataset,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 }
 }

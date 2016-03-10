@@ -6,10 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 #define SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 
-#include <algorithm>
-#include <cstddef>
-#include <stack>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -19,7 +15,13 @@
 #include <sgpp/optimization/sle/system/SLE.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
 
-namespace SGPP {
+#include <algorithm>
+#include <cstddef>
+#include <stack>
+#include <vector>
+#include <string>
+
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -30,8 +32,7 @@ namespace optimization {
  * @return          stream
  */
 template <class T>
-inline std::ostream& operator<<(std::ostream& stream,
-                                const std::vector<T>& x) {
+inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& x) {
   for (size_t i = 0; i < x.size(); i++) {
     stream << ((i > 0) ? ", " : "[") << x[i];
   }
@@ -46,8 +47,7 @@ inline std::ostream& operator<<(std::ostream& stream,
  * @param x         vector
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream,
-                                const base::DataVector& x) {
+inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x) {
   return stream << x.toString();
 }
 
@@ -58,11 +58,10 @@ inline std::ostream& operator<<(std::ostream& stream,
  * @param x         pointer to grid point
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream,
-                                const SGPP::base::GridIndex& x) {
-  base::DataVector xCoord(x.dim());
+inline std::ostream& operator<<(std::ostream& stream, const sgpp::base::GridIndex& x) {
+  base::DataVector xCoord(x.getDimension());
 
-  for (size_t t = 0; t < x.dim(); t++) {
+  for (size_t t = 0; t < x.getDimension(); t++) {
     xCoord[t] = x.getCoord(t);
   }
 
@@ -71,7 +70,7 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 /**
  * Singleton class to facilitate debugging output.
- * Use with the SGPP::printer instance.
+ * Use with the sgpp::printer instance.
  *
  * The status printing functions won't print anything if
  * - status printing is disabled with disableStatusPrinting() OR
@@ -86,10 +85,7 @@ class Printer {
   /**
    * @return singleton instance
    */
-  inline static Printer& getInstance() {
-    static Printer printer;
-    return printer;
-  }
+  static Printer& getInstance();
 
   /**
    * Call at the beginning of a time-consuming operation.
@@ -152,22 +148,18 @@ class Printer {
   /**
    * @return          current verbosity level
    */
-  inline int getVerbosity() const {
-    return verbose;
-  }
+  inline int getVerbosity() const { return verbose; }
 
   /**
    * @param level     new verbosity level
    */
-  inline void setVerbosity(int level) {
-    verbose = level;
-  }
+  inline void setVerbosity(int level) { verbose = level; }
 
   /**
    * @return  running-time of the last operation terminated by
    *          printStatusEnd()
    */
-  float_t getLastDurationSecs() const;
+  double getLastDurationSecs() const;
 
   /**
    * @return  internal mutex
@@ -199,8 +191,7 @@ class Printer {
    *
    * @param gridGen       grid to be printed
    */
-  void printIterativeGridGenerator(
-    const IterativeGridGenerator& gridGen) const;
+  void printIterativeGridGenerator(const IterativeGridGenerator& gridGen) const;
 
   /**
    * Print a system of linear equations.
@@ -229,7 +220,7 @@ class Printer {
   /// stack of stop watches (started at time of printStatusBegin() calls)
   std::stack<base::SGppStopwatch> watches;
   /// length of last operation in seconds
-  float_t lastDuration;
+  double lastDuration;
   /// maximum length of lines, 0 if unbounded
   size_t lineLengthLimit;
   /// indentation
@@ -257,8 +248,7 @@ class Printer {
    */
   void operator=(const Printer&) = delete;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP */

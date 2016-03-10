@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -22,13 +22,13 @@ namespace datadriven {
 class Learner : public LearnerBase {
  protected:
   /// regularization mode
-  SGPP::datadriven::RegularizationType CMode_;
+  sgpp::datadriven::RegularizationType CMode_;
   /// regularization operator
-  SGPP::base::OperationMatrix* C_;
+  sgpp::base::OperationMatrix* C_;
 
   /// construct system matrix
-  virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
-    SGPP::base::DataMatrix& trainDataset, float_t lambda);
+  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(
+    sgpp::base::DataMatrix& trainDataset, double lambda);
 
  public:
   /**
@@ -38,7 +38,7 @@ class Learner : public LearnerBase {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  Learner(SGPP::datadriven::RegularizationType& regularization,
+  Learner(sgpp::datadriven::RegularizationType& regularization,
           const bool isRegression,
           const bool isVerbose = true);
 
@@ -52,7 +52,7 @@ class Learner : public LearnerBase {
    * @param isVerbose set to true in order to allow console output
    */
   Learner(const std::string tGridFilename, const std::string tAlphaFilename,
-          SGPP::datadriven::RegularizationType& regularization,
+          sgpp::datadriven::RegularizationType& regularization,
           const bool isRegression, const bool isVerbose = true);
 
   /**
@@ -62,6 +62,6 @@ class Learner : public LearnerBase {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNER_HPP */

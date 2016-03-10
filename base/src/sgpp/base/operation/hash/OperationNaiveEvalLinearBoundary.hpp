@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
@@ -22,7 +22,7 @@ class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalLinearBoundary(GridStorage* storage) : storage(
+  explicit OperationNaiveEvalLinearBoundary(GridStorage& storage) : storage(
       storage) {
   }
 
@@ -37,16 +37,16 @@ class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D linear basis
   SLinearBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALLINEARBOUNDARY_HPP */

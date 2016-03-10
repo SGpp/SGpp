@@ -13,17 +13,17 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationLinearBoundary::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationLinearBoundary func(this->storage);
-  sweep<HierarchisationLinearBoundary> s(func, this->storage);
+  HierarchisationLinearBoundary func(storage);
+  sweep<HierarchisationLinearBoundary> s(func, storage);
 
   // N D case
-  if (this->storage->dim() > 1) {
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+  if (this->storage.getDimension() > 1) {
+    for (size_t i = 0; i < this->storage.getDimension(); i++) {
       s.sweep1D_Boundary(node_values, node_values, i);
     }
   } else {  // 1 D case
@@ -33,12 +33,12 @@ void OperationHierarchisationLinearBoundary::doHierarchisation(
 
 void OperationHierarchisationLinearBoundary::doDehierarchisation(
   DataVector& alpha) {
-  DehierarchisationLinearBoundary func(this->storage);
-  sweep<DehierarchisationLinearBoundary> s(func, this->storage);
+  DehierarchisationLinearBoundary func(storage);
+  sweep<DehierarchisationLinearBoundary> s(func, storage);
 
   // N D case
-  if (this->storage->dim() > 1) {
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+  if (this->storage.getDimension() > 1) {
+    for (size_t i = 0; i < this->storage.getDimension(); i++) {
       s.sweep1D_Boundary(alpha, alpha, i);
     }
   } else {  // 1 D case
@@ -47,4 +47,4 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

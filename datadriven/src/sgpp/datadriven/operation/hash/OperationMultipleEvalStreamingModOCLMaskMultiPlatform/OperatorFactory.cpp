@@ -10,19 +10,18 @@
 #include "Configuration.hpp"
 #include "OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
   if (configuration.getParameters().operator bool()) {
     base::OCLOperationConfiguration* cloned =
-        dynamic_cast<base::OCLOperationConfiguration*>(
-            configuration.getParameters()->clone());
+        dynamic_cast<base::OCLOperationConfiguration*>(configuration.getParameters()->clone());
     parameters = std::shared_ptr<base::OCLOperationConfiguration>(cloned);
     manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
   } else {
@@ -30,15 +29,14 @@ base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
     parameters = manager->getConfiguration();
   }
 
-  StreamingModOCLMaskMultiPlatform::Configuration::augmentDefaultParameters(
-      *parameters);
+  StreamingModOCLMaskMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
 
   if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
-    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<
-        float>(grid, dataset, manager, parameters);
+    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<float>(
+        grid, dataset, manager, parameters);
   } else if ((*parameters)["INTERNAL_PRECISION"].get() == "double") {
-    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<
-        double>(grid, dataset, manager, parameters);
+    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<double>(
+        grid, dataset, manager, parameters);
   } else {
     throw base::factory_exception(
         "Error creating "
@@ -48,4 +46,4 @@ base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

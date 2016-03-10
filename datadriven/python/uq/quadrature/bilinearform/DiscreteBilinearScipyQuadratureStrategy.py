@@ -20,7 +20,7 @@ class DiscreteBilinearScipyQuadratureStrategy(BilinearQuadratureStrategy):
 
         # run over all dimensions
         d = 0
-        while d < gpi.dim() and abs(val) > 1e-15:
+        while d < gpi.getDimension() and abs(val) > 1e-15:
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)

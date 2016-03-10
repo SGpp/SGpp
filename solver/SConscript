@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -17,6 +17,7 @@ Import('installTargetList')
 Import('exampleTargetList')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 moduleDependencies = ['sgppbase']
 Export('moduleDependencies')
@@ -28,19 +29,21 @@ if env['USE_STATICLIB']:
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
 
-srcs = []
+cpps = []
+hpps = []
+objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("src"):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        srcs.append(os.path.join(currentFolder, fileName))
+        cpp = os.path.join(currentFolder, fileName)
+        cpps.append(cpp)
+        objs.append(env.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
-
-objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
-    # objs.append(sourceFile)
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 if env['USE_STATICLIB']:
     # building static libraries is the same for unix and windows platforms
@@ -49,7 +52,7 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
+    # building of shared libraries differs
     libsuffix = env['SHLIBSUFFIX']
     lib = env.SharedLibrary(target=libname,
                             source=objs,
@@ -67,17 +70,29 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
+# build examples
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
+        cpp = os.path.join("examples", fileName)
+        cpps.append(cpp)
+        example = env.Program(source=cpp,
                               LIBPATH=BUILD_DIR,
                               LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
+    elif fnmatch.fnmatch(fileName, "*.hpp"):
+        hpp = os.path.join("examples", fileName)
+        hpps.append(hpp)
+
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

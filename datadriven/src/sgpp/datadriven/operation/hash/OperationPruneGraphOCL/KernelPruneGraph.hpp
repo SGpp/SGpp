@@ -10,7 +10,7 @@
 #include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
 
 #include <limits>
 #include <string>
@@ -18,7 +18,7 @@
 
 #include "KernelSourceBuilderPruneGraph.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -35,14 +35,14 @@ class KernelPruneGraph {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<int> devicePoints;
-  base::OCLClonedBufferSD<T> deviceAlpha;
-  base::OCLClonedBufferSD<T> deviceData;
-  base::OCLClonedBufferSD<int> deviceGraph;
+  base::OCLBufferWrapperSD<int> devicePoints;
+  base::OCLBufferWrapperSD<T> deviceAlpha;
+  base::OCLBufferWrapperSD<T> deviceData;
+  base::OCLBufferWrapperSD<int> deviceGraph;
 
   cl_kernel kernel;
 
-  SGPP::datadriven::DensityOCLMultiPlatform::SourceBuilderPruneGraph<T> kernelSourceBuilder;
+  sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderPruneGraph<T> kernelSourceBuilder;
 
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
@@ -122,7 +122,7 @@ class KernelPruneGraph {
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
         std::cout << "building kernel" << std::endl;
-      this->kernel = manager->buildKernel(program_src, device, "removeEdges");
+      this->kernel = manager->buildKernel(program_src, device, kernelConfiguration, "removeEdges");
     }
 
     deviceGraph.intializeTo(graph, 1, 0, graph.size());
@@ -228,7 +228,7 @@ class KernelPruneGraph {
     this->deviceTimingMult += time;
     return 0;
   }
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -279,4 +279,4 @@ class KernelPruneGraph {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

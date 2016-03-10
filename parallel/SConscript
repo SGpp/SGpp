@@ -1,9 +1,10 @@
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import os
+import sys
 import fnmatch
 
 Import('env')
@@ -11,6 +12,7 @@ Import('BUILD_DIR')
 Import('moduleName')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 env_parallel = env.Clone()
 # can only build without mpi support, skip those files
@@ -36,12 +38,12 @@ MPIOnlyFiles = [
     "BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp",
     "BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp",
     "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.cpp",
-    "OperationLaplaceVectorizedLinear.cpp",
-    "OperationLaplaceVectorizedLinearBoundary.cpp",
-    "OperationLTwoDotProductVectorizedLinear.cpp",
-    "OperationLTwoDotProductVectorizedLinearBoundary.cpp",
-    "OperationLTwoDotLaplaceVectorizedLinear.cpp",
-    "OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
+    #"OperationLaplaceVectorizedLinear.cpp",
+    #"OperationLaplaceVectorizedLinearBoundary.cpp",
+    #"OperationLTwoDotProductVectorizedLinear.cpp",
+    #"OperationLTwoDotProductVectorizedLinearBoundary.cpp",
+    #"OperationLTwoDotLaplaceVectorizedLinear.cpp",
+    #"OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
     ]
 
 # Nvidia OpenCL: -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
@@ -77,7 +79,7 @@ OCLOnlyFiles = [
 
 #-I$(ARBBINCLUDE) -DUSEARBB
 #-L$(ARBBLIB) -larbb -ltbb
-ArBBOnlyFiles = [ 
+ArBBOnlyFiles = [
     "OperationMultipleEvalIterativeArBBLinear.cpp",
     "OperationMultipleEvalIterativeSPArBBLinear.cpp",
     "OperationMultipleEvalIterativeArBBModLinear.cpp",
@@ -91,14 +93,14 @@ ArBBOnlyFiles = [
 
 MICOnlyFiles = [
     "MICKernelImpl.cpp",
-    "SPMICKernelImpl.cpp"       
+    "SPMICKernelImpl.cpp"
 ]
 
-moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
+moduleDependencies = ['sgppdatadriven', 'sgppfinance', 'sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-if env['PLATFORM'] == 'win32':
-    sys.stderr.write("Error: the parallel package is not supported on windows platforms.\n")
+if env['COMPILER'] == 'vcc':
+    sys.stderr.write("Error: The parallel package is not supported on MSVC++.\n")
     sys.exit(1)
 
 libname = "sgpp%s" % moduleName
@@ -107,28 +109,33 @@ if env['USE_STATICLIB']:
     for i, _ in enumerate(moduleDependencies):
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
-srcs = []
+
+cpps = []
+hpps = []
+objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
         continue #  ignore exampleApplication when compiling normally.
                  #those should probably go into normal example folder.
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            #if fileName in MPIOnlyFiles:
-            #     continue
+            if fileName in MPIOnlyFiles:
+                if not 'USE_MPI' in env_parallel['CPPDEFINES']:
+                    continue
             if fileName in OCLOnlyFiles:
-                 continue
+                continue
             if fileName in ArBBOnlyFiles:
-                 continue
-            srcs.append(os.path.join(currentFolder, fileName))
+                continue
+            cpp = os.path.join(currentFolder, fileName)
+            cpps.append(cpp)
+            objs.append(env_parallel.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
-
-objs = []
-for sourceFile in srcs:
-    objs.append(env_parallel.SharedObject(sourceFile))
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 if env['USE_STATICLIB']:
     libsuffix = env['LIBSUFFIX']
@@ -153,18 +160,34 @@ libInstall = env_parallel.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
+# build examples
 Import('exampleTargetList')
+example_env = env.Clone()
+example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
 for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*MPI*") and not 'USE_MPI' in env_parallel['CPPDEFINES']:
+        continue  # skip MPI files, if USE_MPI is not defined
+    if not fnmatch.fnmatch(fileName, "*MPI*") and 'USE_MPI' in env_parallel['CPPDEFINES']:
+        continue  # skip non mpi files if USE_MPI is defined
     if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
+        cpp = os.path.join("examples", fileName)
+        cpps.append(cpp)
+        example = example_env.Program(source=cpp)
+        example_env.Requires(example, libInstall)
         exampleTargetList.append(example)
+    elif fnmatch.fnmatch(fileName, "*.hpp"):
+        hpp = os.path.join("examples", fileName)
+        hpps.append(hpp)
+
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 Import('libraryTargetList')
 Import('installTargetList')

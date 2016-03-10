@@ -39,152 +39,236 @@ const bool UMFPACK_ENABLED;
 %}
 
 // necessary tools
-%rename(OptRNG)         SGPP::optimization::RandomNumberGenerator;
+%rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
-%rename(OptScalarFunction)                      SGPP::optimization::ScalarFunction;
-%rename(OptScalarFunctionGradient)              SGPP::optimization::ScalarFunctionGradient;
-%rename(OptScalarFunctionHessian)               SGPP::optimization::ScalarFunctionHessian;
-%rename(OptInterpolantScalarFunction)           SGPP::optimization::InterpolantScalarFunction;
-%rename(OptInterpolantScalarFunctionGradient)   SGPP::optimization::InterpolantScalarFunctionGradient;
-%rename(OptInterpolantScalarFunctionHessian)    SGPP::optimization::InterpolantScalarFunctionHessian;
-%rename(OptComponentScalarFunction)             SGPP::optimization::ComponentScalarFunction;
-%rename(OptComponentScalarFunctionGradient)     SGPP::optimization::ComponentScalarFunctionGradient;
-%rename(OptComponentScalarFunctionHessian)      SGPP::optimization::ComponentScalarFunctionHessian;
-%rename(OptWrapperScalarFunction)               SGPP::optimization::WrapperScalarFunction;
-%rename(OptWrapperScalarFunctionGradient)       SGPP::optimization::WrapperScalarFunctionGradient;
-%rename(OptWrapperScalarFunctionHessian)        SGPP::optimization::WrapperScalarFunctionHessian;
+%rename(OptScalarFunction)                      sgpp::optimization::ScalarFunction;
+%rename(OptScalarFunctionGradient)              sgpp::optimization::ScalarFunctionGradient;
+%rename(OptScalarFunctionHessian)               sgpp::optimization::ScalarFunctionHessian;
+%rename(OptInterpolantScalarFunction)           sgpp::optimization::InterpolantScalarFunction;
+%rename(OptInterpolantScalarFunctionGradient)   sgpp::optimization::InterpolantScalarFunctionGradient;
+%rename(OptInterpolantScalarFunctionHessian)    sgpp::optimization::InterpolantScalarFunctionHessian;
+%rename(OptComponentScalarFunction)             sgpp::optimization::ComponentScalarFunction;
+%rename(OptComponentScalarFunctionGradient)     sgpp::optimization::ComponentScalarFunctionGradient;
+%rename(OptComponentScalarFunctionHessian)      sgpp::optimization::ComponentScalarFunctionHessian;
+%rename(OptWrapperScalarFunction)               sgpp::optimization::WrapperScalarFunction;
+%rename(OptWrapperScalarFunctionGradient)       sgpp::optimization::WrapperScalarFunctionGradient;
+%rename(OptWrapperScalarFunctionHessian)        sgpp::optimization::WrapperScalarFunctionHessian;
 
-%rename(OptVectorFunction)                      SGPP::optimization::VectorFunction;
-%rename(OptVectorFunctionGradient)              SGPP::optimization::VectorFunctionGradient;
-%rename(OptVectorFunctionHessian)               SGPP::optimization::VectorFunctionHessian;
-%rename(OptEmptyVectorFunction)                 SGPP::optimization::EmptyVectorFunction;
-%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::EmptyVectorFunctionGradient;
-%rename(OptInterpolantVectorFunction)           SGPP::optimization::InterpolantVectorFunction;
-%rename(OptInterpolantVectorGradient)           SGPP::optimization::InterpolantVectorGradient;
-%rename(OptInterpolantVectorHessian)            SGPP::optimization::InterpolantVectorHessian;
-%rename(OptWrapperVectorFunction)               SGPP::optimization::WrapperVectorFunction;
-%rename(OptWrapperVectorFunctionGradient)       SGPP::optimization::WrapperVectorFunctionGradient;
-%rename(OptWrapperVectorFunctionHessian)        SGPP::optimization::WrapperVectorFunctionHessian;
+%rename(OptVectorFunction)                      sgpp::optimization::VectorFunction;
+%rename(OptVectorFunctionGradient)              sgpp::optimization::VectorFunctionGradient;
+%rename(OptVectorFunctionHessian)               sgpp::optimization::VectorFunctionHessian;
+%rename(OptEmptyVectorFunction)                 sgpp::optimization::EmptyVectorFunction;
+%rename(OptEmptyVectorFunctionGradient)         sgpp::optimization::EmptyVectorFunctionGradient;
+%rename(OptInterpolantVectorFunction)           sgpp::optimization::InterpolantVectorFunction;
+%rename(OptInterpolantVectorGradient)           sgpp::optimization::InterpolantVectorGradient;
+%rename(OptInterpolantVectorHessian)            sgpp::optimization::InterpolantVectorHessian;
+%rename(OptWrapperVectorFunction)               sgpp::optimization::WrapperVectorFunction;
+%rename(OptWrapperVectorFunctionGradient)       sgpp::optimization::WrapperVectorFunctionGradient;
+%rename(OptWrapperVectorFunctionHessian)        sgpp::optimization::WrapperVectorFunctionHessian;
 
-%rename(OptTestFunction)    SGPP::optimization::test_functions::TestFunction;
-%rename(OptAckley)          SGPP::optimization::test_functions::Ackley;
-%rename(OptBeale)           SGPP::optimization::test_functions::Beale;
-%rename(OptBranin)          SGPP::optimization::test_functions::Branin;
-%rename(OptEasom)           SGPP::optimization::test_functions::Easom;
-%rename(OptEggholder)       SGPP::optimization::test_functions::Eggholder;
-%rename(OptGoldsteinPrice)  SGPP::optimization::test_functions::GoldsteinPrice;
-%rename(OptGriewank)        SGPP::optimization::test_functions::Griewank;
-%rename(OptHartman3)        SGPP::optimization::test_functions::Hartman3;
-%rename(OptHartman6)        SGPP::optimization::test_functions::Hartman6;
-%rename(OptHimmelblau)      SGPP::optimization::test_functions::Himmelblau;
-%rename(OptHoelderTable)    SGPP::optimization::test_functions::HoelderTable;
-%rename(OptMichalewicz)     SGPP::optimization::test_functions::Michalewicz;
-%rename(OptMladineo)        SGPP::optimization::test_functions::Mladineo;
-%rename(OptRastrigin)       SGPP::optimization::test_functions::Rastrigin;
-%rename(OptRosenbrock)      SGPP::optimization::test_functions::Rosenbrock;
-%rename(OptSHCB)            SGPP::optimization::test_functions::SHCB;
-%rename(OptSchwefel)        SGPP::optimization::test_functions::Schwefel;
-%rename(OptSphere)          SGPP::optimization::test_functions::Sphere;
+%rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
+%rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
+%rename(OptIterativeGridGeneratorLinearSurplus) sgpp::optimization::IterativeGridGeneratorLinearSurplus;
+%rename(OptIterativeGridGeneratorRitterNovak)   sgpp::optimization::IterativeGridGeneratorRitterNovak;
+%rename(OptIterativeGridGeneratorSOO)           sgpp::optimization::IterativeGridGeneratorSOO;
 
-%rename(OptHashRefinementMultiple)              SGPP::optimization::HashRefinementMultiple;
-%rename(OptIterativeGridGenerator)              SGPP::optimization::IterativeGridGenerator;
-%rename(OptIterativeGridGeneratorLinearSurplus) SGPP::optimization::IterativeGridGeneratorLinearSurplus;
-%rename(OptIterativeGridGeneratorRitterNovak)   SGPP::optimization::IterativeGridGeneratorRitterNovak;
-%rename(OptIterativeGridGeneratorSOO)           SGPP::optimization::IterativeGridGeneratorSOO;
+%rename(OptSLE)                     sgpp::optimization::SLE;
+%rename(OptFullSLE)                 sgpp::optimization::FullSLE;
+%rename(OptHierarchisationSLE)      sgpp::optimization::HierarchisationSLE;
+%rename(OptSLESolver)               sgpp::optimization::sle_solver::SLESolver;
+%rename(OptArmadillo)               sgpp::optimization::sle_solver::Armadillo;
+%rename(OptAutoSLESolver)           sgpp::optimization::sle_solver::Auto;
+%rename(OptBiCGStab)                sgpp::optimization::sle_solver::BiCGStab;
+%rename(OptEigen)                   sgpp::optimization::sle_solver::Eigen;
+%rename(OptGaussianElimination)     sgpp::optimization::sle_solver::GaussianElimination;
+%rename(OptGmmpp)                   sgpp::optimization::sle_solver::Gmmpp;
+%rename(OptUMFPACK)                 sgpp::optimization::sle_solver::UMFPACK;
 
-%rename(OptSLE)                     SGPP::optimization::SLE;
-%rename(OptFullSLE)                 SGPP::optimization::FullSLE;
-%rename(OptHierarchisationSLE)      SGPP::optimization::HierarchisationSLE;
-%rename(OptSLESolver)               SGPP::optimization::sle_solver::SLESolver;
-%rename(OptArmadillo)               SGPP::optimization::sle_solver::Armadillo;
-%rename(OptAutoSLESolver)           SGPP::optimization::sle_solver::Auto;
-%rename(OptBiCGStab)                SGPP::optimization::sle_solver::BiCGStab;
-%rename(OptEigen)                   SGPP::optimization::sle_solver::Eigen;
-%rename(OptGaussianElimination)     SGPP::optimization::sle_solver::GaussianElimination;
-%rename(OptGmmpp)                   SGPP::optimization::sle_solver::Gmmpp;
-%rename(OptUMFPACK)                 SGPP::optimization::sle_solver::UMFPACK;
+%rename(OptUnconstrainedOptimizer)  sgpp::optimization::optimizer::UnconstrainedOptimizer;
+%rename(OptAdaptiveGradientDescent) sgpp::optimization::optimizer::AdaptiveGradientDescent;
+%rename(OptAdaptiveNewton)          sgpp::optimization::optimizer::AdaptiveNewton;
+%rename(OptBFGS)                    sgpp::optimization::optimizer::BFGS;
+%rename(OptCMAES)                   sgpp::optimization::optimizer::CMAES;
+%rename(OptDifferentialEvolution)   sgpp::optimization::optimizer::DifferentialEvolution;
+%rename(OptGradientDescent)         sgpp::optimization::optimizer::GradientDescent;
+%rename(OptMultiStart)              sgpp::optimization::optimizer::MultiStart;
+%rename(OptNelderMead)              sgpp::optimization::optimizer::NelderMead;
+%rename(OptNewton)                  sgpp::optimization::optimizer::Newton;
+%rename(OptNLCG)                    sgpp::optimization::optimizer::NLCG;
+%rename(OptRprop)                   sgpp::optimization::optimizer::Rprop;
 
-%rename(OptUnconstrainedOptimizer)  SGPP::optimization::optimizer::UnconstrainedOptimizer;
-%rename(OptAdaptiveGradientDescent) SGPP::optimization::optimizer::AdaptiveGradientDescent;
-%rename(OptAdaptiveNewton)          SGPP::optimization::optimizer::AdaptiveNewton;
-%rename(OptBFGS)                    SGPP::optimization::optimizer::BFGS;
-%rename(OptCMAES)                   SGPP::optimization::optimizer::CMAES;
-%rename(OptDifferentialEvolution)   SGPP::optimization::optimizer::DifferentialEvolution;
-%rename(OptGradientDescent)         SGPP::optimization::optimizer::GradientDescent;
-%rename(OptMultiStart)              SGPP::optimization::optimizer::MultiStart;
-%rename(OptNelderMead)              SGPP::optimization::optimizer::NelderMead;
-%rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
-%rename(OptNLCG)                    SGPP::optimization::optimizer::NLCG;
-%rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
+%rename(OptLeastSquaresOptimizer)   sgpp::optimization::optimizer::LeastSquaresOptimizer;
+%rename(OptLevenbergMarquardt)      sgpp::optimization::optimizer::LevenbergMarquardt;
 
-%rename(OptLeastSquaresOptimizer)   SGPP::optimization::optimizer::LeastSquaresOptimizer;
-%rename(OptLevenbergMarquardt)      SGPP::optimization::optimizer::LevenbergMarquardt;
+%rename(OptConstrainedOptimizer)    sgpp::optimization::optimizer::ConstrainedOptimizer;
+%rename(OptAugmentedLagrangian)     sgpp::optimization::optimizer::AugmentedLagrangian;
+%rename(OptLogBarrier)              sgpp::optimization::optimizer::LogBarrier;
+%rename(OptSquaredPenalty)          sgpp::optimization::optimizer::SquaredPenalty;
 
-%rename(OptConstrainedOptimizer)    SGPP::optimization::optimizer::ConstrainedOptimizer;
-%rename(OptAugmentedLagrangian)     SGPP::optimization::optimizer::AugmentedLagrangian;
-%rename(OptLogBarrier)              SGPP::optimization::optimizer::LogBarrier;
-%rename(OptSquaredPenalty)          SGPP::optimization::optimizer::SquaredPenalty;
+%rename(OptTestScalarFunction)  sgpp::optimization::test_problems::TestScalarFunction;
+%rename(OptTestVectorFunction)  sgpp::optimization::test_problems::TestVectorFunction;
 
-%rename(OptFileIOWriteGrid)                 SGPP::optimization::file_io::writeGrid;
-%rename(OptFileIOReadGrid)                  SGPP::optimization::file_io::readGrid;
-%rename(OptFileIOWriteMatrix)               SGPP::optimization::file_io::writeMatrix;
-%rename(OptFileIOReadMatrix)                SGPP::optimization::file_io::readMatrix;
-%rename(OptFileIOWriteVector)               SGPP::optimization::file_io::writeVector;
-%rename(OptFileIOReadVector)                SGPP::optimization::file_io::readVector;
-%rename(OptMathSchurDecomposition)          SGPP::optimization::math::schurDecomposition;
-%rename(OptMathQRDecomposition)             SGPP::optimization::math::QRDecomposition;
-%rename(OptMathHessenbergForm)              SGPP::optimization::math::hessenbergForm;
-%rename(OptMathHouseholderTransformation)   SGPP::optimization::math::householderTransformation;
-%rename(OptMutexType)                       SGPP::optimization::MutexType;
-%rename(OptPrinter)                         SGPP::optimization::Printer;
+%rename(OptUnconstrainedTestProblem)    sgpp::optimization::test_problems::UnconstrainedTestProblem;
+%rename(OptAbsoluteValue)               sgpp::optimization::test_problems::AbsoluteValue;
+%rename(OptAbsoluteValueObjective)      sgpp::optimization::test_problems::AbsoluteValue;
+%rename(OptAckley)                      sgpp::optimization::test_problems::Ackley;
+%rename(OptAckleyObjective)             sgpp::optimization::test_problems::AckleyObjective;
+%rename(OptBeale)                       sgpp::optimization::test_problems::Beale;
+%rename(OptBealeObjective)              sgpp::optimization::test_problems::BealeObjective;
+%rename(OptBranin)                      sgpp::optimization::test_problems::Branin;
+%rename(OptBraninObjective)             sgpp::optimization::test_problems::BraninObjective;
+%rename(OptBubbleWrap)                  sgpp::optimization::test_problems::BubbleWrap;
+%rename(OptBubbleWrapObjective)         sgpp::optimization::test_problems::BubbleWrapObjective;
+%rename(OptEasomYang)                   sgpp::optimization::test_problems::EasomYang;
+%rename(OptEasomYangObjective)          sgpp::optimization::test_problems::EasomYangObjective;
+%rename(OptEggholder)                   sgpp::optimization::test_problems::Eggholder;
+%rename(OptEggholderObjective)          sgpp::optimization::test_problems::EggholderObjective;
+%rename(OptGoldsteinPrice)              sgpp::optimization::test_problems::GoldsteinPrice;
+%rename(OptGoldsteinPriceObjective)     sgpp::optimization::test_problems::GoldsteinPriceObjective;
+%rename(OptGriewank)                    sgpp::optimization::test_problems::Griewank;
+%rename(OptGriewankObjective)           sgpp::optimization::test_problems::GriewankObjective;
+%rename(OptHartman3)                    sgpp::optimization::test_problems::Hartman3;
+%rename(OptHartman3Objective)           sgpp::optimization::test_problems::Hartman3Objective;
+%rename(OptHartman6)                    sgpp::optimization::test_problems::Hartman6;
+%rename(OptHartman6Objective)           sgpp::optimization::test_problems::Hartman6Objective;
+%rename(OptHimmelblau)                  sgpp::optimization::test_problems::Himmelblau;
+%rename(OptHimmelblauObjective)         sgpp::optimization::test_problems::HimmelblauObjective;
+%rename(OptHoelderTable)                sgpp::optimization::test_problems::HoelderTable;
+%rename(OptHoelderTableObjective)       sgpp::optimization::test_problems::HoelderTableObjective;
+%rename(OptIncreasingPower)             sgpp::optimization::test_problems::IncreasingPower;
+%rename(OptIncreasingPowerObjective)    sgpp::optimization::test_problems::IncreasingPowerObjective;
+%rename(OptMichalewicz)                 sgpp::optimization::test_problems::Michalewicz;
+%rename(OptMichalewiczObjective)        sgpp::optimization::test_problems::MichalewiczObjective;
+%rename(OptMladineo)                    sgpp::optimization::test_problems::Mladineo;
+%rename(OptMladineoObjective)           sgpp::optimization::test_problems::MladineoObjective;
+%rename(OptPerm)                        sgpp::optimization::test_problems::Perm;
+%rename(OptPermObjective)               sgpp::optimization::test_problems::PermObjective;
+%rename(OptRastrigin)                   sgpp::optimization::test_problems::Rastrigin;
+%rename(OptRastriginObjective)          sgpp::optimization::test_problems::RastriginObjective;
+%rename(OptRosenbrock)                  sgpp::optimization::test_problems::Rosenbrock;
+%rename(OptRosenbrockObjective)         sgpp::optimization::test_problems::RosenbrockObjective;
+%rename(OptSHCB)                        sgpp::optimization::test_problems::SHCB;
+%rename(OptSHCBObjective)               sgpp::optimization::test_problems::SHCBObjective;
+%rename(OptSchwefel)                    sgpp::optimization::test_problems::Schwefel;
+%rename(OptSchwefelObjective)           sgpp::optimization::test_problems::SchwefelObjective;
+%rename(OptSphere)                      sgpp::optimization::test_problems::Sphere;
+%rename(OptSphereObjective)             sgpp::optimization::test_problems::SphereObjective;
+%rename(OptTremblingParabola)           sgpp::optimization::test_problems::TremblingParabola;
+%rename(OptTremblingParabolaObjective)  sgpp::optimization::test_problems::TremblingParabolaObjective;
+
+%rename(OptConstrainedTestProblem)          sgpp::optimization::test_problems::ConstrainedTestProblem;
+%rename(OptFloudas)                         sgpp::optimization::test_problems::Floudas;
+%rename(OptFloudasObjective)                sgpp::optimization::test_problems::FloudasObjective;
+%rename(OptFloudasInequalityConstraint)     sgpp::optimization::test_problems::FloudasInequalityConstraint;
+%rename(OptFloudasEqualityConstraint)       sgpp::optimization::test_problems::FloudasEqualityConstraint;
+%rename(OptG03)                             sgpp::optimization::test_problems::G03;
+%rename(OptG03Objective)                    sgpp::optimization::test_problems::G03Objective;
+%rename(OptG03InequalityConstraint)         sgpp::optimization::test_problems::G03InequalityConstraint;
+%rename(OptG03EqualityConstraint)           sgpp::optimization::test_problems::G03EqualityConstraint;
+%rename(OptG04)                             sgpp::optimization::test_problems::G04;
+%rename(OptG04Objective)                    sgpp::optimization::test_problems::G04Objective;
+%rename(OptG04InequalityConstraint)         sgpp::optimization::test_problems::G04InequalityConstraint;
+%rename(OptG04EqualityConstraint)           sgpp::optimization::test_problems::G04EqualityConstraint;
+%rename(OptG05)                             sgpp::optimization::test_problems::G05;
+%rename(OptG05Objective)                    sgpp::optimization::test_problems::G05Objective;
+%rename(OptG05InequalityConstraint)         sgpp::optimization::test_problems::G05InequalityConstraint;
+%rename(OptG05EqualityConstraint)           sgpp::optimization::test_problems::G05EqualityConstraint;
+%rename(OptG06)                             sgpp::optimization::test_problems::G06;
+%rename(OptG06Objective)                    sgpp::optimization::test_problems::G06Objective;
+%rename(OptG06InequalityConstraint)         sgpp::optimization::test_problems::G06InequalityConstraint;
+%rename(OptG06EqualityConstraint)           sgpp::optimization::test_problems::G06EqualityConstraint;
+%rename(OptG08)                             sgpp::optimization::test_problems::G08;
+%rename(OptG08Objective)                    sgpp::optimization::test_problems::G08Objective;
+%rename(OptG08InequalityConstraint)         sgpp::optimization::test_problems::G08InequalityConstraint;
+%rename(OptG08EqualityConstraint)           sgpp::optimization::test_problems::G08EqualityConstraint;
+%rename(OptG09)                             sgpp::optimization::test_problems::G09;
+%rename(OptG09Objective)                    sgpp::optimization::test_problems::G09Objective;
+%rename(OptG09InequalityConstraint)         sgpp::optimization::test_problems::G09InequalityConstraint;
+%rename(OptG09EqualityConstraint)           sgpp::optimization::test_problems::G09EqualityConstraint;
+%rename(OptG10)                             sgpp::optimization::test_problems::G10;
+%rename(OptG10Objective)                    sgpp::optimization::test_problems::G10Objective;
+%rename(OptG10InequalityConstraint)         sgpp::optimization::test_problems::G10InequalityConstraint;
+%rename(OptG10EqualityConstraint)           sgpp::optimization::test_problems::G10EqualityConstraint;
+%rename(OptG11)                             sgpp::optimization::test_problems::G11;
+%rename(OptG11Objective)                    sgpp::optimization::test_problems::G11Objective;
+%rename(OptG11InequalityConstraint)         sgpp::optimization::test_problems::G11InequalityConstraint;
+%rename(OptG11EqualityConstraint)           sgpp::optimization::test_problems::G11EqualityConstraint;
+%rename(OptG12)                             sgpp::optimization::test_problems::G12;
+%rename(OptG12Objective)                    sgpp::optimization::test_problems::G12Objective;
+%rename(OptG12InequalityConstraint)         sgpp::optimization::test_problems::G12InequalityConstraint;
+%rename(OptG12EqualityConstraint)           sgpp::optimization::test_problems::G12EqualityConstraint;
+%rename(OptG13)                             sgpp::optimization::test_problems::G13;
+%rename(OptG13Objective)                    sgpp::optimization::test_problems::G13Objective;
+%rename(OptG13InequalityConstraint)         sgpp::optimization::test_problems::G13InequalityConstraint;
+%rename(OptG13EqualityConstraint)           sgpp::optimization::test_problems::G13EqualityConstraint;
+%rename(OptSimionescu)                      sgpp::optimization::test_problems::Simionescu;
+%rename(OptSimionescuObjective)             sgpp::optimization::test_problems::SimionescuObjective;
+%rename(OptSimionescuInequalityConstraint)  sgpp::optimization::test_problems::SimionescuInequalityConstraint;
+%rename(OptSimionescuEqualityConstraint)    sgpp::optimization::test_problems::SimionescuEqualityConstraint;
+%rename(OptSoland)                          sgpp::optimization::test_problems::Soland;
+%rename(OptSolandObjective)                 sgpp::optimization::test_problems::SolandObjective;
+%rename(OptSolandInequalityConstraint)      sgpp::optimization::test_problems::SolandInequalityConstraint;
+%rename(OptSolandEqualityConstraint)        sgpp::optimization::test_problems::SolandEqualityConstraint;
+
+%rename(OptFileIOWriteGrid)                 sgpp::optimization::file_io::writeGrid;
+%rename(OptFileIOReadGrid)                  sgpp::optimization::file_io::readGrid;
+%rename(OptFileIOWriteMatrix)               sgpp::optimization::file_io::writeMatrix;
+%rename(OptFileIOReadMatrix)                sgpp::optimization::file_io::readMatrix;
+%rename(OptFileIOWriteVector)               sgpp::optimization::file_io::writeVector;
+%rename(OptFileIOReadVector)                sgpp::optimization::file_io::readVector;
+%rename(OptMathSchurDecomposition)          sgpp::optimization::math::schurDecomposition;
+%rename(OptMathQRDecomposition)             sgpp::optimization::math::QRDecomposition;
+%rename(OptMathHessenbergForm)              sgpp::optimization::math::hessenbergForm;
+%rename(OptMathHouseholderTransformation)   sgpp::optimization::math::householderTransformation;
+%rename(OptMutexType)                       sgpp::optimization::MutexType;
+%rename(OptPrinter)                         sgpp::optimization::Printer;
 
 // classes with director interface
-%feature("director") SGPP::optimization::ConstraintFunction;
-%feature("director") SGPP::optimization::ConstraintGradient;
-%feature("director") SGPP::optimization::ConstraintHessian;
-%feature("director") SGPP::optimization::ObjectiveFunction;
-%feature("director") SGPP::optimization::ObjectiveGradient;
-%feature("director") SGPP::optimization::ObjectiveHessian;
-%feature("director") SGPP::optimization::ScalarFunction;
-%feature("director") SGPP::optimization::ScalarFunctionGradient;
-%feature("director") SGPP::optimization::ScalarFunctionHessian;
-%feature("director") SGPP::optimization::VectorFunction;
-%feature("director") SGPP::optimization::VectorFunctionGradient;
-%feature("director") SGPP::optimization::VectorFunctionHessian;
-%feature("director") SGPP::optimization::test_functions::TestFunction;
-%feature("director") SGPP::optimization::IterativeGridGenerator;
-%feature("director") SGPP::optimization::SLE;
-%feature("director") SGPP::optimization::sle_solver::SLESolver;
+%feature("director") sgpp::optimization::ConstraintFunction;
+%feature("director") sgpp::optimization::ConstraintGradient;
+%feature("director") sgpp::optimization::ConstraintHessian;
+%feature("director") sgpp::optimization::ObjectiveFunction;
+%feature("director") sgpp::optimization::ObjectiveGradient;
+%feature("director") sgpp::optimization::ObjectiveHessian;
+%feature("director") sgpp::optimization::ScalarFunction;
+%feature("director") sgpp::optimization::ScalarFunctionGradient;
+%feature("director") sgpp::optimization::ScalarFunctionHessian;
+%feature("director") sgpp::optimization::VectorFunction;
+%feature("director") sgpp::optimization::VectorFunctionGradient;
+%feature("director") sgpp::optimization::VectorFunctionHessian;
+%feature("director") sgpp::optimization::IterativeGridGenerator;
+%feature("director") sgpp::optimization::SLE;
+%feature("director") sgpp::optimization::sle_solver::SLESolver;
 
 // dirty hack to override SWIG's generated director method for "clone"
-/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintFunction_t;") std::unique_ptr<SGPP::optimization::ConstraintFunction>& {
-    clone = std::unique_ptr<SGPP::optimization::ConstraintFunction>(
+/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintFunction_t;") std::unique_ptr<sgpp::optimization::ConstraintFunction>& {
+    clone = std::unique_ptr<sgpp::optimization::ConstraintFunction>(
         new SwigDirector_OptConstraintFunction(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintGradient_t;") std::unique_ptr<SGPP::optimization::ConstraintGradient>& {
-    clone = std::unique_ptr<SGPP::optimization::ConstraintGradient>(
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintGradient_t;") std::unique_ptr<sgpp::optimization::ConstraintGradient>& {
+    clone = std::unique_ptr<sgpp::optimization::ConstraintGradient>(
         new SwigDirector_OptConstraintGradient(*this));
     return;
 }
 
-/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveFunction_t;") std::unique_ptr<SGPP::optimization::ObjectiveFunction>& {
-    clone = std::unique_ptr<SGPP::optimization::ObjectiveFunction>(
+/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveFunction_t;") std::unique_ptr<sgpp::optimization::ObjectiveFunction>& {
+    clone = std::unique_ptr<sgpp::optimization::ObjectiveFunction>(
         new SwigDirector_OptObjectiveFunction(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveGradient_t;") std::unique_ptr<SGPP::optimization::ObjectiveGradient>& {
-    clone = std::unique_ptr<SGPP::optimization::ObjectiveGradient>(
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveGradient_t;") std::unique_ptr<sgpp::optimization::ObjectiveGradient>& {
+    clone = std::unique_ptr<sgpp::optimization::ObjectiveGradient>(
         new SwigDirector_OptObjectiveGradient(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveHessian_t;") std::unique_ptr<SGPP::optimization::ObjectiveHessian>& {
-    clone = std::unique_ptr<SGPP::optimization::ObjectiveHessian>(
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveHessian_t;") std::unique_ptr<sgpp::optimization::ObjectiveHessian>& {
+    clone = std::unique_ptr<sgpp::optimization::ObjectiveHessian>(
         new SwigDirector_OptObjectiveHessian(*this));
     return;
 }*/
@@ -216,33 +300,12 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 
-%include "optimization/src/sgpp/optimization/function/scalar/test/TestFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Ackley.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Beale.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Branin.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Easom.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Eggholder.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/GoldsteinPrice.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Griewank.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Hartman3.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Hartman6.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Himmelblau.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/HoelderTable.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Michalewicz.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Mladineo.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Rastrigin.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Rosenbrock.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/SHCB.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Schwefel.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/test/Sphere.hpp"
-
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
-%include "optimization/src/sgpp/optimization/operation/OptimizationOpFactory.hpp"
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
 
 %include "optimization/src/sgpp/optimization/sle/system/SLE.hpp"
@@ -280,15 +343,60 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
 
+%include "optimization/src/sgpp/optimization/test_problems/TestScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/TestVectorFunction.hpp"
+
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Ackley.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Beale.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/EasomYang.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Eggholder.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/GoldsteinPrice.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Griewank.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Hartman3.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Hartman6.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Himmelblau.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/HoelderTable.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/IncreasingPower.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Michalewicz.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Mladineo.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Perm.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/SHCB.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Sphere.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp"
+
+%include "optimization/src/sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/Floudas.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G03.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G04.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G05.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G06.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G08.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G09.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G10.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G11.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G12.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G13.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/Simionescu.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/Soland.hpp"
+
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
-%rename(optOperatorInsertion) SGPP::optimization::operator<<;
+%rename(optOperatorInsertion) sgpp::optimization::operator<<;
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
+
+%include "OpFactory.i"
 
 // templates
 //%apply size_t *OUTPUT { size_t& m, size_t& n };
-%template(OptFileIOWriteMatrix)      SGPP::optimization::file_io::writeMatrix<SGPP::float_t>;
-%template(OptFileIOReadMatrix)       SGPP::optimization::file_io::readMatrix<SGPP::float_t>;
-%template(OptFileIOWriteVector)      SGPP::optimization::file_io::writeVector<SGPP::float_t>;
-%template(OptFileIOReadVector)       SGPP::optimization::file_io::readVector<SGPP::float_t>;
+%template(OptFileIOWriteMatrix)      sgpp::optimization::file_io::writeMatrix<double>;
+%template(OptFileIOReadMatrix)       sgpp::optimization::file_io::readMatrix<double>;
+%template(OptFileIOWriteVector)      sgpp::optimization::file_io::writeVector<double>;
+%template(OptFileIOReadVector)       sgpp::optimization::file_io::readVector<double>;

@@ -7,23 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+DPhidPhiDownBBLinear::DPhidPhiDownBBLinear(sgpp::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+DPhidPhiDownBBLinear::~DPhidPhiDownBBLinear() {}
 
-DPhidPhiDownBBLinear::DPhidPhiDownBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-DPhidPhiDownBBLinear::~DPhidPhiDownBBLinear() {
-}
-
-void DPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
-                                      SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = boundingBox->getIntervalWidth(dim);
-  float_t t = boundingBox->getIntervalOffset(dim);
+void DPhidPhiDownBBLinear::operator()(sgpp::base::DataVector& source,
+                                      sgpp::base::DataVector& result, grid_iterator& index,
+                                      size_t dim) {
+  double q = boundingBox->getIntervalWidth(dim);
+  double t = boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -38,31 +34,29 @@ void DPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void DPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source,
-                               SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                               float_t fr) {
+void DPhidPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                               grid_iterator& index, size_t dim, double fl, double fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  //  float_t i_dbl = static_cast<float_t>(i);
+  //  double i_dbl = static_cast<double>(i);
   int l_int = static_cast<int>(l);
 
-  float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
+  double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-
-  float_t diagonal = 2.0 / h;
+  double diagonal = 2.0 / h;
 
   // integration
   result[seq] = (diagonal * alpha_value);
 
   // dehierarchisation
-  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+  double fm = ((fl + fr) / 2.0) + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -81,30 +75,30 @@ void DPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source,
   }
 }
 
-void DPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source,
-                                 SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                                 float_t fr, float_t q, float_t t) {
+void DPhidPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                 grid_iterator& index, size_t dim, double fl, double fr,
+                                 double q, double t) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  //  float_t i_dbl = static_cast<float_t>(i);
+  //  double i_dbl = static_cast<double>(i);
   int l_int = static_cast<int>(l);
 
-  float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
+  double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-  float_t diagonal = (2) / (q * h);
+  double diagonal = (2) / (q * h);
 
   // integration
   result[seq] = (diagonal * alpha_value);
 
   // dehierarchisation
-  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+  double fm = ((fl + fr) / 2.0) + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -123,7 +117,5 @@ void DPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

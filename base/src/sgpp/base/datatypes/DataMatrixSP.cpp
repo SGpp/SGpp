@@ -17,7 +17,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 DataMatrixSP::DataMatrixSP(size_t nrows, size_t ncols) :
@@ -184,7 +184,7 @@ void DataMatrixSP::transpose() {
 
 size_t DataMatrixSP::appendRow(const DataVectorSP& vec) {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::appendRow : Dimensions do not match");
   }
 
@@ -205,7 +205,7 @@ void DataMatrixSP::setAll(float value) {
 
 void DataMatrixSP::getRow(size_t row, DataVectorSP& vec) const {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::getRow : Dimensions do not match");
   }
 
@@ -224,7 +224,7 @@ void DataMatrixSP::getRow(size_t row, std::vector<float>& vec) const {
 
 void DataMatrixSP::setRow(size_t row, const DataVectorSP& vec) {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::setRow : Dimensions do not match");
   }
 
@@ -235,7 +235,7 @@ void DataMatrixSP::setRow(size_t row, const DataVectorSP& vec) {
 
 void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) const {
   if (vec.getSize() != this->nrows) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::getColumn : Dimensions do not match");
   }
 
@@ -246,7 +246,7 @@ void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) const {
 
 void DataMatrixSP::setColumn(size_t col, const DataVectorSP& vec) {
   if (vec.getSize() != this->nrows) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::setColumn : Dimensions do not match");
   }
 
@@ -280,10 +280,13 @@ DataMatrixSP& DataMatrixSP::operator=(const DataMatrixSP& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw new SGPP::base::data_exception(
-      "DataMatrixSP::= : Dimensions do not match");
+    // throw sgpp::base::data_exception("DataMatrixSP::= : Dimensions do not match");
+    delete[] this->data;
+    this->data = new float[matr.nrows * matr.ncols];
   }
 
+  this->nrows = matr.nrows;
+  this->ncols = matr.ncols;
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
   return *this;
 }
@@ -291,7 +294,7 @@ DataMatrixSP& DataMatrixSP::operator=(const DataMatrixSP& matr) {
 
 void DataMatrixSP::add(const DataMatrixSP& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::add : Dimensions do not match");
   }
 
@@ -304,7 +307,7 @@ void DataMatrixSP::add(const DataMatrixSP& matr) {
 
 void DataMatrixSP::sub(const DataMatrixSP& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::sub : Dimensions do not match");
   }
 
@@ -317,7 +320,7 @@ void DataMatrixSP::sub(const DataMatrixSP& matr) {
 
 void DataMatrixSP::addReduce(DataVectorSP& reduction) {
   if (this->nrows != reduction.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match");
   }
 
@@ -335,12 +338,12 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction) {
 void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
                              size_t start_beta) {
   if (this->nrows != reduction.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match (reduction)");
   }
 
   if (this->ncols + start_beta > beta.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match (beta)");
   }
 
@@ -357,7 +360,7 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
 
 void DataMatrixSP::expand(const DataVectorSP& expand) {
   if (this->nrows != expand.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::expand : Dimensions do not match");
   }
 
@@ -370,7 +373,7 @@ void DataMatrixSP::expand(const DataVectorSP& expand) {
 
 void DataMatrixSP::componentwise_mult(const DataMatrixSP& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::componentwise_mult : Dimensions do not match");
   }
 
@@ -383,7 +386,7 @@ void DataMatrixSP::componentwise_mult(const DataMatrixSP& matr) {
 
 void DataMatrixSP::componentwise_div(const DataMatrixSP& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::componentwise_div : Dimensions do not match");
   }
 
@@ -404,12 +407,12 @@ void DataMatrixSP::mult(float scalar) {
 
 void DataMatrixSP::mult(const DataVectorSP& x, DataVectorSP& y) {
   if (ncols != x.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::mult : Dimensions do not match (x)");
   }
 
   if (nrows != y.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::mult : Dimensions do not match (y)");
   }
 
@@ -467,7 +470,7 @@ void DataMatrixSP::normalizeDimension(size_t d, float border) {
   size_t n = nrows * ncols;
 
   if (ncols <= d) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::normalizeDimension : Not enough columns in DataMatrixSP");
   }
 
@@ -576,7 +579,7 @@ void DataMatrixSP::minmax(size_t col, float* min, float* max) const {
   size_t n = nrows * ncols;
 
   if (ncols <= col) {
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "DataMatrixSP::minmax : Not enough entries in DataMatrixSP");
   }
 
@@ -644,4 +647,4 @@ size_t DataMatrixSP::getNumberNonZero() const {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

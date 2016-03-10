@@ -18,7 +18,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -53,7 +53,7 @@ namespace base {
 template<class BASIS>
 class AlgorithmEvaluation {
  public:
-  explicit AlgorithmEvaluation(GridStorage* storage) :
+  explicit AlgorithmEvaluation(GridStorage& storage) :
     storage(storage) {
   }
 
@@ -73,7 +73,7 @@ class AlgorithmEvaluation {
    *
    * @result result result of the function evaluation
    */
-  float_t operator()(BASIS& basis, const DataVector& point,
+  double operator()(BASIS& basis, const DataVector& point,
                      const DataVector& alpha) {
     GridStorage::grid_iterator working(storage);
 
@@ -83,10 +83,10 @@ class AlgorithmEvaluation {
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage->dim();
+    size_t dim = storage.getDimension();
 
     // Check for bounding box
-    BoundingBox* bb = storage->getBoundingBox();
+    BoundingBox* bb = storage.getBoundingBox();
     DataVector newPoint(point);
 
     if ( bb != NULL ) {
@@ -117,8 +117,8 @@ class AlgorithmEvaluation {
 
     for (size_t d = 0; d < dim; ++d) {
       // This does not really work on grids with borders.
-      float_t temp = floor(newPoint[d] *
-                           static_cast<float_t>(1 << (bits - 2))) * 2;
+      double temp = floor(newPoint[d] *
+                           static_cast<double>(1 << (bits - 2))) * 2;
 
       if (newPoint[d] == 1.0) {
         source[d] = static_cast<index_type> (temp - 1);
@@ -127,7 +127,7 @@ class AlgorithmEvaluation {
       }
     }
 
-    float_t result = 0.0;
+    double result = 0.0;
 
     rec(basis, point, 0, 1.0, working, source, alpha, result);
 
@@ -137,7 +137,7 @@ class AlgorithmEvaluation {
   }
 
  protected:
-  GridStorage* storage;
+  GridStorage& storage;
 
   /**
    * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
@@ -151,12 +151,12 @@ class AlgorithmEvaluation {
    * @param working iterator working on the GridStorage of the basis
    * @param source array of indices for each dimension (identifying the indices of the current grid point)
    * @param alpha the spars grid's ansatzfunctions coefficients
-   * @param result reference to a float_t into which the result should be stored
+   * @param result reference to a double into which the result should be stored
    */
   void rec(BASIS& basis, const DataVector& point, size_t current_dim,
-           float_t value, GridStorage::grid_iterator& working,
+           double value, GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source, const DataVector& alpha,
-           float_t& result) {
+           double& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -171,7 +171,7 @@ class AlgorithmEvaluation {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage->end(seq)) {
+      if (storage.end(seq)) {
         break;
       } else {
         index_type work_index;
@@ -179,11 +179,11 @@ class AlgorithmEvaluation {
 
         working.get(current_dim, temp, work_index);
 
-        float_t new_value = basis.eval(work_level, work_index,
+        double new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
         new_value *= value;
 
-        if (current_dim == storage->dim() - 1) {
+        if (current_dim == storage.getDimension() - 1) {
           result += (alpha[seq] * new_value);
         } else {
           rec(basis, point, current_dim + 1, new_value,
@@ -214,6 +214,6 @@ class AlgorithmEvaluation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORITHMEVALUATION_HPP */

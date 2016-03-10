@@ -16,10 +16,10 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-PeriodicGridGenerator::PeriodicGridGenerator(GridStorage* storage) : storage(
+PeriodicGridGenerator::PeriodicGridGenerator(GridStorage& storage) : storage(
     storage) {
 }
 
@@ -37,7 +37,7 @@ void PeriodicGridGenerator::full(size_t level) {
     "PeriodicGridGenerator::full is not implemented");
 }
 
-void PeriodicGridGenerator::refine(RefinementFunctor* func) {
+void PeriodicGridGenerator::refine(RefinementFunctor& func) {
   throw generation_exception(
     "PeriodicGridGenerator::refine is not implemented");
 }
@@ -54,14 +54,14 @@ void PeriodicGridGenerator::cliques(size_t level, size_t clique_size) {
               clique_size);
 }
 
-void PeriodicGridGenerator::coarsen(CoarseningFunctor* func,
-                                    DataVector* alpha) {
+void PeriodicGridGenerator::coarsen(CoarseningFunctor& func,
+                                    DataVector& alpha) {
   throw generation_exception(
     "PeriodicGridGenerator::coarsen is not implemented");
 }
 
-void PeriodicGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func,
-    DataVector* alpha, size_t numFirstOnly) {
+void PeriodicGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+    DataVector& alpha, size_t numFirstOnly) {
   throw generation_exception(
     "PeriodicGridGenerator::coarsenNFirstOnly is not implemented");
 }
@@ -72,7 +72,7 @@ size_t PeriodicGridGenerator::getNumberOfRemovablePoints() {
   return 0;
 }
 
-void PeriodicGridGenerator::refineMaxLevel(RefinementFunctor* func,
+void PeriodicGridGenerator::refineMaxLevel(RefinementFunctor& func,
     size_t maxLevel) {
   throw generation_exception(
     "PeriodicGridGenerator::refineMaxLevel is not implemented");
@@ -87,4 +87,4 @@ size_t PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

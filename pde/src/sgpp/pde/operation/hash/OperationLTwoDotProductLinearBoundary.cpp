@@ -12,34 +12,31 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationLTwoDotProductLinearBoundary::OperationLTwoDotProductLinearBoundary(
-  SGPP::base::GridStorage* storage) : StdUpDown(storage) {
-}
+    sgpp::base::GridStorage* storage)
+    : StdUpDown(storage) {}
 
-OperationLTwoDotProductLinearBoundary::~OperationLTwoDotProductLinearBoundary() {
-}
+OperationLTwoDotProductLinearBoundary::~OperationLTwoDotProductLinearBoundary() {}
 
-void OperationLTwoDotProductLinearBoundary::up(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+void OperationLTwoDotProductLinearBoundary::up(sgpp::base::DataVector& alpha,
+                                               sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
+  sgpp::base::sweep<PhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationLTwoDotProductLinearBoundary::down(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+void OperationLTwoDotProductLinearBoundary::down(sgpp::base::DataVector& alpha,
+                                                 sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
+  sgpp::base::sweep<PhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

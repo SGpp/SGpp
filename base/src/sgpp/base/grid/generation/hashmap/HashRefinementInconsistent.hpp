@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,10 +28,10 @@ class HashRefinementInconsistent: public HashRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param index The point that should be inserted
    */
-  void createGridpoint(GridStorage* storage, index_type& index) override;
+  void createGridpoint(GridStorage& storage, index_type& index) override;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHREFINEMENTINCONSISTENT_HPP */

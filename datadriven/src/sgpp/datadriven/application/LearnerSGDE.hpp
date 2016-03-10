@@ -6,7 +6,7 @@
 #ifndef LEARNERSGDE_HPP_
 #define LEARNERSGDE_HPP_
 
-#include "DensityEstimator.hpp"
+#include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
@@ -19,21 +19,21 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 struct LearnerSGDEConfiguration {
   // parameters for cross-validation
   bool doCrossValidation_;  // enables cross-validation
-  size_t kfold_;  // number of batches for cross validation
-  int seed_;  // seed for randomized k-fold
-  bool shuffle_;  // randomized/sequential k-fold
-  bool silent_;  // verbosity
+  size_t kfold_;            // number of batches for cross validation
+  int seed_;                // seed for randomized k-fold
+  bool shuffle_;            // randomized/sequential k-fold
+  bool silent_;             // verbosity
 
   // regularization parameter optimization
-  float_t lambda_;  // regularization parameter
-  float_t lambdaStart_;  // lower bound for lambda search range
-  float_t lambdaEnd_;  // upper bound for lambda search range
+  double lambda_;       // regularization parameter
+  double lambdaStart_;  // lower bound for lambda search range
+  double lambdaEnd_;    // upper bound for lambda search range
   // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns;
   // must be > 1
   size_t lambdaSteps_;
@@ -42,7 +42,7 @@ struct LearnerSGDEConfiguration {
 
 // --------------------------------------------------------------------------
 
-class LearnerSGDE: public datadriven::DensityEstimator {
+class LearnerSGDE : public datadriven::DensityEstimator {
  public:
   /**
    * Constructor
@@ -53,10 +53,10 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    * @param regularizationConfig config for regularization operator
    * @param learnerSGDEConfig configuration for the learner
    */
-  LearnerSGDE(SGPP::base::RegularGridConfiguration& gridConfig,
-              SGPP::base::AdpativityConfiguration& adaptivityConfig,
-              SGPP::solver::SLESolverConfiguration& solverConfig,
-              SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+  LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
+              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::solver::SLESolverConfiguration& solverConfig,
+              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
               LearnerSGDEConfiguration& learnerSGDEConfig);
   virtual ~LearnerSGDE();
 
@@ -66,46 +66,46 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    *
    * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
    */
-  void initialize(SGPP::base::DataMatrix& samples);
+  void initialize(base::DataMatrix& samples);
 
   /**
    * This methods evaluates the sparse grid density at a single point
    * @param x DataVector length equal to dimensionality
    */
-  virtual float_t pdf(SGPP::base::DataVector& x);
+  virtual double pdf(base::DataVector& x);
 
   /**
    * Evaluation of the sparse grid density at a set of points.
    * @param points DataMatrix (nrows = number of samples, ncols = dimensionality)
    * @param res DataVector (size = number of samples) where the results are stored
    */
-  virtual void pdf(SGPP::base::DataMatrix& points, SGPP::base::DataVector& res);
+  virtual void pdf(base::DataMatrix& points, base::DataVector& res);
 
   /**
    * This method computes the mean of the density function
    */
-  virtual float_t mean();
+  virtual double mean();
 
   /**
    * Computes the variance of the density function
    */
-  virtual float_t variance();
+  virtual double variance();
 
   /**
    * WARNING: Not yet implemented
    */
-  virtual void cov(SGPP::base::DataMatrix& cov);
+  virtual void cov(base::DataMatrix& cov);
 
   /**
    * returns the samples in the given dimension
    * @param dim
    */
-  virtual SGPP::base::DataVector* getSamples(size_t dim);
+  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim);
 
   /**
    * returns the complete sample set
    */
-  virtual SGPP::base::DataMatrix* getSamples();
+  virtual std::shared_ptr<base::DataMatrix> getSamples();
 
   /**
    * get number of dimensions
@@ -117,18 +117,12 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    */
   virtual size_t getNsamples();
 
-  virtual SGPP::base::Grid* getGrid();
-  virtual SGPP::base::DataVector* getAlpha();
-
   /**
          * returns the surpluses
          */
-  virtual SGPP::base::DataVector getSurpluses();
+  virtual std::shared_ptr<base::DataVector> getSurpluses();
 
-  /**
-   * returns the grid storage
-   */
-  virtual SGPP::base::GridStorage* getGridStorage();
+  virtual std::shared_ptr<base::Grid> getGrid();
 
  protected:
   /**
@@ -139,20 +133,20 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    * @param train sample set
    * @param lambdaReg regularization parameter
    */
-  virtual void train(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
-                     SGPP::base::DataMatrix& train, float_t lambdaReg);
+  virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
+                     double lambdaReg);
 
   /**
    * generates a regular grid
-   * @param grid grid
    * @param ndim number of dimensions
+   * @return grid
    */
-  void createRegularGrid(SGPP::base::Grid*& grid, size_t ndim);
+  std::shared_ptr<base::Grid> createRegularGrid(size_t ndim);
 
   /**
    * Does cross-validation to obtain a suitable regularization parameter
    */
-  float_t optimizeLambdaCV();
+  double optimizeLambdaCV();
 
   /**
    * Compute the residual for a given test data set on a learned grid
@@ -167,15 +161,14 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    * @param lambdaReg regularization parameters
    * @return
    */
-  float_t computeResidual(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
-                          SGPP::base::DataMatrix& test, float_t lambdaReg);
+  double computeResidual(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& test,
+                          double lambdaReg);
 
   /**
    * generates the regularization matrix
    * @param grid grid
    */
-  SGPP::base::OperationMatrix* computeRegularizationMatrix(
-    SGPP::base::Grid& grid);
+  std::unique_ptr<base::OperationMatrix> computeRegularizationMatrix(base::Grid& grid);
 
   /**
    * splits the complete sample set in a set of smaller training and test
@@ -184,22 +177,21 @@ class LearnerSGDE: public datadriven::DensityEstimator {
    * @param strain vector containing the training samples for cv
    * @param stest vector containing the test samples for cv
    */
-  void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
-                std::vector<SGPP::base::DataMatrix*>& stest);
+  void splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,
+                std::vector<std::shared_ptr<base::DataMatrix> >& stest);
 
-  SGPP::base::Grid* grid;
-  SGPP::base::DataVector alpha;
-  SGPP::base::DataMatrix* samples;
+  std::shared_ptr<base::Grid> grid;
+  std::shared_ptr<base::DataVector> alpha;
+  std::shared_ptr<base::DataMatrix> samples;
 
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::base::AdpativityConfiguration adaptivityConfig;
-  SGPP::solver::SLESolverConfiguration solverConfig;
-  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   LearnerSGDEConfiguration learnerSGDEConfig;
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNERSGDE_HPP_ */
-

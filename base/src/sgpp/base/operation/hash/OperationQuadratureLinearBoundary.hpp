@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ class OperationQuadratureLinearBoundary : public OperationQuadrature {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationQuadratureLinearBoundary(GridStorage* storage) : storage(
+  explicit OperationQuadratureLinearBoundary(GridStorage& storage) : storage(
       storage) {}
 
   ~OperationQuadratureLinearBoundary() override {}
@@ -36,14 +36,14 @@ class OperationQuadratureLinearBoundary : public OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(DataVector& alpha) override;
+  double doQuadrature(DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONQUADRATURELINEARBOUND_HPP */

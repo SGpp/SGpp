@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef BASIS_EVAL_HPP
 #define BASIS_EVAL_HPP
 
@@ -16,12 +21,9 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-using namespace SGPP;
-using namespace SGPP::base;
-
-SGPP::float_t basisEvalDx(
-  SBasis& basis, level_t l, index_t i, SGPP::float_t x);
-SGPP::float_t basisEvalDxDx(
-  SBasis& basis, level_t l, index_t i, SGPP::float_t x);
+double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                          sgpp::base::index_t i, double x);
+double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                            sgpp::base::index_t i, double x);
 
 #endif /* BASIS_EVAL_HPP */

@@ -11,13 +11,14 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #ifdef __SSE3__
-#include "immintrin.h"
+#include <immintrin.h>
 #endif
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -29,28 +30,28 @@ namespace pde {
  */
 class LaplaceEnhancedUpBBLinear {
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
 
-  /// Pointer to SGPP::base::GridStorage object
-  SGPP::base::GridStorage* storage;
+  /// Pointer to sgpp::base::GridStorage object
+  sgpp::base::GridStorage* storage;
   /// Pointer to the bounding box Obejct
-  SGPP::base::BoundingBox* boundingBox;
+  sgpp::base::BoundingBox* boundingBox;
   /// algorithmic dimensions, operator is applied in this dimensions
   const std::vector<size_t> algoDims;
   /// number of algorithmic dimensions
   const size_t numAlgoDims_;
   /// pointer to DataMatrix containing source coefficients
-  float_t* ptr_source_;
+  double* ptr_source_;
   /// pointer to DataMatrix containing result coefficients
-  float_t* ptr_result_;
+  double* ptr_result_;
   /// current algorithmic dimension for the overall operator
   size_t cur_algo_dim_;
   /// stretching of basis functions in current algorithmic domain
-  float_t q_;
+  double q_;
   /// translation of basis function in current algorithmic domain
-  float_t t_;
+  double t_;
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__)
   /// const. vector holding 1/2 in both components
   const __m128d half_in_;
 #endif
@@ -60,13 +61,14 @@ class LaplaceEnhancedUpBBLinear {
   const __m128d half_in_;
 #endif
 #endif
+
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage);
+  explicit LaplaceEnhancedUpBBLinear(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -77,16 +79,16 @@ class LaplaceEnhancedUpBBLinear {
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataMatrix& source,
-                          SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
+  virtual void operator()(sgpp::base::DataMatrix& source, sgpp::base::DataMatrix& result,
+                          grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Up (L2 scalar product) without Bounding Box
    *
@@ -95,10 +97,10 @@ class LaplaceEnhancedUpBBLinear {
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void rec(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void rec(double& fl, double& fr, size_t dim, grid_iterator& index);
 
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__)
   /**
    * recursive function for the calculation of merged-Down (L2 scalar products) without Bounding Box
    *
@@ -119,7 +121,7 @@ class LaplaceEnhancedUpBBLinear {
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim,
+  void rec_LL(double& fl, double& fr, double& fl2, double& fr2, size_t dim,
               grid_iterator& index);
 #endif
 #else
@@ -144,30 +146,32 @@ class LaplaceEnhancedUpBBLinear {
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim,
+  void rec_LL(double& fl, double& fr, double& fl2, double& fr2, size_t dim,
               grid_iterator& index);
 #endif
 #endif
 
   /**
-   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) without Bounding Box
+   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) without
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void rec_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void rec_LG(double& fl, double& fr, size_t dim, grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) without Bounding Box
+   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) without
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void rec_GL(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void rec_GL(double& fl, double& fr, size_t dim, grid_iterator& index);
 
   /**
    * recursive function for the calculation of Up (gradient) without Bounding Box
@@ -184,7 +188,7 @@ class LaplaceEnhancedUpBBLinear {
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void recBB(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void recBB(double& fl, double& fr, size_t dim, grid_iterator& index);
 
   /**
    * recursive function for the calculation of merged-Up (L2 scalar products) with Bounding Box
@@ -196,28 +200,30 @@ class LaplaceEnhancedUpBBLinear {
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void recBB_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim,
+  void recBB_LL(double& fl, double& fr, double& fl2, double& fr2, size_t dim,
                 grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) with Bounding Box
+   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) with
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void recBB_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void recBB_LG(double& fl, double& fr, size_t dim, grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) with Bounding Box
+   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) with
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    * @param index an iterator object of the grid
    */
-  void recBB_GL(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
+  void recBB_GL(double& fl, double& fr, size_t dim, grid_iterator& index);
 
   /**
    * recursive function for the calculation of Up (gradient) with Bounding Box
@@ -227,9 +233,7 @@ class LaplaceEnhancedUpBBLinear {
   void recBB_grad(size_t dim, grid_iterator& index);
 };
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* LAPLACEENHANCEDUPBBLINEAR_HPP */

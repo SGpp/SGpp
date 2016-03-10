@@ -11,14 +11,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 class OperationDensitySampling1DLinear : public OperationDensitySampling1D {
  protected:
   base::Grid* grid;
+
  public:
-  OperationDensitySampling1DLinear(base::Grid* grid);
+  explicit OperationDensitySampling1DLinear(base::Grid* grid);
   virtual ~OperationDensitySampling1DLinear();
 
   /**
@@ -29,11 +29,10 @@ class OperationDensitySampling1DLinear : public OperationDensitySampling1D {
    * @param samples Output DataVector
   * @param seedp seed
    */
-  void doSampling1D(base::DataVector* alpha, size_t num_samples,
-                    base::DataVector*& samples, unsigned int* seedp);
+  void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples,
+                    unsigned int* seedp);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP_ */

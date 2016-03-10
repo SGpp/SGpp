@@ -28,19 +28,15 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 class OCLKernelImplBase {
  public:
   void resetKernel();
-  static inline size_t getChunkGridPoints() {
-    return ocl_local_size;
-  }
+  static inline size_t getChunkGridPoints() { return ocl_local_size; }
 
-  static inline size_t getChunkDataPoints() {
-    return ocl_local_size;
-  }
+  static inline size_t getChunkDataPoints() { return ocl_local_size; }
+
  protected:
   OCLKernelImplBase();
 
@@ -50,7 +46,6 @@ class OCLKernelImplBase {
   void releaseDataBuffers();
 
   void releaseKernelsAndPrograms();
-
 
   cl_int err;
   cl_platform_id platform_id;
@@ -79,9 +74,9 @@ class OCLKernelImplBase {
 
   static unsigned int ocl_local_size;
 };
-}
-}
+}  // namespace parallel
+}  // namespace sgpp
 
-#endif // USEOCL
+#endif  // USEOCL
 
-#endif // OCLKERNELIMPLBASE_HPP
+#endif  // OCLKERNELIMPLBASE_HPP

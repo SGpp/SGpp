@@ -26,27 +26,27 @@
 #include <iostream>
 #include <vector>
 
-using SGPP::base::GridStorage;
-using SGPP::base::GridGenerator;
-using SGPP::base::DataVector;
-using SGPP::base::OperationMatrix;
-using SGPP::base::Grid;
-using SGPP::base::SurplusRefinementFunctor;
-using SGPP::base::GridIndex;
-using SGPP::base::OperationEval;
-using SGPP::base::application_exception;
+using sgpp::base::GridStorage;
+using sgpp::base::GridGenerator;
+using sgpp::base::DataVector;
+using sgpp::base::OperationMatrix;
+using sgpp::base::Grid;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::GridIndex;
+using sgpp::base::OperationEval;
+using sgpp::base::application_exception;
 
 using std::endl;
 using std::cout;
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 LearnerPiecewiseConstantSmoothedRegression::LearnerPiecewiseConstantSmoothedRegression(
-  SGPP::base::RegularGridConfiguration& gridConfig,
-  SGPP::base::AdpativityConfiguration& adaptivityConfig,
-  SGPP::solver::SLESolverConfiguration& solverConfig,
-  SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+  sgpp::base::RegularGridConfiguration& gridConfig,
+  sgpp::base::AdpativityConfiguration& adaptivityConfig,
+  sgpp::solver::SLESolverConfiguration& solverConfig,
+  sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
   bool verbose) :
   gridConfig(gridConfig), adaptivityConfig(adaptivityConfig),
   solverConfig(solverConfig), regularizationConfig(
@@ -56,15 +56,15 @@ LearnerPiecewiseConstantSmoothedRegression::LearnerPiecewiseConstantSmoothedRegr
 // ---------------------------------------------------------------------------
 
 void LearnerPiecewiseConstantSmoothedRegression::train(
-  SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
+  sgpp::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
   Grid& grid,
-  DataVector& alpha, float_t lambda) {
-  size_t dim = grid.getStorage()->dim();
+  DataVector& alpha, double lambda) {
+  size_t dim = grid.getDimension();
 
-  GridStorage* gridStorage = grid.getStorage();
-  GridGenerator* gridGen = grid.createGridGenerator();
-  DataVector rhs(grid.getStorage()->size());
-  alpha.resize(grid.getStorage()->size());
+  GridStorage* gridStorage = &grid.getStorage();
+  GridGenerator& gridGen = grid.getGenerator();
+  DataVector rhs(grid.getSize());
+  alpha.resize(grid.getSize());
   alpha.setAll(0.0);
 
   if (verbose) {
@@ -74,7 +74,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
   for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
     OperationMatrix* C = computeRegularizationMatrix(grid);
 
-    SGPP::datadriven::PiecewiseConstantSmoothedRegressionSystemMatrix SMatrix(
+    sgpp::datadriven::PiecewiseConstantSmoothedRegressionSystemMatrix SMatrix(
       piecewiseRegressor, grid, *C, lambda);
 
     if (verbose) {
@@ -87,7 +87,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       cout << "# LearnerDensityRegression: Solving " << endl;
     }
 
-    SGPP::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
+    sgpp::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
                                           solverConfig.eps_);
     myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
@@ -97,32 +97,29 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       }
 
       // Weight surplus with function evaluation at grid points
-      OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+      std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
 
-      for (size_t i = 0; i < gridStorage->size(); i++) {
+      for (size_t i = 0; i < gridStorage->getSize(); i++) {
         gp = gridStorage->get(i);
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      delete opEval;
-      opEval = NULL;
-
-      SurplusRefinementFunctor srf(&alphaWeight, adaptivityConfig.noPoints_,
+      SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
                                    adaptivityConfig.threshold_);
-      gridGen->refine(&srf);
+      gridGen.refine(srf);
 
       if (verbose) {
         cout << "# LearnerDensityRegression: ref " << ref << "/" <<
              adaptivityConfig.numRefinements_ - 1 << ": "
-             << grid.getStorage()->size() << endl;
+             << grid.getSize() << endl;
       }
 
-      alpha.resize(grid.getStorage()->size());
-      rhs.resize(grid.getStorage()->size());
+      alpha.resize(grid.getSize());
+      rhs.resize(grid.getSize());
       alpha.setAll(0.0);
       rhs.setAll(0.0);
     }
@@ -135,15 +132,15 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
 
 OperationMatrix*
 LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
-  SGPP::base::Grid& grid) {
+  sgpp::base::Grid& grid) {
   OperationMatrix* C = NULL;
 
   if (regularizationConfig.regType_ ==
-      SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid);
+      sgpp::datadriven::RegularizationType::Identity) {
+    C = sgpp::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_ ==
-             SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid);
+             sgpp::datadriven::RegularizationType::Laplace) {
+    C = sgpp::op_factory::createOperationLaplace(grid).release();
   } else {
     throw application_exception("LearnerDensityRegression::train : unknown regularization type");
   }
@@ -152,4 +149,4 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

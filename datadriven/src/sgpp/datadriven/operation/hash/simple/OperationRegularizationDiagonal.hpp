@@ -12,8 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -21,12 +20,12 @@ namespace datadriven {
  * DataVector for regularization.
  * This class implements several scaling possibilities.
  */
-class OperationRegularizationDiagonal: public base::OperationMatrix {
+class OperationRegularizationDiagonal : public base::OperationMatrix {
  protected:
   // to remember mode
   int mode;
   // to remember parameter k
-  float_t k;
+  double k;
   // to remember state of grid in terms of number of grid points
   size_t size;
   // ro remember grid's storage
@@ -35,7 +34,7 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
   base::DataVector diagonal;
 
   // Diagonal entries have been provided
-  //static const int DIAGMATRIX = 0;
+  // static const int DIAGMATRIX = 0;
 
   /**
    * Check for mode and run corresponding init
@@ -48,7 +47,7 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    * @f$\prod_{k=1}^d \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^k}@f$.
    * @param k Parameter k
    */
-  virtual void initHkmix(float_t k) = 0;
+  virtual void initHkmix(double k) = 0;
 
   /**
    * Initialize H0HkLaplace.
@@ -57,7 +56,7 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    * \prod_{l\neq k} \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^0}@f$.
    * @param k Parameter k
    */
-  virtual void initH0HkLaplace(float_t k) = 0;
+  virtual void initH0HkLaplace(double k) = 0;
 
   /**
    * Initialize ISOTROPIC_PENALTY, ignores constructor parameter k.
@@ -72,7 +71,6 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    * @f$\frac{1}{2}\log(1+(\frac{\max\{l_1,\dots,l_d\}}{\max\{\min\{l_1,\dots,l_d\},1\}})d)@f$.
    */
   virtual void initAnisotropicPenalty();
-
 
  public:
   /// Diagonal scaling for @f$H^k_\textbf{mix}@f$-norm (product of
@@ -90,16 +88,16 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    * Constructor of OperationRegularizationDiagonal.
    * Constructor should most likely call init() in subclasses.
    * @param storage Pointer to grid's storage object
-   * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+   * @param mode Mode, specifying which regularization to use. Example:
+   * OperationRegularizationDiagonal::HKMIX.
    * @param k Parameter for @f$H^k@f$
    */
-  OperationRegularizationDiagonal(base::GridStorage* storage, int mode,
-                                  float_t k);
+  OperationRegularizationDiagonal(base::GridStorage* storage, int mode, double k);
 
   /**
    * Destructor
    */
-  virtual ~OperationRegularizationDiagonal() {};
+  virtual ~OperationRegularizationDiagonal() {}
 
   /**
    * Multiplication with diagonal matrix.
@@ -108,7 +106,6 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    */
   virtual void mult(base::DataVector& alpha, base::DataVector& result);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONREGULARIZATIONDIAGONAL_HPP */

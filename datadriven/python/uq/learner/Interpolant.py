@@ -40,13 +40,13 @@ class Interpolant(Learner):
 
         # assert that the number of dimensions of the data is the same
         # as the grids
-        assert gs.dim() == points.getDim()
+        assert gs.getDimension() == points.getDim()
 
         nodalValues = DataVector(gs.size())
         nodalValues.setAll(0.0)
 
         # interpolation on nodal basis
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         cnt = 0
         for i in xrange(gs.size()):
             gp = gs.get(i)
@@ -54,14 +54,14 @@ class Interpolant(Learner):
             x = tuple(p.array())
             if x not in points:
                 # # search for 2*d closest grid points
-                # q = DataVector(gs.dim())
+                # q = DataVector(gs.getDimension())
                 # l = np.array([])
                 # for j in xrange(gs.size()):
                 #     gs.get(j).getCoords(q)
                 #     q.sub(p)
                 #     l = np.append(l, q.l2Norm())
 
-                # n = min(gs.size(), gs.dim())
+                # n = min(gs.size(), gs.getDimension())
 
                 # ixs = np.argsort(l)
                 # # nodalValues[i] = np.mean(l[ixs[:n]])
@@ -88,7 +88,7 @@ class Interpolant(Learner):
 #         fig, _ = plotSG3d(self.grid, alpha)
 #         fig.show()
 
-        err, _ = checkInterpolation(self.grid, alpha, nodalValues)
+        err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-12)
 
         if len(err) > 0:
             print "interpolation property not met"

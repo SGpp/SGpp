@@ -12,7 +12,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -70,10 +70,10 @@ class DehierarchisationModFundamentalSpline {
   /// grid
   ModFundamentalSplineGrid* grid;
   /// grid storage
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP */

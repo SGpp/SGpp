@@ -7,7 +7,7 @@
 
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
@@ -17,7 +17,7 @@ ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
   index_type hInv = 1;
 
   for (level_type l = 0; l <= maxLevel; l++) {
-    const float_t h = 1.0 / static_cast<float_t>(hInv);
+    const double h = 1.0 / static_cast<double>(hInv);
 
     for (index_type i = 0; i <= hInv; i++) {
       table[k] = calculatePoint(h, i);
@@ -28,5 +28,10 @@ ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
   }
 }
 
+ClenshawCurtisTable& ClenshawCurtisTable::getInstance() {
+  static ClenshawCurtisTable clenshawCurtisTable;
+  return clenshawCurtisTable;
+}
+
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

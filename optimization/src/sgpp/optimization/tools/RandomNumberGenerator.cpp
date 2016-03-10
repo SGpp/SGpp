@@ -3,20 +3,23 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <ctime>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-namespace SGPP {
+#include <ctime>
+
+namespace sgpp {
 namespace optimization {
 
-RandomNumberGenerator::RandomNumberGenerator() {
-  setSeed();
+RandomNumberGenerator::RandomNumberGenerator() { setSeed(); }
+
+RandomNumberGenerator& RandomNumberGenerator::getInstance() {
+  static RandomNumberGenerator rng;
+  return rng;
 }
 
-float_t RandomNumberGenerator::getUniformRN(float_t a, float_t b) {
-  std::uniform_real_distribution<float_t> distr(a, b);
+double RandomNumberGenerator::getUniformRN(double a, double b) {
+  std::uniform_real_distribution<double> distr(a, b);
   return distr(generator);
 }
 
@@ -25,24 +28,18 @@ size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
   return distr(generator);
 }
 
-float_t RandomNumberGenerator::getGaussianRN(float_t stdDev,
-    float_t mean) {
-  std::normal_distribution<float_t> distr(mean, stdDev);
+double RandomNumberGenerator::getGaussianRN(double stdDev, double mean) {
+  std::normal_distribution<double> distr(mean, stdDev);
   return distr(generator);
 }
 
-RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const {
-  return seed;
-}
+RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const { return seed; }
 
-void RandomNumberGenerator::setSeed() {
-  setSeed(static_cast<SeedType>(std::time(0)));
-}
+void RandomNumberGenerator::setSeed() { setSeed(static_cast<SeedType>(std::time(0))); }
 
 void RandomNumberGenerator::setSeed(RandomNumberGenerator::SeedType seed) {
   this->seed = seed;
   generator.seed(seed);
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

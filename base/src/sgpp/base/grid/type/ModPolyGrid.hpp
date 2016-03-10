@@ -8,12 +8,12 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
-
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -37,23 +37,25 @@ class ModPolyGrid : public Grid {
    */
   ~ModPolyGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
   void serialize(std::ostream& ostr) override;
 
   const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator();
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
   virtual size_t getDegree() const;
 
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
-  const SPolyModifiedBase* basis_;
+  std::unique_ptr<SPolyModifiedBase> basis_;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODPOLYGRID_HPP */

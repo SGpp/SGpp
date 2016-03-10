@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
 """
@@ -87,7 +87,7 @@ class HDMR(object):
         # hierarchize without pdf
         gs = grid.getStorage()
         nodalValues = DataVector(gs.size())
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.get(i).getCoords(p)
             nodalValues[i] = evalSGFunction(self.__grid, self.__alpha, p)
@@ -144,6 +144,9 @@ class HDMR(object):
         T = self.__ap.getJointTransformation()
         vol = T.vol()
 
+        if self._verbose:
+            print "-" * 60
+
         # add higher order terms
         for k in xrange(self.__nk):
             perms = it.combinations(range(self.__dim), r=k + 1)
@@ -152,7 +155,6 @@ class HDMR(object):
                 dd = [d for d in xrange(self.__dim) if d not in perm]
 
                 if self._verbose:
-                    print "-" * 60
                     print "Explore %s, Integrate: %s" % (perm, dd),
 
                 # -----------------------------------------------
@@ -179,6 +181,9 @@ class HDMR(object):
         if self.__has_highest_order_term:
             perm = tuple(range(self.__dim))
             expec[perm] = self.__grid, self.__alpha
+
+        if self._verbose:
+            print "-" * 60
 
         return expec
 

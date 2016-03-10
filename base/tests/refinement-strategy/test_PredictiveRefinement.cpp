@@ -3,14 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-
-#include "sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -19,13 +17,14 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
-
-using namespace SGPP::base;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
 
 BOOST_AUTO_TEST_SUITE(TestPredictiveRefinement)
 
 BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
-
   size_t dataset_size = 81;
   size_t dim = 2;
   size_t level = 2;
@@ -277,14 +276,12 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   data.set(80, 1, 0.9);
   error.set(80, 0.80);
 
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  Grid* grid = Grid::createLinearGrid(dim);
+  grid->getGenerator().regular(level);
+  //  GridStorage& storage = grid->getStorage();
 
-  GridGenerator* gen = grid->createGridGenerator();
-  gen->regular(level);
-  //  GridStorage* storage = grid->getStorage();
-
-  DataVector surplusses(1);
+  DataVector surplusses(5);
   surplusses[0] = 1.0;
   surplusses[1] = .5;
   surplusses[2] = .5;
@@ -296,20 +293,17 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //  PredictiveRefinement predictive_refinement(hash_refinement);
   //
   //
-  //  predictive_refinement.free_refine(storage, &functor);
+  //  predictive_refinement.free_refine(&storage, &functor);
   //
-  //  BOOST_CHECK_EQUAL(storage->size(), 9);
+  //  BOOST_CHECK_EQUAL(storage.getSize(), 9);
   //
-  //  for (size_t i = 0; i < storage->size(); i++) {
-  //    HashGridIndex* index = storage->get(i);
+  //  for (size_t i = 0; i < storage.getSize(); i++) {
+  //    HashGridIndex* index = storage.get(i);
   //    BOOST_CHECK((index->getIndex(0) == 4) == false);
   //  }
   //
   //
   //  delete hash_refinement;
-  //  delete gen;
-  //  delete grid;
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

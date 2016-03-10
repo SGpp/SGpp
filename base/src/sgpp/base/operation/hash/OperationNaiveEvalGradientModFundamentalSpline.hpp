@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,7 +28,7 @@ class OperationNaiveEvalGradientModFundamentalSpline : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalGradientModFundamentalSpline(GridStorage* storage,
+  OperationNaiveEvalGradientModFundamentalSpline(GridStorage& storage,
       size_t degree) :
     storage(storage), base(degree) {
   }
@@ -45,18 +45,18 @@ class OperationNaiveEvalGradientModFundamentalSpline : public
    * @param[out]  gradient    gradient of linear combination
    * @return                  value of linear combination
    */
-  float_t evalGradient(const DataVector& alpha,
+  double evalGradient(const DataVector& alpha,
                        const DataVector& point,
                        DataVector& gradient) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SFundamentalSplineModifiedBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALGRADIENTMODFUNDAMENTALSPLINE_HPP */

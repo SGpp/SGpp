@@ -14,7 +14,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLManager {
@@ -58,4 +58,4 @@ class OCLManager {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

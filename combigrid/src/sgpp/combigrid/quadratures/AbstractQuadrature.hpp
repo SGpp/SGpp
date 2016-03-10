@@ -1,17 +1,16 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef ABSTRACTQUADRATURE_HPP_
 #define ABSTRACTQUADRATURE_HPP_
 
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 #include <sgpp/combigrid/combigrid/CombiGrid.hpp>
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
 #include <vector>
-#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 
@@ -42,16 +41,13 @@ class AbstractQuadratureRule {
    *information is stored on the points of the
    * underlying full grids...
    */
-  virtual _Tp integrate(CombiGrid<_Tp>* grids,
-                        _Tp (*f)(std::vector<double>) = NULL) = 0;
+  virtual _Tp integrate(CombiGrid<_Tp>* grids, _Tp (*f)(std::vector<double>) = NULL) = 0;
 
   virtual ~AbstractQuadratureRule() { ; }
 
  protected:
-  void getGridValues(FullGrid<_Tp>* grid, bool badstretching,
-                     AbstractStretchingMaker* stretching,
-                     std::vector<_Tp>* f_values,
-                     _Tp (*f)(std::vector<double>)) {
+  void getGridValues(FullGrid<_Tp>* grid, bool badstretching, AbstractStretchingMaker* stretching,
+                     std::vector<_Tp>* f_values, _Tp (*f)(std::vector<double>)) {
     int dim = grid->getDimension();
     std::vector<Domain1D> domains;
     GridDomain* domain = grid->getDomain();
@@ -62,8 +58,7 @@ class AbstractQuadratureRule {
       }
     }
 
-    unsigned int num_elem =
-        grid->getNrElements();  // get the total number of grid points
+    unsigned int num_elem = grid->getNrElements();  // get the total number of grid points
 
     // precomupte the function values depending on whether or not the user wants
     // to integrate an external function
@@ -76,14 +71,12 @@ class AbstractQuadratureRule {
 
     if (f == NULL) {
       if (badstretching) {
-        std::vector<std::vector<double> > stretchings(dim,
-                                                      std::vector<double>());
+        std::vector<std::vector<double> > stretchings(dim, std::vector<double>());
         std::vector<std::vector<double> > jacobs(dim, std::vector<double>());
 
         for (int d = 0; d < dim; d++)
           stretching->get1DStretching(grid->getLevels()[d], domain->getMin()[d],
-                                      domain->getMax()[d], &(stretchings[d]),
-                                      &(jacobs[d]));
+                                      domain->getMax()[d], &(stretchings[d]), &(jacobs[d]));
 
         for (unsigned int j = 0; j < num_elem; j++) {
           grid->getVectorIndex(j, indices);
@@ -121,20 +114,17 @@ class AbstractQuadratureRule {
           }
 
           (*f_values)[j] =
-              grid->getElementVector()[j] *
-              jacobian_j;  // simply pick out the value on the grid...
+              grid->getElementVector()[j] * jacobian_j;  // simply pick out the value on the grid...
         }
       }
     } else {  // f !=NULL
       if (badstretching) {
-        std::vector<std::vector<double> > stretchings(dim,
-                                                      std::vector<double>());
+        std::vector<std::vector<double> > stretchings(dim, std::vector<double>());
         std::vector<std::vector<double> > jacobs(dim, std::vector<double>());
 
         for (int d = 0; d < dim; d++)
           stretching->get1DStretching(grid->getLevels()[d], domain->getMin()[d],
-                                      domain->getMax()[d], &(stretchings[d]),
-                                      &(jacobs[d]));
+                                      domain->getMax()[d], &(stretchings[d]), &(jacobs[d]));
 
         for (unsigned int j = 0; j < num_elem; j++) {
           grid->getVectorIndex(j, indices);
@@ -158,9 +148,7 @@ class AbstractQuadratureRule {
             jacobian_j *= (_Tp)domains[d].axisJacobian()[indices[d]];
           }
 
-          (*f_values)[j] =
-              f(coords) *
-              jacobian_j;  // simply pick out the value on the grid...
+          (*f_values)[j] = f(coords) * jacobian_j;  // simply pick out the value on the grid...
         }
       }
     }

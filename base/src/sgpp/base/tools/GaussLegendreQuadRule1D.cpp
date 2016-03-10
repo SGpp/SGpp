@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GaussLegendreQuadRule1D.hpp"
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
@@ -558,4 +558,4 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

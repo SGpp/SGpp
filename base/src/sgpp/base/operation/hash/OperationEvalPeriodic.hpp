@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,22 +26,22 @@ class OperationEvalPeriodic : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalPeriodic(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalPeriodic(GridStorage& storage) : storage(storage) {}
 
   /**
    * Destructor
    */
   ~OperationEvalPeriodic() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPERIODIC_HPP */

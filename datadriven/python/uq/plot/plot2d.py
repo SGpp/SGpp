@@ -24,7 +24,8 @@ def plotDensity2d(U, n=50, addContour=True):
                extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
 
     plt.jet()
-    plt.colorbar()
+    cbar = plt.colorbar()
+    cbar.ax.set_ylabel(r'$\hat{f}(\xi_1, \xi_2)$')
 
     if addContour:
         cs = plt.contour(X, 1 - Y, Z, colors='black')
@@ -64,23 +65,23 @@ def plotSGDE2d(U, n=100):
     # plot negative areas
     if len(neg_z) > 0:
         plt.plot(neg_x, neg_y, linestyle=' ', marker='o', color='red')
-        plt.title("N=%i, [%g, %g]" % (U.grid.getStorage().size(), min(neg_z), max(neg_z)))
+        plt.title("N=%i, [%g, %g]" % (U.grid.getSize(), min(neg_z), max(neg_z)))
     else:
-        plt.title("N=%i" % U.grid.getStorage().size())
+        plt.title("N=%i" % U.grid.getSize())
     plt.xlim(0, 1)
     plt.ylim(0, 1)
 
 
-def plotFunction2d(f, addContour=True, n=101):
-    x = np.linspace(0, 1, n)
-    y = np.linspace(0, 1, n)
+def plotFunction2d(f, addContour=True, n=101,
+                   xlim=[0, 1], ylim=[0, 1]):
+    x = np.linspace(xlim[0], xlim[1], n)
+    y = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(x, y)
     Z = np.ones(n * n).reshape(n, n)
 
-    print "-" * 60
     for i in xrange(len(X)):
         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f(xi, yi)
+            Z[i, j] = f(xi, 1 - yi)
 
     plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
 

@@ -31,7 +31,7 @@
 #include <list>
 #include <typeinfo>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class HashGridIterator;
@@ -172,7 +172,7 @@ class HashGridStorage {
    *
    * @return returns the size of the hashmap
    */
-  size_t size() const;
+  size_t getSize() const;
 
   /**
    * gets the number of inner grid points
@@ -186,7 +186,7 @@ class HashGridStorage {
    *
    * @return the dimension of the grid stored in this HashGridStorage object
    */
-  size_t dim() const;
+  size_t getDimension() const;
 
   /**
    * gets the index number for given gridpoint by its sequence number
@@ -619,6 +619,6 @@ inline HashGridStorage::seq() const {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHGRIDSTORAGE_HPP */

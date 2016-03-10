@@ -8,11 +8,12 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,9 +29,10 @@ class PolyBoundaryGrid : public Grid {
    *
    * @param dim the dimension of the grid
    * @param degree the max. polynom's degree
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
@@ -40,24 +42,26 @@ class PolyBoundaryGrid : public Grid {
   ~PolyBoundaryGrid() override;
 
   const SBasis& getBasis() override;
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
   void serialize(std::ostream& ostr) override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
   size_t getDegree() const;
 
  protected:
+  /// grid generator
+  BoundaryGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
   /// polynomial basis
-  const SPolyBoundaryBase* basis_;
-  /// level at which the boundary points should be inserted
+  std::unique_ptr<SPolyBoundaryBase> basis_;
+  /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POLYTRUNCATEDBOUNDARYGRID_HPP */

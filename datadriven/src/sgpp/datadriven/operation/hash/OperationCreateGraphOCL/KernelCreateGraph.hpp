@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
 
 #include <limits>
 #include <string>
@@ -17,7 +17,7 @@
 
 #include "KernelSourceBuilderCreateGraph.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -28,10 +28,10 @@ class KernelCreateGraph {
   size_t dims;
   size_t k;
   cl_int err;
-  base::OCLClonedBufferSD<T> deviceData;
-  base::OCLClonedBufferSD<int> deviceResultData;
+  base::OCLBufferWrapperSD<T> deviceData;
+  base::OCLBufferWrapperSD<int> deviceResultData;
   cl_kernel kernel;
-  SGPP::datadriven::DensityOCLMultiPlatform::SourceBuilderCreateGraph<T> kernelSourceBuilder;
+  sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderCreateGraph<T> kernelSourceBuilder;
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   double deviceTimingMult;
   json::Node &kernelConfiguration;
@@ -99,7 +99,8 @@ class KernelCreateGraph {
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
         std::cout << "building kernel" << std::endl;
-      this->kernel = manager->buildKernel(program_src, device, "connectNeighbors");
+      this->kernel = manager->buildKernel(program_src, device, kernelConfiguration,
+                                          "connectNeighbors");
     }
 
     if (chunksize == -1) {
@@ -212,7 +213,7 @@ class KernelCreateGraph {
     this->deviceTimingMult += time;
     return 0;
   }
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -263,4 +264,4 @@ class KernelCreateGraph {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

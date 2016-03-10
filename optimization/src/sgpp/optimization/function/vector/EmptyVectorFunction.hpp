@@ -6,9 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 #define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 
+#include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -18,20 +19,14 @@ namespace optimization {
  */
 class EmptyVectorFunction {
  public:
-  inline static WrapperVectorFunction& getInstance() {
-    static WrapperVectorFunction wrapperVectorFunction(
-      0, 0, [](const base::DataVector & x,
-    base::DataVector & value) {});
-    return wrapperVectorFunction;
-  }
+  static WrapperVectorFunction& getInstance();
 
  private:
   EmptyVectorFunction() {}
   EmptyVectorFunction(const EmptyVectorFunction&) = delete;
   void operator=(const EmptyVectorFunction&) = delete;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

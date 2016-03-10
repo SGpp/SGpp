@@ -15,18 +15,15 @@
 #include <sgpp/base/operation/hash/OperationMatrixSP.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-#if USE_DOUBLE_PRECISION==0
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
- * Class that implements the virtual class SGPP::base::OperationMatrix for the
+ * Class that implements the virtual class sgpp::base::OperationMatrix for the
  * application of classification for the Systemmatrix with weight
  *
  * The Identity matrix is used as regularization operator.
@@ -37,17 +34,16 @@ namespace parallel {
  *
  * Sinple precision variant!
  */
-class DMWeightMatrixSPVectorizedIdentity : public
-  SGPP::base::OperationMatrixSP {
+class DMWeightMatrixSPVectorizedIdentity : public sgpp::base::OperationMatrixSP {
  private:
   /// the lambda, the regularisation parameter
   float lamb;
   /// OperationB for calculating the data matrix
-  SGPP::parallel::OperationMultipleEvalVectorizedSP* B;
+  sgpp::parallel::OperationMultipleEvalVectorizedSP* B;
   /// Pointer to the data vector
-  SGPP::base::DataMatrixSP* data;
+  sgpp::base::DataMatrixSP* data;
   /// Pointer to the weight vector
-  SGPP::base::DataVectorSP* weight;
+  sgpp::base::DataVectorSP* weight;
   /// Number of orignal training instances
   size_t numTrainingInstances;
   /// Number of patched and used training instances
@@ -66,40 +62,40 @@ class DMWeightMatrixSPVectorizedIdentity : public
   /// time needed only for the computation of mult transposed, interesting on accelerator boards
   double computeTimeMultTrans;
   /// Stopwatch needed to determine the durations of mult and mult transposed
-  SGPP::base::SGppStopwatch* myTimer;
+  sgpp::base::SGppStopwatch* myTimer;
 
  public:
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    * @param w the weights to the training data
    * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
    */
-  DMWeightMatrixSPVectorizedIdentity(SGPP::base::Grid& SparseGrid,
-                                     SGPP::base::DataMatrixSP& trainData, float lambda, SGPP::base::DataVectorSP& w,
-                                     VectorizationType vecMode);
+  DMWeightMatrixSPVectorizedIdentity(sgpp::base::Grid& SparseGrid,
+                                     sgpp::base::DataMatrixSP& trainData, float lambda,
+                                     sgpp::base::DataVectorSP& w, VectorizationType vecMode);
 
   /**
    * Std-Destructor
    */
   virtual ~DMWeightMatrixSPVectorizedIdentity();
 
-  virtual void mult(SGPP::base::DataVectorSP& alpha,
-                    SGPP::base::DataVectorSP& result);
+  virtual void mult(sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& result);
 
   /**
    * Generates the right hand side of the classification equation
    *
    * @param classes the class information of the training data
-   * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
+   * @param b reference to the vector that will contain the result of the matrix vector
+   * multiplication on the rhs
    */
-  void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b);
+  void generateb(sgpp::base::DataVectorSP& classes, sgpp::base::DataVectorSP& b);
 
   /**
-   * rebuilds the SGPP::base::DataMatrix for Level and Index
+   * rebuilds the sgpp::base::DataMatrix for Level and Index
    */
   void rebuildLevelAndIndex();
 
@@ -120,8 +116,7 @@ class DMWeightMatrixSPVectorizedIdentity : public
                  double& computeMultTrans);
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace sgpp
 
-#endif
 #endif /* DMWEIGHTMATRIXSPVECTORIZEDIDENTITY_HPP */

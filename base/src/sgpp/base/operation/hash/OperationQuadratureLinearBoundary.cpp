@@ -9,26 +9,26 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
-  float_t res = 0;
-  float_t tmp;
+double OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
+  double res = 0;
+  double tmp;
   int nr_boundaries = 0;  // nr. of boundaries a point touches
   int cur_ind, cur_lev;
   GridStorage::index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
-    tmp = pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) * alpha.get(
+    tmp = pow(2.0, -static_cast<double>(iter->first->getLevelSum())) * alpha.get(
             iter->second);
 
     if (!iter->first->isInnerPoint()) {
       nr_boundaries = 0;
 
-      for (size_t d = 0; d < iter->first->dim(); d++) {
+      for (size_t d = 0; d < iter->first->getDimension(); d++) {
         cur_ind = iter->first->getIndex(d);
         cur_lev = iter->first->getLevel(d);
 
@@ -46,4 +46,4 @@ float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

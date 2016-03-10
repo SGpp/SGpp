@@ -8,23 +8,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+XdPhidPhiDownBBLinearBoundary::XdPhidPhiDownBBLinearBoundary(sgpp::base::GridStorage* storage)
+    : XdPhidPhiDownBBLinear(storage) {}
 
+XdPhidPhiDownBBLinearBoundary::~XdPhidPhiDownBBLinearBoundary() {}
 
-XdPhidPhiDownBBLinearBoundary::XdPhidPhiDownBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : XdPhidPhiDownBBLinear(storage) {
-}
-
-XdPhidPhiDownBBLinearBoundary::~XdPhidPhiDownBBLinearBoundary() {
-}
-
-void XdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = this->boundingBox->getIntervalWidth(dim);
-  float_t t = this->boundingBox->getIntervalOffset(dim);
+void XdPhidPhiDownBBLinearBoundary::operator()(sgpp::base::DataVector& source,
+                                               sgpp::base::DataVector& result, grid_iterator& index,
+                                               size_t dim) {
+  double q = this->boundingBox->getIntervalWidth(dim);
+  double t = this->boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -33,8 +29,8 @@ void XdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t left_boundary;
-  float_t right_boundary;
+  double left_boundary;
+  double right_boundary;
   size_t seq_left;
   size_t seq_right;
 
@@ -56,15 +52,19 @@ void XdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   if (useBB) {
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; //left_boundary;
+      result[seq_left] = 0.0;  // left_boundary;
     } else {
-      throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw base::application_exception(
+          "XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //right_boundary;
+      result[seq_right] = 0.0;  // right_boundary;
     } else {
-      throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw base::application_exception(
+          "XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     // move to root
@@ -80,15 +80,19 @@ void XdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   } else {
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; //left_boundary;
+      result[seq_left] = 0.0;  // left_boundary;
     } else {
-      throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw base::application_exception(
+          "XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //right_boundary;
+      result[seq_right] = 0.0;  // right_boundary;
     } else {
-      throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw base::application_exception(
+          "XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     // move to root
@@ -104,7 +108,5 @@ void XdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

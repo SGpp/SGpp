@@ -9,7 +9,7 @@
 
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
@@ -23,8 +23,7 @@ class Configuration {
     return kernelName;
   }
 
-  static void augmentDefaultParameters(
-      SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -32,10 +31,9 @@ class Configuration {
 
         const std::string &kernelName = Configuration::getKernelName();
 
-        json::Node &kernelNode =
-            deviceNode["KERNELS"].contains(kernelName)
-                ? deviceNode["KERNELS"][kernelName]
-                : deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
+                                     ? deviceNode["KERNELS"][kernelName]
+                                     : deviceNode["KERNELS"].addDictAttr(kernelName);
 
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);
@@ -65,12 +63,12 @@ class Configuration {
           kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
         }
 
-        if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+        if (kernelNode.contains("KERNEL_DATA_BLOCK_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
         }
 
-        if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+        if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
         }
 
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
@@ -82,4 +80,4 @@ class Configuration {
 };
 }  // namespace StreamingOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

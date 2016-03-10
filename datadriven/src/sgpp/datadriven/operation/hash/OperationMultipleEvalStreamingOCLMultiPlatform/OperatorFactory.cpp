@@ -11,19 +11,18 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "Configuration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
   if (configuration.getParameters().operator bool()) {
     base::OCLOperationConfiguration* cloned =
-        dynamic_cast<base::OCLOperationConfiguration*>(
-            configuration.getParameters()->clone());
+        dynamic_cast<base::OCLOperationConfiguration*>(configuration.getParameters()->clone());
     parameters = std::shared_ptr<base::OCLOperationConfiguration>(cloned);
     manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
   } else {
@@ -31,10 +30,7 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
     parameters = manager->getConfiguration();
   }
 
-  // TODO(pfandedd): filter devices that are disabled (COUNT=0)
-
-  StreamingOCLMultiPlatform::Configuration::augmentDefaultParameters(
-      *parameters);
+  StreamingOCLMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
 
   //    std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];
   //    std::string &firstDeviceName =
@@ -42,16 +38,15 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
   //    json::Node &deviceNode =
   //    (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
   //    json::Node &firstDeviceConfig =
-  //    deviceNode["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
+  //    deviceNode["[StreamingOCLMultiPlatform::Configuration::getKernelName()];
 
+  std::cout << "INTERNAL_PRECISION: " << (*parameters)["INTERNAL_PRECISION"].get() << std::endl;
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    return new datadriven::StreamingOCLMultiPlatform::
-        OperationMultiEvalStreamingOCLMultiPlatform<float>(
-            grid, dataset, manager, parameters, (*parameters));
+    return new datadriven::StreamingOCLMultiPlatform::OperationMultiEvalStreamingOCLMultiPlatform<
+        float>(grid, dataset, manager, parameters, (*parameters));
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    return new datadriven::StreamingOCLMultiPlatform::
-        OperationMultiEvalStreamingOCLMultiPlatform<double>(
-            grid, dataset, manager, parameters, (*parameters));
+    return new datadriven::StreamingOCLMultiPlatform::OperationMultiEvalStreamingOCLMultiPlatform<
+        double>(grid, dataset, manager, parameters, (*parameters));
   } else {
     throw base::factory_exception(
         "Error creating "
@@ -61,4 +56,4 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

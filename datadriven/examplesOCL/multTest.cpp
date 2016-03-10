@@ -15,18 +15,15 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
-void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-                      SGPP::base::Grid& grid,
-                      SGPP::base::GridGenerator& gridGen,
-                      SGPP::base::DataVector& alpha) {
+void doAllRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                      sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-        new SGPP::base::SurplusRefinementFunctor(&alpha, adaptConfig.noPoints_,
-                                                 adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -34,57 +31,62 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
     for (size_t j = oldSize; j < alpha.getSize(); j++) {
       alpha[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
 int main(int argc, char** argv) {
-  /*    SGPP::base::OCLOperationConfiguration parameters;
+  /*    sgpp::base::OCLOperationConfiguration parameters;
    parameters.readFromFile("StreamingOCL.cfg");
    std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION")
    << std::endl;*/
 
   //  std::string fileName = "friedman2_90000.arff";
-  //    std::string fileName = "debugging.arff";
+  //  std::string fileName = "debugging.arff";
   std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 5;
+  uint32_t level = 6;
 
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix& trainingData = dataset.getData();
+  sgpp::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
-  //    SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  //    std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances()
-            << std::endl;
+  bool modLinear = true;
+  std::unique_ptr<sgpp::base::Grid> grid(nullptr);
+  if (modLinear) {
+    grid = sgpp::base::Grid::createModLinearGrid(dim);
+  } else {
+    grid = sgpp::base::Grid::createLinearGrid(dim);
+  }
 
-  SGPP::base::DataVector alpha(gridStorage->size());
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
+
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
+
+  sgpp::base::DataVector alpha(gridStorage.getSize());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
     //    alpha[i] = dist(mt);
@@ -92,17 +94,15 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;
-  SGPP::base::OperationMultipleEval* eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  doAllRefinements(adaptConfig, *grid, *gridGen, alpha);
+  doAllRefinements(adaptConfig, *grid, gridGen, alpha);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size()
-            << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
-  SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
+  sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
   dataSizeVectorResult.setAll(0);
 
   std::cout << "preparing operation for refined grid" << std::endl;
@@ -110,35 +110,50 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating result" << std::endl;
 
-  for (size_t i = 0; i < 100; i++) {
-    std::cout << "step: " << i << std::endl;
+  for (size_t i = 0; i < 5; i++) {
+    std::cout << "repeated mult: " << i << std::endl;
     eval->mult(alpha, dataSizeVectorResult);
   }
 
   std::cout << "duration: " << eval->getDuration() << std::endl;
 
-  //    SGPP::base::DataVector alpha2(gridStorage->size());
+  //    sgpp::base::DataVector alpha2(gridStorage.getSize());
   //    alpha2.setAll(0.0);
   //
   //    eval->multTranspose(dataSizeVectorResult, alpha2);
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
 
-  SGPP::base::DataVector dataSizeVectorResultCompare(
-      dataset.getNumberInstances());
+  sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
   dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
   double mse = 0.0;
 
+  double largestDifferenceMine = 0.0;
+  double largestDifferenceReference = 0.0;
+  double largestDifference = 0.0;
+
   for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-    mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]) *
-           (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    double difference = std::abs(dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    if (difference > largestDifference) {
+      largestDifference = difference;
+      largestDifferenceMine = dataSizeVectorResult[i];
+      largestDifferenceReference = dataSizeVectorResultCompare[i];
+    }
+
+    //    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
+    //              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+
+    mse += difference * difference;
   }
+
+  std::cout << "largestDifference: " << largestDifference << " mine: " << largestDifferenceMine
+            << " ref: " << largestDifferenceReference << std::endl;
 
   mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
   std::cout << "mse: " << mse << std::endl;

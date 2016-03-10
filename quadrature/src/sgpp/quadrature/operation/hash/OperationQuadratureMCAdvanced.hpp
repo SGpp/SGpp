@@ -11,24 +11,25 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
- * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
+ * Typedef for general functions that can be passed to integration methods. Requires three
+ * parameters. First, the dimensionality, then dim-many coordinates, and then further client data
+ * for the function at hand.
  */
-typedef float_t (*FUNC)(int, float_t*, void*);
+typedef double (*FUNC)(int, double*, void*);
 
 /**
  * Quadrature on any sparse grid (that has OperationMultipleEval implemented)
  * using various Monte Carlo Methods (Advanced).
  */
 
-class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
-
+class OperationQuadratureMCAdvanced : public sgpp::base::OperationQuadrature {
  public:
-
   /**
    * @brief Constructor of OperationQuadratureMCAdvanced, specifying a grid
    * object and the number of samples to use.
@@ -37,7 +38,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
    * @param numberOfSamples Number of Monte Carlo samples
    * @param seed Custom seed (defaults to default seed of mt19937_64)
    */
-  OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples,
+  OperationQuadratureMCAdvanced(sgpp::base::Grid& grid, size_t numberOfSamples,
                                 std::uint64_t seed = std::mt19937_64::default_seed);
 
   /**
@@ -61,7 +62,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  virtual float_t doQuadrature(SGPP::base::DataVector& alpha);
+  virtual double doQuadrature(sgpp::base::DataVector& alpha);
 
   /**
    * @brief Quadrature of an arbitrary function using
@@ -70,7 +71,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
    * @param func The function to integrate
    * @param clientdata Optional data to pass to FUNC
    */
-  float_t doQuadratureFunc(FUNC func, void* clientdata);
+  double doQuadratureFunc(FUNC func, void* clientdata);
 
   /**
    * @brief Quadrature of the @f$L^2@f$-norm of the error,
@@ -82,8 +83,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
    * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadratureL2Error(FUNC func, void* clientdata,
-                              SGPP::base::DataVector& alpha);
+  double doQuadratureL2Error(FUNC func, void* clientdata, sgpp::base::DataVector& alpha);
 
   /**
    * @brief Initialize SampleGenerator for NaiveMC
@@ -117,7 +117,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
 
  protected:
   // Pointer to the grid object
-  SGPP::base::Grid* grid;
+  sgpp::base::Grid* grid;
   // Number of MC samples
   size_t numberOfSamples;
   // number of dimensions (same as in Grid, if given)
@@ -126,12 +126,11 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
   // seed for the sample generator
   std::uint64_t seed;
 
-  //SampleGenerator Instance
-  SGPP::quadrature::SampleGenerator* myGenerator;
-
+  // SampleGenerator Instance
+  sgpp::quadrature::SampleGenerator* myGenerator;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp
 
 #endif /* OPERATIONQUADRATUREMCADVANCED_HPP */

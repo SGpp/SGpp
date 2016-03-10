@@ -17,7 +17,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -67,8 +67,8 @@ class PolyBasis: public Basis<LT, IT> {
    * @param pos
    * @return
    */
-  float_t evalHierToTop(LT level, IT index, DataVector& coeffs, float_t pos) {
-    float_t result = 0.0;
+  double evalHierToTop(LT level, IT index, DataVector& coeffs, double pos) {
+    double result = 0.0;
 
     // just evaluate the hierarchical ancestors -> so start with the
     // parent node
@@ -100,11 +100,11 @@ class PolyBasis: public Basis<LT, IT> {
    * Due to limited polynomial degree, we compute the roots of the Lagrange
    * polynomial bottom up.
    */
-  float_t eval(LT level, IT index, float_t p) override {
+  double eval(LT level, IT index, double p) override {
     // degree of polynomial, limited with level of grid point
     size_t deg = std::min<size_t>(degree, level + 1);
     // get the position in units of h of the current maximum level
-    p *= static_cast<float_t>(1 << level);
+    p *= static_cast<double>(1 << level);
     // start with the current grid point
     size_t root = index;
     // copy of index: used to identify the path in the binary tree of grid
@@ -115,14 +115,14 @@ class PolyBasis: public Basis<LT, IT> {
     size_t id = root;
     // position where the polynomial is one -> position of grid point:
     // (level, index)
-    float_t base = static_cast<float_t>(root);
-    float_t eval = 1;
+    double base = static_cast<double>(root);
+    double eval = 1;
     // as first parent we choose the right one. In units of h, it is 1 distance
     // away from the current one.
     root++;
     // add it to the Lagrange polynomial and normalize it
-    eval *= (p - static_cast<float_t>(root)) /
-            (base - static_cast<float_t>(root));
+    eval *= (p - static_cast<double>(root)) /
+            (base - static_cast<double>(root));
     // go to the next left neighbor that must exist due to
     // minimum degree of 2 of
     // the polynomial. the reference point is now the last one
@@ -136,8 +136,8 @@ class PolyBasis: public Basis<LT, IT> {
     // into account that the first root has been added already
     for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
       // add the next root to the polynomial
-      eval *= (p - static_cast<float_t>(root)) /
-              (base - static_cast<float_t>(root));
+      eval *= (p - static_cast<double>(root)) /
+              (base - static_cast<double>(root));
       // take last two indices (id & 3):
       // this gives you the information where to
       // look for the next root. The result needs to be scaled
@@ -160,22 +160,22 @@ class PolyBasis: public Basis<LT, IT> {
     return eval;
   }
 
-  float_t evalSave(LT level, IT index, float_t p) {
+  double evalSave(LT level, IT index, double p) {
     // spacing on current level
-    float_t h = 1.0f / static_cast<float_t>(1 << level);
+    double h = 1.0f / static_cast<double>(1 << level);
 
     // check if p is out of bounds
-    if ((p <= h * static_cast<float_t>(index - 1)) ||
-        (p >= h * static_cast<float_t>(index + 1))) {
+    if ((p <= h * static_cast<double>(index - 1)) ||
+        (p >= h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
       return eval(level, index, p);
     }
   }
 
-  float_t getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) {
     // grid spacing
-    float_t h = 1.0f / static_cast<float_t>(1 << level);
+    double h = 1.0f / static_cast<double>(1 << level);
 
     // --------------------------------
     // Gauss-Legendre quadrature
@@ -187,13 +187,13 @@ class PolyBasis: public Basis<LT, IT> {
     // getting legendre gauss points and weights in [-1, 1]
     quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
 
-    float_t sum = 0.0f;
-    float_t x = 0.0f;
+    double sum = 0.0f;
+    double x = 0.0f;
 
     for (size_t i = 0; i < n_roots; i++) {
       // scale the roots to the support of the basis:
       // [-1, 1] -> [0, 1] -> [a, b]
-      x = h * (roots[i] + static_cast<float_t>(index));
+      x = h * (roots[i] + static_cast<double>(index));
       // evaluate the polynom and weight it
       sum += weights[i] * eval(level, index, x);
     }
@@ -217,6 +217,6 @@ class PolyBasis: public Basis<LT, IT> {
 typedef PolyBasis<unsigned int, unsigned int> SPolyBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POLY_BASE_HPP */

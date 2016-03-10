@@ -76,10 +76,12 @@ class Node {
   virtual Node& addTextAttr(const std::string& name, const std::string& value);
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const char* value);
+  virtual Node& addIDAttr(const std::string& name, const std::string& value);
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const std::string& value);
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
+  virtual Node& addIDAttr(const std::string& name, const char* value);
 
   // returns the node to which the attribute was added
   virtual Node& addIDAttr(const std::string& name, const double& value);
@@ -101,12 +103,17 @@ class Node {
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceTextAttr(const std::string& name,
-                                const std::string& value);
+  virtual Node& replaceTextAttr(const std::string& name, const std::string& value);
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist, the old node is deleted
   virtual Node& replaceIDAttr(const std::string& name, const std::string& value);
+
+  // returns the node to which the attribute was added
+  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
+  virtual Node& replaceIDAttr(const std::string& name, const char* value);
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist, the old node is deleted
@@ -145,6 +152,8 @@ class Node {
   virtual Node& addIdValue(const std::string& value);
 
   // returns the list node to which the value was added
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
   virtual Node& addIdValue(const char* value);
 
   // returns the list node to which the value was added
@@ -171,4 +180,3 @@ class Node {
 }  // namespace json
 
 std::ostream& operator<<(std::ostream& stream, json::Node& node);
-

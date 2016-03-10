@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,7 +27,7 @@ class OperationEvalLinearBoundary : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalLinearBoundary(GridStorage* storage) :
+  explicit OperationEvalLinearBoundary(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -35,15 +35,15 @@ class OperationEvalLinearBoundary : public OperationEval {
    */
   ~OperationEvalLinearBoundary() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALLINEARBOUNDARY_HPP */

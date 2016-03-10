@@ -5,12 +5,12 @@
 
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 
-using namespace SGPP::base;
+using namespace sgpp::base;
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /*
@@ -43,8 +43,8 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   this->maxLevel = 0;
 
   //calculate the maxLevel first - required for level vector flattening
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -60,8 +60,8 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   //also find out how many grid points the largest subspace contains
   this->maxGridPointsOnLevel = 0;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -169,7 +169,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   // cout << "largestListSubspace: " << largestListSubspace << endl;
   // cout << "numberOfListSubspaces: " << numberOfListSubspaces << endl;
   // cout << "subspaceCount: " << subspaceCount << endl;
-  // cout << "avr. points per subspace: " << ((float_t) nonVirtualGridPoints / (float_t) subspaceCount) << endl;
+  // cout << "avr. points per subspace: " << ((double) nonVirtualGridPoints / (double) subspaceCount) << endl;
 
   this->statsFile << this->refinementStep << this->csvSep;
   this->statsFile << nonVirtualGridPoints << this->csvSep;
@@ -179,12 +179,12 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   this->statsFile << largestListSubspace << this->csvSep;
   this->statsFile << numberOfListSubspaces << this->csvSep;
   this->statsFile << subspaceCount << this->csvSep;
-  this->statsFile << ((float_t) nonVirtualGridPoints / (float_t) subspaceCount) <<
+  this->statsFile << ((double) nonVirtualGridPoints / (double) subspaceCount) <<
                   this->csvSep;
   size_t numberOfThreads = omp_get_max_threads();
-  this->statsFile << ((float_t) (this->maxGridPointsOnLevel * numberOfThreads +
+  this->statsFile << ((double) (this->maxGridPointsOnLevel * numberOfThreads +
                                  actualGridPoints) * 8.0) / (1024.0 * 1024.0) << this->csvSep;
-  this->statsFile << (float_t) (this->maxGridPointsOnLevel * numberOfThreads +
+  this->statsFile << (double) (this->maxGridPointsOnLevel * numberOfThreads +
                                 actualGridPoints) / nonVirtualGridPoints << endl;
   this->refinementStep += 1;
 #endif

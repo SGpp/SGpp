@@ -7,41 +7,33 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+DPhiPhiUpBBLinear::DPhiPhiUpBBLinear(sgpp::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+DPhiPhiUpBBLinear::~DPhiPhiUpBBLinear() {}
 
-DPhiPhiUpBBLinear::DPhiPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-
-DPhiPhiUpBBLinear::~DPhiPhiUpBBLinear() {
-}
-
-void DPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                   SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void DPhiPhiUpBBLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                   grid_iterator& index, size_t dim) {
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   rec(source, result, index, dim, fl, fr);
 }
 
-
-void DPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                            float_t& fr) {
+void DPhiPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                            grid_iterator& index, size_t dim, double& fl, double& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -61,9 +53,9 @@ void DPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
 
   index.get(dim, current_level, current_index);
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
   // transposed operations:
   result[seq] = fm;
@@ -72,7 +64,5 @@ void DPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + (alpha_value * (-0.5) + fr);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

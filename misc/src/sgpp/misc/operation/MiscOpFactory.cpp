@@ -3,17 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cstring>
 #include <sgpp/base/exception/factory_exception.hpp>
-
 #include <sgpp/misc/operation/MiscOpFactory.hpp>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstring>
 
-namespace SGPP {
-
-namespace op_factory {
-
-}
-}
+namespace sgpp {
+namespace op_factory {}  // namespace op_factory
+}  // namespace sgpp

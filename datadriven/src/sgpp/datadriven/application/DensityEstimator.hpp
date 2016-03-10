@@ -13,38 +13,33 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class DensityEstimator {
  public:
   DensityEstimator();
-  explicit DensityEstimator(base::DataMatrix& samples);
   virtual ~DensityEstimator();
 
   virtual void initialize(base::DataMatrix& samples) = 0;
 
-  virtual float_t pdf(base::DataVector& x) = 0;
+  virtual double pdf(base::DataVector& x) = 0;
   virtual void pdf(base::DataMatrix& points, base::DataVector& res) = 0;
 
-  virtual float_t mean() = 0;
-  virtual float_t variance() = 0;
-  virtual float_t std_deviation();
+  virtual double mean() = 0;
+  virtual double variance() = 0;
+  virtual double std_deviation();
   virtual void cov(base::DataMatrix& cov) = 0;
   virtual void corrcoef(base::DataMatrix& corr);
 
-  virtual base::DataVector* getSamples(size_t dim) = 0;
-  virtual base::DataMatrix* getSamples();
+  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim) = 0;
+  virtual std::shared_ptr<base::DataMatrix> getSamples() = 0;
 
   virtual size_t getDim() = 0;
   virtual size_t getNsamples() = 0;
-
- protected:
-  base::DataMatrix samples;
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DENSITYESTIMATOR_HPP_ */
-

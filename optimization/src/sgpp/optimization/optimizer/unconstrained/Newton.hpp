@@ -16,8 +16,7 @@
 #include <cstddef>
 #include <memory>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -31,19 +30,19 @@ namespace optimizer {
 class Newton : public UnconstrainedOptimizer {
  public:
   /// default beta (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_BETA = 0.5;
+  static constexpr double DEFAULT_BETA = 0.5;
   /// default gamma (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_GAMMA = 1e-2;
+  static constexpr double DEFAULT_GAMMA = 1e-2;
   /// default tolerance (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
+  static constexpr double DEFAULT_TOLERANCE = 1e-8;
   /// default epsilon (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_EPSILON = 1e-18;
+  static constexpr double DEFAULT_EPSILON = 1e-18;
   /// default steepest descent restart parameter 1
-  static constexpr float_t DEFAULT_ALPHA1 = 1e-6;
+  static constexpr double DEFAULT_ALPHA1 = 1e-6;
   /// default steepest descent restart parameter 2
-  static constexpr float_t DEFAULT_ALPHA2 = 1e-6;
+  static constexpr double DEFAULT_ALPHA2 = 1e-6;
   /// default steepest descent restart exponent
-  static constexpr float_t DEFAULT_P = 0.1;
+  static constexpr double DEFAULT_P = 0.1;
 
   /**
    * Constructor.
@@ -61,16 +60,10 @@ class Newton : public UnconstrainedOptimizer {
    * @param alpha2            steepest descent restart parameter 2
    * @param p                 steepest descent restart exponent
    */
-  Newton(ScalarFunction& f,
-         ScalarFunctionHessian& fHessian,
-         size_t maxItCount = DEFAULT_N,
-         float_t beta = DEFAULT_BETA,
-         float_t gamma = DEFAULT_GAMMA,
-         float_t tolerance = DEFAULT_TOLERANCE,
-         float_t epsilon = DEFAULT_EPSILON,
-         float_t alpha1 = DEFAULT_ALPHA1,
-         float_t alpha2 = DEFAULT_ALPHA2,
-         float_t p = DEFAULT_P);
+  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
+         double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+         double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
+         double alpha1 = DEFAULT_ALPHA1, double alpha2 = DEFAULT_ALPHA2, double p = DEFAULT_P);
 
   /**
    * Constructor.
@@ -90,17 +83,9 @@ class Newton : public UnconstrainedOptimizer {
    *                          the linear systems
    *                          (Hessian as coefficient matrix)
    */
-  Newton(ScalarFunction& f,
-         ScalarFunctionHessian& fHessian,
-         size_t maxItCount,
-         float_t beta,
-         float_t gamma,
-         float_t tolerance,
-         float_t epsilon,
-         float_t alpha1,
-         float_t alpha2,
-         float_t p,
-         const sle_solver::SLESolver& sleSolver);
+  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount, double beta,
+         double gamma, double tolerance, double epsilon, double alpha1, double alpha2,
+         double p, const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -117,104 +102,102 @@ class Newton : public UnconstrainedOptimizer {
   /**
    * @return              beta (parameter for Armijo's rule)
    */
-  float_t getBeta() const;
+  double getBeta() const;
 
   /**
    * @param beta          beta (parameter for Armijo's rule)
    */
-  void setBeta(float_t beta);
+  void setBeta(double beta);
 
   /**
    * @return              gamma (parameter for Armijo's rule)
    */
-  float_t getGamma() const;
+  double getGamma() const;
 
   /**
    * @param gamma         gamma (parameter for Armijo's rule)
    */
-  void setGamma(float_t gamma);
+  void setGamma(double gamma);
 
   /**
    * @return              tolerance (parameter for Armijo's rule)
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance     tolerance (parameter for Armijo's rule)
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return              epsilon (parameter for Armijo's rule)
    */
-  float_t getEpsilon() const;
+  double getEpsilon() const;
 
   /**
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  void setEpsilon(float_t epsilon);
+  void setEpsilon(double epsilon);
 
   /**
    * @return          steepest descent restart parameter 1
    */
-  float_t getAlpha1() const;
+  double getAlpha1() const;
 
   /**
    * @param alpha1    steepest descent restart parameter 1
    */
-  void setAlpha1(float_t alpha1);
+  void setAlpha1(double alpha1);
 
   /**
    * @return          steepest descent restart parameter 2
    */
-  float_t getAlpha2() const;
+  double getAlpha2() const;
 
   /**
    * @param alpha2    steepest descent restart parameter 2
    */
-  void setAlpha2(float_t alpha2);
+  void setAlpha2(double alpha2);
 
   /**
    * @return          steepest descent restart exponent
    */
-  float_t getP() const;
+  double getP() const;
 
   /**
    * @param p         steepest descent restart exponent
    */
-  void setP(float_t p);
+  void setP(double p);
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function Hessian
   ScalarFunctionHessian& fHessian;
   /// beta (parameter for Armijo's rule)
-  float_t beta;
+  double beta;
   /// gamma (parameter for Armijo's rule)
-  float_t gamma;
+  double gamma;
   /// tolerance (parameter for Armijo's rule)
-  float_t tol;
+  double tol;
   /// epsilon (parameter for Armijo's rule)
-  float_t eps;
+  double eps;
   /// steepest descent restart parameter 1
-  float_t alpha1;
+  double alpha1;
   /// steepest descent restart parameter 2
-  float_t alpha2;
+  double alpha2;
   /// steepest descent restart exponent
-  float_t p;
+  double p;
   /// default linear solver
   const sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
   const sle_solver::SLESolver& sleSolver;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NEWTON_HPP */

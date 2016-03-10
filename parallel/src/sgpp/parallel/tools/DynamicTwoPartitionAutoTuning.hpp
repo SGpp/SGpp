@@ -6,24 +6,23 @@
 #ifndef DYNAMICTWOPARTITIONAUTOTUNING_HPP
 #define DYNAMICTWOPARTITIONAUTOTUNING_HPP
 
-#include "TwoPartitionAutoTuning.hpp"
+#include <sgpp/parallel/tools/TwoPartitionAutoTuning.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
  public:
-  DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider,
-                                size_t retune_cycles);
+  DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
   virtual void resetAutoTuning();
+
  protected:
   void autoTune();
   double _partition2_speedup;
 };
+}  // namespace parallel
+}  // namespace sgpp
 
-}
-}
-#endif // DYNAMICTWOPARTITIONAUTOTUNING_HPP
+#endif  // DYNAMICTWOPARTITIONAUTOTUNING_HPP

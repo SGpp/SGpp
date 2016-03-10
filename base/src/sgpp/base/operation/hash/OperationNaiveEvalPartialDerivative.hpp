@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -42,8 +42,8 @@ class OperationNaiveEvalPartialDerivative {
    * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
-                                const std::vector<float_t>& point,
+  double evalPartialDerivative(const DataVector& alpha,
+                                const std::vector<double>& point,
                                 size_t derivDim) {
     DataVector p(point);
     return evalPartialDerivative(alpha, p, derivDim);
@@ -57,12 +57,12 @@ class OperationNaiveEvalPartialDerivative {
    * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
    * @return          value of the partial derivative of the linear combination
    */
-  virtual float_t evalPartialDerivative(const DataVector& alpha,
+  virtual double evalPartialDerivative(const DataVector& alpha,
                                         const DataVector& point,
                                         size_t derivDim) = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALPARTIALDERIVATIVE_HPP */

@@ -9,12 +9,11 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
-#include <string>
-//
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -25,20 +24,18 @@ namespace solver {
 class VarTimestep : public StepsizeControl {
  protected:
   void predictor(SLESolver& LinearSystemSolver,
-                 SGPP::solver::OperationParabolicPDESolverSystem& System,
-                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                 SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
+                 sgpp::solver::OperationParabolicPDESolverSystem& System, double tmp_timestepsize,
+                 sgpp::base::DataVector& dv, sgpp::base::DataVector& corr,
+                 sgpp::base::DataVector* rhs);
   void corrector(SLESolver& LinearSystemSolver,
-                 SGPP::solver::OperationParabolicPDESolverSystem& System,
-                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                 SGPP::base::DataVector* rhs);
+                 sgpp::solver::OperationParabolicPDESolverSystem& System, double tmp_timestepsize,
+                 sgpp::base::DataVector& dv, sgpp::base::DataVector* rhs);
 
-  virtual float_t nextTimestep(float_t tmp_timestepsize,
-                               float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
+  virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm,
+                               double epsilon);
 
   std::string _predictor;
   std::string _corrector;
-
 
  public:
   /**
@@ -49,12 +46,11 @@ class VarTimestep : public StepsizeControl {
    * @param imax number of maximum executed iterations
    * @param timestepSize the size of one timestep
    * @param eps the epsilon for the step size control
-   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param screen possible pointer to a sgpp::base::ScreenOutput object
    * @param gamma damping factor
    */
-  VarTimestep(std::string pred, std::string corr, size_t imax,
-              float_t timestepSize, float_t eps, SGPP::base::ScreenOutput* screen = NULL,
-              float_t gamma = -1);
+  VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps,
+              sgpp::base::ScreenOutput* screen = NULL, double gamma = -1);
 
   /**
    * Std-Destructor
@@ -62,7 +58,7 @@ class VarTimestep : public StepsizeControl {
   virtual ~VarTimestep();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /* VARTIMESTEP_HPP */

@@ -16,21 +16,20 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
+double OperationEvalPrewavelet::eval(const DataVector& alpha,
                                       const DataVector& point) {
-  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+  typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
   IndexValVector vec;
   PrewaveletBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(
-    storage);
+  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 
-  float_t result = 0.0;
+  double result = 0.0;
 
   for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
     result += iter->second * alpha[iter->first];
@@ -39,22 +38,22 @@ float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
   return result;
 }
 
-float_t OperationEvalPrewavelet::test(const DataVector& alpha,
+double OperationEvalPrewavelet::test(const DataVector& alpha,
                                       const DataVector& data,
                                       const DataVector& classes) {
   return 0;
 }
 
-float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
-  float_t result = 0.0;
+double OperationEvalPrewavelet::integrate(const DataVector& alpha) {
+  double result = 0.0;
 
-  for (size_t i = 0; i < storage->size(); i++) {
-    float_t temp_result = 1;
+  for (size_t i = 0; i < storage.getSize(); i++) {
+    double temp_result = 1;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       GridStorage::index_type::level_type level;
       GridStorage::index_type::index_type index;
-      (*storage)[i]->get(d, level, index);
+      storage[i]->get(d, level, index);
 
       if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
         temp_result = 0.0;
@@ -73,4 +72,4 @@ float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

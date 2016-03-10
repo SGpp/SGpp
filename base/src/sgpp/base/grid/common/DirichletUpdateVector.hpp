@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -34,7 +34,7 @@ class DirichletUpdateVector {
   //  /// stretching of the grid
   //  Stretching* myStretching;
   /// Grid Storage object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -42,7 +42,7 @@ class DirichletUpdateVector {
    *
    * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
    */
-  explicit DirichletUpdateVector(GridStorage* storage);
+  explicit DirichletUpdateVector(GridStorage& storage);
 
   /**
    * Std-Destructor
@@ -87,18 +87,18 @@ class DirichletUpdateVector {
   * @param updateVector the vector that should be updated
   * @param value the value that is multiplied with the value on the boundaries
   */
-  void multiplyBoundary(DataVector& updateVector, float_t value);
+  void multiplyBoundary(DataVector& updateVector, double value);
 
   /**
    * Multiplies the values of the points in the vector that meet the predicate condition by the constant value.
    * Calling this method with a function pointer that returns true if point->isInnerPoint() and false otherwise gives the same result as
    * the multiplyBoundary method.
    */
-  void multiply(DataVector& updateVector, float_t value,
-                bool (*predicate)(GridIndex*, GridStorage*));
+  void multiply(DataVector& updateVector, double value,
+                bool (*predicate)(GridIndex*, GridStorage&));
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DIRICHLETUPDATEVECTOR_HPP */

@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GridStencil::GridStencil(std::istream& istr)
@@ -17,12 +17,12 @@ GridStencil::GridStencil(std::istream& istr)
 
 
 GridStencil::GridStencil(size_t dim)
-  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+  : Grid(dim), surplusStencil(64), neighborStencil(64), weightStencil(64) {
 }
 
 
 GridStencil::GridStencil(BoundingBox& BB)
-  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+  : Grid(BB), surplusStencil(64), neighborStencil(64), weightStencil(64) {
 }
 
 
@@ -50,4 +50,4 @@ GridStencil::getWeightStencil() const {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

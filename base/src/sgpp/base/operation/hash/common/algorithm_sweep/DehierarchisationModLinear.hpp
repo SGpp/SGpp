@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -27,7 +27,7 @@ class DehierarchisationModLinear {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -35,7 +35,7 @@ class DehierarchisationModLinear {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  explicit DehierarchisationModLinear(GridStorage* storage);
+  explicit DehierarchisationModLinear(GridStorage& storage);
   /**
    * Destructor
    */
@@ -65,10 +65,10 @@ class DehierarchisationModLinear {
    * @param fr right value of the current region regarded in this step of the recursion
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index,
-           size_t dim, float_t fl, float_t fr);
+           size_t dim, double fl, double fr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DEHIERARCHISATIONMODLINEAR_HPP */

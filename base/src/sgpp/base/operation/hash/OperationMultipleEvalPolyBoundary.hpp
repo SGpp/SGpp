@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,10 +27,8 @@ class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset Dataset
    */
-  OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree,
-                                    DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), base(degree) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
   }
 
   /**
@@ -44,12 +42,12 @@ class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Basis object
   SPolyBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP */

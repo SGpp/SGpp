@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -27,7 +27,7 @@ class HierarchisationLinearStretched {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
   /// the stretching object
   Stretching* stretch;
 
@@ -37,7 +37,7 @@ class HierarchisationLinearStretched {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinearStretched(GridStorage* storage);
+  explicit HierarchisationLinearStretched(GridStorage& storage);
 
   /**
    * Destructor
@@ -68,10 +68,10 @@ class HierarchisationLinearStretched {
    * @param fr right value of the current region regarded in this step of the recursion
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index,
-           size_t dim, float_t fl, float_t fr);
+           size_t dim, double fl, double fr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HIERARCHISATIONLINEARSTRETCHED_HPP */

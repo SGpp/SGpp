@@ -1,13 +1,19 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-using namespace SGPP::base;
+
+#include <algorithm>
+
+using sgpp::base::DataVector;
 
 struct FixtureDataVector {
-	FixtureDataVector() :
-    nrows(5), ncols(3), N(nrows * ncols), d_rand(N), min(0), max(0), sum(
-      0) {
+  FixtureDataVector() : nrows(5), ncols(3), N(nrows * ncols), d_rand(N), min(0), max(0), sum(0) {
     l_rand_total = new double[nrows * ncols];
     l_rand = new double* [nrows];
 
@@ -32,13 +38,13 @@ struct FixtureDataVector {
     BOOST_TEST_MESSAGE("setup fixture");
   }
   ~FixtureDataVector() {
-    delete [] l_rand_total;
+    delete[] l_rand_total;
 
     for (int i = 0; i < nrows; ++i) {
-      delete [] l_rand[i];
+      delete[] l_rand[i];
     }
 
-    delete [] l_rand;
+    delete[] l_rand;
     BOOST_TEST_MESSAGE("teardown fixture");
   }
   int nrows, ncols, N;
@@ -52,13 +58,13 @@ BOOST_FIXTURE_TEST_SUITE(testDataVector, FixtureDataVector)
 
 BOOST_AUTO_TEST_CASE(testConstructor) {
   DataVector d = DataVector(2);
-  BOOST_CHECK_EQUAL(d.getSize(), 2);
+  BOOST_CHECK_EQUAL(d.getSize(), 2U);
 }
 
 BOOST_AUTO_TEST_CASE(testSetUp) {
-	for (int i = 0; i < N; ++i){
-		BOOST_CHECK_EQUAL(l_rand_total[i], d_rand[i]);
-	}
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_EQUAL(l_rand_total[i], d_rand[i]);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testMinMax) {
@@ -74,112 +80,112 @@ BOOST_AUTO_TEST_CASE(testOps) {
   double scalar = 0.213;
 
   for (int i = 0; i < N; ++i) {
-	d2[i] = static_cast<double>(i);
+    d2[i] = static_cast<double>(i);
   }
 
-  //add
+  // add
   d = DataVector(d_rand);
   d.add(d2);
-  for (int i = 0; i < N; ++i){
-	  BOOST_CHECK_EQUAL(d[i], d_rand[i]+static_cast<double>(i));
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_EQUAL(d[i], d_rand[i] + static_cast<double>(i));
   }
 
-  //axpy
+  // axpy
   d = DataVector(d_rand);
   d.axpy(scalar, d2);
-  for (int i = 0; i < N; ++i){
-	  BOOST_CHECK_EQUAL(d[i],d_rand[i] + scalar * static_cast<double>(i));
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_EQUAL(d[i], d_rand[i] + scalar * static_cast<double>(i));
   }
 
-  //dotProduct
+  // dotProduct
   d = DataVector(d_rand);
   double dotProdResultActual = d.dotProduct(d2);
   double dotProdResultExact = 0;
-  for (int i = 0; i < N; ++i){
-	  dotProdResultExact += d_rand[i]*static_cast<double>(i);
+  for (int i = 0; i < N; ++i) {
+    dotProdResultExact += d_rand[i] * static_cast<double>(i);
   }
   BOOST_CHECK_EQUAL(dotProdResultActual, dotProdResultExact);
 
-  //L2Norm
+  // L2Norm
   d = DataVector(d_rand);
-  double lTwoNormSquaredActual = d.l2Norm()*d.l2Norm();
+  double lTwoNormSquaredActual = d.l2Norm() * d.l2Norm();
   double lTwoNormSquaredExact = 0;
-  for (int i = 0; i < N; ++i){
-	  lTwoNormSquaredExact += d_rand[i]*d_rand[i];
+  for (int i = 0; i < N; ++i) {
+    lTwoNormSquaredExact += d_rand[i] * d_rand[i];
   }
   BOOST_CHECK_CLOSE(lTwoNormSquaredActual, lTwoNormSquaredExact, tol);
 
-  //max
+  // max
   d = DataVector(d_rand);
   double maxActual = d.max();
   BOOST_CHECK_EQUAL(max, maxActual);
 
-  //maxNorm
+  // maxNorm
   d = DataVector(d_rand);
   double maxNormActual = d.maxNorm();
   double maxNormExpected = 0.0;
-  for (int i = 1; i < N; ++i){
-	  maxNormExpected = maxNormExpected < fabs(d_rand[i]) ? fabs(d_rand[i]) : maxNormExpected;
+  for (int i = 1; i < N; ++i) {
+    maxNormExpected = maxNormExpected < fabs(d_rand[i]) ? fabs(d_rand[i]) : maxNormExpected;
   }
   BOOST_CHECK_CLOSE(maxNormActual, maxNormExpected, tol);
 
-  //min
+  // min
   d = DataVector(d_rand);
   double minActual = d.min();
   BOOST_CHECK_EQUAL(minActual, min);
 
-  //minmax
+  // minmax
   d.minmax(&minActual, &maxActual);
   BOOST_CHECK_EQUAL(minActual, min);
   BOOST_CHECK_EQUAL(maxActual, max);
 
-  //normalize
+  // normalize
   d = DataVector(d_rand);
   d.normalize();
   double border = 0.0;
   double delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
-  for (int i = 0; i < N; i++){
-	  BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min())/delta + border, tol);
+  for (int i = 0; i < N; i++) {
+    BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min()) / delta + border, tol);
   }
 
-  //normalize with border
+  // normalize with border
   d = DataVector(d_rand);
   border = 3.64;
   d.normalize(border);
   delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
-  for (int i = 0; i < N; i++){
-	  BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min())/delta + border, tol);
+  for (int i = 0; i < N; i++) {
+    BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min()) / delta + border, tol);
   }
 
-  //RMSNorm
+  // RMSNorm
   d = DataVector(d_rand);
-  double rmsNormSquaredActual = d.RMSNorm()*d.RMSNorm();
+  double rmsNormSquaredActual = d.RMSNorm() * d.RMSNorm();
   double rmsNormSquaredExpected = 0;
-  for (int i = 0; i < N; ++i){
-	  rmsNormSquaredExpected += d_rand[i]*d_rand[i];
+  for (int i = 0; i < N; ++i) {
+    rmsNormSquaredExpected += d_rand[i] * d_rand[i];
   }
-  rmsNormSquaredExpected *= 1.0/N;
+  rmsNormSquaredExpected *= 1.0 / N;
   BOOST_CHECK_CLOSE(rmsNormSquaredActual, rmsNormSquaredExpected, tol);
 
-  //sub
+  // sub
   d = DataVector(d_rand);
   d.sub(d2);
-  for (int i = 0; i < N; ++i){
-	  BOOST_CHECK_EQUAL(d[i], d_rand[i]-static_cast<double>(i));
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_EQUAL(d[i], d_rand[i] - static_cast<double>(i));
   }
 
-  //mult scalar
+  // mult scalar
   d = DataVector(d_rand);
   d.mult(scalar);
-  for (int i = 0; i < N; ++i){
-	  BOOST_CHECK_EQUAL(d[i], d_rand[i]*scalar);
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_EQUAL(d[i], d_rand[i] * scalar);
   }
 
-  //sum
+  // sum
   d = DataVector(d_rand);
   BOOST_CHECK_CLOSE(d.sum(), sum, tol);
 
-  //square
+  // square
   d = DataVector(d_rand);
   d.sqr();
 
@@ -187,15 +193,15 @@ BOOST_AUTO_TEST_CASE(testOps) {
     BOOST_CHECK_EQUAL(d[i], d_rand[i] * d_rand[i]);
   }
 
-  //sqrt
+  // sqrt
   d = DataVector(d_rand);
   d.sqr();
   d.sqrt();
-  for (int i = 0; i < N; ++i){
-	    BOOST_CHECK_CLOSE(d[i], d_rand[i], tol);
+  for (int i = 0; i < N; ++i) {
+    BOOST_CHECK_CLOSE(d[i], d_rand[i], tol);
   }
 
-  //abs
+  // abs
   d = DataVector(d_rand);
   d.abs();
 
@@ -203,7 +209,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
     BOOST_CHECK_EQUAL(d[i], fabs(d_rand[i]));
   }
 
-  //componentwise mult
+  // componentwise mult
   d = DataVector(d_rand);
 
   d.componentwise_mult(d2);
@@ -212,7 +218,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
     BOOST_CHECK_EQUAL(d[i], d_rand[i] * static_cast<double>(i));
   }
 
-  //componentwise div
+  // componentwise div
   d = DataVector(d_rand);
 
   for (int i = 0; i < N; ++i) {
@@ -222,11 +228,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.componentwise_div(d2);
 
   for (int i = 0; i < N; ++i) {
-#if USE_DOUBLE_PRECISION == 1
-    BOOST_CHECK_CLOSE( d_rand[i] / (i + 1.0), d[i], float_t(1e-12) );
-#else
-    BOOST_CHECK_CLOSE( d_rand[i] / (i + 1.0), d[i], float_t(1e-5) );
-#endif
+    BOOST_CHECK_CLOSE(d_rand[i] / (i + 1.0), d[i], 1e-12);
   }
 }
 
@@ -243,4 +245,3 @@ BOOST_AUTO_TEST_CASE(testDotProduct) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

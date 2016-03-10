@@ -1,15 +1,15 @@
-/*
- * CombiArbitraryScheme_demo.hpp
- *
- *  Created on: 29 Jun 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIARBITRARYSCHEME_HPP_
 #define COMBIARBITRARYSCHEME_HPP_
 
 #include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
 #include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
+
+#include <vector>
 
 namespace combigrid {
 /** Combischeme created with from an arbitrary active set of full grids. Missing
@@ -21,7 +21,7 @@ class CombiArbitraryScheme : public combigrid::AbstractCombiScheme<_Tp> {
   std::vector<std::vector<int> > _levels_vector;
 
  public:
-  CombiArbitraryScheme(std::vector<std::vector<int> > levels_vector);
+  explicit CombiArbitraryScheme(std::vector<std::vector<int> > levels_vector);
 
   /**
    * do nothing constructor
@@ -50,8 +50,7 @@ class CombiArbitraryScheme : public combigrid::AbstractCombiScheme<_Tp> {
    *
    * */
 
-  void initCombiGrid(int in_dim,
-                     std::vector<std::vector<int> >& out_levels_vector,
+  void initCombiGrid(int in_dim, std::vector<std::vector<int> >& out_levels_vector,
                      std::vector<_Tp>& out_coefs);
 
   /**
@@ -76,8 +75,7 @@ class CombiArbitraryScheme : public combigrid::AbstractCombiScheme<_Tp> {
    *
    * */
 
-  void re_initCombiGrid(int in_dim,
-                        const std::vector<FGridContainer<_Tp>*> in_grids,
+  void re_initCombiGrid(int in_dim, const std::vector<FGridContainer<_Tp>*> in_grids,
                         std::vector<std::vector<int> >& out_levels_vector,
                         std::vector<_Tp>& out_coefs);
 
@@ -90,9 +88,8 @@ class CombiArbitraryScheme : public combigrid::AbstractCombiScheme<_Tp> {
    * current combigrid- will be updated with the newly recomputed
    * coefficients
    * */
-  void recomputeCoefficients(int in_dim,
-                             std::vector<FGridContainer<_Tp>*>& out_fgrids);
+  void recomputeCoefficients(int in_dim, std::vector<FGridContainer<_Tp>*>& out_fgrids);
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIARBITRARYSCHEME_DEMO_HPP_ */

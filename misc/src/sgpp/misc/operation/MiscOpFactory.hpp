@@ -14,13 +14,9 @@
  */
 #include <sgpp/globaldef.hpp>
 
+namespace sgpp {
 
-namespace SGPP {
-
-namespace op_factory {
-
-}
-
+namespace op_factory {}
 }
 
 #endif /* EXPERIMENTAL_OP_FACTORY_HPP */

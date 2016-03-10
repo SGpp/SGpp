@@ -9,10 +9,10 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-ConvertPrewaveletToLinear::ConvertPrewaveletToLinear(GridStorage* storage) :
+ConvertPrewaveletToLinear::ConvertPrewaveletToLinear(GridStorage& storage) :
   storage(storage) {
 }
 
@@ -34,17 +34,17 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
   index_type init_index;
   size_t _seq;
   size_t _seq_temp;
-  float_t _val = 0.0;
-  float_t* temp_current = 0;
-  float_t* temp_old = 0;
+  double _val = 0.0;
+  double* temp_current = 0;
+  double* temp_old = 0;
 
 
   index.get(dim, init_level, init_index);
 
   for (; level > 1; --level) {
     if (level == max_level) {
-      temp_current = new float_t[1 << level];
-      temp_old = new float_t[1 << (level + 1)];
+      temp_current = new double[1 << level];
+      temp_old = new double[1 << (level + 1)];
 
       for (int t = 0; t < (1 << (level + 1)); t++) {
         temp_old[t] = 0;
@@ -53,28 +53,28 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       for (int t = 2; t < (1 << level); t = t + 2) {
         index.set(dim, level, t - 1);
         _seq = index.seq();
-        _val = storage->end(_seq) ? 0.0 : source[_seq];
+        _val = storage.end(_seq) ? 0.0 : source[_seq];
         temp_current[t] = -0.6 * _val;
 
         index.set(dim, level, t + 1);
         _seq = index.seq();
-        _val = storage->end(_seq) ? 0.0 : source[_seq];
+        _val = storage.end(_seq) ? 0.0 : source[_seq];
         temp_current[t] = temp_current[t] - 0.6 * _val;
       }
     } else {
       delete[] temp_old;
       temp_old = temp_current;
-      temp_current = new float_t[(1 << level)];
+      temp_current = new double[(1 << level)];
 
       for (int t = 2; t < (1 << level); t = t + 2) {
         index.set(dim, level, t - 1);
         _seq = index.seq();
-        _val = storage->end(_seq) ? 0.0 : source[_seq];
+        _val = storage.end(_seq) ? 0.0 : source[_seq];
         temp_current[t] = -0.6 * _val + temp_old[t * 2];
 
         index.set(dim, level, t + 1);
         _seq = index.seq();
-        _val = storage->end(_seq) ? 0.0 : source[_seq];
+        _val = storage.end(_seq) ? 0.0 : source[_seq];
         temp_current[t] = temp_current[t] - 0.6 * _val;
       }
     }
@@ -82,18 +82,18 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
     // Special treatment for first index
     index.set(dim, level, 1);
     _seq = index.seq();
-    _val = storage->end(_seq) ? 0.0 : source[_seq];
-    float_t current_value = _val;
-    float_t left_value = 0;
+    _val = storage.end(_seq) ? 0.0 : source[_seq];
+    double current_value = _val;
+    double left_value = 0;
 
-    if (!storage->end(_seq))
+    if (!storage.end(_seq))
       result[_seq] = 0.9 * current_value;
 
     index.set(dim, level, 3);
     _seq_temp = index.seq();
-    _val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
+    _val = storage.end(_seq_temp) ? 0.0 : source[_seq_temp];
 
-    if (!storage->end(_seq)) {
+    if (!storage.end(_seq)) {
       result[_seq] += 0.1 * _val;
       result[_seq] += temp_old[2] - 0.5 * temp_current[2];
     }
@@ -106,12 +106,12 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       _seq_temp = index.seq();
 
       left_value = current_value;
-      _val = storage->end(_seq) ? 0.0 : source[_seq];
+      _val = storage.end(_seq) ? 0.0 : source[_seq];
       current_value = _val;
 
-      _val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
+      _val = storage.end(_seq_temp) ? 0.0 : source[_seq_temp];
 
-      if (!storage->end(_seq)) {
+      if (!storage.end(_seq)) {
         result[_seq] = current_value + 0.1 * left_value + 0.1
                        * _val;
 
@@ -124,9 +124,9 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
     index_type last = (1 << static_cast<index_type>(level)) - 1;
     index.set(dim, level, last);
     _seq = index.seq();
-    _val = storage->end(_seq) ? 0.0 : source[_seq];
+    _val = storage.end(_seq) ? 0.0 : source[_seq];
 
-    if (!storage->end(_seq)) {
+    if (!storage.end(_seq)) {
       result[_seq] = 0.9 * _val + 0.1 * current_value;
 
       result[_seq] += temp_old[last * 2] - 0.5 * temp_current[last
@@ -146,4 +146,4 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

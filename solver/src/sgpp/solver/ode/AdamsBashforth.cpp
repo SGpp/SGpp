@@ -9,31 +9,27 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 #include <sstream>
 
-#include <sgpp/globaldef.hpp>
-
-
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-AdamsBashforth::AdamsBashforth(size_t imax, float_t timestepSize,
-                               SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize),
-  myScreen(screen) {
+AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, sgpp::base::ScreenOutput* screen)
+    : ODESolver(imax, timestepSize), myScreen(screen) {
   this->residuum = 0.0;
-
 }
 
-AdamsBashforth::~AdamsBashforth() {
-}
+AdamsBashforth::~AdamsBashforth() {}
 
 void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
-                           SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep,
-                           bool verbose) {
+                           sgpp::solver::OperationParabolicPDESolverSystem& System,
+                           bool bIdentifyLastStep, bool verbose) {
   size_t allIter = 0;
-  SGPP::base::DataVector* rhs;
+  sgpp::base::DataVector* rhs;
 
   for (size_t i = 0; i < this->nMaxIterations; i++) {
     if (i > 0)
@@ -44,30 +40,29 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
     // generate right hand side
     rhs = System.generateRHS();
 
-
     // solve the system of the current timestep
-    LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true,
-                             false, -1.0);
+    LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
     allIter += LinearSystemSolver.getNumberIterations();
 
     if (verbose == true) {
       if (myScreen == NULL) {
         std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
-                  << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-                  allIter << ")" << std::endl;
+                  << LinearSystemSolver.getNumberIterations()
+                  << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
       }
     }
 
     if (myScreen != NULL) {
       std::stringstream soutput;
-      soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " <<
-              LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-              allIter << ")";
+      soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
+              << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter
+              << ")";
 
       if (i < this->nMaxIterations - 1) {
-        myScreen->update((size_t)(((float_t)(i + 1) * 100.0) / ((
-                                    float_t)this->nMaxIterations)), soutput.str());
+        myScreen->update((size_t)((static_cast<double>(i + 1) * 100.0) /
+            static_cast<double>(this->nMaxIterations)),
+                         soutput.str());
       } else {
         myScreen->update(100, soutput.str());
       }
@@ -86,7 +81,6 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
     }
 
     System.saveAlpha();
-
   }
 
   // write some empty lines to console
@@ -97,5 +91,5 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
   this->nIterations = allIter;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp

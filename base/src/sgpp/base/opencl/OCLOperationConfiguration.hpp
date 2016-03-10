@@ -12,7 +12,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/OperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLOperationConfiguration : public OperationConfiguration {
@@ -22,7 +22,9 @@ class OCLOperationConfiguration : public OperationConfiguration {
   explicit OCLOperationConfiguration(const std::string& fileName);
 
   OperationConfiguration* clone() override;
+
+  std::vector<std::reference_wrapper<json::Node>> getAllDeviceNodes();
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

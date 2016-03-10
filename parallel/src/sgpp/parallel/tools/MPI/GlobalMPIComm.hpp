@@ -10,14 +10,12 @@
 #ifdef USE_MPI
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 // Hack, remove if possible
 extern MPICommunicator* myGlobalMPIComm;
 }
 }
 #endif
-
 
 #endif /* GLOBALMPICOMM_HPP */

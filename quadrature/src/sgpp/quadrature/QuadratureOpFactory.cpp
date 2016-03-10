@@ -7,15 +7,14 @@
 #include <sgpp/globaldef.hpp>
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 
-quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(
-  base::Grid& grid, size_t numberOfSamples,
-  std::uint64_t seed) {
-  return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples,
-         seed);
+std::unique_ptr<quadrature::OperationQuadratureMCAdvanced> createOperationQuadratureMCAdvanced(
+    base::Grid& grid, size_t numberOfSamples, std::uint64_t seed) {
+  return std::unique_ptr<quadrature::OperationQuadratureMCAdvanced>(
+      new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed));
 }
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

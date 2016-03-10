@@ -9,12 +9,11 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 class ConjugateGradients : public SLESolver {
@@ -22,16 +21,16 @@ class ConjugateGradients : public SLESolver {
   /**
    * Std-Constructor
    */
-  ConjugateGradients(size_t imax, float_t epsilon);
+  ConjugateGradients(size_t imax, double epsilon);
 
   /**
    * Std-Destructor
    */
   virtual ~ConjugateGradients();
 
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false,
-                     bool verbose = false, float_t max_threshold = -1.0);
+  virtual void solve(sgpp::base::OperationMatrix& SystemMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, bool reuse = false, bool verbose = false,
+                     double max_threshold = -1.0);
 
   // Define functions for observer pattern in python
 
@@ -46,7 +45,8 @@ class ConjugateGradients : public SLESolver {
   virtual void calcStarting();
 
   /**
-   * function that signals that one iteration step of the CG method has been completed (used in python)
+   * function that signals that one iteration step of the CG method has been completed (used in
+   * python)
    */
   virtual void iterationComplete();
 
@@ -56,7 +56,7 @@ class ConjugateGradients : public SLESolver {
   virtual void complete();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /* CONJUGATEGRADIENTS_HPP */

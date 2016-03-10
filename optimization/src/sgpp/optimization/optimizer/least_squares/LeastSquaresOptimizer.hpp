@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -36,21 +36,19 @@ class LeastSquaresOptimizer {
    * @param N     maximal number of iterations or function evaluations
    *              (depending on the implementation)
    */
-  LeastSquaresOptimizer(VectorFunction& phi, size_t N = DEFAULT_N) :
-    phi(phi),
-    N(N),
-    x0(phi.getNumberOfParameters(), 0.5),
-    xOpt(0),
-    fOpt(NAN),
-    xHist(0, 0),
-    fHist(0) {
-  }
+  explicit LeastSquaresOptimizer(VectorFunction& phi, size_t N = DEFAULT_N)
+      : phi(phi),
+        N(N),
+        x0(phi.getNumberOfParameters(), 0.5),
+        xOpt(0),
+        fOpt(NAN),
+        xHist(0, 0),
+        fHist(0) {}
 
   /**
    * Destructor.
    */
-  virtual ~LeastSquaresOptimizer() {
-  }
+  virtual ~LeastSquaresOptimizer() {}
 
   /**
    * Pure virtual method for optimization of the objective function.
@@ -62,71 +60,53 @@ class LeastSquaresOptimizer {
   /**
    * @return phi
    */
-  VectorFunction& getPhiFunction() const {
-    return phi;
-  }
+  VectorFunction& getPhiFunction() const { return phi; }
 
   /**
    * @return  maximal number of iterations or function evaluations
    */
-  size_t getN() const {
-    return N;
-  }
+  size_t getN() const { return N; }
 
   /**
    * @param N maximal number of iterations or function evaluations
    */
-  void setN(size_t N) {
-    this->N = N;
-  }
+  void setN(size_t N) { this->N = N; }
 
   /**
    * @return                  starting point
    */
-  const base::DataVector& getStartingPoint() const {
-    return x0;
-  }
+  const base::DataVector& getStartingPoint() const { return x0; }
 
   /**
    * @param startingPoint     starting point
    */
-  void setStartingPoint(const base::DataVector& startingPoint) {
-    this->x0 = startingPoint;
-  }
+  void setStartingPoint(const base::DataVector& startingPoint) { this->x0 = startingPoint; }
 
   /**
    * @return result of optimization (location of optimum),
    *         empty vector on error
    */
-  const base::DataVector& getOptimalPoint() const {
-    return xOpt;
-  }
+  const base::DataVector& getOptimalPoint() const { return xOpt; }
 
   /**
    * @return result of optimization (optimal function value),
    *         NAN on error
    */
-  float_t getOptimalValue() const {
-    return fOpt;
-  }
+  double getOptimalValue() const { return fOpt; }
 
   /**
    * @return tall matrix (d columns) in which the k-th row indicates
    *         the best point after k iterations of the optimization,
    *         empty matrix on error or if not supported
    */
-  const base::DataMatrix& getHistoryOfOptimalPoints() const {
-    return xHist;
-  }
+  const base::DataMatrix& getHistoryOfOptimalPoints() const { return xHist; }
 
   /**
    * @return vector in which the k-th entry indicates the best
    *         function value after k iterations of the optimization,
    *         empty vector on error or if not supported
    */
-  const base::DataVector& getHistoryOfOptimalValues() const {
-    return fHist;
-  }
+  const base::DataVector& getHistoryOfOptimalValues() const { return fHist; }
 
   /**
    * Pure virtual method for cloning the optimizer.
@@ -135,8 +115,7 @@ class LeastSquaresOptimizer {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<LeastSquaresOptimizer>&
-                     clone) const = 0;
+  virtual void clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const = 0;
 
  protected:
   /// phi function
@@ -148,15 +127,14 @@ class LeastSquaresOptimizer {
   /// result of optimization (location of optimum)
   base::DataVector xOpt;
   /// result of optimization (optimal function value)
-  float_t fOpt;
+  double fOpt;
   /// search history matrix (optimal points)
   base::DataMatrix xHist;
   /// search history vector (optimal values)
   base::DataVector fHist;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP */

@@ -68,20 +68,6 @@ Test PYDOC:
     - master
 
 
-Test SinglePrecision:
-  stage: switches
-  script:
-    - scons -j $(nproc) VERBOSE=1 COMPILER=gnu ARCH=avx OPT=1 PYDOC=0 USE_DOUBLE_PRECISION=0
-  tags:
-    - ubuntu
-    - gcc
-    - scons
-    - swig
-    - avx
-  except:
-    - master
-
-
 Test StaticLib:
   stage: switches
   script:

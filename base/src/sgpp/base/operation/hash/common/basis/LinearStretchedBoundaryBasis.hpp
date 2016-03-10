@@ -14,7 +14,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -39,7 +39,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * @param index the index of the current basis function
    * @param p the absolute position of the evaluation point
 
-  float_t eval(LT level, IT index, float_t p)
+  double eval(LT level, IT index, double p)
   {
     if (level == 0)
     {
@@ -70,7 +70,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * @param q the scaling factor of the basis function
    * @param t the offset of the basis function
 
-  float_t eval(LT level, IT index, float_t p, float_t q, float_t t)
+  double eval(LT level, IT index, double p, double q, double t)
   {
     if (level == 0)
     {
@@ -96,7 +96,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  float_t stretchedEval(float_t p, float_t pos0, float_t pos1) {
+  double stretchedEval(double p, double pos0, double pos1) {
     return (p - pos0) / (pos1 - pos0);
   }
 
@@ -106,8 +106,8 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  float_t eval(LT level, IT index, float_t p, float_t pos0,
-               float_t pos1) override {
+  double eval(LT level, IT index, double p, double pos0,
+               double pos1) override {
     //    if(level == 0){
     //      if(index == 0){
     //
@@ -131,6 +131,6 @@ typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int>
 SLinearStretchedBoundaryBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARSTRETCHEDBOUNDARYBASE_HPP */

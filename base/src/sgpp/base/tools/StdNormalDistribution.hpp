@@ -11,7 +11,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -40,7 +40,7 @@ class StdNormalDistribution {
    *
    * @param x the value for which the cumulative density value should be calculated
    */
-  float_t getCumulativeDensity(const float_t x);
+  double getCumulativeDensity(const double x);
 
   /*
    * Calculates the Density values of the standard normal distribution
@@ -50,7 +50,7 @@ class StdNormalDistribution {
    *
    * @param x the value for which the density value should be calculated
    */
-  float_t getDensity(const float_t x);
+  double getDensity(const double x);
 
   /*
    * Calculates the Density values of the normal distribution
@@ -61,7 +61,7 @@ class StdNormalDistribution {
    * @param mu the expected value of the normal distribution
    * @param sigma the standard deviation of the normal distribution
    */
-  float_t getDensity(const float_t x, const float_t mu, const float_t sigma);
+  double getDensity(const double x, const double mu, const double sigma);
 
 
   /*
@@ -71,11 +71,11 @@ class StdNormalDistribution {
    * @param mu the expected value of the normal distribution
    * @param sigma the standard deviation of the normal distribution
    */
-  float_t getNormedDensity(const float_t x, const float_t mu,
-                           const float_t sigma);
+  double getNormedDensity(const double x, const double mu,
+                           const double sigma);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STDNORMALDISTRIBUTION_HPP */

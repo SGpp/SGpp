@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,11 +25,12 @@ class BoundaryGridGenerator : public GridGenerator {
    * Constructor
    *
    * @param storage       template type that holds the grid points
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
-  explicit BoundaryGridGenerator(GridStorage* storage,
+  explicit BoundaryGridGenerator(GridStorage& storage,
                                  level_t boundaryLevel = 1);
 
   /**
@@ -40,25 +41,25 @@ class BoundaryGridGenerator : public GridGenerator {
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
-  void refine(RefinementFunctor* func) override;
+  void refine(RefinementFunctor& func) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
                          size_t numFirstOnly) override;
   size_t getNumberOfRemovablePoints() override;
 
-  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
   /// level at which the boundary points should be inserted
   level_t boundaryLevel;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* TRUNCATEDBOUNDARYGRIDGENERATOR_HPP */

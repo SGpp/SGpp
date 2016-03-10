@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 IndexInSubspaceGenerator::IndexInSubspaceGenerator(const value_type&
@@ -30,7 +30,7 @@ IndexInSubspaceGenerator::iterator IndexInSubspaceGenerator::begin() {
 bool IndexInSubspaceGenerator::compareVectors(value_type& vec1,
     value_type& vec2) {
   if (vec1.size() != vec2.size()) {
-    throw new std::length_error("Vector size mismatch");
+    throw std::length_error("Vector size mismatch");
   }
 
   bool res = true;
@@ -64,4 +64,4 @@ IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,14 +11,14 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   boundaryLevel(0) {
   istr >> boundaryLevel;
 }
@@ -26,20 +26,22 @@ LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr) :
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim,
     level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   boundaryLevel(boundaryLevel) {
 }
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(BoundingBox& BB,
     level_t boundaryLevel) :
   Grid(BB),
+  generator(storage, boundaryLevel),
   boundaryLevel(boundaryLevel) {
 }
 
 LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {
 }
 
-SGPP::base::GridType LinearClenshawCurtisGrid::getType() {
-  return SGPP::base::GridType::LinearClenshawCurtis;
+sgpp::base::GridType LinearClenshawCurtisGrid::getType() {
+  return sgpp::base::GridType::LinearClenshawCurtis;
 }
 
 const SBasis& LinearClenshawCurtisGrid::getBasis() {
@@ -47,8 +49,8 @@ const SBasis& LinearClenshawCurtisGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return new LinearClenshawCurtisGrid(istr);
+std::unique_ptr<Grid> LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearClenshawCurtisGrid(istr));
 }
 
 void LinearClenshawCurtisGrid::serialize(std::ostream& ostr) {
@@ -60,10 +62,10 @@ void LinearClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearClenshawCurtisGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+GridGenerator& LinearClenshawCurtisGrid::getGenerator() {
+  return generator;
 }
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

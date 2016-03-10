@@ -11,13 +11,14 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationDensityConditionalKDE {
  public:
-  OperationDensityConditionalKDE(datadriven::GaussianKDE& kde);
+  explicit OperationDensityConditionalKDE(datadriven::GaussianKDE& kde);
   virtual ~OperationDensityConditionalKDE();
 
   /**
@@ -27,7 +28,7 @@ class OperationDensityConditionalKDE {
    * @param xbar Point at which to conditionalize
    * @param conditionalizedKDE conditionalized kernel density
    */
-  virtual void doConditional(size_t mdim, float_t xbar,
+  virtual void doConditional(size_t mdim, double xbar,
                              datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
@@ -37,8 +38,7 @@ class OperationDensityConditionalKDE {
    * @param xbar Point at which to conditionalize
    * @param conditionalizedKDE conditionalized kernel density
    */
-  virtual void doConditional(std::vector<size_t>& mdims,
-                             base::DataVector& xbar,
+  virtual void doConditional(std::vector<size_t>& mdims, base::DataVector& xbar,
                              datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
@@ -68,6 +68,6 @@ class OperationDensityConditionalKDE {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONDENSITYCONDITIONALKDE_HPP_ */

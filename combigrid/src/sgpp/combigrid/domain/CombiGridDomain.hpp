@@ -1,15 +1,16 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef COMBIGRIDDOMAIN_HPP_
 #define COMBIGRIDDOMAIN_HPP_
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
 #include <sgpp/combigrid/domain/CombiDomain1D.hpp>
-#include "../utils/combigrid_utils.hpp"
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
+#include <vector>
 
 namespace combigrid {
 
@@ -17,12 +18,11 @@ namespace combigrid {
 class GridDomain {
  public:
   /** Constructor for homogeneously stretched griddomain*/
-  GridDomain(int dim, const std::vector<int>& levels,
-             const std::vector<double>& min, const std::vector<double>& max,
-             AbstractStretchingMaker& stretchingMaker);
+  GridDomain(int dim, const std::vector<int>& levels, const std::vector<double>& min,
+             const std::vector<double>& max, AbstractStretchingMaker& stretchingMaker);
   /** constructor for heterogeneously stretched griddomain*/
-  GridDomain(int dim, const std::vector<int>& levels,
-             const std::vector<double>& min, const std::vector<double>& max,
+  GridDomain(int dim, const std::vector<int>& levels, const std::vector<double>& min,
+             const std::vector<double>& max,
              std::vector<AbstractStretchingMaker*> stretchingMakers);
 
   /* copy constructor*/
@@ -33,13 +33,12 @@ class GridDomain {
    */
   virtual ~GridDomain() { ; }
 
-  int getDim() const { return (int)_axisDomains.size(); }
+  int getDim() const { return static_cast<int>(_axisDomains.size()); }
   /** transform from real coordinate into unit coordinates
    * @param coords [IN/OUT]
    * @param levels_in [IN] the required levels
    * @param boundaryFlag [IN] for each dimensions if there are boundary points*/
-  void transformRealToUnit(std::vector<double>& coords,
-                           const std::vector<int>& levels_in,
+  void transformRealToUnit(std::vector<double>& coords, const std::vector<int>& levels_in,
                            const std::vector<bool>& boundaryFlag) const;
 
   /** return 1D axis, can be used for back transformation for each dimension
@@ -70,6 +69,6 @@ class GridDomain {
   std::vector<double> _min;
   std::vector<double> _max;
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIGRIDDOMAIN_HPP_ */

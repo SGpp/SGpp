@@ -10,7 +10,7 @@
 #include <string>
 #include "OpFactory.hpp"
 #include "KernelPruneGraph.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
@@ -20,8 +20,8 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
-  SGPP::base::OCLOperationConfiguration *parameters =
-      new SGPP::base::OCLOperationConfiguration(opencl_conf);
+  sgpp::base::OCLOperationConfiguration *parameters =
+      new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
   parameters->serialize("MyOCLConfDebug.cfg");
   if (parameters->contains("INTERNAL_PRECISION") == false) {
@@ -67,4 +67,4 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   return NULL;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -8,12 +8,11 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -23,8 +22,8 @@ namespace solver {
  */
 class AdamsBashforth : public ODESolver {
  private:
-  /// Pointer to SGPP::base::ScreenOutput object
-  SGPP::base::ScreenOutput* myScreen;
+  /// Pointer to sgpp::base::ScreenOutput object
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -32,10 +31,9 @@ class AdamsBashforth : public ODESolver {
    *
    * @param imax number of maximum executed iterations
    * @param timestepSize the size of one timestep
-   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
-  AdamsBashforth(size_t imax, float_t timestepSize,
-                 SGPP::base::ScreenOutput* screen = NULL);
+  AdamsBashforth(size_t imax, double timestepSize, sgpp::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -43,11 +41,11 @@ class AdamsBashforth : public ODESolver {
   virtual ~AdamsBashforth();
 
   virtual void solve(SLESolver& LinearSystemSolver,
-                     SGPP::solver::OperationParabolicPDESolverSystem& System,
+                     sgpp::solver::OperationParabolicPDESolverSystem& System,
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /* ADAMSBASHFORTH_HPP */

@@ -1,14 +1,14 @@
-/*
- * CombiTS_CT.hpp
- *
- *  Created on: 6 Jun 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBITS_CT_HPP_
 #define COMBITS_CT_HPP_
 
 #include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
+
+#include <vector>
 
 namespace combigrid {
 
@@ -37,14 +37,13 @@ class CombiTS_CT : public AbstractCombiScheme<_Tp> {
    * @param in_levels the level vector for the dimension adaptive case
    * @param makeCombiInDimension
    * */
-  CombiTS_CT(const std::vector<int>& in_levels,
-             const std::vector<bool>& makeCombiInDimension);
+  CombiTS_CT(const std::vector<int>& in_levels, const std::vector<bool>& makeCombiInDimension);
 
   /** Simple constructor taking only the levels vector.
    * @param in_max_levels the level vector for the dimension adaptive case
    *
    */
-  CombiTS_CT(std::vector<int> in_max_levels);
+  explicit CombiTS_CT(std::vector<int> in_max_levels);
 
   /**
    * Set which dimensions should the combischeme be applied to. Default is all
@@ -81,8 +80,7 @@ class CombiTS_CT : public AbstractCombiScheme<_Tp> {
    *
    * */
 
-  void initCombiGrid(int in_dim,
-                     std::vector<std::vector<int> >& out_levels_vector,
+  void initCombiGrid(int in_dim, std::vector<std::vector<int> >& out_levels_vector,
                      std::vector<_Tp>& out_coefs);
 
   /**
@@ -106,8 +104,7 @@ class CombiTS_CT : public AbstractCombiScheme<_Tp> {
    *for each level...
    *
    * */
-  void re_initCombiGrid(int in_dim,
-                        const std::vector<FGridContainer<_Tp>*> in_grids,
+  void re_initCombiGrid(int in_dim, const std::vector<FGridContainer<_Tp>*> in_grids,
                         std::vector<std::vector<int> >& out_levels_vector,
                         std::vector<_Tp>& out_coefs);
 
@@ -120,8 +117,7 @@ class CombiTS_CT : public AbstractCombiScheme<_Tp> {
    * current combigrid- will be updated with the newly recomputed
    * coefficients
    * */
-  void recomputeCoefficients(int in_dim,
-                             std::vector<FGridContainer<_Tp>*>& out_fgrids);
+  void recomputeCoefficients(int in_dim, std::vector<FGridContainer<_Tp>*>& out_fgrids);
 
   virtual ~CombiTS_CT() {
     // not strictly necessary since memory will automatically be freed once the
@@ -132,6 +128,6 @@ class CombiTS_CT : public AbstractCombiScheme<_Tp> {
     _makeCombiInDimension.clear();
   }
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBITS_CT_HPP_ */

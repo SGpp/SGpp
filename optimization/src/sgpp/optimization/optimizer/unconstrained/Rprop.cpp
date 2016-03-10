@@ -8,28 +8,21 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Rprop::Rprop(
-  ScalarFunction& f,
-  ScalarFunctionGradient& fGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t initialStepSize,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fGradient(fGradient),
-  theta(tolerance),
-  initialAlpha(initialStepSize),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor) {
-}
+Rprop::Rprop(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
+             double tolerance, double initialStepSize, double stepSizeIncreaseFactor,
+             double stepSizeDecreaseFactor)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fGradient(fGradient),
+      theta(tolerance),
+      initialAlpha(initialStepSize),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor) {}
 
-Rprop::~Rprop() {
-}
+Rprop::~Rprop() {}
 
 void Rprop::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
@@ -42,7 +35,7 @@ void Rprop::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx;
+  double fx;
   base::DataVector gradFx(d);
 
   base::DataVector xOld(d);
@@ -65,10 +58,10 @@ void Rprop::optimize() {
     }
 
     for (size_t t = 0; t < d; t++) {
-      const float_t dir = gradFx[t];
-      const float_t dirProduct = dir * gradFxOld[t];
+      const double dir = gradFx[t];
+      const double dirProduct = dir * gradFxOld[t];
 
-      float_t dirSign;
+      double dirSign;
 
       if (dir > 0.0) {
         dirSign = 1.0;
@@ -89,7 +82,7 @@ void Rprop::optimize() {
         gradFxOld[t] = dir;
       }
 
-      const float_t newXt = x[t] - alpha[t] * dirSign;
+      const double newXt = x[t] - alpha[t] * dirSign;
 
       if (newXt < 0.0) {
         alpha[t] = x[t];
@@ -103,9 +96,8 @@ void Rprop::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     xHist.appendRow(x);
     fHist.append(fx);
@@ -133,49 +125,31 @@ void Rprop::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& Rprop::getObjectiveGradient() const {
-  return fGradient;
-}
+ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return fGradient; }
 
-float_t Rprop::getTolerance() const {
-  return theta;
-}
+double Rprop::getTolerance() const { return theta; }
 
-void Rprop::setTolerance(float_t tolerance) {
-  theta = tolerance;
-}
+void Rprop::setTolerance(double tolerance) { theta = tolerance; }
 
-float_t Rprop::getInitialStepSize() const {
-  return initialAlpha;
-}
+double Rprop::getInitialStepSize() const { return initialAlpha; }
 
-void Rprop::setInitialStepSize(float_t initialStepSize) {
-  initialAlpha = initialStepSize;
-}
+void Rprop::setInitialStepSize(double initialStepSize) { initialAlpha = initialStepSize; }
 
-float_t Rprop::getStepSizeIncreaseFactor() const {
-  return rhoAlphaPlus;
-}
+double Rprop::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void Rprop::setStepSizeIncreaseFactor(
-  float_t stepSizeIncreaseFactor) {
+void Rprop::setStepSizeIncreaseFactor(double stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t Rprop::getStepSizeDecreaseFactor() const {
-  return rhoAlphaMinus;
-}
+double Rprop::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void Rprop::setStepSizeDecreaseFactor(
-  float_t stepSizeDecreaseFactor) {
+void Rprop::setStepSizeDecreaseFactor(double stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-void Rprop::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new Rprop(*this));
+void Rprop::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new Rprop(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp

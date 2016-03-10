@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,25 +28,25 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
    * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
    * @param threshold The absolute value of the entries have to be greater or equal than the threshold
    */
-  SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num = 1,
-                           float_t threshold = 0.0);
+  SurplusCoarseningFunctor(DataVector& alpha, size_t removements_num = 1,
+                           double threshold = 0.0);
 
   /**
    * Destructor
    */
   ~SurplusCoarseningFunctor() override;
 
-  float_t operator()(GridStorage* storage, size_t seq) override;
+  double operator()(GridStorage& storage, size_t seq) override;
 
-  float_t start() const override;
+  double start() const override;
 
   size_t getRemovementsNum() const;
 
-  float_t getCoarseningThreshold() const;
+  double getCoarseningThreshold() const;
 
  protected:
   /// pointer to the vector that stores the alpha values
-  DataVector* alpha;
+  DataVector& alpha;
 
   /// number of grid points to remove
   size_t removements_num;
@@ -55,10 +55,10 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
    * threshold, only the points with greater to equal absolute values of the
    * refinement criterion (e.g. alpha or error) will be refined
    */
-  float_t threshold;
+  double threshold;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SURPLUSCOARSENINGFUNCTOR_HPP */

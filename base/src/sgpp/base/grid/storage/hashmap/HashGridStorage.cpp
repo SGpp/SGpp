@@ -15,7 +15,7 @@
 #include <list>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 HashGridStorage::HashGridStorage(size_t dim) :
@@ -104,7 +104,7 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom) :
                nullptr)
   , bUseStretching(copyFrom.bUseStretching) {
   // copy gridpoints
-  for (size_t i = 0; i < copyFrom.size(); i++) {
+  for (size_t i = 0; i < copyFrom.getSize(); i++) {
     this->insert(*(copyFrom[i]));
   }
 }
@@ -276,7 +276,7 @@ HashGridStorage::serialize(std::ostream& ostream) {
       }
 
       ostream << std::endl;
-      std::vector<float_t>* vec = stretching->getDiscreteVector(true);
+      std::vector<double>* vec = stretching->getDiscreteVector(true);
       int* vecLevel = stretching->getDiscreteVectorLevel();
 
       for (size_t i = 0; i < DIM; i++) {
@@ -324,7 +324,7 @@ HashGridStorage::toString(std::ostream& stream) {
 }
 
 size_t
-HashGridStorage::size() const {
+HashGridStorage::getSize() const {
   return map.size();
 }
 
@@ -341,7 +341,7 @@ HashGridStorage::getNumInnerPoints() const {
 }
 
 size_t
-HashGridStorage::dim() const {
+HashGridStorage::getDimension() const {
   return DIM;
 }
 
@@ -484,8 +484,8 @@ HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level,
   for (size_t i = 0; i < list.size(); i++) {
     for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
-      level.set(i, current_dim, static_cast<float_t>(1 << curLevel));
-      index.set(i, current_dim, static_cast<float_t>(curIndex));
+      level.set(i, current_dim, static_cast<double>(1 << curLevel));
+      index.set(i, current_dim, static_cast<double>(curIndex));
     }
   }
 
@@ -568,44 +568,28 @@ HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level,
       if (curLevel == 1) {
         level.set(i, current_dim, 0.0);
         index.set(i, current_dim, 0.0);
-#if USE_DOUBLE_PRECISION
         uint64_t intmask = 0x0000000000000000;
-#else
-        uint32_t intmask = 0x00000000;
-#endif
-        mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
+        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 1.0);
       } else if (curIndex == 1) {
         level.set(i, current_dim,
-                  (-1.0) * static_cast<float_t>(1 << curLevel));
+                  (-1.0) * static_cast<double>(1 << curLevel));
         index.set(i, current_dim, 0.0);
-#if USE_DOUBLE_PRECISION
         uint64_t intmask = 0x0000000000000000;
-#else
-        uint32_t intmask = 0x00000000;
-#endif
-        mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
+        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 2.0);
       } else if (curIndex ==
                  static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
-        level.set(i, current_dim, static_cast<float_t>(1 << curLevel));
-        index.set(i, current_dim, static_cast<float_t>(curIndex));
-#if USE_DOUBLE_PRECISION
+        level.set(i, current_dim, static_cast<double>(1 << curLevel));
+        index.set(i, current_dim, static_cast<double>(curIndex));
         uint64_t intmask = 0x0000000000000000;
-#else
-        uint32_t intmask = 0x00000000;
-#endif
-        mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
+        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 1.0);
       } else {
-        level.set(i, current_dim, static_cast<float_t>(1 << curLevel));
-        index.set(i, current_dim, static_cast<float_t>(curIndex));
-#if USE_DOUBLE_PRECISION
+        level.set(i, current_dim, static_cast<double>(1 << curLevel));
+        index.set(i, current_dim, static_cast<double>(curIndex));
         uint64_t intmask = 0x8000000000000000;
-#else
-        uint32_t intmask = 0x80000000;
-#endif
-        mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
+        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 1.0);
       }
     }
@@ -781,12 +765,12 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
 
       int discreteLevel = 0;
       int vectorLength = 0;
-      std::vector<float_t>* vec = new std::vector<float_t>[DIM];
+      std::vector<double>* vec = new std::vector<double>[DIM];
 
       for (size_t i = 0; i < DIM; i++) {
         istream >> discreteLevel;
         vectorLength = static_cast<int>(pow(2.0, discreteLevel)) + 1;
-        vec[i] = std::vector<float_t>(vectorLength, 0);
+        vec[i] = std::vector<double>(vectorLength, 0);
 
         for (int j = 0; j < vectorLength; j++) {
           istream >> vec[i][j];
@@ -813,5 +797,5 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

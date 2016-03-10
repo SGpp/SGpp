@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationSecondMomentLinear(GridStorage& storage) : storage(storage) {}
 
   ~OperationSecondMomentLinear() override {}
 
@@ -35,14 +35,14 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(DataVector& alpha) override;
+  double doQuadrature(DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONSECONDMOMENTLINEAR_HPP */

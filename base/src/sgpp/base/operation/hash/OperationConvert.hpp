@@ -8,14 +8,15 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#ifdef _WIN32
+// disable warning on MSVC++
+#ifdef _MSC_VER
 #pragma warning(disable: 4267)
-#endif
+#endif /* MSC_VER */
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -47,6 +48,6 @@ class OperationConvert {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONCONVERT_HPP */

@@ -6,21 +6,16 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-TestVectorFunction::TestVectorFunction(size_t d, size_t m) :
-  VectorFunction(d, m),
-  displacement(d, 0.0),
-  xTmp(d) {
-}
+TestVectorFunction::TestVectorFunction(size_t d, size_t m)
+    : VectorFunction(d, m), displacement(d, 0.0), xTmp(d) {}
 
-TestVectorFunction::~TestVectorFunction() {
-}
+TestVectorFunction::~TestVectorFunction() {}
 
-void TestVectorFunction::eval(const base::DataVector& x,
-                              base::DataVector& value) {
+void TestVectorFunction::eval(const base::DataVector& x, base::DataVector& value) {
   // displace vector before evaluation
   for (size_t t = 0; t < d; t++) {
     xTmp[t] = x[t] + displacement[t];
@@ -29,15 +24,11 @@ void TestVectorFunction::eval(const base::DataVector& x,
   evalUndisplaced(xTmp, value);
 }
 
-const base::DataVector& TestVectorFunction::getDisplacement() const {
-  return displacement;
-}
+const base::DataVector& TestVectorFunction::getDisplacement() const { return displacement; }
 
-void TestVectorFunction::setDisplacement(
-  const base::DataVector& displacement) {
+void TestVectorFunction::setDisplacement(const base::DataVector& displacement) {
   this->displacement = displacement;
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp

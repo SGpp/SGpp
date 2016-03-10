@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -35,14 +35,12 @@ class VectorFunctionGradient {
    * @param d     dimension of the domain
    * @param m     number of components
    */
-  VectorFunctionGradient(size_t d, size_t m) : d(d), m(m) {
-  }
+  VectorFunctionGradient(size_t d, size_t m) : d(d), m(m) {}
 
   /**
    * Destructor.
    */
-  virtual ~VectorFunctionGradient() {
-  }
+  virtual ~VectorFunctionGradient() {}
 
   /**
    * Pure virtual method for calculating \f$g(\vec{x})\f$
@@ -53,23 +51,18 @@ class VectorFunctionGradient {
    * @param[out] gradient gradient \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  virtual void eval(const base::DataVector& x,
-                    base::DataVector& value,
+  virtual void eval(const base::DataVector& x, base::DataVector& value,
                     base::DataMatrix& gradient) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * @return number \f$m\f$ of components
    */
-  size_t getNumberOfComponents() const {
-    return m;
-  }
+  size_t getNumberOfComponents() const { return m; }
 
   /**
    * Pure virtual method for cloning the gradient.
@@ -79,8 +72,7 @@ class VectorFunctionGradient {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<VectorFunctionGradient>& clone) const = 0;
+  virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const = 0;
 
  protected:
   /// dimension of the domain
@@ -88,8 +80,7 @@ class VectorFunctionGradient {
   /// number of components
   size_t m;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_VECTORFUNCTIONGRADIENT_HPP */

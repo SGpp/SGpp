@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -27,43 +27,33 @@ class FullSLE : public CloneableSLE {
    *
    * @param A     coefficient matrix
    */
-  FullSLE(base::DataMatrix& A) : CloneableSLE(), A(A) {
-  }
+  explicit FullSLE(base::DataMatrix& A) : CloneableSLE(), A(A) {}
 
   /**
    * Destructor.
    */
-  virtual ~FullSLE() override {
-  }
+  ~FullSLE() override {}
 
   /**
    * @param i     row index
    * @param j     column index
    * @return      whether the (i,j)-th entry of the matrix is non-zero
    */
-  inline virtual bool isMatrixEntryNonZero(size_t i, size_t j) override {
-    return (A(i, j) != 0.0);
-  }
+  inline bool isMatrixEntryNonZero(size_t i, size_t j) override { return (A(i, j) != 0.0); }
 
   /**
    * @param i     row index
    * @param j     column index
    * @return      (i,j)-th entry of the matrix
    */
-  inline virtual float_t getMatrixEntry(size_t i, size_t j) override {
-    return A(i, j);
-  }
+  inline double getMatrixEntry(size_t i, size_t j) override { return A(i, j); }
 
   /**
    * @return  coefficient matrix
    */
-  base::DataMatrix& getA() {
-    return A;
-  }
+  base::DataMatrix& getA() { return A; }
 
-  virtual size_t getDimension() const override {
-    return A.getNrows();
-  }
+  size_t getDimension() const override { return A.getNrows(); }
 
   /**
    * Clones the linear system.
@@ -71,7 +61,7 @@ class FullSLE : public CloneableSLE {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<CloneableSLE>& clone) const override {
+  void clone(std::unique_ptr<CloneableSLE>& clone) const override {
     clone = std::unique_ptr<CloneableSLE>(new FullSLE(A));
   }
 
@@ -79,8 +69,7 @@ class FullSLE : public CloneableSLE {
   /// coefficient matrix
   base::DataMatrix& A;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_FULLSLE_HPP */

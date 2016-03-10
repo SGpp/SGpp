@@ -1,5 +1,5 @@
 /**
-@page code_examples_predictive_refinement Short Code Examples: Predictive Refinement
+@page code_examples_predictive_refinement Predictive Refinement Example
 
 The following example shows how to use predictive refinement in SG++.
 
@@ -7,38 +7,35 @@ This time, we deal with the function
 @f[ f(x_0,x_1) := sin(x0 * \pi) @f]
 @todo Add explanation
 
-@see @ref code_examples_quick_start
+@see @ref code_examples_tutorial
 
-@section code_examples_predictive_refinement__overview Overview
-- @ref code_examples_predictive_refinement__python
-- @ref code_examples_predictive_refinement__cpp
+For instructions how to compile and run the example,
+please see \ref installation.
 
-@section code_examples_predictive_refinement__python Python
+
+
+@section code_examples_predictive_refinement_overview Overview
+
+- @ref code_examples_predictive_refinement_python
+- @ref code_examples_predictive_refinement_cpp
+
+
+
+@section code_examples_predictive_refinement_python Python
 
 First, the example in Python.
 
-@include python_simple_predictive_refinement.py
-which can be executed by
-@code
-> python python_simple_predictive_refinement.py
-@endcode
-in the directory @c examples/.
-
 This results in an output similar to
-@include all_simple_predictive_refinement.output.txt
 
-@section code_examples_predictive_refinement__cpp C++
+@include predictive_refinement.output.txt
+
+
+
+@section code_examples_predictive_refinement_cpp C++
 
 Now, the very same in C++.
 
-@include c++_simple_predictive_refinement.cpp
-which can be executed by
-@code
-> g++ -std=c++11 -O3 -I../src -L../../lib/sgpp -o c++_simple_predictive_refinement c++_simple_predictive_refinement.cpp -lsgppbase
-> ./c++_simple_predictive_refinement
-@endcode
-in the directory @c examples/.
+@include predictive_refinement.cpp
 
 This results in an output similar to the Python example output from above.
-
 */

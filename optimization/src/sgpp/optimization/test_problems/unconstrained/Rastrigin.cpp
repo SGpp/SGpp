@@ -8,53 +8,40 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-Rastrigin::Rastrigin(size_t d) :
-  UnconstrainedTestProblem(d),
-  f(d) {
-}
+Rastrigin::Rastrigin(size_t d) : UnconstrainedTestProblem(d), f(d) {}
 
-Rastrigin::~Rastrigin() {
-}
+Rastrigin::~Rastrigin() {}
 
-TestScalarFunction& Rastrigin::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& Rastrigin::getObjectiveFunction() { return f; }
 
-float_t Rastrigin::getOptimalPointUndisplaced(base::DataVector& x) {
+double Rastrigin::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
   x.setAll(0.2);
   return 0.0;
 }
 
-RastriginObjective::RastriginObjective(size_t d) :
-  TestScalarFunction(d) {
-}
+RastriginObjective::RastriginObjective(size_t d) : TestScalarFunction(d) {}
 
-RastriginObjective::~RastriginObjective() {
-}
+RastriginObjective::~RastriginObjective() {}
 
-float_t RastriginObjective::evalUndisplaced(
-  const base::DataVector& x) {
-  float_t result = 10.0 * static_cast<float_t>(d);
+double RastriginObjective::evalUndisplaced(const base::DataVector& x) {
+  double result = 10.0 * static_cast<double>(d);
 
   for (size_t t = 0; t < d; t++) {
-    const float_t xt = 10.0 * x[t] - 2.0;
+    const double xt = 10.0 * x[t] - 2.0;
     result += xt * xt - 10.0 * std::cos(2 * M_PI * xt);
   }
 
   return result;
 }
 
-void RastriginObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new RastriginObjective(*this));
+void RastriginObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new RastriginObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp

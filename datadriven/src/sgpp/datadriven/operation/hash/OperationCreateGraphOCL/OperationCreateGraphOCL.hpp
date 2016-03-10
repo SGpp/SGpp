@@ -13,7 +13,7 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 
 #include <vector>
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -92,4 +92,4 @@ class OperationCreateGraphOCL {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

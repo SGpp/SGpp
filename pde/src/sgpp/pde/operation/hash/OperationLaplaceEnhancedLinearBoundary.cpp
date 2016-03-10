@@ -12,37 +12,33 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(
-  SGPP::base::GridStorage* storage) : UpDownOneOpDimEnhanced(storage) {
-}
+    sgpp::base::GridStorage* storage)
+    : UpDownOneOpDimEnhanced(storage) {}
 
 OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& coef) : UpDownOneOpDimEnhanced(storage, coef) {
-}
+    sgpp::base::GridStorage* storage, sgpp::base::DataVector& coef)
+    : UpDownOneOpDimEnhanced(storage, coef) {}
 
-OperationLaplaceEnhancedLinearBoundary::~OperationLaplaceEnhancedLinearBoundary() {
-}
+OperationLaplaceEnhancedLinearBoundary::~OperationLaplaceEnhancedLinearBoundary() {}
 
-void OperationLaplaceEnhancedLinearBoundary::up(SGPP::base::DataMatrix& alpha,
-    SGPP::base::DataMatrix& result, size_t dim) {
+void OperationLaplaceEnhancedLinearBoundary::up(sgpp::base::DataMatrix& alpha,
+                                                sgpp::base::DataMatrix& result, size_t dim) {
   LaplaceEnhancedUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, this->storage);
+  sgpp::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationLaplaceEnhancedLinearBoundary::down(SGPP::base::DataMatrix& alpha,
-    SGPP::base::DataMatrix& result, size_t dim) {
+void OperationLaplaceEnhancedLinearBoundary::down(sgpp::base::DataMatrix& alpha,
+                                                  sgpp::base::DataMatrix& result, size_t dim) {
   LaplaceEnhancedDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, this->storage);
+  sgpp::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

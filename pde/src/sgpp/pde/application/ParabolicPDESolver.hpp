@@ -10,8 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -22,9 +21,9 @@ namespace pde {
 class ParabolicPDESolver : public PDESolver {
  protected:
   /// the size of one timestep
-  //float_t timestepSize;
+  // double timestepSize;
   /// The number of timesteps that are executed during solving
-  //size_t nTimesteps;
+  // size_t nTimesteps;
 
  public:
   /**
@@ -46,11 +45,12 @@ class ParabolicPDESolver : public PDESolver {
    * @param epsilonCG the epsilon used in the CG
    * @param alpha the coefficients of the Sparse Gird's basis functions
    * @param verbose enables verbose output during solving
-   * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+   * @param generateAnimation set this to true, if you want to generate a grid output in every
+   * timestep
    * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    */
-  virtual void solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                                  double epsilonCG, sgpp::base::DataVector& alpha,
                                   bool verbose = false, bool generateAnimation = false,
                                   size_t numEvalsAnimation = 20) = 0;
 
@@ -63,11 +63,12 @@ class ParabolicPDESolver : public PDESolver {
    * @param epsilonCG the epsilon used in the CG
    * @param alpha the coefficients of the Sparse Gird's basis functions
    * @param verbose enables verbose output during solving
-   * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+   * @param generateAnimation set this to true, if you want to generate a grid output in every
+   * timestep
    * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    */
-  virtual void solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                                  double epsilonCG, sgpp::base::DataVector& alpha,
                                   bool verbose = false, bool generateAnimation = false,
                                   size_t numEvalsAnimation = 20) = 0;
 
@@ -79,14 +80,14 @@ class ParabolicPDESolver : public PDESolver {
    * @param maxCGIterations the maximum of interation in the CG solver
    * @param epsilonCG the epsilon used in the CG
    * @param alpha the coefficients of the Sparse Gird's basis functions
-   * @param NumImEul specifies how many ImEul steps should be executed before CrNic is used, default is 0
+   * @param NumImEul specifies how many ImEul steps should be executed before CrNic is used, default
+   * is 0
    */
-  virtual void solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                                  double epsilonCG, sgpp::base::DataVector& alpha,
                                   size_t NumImEul = 0) = 0;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* PARABOLICPDESOLVER_HPP */

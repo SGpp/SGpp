@@ -13,7 +13,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,7 +28,7 @@ class OperationNaiveEvalHessianModBspline : public OperationNaiveEvalHessian {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalHessianModBspline(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalHessianModBspline(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -45,19 +45,19 @@ class OperationNaiveEvalHessianModBspline : public OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  float_t evalHessian(const DataVector& alpha,
+  double evalHessian(const DataVector& alpha,
                       const DataVector& point,
                       DataVector& gradient,
                       DataMatrix& hessian) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineModifiedBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALHESSIANMODBSPLINE_HPP */

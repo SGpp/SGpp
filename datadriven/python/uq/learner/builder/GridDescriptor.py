@@ -48,7 +48,10 @@ class GridDescriptor(object):
         Defines the polynomial base of the grid
         @param deg: degree of polynomial base as integer
         """
-        self.__deg = deg
+        if deg > 1:
+            self.__deg = deg
+        else:
+            print "Warning: GridDescriptor.withPolynomialBasis - deg < 2 ignored"
         return self
 
     def withBorder(self, border):
@@ -73,7 +76,7 @@ class GridDescriptor(object):
         @param grid:
         """
         self.__grid = grid
-        self.__dim = grid.getStorage().dim()
+        self.__dim = grid.getDimension()
         self.__deg = getDegree(grid)
         self.__border = hasBorder(grid)
         if self.__border:
@@ -98,7 +101,7 @@ class GridDescriptor(object):
             grid = gridFormatter.deserializeFromFile(self.__file)
         else:
             if self.__grid is not None:
-                self.__dim = self.__grid.getStorage().dim()
+                self.__dim = self.__grid.getDimension()
 
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\
@@ -128,7 +131,7 @@ class GridDescriptor(object):
 
             # generate the grid
             if self.level is not None:
-                generator = grid.createGridGenerator()
+                generator = grid.getGenerator()
                 if not self.__full:
                     generator.regular(self.level)
                 else:

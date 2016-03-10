@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -44,8 +44,8 @@ class SubspaceRefinement: public RefinementDecorator {
   * @param storage hashmap that stores the grid points
   * @param functor a RefinementFunctor specifying the refinement criteria
   */
-  void free_refine(GridStorage* storage,
-                   RefinementFunctor* functor) override;
+  void free_refine(GridStorage& storage,
+                   RefinementFunctor& functor) override;
 
 
   /**
@@ -63,8 +63,8 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param collection container that contains elements to refine (empty initially)
    */
   void collectRefinablePoints(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 
@@ -76,8 +76,8 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param collection container that contains elements to refine (empty initially)
    */
   void refineGridpointsCollection(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 
@@ -99,5 +99,5 @@ class SubspaceRefinement: public RefinementDecorator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* SUBSPACEREFINEMENT_HPP_ */

@@ -10,53 +10,40 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-#include <sgpp/globaldef.hpp>
-
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-template<typename OCLBasisType>
+template <typename OCLBasisType>
 class OCLKernel {
  public:
   static const KernelType kernelType = OCLBasisType::kernelType;
-  inline void mult(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* mask,
-    SGPP::base::DataMatrix* offset,
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
-    #pragma omp master
+  inline void mult(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                   sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                   sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                   sgpp::base::DataVector& result, const size_t start_index_grid,
+                   const size_t end_index_grid, const size_t start_index_data,
+                   const size_t end_index_data) {
+#pragma omp master
     {
-      //double time = m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
-      m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
-      start_index_grid, end_index_grid, start_index_data, end_index_data);
+      // double time = m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
+      m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result, start_index_grid,
+                           end_index_grid, start_index_data, end_index_data);
     }
   }
 
-  inline void multTranspose(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* mask, //unused for this specialization
-    SGPP::base::DataMatrix* offset, //unused for this specialization
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
-
+  inline void multTranspose(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                            sgpp::base::DataMatrix* mask,    // unused for this specialization
+                            sgpp::base::DataMatrix* offset,  // unused for this specialization
+                            sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                            sgpp::base::DataVector& result, const size_t start_index_grid,
+                            const size_t end_index_grid, const size_t start_index_data,
+                            const size_t end_index_data) {
 #ifdef _OPENMP
     int tid = omp_get_thread_num();
     int num_threads = omp_get_num_threads();
@@ -67,15 +54,14 @@ class OCLKernel {
 
     size_t range = end_index_grid - start_index_grid;
     size_t numWGs = range / m_oclkernel.getChunkGridPoints();
-    size_t end_index_grid_gpu = start_index_grid + numWGs *
-                                m_oclkernel.getChunkGridPoints();
+    size_t end_index_grid_gpu = start_index_grid + numWGs * m_oclkernel.getChunkGridPoints();
 
     if (tid == 0) {
-      //double time = 0.0;
-      //time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
-      m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source,
-                                    result,
-                                    start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
+      // double time = 0.0;
+      // time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+      m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+                                    start_index_grid, end_index_grid_gpu, start_index_data,
+                                    end_index_data);
     }
 
     size_t start_grid_cpu = end_index_grid_gpu;
@@ -87,22 +73,21 @@ class OCLKernel {
         start_grid_cpu = end_grid_cpu = 0;
       } else {
         // distribute work evenly across all threads but thread 0
-        PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid,
-                                              num_threads - 1, tid - 1, &start_grid_cpu, &end_grid_cpu, 1);
+        PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid, num_threads - 1,
+                                              tid - 1, &start_grid_cpu, &end_grid_cpu, 1);
       }
     }
 
-    OCLBasisType::multTransposeDefault(level, index, mask, offset, dataset, source,
-                                       result,
-                                       start_grid_cpu, end_grid_cpu, start_index_data, end_index_data);
+    OCLBasisType::multTransposeDefault(level, index, mask, offset, dataset, source, result,
+                                       start_grid_cpu, end_grid_cpu, start_index_data,
+                                       end_index_data);
   }
 
-  void resetKernel() {
-    m_oclkernel.resetKernel();
-  }
+  void resetKernel() { m_oclkernel.resetKernel(); }
 
   OCLKernelImpl<OCLBasisType> m_oclkernel;
 };
-}
-}
-#endif // OCLKERNEL_HPP
+}  // namespace parallel
+}  // namespace sgpp
+
+#endif  // OCLKERNEL_HPP

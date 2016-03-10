@@ -4,53 +4,44 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
-
-#include <random>
 #include <sgpp/globaldef.hpp>
 
+#include <random>
 #include <cmath>
 
-using namespace SGPP::base;
-
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
-HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions,
-    std::uint64_t seed) :
-  SampleGenerator(dimensions, seed),
-  index(1),
-  baseVector(dimensions),
-  iVector(dimensions),
-  fVector(dimensions),
-  resultVector(dimensions),
-  distInt(0, 15) {
-  size_t basePrimes[] =
-  { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47 };
+HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions, std::uint64_t seed)
+    : SampleGenerator(dimensions, seed),
+      index(1),
+      baseVector(dimensions),
+      iVector(dimensions),
+      fVector(dimensions),
+      resultVector(dimensions),
+      distInt(0, 15) {
+  size_t basePrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
 
   for (size_t i = 0; i < dimensions; i++) {
     baseVector[i] = basePrimes[distInt(rng)];
-    fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
+    fVector[i] = 1. / static_cast<double>(baseVector[i]);
     resultVector[i] = 0.;
   }
 }
 
-HaltonSampleGenerator::~HaltonSampleGenerator() {
-}
+HaltonSampleGenerator::~HaltonSampleGenerator() {}
 
-void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
-
+void HaltonSampleGenerator::getSample(sgpp::base::DataVector& dv) {
   for (size_t i = 0; i < dimensions; i++) {
     resultVector[i] = 0.;
-    fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
-    iVector[i] = static_cast<float_t>(index);
+    fVector[i] = 1. / static_cast<double>(baseVector[i]);
+    iVector[i] = static_cast<double>(index);
 
     while (iVector[i] > 0) {
-      resultVector[i] = resultVector[i]
-                        + fVector[i]
-                        * ((float_t) ((size_t) iVector[i] % baseVector[i]));
-      iVector[i] = floor(
-                     ((float_t) iVector[i]) / ((float_t) baseVector[i]));
-      fVector[i] = fVector[i] / ((float_t) baseVector[i]);
+      resultVector[i] =
+          resultVector[i] + fVector[i] * (static_cast<double>((size_t)iVector[i] % baseVector[i]));
+      iVector[i] = floor(static_cast<double>(iVector[i]) / static_cast<double>(baseVector[i]));
+      fVector[i] = fVector[i] / static_cast<double>(baseVector[i]);
     }
 
     dv[i] = resultVector[i];
@@ -59,5 +50,5 @@ void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
   index++;
 }
 
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp

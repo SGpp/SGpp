@@ -10,11 +10,11 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
-    source, SGPP::base::DataVector& result,
+void OperationMultipleEvalSubspaceCombined::multImpl(sgpp::base::DataVector&
+    source, sgpp::base::DataVector& result,
     const size_t start_index_data, const size_t end_index_data) {
   size_t tid = omp_get_thread_num();
 
@@ -25,12 +25,12 @@ void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
   #pragma omp barrier
 
   size_t dim = this->paddedDataset->getNcols();
-  float_t* datasetPtr = this->paddedDataset->getPointer();
+  double* datasetPtr = this->paddedDataset->getPointer();
 
   size_t totalThreadNumber = X86COMBINED_PARALLEL_DATA_POINTS +
                              X86COMBINED_VEC_PADDING;
 
-  float_t* evalIndexValuesAll = new float_t[(dim + 1) * totalThreadNumber];
+  double* evalIndexValuesAll = new double[(dim + 1) * totalThreadNumber];
 
   for (size_t i = 0; i < (dim + 1) * totalThreadNumber; i++) {
     evalIndexValuesAll[i] = 1.0;
@@ -46,15 +46,15 @@ void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
   size_t validIndices[X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING];
   size_t validIndicesCount;
 
-  float_t componentResults[X86COMBINED_PARALLEL_DATA_POINTS +
+  double componentResults[X86COMBINED_PARALLEL_DATA_POINTS +
                            X86COMBINED_VEC_PADDING];
   size_t levelIndices[X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING];
   //size_t nextIterationToRecalcReferences[X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING];
 
-  float_t* listSubspace = new float_t[this->maxGridPointsOnLevel];
+  double* listSubspace = new double[this->maxGridPointsOnLevel];
 
   for (size_t i = 0; i < this->maxGridPointsOnLevel; i++) {
-    listSubspace[i] = std::numeric_limits<float_t>::quiet_NaN();
+    listSubspace[i] = std::numeric_limits<double>::quiet_NaN();
   }
 
   //process the next chunk of data tuples in parallel
@@ -71,12 +71,12 @@ void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
     for (size_t subspaceIndex = 0; subspaceIndex < subspaceCount; subspaceIndex++) {
       SubspaceNodeCombined& subspace = this->allSubspaceNodes[subspaceIndex];
 
-      float_t* levelArrayContinuous = nullptr;
+      double* levelArrayContinuous = nullptr;
 
       //prepare the subspace array for a list type subspace
       if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
         //fill with surplusses
-        for (std::pair<uint32_t, float_t> tuple : subspace.indexFlatSurplusPairs) {
+        for (std::pair<uint32_t, double> tuple : subspace.indexFlatSurplusPairs) {
           //actual values are utilized, but only read
           listSubspace[tuple.first] = tuple.second;
         }
@@ -108,7 +108,7 @@ void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
         componentResults[threadId] = 0.0;
         levelIndices[threadId] = 0;
         //nextIterationToRecalcReferences[threadId] = 0;
-        float_t* evalIndexValues = evalIndexValuesAll + (dim + 1) * threadId;
+        double* evalIndexValues = evalIndexValuesAll + (dim + 1) * threadId;
 
         //for faster index flattening, last element is for padding
         uint32_t* intermediates = intermediatesAll + (dim + 1) * threadId;
@@ -127,8 +127,8 @@ void OperationMultipleEvalSubspaceCombined::multImpl(SGPP::base::DataVector&
                                  evalIndexValuesAll, intermediatesAll);
 
       if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
-        for (std::pair<uint32_t, float_t>& tuple : subspace.indexFlatSurplusPairs) {
-          listSubspace[tuple.first] = std::numeric_limits<float_t>::quiet_NaN();
+        for (std::pair<uint32_t, double>& tuple : subspace.indexFlatSurplusPairs) {
+          listSubspace[tuple.first] = std::numeric_limits<double>::quiet_NaN();
         }
       }
     } // end iterate grid

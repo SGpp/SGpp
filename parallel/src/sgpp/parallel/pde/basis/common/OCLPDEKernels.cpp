@@ -3,13 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLPDEKernels.hpp"
-
+#include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -33,16 +31,12 @@ size_t LastRunBound = 1;
 
 void PrintGFLOPS();
 
-
-
 void oclCheckErr(cl_int err, const char* function) {
   if (err != CL_SUCCESS) {
     printf("Error: Failure %s: %d\n", function, err);
     exit(-1);
   }
 }
-
-
 
 void StartUpGPU() {
 #ifdef USE_MPI
@@ -61,19 +55,18 @@ void StartUpGPU() {
 #endif
   // read number of OpenCL devices environment variable: SGPP_NUM_OCL_DEVICES
   const char* num_ocl_devices_env = getenv("SGPP_NUM_OCL_DEVICES");
-  unsigned int max_number_ocl_devices = std::min<unsigned int>
-                                        (std::numeric_limits<unsigned int>::max(), NUMDEVS);
+  unsigned int max_number_ocl_devices =
+      std::min<unsigned int>(std::numeric_limits<unsigned int>::max(), NUMDEVS);
 
   if (num_ocl_devices_env != NULL) {
-    unsigned int num_ocl_devices_limit = (unsigned int)(strtoul (
-                                           num_ocl_devices_env, NULL, 0));
+    unsigned int num_ocl_devices_limit = (unsigned int)(strtoul(num_ocl_devices_env, NULL, 0));
 
     if (num_ocl_devices_limit != 0) {
-      max_number_ocl_devices = std::min<unsigned int>(max_number_ocl_devices,
-                               num_ocl_devices_limit);
+      max_number_ocl_devices =
+          std::min<unsigned int>(max_number_ocl_devices, num_ocl_devices_limit);
     } else {
-      std::cout << "Ignoring value: \"" << num_ocl_devices_env <<
-                "\" for SGPP_NUM_OCL_DEVICES" << std::endl;
+      std::cout << "Ignoring value: \"" << num_ocl_devices_env << "\" for SGPP_NUM_OCL_DEVICES"
+                << std::endl;
     }
   } else {
     max_number_ocl_devices = std::min<unsigned int>(max_number_ocl_devices, 8);
@@ -81,14 +74,13 @@ void StartUpGPU() {
 
   cl_int err = CL_SUCCESS;
   err |= clGetPlatformIDs(0, NULL, &num_platforms);
-  oclCheckErr(err,
-              "OCL Error: Unable to get number of OpenCL platforms. Error Code");
+  oclCheckErr(err, "OCL Error: Unable to get number of OpenCL platforms. Error Code");
 #ifdef USE_MPI
 
   if (myrank == 0) {
 #endif
-    std::cout << "OCL Info: " << num_platforms <<
-              " OpenCL Platforms have been initialized" << std::endl;
+    std::cout << "OCL Info: " << num_platforms << " OpenCL Platforms have been initialized"
+              << std::endl;
 #ifdef USE_MPI
   }
 
@@ -101,15 +93,14 @@ void StartUpGPU() {
 
   for (cl_uint ui = 0; ui < num_platforms; ui++) {
     char vendor_name[128] = {0};
-    err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR,
-                            128 * sizeof(char), vendor_name, NULL);
+    err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name,
+                            NULL);
     oclCheckErr(err, "OCL Error: Can't get platform vendor!");
 #ifdef USE_MPI
 
     if (myrank == 0) {
 #endif
-      std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name <<
-                std::endl;
+      std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name << std::endl;
 #ifdef USE_MPI
     }
 
@@ -124,9 +115,9 @@ void StartUpGPU() {
 #ifdef USEOCL_MIC
         std::cout << "OCL Info: Using MIC Platform: " << vendor_name << std::endl;
 #elif USEOCL_CPU
-        std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
+      std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
 #else
-        std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
+      std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
 #endif
 #ifdef USE_MPI
       }
@@ -146,7 +137,7 @@ void StartUpGPU() {
 #ifdef USEOCL_CPU
         std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
 #else
-        std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
+      std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
 #endif
 #ifdef USE_MPI
       }
@@ -177,12 +168,11 @@ void StartUpGPU() {
 #ifdef USEOCL_INTEL
 #ifdef USEOCL_MIC
   device_ids = new cl_device_id[max_number_ocl_devices];
-  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR,
-                       max_number_ocl_devices, device_ids, &num_devices);
+  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, max_number_ocl_devices, device_ids,
+                       &num_devices);
 
   if (num_devices == 0) {
-    std::cout << "OCL Error: NO Accelerator OpenCL devices have been found!" <<
-              std::endl;
+    std::cout << "OCL Error: NO Accelerator OpenCL devices have been found!" << std::endl;
   }
 
   // set max number of devices
@@ -209,7 +199,6 @@ void StartUpGPU() {
   device_ids = new cl_device_id[max_number_ocl_devices];
   err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
 
-
   if (num_devices == 0) {
     std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
   }
@@ -220,18 +209,16 @@ void StartUpGPU() {
   }
 
 #ifdef USEOCL_CPU
-  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices, device_ids,
-                        NULL);
+  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices, device_ids, NULL);
 #else
-  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids,
-                        NULL);
+  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
 #endif
   oclCheckErr(err, "OCL Error: Unable to get Device ID. Error Code");
 #endif
 
 #ifdef USEOCL_NVIDIA
-  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices,
-                        NULL, &num_devices);
+  err |=
+      clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, NULL, &num_devices);
   oclCheckErr(err, "clGetDeviceIDs1");
 
   if (num_devices == 0) {
@@ -245,16 +232,15 @@ void StartUpGPU() {
 
   device_ids = new cl_device_id[num_devices];
 
-  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids,
-                        NULL);
+  err |= clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
   oclCheckErr(err, "OCL Error: Unable to get Device ID. Error Code");
 #endif
 #ifdef USE_MPI
 
   if (myrank == 0) {
 #endif
-    std::cout << "OCL Info: " << num_devices <<
-              " OpenCL devices have been initialized!" << std::endl;
+    std::cout << "OCL Info: " << num_devices << " OpenCL devices have been initialized!"
+              << std::endl;
 #ifdef USE_MPI
   }
 
@@ -265,19 +251,15 @@ void StartUpGPU() {
 
   for (size_t i = 0; i < num_devices; i++) {
 #if QUEUEPROF
-    command_queue[i] = clCreateCommandQueue(context, device_ids[i],
-                                            CL_QUEUE_PROFILING_ENABLE, &err);
+    command_queue[i] =
+        clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
 #else
-    command_queue[i] = clCreateCommandQueue(context, device_ids[i],
-                                            0, &err);
+    command_queue[i] = clCreateCommandQueue(context, device_ids[i], 0, &err);
 
 #endif
     oclCheckErr(err, "clCreateCommandQueue");
   }
-
 }
-
-
 
 void PrintGFLOPS() {
   Timing LaplaceInnerTiming = PrintGFLOPSLaplaceInner();
@@ -287,19 +269,15 @@ void PrintGFLOPS() {
   Timing LTwoDotLaplaceInnerTiming = PrintGFLOPSLTwoDotLaplaceInner();
   Timing LTwoDotLaplaceBoundTiming = PrintGFLOPSLTwoDotLaplaceBound();
 
-
-  double TotalCalculationTime = LaplaceInnerTiming.time +
-                                LaplaceBoundTiming.time + LTwoDotInnerTiming.time +
-                                LTwoDotBoundTiming.time + LTwoDotLaplaceInnerTiming.time +
-                                LTwoDotLaplaceBoundTiming.time;
+  double TotalCalculationTime = LaplaceInnerTiming.time + LaplaceBoundTiming.time +
+                                LTwoDotInnerTiming.time + LTwoDotBoundTiming.time +
+                                LTwoDotLaplaceInnerTiming.time + LTwoDotLaplaceBoundTiming.time;
   double LaplaceInnerWeight = LaplaceInnerTiming.time / TotalCalculationTime;
   double LaplaceBoundWeight = LaplaceBoundTiming.time / TotalCalculationTime;
   double LTwoDotInnerWeight = LTwoDotInnerTiming.time / TotalCalculationTime;
   double LTwoDotBoundWeight = LTwoDotBoundTiming.time / TotalCalculationTime;
-  double LTwoDotLaplaceInnerWeight = LTwoDotLaplaceInnerTiming.time /
-                                     TotalCalculationTime;
-  double LTwoDotLaplaceBoundWeight = LTwoDotLaplaceBoundTiming.time /
-                                     TotalCalculationTime;
+  double LTwoDotLaplaceInnerWeight = LTwoDotLaplaceInnerTiming.time / TotalCalculationTime;
+  double LTwoDotLaplaceBoundWeight = LTwoDotLaplaceBoundTiming.time / TotalCalculationTime;
   AverageGFLOPS += LaplaceInnerTiming.GFLOPS * LaplaceInnerWeight;
   AverageGFLOPS += LaplaceBoundTiming.GFLOPS * LaplaceBoundWeight;
   AverageGFLOPS += LTwoDotInnerTiming.GFLOPS * LTwoDotInnerWeight;
@@ -317,18 +295,17 @@ void PrintGFLOPS() {
   std::cout << "Total Bound+Inner time : " << TotalCalculationTime << std::endl;
   std::cout << "Average GOPS: " << AverageGOPS << std::endl;
   std::cout << "Average GFLOPS: " << AverageGFLOPS << std::endl;
-
 }
 
 double AccumulateTiming(cl_event* GPUExecution, size_t gpuid) {
   cl_int ciErrNum = CL_SUCCESS;
 
   cl_ulong startTime, endTime;
-  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid],
-                                     CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid], CL_PROFILING_COMMAND_START,
+                                     sizeof(cl_ulong), &startTime, NULL);
   oclCheckErr(ciErrNum, "clGetEventProfilingInfo1");
-  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid],
-                                     CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid], CL_PROFILING_COMMAND_END,
+                                     sizeof(cl_ulong), &endTime, NULL);
   oclCheckErr(ciErrNum, "clGetEventProfilingInfo2");
   return (double)(endTime - startTime);
 }
@@ -337,16 +314,14 @@ double AccumulateWaiting(cl_event* GPUExecution, size_t gpuid) {
   cl_int ciErrNum = CL_SUCCESS;
 
   cl_ulong startTime, endTime;
-  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid],
-                                     CL_PROFILING_COMMAND_QUEUED, sizeof(cl_ulong), &startTime, NULL);
+  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid], CL_PROFILING_COMMAND_QUEUED,
+                                     sizeof(cl_ulong), &startTime, NULL);
   oclCheckErr(ciErrNum, "clGetEventProfilingInfo3");
-  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid],
-                                     CL_PROFILING_COMMAND_SUBMIT, sizeof(cl_ulong), &endTime, NULL);
+  ciErrNum = clGetEventProfilingInfo(GPUExecution[gpuid], CL_PROFILING_COMMAND_SUBMIT,
+                                     sizeof(cl_ulong), &endTime, NULL);
   oclCheckErr(ciErrNum, "clGetEventProfilingInfo4");
   return (double)(endTime - startTime);
-
 }
-
 }
 using namespace oclpdekernels;
 void OCLPDEKernels::CleanUpGPU() {
@@ -354,7 +329,7 @@ void OCLPDEKernels::CleanUpGPU() {
     delete device_ids;
     delete platform_ids;
 
-    for (unsigned int i = 0; i < num_devices; i++)  {
+    for (unsigned int i = 0; i < num_devices; i++) {
       clReleaseCommandQueue(command_queue[i]);
     }
 

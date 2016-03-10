@@ -17,7 +17,8 @@ from plot1d import (plotDensity1d,
                     plotSG1d,
                     plotSurplusLevelWise,
                     plotNodal1d,
-                    plotSGDE1d)
+                    plotSGDE1d,
+                    plotSobolIndices)
 
 from plot2d import (plotSGDE2d,
                     plotDensity2d,

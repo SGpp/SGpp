@@ -11,5 +11,5 @@ def getL2EpsilonComplexity(grid):
         p = 1.
 
     n = grid.getSize()
-    d = grid.getStorage().dim()
+    d = grid.getDimension()
     return n ** -(p + 1) * np.log2(n) ** ((p + 2) * (d - 1))

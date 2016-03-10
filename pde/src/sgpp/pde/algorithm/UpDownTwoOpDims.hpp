@@ -6,8 +6,6 @@
 #ifndef UPDOWNTWOOPDIMS_HPP
 #define UPDOWNTWOOPDIMS_HPP
 
-#include <vector>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -19,8 +17,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -35,30 +34,29 @@ namespace pde {
  * before executing this Up/down scheme!
  *
  */
-class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
+class UpDownTwoOpDims : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    * @param coef vector that contains the constant coefficients of this operation
    */
-  UpDownTwoOpDims(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef);
+  UpDownTwoOpDims(sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& coef);
 
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  UpDownTwoOpDims(SGPP::base::GridStorage* storage);
+  explicit UpDownTwoOpDims(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~UpDownTwoOpDims();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * this functions provides the same functionality as the normal mult routine.
@@ -71,8 +69,10 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * in a better parallel efficiency on systems with 4 or more cores hence fewer barriers
    * are needed.
    *
-   * For a full calculation of this operator, in mult serval number of up/downs are needed. This number
-   * is equal to the square of the number of the grid's dimensions. All different steps can be executed
+   * For a full calculation of this operator, in mult serval number of up/downs are needed. This
+   * number
+   * is equal to the square of the number of the grid's dimensions. All different steps can be
+   * executed
    * in parallel. Here only one up/Down is executed, identified by its special dimensions.
    *
    * Attention: A symmetric operator is assumed: This method only start a calculation if
@@ -83,16 +83,16 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param operationDimOne Dimension in which the first special operator is applied
    * @param operationDimTwo Dimension in which the second special operator is applied
    */
-  void multParallelBuildingBlock(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataVector& result, size_t operationDimOne, size_t operationDimTwo);
+  void multParallelBuildingBlock(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                 size_t operationDimOne, size_t operationDimTwo);
 
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
 
   /// Pointer to the grid's storage object
-  SGPP::base::GridStorage* storage;
+  sgpp::base::GridStorage* storage;
   /// Pointer to the coefficients of this bilinear form
-  SGPP::base::DataMatrix* coefs;
+  sgpp::base::DataMatrix* coefs;
   /// algorithmic dimensions, operator is applied in this dimensions
   const std::vector<size_t> algoDims;
   /// number of algorithmic dimensions
@@ -109,8 +109,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-              size_t dim, size_t op_dim_one, size_t op_dim_two);
+  void updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
+              size_t op_dim_one, size_t op_dim_two);
 
   /**
    * All calculations for gradient, parallel version using OpenMP 3
@@ -121,8 +121,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param op_dim_one the dimension in which to use the first gradient
    * @param op_dim_two the dimension in which to use the second gradient
    */
-  void specialOpOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim, size_t op_dim_one, size_t op_dim_two);
+  void specialOpOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
+                    size_t op_dim_one, size_t op_dim_two);
 
   /**
    * All calculations for gradient, Part 2, parallel version using OpenMP 3
@@ -133,8 +133,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param op_dim_one the dimension in which to use the first gradient
    * @param op_dim_two the dimension in which to use the second gradient
    */
-  void specialOpTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim, size_t op_dim_one, size_t op_dim_two);
+  void specialOpTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
+                    size_t op_dim_one, size_t op_dim_two);
 
   /**
    * if the current dimension is equal to the both special operation dimensions
@@ -145,9 +145,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param op_dim_one the dimension in which to use the first gradient
    * @param op_dim_two the dimension in which to use the second gradient
    */
-  void specialOpOneAndOpTwo(SGPP::base::DataVector& alpha,
-                            SGPP::base::DataVector& result, size_t dim, size_t op_dim_one,
-                            size_t op_dim_two);
+  void specialOpOneAndOpTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                            size_t dim, size_t op_dim_one, size_t op_dim_two);
 
   /**
    * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -158,8 +157,7 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim) = 0;
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -170,8 +168,7 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim) = 0;
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * 1D down if the current dim is equal to i
@@ -180,8 +177,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDimOne(SGPP::base::DataVector& alpha,
-                            SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void downOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                            size_t dim) = 0;
 
   /**
    * 1D up if the current dim is equal to i
@@ -190,8 +187,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDimOne(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void upOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                          size_t dim) = 0;
 
   /**
    * 1D down if the current dim is equal to j
@@ -200,8 +197,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDimTwo(SGPP::base::DataVector& alpha,
-                            SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void downOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                            size_t dim) = 0;
 
   /**
    * 1D up if the current dim is equal to j
@@ -210,8 +207,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDimTwo(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void upOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                          size_t dim) = 0;
 
   /**
    * 1D down, if the current dim is equal to i and j
@@ -220,8 +217,8 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void downOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * 1D up, if the current dim is equal to i and j
@@ -230,11 +227,10 @@ class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-                                     SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void upOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                     size_t dim) = 0;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* UPDOWNTWOOPDIMS_HPP */

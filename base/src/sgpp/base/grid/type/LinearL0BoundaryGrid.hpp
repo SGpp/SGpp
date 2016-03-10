@@ -7,11 +7,12 @@
 #define LINEARBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -19,6 +20,8 @@ namespace base {
  */
 class LinearL0BoundaryGrid : public Grid {
  protected:
+  /// grid generator
+  L0BoundaryGridGenerator generator;
   explicit LinearL0BoundaryGrid(std::istream& istr);
 
  public:
@@ -34,16 +37,16 @@ class LinearL0BoundaryGrid : public Grid {
    */
   ~LinearL0BoundaryGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARBOUNDARYGRID_HPP */

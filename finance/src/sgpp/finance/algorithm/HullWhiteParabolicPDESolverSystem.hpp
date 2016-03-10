@@ -15,33 +15,35 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
  * This class implements the ParabolicPDESolverSystem for the HullWhite
  * Equation.
  */
-class HullWhiteParabolicPDESolverSystem : public
-  SGPP::pde::OperationParabolicPDESolverSystemFreeBoundaries {
+class HullWhiteParabolicPDESolverSystem
+    : public sgpp::pde::OperationParabolicPDESolverSystemFreeBoundaries {
  protected:
   /// theta
-  float_t theta;
+  double theta;
   /// sigma
-  float_t sigma;
+  double sigma;
   /// a
-  float_t a;
+  double a;
   /// the B matrix Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpBBound;
+  sgpp::base::OperationMatrix* OpBBound;
   /// the D matrix Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpDBound;
+  sgpp::base::OperationMatrix* OpDBound;
   /// the E matrix Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpEBound;
+  sgpp::base::OperationMatrix* OpEBound;
   /// the F matrix Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpFBound;
+  sgpp::base::OperationMatrix* OpFBound;
   /// the LTwoDotProduct Operation (Mass Matrix A), on boundary grid
-  SGPP::base::OperationMatrix* OpLTwoBound;
+  sgpp::base::OperationMatrix* OpLTwoBound;
 
   /// use coarsening between timesteps in order to reduce gridsize
   bool useCoarsen;
@@ -50,27 +52,25 @@ class HullWhiteParabolicPDESolverSystem : public
   /// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
   int numCoarsenPoints;
   /// Threshold used to decide if a grid point should be deleted
-  float_t coarsenThreshold;
+  double coarsenThreshold;
   /// Threshold used to decide if a grid point should be refined
-  float_t refineThreshold;
+  double refineThreshold;
   /// refine mode during solving Black Scholes Equation: classic or maxLevel
   std::string refineMode;
   /// maxLevel max. Level of refinement
-  SGPP::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridIndex::level_type refineMaxLevel;
 
   /// vector storing algorithmic dimensions
   std::vector<size_t> HWalgoDims;
   /// Routine to modify the boundaries/inner points of the grid
-  SGPP::base::DirichletUpdateVector* BoundaryUpdate;
+  sgpp::base::DirichletUpdateVector* BoundaryUpdate;
 
   /// access to the variable discount factor
   VariableDiscountFactor* variableDiscountFactor;
 
-  virtual void applyLOperator(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result);
+  virtual void applyLOperator(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrix(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result);
+  virtual void applyMassMatrix(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  public:
   /**
@@ -82,7 +82,8 @@ class HullWhiteParabolicPDESolverSystem : public
    * @param sigma reference to the sigma
    * @param a reference to the a
    * @param TimestepSize the size of one timestep used in the ODE Solver
-   * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+   * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for
+   * explicit Euler,
    *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
    * @param useCoarsen specifies if the grid should be coarsened between timesteps
    * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
@@ -93,14 +94,12 @@ class HullWhiteParabolicPDESolverSystem : public
    * @param refineMaxLevel max. refinement level
    * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
    */
-  HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid,
-                                    SGPP::base::DataVector& alpha, float_t sigma, float_t theta,
-                                    float_t a, float_t TimestepSize, std::string OperationMode = "ExEul",
-                                    bool useCoarsen = false, float_t coarsenThreshold = 0.0,
-                                    std::string adaptSolveMode = "none",
-                                    int numCoarsenPoints = -1, float_t refineThreshold = 0.0,
-                                    std::string refineMode = "classic",
-                                    SGPP::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
+  HullWhiteParabolicPDESolverSystem(
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, double sigma, double theta,
+      double a, double TimestepSize, std::string OperationMode = "ExEul", bool useCoarsen = false,
+      double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+      int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
+      sgpp::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
 
   /**
    * Std-Destructor
@@ -117,12 +116,10 @@ class HullWhiteParabolicPDESolverSystem : public
   void startTimestep();
 
  private:
-
   /// the dimension of the risk-free rate (Hull-White dimension)
   int dim_r;
 };
-
-}
-}
+}  // namespace finance
+}  // namespace sgpp
 
 #endif /* HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP */

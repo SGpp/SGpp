@@ -8,14 +8,13 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
-#include <string>
-#include "VarTimestep.hpp"
-
+#include <sgpp/solver/ode/VarTimestep.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -25,9 +24,8 @@ namespace solver {
  */
 class StepsizeControlMC : public VarTimestep {
  protected:
-
-  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                       float_t norm, float_t epsilon);
+  double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm,
+                       double epsilon);
 
  public:
   /**
@@ -38,8 +36,8 @@ class StepsizeControlMC : public VarTimestep {
    * @param eps the epsilon for the step size control
    * @param screen possible pointer to a ScreenOutput object
    */
-  StepsizeControlMC(size_t imax, float_t timestepSize, float_t eps,
-                    SGPP::base::ScreenOutput* screen = NULL);
+  StepsizeControlMC(size_t imax, double timestepSize, double eps,
+                    sgpp::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -47,7 +45,7 @@ class StepsizeControlMC : public VarTimestep {
   virtual ~StepsizeControlMC();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /* STEPSIZECONTROLMC_HPP */

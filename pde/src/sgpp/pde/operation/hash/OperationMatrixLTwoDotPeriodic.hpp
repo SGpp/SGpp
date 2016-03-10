@@ -11,22 +11,21 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
  * Implements the standard L 2 scalar product on periodic grids
  *
  */
-class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
+class OperationMatrixLTwoDotPeriodic : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
    * @param gridStorage pointer to the GridStorage of the grid
    */
-  OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
+  explicit OperationMatrixLTwoDotPeriodic(sgpp::base::GridStorage* gridStorage);
 
   /**
    * Destructor
@@ -39,15 +38,12 @@ class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
   * @param alpha DataVector that is multiplied to the matrix
   * @param result DataVector into which the result of multiplication is stored
   */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
+
  protected:
-
-  SGPP::base::GridStorage* gridStorage;
+  sgpp::base::GridStorage* gridStorage;
 };
-
-}
-}
-
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* OPERATIONMATRIXLTWODOTPERIODIC_HPP */

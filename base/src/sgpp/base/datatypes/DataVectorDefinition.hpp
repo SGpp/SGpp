@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 /**
  * This struct is needed for exporting a DataVector
@@ -18,11 +18,11 @@ namespace base {
  * DataVector object
  *
  * The space required by a DataVector object is:
- * (size+unused)*sizeof(float_t)
+ * (size+unused)*sizeof(double)
  */
 struct DataVectorDefinition {
   /// Array to store the data
-  float_t* data;
+  double* data;
   /// Number of elements of the data vector
   size_t size;
   /// Number of additional rows for which memory has already been reserved
@@ -35,6 +35,6 @@ struct DataVectorDefinition {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DATAVECTORDEFINITION_HPP */

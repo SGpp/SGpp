@@ -13,7 +13,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -34,10 +34,10 @@ class LinearBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of linear basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
-    return std::max(1.0 - std::abs(static_cast<float_t>(static_cast<IT>
+  inline double eval(LT l, IT i, double x) override {
+    return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>
                                    (1) << l) * x -
-                                   static_cast<float_t>(i)), 0.0);
+                                   static_cast<double>(i)), 0.0);
   }
 };
 
@@ -45,6 +45,6 @@ class LinearBasis: public Basis<LT, IT> {
 typedef LinearBasis<unsigned int, unsigned int> SLinearBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEAR_BASE_HPP */

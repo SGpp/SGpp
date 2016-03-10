@@ -1,9 +1,17 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include "ObjectiveFunctions.hpp"
 
 ExampleFunction::ExampleFunction() : ScalarFunction(2) {
 }
 
-SGPP::float_t ExampleFunction::eval(const SGPP::base::DataVector& x) {
+ExampleFunction::~ExampleFunction() {
+}
+
+double ExampleFunction::eval(const sgpp::base::DataVector& x) {
   // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
@@ -20,8 +28,11 @@ void ExampleFunction::clone(std::unique_ptr<ScalarFunction>& clone) const {
 ExampleGradient::ExampleGradient() : ScalarFunctionGradient(2) {
 }
 
-SGPP::float_t ExampleGradient::eval(const SGPP::base::DataVector& x,
-                                    SGPP::base::DataVector& gradient) {
+ExampleGradient::~ExampleGradient() {
+}
+
+double ExampleGradient::eval(const sgpp::base::DataVector& x,
+                                    sgpp::base::DataVector& gradient) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
     gradient[0] = 8.0 * std::cos(8.0 * x[0]);
@@ -40,9 +51,12 @@ const {
 ExampleHessian::ExampleHessian() : ScalarFunctionHessian(2) {
 }
 
-SGPP::float_t ExampleHessian::eval(const SGPP::base::DataVector& x,
-                                   SGPP::base::DataVector& gradient,
-                                   SGPP::base::DataMatrix& hessian) {
+ExampleHessian::~ExampleHessian() {
+}
+
+double ExampleHessian::eval(const sgpp::base::DataVector& x,
+                                   sgpp::base::DataVector& gradient,
+                                   sgpp::base::DataMatrix& hessian) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
     gradient[0] = 8.0 * std::cos(8.0 * x[0]);
@@ -67,16 +81,19 @@ const {
 SphereGradient::SphereGradient(size_t d) : ScalarFunctionGradient(d) {
 }
 
-SGPP::float_t SphereGradient::eval(const SGPP::base::DataVector& x,
-                                   SGPP::base::DataVector& gradient) {
-  SGPP::float_t result;
+SphereGradient::~SphereGradient() {
+}
+
+double SphereGradient::eval(const sgpp::base::DataVector& x,
+                                   sgpp::base::DataVector& gradient) {
+  double result;
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
       return INFINITY;
     }
 
-    const SGPP::float_t xt = 10.0 * x[t] - 1.0;
+    const double xt = 10.0 * x[t] - 1.0;
     result += xt * xt;
     gradient[t] = 20.0 * xt;
   }
@@ -92,17 +109,20 @@ const {
 SphereHessian::SphereHessian(size_t d) : ScalarFunctionHessian(d) {
 }
 
-SGPP::float_t SphereHessian::eval(const SGPP::base::DataVector& x,
-                                  SGPP::base::DataVector& gradient,
-                                  SGPP::base::DataMatrix& hessian) {
-  SGPP::float_t result;
+SphereHessian::~SphereHessian() {
+}
+
+double SphereHessian::eval(const sgpp::base::DataVector& x,
+                                  sgpp::base::DataVector& gradient,
+                                  sgpp::base::DataMatrix& hessian) {
+  double result;
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
       return INFINITY;
     }
 
-    const SGPP::float_t xt = 10.0 * x[t] - 1.0;
+    const double xt = 10.0 * x[t] - 1.0;
 
     result += xt * xt;
     gradient[t] = 20.0 * xt;
@@ -132,8 +152,11 @@ DeformedLinearPhiFunction::DeformedLinearPhiFunction(size_t d) :
   }
 }
 
-void DeformedLinearPhiFunction::eval(const SGPP::base::DataVector& x,
-                                     SGPP::base::DataVector& value) {
+DeformedLinearPhiFunction::~DeformedLinearPhiFunction() {
+}
+
+void DeformedLinearPhiFunction::eval(const sgpp::base::DataVector& x,
+                                     sgpp::base::DataVector& value) {
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
       value.setAll(INFINITY);
@@ -160,9 +183,12 @@ DeformedLinearPhiGradient::DeformedLinearPhiGradient(size_t d) :
   }
 }
 
-void DeformedLinearPhiGradient::eval(const SGPP::base::DataVector& x,
-                                     SGPP::base::DataVector& value,
-                                     SGPP::base::DataMatrix& gradient) {
+DeformedLinearPhiGradient::~DeformedLinearPhiGradient() {
+}
+
+void DeformedLinearPhiGradient::eval(const sgpp::base::DataVector& x,
+                                     sgpp::base::DataVector& value,
+                                     sgpp::base::DataMatrix& gradient) {
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
       value.setAll(INFINITY);
@@ -189,12 +215,15 @@ void DeformedLinearPhiGradient::clone(
 G3ObjectiveFunction::G3ObjectiveFunction(size_t d) : ScalarFunction(d) {
 }
 
-SGPP::float_t G3ObjectiveFunction::eval(const SGPP::base::DataVector& x) {
-  const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
-  SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
+G3ObjectiveFunction::~G3ObjectiveFunction() {
+}
+
+double G3ObjectiveFunction::eval(const sgpp::base::DataVector& x) {
+  const double dDbl = static_cast<double>(d);
+  double fx = -std::pow(dDbl, dDbl / 2.0);
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       fx *= x[t];
     } else {
       return INFINITY;
@@ -212,20 +241,21 @@ void G3ObjectiveFunction::clone(std::unique_ptr<ScalarFunction>& clone) const {
 G3ObjectiveGradient::G3ObjectiveGradient(size_t d) : ScalarFunctionGradient(d) {
 }
 
-SGPP::float_t G3ObjectiveGradient::eval(const SGPP::base::DataVector& x,
-                                        SGPP::base::DataVector& gradient) {
-  const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
-  SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
+G3ObjectiveGradient::~G3ObjectiveGradient() {
+}
+
+double G3ObjectiveGradient::eval(const sgpp::base::DataVector& x,
+                                        sgpp::base::DataVector& gradient) {
+  const double dDbl = static_cast<double>(d);
+  double fx = -std::pow(dDbl, dDbl / 2.0);
+
+  gradient.setAll(fx);
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
-      gradient[t] = fx;
-    } else {
+    if ((x[t] < 0.0) || (x[t] > 1.0)) {
       return INFINITY;
     }
-  }
 
-  for (size_t t = 0; t < d; t++) {
     for (size_t t2 = 0; t2 < d; t2++) {
       if (t2 != t) {
         gradient[t2] *= x[t];
@@ -249,12 +279,15 @@ const {
 G3ConstraintFunction::G3ConstraintFunction(size_t d) : VectorFunction(d, 1) {
 }
 
-void G3ConstraintFunction::eval(const SGPP::base::DataVector& x,
-                                SGPP::base::DataVector& value) {
-  SGPP::float_t gx = -1.0;
+G3ConstraintFunction::~G3ConstraintFunction() {
+}
+
+void G3ConstraintFunction::eval(const sgpp::base::DataVector& x,
+                                sgpp::base::DataVector& value) {
+  double gx = -1.0;
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       gx += x[t] * x[t];
     } else {
       value[0] = INFINITY;
@@ -274,13 +307,16 @@ G3ConstraintGradient::G3ConstraintGradient(size_t d) : VectorFunctionGradient(d,
       1) {
 }
 
-void G3ConstraintGradient::eval(const SGPP::base::DataVector& x,
-                                SGPP::base::DataVector& value,
-                                SGPP::base::DataMatrix& gradient) {
-  SGPP::float_t gx = -1.0;
+G3ConstraintGradient::~G3ConstraintGradient() {
+}
+
+void G3ConstraintGradient::eval(const sgpp::base::DataVector& x,
+                                sgpp::base::DataVector& value,
+                                sgpp::base::DataMatrix& gradient) {
+  double gx = -1.0;
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       gx += x[t] * x[t];
       gradient(0, t) = 2.0 * x[t];
     } else {
@@ -303,12 +339,15 @@ const {
 G8ObjectiveFunction::G8ObjectiveFunction() : ScalarFunction(2) {
 }
 
-SGPP::float_t G8ObjectiveFunction::eval(const SGPP::base::DataVector& x) {
+G8ObjectiveFunction::~G8ObjectiveFunction() {
+}
+
+double G8ObjectiveFunction::eval(const sgpp::base::DataVector& x) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
-    const SGPP::float_t x0 = 10.0 * x[0];
-    const SGPP::float_t x1 = 10.0 * x[1];
-    const SGPP::float_t fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+    const double x0 = 10.0 * x[0];
+    const double x1 = 10.0 * x[1];
+    const double fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
                              std::sin(2.0 * M_PI * x1) / (std::pow(x0, 3.0) * (x0 + x1));
     return fx;
   } else {
@@ -324,13 +363,16 @@ void G8ObjectiveFunction::clone(std::unique_ptr<ScalarFunction>& clone) const {
 G8ObjectiveGradient::G8ObjectiveGradient() : ScalarFunctionGradient(2) {
 }
 
-SGPP::float_t G8ObjectiveGradient::eval(const SGPP::base::DataVector& x,
-                                        SGPP::base::DataVector& gradient) {
+G8ObjectiveGradient::~G8ObjectiveGradient() {
+}
+
+double G8ObjectiveGradient::eval(const sgpp::base::DataVector& x,
+                                        sgpp::base::DataVector& gradient) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
-    const SGPP::float_t x0 = 10.0 * x[0];
-    const SGPP::float_t x1 = 10.0 * x[1];
-    const SGPP::float_t fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+    const double x0 = 10.0 * x[0];
+    const double x1 = 10.0 * x[1];
+    const double fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
                              std::sin(2.0 * M_PI * x1) / (std::pow(x0, 3.0) * (x0 + x1));
     gradient[0] = 6.0 * M_PI * std::cos(2.0 * M_PI * x0) *
                   std::pow(std::sin(2.0 * M_PI * x0), 2.0) *
@@ -365,12 +407,15 @@ const {
 G8ConstraintFunction::G8ConstraintFunction() : VectorFunction(2, 2) {
 }
 
-void G8ConstraintFunction::eval(const SGPP::base::DataVector& x,
-                                SGPP::base::DataVector& value) {
+G8ConstraintFunction::~G8ConstraintFunction() {
+}
+
+void G8ConstraintFunction::eval(const sgpp::base::DataVector& x,
+                                sgpp::base::DataVector& value) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
-    const SGPP::float_t x0 = 10.0 * x[0];
-    const SGPP::float_t x1 = 10.0 * x[1];
+    const double x0 = 10.0 * x[0];
+    const double x1 = 10.0 * x[1];
     value[0] = std::pow(x0, 2.0) - x1 + 1.0;
     value[1] = 1.0 - x0 + std::pow(x1 - 4.0, 2.0);
   } else {
@@ -388,13 +433,16 @@ void G8ConstraintFunction::clone(std::unique_ptr<VectorFunction>& clone) const {
 G8ConstraintGradient::G8ConstraintGradient() : VectorFunctionGradient(2, 2) {
 }
 
-void G8ConstraintGradient::eval(const SGPP::base::DataVector& x,
-                                SGPP::base::DataVector& value,
-                                SGPP::base::DataMatrix& gradient) {
+G8ConstraintGradient::~G8ConstraintGradient() {
+}
+
+void G8ConstraintGradient::eval(const sgpp::base::DataVector& x,
+                                sgpp::base::DataVector& value,
+                                sgpp::base::DataMatrix& gradient) {
   if ((x[0] >= 0.0) && (x[0] <= 1.0) &&
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
-    const SGPP::float_t x0 = 10.0 * x[0];
-    const SGPP::float_t x1 = 10.0 * x[1];
+    const double x0 = 10.0 * x[0];
+    const double x1 = 10.0 * x[1];
     value[0] = std::pow(x0, 2.0) - x1 + 1.0;
     value[1] = 1.0 - x0 + std::pow(x1 - 4.0, 2.0);
     gradient(0, 0) = 2.0 * x0 * 10.0;

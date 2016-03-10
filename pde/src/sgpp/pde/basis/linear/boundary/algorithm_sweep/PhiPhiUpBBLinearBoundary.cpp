@@ -7,21 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(SGPP::base::GridStorage*
-    storage) : PhiPhiUpBBLinear(storage) {
-}
+PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(sgpp::base::GridStorage* storage)
+    : PhiPhiUpBBLinear(storage) {}
 
-PhiPhiUpBBLinearBoundary::~PhiPhiUpBBLinearBoundary() {
-}
+PhiPhiUpBBLinearBoundary::~PhiPhiUpBBLinearBoundary() {}
 
-void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = this->boundingBox->getIntervalWidth(dim);
-  float_t t = this->boundingBox->getIntervalOffset(dim);
+void PhiPhiUpBBLinearBoundary::operator()(sgpp::base::DataVector& source,
+                                          sgpp::base::DataVector& result, grid_iterator& index,
+                                          size_t dim) {
+  double q = this->boundingBox->getIntervalWidth(dim);
+  double t = this->boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -30,8 +28,8 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (useBB) {
     if (!index.hint()) {
@@ -56,9 +54,9 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // up
     //////////////////////////////////////
-    //Left
+    // Left
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
       result[seq_left] += (((1.0 / 6.0) * source[seq_right]) * q);
@@ -66,7 +64,7 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // Right
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -95,9 +93,9 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // up
     //////////////////////////////////////
-    //Left
+    // Left
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
       result[seq_left] += ((1.0 / 6.0) * source[seq_right]);
@@ -105,7 +103,7 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // Right
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -114,7 +112,5 @@ void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace sgpp

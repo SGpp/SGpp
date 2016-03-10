@@ -11,7 +11,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -48,21 +48,19 @@ class TremblingParabolaObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  double evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 
  protected:
   const size_t p;
   const base::SBsplineBase bSplineBasis;
-  const float_t g0;
+  const double g0;
 
-  inline float_t splineTrembling(float_t x) const;
+  inline double splineTrembling(double x) const;
 };
 
 /**
@@ -102,16 +100,14 @@ class TremblingParabola : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  double getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
   TremblingParabolaObjective f;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_TREMBLINGPARABOLA_HPP */

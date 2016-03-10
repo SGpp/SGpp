@@ -11,8 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace micsp {
 #ifdef __INTEL_OFFLOAD
@@ -32,42 +31,41 @@ extern int number_mic_devices;
 extern bool multicard_multtrans_fast;
 extern float** tempgrid;
 
-void uploadGrid(SGPP::base::DataMatrixSP* level,
-                SGPP::base::DataMatrixSP* index, SGPP::base::DataMatrixSP* mask,
-                SGPP::base::DataMatrixSP* offset);
+void uploadGrid(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset);
 
-void uploadData(SGPP::base::DataMatrixSP* data);
+void uploadData(sgpp::base::DataMatrixSP* data);
 
 void deleteGrid();
 
 void deleteData();
 
 /**
- * @brief transferResultMult workaround for intel compiler bug: it's not possible to have an into clause in a templated class
+ * @brief transferResultMult workaround for intel compiler bug: it's not possible to have an into
+ * clause in a templated class
  * @param offset offset of the result to copy
  * @param size size of the result to copy
  * @param device which device do we want to copy the result from
  * @param ptrResult array on the host for the result
  */
-void transferResultMult(size_t offset, size_t size, size_t device,
-                        float* ptrResult);
+void transferResultMult(size_t offset, size_t size, size_t device, float* ptrResult);
 
 /**
- * @brief transferResultMultTrans workaround for intel compiler bug: it's not possible to have an into clause in a templated class
+ * @brief transferResultMultTrans workaround for intel compiler bug: it's not possible to have an
+ * into clause in a templated class
  * @param offset offset of the result to copy
  * @param size size of the result to copy
  * @param device which device do we want to copy the result from
  * @param ptrResult array on the host for the result
  */
-void transferResultMultTrans(size_t offset, size_t size, size_t device,
-                             float* ptrResult);
+void transferResultMultTrans(size_t offset, size_t size, size_t device, float* ptrResult);
 
-void transferInputMult(size_t offsetAlpha, size_t chunkAlpha, float* ptrAlpha,
-                       size_t offsetResult, size_t chunkResult, float* ptrResult, size_t device);
-void transferInputMultTrans(size_t offsetSource, size_t chunkSource,
-                            float* ptrSource,
-                            size_t offsetResult, size_t chunkResult, float* ptrResult, size_t device);
-}
-}
-}
-#endif // SPMICKERNELIMPL_HPP
+void transferInputMult(size_t offsetAlpha, size_t chunkAlpha, float* ptrAlpha, size_t offsetResult,
+                       size_t chunkResult, float* ptrResult, size_t device);
+void transferInputMultTrans(size_t offsetSource, size_t chunkSource, float* ptrSource,
+                            size_t offsetResult, size_t chunkResult, float* ptrResult,
+                            size_t device);
+}  // namespace micsp
+}  // namespace parallel
+}  // namespace sgpp
+#endif  // SPMICKERNELIMPL_HPP

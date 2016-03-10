@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OperationCreateGraphOCLMultiPlatform.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*

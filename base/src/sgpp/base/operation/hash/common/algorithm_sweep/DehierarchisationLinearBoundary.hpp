@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -31,7 +31,7 @@ class DehierarchisationLinearBoundary : public DehierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  explicit DehierarchisationLinearBoundary(GridStorage* storage);
+  explicit DehierarchisationLinearBoundary(GridStorage& storage);
 
   /**
    * Destructor
@@ -57,6 +57,6 @@ class DehierarchisationLinearBoundary : public DehierarchisationLinear {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DEHIERARCHISATIONLINEARBOUNDARY_HPP */

@@ -6,28 +6,28 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientBspline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationNaiveEvalGradientBspline::evalGradient(
+double OperationNaiveEvalGradientBspline::evalGradient(
   const DataVector& alpha, const DataVector& point, DataVector& gradient) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
-  float_t result = 0.0;
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
+  double result = 0.0;
 
-  gradient.resize(storage->dim());
+  gradient.resize(storage.getDimension());
   gradient.setAll(0.0);
 
   DataVector curGradient(d);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *(*storage)[i];
-    float_t curValue = 1.0;
+    const GridIndex& gp = *storage[i];
+    double curValue = 1.0;
     curGradient.setAll(alpha[i]);
 
     for (size_t t = 0; t < d; t++) {
-      const float_t val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const float_t dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t),
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
+      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t),
                                        point[t]);
 
       curValue *= val1d;
@@ -49,4 +49,4 @@ float_t OperationNaiveEvalGradientBspline::evalGradient(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

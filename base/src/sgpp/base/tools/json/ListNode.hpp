@@ -13,7 +13,7 @@
 
 namespace json {
 
-class ListNode: public Node {
+class ListNode : public Node {
  private:
   std::vector<std::unique_ptr<Node>> list;
 
@@ -30,7 +30,7 @@ class ListNode: public Node {
 
   void serialize(std::ostream& outFile, size_t indentWidth) override;
 
-  Node& operator[](const size_t index) override;
+  Node& operator[](const size_t index)override;
 
   size_t size() override;
 
@@ -50,10 +50,12 @@ class ListNode: public Node {
   Node& addTextValue(const std::string& value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const std::string& value) override;
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
+  Node& addIdValue(const char* value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const char* value) override;
+  Node& addIdValue(const std::string& value) override;
 
   // returns the list node to which the value was added
   Node& addIdValue(const double& value) override;

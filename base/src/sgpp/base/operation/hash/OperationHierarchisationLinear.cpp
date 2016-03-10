@@ -13,29 +13,29 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationLinear::doHierarchisation(DataVector&
     node_values) {
-  HierarchisationLinear func(this->storage);
-  sweep<HierarchisationLinear> s(func, this->storage);
+  HierarchisationLinear func(storage);
+  sweep<HierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationLinear func(this->storage);
-  sweep<DehierarchisationLinear> s(func, this->storage);
+  DehierarchisationLinear func(storage);
+  sweep<DehierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

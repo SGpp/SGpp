@@ -6,15 +6,15 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
-namespace SGPP {
+#include <cstddef>
+
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -30,8 +30,7 @@ class IterativeGridGenerator {
    * @param grid  grid (should be empty)
    * @param N     maximal number of grid points
    */
-  IterativeGridGenerator(
-    ScalarFunction& f, base::Grid& grid, size_t N);
+  IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N);
 
   /**
    * Destructor.
@@ -67,7 +66,7 @@ class IterativeGridGenerator {
 
   /**
    * Removes grid points with indices
-   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * [oldGridSize, oldGridSize + 1, ..., grid.getSize() - 1]
    * from the grid.
    *
    * @param oldGridSize   number of grid points after removal
@@ -76,15 +75,14 @@ class IterativeGridGenerator {
 
   /**
    * Evaluates the objective function at grid points with indices
-   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * [oldGridSize, oldGridSize + 1, ..., grid.getSize() - 1]
    * and saves values in functionValues.
    *
    * @param oldGridSize   number of grid points already evaluated
    */
   void evalFunction(size_t oldGridSize = 0);
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP */

@@ -10,19 +10,19 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid,
-                               SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C,
-                               float_t lambda, SGPP::base::DataVector& w) {
+DMWeightMatrix::DMWeightMatrix(sgpp::base::Grid& SparseGrid,
+                               sgpp::base::DataMatrix& trainData, sgpp::base::OperationMatrix& C,
+                               double lambda, sgpp::base::DataVector& w) {
   // create the operations needed in ApplyMatrix
   this->C = &C;
   this->lamb = lambda;
   this->data = &trainData;
   // this->B = SparseGrid.createOperationMultipleEval(this->data);
-  this->B = SGPP::op_factory::createOperationMultipleEval(SparseGrid,
-            *(this->data));
+  this->B = sgpp::op_factory::createOperationMultipleEval(SparseGrid,
+            *(this->data)).release();
   this->weight = &w;
 }
 
@@ -31,9 +31,9 @@ DMWeightMatrix::~DMWeightMatrix() {
 }
 
 
-void DMWeightMatrix::mult(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp((*data).getNrows());
+void DMWeightMatrix::mult(sgpp::base::DataVector& alpha,
+                          sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp((*data).getNrows());
   // size_t M = (*data).getNrows();
   //// Operation B
   this->B->mult(alpha, temp);
@@ -41,17 +41,17 @@ void DMWeightMatrix::mult(SGPP::base::DataVector& alpha,
 
   this->B->multTranspose(temp, result);
 
-  SGPP::base::DataVector temptwo(alpha.getSize());
+  sgpp::base::DataVector temptwo(alpha.getSize());
   this->C->mult(alpha, temptwo);
   result.axpy(this->lamb, temptwo);
 }
 
-void DMWeightMatrix::generateb(SGPP::base::DataVector& classes,
-                               SGPP::base::DataVector& b) {
-  SGPP::base::DataVector myClassesWithWeights(classes);
+void DMWeightMatrix::generateb(sgpp::base::DataVector& classes,
+                               sgpp::base::DataVector& b) {
+  sgpp::base::DataVector myClassesWithWeights(classes);
   myClassesWithWeights.componentwise_mult(*weight);
   this->B->multTranspose(myClassesWithWeights, b);
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

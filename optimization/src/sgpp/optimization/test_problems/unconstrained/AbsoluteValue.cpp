@@ -8,23 +8,17 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-AbsoluteValue::AbsoluteValue(size_t d) :
-  UnconstrainedTestProblem(d),
-  f(d) {
-}
+AbsoluteValue::AbsoluteValue(size_t d) : UnconstrainedTestProblem(d), f(d) {}
 
-AbsoluteValue::~AbsoluteValue() {
-}
+AbsoluteValue::~AbsoluteValue() {}
 
-TestScalarFunction& AbsoluteValue::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& AbsoluteValue::getObjectiveFunction() { return f; }
 
-float_t AbsoluteValue::getOptimalPointUndisplaced(base::DataVector& x) {
+double AbsoluteValue::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
 
   for (size_t t = 0; t < d; t++) {
@@ -34,16 +28,12 @@ float_t AbsoluteValue::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-AbsoluteValueObjective::AbsoluteValueObjective(size_t d) :
-  TestScalarFunction(d) {
-}
+AbsoluteValueObjective::AbsoluteValueObjective(size_t d) : TestScalarFunction(d) {}
 
-AbsoluteValueObjective::~AbsoluteValueObjective() {
-}
+AbsoluteValueObjective::~AbsoluteValueObjective() {}
 
-float_t AbsoluteValueObjective::evalUndisplaced(
-  const base::DataVector& x) {
-  float_t result = 0.0;
+double AbsoluteValueObjective::evalUndisplaced(const base::DataVector& x) {
+  double result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
     result += std::abs(x[t] - 1.0 / std::pow(2.0, t + 1));
@@ -52,12 +42,9 @@ float_t AbsoluteValueObjective::evalUndisplaced(
   return result;
 }
 
-void AbsoluteValueObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new AbsoluteValueObjective(*this));
+void AbsoluteValueObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new AbsoluteValueObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp

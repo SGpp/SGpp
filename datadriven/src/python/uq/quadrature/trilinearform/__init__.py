@@ -1,2 +1,0 @@
-from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
-from TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy

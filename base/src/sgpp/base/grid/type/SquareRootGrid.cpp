@@ -6,35 +6,34 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 
-#include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
-// #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
-
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SquareRootGrid::SquareRootGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 SquareRootGrid::SquareRootGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 SquareRootGrid::~SquareRootGrid() {
 }
 
-SGPP::base::GridType SquareRootGrid::getType() {
-  return SGPP::base::GridType::SquareRoot;
+sgpp::base::GridType SquareRootGrid::getType() {
+  return sgpp::base::GridType::SquareRoot;
 }
 
 const SBasis& SquareRootGrid::getBasis() {
@@ -42,23 +41,23 @@ const SBasis& SquareRootGrid::getBasis() {
   return basis;
 }
 
-Grid* SquareRootGrid::unserialize(std::istream& istr) {
-  return new SquareRootGrid(istr);
+std::unique_ptr<Grid> SquareRootGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new SquareRootGrid(istr));
 }
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* SquareRootGrid::createGridGenerator() {
-  return new SquareRootGridGenerator(this->storage);
+GridGenerator& SquareRootGrid::getGenerator() {
+  return generator;
 }
 // OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
 // {
-//   return new OperationHierarchisationLinearBoundary(this->storage);
+//   return new OperationHierarchisationLinearBoundary(storage);
 // }
 // OperationEval* SquareRootGrid::createOperationEval()
 // {
-//   return new OperationEvalLinearBoundary(this->storage);
+//   return new OperationEvalLinearBoundary(storage);
 // }
 
 // OperationConvert* SquareRootGrid::createOperationConvert()
@@ -67,4 +66,4 @@ GridGenerator* SquareRootGrid::createGridGenerator() {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

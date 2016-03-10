@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cstring>
-#include <iterator>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
@@ -13,32 +10,33 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-namespace SGPP {
+#include <cstring>
+#include <iterator>
+#include <algorithm>
+#include <string>
+#include <vector>
+
+namespace sgpp {
 namespace optimization {
 
-IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-  ScalarFunction& f, base::Grid& grid, size_t N,
-  float_t adaptivity) :
-  IterativeGridGenerator(f, grid, N) {
+IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
+                                                     double adaptivity)
+    : IterativeGridGenerator(f, grid, N) {
   setAdaptivity(adaptivity);
 }
 
-IterativeGridGeneratorSOO::~IterativeGridGeneratorSOO() {
-}
+IterativeGridGeneratorSOO::~IterativeGridGeneratorSOO() {}
 
-IterativeGridGeneratorSOO::AdaptivityFunction
-IterativeGridGeneratorSOO::getAdaptivity() const {
+IterativeGridGeneratorSOO::AdaptivityFunction IterativeGridGeneratorSOO::getAdaptivity() const {
   return hMax;
 }
 
-void IterativeGridGeneratorSOO::setAdaptivity(float_t adaptivity) {
-  hMax = [adaptivity](size_t n) {
-    return static_cast<size_t>(std::pow(n, adaptivity));
-  };
+void IterativeGridGeneratorSOO::setAdaptivity(double adaptivity) {
+  hMax = [adaptivity](size_t n) { return static_cast<size_t>(std::pow(n, adaptivity)); };
 }
 
 void IterativeGridGeneratorSOO::setAdaptivity(
-  IterativeGridGeneratorSOO::AdaptivityFunction adaptivity) {
+    IterativeGridGeneratorSOO::AdaptivityFunction adaptivity) {
   hMax = adaptivity;
 }
 
@@ -46,9 +44,8 @@ bool IterativeGridGeneratorSOO::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
 
   bool result = true;
-  base::GridIndex::PointDistribution distr =
-    base::GridIndex::PointDistribution::Normal;
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
+  base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
@@ -107,21 +104,19 @@ bool IterativeGridGeneratorSOO::generate() {
     // status printing
     {
       char str[10];
-      snprintf(str, 10, "%.1f%%",
-               static_cast<float_t>(currentN) /
-               static_cast<float_t>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) +
-          " (N = " + std::to_string(currentN) +
-          ", k = " + std::to_string(k) + ")");
+      snprintf(str, sizeof(str), "%.1f%%",
+               static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
+      Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
+                                               std::to_string(currentN) + ", k = " +
+                                               std::to_string(k) + ")");
     }
 
     const size_t curDepthBound =
-      std::min(depthMap.size() - 1,
-               static_cast<size_t>(hMax(n)) + depthBoundOffset);
-    float_t nuMin = INFINITY;
+        std::min(depthMap.size() - 1, static_cast<size_t>(hMax(n)) + depthBoundOffset);
+    double nuMin = INFINITY;
 
     for (size_t depth = 0; depth <= curDepthBound; depth++) {
-      float_t fBest = INFINITY;
+      double fBest = INFINITY;
       size_t iBest = 0;
 
       for (size_t i : depthMap[depth]) {
@@ -133,16 +128,16 @@ bool IterativeGridGeneratorSOO::generate() {
 
       if (fBest < nuMin) {
         refinementAlpha[iBest] = 1.0;
-        base::SurplusRefinementFunctor refineFunc(&refinementAlpha, 1);
-        refinement.free_refine(&gridStorage, &refineFunc);
+        base::SurplusRefinementFunctor refineFunc(refinementAlpha, 1);
+        refinement.free_refine(gridStorage, refineFunc);
 
         // new grid size
-        const size_t newN = gridStorage.size();
+        const size_t newN = gridStorage.getSize();
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
           Printer::getInstance().printStatusEnd(
-            "error: size unchanged in IterativeGridGeneratorSOO");
+              "error: size unchanged in IterativeGridGeneratorSOO");
           result = false;
           breakLoop = true;
           break;
@@ -204,15 +199,13 @@ bool IterativeGridGeneratorSOO::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(
-          currentN) +
-        ", k = " + std::to_string(k) + ")");
+    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ", k = " +
+                                             std::to_string(k) + ")");
     Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

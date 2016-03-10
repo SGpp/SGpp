@@ -7,19 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
-  float_t res = 0;
-  float_t tmpres = 0;
+double OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
+  double res = 0;
+  double tmpres = 0;
   GridIndex* gp;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    gp = storage->get(i);
+    gp = storage.get(i);
     tmpres = 1.;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
     }
 
@@ -30,4 +30,4 @@ float_t OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

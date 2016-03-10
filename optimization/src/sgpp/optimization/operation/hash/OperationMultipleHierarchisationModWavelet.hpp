@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODWAVELET_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODWAVELET_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODWAVELET_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODWAVELET_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -12,22 +12,21 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
  * Hierarchisation operation for modified wavelet basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationModWavelet :
-  public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationModWavelet : public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  OperationMultipleHierarchisationModWavelet(base::ModWaveletGrid& grid);
+  explicit OperationMultipleHierarchisationModWavelet(base::ModWaveletGrid& grid);
 
   /**
    * Destructor.
@@ -68,8 +67,7 @@ class OperationMultipleHierarchisationModWavelet :
   /// storage of the sparse grid
   base::ModWaveletGrid& grid;
 };
+}  // namespace optimization
+}  // namespace sgpp
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODWAVELET_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODWAVELET_HPP */

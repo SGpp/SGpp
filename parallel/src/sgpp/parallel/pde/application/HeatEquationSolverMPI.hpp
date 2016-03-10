@@ -15,6 +15,9 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
@@ -22,11 +25,7 @@
 #include <fstream>
 #include <cmath>
 
-#include <sgpp/globaldef.hpp>
-#include "../../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
-
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -39,12 +38,12 @@ namespace parallel {
  * This version offers support for MPI parallelization!
  *
  */
-class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
+class HeatEquationSolverMPI : public sgpp::pde::ParabolicPDESolver {
  private:
   /// the heat coefficient
   double a;
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -57,21 +56,18 @@ class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
    */
   virtual ~HeatEquationSolverMPI();
 
-  void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
 
-  void solveExplicitEuler(size_t numTimesteps, double timestepsize,
-                          size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha,
-                          bool verbose = false, bool generateAnimation = false,
-                          size_t numEvalsAnimation = 20);
+  void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
+                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveImplicitEuler(size_t numTimesteps, double timestepsize,
-                          size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha,
-                          bool verbose = false, bool generateAnimation = false,
-                          size_t numEvalsAnimation = 20);
+  void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
+                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveCrankNicolson(size_t numTimesteps, double timestepsize,
-                          size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha,
-                          size_t NumImEul = 0);
+  void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, size_t NumImEul = 0);
 
   /**
    * This method sets the heat coefficient of the regarded material
@@ -89,16 +85,15 @@ class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu,
-                              double sigma, double factor);
+  void initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu, double sigma,
+                              double factor);
 
   /**
    * Inits the screen object
    */
   void initScreen();
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif /* HEATEQUATIONSOLVERMPI_HPP */

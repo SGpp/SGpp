@@ -6,8 +6,6 @@
 #ifndef STDUPDOWN_HPP
 #define STDUPDOWN_HPP
 
-#include <vector>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -18,31 +16,30 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
  * Implements a standard Up/Down Schema without any operation dim.
  *
  */
-class StdUpDown: public SGPP::base::OperationMatrix {
+class StdUpDown : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  StdUpDown(SGPP::base::GridStorage* storage);
+  explicit StdUpDown(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~StdUpDown();
 
-
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * this functions provides the same functionality as the normal mult routine.
@@ -58,15 +55,13 @@ class StdUpDown: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void multParallelBuildingBlock(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataVector& result);
-
+  void multParallelBuildingBlock(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
 
   /// Pointer to the grid's storage object
-  SGPP::base::GridStorage* storage;
+  sgpp::base::GridStorage* storage;
   /// algorithmic dimensions, operator is applied in this dimensions
   const std::vector<size_t> algoDims;
   /// number of algorithmic dimensions
@@ -81,8 +76,7 @@ class StdUpDown: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-              size_t dim);
+  void updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * 1D up Operation
@@ -91,8 +85,7 @@ class StdUpDown: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim) = 0;
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * 1D down Operation
@@ -101,11 +94,9 @@ class StdUpDown: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim) = 0;
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* STDUPDOWN_HPP */

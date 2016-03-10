@@ -3,47 +3,42 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <math.h>
-//#include <iostream>
 
-#include <sgpp/globaldef.hpp>
+#include <cmath>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLinearBoundary(
-  base::GridStorage* storage, int mode, float_t k)
-  : OperationRegularizationDiagonal(storage, mode, k) {
+    base::GridStorage* storage, int mode, double k)
+    : OperationRegularizationDiagonal(storage, mode, k) {
   init();
 }
 
-void OperationRegularizationDiagonalLinearBoundary::initHkmix (float_t k) {
-  size_t dim = storage->dim();
+void OperationRegularizationDiagonalLinearBoundary::initHkmix(double k) {
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
-  float_t res;
+  double res;
 
   for (size_t i = 0; i < size; i++) {
     gi = storage->get(i);
     res = 1.0;
 
     for (size_t d = 0; d < dim; d++) {
-      res *= pow(2, (2 * k - 1) *
-                 static_cast<float_t>(gi->getLevel(d)) - 1);
+      res *= pow(2, (2 * k - 1) * static_cast<double>(gi->getLevel(d)) - 1);
     }
 
     diagonal[i] = res;
   }
-
 }
 
-void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace (
-  float_t k) {
-  size_t dim = storage->dim();
+void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace(double k) {
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
-  float_t res, resd;
+  double res, resd;
 
   for (size_t i = 0; i < size; i++) {
     gi = storage->get(i);
@@ -51,8 +46,7 @@ void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace (
 
     for (size_t d = 0; d < dim; d++) {
       // Hk in dimension d
-      resd = pow(2, (2 * k - 1) *
-                 static_cast<float_t>(gi->getLevel(d)) - 1);
+      resd = pow(2, (2 * k - 1) * static_cast<double>(gi->getLevel(d)) - 1);
 
       // "H0" in remaining dimensions
       for (size_t d2 = 0; d2 < d; d2++) {
@@ -68,8 +62,6 @@ void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace (
 
     diagonal[i] = res;
   }
-
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

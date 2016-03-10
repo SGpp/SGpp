@@ -17,25 +17,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
-template<typename KernelImplementation>
-class DMSystemMatrixSPVectorizedIdentityAllreduce : public
-  SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+template <typename KernelImplementation>
+class DMSystemMatrixSPVectorizedIdentityAllreduce
+    : public sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
  private:
   // which part of the dataset this process handles, it always handles the complete grid
   size_t data_size;
   size_t data_offset;
 
  public:
-  DMSystemMatrixSPVectorizedIdentityAllreduce(SGPP::base::Grid& SparseGrid,
-      SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
-    : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid,
-        trainData, lambda, vecMode) {
-    SGPP::parallel::PartitioningTool::getMPIPartitionSegment(
-      this->numPatchedTrainingInstances_, &data_size, &data_offset,
-      SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
+  DMSystemMatrixSPVectorizedIdentityAllreduce(sgpp::base::Grid& SparseGrid,
+                                              sgpp::base::DataMatrixSP& trainData, float lambda,
+                                              VectorizationType vecMode)
+      : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData,
+                                                                        lambda, vecMode) {
+    sgpp::parallel::PartitioningTool::getMPIPartitionSegment(
+        this->numPatchedTrainingInstances_, &data_size, &data_offset,
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
     rebuildLevelAndIndex();
   }
 
@@ -48,29 +48,19 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce : public
     result.setAll(0.0f);
 
     this->myTimer_->start();
-    #pragma omp parallel
+#pragma omp parallel
     {
-      this->kernel_.mult(
-        this->level_,
-        this->index_,
-        this->mask_,
-        this->offset_,
-        this->dataset_,
-        alpha,
-        *(this->tempData),
-        0,
-        this->storage_->size(),
-        data_offset,
-        data_offset + data_size);
+      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+                         alpha, *(this->tempData), 0, this->storage_.getSize(), data_offset,
+                         data_offset + data_size);
 
-      #pragma omp barrier
-      // make sure that all threads finished their part, so that we can
-      // safely overwrite the padded range
-      #pragma omp single
+#pragma omp barrier
+// make sure that all threads finished their part, so that we can
+// safely overwrite the padded range
+#pragma omp single
       {
         // patch result -> set additional entries zero
-        for (size_t i = this->numTrainingInstances_;
-             i < this->numPatchedTrainingInstances_; i++) {
+        for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++) {
           this->tempData->set(i, 0.0f);
         }
 
@@ -88,26 +78,16 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce : public
       // needed, as multTranspose works on the full data part of this
       // process, so threads might work on unfinished results of mult
 
-      this->kernel_.multTranspose(
-        this->level_,
-        this->index_,
-        this->mask_,
-        this->offset_,
-        this->dataset_,
-        *(this->tempData),
-        *(this->result_tmp),
-        0,
-        this->storage_->size(),
-        data_offset,
-        data_offset + data_size);
+      this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
+                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
-    //myGlobalMPIComm->Barrier();
+    // myGlobalMPIComm->Barrier();
     this->computeTimeMultTrans_ += this->myTimer_->stop();
     myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), result);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-    result.axpy(static_cast<float>(this->numTrainingInstances_)*this->lambda_,
-                alpha);
+    result.axpy(static_cast<float>(this->numTrainingInstances_) * this->lambda_, alpha);
   }
 
   virtual void generateb(base::DataVectorSP& classes, base::DataVectorSP& b) {
@@ -116,20 +96,11 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce : public
     this->tempData->copyFrom(classes);
     this->result_tmp->setAll(0.0f);
 
-    #pragma omp parallel
+#pragma omp parallel
     {
-      this->kernel_.multTranspose(
-        this->level_,
-        this->index_,
-        this->mask_,
-        this->offset_,
-        this->dataset_,
-        *(this->tempData),
-        *(this->result_tmp),
-        0,
-        this->storage_->size(),
-        data_offset,
-        data_offset + data_size);
+      this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
+                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
     myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
@@ -139,11 +110,9 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce : public
   virtual void rebuildLevelAndIndex() {
     DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
   }
-
 };
 
-}
-#endif
-#endif // DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H
+}  // namespace parallel
+}  // namespace sgpp
 
-
+#endif  // DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H

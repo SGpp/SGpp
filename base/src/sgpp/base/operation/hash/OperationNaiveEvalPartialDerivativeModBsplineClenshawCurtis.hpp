@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -30,7 +30,7 @@ class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
    * @param degree    B-spline degree
    */
   OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
-    GridStorage* storage, size_t degree) :
+    GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -46,18 +46,18 @@ class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
+  double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
                                 size_t derivDim) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineModifiedClenshawCurtisBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPARTIALDERIVATIVEMODBSPLINECLENSHAWCURTIS_HPP */

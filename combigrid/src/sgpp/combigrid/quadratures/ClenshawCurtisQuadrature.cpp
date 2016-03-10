@@ -1,18 +1,14 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/quadratures/ClenshawCurtisQuadrature.hpp>
-#include <vector>
 #include <sgpp/globaldef.hpp>
-
+#include <vector>
 
 template <typename _Tp>
-combigrid::ClenshawCurtisQuadrature<_Tp>::ClenshawCurtisQuadrature(
-    int max_lvl) {
+combigrid::ClenshawCurtisQuadrature<_Tp>::ClenshawCurtisQuadrature(int max_lvl) {
   if (max_lvl >= 2) {  // 5 pts?
     MAX_LEVELS = max_lvl;
   } else {
@@ -40,8 +36,7 @@ combigrid::ClenshawCurtisQuadrature<_Tp>::ClenshawCurtisQuadrature(
      * coefs
      *  we start from level 1, up to level MAX_LEVELS ...
      * */
-    ClenshawCurtisQuadrature<_Tp>::calculateCoefficients(d,
-                                                         coefficients + d - 1);
+    ClenshawCurtisQuadrature<_Tp>::calculateCoefficients(d, coefficients + d - 1);
   }
 }
 
@@ -59,8 +54,8 @@ combigrid::ClenshawCurtisQuadrature<_Tp>::~ClenshawCurtisQuadrature() {
 }
 
 template <typename _Tp>
-_Tp combigrid::ClenshawCurtisQuadrature<_Tp>::integrate(
-    CombiGrid<_Tp>* grids, _Tp (*f)(std::vector<double>)) {
+_Tp combigrid::ClenshawCurtisQuadrature<_Tp>::integrate(CombiGrid<_Tp>* grids,
+                                                        _Tp (*f)(std::vector<double>)) {
   int dim = grids->getDim();
 
   /**
@@ -114,8 +109,7 @@ _Tp combigrid::ClenshawCurtisQuadrature<_Tp>::integrate(
       // if error has occured simply skip through all the iterations until you
       // reach the end...
       if (grids->getFullGrid(j)->isActive()) {
-        if (static_cast<int>(grids->getFullGrid(j)->getMaxLevel()) >
-            MAX_LEVELS) {
+        if (static_cast<int>(grids->getFullGrid(j)->getMaxLevel()) > MAX_LEVELS) {
           // problem with parallelization - if this error occurs
           // the
           // end result might not be set
@@ -127,8 +121,7 @@ _Tp combigrid::ClenshawCurtisQuadrature<_Tp>::integrate(
           error_flag++;
         } else {
           result += (_Tp)grids->getCoef(j) *
-                    clenshaw_curtis_fullgrid(dim, f, grids->getFullGrid(j),
-                                             badstretching);
+                    clenshaw_curtis_fullgrid(dim, f, grids->getFullGrid(j), badstretching);
         }
       }
     }
@@ -144,12 +137,10 @@ _Tp combigrid::ClenshawCurtisQuadrature<_Tp>::clenshaw_curtis_fullgrid(
     int dim, _Tp (*f)(std::vector<double>), FGridContainer<_Tp>* gridContainer,
     bool badstretching) {
   _Tp result = 0.0f;
-  FullGrid<_Tp>* grid =
-      gridContainer->fg();  // obtain a pointer to the fullgrid
+  FullGrid<_Tp>* grid = gridContainer->fg();  // obtain a pointer to the fullgrid
   std::vector<_Tp> f_values;
   CombiChebyshevStretching stretching = CombiChebyshevStretching();
-  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             &f_values, f);
+  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching, &f_values, f);
 
   /***
    * At this point of the evaluation we already have the functional values
@@ -161,8 +152,7 @@ _Tp combigrid::ClenshawCurtisQuadrature<_Tp>::clenshaw_curtis_fullgrid(
    *functional values by the weights
    *  and sum the results up...
    */
-  unsigned int num_elem =
-      grid->getNrElements();  // get the total number of grid points
+  unsigned int num_elem = grid->getNrElements();  // get the total number of grid points
   std::vector<int> indices(dim, 0);
   std::vector<int> levels = gridContainer->getFGLevels();
 
@@ -184,8 +174,8 @@ _Tp combigrid::ClenshawCurtisQuadrature<_Tp>::clenshaw_curtis_fullgrid(
 }
 
 template <class _Tp>
-void combigrid::ClenshawCurtisQuadrature<_Tp>::calculateCoefficients(
-    int in_level, _Tp** out_coefs) {
+void combigrid::ClenshawCurtisQuadrature<_Tp>::calculateCoefficients(int in_level,
+                                                                     _Tp** out_coefs) {
   int N = powerOfTwo[in_level] + 1;
   int n = powerOfTwo[in_level - 1];  // is equal to (N-1)/2;
 
@@ -198,8 +188,7 @@ void combigrid::ClenshawCurtisQuadrature<_Tp>::calculateCoefficients(
     double w_i = 0.0f;
     double factor = 2.0 * M_PI * (i - 1.0) / (N - 1.0);
 
-    for (int j = 1; j < n; j++)
-      w_i += 2.0 * cos(factor * j) / (1.0 - 4.0 * j * j);
+    for (int j = 1; j < n; j++) w_i += 2.0 * cos(factor * j) / (1.0 - 4.0 * j * j);
 
     w_i += cos(factor * n) / (1.0 - 4.0 * n * n);
     w_i = 2.0 * (1.0 + w_i) / (N - 1.0);

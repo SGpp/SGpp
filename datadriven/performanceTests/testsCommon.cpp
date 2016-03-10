@@ -1,11 +1,10 @@
-/*
- * test_datadrivenCommon.cpp
- *
- *  Created on: Jul 30, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "testsCommon.hpp"
+#include <boost/lexical_cast.hpp>
+#include <zlib.h>
 
 #include <iostream>
 #include <string>
@@ -14,16 +13,10 @@
 #include <random>
 #include <fstream>
 
-#include <boost/lexical_cast.hpp>
-
-#include <zlib.h>
-
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-
-using namespace SGPP::base;
+#include "testsCommon.hpp"
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 std::string uncompressFile(std::string fileName) {
-
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
   if (inFileZ == NULL) {
@@ -58,23 +51,21 @@ std::string uncompressFile(std::string fileName) {
   return convert.str();
 }
 
-void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-                         SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
-
+void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                         sgpp::base::GridGenerator& gridGen) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  SGPP::base::DataVector alphaRefine(grid.getSize());
+  sgpp::base::DataVector alphaRefine(grid.getSize());
 
   for (size_t i = 0; i < alphaRefine.getSize(); i++) {
     alphaRefine[i] = dist(mt);
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-    SGPP::base::SurplusRefinementFunctor(&alphaRefine,
-                                         adaptConfig.noPoints_, adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -82,17 +73,14 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
     for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
       alphaRefine[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
-void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-                           SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
-
+void doDirectedRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                           sgpp::base::GridGenerator& gridGen) {
   double dummySurplusValue = 1.0;
 
-  SGPP::base::DataVector alphaRefine(grid.getSize());
+  sgpp::base::DataVector alphaRefine(grid.getSize());
 
   for (size_t i = 0; i < alphaRefine.getSize(); i++) {
     alphaRefine[i] = dummySurplusValue;
@@ -100,21 +88,17 @@ void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-    SGPP::base::SurplusRefinementFunctor(&alphaRefine,
-                                         adaptConfig.noPoints_, adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
 
     for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
       alphaRefine[i] = dummySurplusValue;
-
     }
 
-    //increment only once for added grid points
+    // increment only once for added grid points
     dummySurplusValue += 1.0;
-
-    delete myRefineFunc;
   }
 }

@@ -3,10 +3,19 @@ import fnmatch
 
 Import('env')
 
+cpps = []
+hpps = []
 objs = []
-if env['ARCH'].upper() == "AVX" or env['ARCH'].upper() == "AVX2" or env['ARCH'].upper() == "AVX512":
+
+if env['ARCH'] == "avx" or env['ARCH'] == "avx2" or env['ARCH'] == "avx512":
   for currentFolder, subdirNames, fileNames in os.walk("."):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      sourceFile = os.path.join(currentFolder, fileName)
-      objs.append(env.SharedObject(sourceFile))
-Return('objs')
+      cpp = os.path.join(currentFolder, fileName)
+      cpps.append(cpp)
+      objs.append(env.SharedObject(cpp))
+  for fileName in fnmatch.filter(fileNames, '*.hpp'):
+    hpp = os.path.join(currentFolder, fileName)
+    hpps.append(hpp)
+
+returnTuple = (cpps, hpps, objs)
+Return('returnTuple')

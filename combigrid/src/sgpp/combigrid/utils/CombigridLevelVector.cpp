@@ -1,13 +1,13 @@
-/* ****************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Christoph Kowitz (kowitz@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "CombigridLevelVector.hpp"
+#include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
-using namespace combigrid;
+#include <vector>
+
+namespace combigrid {
 
 const int CombigridLevelVector::LEVELMAX = 128;
 
@@ -21,8 +21,7 @@ CombigridLevelVector::CombigridLevelVector(std::vector<int> level) {
   coef_.push_back(1);
 }
 
-CombigridLevelVector::CombigridLevelVector(std::vector<int> level,
-                                           double coef) {
+CombigridLevelVector::CombigridLevelVector(std::vector<int> level, double coef) {
   levelVec_.push_back(level);
   coef_.push_back(coef);
 }
@@ -33,8 +32,7 @@ CombigridLevelVector::CombigridLevelVector(std::vector<std::vector<int> > in,
   doAddition();
 }
 
-CombigridLevelVector& CombigridLevelVector::operator=(
-    const CombigridLevelVector& rhs) {
+CombigridLevelVector& CombigridLevelVector::operator=(const CombigridLevelVector& rhs) {
   if (this == &rhs) return (*this);
 
   levelVec_ = rhs.getLevelVec();
@@ -42,8 +40,7 @@ CombigridLevelVector& CombigridLevelVector::operator=(
   return (*this);
 }
 
-const CombigridLevelVector CombigridLevelVector::operator*(
-    const CombigridLevelVector& b) const {
+const CombigridLevelVector CombigridLevelVector::operator*(const CombigridLevelVector& b) const {
   std::vector<std::vector<int> > result;
   std::vector<int> buffer(b.getDim());
   std::vector<double> c;
@@ -51,8 +48,7 @@ const CombigridLevelVector CombigridLevelVector::operator*(
   for (int i = 0; i < getN(); ++i) {
     for (int j = 0; j < b.getN(); ++j) {
       for (int k = 0; k < b.getDim(); ++k) {
-        buffer[k] = levelVec_[i][k] < b.levelVec_[j][k] ? levelVec_[i][k]
-                                                        : b.levelVec_[j][k];
+        buffer[k] = levelVec_[i][k] < b.levelVec_[j][k] ? levelVec_[i][k] : b.levelVec_[j][k];
       }
 
       result.push_back(buffer);
@@ -62,8 +58,7 @@ const CombigridLevelVector CombigridLevelVector::operator*(
 
   return CombigridLevelVector(result, c);
 }
-const CombigridLevelVector CombigridLevelVector::operator-(
-    const CombigridLevelVector& b) const {
+const CombigridLevelVector CombigridLevelVector::operator-(const CombigridLevelVector& b) const {
   CombigridLevelVector result(*this), inVec(b);
 
   for (int i = 0; i < b.getN(); ++i) {
@@ -73,8 +68,7 @@ const CombigridLevelVector CombigridLevelVector::operator-(
   return result + inVec;
 }
 
-const CombigridLevelVector CombigridLevelVector::operator+(
-    const CombigridLevelVector& b) const {
+const CombigridLevelVector CombigridLevelVector::operator+(const CombigridLevelVector& b) const {
   CombigridLevelVector result(*this);
 
   for (int i = 0; i < b.getN(); ++i) {
@@ -87,8 +81,8 @@ const CombigridLevelVector CombigridLevelVector::operator+(
 }
 
 void CombigridLevelVector::doAddition() {
-  for (int i = 0; i < (int)levelVec_.size(); ++i) {
-    for (int j = i + 1; j < (int)levelVec_.size(); ++j) {
+  for (int i = 0; i < static_cast<int>(levelVec_.size()); ++i) {
+    for (int j = i + 1; j < static_cast<int>(levelVec_.size()); ++j) {
       bool same = true;
 
       for (int k = 0; k < getDim(); ++k) {
@@ -123,12 +117,11 @@ void CombigridLevelVector::printLevelVec() {
   }
 }
 
-CombigridLevelVector CombigridLevelVector::getCombiLevels(
-    std::vector<CombigridLevelVector> in) {
+CombigridLevelVector CombigridLevelVector::getCombiLevels(std::vector<CombigridLevelVector> in) {
   CombigridLevelVector unity(in[0].getDim());
   CombigridLevelVector erg = unity - in[0];
 
-  for (int i = 1; i < (int)in.size(); ++i) {
+  for (int i = 1; i < static_cast<int>(in.size()); ++i) {
     erg = erg * (unity - in[i]);
   }
 
@@ -136,11 +129,10 @@ CombigridLevelVector CombigridLevelVector::getCombiLevels(
   return erg;
 }
 
-CombigridLevelVector CombigridLevelVector::getCombiLevels(
-    std::vector<std::vector<int> > in) {
+CombigridLevelVector CombigridLevelVector::getCombiLevels(std::vector<std::vector<int> > in) {
   std::vector<CombigridLevelVector> buffer;
 
-  for (int i = 0; i < (int)in.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(in.size()); ++i) {
     buffer.push_back(CombigridLevelVector(in[i]));
   }
 
@@ -157,8 +149,7 @@ std::vector<CombigridLevelVector> CombigridLevelVector::split() {
   return buffer;
 }
 
-CombigridLevelVector CombigridLevelVector::getCombiLevels(
-    CombigridLevelVector in) {
+CombigridLevelVector CombigridLevelVector::getCombiLevels(CombigridLevelVector in) {
   in.doAddition();
   //  for (int i = 0; i < in.getN(); ++i) {
   //    if(in.getCoef()[i]!=1) {
@@ -186,3 +177,4 @@ CombigridLevelVector CombigridLevelVector::getChanges(std::vector<int> in) {
 void CombigridLevelVector::update(std::vector<int> in) {
   (*this) = (*this) + (*this).getChanges(in);
 }
+}  // namespace combigrid

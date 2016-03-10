@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,7 +28,7 @@ class OperationStencilHierarchisationLinear : public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationStencilHierarchisationLinear(GridStorage* storage) :
+  explicit OperationStencilHierarchisationLinear(GridStorage& storage) :
     storage(storage),
     surplusStencil(0), neighborStencil(0), weightStencil(0) {}
 
@@ -58,8 +58,8 @@ class OperationStencilHierarchisationLinear : public
   };
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 
   /// Index array with surplus indices
   IndexStencil surplusStencil;
@@ -72,6 +72,6 @@ class OperationStencilHierarchisationLinear : public
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONSTENCILHIERARCHISATION_HPP */

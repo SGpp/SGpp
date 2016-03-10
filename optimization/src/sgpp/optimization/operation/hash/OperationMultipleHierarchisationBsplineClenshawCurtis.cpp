@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -12,19 +10,18 @@
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
-OperationMultipleHierarchisationBsplineClenshawCurtis::OperationMultipleHierarchisationBsplineClenshawCurtis(
-  base::BsplineClenshawCurtisGrid& grid) :
-  grid(grid) {
-}
+OperationMultipleHierarchisationBsplineClenshawCurtis::
+    OperationMultipleHierarchisationBsplineClenshawCurtis(base::BsplineClenshawCurtisGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationBsplineClenshawCurtis::~OperationMultipleHierarchisationBsplineClenshawCurtis() {
-}
+OperationMultipleHierarchisationBsplineClenshawCurtis::
+    ~OperationMultipleHierarchisationBsplineClenshawCurtis() {}
 
 bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
-  base::DataVector& nodeValues) {
+    base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
@@ -32,15 +29,14 @@ bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
-  base::DataVector& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
-  const size_t d = storage.dim();
-  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage,
-      grid.getDegree());
-  base::DataVector nodeValues(storage.size());
+    base::DataVector& alpha) {
+  base::GridStorage& storage = grid.getStorage();
+  const size_t d = storage.getDimension();
+  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(storage, grid.getDegree());
+  base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
-  for (size_t j = 0; j < storage.size(); j++) {
+  for (size_t j = 0; j < storage.getSize(); j++) {
     const base::GridIndex& gp = *storage[j];
 
     for (size_t t = 0; t < d; t++) {
@@ -50,12 +46,12 @@ void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
     nodeValues[j] = opNaiveEval.eval(alpha, x);
   }
 
-  alpha.resize(storage.size());
+  alpha.resize(storage.getSize());
   alpha = nodeValues;
 }
 
 bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+    base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
@@ -63,19 +59,18 @@ bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
-  base::DataMatrix& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
-  const size_t d = storage.dim();
-  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage,
-      grid.getDegree());
-  base::DataVector nodeValues(storage.size(), 0.0);
+    base::DataMatrix& alpha) {
+  base::GridStorage& storage = grid.getStorage();
+  const size_t d = storage.getDimension();
+  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(storage, grid.getDegree());
+  base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
-  base::DataVector alpha1(storage.size(), 0.0);
+  base::DataVector alpha1(storage.getSize(), 0.0);
 
   for (size_t i = 0; i < alpha.getNcols(); i++) {
     alpha.getColumn(i, alpha1);
 
-    for (size_t j = 0; j < storage.size(); j++) {
+    for (size_t j = 0; j < storage.getSize(); j++) {
       const base::GridIndex& gp = *storage[j];
 
       for (size_t t = 0; t < d; t++) {
@@ -88,6 +83,5 @@ void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

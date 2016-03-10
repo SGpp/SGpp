@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "HierarchisationPoly.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -11,11 +11,11 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
-HierarchisationPoly::HierarchisationPoly(GridStorage* storage,
+HierarchisationPoly::HierarchisationPoly(GridStorage& storage,
     SPolyBase* base) :
   storage(storage), base(base) {
 }
@@ -43,8 +43,8 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // hierarchisation
-  float_t x = static_cast<float_t>(cur_ind) /
-              static_cast<float_t>(1 << cur_lev);
+  double x = static_cast<double>(cur_ind) /
+              static_cast<double>(1 << cur_lev);
   result[seq] = source[seq]
                 - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 
@@ -55,14 +55,14 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
@@ -74,4 +74,4 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

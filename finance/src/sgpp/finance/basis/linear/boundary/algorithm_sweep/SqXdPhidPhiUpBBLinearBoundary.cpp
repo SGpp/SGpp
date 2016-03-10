@@ -7,23 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(sgpp::base::GridStorage* storage)
+    : SqXdPhidPhiUpBBLinear(storage) {}
 
+SqXdPhidPhiUpBBLinearBoundary::~SqXdPhidPhiUpBBLinearBoundary() {}
 
-SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage) {
-}
-
-SqXdPhidPhiUpBBLinearBoundary::~SqXdPhidPhiUpBBLinearBoundary() {
-}
-
-void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = this->boundingBox->getIntervalWidth(dim);
-  float_t t = this->boundingBox->getIntervalOffset(dim);
+void SqXdPhidPhiUpBBLinearBoundary::operator()(sgpp::base::DataVector& source,
+                                               sgpp::base::DataVector& result, grid_iterator& index,
+                                               size_t dim) {
+  double q = this->boundingBox->getIntervalWidth(dim);
+  double t = this->boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -32,8 +28,8 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (useBB) {
     if (!index.hint()) {
@@ -60,15 +56,15 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
     //////////////////////////////////////
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
-      float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+      double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
       result[seq_left] -= (1.0 / 3.0) * source[seq_right] * bbFactor;
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -99,7 +95,7 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
     //////////////////////////////////////
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
 
@@ -107,7 +103,7 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -116,7 +112,5 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

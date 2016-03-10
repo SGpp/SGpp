@@ -24,7 +24,7 @@ def getIntegral(grid, level, index):
 
 def getIntegralOfBasisFunction(grid, gp):
     quad = 1.
-    for d in xrange(gp.dim()):
+    for d in xrange(gp.getDimension()):
         quad *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
     return quad
 
@@ -42,7 +42,7 @@ def doQuadrature(grid, alpha):
             gp = gs.get(i)
 
             q = 1.0
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 q *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
 
             s += alpha[i] * q

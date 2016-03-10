@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,10 +26,8 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
    * @param grid grid
    * @param dataset data
    */
-  OperationMultipleEvalModWavelet(Grid& grid,
-                                  DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalModWavelet(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -42,10 +40,10 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALMODWAVELET_HPP */

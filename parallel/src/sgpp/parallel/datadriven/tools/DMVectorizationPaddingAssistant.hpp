@@ -13,8 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -53,8 +52,7 @@ class DMVectorizationPaddingAssistant {
    *
    * @return number of rows in the padded DataMatrix object
    */
-  static size_t padDataset(SGPP::base::DataMatrix& dataset,
-                           VectorizationType& vecType);
+  static size_t padDataset(sgpp::base::DataMatrix& dataset, VectorizationType& vecType);
 
   /**
    * Pads a DataMatrixSP object
@@ -64,12 +62,9 @@ class DMVectorizationPaddingAssistant {
    *
    * @return number of rows in the padded DataMatrixSP object
    */
-  static size_t padDataset(SGPP::base::DataMatrixSP& dataset,
-                           VectorizationType vecType);
+  static size_t padDataset(sgpp::base::DataMatrixSP& dataset, VectorizationType vecType);
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif

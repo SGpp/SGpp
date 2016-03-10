@@ -8,11 +8,11 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <random>
-
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+#include <random>
+
+namespace sgpp {
 namespace quadrature {
 
 /**
@@ -24,7 +24,6 @@ namespace quadrature {
 
 class SampleGenerator {
  public:
-
   /**
    * Standard constructor
    *
@@ -32,8 +31,7 @@ class SampleGenerator {
    * @param seed custom seed (defaults to default seed of mt19937_64)
    */
 
-  SampleGenerator(size_t dimensions,
-                  std::uint64_t seed = std::mt19937_64::default_seed);
+  explicit SampleGenerator(size_t dimensions, std::uint64_t seed = std::mt19937_64::default_seed);
   virtual ~SampleGenerator();
 
   /**
@@ -45,9 +43,7 @@ class SampleGenerator {
    * @param sample provide a DataVector to store the generated sample.
    */
 
-  virtual void getSample(SGPP::base::DataVector& sample) {
-  }
-  ;
+  virtual void getSample(sgpp::base::DataVector& sample) {}
 
   /**
    * This method generates a given number of samples. The resulting
@@ -58,7 +54,7 @@ class SampleGenerator {
    * @param samples provide a DataMatrix to hold the generated samples
    */
 
-  void getSamples(SGPP::base::DataMatrix& samples);
+  void getSamples(sgpp::base::DataMatrix& samples);
 
   /**
    *
@@ -85,7 +81,7 @@ class SampleGenerator {
   // random number generator
   std::mt19937_64 rng;
 };
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp
 
 #endif /* SAMPLEGENERATOR_HPP */

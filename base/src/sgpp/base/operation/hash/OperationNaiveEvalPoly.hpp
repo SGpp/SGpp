@@ -13,7 +13,7 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OperationNaiveEvalPoly: public OperationNaiveEval {
@@ -24,7 +24,7 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
    * @param storage   storage of the sparse grid
    * @param degree    polynomial degree
    */
-  OperationNaiveEvalPoly(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalPoly(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -36,16 +36,16 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SPolyBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BASE_SRC_SGPP_BASE_OPERATION_HASH_OPERATIONNAIVEEVALPOLY_HPP_ */

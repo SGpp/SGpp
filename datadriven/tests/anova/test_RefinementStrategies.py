@@ -105,7 +105,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
         
     def process_grid_statistics(self, storage):
         grid_statistics = {}
-        for i in xrange(storage.size()):
+        for i in xrange(storage.getSize()):
             point = storage.get(i)
             key = (point.getLevel(0),point.getLevel(1))
             if grid_statistics.has_key(key):
@@ -151,7 +151,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
 
             #compress grid
             if learner.iteration == 0:
-                generator = learner.grid.createGridGenerator()
+                generator = learner.grid.getGenerator()
                 functor = self.coarsening_functor(
                           learner.alpha,
                           generator.getNumberOfRemovablePoints(),
@@ -175,7 +175,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
             print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" \
-                    % (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+                    % (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if learner.iteration == 5: 
                 pass
@@ -184,9 +184,9 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             #refine grid
             learner.notifyEventControllers(LearnerEvents.REFINING_GRID)
             learner.grid.getStorage().recalcLeafProperty()
-            refinable_poits = learner.grid.createGridGenerator().getNumberOfRefinablePoints()
+            refinable_poits = learner.grid.getGenerator().getNumberOfRefinablePoints()
             pointsNum = learner.specification.getNumOfPointsToRefine(refinable_poits)
-#            learner.grid.createGridGenerator().refine( SurplusRefinementFunctor(learner.errors, int(pointsNum), learner.specification.getAdaptThreshold()) )
+#            learner.grid.getGenerator().refine( SurplusRefinementFunctor(learner.errors, int(pointsNum), learner.specification.getAdaptThreshold()) )
 
             
             refiner = HashRefinement()
@@ -242,15 +242,15 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
             print "Space %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+            (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if(learner.stopPolicy.isTrainingComplete(learner)): break
             
             #refine grid
             learner.notifyEventControllers(LearnerEvents.REFINING_GRID)
         
-            pointsNum = learner.specification.getNumOfPointsToRefine( learner.grid.createGridGenerator().getNumberOfRefinablePoints() )
-            learner.grid.createGridGenerator().refine( self.refinement_functor(learner.alpha, int(pointsNum), learner.specification.getAdaptThreshold()) )
+            pointsNum = learner.specification.getNumOfPointsToRefine( learner.grid.getGenerator().getNumberOfRefinablePoints() )
+            learner.grid.getGenerator().refine( self.refinement_functor(learner.alpha, int(pointsNum), learner.specification.getAdaptThreshold()) )
         #formatter = GridFormatter()
         #formatter.serializeToFile(learner.grid, "grid_anova_%s.txt"%suffix)
 

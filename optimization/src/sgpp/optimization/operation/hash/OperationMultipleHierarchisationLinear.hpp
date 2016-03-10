@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONLINEAR_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONLINEAR_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEAR_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEAR_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -12,22 +12,21 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
  * Hierarchisation operation for linear basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationLinear :
-  public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationLinear : public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  OperationMultipleHierarchisationLinear(base::LinearGrid& grid);
+  explicit OperationMultipleHierarchisationLinear(base::LinearGrid& grid);
 
   /**
    * Destructor.
@@ -68,8 +67,7 @@ class OperationMultipleHierarchisationLinear :
   /// storage of the sparse grid
   base::LinearGrid& grid;
 };
+}  // namespace optimization
+}  // namespace sgpp
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONLINEAR_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEAR_HPP */

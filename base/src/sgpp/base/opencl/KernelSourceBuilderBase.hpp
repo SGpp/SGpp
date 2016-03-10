@@ -12,7 +12,7 @@
 #include "OCLDevice.hpp"
 #include "sgpp/base/tools/json/Node.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 template <typename T>
@@ -54,7 +54,7 @@ class KernelSourceBuilderBase {
 
       file.close();
     } else {
-      throw new base::operation_exception(
+      throw base::operation_exception(
           "OCL error: file to reuse not found\n");
     }
 
@@ -80,4 +80,4 @@ class KernelSourceBuilderBase {
   }
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

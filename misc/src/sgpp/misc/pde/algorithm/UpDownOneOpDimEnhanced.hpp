@@ -6,8 +6,6 @@
 #ifndef UPDOWNONEOPDIMENHANCED_HPP
 #define UPDOWNONEOPDIMENHANCED_HPP
 
-#include <vector>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -19,8 +17,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -29,32 +28,30 @@ namespace pde {
  * afterwards.
  *
  */
-class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
+class UpDownOneOpDimEnhanced : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
-   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+   * @param storage the grid's sgpp::base::GridStorage object
+   * @param coef reference to a sgpp::base::DataVector object that contains the bilinear form's
+   * constant coefficients; one per dimension
    */
-  UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage,
-                         SGPP::base::DataVector& coef);
+  UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage, sgpp::base::DataVector& coef);
 
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage);
+  explicit UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~UpDownOneOpDimEnhanced();
 
-
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * this functions provides the same functionality as the normal mult routine.
@@ -70,17 +67,15 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void multParallelBuildingBlock(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataVector& result);
-
+  void multParallelBuildingBlock(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
 
   /// Pointer to the grid's storage object
-  SGPP::base::GridStorage* storage;
-  /// Pointer to the SGPP::base::DataVector of the coefs
-  SGPP::base::DataVector* coefs;
+  sgpp::base::GridStorage* storage;
+  /// Pointer to the sgpp::base::DataVector of the coefs
+  sgpp::base::DataVector* coefs;
   /// algorithmic dimensions, operator is applied in this dimensions
   const std::vector<size_t> algoDims;
   /// number of algorithmic dimensions
@@ -95,8 +90,7 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
    * @param alpha matrix of coefficients
    * @param result matrix to store the results of all dimensions
    */
-  void updown(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
-              size_t dim);
+  void updown(sgpp::base::DataMatrix& alpha, sgpp::base::DataMatrix& result, size_t dim);
 
   /**
    * 1D up Operation
@@ -105,8 +99,7 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
    * @param alpha matrix of coefficients
    * @param result matrix to store the results of all dimensions
    */
-  virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
-                  size_t dim) = 0;
+  virtual void up(sgpp::base::DataMatrix& alpha, sgpp::base::DataMatrix& result, size_t dim) = 0;
 
   /**
    * 1D down Operation
@@ -115,11 +108,10 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
    * @param alpha matrix of coefficients
    * @param result matrix to store the results of all dimensions
    */
-  virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
-                    size_t dim) = 0;
+  virtual void down(sgpp::base::DataMatrix& alpha, sgpp::base::DataMatrix& result, size_t dim) = 0;
 };
 
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* STDUPDOWN_HPP */

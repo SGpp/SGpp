@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/factory_exception.hpp>
-#include "QuadRule1D.hpp"
+#include <sgpp/base/tools/QuadRule1D.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 QuadRule1D::QuadRule1D() :
@@ -38,5 +38,5 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

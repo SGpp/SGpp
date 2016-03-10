@@ -12,28 +12,21 @@
 #ifdef USE_ARMADILLO
 #include <armadillo>
 
-#if USE_DOUBLE_PRECISION
 typedef arma::vec ArmadilloVector;
 typedef arma::mat ArmadilloMatrix;
-#else
-typedef arma::fvec ArmadilloVector;
-typedef arma::fmat ArmadilloMatrix;
-#endif
-
 #endif /* USE_ARMADILLO */
 
 #include <cstddef>
 #include <iostream>
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
-Armadillo::~Armadillo() {
-}
+Armadillo::~Armadillo() {}
 
-bool Armadillo::solve(SLE& system, base::DataVector& b,
-                      base::DataVector& x) const {
+bool Armadillo::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   base::DataMatrix B(b.getPointer(), b.getSize(), 1);
   base::DataMatrix X(B.getNrows(), B.getNcols());
 
@@ -47,9 +40,7 @@ bool Armadillo::solve(SLE& system, base::DataVector& b,
   }
 }
 
-bool Armadillo::solve(SLE& system,
-                      base::DataMatrix& B,
-                      base::DataMatrix& X) const {
+bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 #ifdef USE_ARMADILLO
   Printer::getInstance().printStatusBegin("Solving linear system (Armadillo)...");
 
@@ -59,9 +50,8 @@ bool Armadillo::solve(SLE& system,
 
   A.zeros();
 
-  // parallelize only if the system is cloneable
-  #pragma omp parallel if (system.isCloneable()) \
-  shared(system, A, nnz) default(none)
+// parallelize only if the system is cloneable
+#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz) default(none)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
@@ -74,8 +64,8 @@ bool Armadillo::solve(SLE& system,
 
 #endif /* _OPENMP */
 
-    // copy system matrix to Armadillo matrix object
-    #pragma omp for ordered schedule(dynamic)
+// copy system matrix to Armadillo matrix object
+#pragma omp for ordered schedule(dynamic)
 
     for (arma::uword i = 0; i < n; i++) {
       for (arma::uword j = 0; j < n; j++) {
@@ -84,20 +74,20 @@ bool Armadillo::solve(SLE& system,
         // count nonzero entries
         // (not necessary, you can also remove that if you like)
         if (A(i, j) != 0) {
-          #pragma omp atomic
+#pragma omp atomic
           nnz++;
         }
       }
 
       // status message
       if (i % 100 == 0) {
-        #pragma omp ordered
+#pragma omp ordered
         {
           char str[10];
-          snprintf(str, 10, "%.1f%%",
-          static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-          Printer::getInstance().printStatusUpdate("constructing matrix (" +
-          std::string(str) + ")");
+          snprintf(str, sizeof(str), "%.1f%%",
+                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
+          Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
+                                                   ")");
         }
       }
     }
@@ -109,10 +99,9 @@ bool Armadillo::solve(SLE& system,
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnzRatio = static_cast<float_t>(nnz) /
-                       (static_cast<float_t>(n) *
-                        static_cast<float_t>(n));
-    snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
+    double nnzRatio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
+    snprintf(str, sizeof(str), "%.1f%%", nnzRatio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
   }
@@ -172,7 +161,6 @@ bool Armadillo::solve(SLE& system,
   return false;
 #endif /* USE_ARMADILLO */
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace sgpp

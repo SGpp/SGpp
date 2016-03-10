@@ -18,7 +18,7 @@
 #include <map>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -130,7 +130,7 @@ HashGridIndex::serialize(std::ostream& ostream) {
 }
 
 size_t
-HashGridIndex::dim() const {
+HashGridIndex::getDimension() const {
   return DIM;
 }
 
@@ -154,23 +154,23 @@ HashGridIndex::isLeaf() {
   return Leaf;
 }
 
-float_t
+double
 HashGridIndex::getCoord(size_t d) const {
   if (distr == PointDistribution::Normal) {
     // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
-    return static_cast<float_t>(index[d]) /
-           static_cast<float_t>(static_cast<index_type>(1) << level[d]);
+    return static_cast<double>(index[d]) /
+           static_cast<double>(static_cast<index_type>(1) << level[d]);
   } else {
     return ClenshawCurtisTable::getInstance().getPoint(level[d], index[d]);
   }
 }
 
-float_t
-HashGridIndex::getCoordBB(size_t d, float_t q, float_t t) const {
+double
+HashGridIndex::getCoordBB(size_t d, double q, double t) const {
   return q * getCoord(d) + t;
 }
 
-float_t
+double
 HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
   return stretch->getCoordinates(level[d], index[d], d);
 }
@@ -306,7 +306,7 @@ HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
   for (size_t d = 0; d < DIM; d++) {
     if (level[d] == 0) {
       p.set(d, stretch.getIntervalWidth(d) *
-            static_cast<float_t>(index[d]) + stretch.getIntervalOffset(d));
+            static_cast<double>(index[d]) + stretch.getIntervalOffset(d));
     } else {
       p.set(d, stretch.getCoordinates(level[d], index[d], d));
     }
@@ -462,5 +462,5 @@ HashGridIndex::typeVerboseMap() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

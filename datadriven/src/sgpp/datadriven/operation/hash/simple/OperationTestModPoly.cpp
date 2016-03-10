@@ -4,40 +4,37 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationTestModPoly.hpp>
-
 #include <sgpp/base/exception/operation_exception.hpp>
-
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-float_t OperationTestModPoly::test(SGPP::base::DataVector& alpha,
-                                   SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+double OperationTestModPoly::test(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                                   sgpp::base::DataVector& classes) {
   return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-float_t OperationTestModPoly::testMSE(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+double OperationTestModPoly::testMSE(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                                      sgpp::base::DataVector& refValues) {
   return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-float_t OperationTestModPoly::testWithCharacteristicNumber(
-  SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-  SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
-  return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data,
-         classes, charaNumbers, 0.0);
+double OperationTestModPoly::testWithCharacteristicNumber(sgpp::base::DataVector& alpha,
+                                                           sgpp::base::DataMatrix& data,
+                                                           sgpp::base::DataVector& classes,
+                                                           sgpp::base::DataVector& charaNumbers) {
+  return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes,
+                                              charaNumbers, 0.0);
 }
 
-void OperationTestModPoly::calculateROCcurve(SGPP::base::DataVector& alpha,
-    SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
-    SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
-  test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds,
-                         ROC_curve);
+void OperationTestModPoly::calculateROCcurve(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataMatrix& data,
+                                             sgpp::base::DataVector& classes,
+                                             sgpp::base::DataVector& thresholds,
+                                             sgpp::base::DataMatrix& ROC_curve) {
+  test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

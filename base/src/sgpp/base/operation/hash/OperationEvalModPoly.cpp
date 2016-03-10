@@ -14,19 +14,19 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationEvalModPoly::eval(const DataVector& alpha,
+double OperationEvalModPoly::eval(const DataVector& alpha,
                                    const DataVector& point) {
-  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+  typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
   IndexValVector vec;
   GetAffectedBasisFunctions<SPolyModifiedBase> ga(storage);
 
   ga(base, point, vec);
 
-  float_t result = 0.0;
+  double result = 0.0;
 
   for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
     result += iter->second * alpha[iter->first];
@@ -36,4 +36,4 @@ float_t OperationEvalModPoly::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

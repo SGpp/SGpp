@@ -7,11 +7,12 @@
 #define MODLINEARGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -19,6 +20,8 @@ namespace base {
  */
 class ModLinearGrid : public Grid {
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   explicit ModLinearGrid(std::istream& istr);
 
  public:
@@ -34,16 +37,16 @@ class ModLinearGrid : public Grid {
    */
   ~ModLinearGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODLINEARGRID_HPP */

@@ -8,25 +8,23 @@
 
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
  */
-class OperationLaplaceLinearStretched: public UpDownOneOpDim {
+class OperationLaplaceLinearStretched : public UpDownOneOpDim {
  public:
   /**
    * Constructor of OperationLaplaceLinearStretched
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLaplaceLinearStretched(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceLinearStretched(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -34,23 +32,18 @@ class OperationLaplaceLinearStretched: public UpDownOneOpDim {
   virtual ~OperationLaplaceLinearStretched();
 
  protected:
-  virtual void specialOP(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim, size_t gradient_dim);
+  virtual void specialOP(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
+                         size_t gradient_dim);
 
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACELINEARSTRETCHED_HPP */

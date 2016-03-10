@@ -17,7 +17,7 @@ class Test_SubspaceANOVA(unittest.TestCase):
 
     def setUp(self):
         self.grid = Grid.createLinearGrid(2)  # a simple 2D grid
-        self.grid.createGridGenerator().regular(3)  # max level 3 => 17 points
+        self.grid.getGenerator().regular(3)  # max level 3 => 17 points
         self.HashGridStorage = self.grid.getStorage()
 
 

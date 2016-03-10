@@ -8,7 +8,7 @@
 #include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace math {
 
@@ -39,12 +39,12 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
 
       // calculate shift: lambda is the eigenvalue of A(m-1:m,m-1:m)
       // which is closest to A(m,m)
-      const float_t dPlus = A(m - 1, m - 1) + A(m - 2, m - 2);
-      const float_t dMinus = A(m - 1, m - 1) - A(m - 2, m - 2);
-      const float_t sigma = (dMinus >= 0.0) ? 1.0 : -1.0;
-      const float_t lambda = dPlus / 2.0 + sigma / 2.0 * std::sqrt(
-                               dMinus * dMinus +
-                               4.0 * A(m - 1, m - 2) * A(m - 2, m - 1));
+      const double dPlus = A(m - 1, m - 1) + A(m - 2, m - 2);
+      const double dMinus = A(m - 1, m - 1) - A(m - 2, m - 2);
+      const double sigma = (dMinus >= 0.0) ? 1.0 : -1.0;
+      const double lambda =
+          dPlus / 2.0 +
+          sigma / 2.0 * std::sqrt(dMinus * dMinus + 4.0 * A(m - 1, m - 2) * A(m - 2, m - 1));
 
       // calculate A(1:m,1:m) - lambda*eye(m)
       for (size_t i = 0; i < m; i++) {
@@ -68,7 +68,7 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
       // update lower left values
       for (size_t i = m; i < n; i++) {
         for (size_t j = 0; j < m; j++) {
-          float_t entry = 0.0;
+          double entry = 0.0;
 
           for (size_t l = 0; l < m; l++) {
             entry += A(i, l) * QTilde(l, j);
@@ -81,7 +81,7 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
       // update upper right values
       for (size_t i = 0; i < m; i++) {
         for (size_t j = m; j < n; j++) {
-          float_t entry = 0.0;
+          double entry = 0.0;
 
           for (size_t l = 0; l < m; l++) {
             entry += QTilde(l, i) * A(l, j);
@@ -94,7 +94,7 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
       // update upper left values
       for (size_t i = 0; i < m; i++) {
         for (size_t j = 0; j < m; j++) {
-          float_t entry = 0.0;
+          double entry = 0.0;
 
           for (size_t p = 0; p < m; p++) {
             for (size_t q = 0; q < m; q++) {
@@ -111,7 +111,7 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
       // update transformation matrix (only left part)
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < m; j++) {
-          float_t entry = 0.0;
+          double entry = 0.0;
 
           for (size_t l = 0; l < m; l++) {
             entry += V(i, l) * QTilde(l, j);
@@ -171,7 +171,7 @@ void QRDecomposition(base::DataMatrix& A, base::DataMatrix& Q) {
     // update lower right values (lower left part is zero)
     for (size_t i = k; i < n; i++) {
       for (size_t j = k; j < n; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t l = 0; l < m; l++) {
           entry += QTilde(i - k, l) * A(l + k, j);
@@ -192,7 +192,7 @@ void QRDecomposition(base::DataMatrix& A, base::DataMatrix& Q) {
     // update transformation matrix (only right part)
     for (size_t i = 0; i < n; i++) {
       for (size_t j = k; j < n; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t l = 0; l < m; l++) {
           entry += Q(i, l + k) * QTilde(j - k, l);
@@ -239,7 +239,7 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
     // update upper right values
     for (size_t i = 0; i < k + 1; i++) {
       for (size_t j = k + 1; j < n; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t l = 0; l < m; l++) {
           entry += A(i, l + k + 1) * QTilde(l, j - k - 1);
@@ -252,7 +252,7 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
     // update lower left values
     for (size_t i = k + 1; i < n; i++) {
       for (size_t j = i - 1; j < k + 1; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t l = 0; l < m; l++) {
           entry += QTilde(i - k - 1, l) * A(l + k + 1, j);
@@ -271,13 +271,11 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
     // update lower right values
     for (size_t i = k + 1; i < n; i++) {
       for (size_t j = k + 1; j < n; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t p = 0; p < m; p++) {
           for (size_t q = 0; q < m; q++) {
-            entry += QTilde(i - k - 1, p) *
-                     A(p + k + 1, q + k + 1) *
-                     QTilde(q, j - k - 1);
+            entry += QTilde(i - k - 1, p) * A(p + k + 1, q + k + 1) * QTilde(q, j - k - 1);
           }
         }
 
@@ -290,7 +288,7 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
     // update transformation matrix (only right part)
     for (size_t i = 0; i < n; i++) {
       for (size_t j = k + 1; j < n; j++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t l = 0; l < m; l++) {
           entry += V(i, l + k + 1) * QTilde(l, j - k - 1);
@@ -304,9 +302,7 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
   }
 }
 
-void householderTransformation(const base::DataMatrix& A,
-                               size_t i, size_t j,
-                               base::DataMatrix& Q) {
+void householderTransformation(const base::DataMatrix& A, size_t i, size_t j, base::DataMatrix& Q) {
   // dimension of matrix
   const size_t n = A.getNrows();
   // dimension of transformation
@@ -314,8 +310,8 @@ void householderTransformation(const base::DataMatrix& A,
   // normal vector to reflection hyperplane
   base::DataVector d(m);
 
-  const float_t c1 = A(i, j);
-  float_t cNorm = c1 * c1;
+  const double c1 = A(i, j);
+  double cNorm = c1 * c1;
 
   // read from matrix
   for (size_t p = 1; p < m; p++) {
@@ -324,9 +320,9 @@ void householderTransformation(const base::DataMatrix& A,
   }
 
   cNorm = std::sqrt(cNorm);
-  const float_t sigma = (c1 >= 0.0) ? 1.0 : -1.0;
+  const double sigma = (c1 >= 0.0) ? 1.0 : -1.0;
   d[0] = c1 + sigma * cNorm;
-  const float_t r = std::abs(d[0]) * cNorm;
+  const double r = std::abs(d[0]) * cNorm;
 
   // create transformation matrix
   for (size_t p = 0; p < m; p++) {
@@ -335,7 +331,6 @@ void householderTransformation(const base::DataMatrix& A,
     }
   }
 }
-
-}
-}
-}
+}  // namespace math
+}  // namespace optimization
+}  // namespace sgpp

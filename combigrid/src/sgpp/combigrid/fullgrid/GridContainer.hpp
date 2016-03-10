@@ -1,15 +1,15 @@
-/*
- * GridContainer.hpp
- *
- *  Created on: 23 Jun 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef GRIDCONTAINER_HPP_
 #define GRIDCONTAINER_HPP_
 
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
-#include "../utils/combigrid_utils.hpp"
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
+#include <vector>
 
 /***
  *
@@ -67,10 +67,9 @@ class FGridContainer {
 
   int getMaxLevel() {
     int max = 1;
-    int DIM = (int)_fullgrid_levels.size();
+    int DIM = static_cast<int>(_fullgrid_levels.size());
 
-    for (int d = 0; d < DIM; d++)
-      max = _fullgrid_levels[d] > max ? _fullgrid_levels[d] : max;
+    for (int d = 0; d < DIM; d++) max = _fullgrid_levels[d] > max ? _fullgrid_levels[d] : max;
 
     return max;
   }
@@ -98,13 +97,11 @@ class FGridContainer {
    * the default LinearBasisFunction is set!
    *
    */
-  FGridContainer(const std::vector<int> levels,
-                 const std::vector<bool>& hasBoundaryPts, _Tp coef,
+  FGridContainer(const std::vector<int> levels, const std::vector<bool>& hasBoundaryPts, _Tp coef,
                  BasisFunctionBasis* basis = NULL) {
     int dim = static_cast<int>(levels.size());
 
-    _fullgrid =
-        new combigrid::FullGrid<_Tp>(dim, levels, hasBoundaryPts, basis);
+    _fullgrid = new combigrid::FullGrid<_Tp>(dim, levels, hasBoundaryPts, basis);
     _fullgrid_levels = levels;
     _coefficient = coef;
     _active = true;
@@ -130,6 +127,6 @@ class FGridContainer {
     if (_fullgrid != NULL) _fullgrid->createFullGrid();
   }
 };
-}
+}  // namespace combigrid
 
 #endif /* GRIDCONTAINER_HPP_ */

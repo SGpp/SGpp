@@ -15,7 +15,7 @@
 #include <time.h>
 
 #include <cstddef>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -23,16 +23,16 @@
 #include <algorithm>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 struct Stretching1D {
   std::string type;
-  float_t x_0, xsi;
+  double x_0, xsi;
   // Index 0 : current position
   // Index 1: left neighbor position
   // Index 2: right neighbor position
-  float_t lookup[LOOKUPSIZE][3];
+  double lookup[LOOKUPSIZE][3];
 };
 
 /**
@@ -71,12 +71,12 @@ class Stretching : public BoundingBox {
    * where f is the transformation function and [a,b] are the intervals the transformation is defined.
    *
    * Calculates the streched coordinate with respect to the given parameters
-   *Note to self: may take other than float_t, take care
+   *Note to self: may take other than double, take care
    * @param level level of the node
    * @param index index of the node
    * @param dimension dimension of the node
    */
-  float_t stretchingXform(int level, int index, size_t dimension);
+  double stretchingXform(int level, int index, size_t dimension);
 
   /*
    * calculates the logarithm transform in the given dimension
@@ -95,7 +95,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param dimension dimension of the node
    */
-  float_t logXform(int level, int index, size_t dimension);
+  double logXform(int level, int index, size_t dimension);
 
   /*
    * calculates the leentvar transform in the given dimension
@@ -114,7 +114,7 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  float_t leentvaarXform(int level, int index, size_t dimension);
+  double leentvaarXform(int level, int index, size_t dimension);
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
@@ -132,7 +132,7 @@ class Stretching : public BoundingBox {
    * @param dimension dimension of the node
    *
    */
-  float_t noXform(int level, int index, size_t dimension);
+  double noXform(int level, int index, size_t dimension);
 
   /*
    * calculates the lookup table index
@@ -144,13 +144,13 @@ class Stretching : public BoundingBox {
 
   /*
    * gets the discrete points that are stretched and creates a lookup table
-   * @param vec float_t vector containing the discrete points, includes left and right boundary
+   * @param vec double vector containing the discrete points, includes left and right boundary
    * @param stretch1d Stretch1D to write on the type of stretching and lookup table
    * @param dim dimension of the node
    * @param discreteVectorLevel how many levels the grid vector points form
    */
 
-  void parseVectorToLookupTable(std::vector<float_t> vec,
+  void parseVectorToLookupTable(std::vector<double> vec,
                                 Stretching1D& stretch1d,
                                 size_t dim, int& discreteVectorLevel);
 
@@ -191,10 +191,10 @@ class Stretching : public BoundingBox {
    * initializes the Stretching using the coordinates given. (For Janos' request)
    *
    * @param dim number of the dimensions used with the grid
-   * @param coordinates vector<float_t> array to get the boundaries, as well as the coordinates
+   * @param coordinates vector<double> array to get the boundaries, as well as the coordinates
    * of the specific level the vector defines for each dimension.
    */
-  Stretching(size_t dim, std::vector<float_t>* coordinates);
+  Stretching(size_t dim, std::vector<double>* coordinates);
 
   /**
    * Copy-Constructor
@@ -218,7 +218,7 @@ class Stretching : public BoundingBox {
    * @param dimension dimension of the node
    *
    */
-  float_t getCoordinates(int level, int index, size_t dimension);
+  double getCoordinates(int level, int index, size_t dimension);
 
   /*
    * Returns the type of the Stretching of the dimension given
@@ -244,8 +244,8 @@ class Stretching : public BoundingBox {
    * @param posr right point
    */
   void getAdjacentPositions(int level, int index, size_t dimension,
-                            float_t& posc,
-                            float_t& posl, float_t& posr);
+                            double& posc,
+                            double& posl, double& posr);
 
   /*
    * returns the stretchingMode, can be "analytic" or "discrete"
@@ -256,7 +256,7 @@ class Stretching : public BoundingBox {
    * returns the discreteVector for the discrete grid structure.
    * used for serializing the grid
    */
-  std::vector<float_t>* getDiscreteVector(bool bSort);
+  std::vector<double>* getDiscreteVector(bool bSort);
 
   /*
    * returns the discretevectorlevel array of size nDim
@@ -267,6 +267,6 @@ class Stretching : public BoundingBox {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STRETCHING_HPP */

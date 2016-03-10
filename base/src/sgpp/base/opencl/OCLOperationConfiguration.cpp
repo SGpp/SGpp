@@ -6,12 +6,12 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 #include <string>
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-OCLOperationConfiguration::OCLOperationConfiguration()
-    : OperationConfiguration() {
+OCLOperationConfiguration::OCLOperationConfiguration() : OperationConfiguration() {
   // augment default values to configuration
   //        this->addIDAttr("LOCAL_SIZE", 64ul);
   //        this->addIDAttr("ENABLE_OPTIMIZATIONS", true);
@@ -29,8 +29,7 @@ OCLOperationConfiguration::OCLOperationConfiguration()
   //        this->addIDAttr("SHOW_BUILD_LOG", false);
 }
 
-OCLOperationConfiguration::OCLOperationConfiguration(
-    const std::string& fileName)
+OCLOperationConfiguration::OCLOperationConfiguration(const std::string &fileName)
     : OperationConfiguration(fileName) {
   // augment default values to configuration
   //    if (this->contains("LOCAL_SIZE") == false) {
@@ -84,10 +83,21 @@ OCLOperationConfiguration::OCLOperationConfiguration(
   //    }
 }
 
-OperationConfiguration* OCLOperationConfiguration::clone() {
-  return dynamic_cast<OperationConfiguration*>(
-      new OCLOperationConfiguration(*this));
+OperationConfiguration *OCLOperationConfiguration::clone() {
+  return dynamic_cast<OperationConfiguration *>(new OCLOperationConfiguration(*this));
+}
+
+std::vector<std::reference_wrapper<json::Node>> OCLOperationConfiguration::getAllDeviceNodes() {
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes;
+  for (std::string &platformName : (*this)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*this)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      deviceNodes.push_back(deviceNode);
+    }
+  }
+  return deviceNodes;
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

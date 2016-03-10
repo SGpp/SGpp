@@ -16,8 +16,10 @@
 #include <cstddef>
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -33,48 +35,22 @@ typedef UF_long sslong;
  * @param[out]  x       solution to the system
  * @return              whether all went well (false if errors occurred)
  */
-bool solveInternal(void* numeric, const std::vector<sslong>& Ap,
-                   const std::vector<sslong>& Ai,
-                   const std::vector<double>& Ax,
-                   base::DataVector& b,
-                   base::DataVector& x) {
+bool solveInternal(void* numeric, const std::vector<sslong>& Ap, const std::vector<sslong>& Ai,
+                   const std::vector<double>& Ax, base::DataVector& b, base::DataVector& x) {
   const size_t n = b.getSize();
 
-#if USE_DOUBLE_PRECISION
   x.resize(n);
   x.setAll(0.0);
 
-  sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
-                                   &Ax[0], x.getPointer(), b.getPointer(),
-                                   numeric, NULL, NULL);
+  sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0], &Ax[0], x.getPointer(),
+                                   b.getPointer(), numeric, NULL, NULL);
   return (result == UMFPACK_OK);
-#else
-  std::vector<double> bDbl(b.getPointer(), b.getPointer() + b.getSize());
-  std::vector<double> xDbl(n);
-
-  sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
-                                   &Ax[0], &xDbl[0], &bDbl[0],
-                                   numeric, NULL, NULL);
-
-  if (result == UMFPACK_OK) {
-    for (size_t i = 0; i < xDbl.size(); i++) {
-      x[i] = static_cast<float>(xDbl[i]);
-    }
-
-    return true;
-  } else {
-    return false;
-  }
-
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif /* USE_UMFPACK */
 
-UMFPACK::~UMFPACK() {
-}
+UMFPACK::~UMFPACK() {}
 
-bool UMFPACK::solve(SLE& system, base::DataVector& b,
-                    base::DataVector& x) const {
+bool UMFPACK::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   base::DataMatrix B(b.getPointer(), b.getSize(), 1);
   base::DataMatrix X(B.getNrows(), B.getNcols());
 
@@ -88,9 +64,7 @@ bool UMFPACK::solve(SLE& system, base::DataVector& b,
   }
 }
 
-bool UMFPACK::solve(SLE& system,
-                    base::DataMatrix& B,
-                    base::DataMatrix& X) const {
+bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 #ifdef USE_UMFPACK
   Printer::getInstance().printStatusBegin("Solving linear system (UMFPACK)...");
 
@@ -101,9 +75,8 @@ bool UMFPACK::solve(SLE& system,
   std::vector<uint32_t> Tj;
   std::vector<double> Tx;
 
-  // parallelize only if the system is cloneable
-  #pragma omp parallel if (system.isCloneable()) \
-  shared(system, Ti, Tj, Tx, nnz) default(none)
+// parallelize only if the system is cloneable
+#pragma omp parallel if (system.isCloneable()) shared(system, Ti, Tj, Tx, nnz) default(none)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
@@ -116,15 +89,15 @@ bool UMFPACK::solve(SLE& system,
 
 #endif /* _OPENMP */
 
-    // get indices and values of nonzero entries
-    #pragma omp for ordered schedule(dynamic)
+// get indices and values of nonzero entries
+#pragma omp for ordered schedule(dynamic)
 
     for (uint32_t i = 0; i < n; i++) {
       for (uint32_t j = 0; j < n; j++) {
-        float_t entry = system2->getMatrixEntry(i, j);
+        double entry = system2->getMatrixEntry(i, j);
 
         if (entry != 0) {
-          #pragma omp critical
+#pragma omp critical
           {
             Ti.push_back(i);
             Tj.push_back(j);
@@ -136,13 +109,13 @@ bool UMFPACK::solve(SLE& system,
 
       // status message
       if (i % 100 == 0) {
-        #pragma omp ordered
+#pragma omp ordered
         {
           char str[10];
-          snprintf(str, 10, "%.1f%%",
-          static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+          snprintf(str, sizeof(str), "%.1f%%",
+                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
           Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
-          std::string(str) + ")");
+                                                   std::string(str) + ")");
         }
       }
     }
@@ -154,10 +127,9 @@ bool UMFPACK::solve(SLE& system,
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio = static_cast<float_t>(nnz) /
-                        (static_cast<float_t>(n) *
-                         static_cast<float_t>(n));
-    snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
+    double nnz_ratio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
+    snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
   }
@@ -180,35 +152,33 @@ bool UMFPACK::solve(SLE& system,
 
     Printer::getInstance().printStatusUpdate("step 1: umfpack_dl_triplet_to_col");
 
-    result = umfpack_dl_triplet_to_col(
-               static_cast<sslong>(n), static_cast<sslong>(n),
-               static_cast<sslong>(nnz),
-               &TiArray[0], &TjArray[0], &Tx[0],
-               &Ap[0], &Ai[0], &Ax[0], NULL);
+    result = umfpack_dl_triplet_to_col(static_cast<sslong>(n), static_cast<sslong>(n),
+                                       static_cast<sslong>(nnz), &TiArray[0], &TjArray[0], &Tx[0],
+                                       &Ap[0], &Ai[0], &Ax[0], NULL);
 
     if (result != UMFPACK_OK) {
       Printer::getInstance().printStatusEnd(
-        "error: Could not convert to CCS via "
-        "umfpack_dl_triplet_to_col, error code " +
-        std::to_string(result));
+          "error: Could not convert to CCS via "
+          "umfpack_dl_triplet_to_col, error code " +
+          std::to_string(result));
       return false;
     }
   }
 
-  void* symbolic, *numeric;
+  void *symbolic, *numeric;
 
   Printer::getInstance().printStatusNewLine();
   Printer::getInstance().printStatusUpdate("step 2: umfpack_dl_symbolic");
 
   // call umfpack_dl_symbolic
-  result = umfpack_dl_symbolic(static_cast<sslong>(n),
-                               static_cast<sslong>(n),
-                               &Ap[0], &Ai[0], &Ax[0],
-                               &symbolic, NULL, NULL);
+  result = umfpack_dl_symbolic(static_cast<sslong>(n), static_cast<sslong>(n), &Ap[0], &Ai[0],
+                               &Ax[0], &symbolic, NULL, NULL);
 
   if (result != UMFPACK_OK) {
-    Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_symbolic, "
-                                          "error code " + std::to_string(result));
+    Printer::getInstance().printStatusEnd(
+        "error: Could solve via umfpack_dl_symbolic, "
+        "error code " +
+        std::to_string(result));
     return false;
   }
 
@@ -216,12 +186,13 @@ bool UMFPACK::solve(SLE& system,
   Printer::getInstance().printStatusUpdate("step 3: umfpack_dl_numeric");
 
   // call umfpack_dl_numeric
-  result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0],
-                              symbolic, &numeric, NULL, NULL);
+  result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0], symbolic, &numeric, NULL, NULL);
 
   if (result != UMFPACK_OK) {
-    Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_numeric, "
-                                          "error code " + std::to_string(result));
+    Printer::getInstance().printStatusEnd(
+        "error: Could solve via umfpack_dl_numeric, "
+        "error code " +
+        std::to_string(result));
     umfpack_dl_free_symbolic(&symbolic);
     return false;
   }
@@ -241,16 +212,17 @@ bool UMFPACK::solve(SLE& system,
       Printer::getInstance().printStatusUpdate("step 4: umfpack_dl_solve");
     } else {
       Printer::getInstance().printStatusUpdate("step 4: umfpack_dl_solve (RHS " +
-          std::to_string(i + 1) +
-          " of " + std::to_string(B.getNcols()) +
-          ")");
+                                               std::to_string(i + 1) + " of " +
+                                               std::to_string(B.getNcols()) + ")");
     }
 
     if (solveInternal(numeric, Ap, Ai, Ax, b, x)) {
       X.setColumn(i, x);
     } else {
-      Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_solve, "
-                                            "error code " + std::to_string(result));
+      Printer::getInstance().printStatusEnd(
+          "error: Could solve via umfpack_dl_solve, "
+          "error code " +
+          std::to_string(result));
       umfpack_dl_free_numeric(&numeric);
       return false;
     }
@@ -266,7 +238,6 @@ bool UMFPACK::solve(SLE& system,
   return false;
 #endif /* USE_UMFPACK */
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace sgpp

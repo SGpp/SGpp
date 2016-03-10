@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -32,13 +32,13 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
      * An adaptive grid with prewavelet ansatz functions requires for operations
    * using the up-down algorithm shadow points. These shadow points a needed just
    * for data transport, thus they do not have an influence on the final function.
-   * Please refer to SGPP::pde::UpDownOneOpDimWithShadow for more information.
+   * Please refer to sgpp::pde::UpDownOneOpDimWithShadow for more information.
      *
    * @param storage Pointer to the grid's gridstorage obejct
    * @param shadowStorage shadow points (see detailed description)
    */
-  OperationHierarchisationPrewavelet(GridStorage* storage,
-                                     GridStorage* shadowStorage) :
+  OperationHierarchisationPrewavelet(GridStorage& storage,
+                                     GridStorage& shadowStorage) :
     storage(storage), shadowStorage(shadowStorage) {
   }
 
@@ -52,9 +52,9 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
   void doDehierarchisation(DataVector& alpha) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
-  GridStorage* shadowStorage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
+  GridStorage& shadowStorage;
 
   void expandGrid();
 
@@ -62,6 +62,6 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONPREWAVELET_HPP */

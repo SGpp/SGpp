@@ -19,7 +19,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -43,9 +43,9 @@ class AlgorithmDGEMV {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult_transposed(GridStorage* storage, BASIS& basis,
+  void mult_transposed(GridStorage& storage, BASIS& basis,
                        const DataVector& source, DataMatrix& x, DataVector& result) {
-    typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+    typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
     result.setAll(0.0);
 
@@ -80,13 +80,13 @@ class AlgorithmDGEMV {
     }
   }
   // implementation requires OpenMP 4.0 support
-  //        void mult_transposed(GridStorage* storage, BASIS& basis,
+  //        void mult_transposed(GridStorage& storage, BASIS& basis,
   //        const DataVector& source, DataMatrix& x, DataVector& result) {
-  //          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+  //          typedef std::vector<std::pair<size_t, double> > IndexValVector;
   //
   //          result.setAll(0.0);
   //          #pragma omp declare reduction(accumulate :
-  // ... SGPP::base::DataVector : omp_out.add(omp_in))
+  // ... sgpp::base::DataVector : omp_out.add(omp_in))
   // ... initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //
@@ -127,9 +127,9 @@ class AlgorithmDGEMV {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult(GridStorage* storage, BASIS& basis, const DataVector& source,
+  void mult(GridStorage& storage, BASIS& basis, const DataVector& source,
             DataMatrix& x, DataVector& result) {
-    typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+    typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
     result.setAll(0.0);
 
@@ -160,6 +160,6 @@ class AlgorithmDGEMV {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORTIHMDGEMV_HPP */

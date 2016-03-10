@@ -11,7 +11,7 @@
 
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLDevice {
@@ -34,4 +34,4 @@ class OCLDevice {
         commandQueue(commandQueue) {}
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -21,7 +21,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -59,7 +59,7 @@ class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
    * @param lambda the lambda, the regression parameter
    */
   SystemMatrixLeastSquaresIdentity(base::Grid& SparseGrid,
-                                   base::DataMatrix& trainData, float_t lambda);
+                                   base::DataMatrix& trainData, double lambda);
 
   /**
    * Std-Destructor
@@ -78,11 +78,11 @@ class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
                          operationConfiguration) {
     this->implementationConfiguration = operationConfiguration;
     this->B = op_factory::createOperationMultipleEval(this->grid,
-              *(this->dataset_), this->implementationConfiguration);
+              *(this->dataset_), this->implementationConfiguration).release();
   }
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DMSYSTEMMATRIXSUBSPACES_HPP */
