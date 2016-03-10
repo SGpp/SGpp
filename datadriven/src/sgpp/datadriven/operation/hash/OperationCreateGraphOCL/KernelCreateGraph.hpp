@@ -7,7 +7,6 @@
 #include <CL/cl.h>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
@@ -90,12 +89,6 @@ class KernelCreateGraph {
                 << std::endl;
     }
     size_t datasize = data.size() / dims;
-    if (data.size() * k / dims != result.size()) {
-      std::stringstream errorString;
-      errorString << "Argument Error: Array sizes of graph and result do not match!"
-                  << std::endl;
-      throw base::operation_exception(errorString.str());
-    }
 
     // Build kernel if not already done
     if (this->kernel == nullptr) {
@@ -109,10 +102,17 @@ class KernelCreateGraph {
       this->kernel = manager->buildKernel(program_src, device, "connectNeighbors");
     }
 
-    std::vector<int> zeros(data.size()*k/dims);
-    for (size_t i = 0; i < data.size()*k/dims; i++)
-      zeros[i] = 0.0;
-    deviceResultData.intializeTo(zeros, 1, 0, data.size()*k/dims);
+    if (chunksize == -1) {
+      std::vector<int> zeros(data.size()*k/dims);
+      for (size_t i = 0; i < data.size()*k/dims; i++)
+        zeros[i] = 0.0;
+      deviceResultData.intializeTo(zeros, 1, 0, data.size()*k/dims);
+    } else {
+      std::vector<int> zeros(chunksize * k);
+      for (size_t i = 0; i < chunksize * k; i++)
+        zeros[i] = 0.0;
+      deviceResultData.intializeTo(zeros, 1, 0, chunksize * k);
+    }
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
@@ -139,14 +139,14 @@ class KernelCreateGraph {
     cl_event clTiming = nullptr;
 
     // enqueue kernel
-    if (verbose)
-      std::cout << "Starting the kernel" << std::endl;
     size_t globalworkrange[1];
     if (chunksize == -1) {
       globalworkrange[0] = data.size()/dims;
     } else {
       globalworkrange[0] = chunksize;
     }
+    if (verbose)
+      std::cout << "Starting the kernel for " << globalworkrange[0] << " items" << std::endl;
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
                                  NULL, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
@@ -163,9 +163,16 @@ class KernelCreateGraph {
     clFinish(device->commandQueue);
 
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
-    for (size_t i = 0; i < data.size()*k/dims; i++) {
-      result[i] = hostTemp[i];
+
+    if (chunksize == -1) {
+      for (size_t i = 0; i < data.size()*k/dims; i++)
+        result[i] = hostTemp[i];
+    } else {
+      for (size_t i = 0; i < chunksize * k; i++)
+        result[i] = hostTemp[i];
     }
+    if (verbose)
+      std::cout << "Read data from opencl device" << std::endl;
     // determine kernel execution time
     cl_ulong startTime = 0;
     cl_ulong endTime = 0;

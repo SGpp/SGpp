@@ -14,5 +14,8 @@ namespace datadriven {
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
                                      size_t dimensions, std::string opencl_conf);
+DensityOCLMultiPlatform::OperationCreateGraphOCL*
+createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
+                                     size_t dimensions, std::string opencl_conf);
 }
 }
