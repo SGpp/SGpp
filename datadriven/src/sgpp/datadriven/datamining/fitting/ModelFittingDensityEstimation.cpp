@@ -18,7 +18,7 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
-    datadriven::DataMiningConfiguration config)
+    datadriven::DataMiningConfigJsonParser config)
     : datadriven::ModelFittingBase() {
   // load all the needed variables
   // ...

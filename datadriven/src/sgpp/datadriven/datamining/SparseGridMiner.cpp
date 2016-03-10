@@ -23,7 +23,7 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner::SparseGridMiner(datadriven::DataMiningConfiguration pconfig)
+SparseGridMiner::SparseGridMiner(datadriven::DataMiningConfigJsonParser pconfig)
     : scorer(nullptr), config(pconfig), dataset(nullptr) {}
 
 SparseGridMiner::~SparseGridMiner() {}

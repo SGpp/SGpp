@@ -20,13 +20,13 @@
 namespace sgpp {
 namespace datadriven {
 
-class DataMiningConfiguration : public json::JSON {
+class DataMiningConfigJsonParser : public json::JSON {
  public:
-  DataMiningConfiguration();
+  DataMiningConfigJsonParser();
 
-  explicit DataMiningConfiguration(const std::string& fileName);
+  explicit DataMiningConfigJsonParser(const std::string& fileName);
 
-  virtual DataMiningConfiguration* clone();
+  virtual DataMiningConfigJsonParser* clone();
 
   base::GridType stringToGridType(std::string& gridType);
   RegularizationType stringToRegularizationType(std::string& regularizationType);

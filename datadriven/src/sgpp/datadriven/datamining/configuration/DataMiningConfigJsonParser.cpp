@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <string>
@@ -11,17 +11,17 @@
 namespace sgpp {
 namespace datadriven {
 
-DataMiningConfiguration::DataMiningConfiguration() : json::JSON() {}
+DataMiningConfigJsonParser::DataMiningConfigJsonParser() : json::JSON() {}
 
-DataMiningConfiguration::DataMiningConfiguration(const std::string& fileName)
+DataMiningConfigJsonParser::DataMiningConfigJsonParser(const std::string& fileName)
     : json::JSON(fileName) {}
 
-DataMiningConfiguration* DataMiningConfiguration::clone() {
-  DataMiningConfiguration* clone = new DataMiningConfiguration(*this);
+DataMiningConfigJsonParser* DataMiningConfigJsonParser::clone() {
+  DataMiningConfigJsonParser* clone = new DataMiningConfigJsonParser(*this);
   return clone;
 }
 
-sgpp::base::GridType DataMiningConfiguration::stringToGridType(std::string& gridType) {
+sgpp::base::GridType DataMiningConfigJsonParser::stringToGridType(std::string& gridType) {
   if (gridType.compare("Linear") == 0) {
     return sgpp::base::GridType::Linear;
   } else if (gridType.compare("LinearStretched") == 0) {
@@ -79,7 +79,7 @@ sgpp::base::GridType DataMiningConfiguration::stringToGridType(std::string& grid
   }
 }
 
-sgpp::datadriven::RegularizationType DataMiningConfiguration::stringToRegularizationType(
+sgpp::datadriven::RegularizationType DataMiningConfigJsonParser::stringToRegularizationType(
     std::string& regularizationType) {
   if (regularizationType.compare("Identity") == 0) {
     return sgpp::datadriven::RegularizationType::Identity;
@@ -90,7 +90,8 @@ sgpp::datadriven::RegularizationType DataMiningConfiguration::stringToRegulariza
   }
 }
 
-sgpp::solver::SLESolverType DataMiningConfiguration::stringToSolverType(std::string& solverType) {
+sgpp::solver::SLESolverType DataMiningConfigJsonParser::stringToSolverType(
+    std::string& solverType) {
   if (solverType.compare("CG")) {
     return sgpp::solver::SLESolverType::CG;
   } else if (solverType.compare("BiCGSTAB")) {

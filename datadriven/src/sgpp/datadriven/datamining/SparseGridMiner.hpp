@@ -22,14 +22,14 @@ namespace datadriven {
 
 class SparseGridMiner {
  public:
-  explicit SparseGridMiner(datadriven::DataMiningConfiguration pconfig);
+  explicit SparseGridMiner(datadriven::DataMiningConfigJsonParser pconfig);
   virtual ~SparseGridMiner();
 
   void run();
 
  private:
   datadriven::Scorer* scorer;
-  datadriven::DataMiningConfiguration& config;
+  datadriven::DataMiningConfigJsonParser& config;
   datadriven::SampleProvider* dataset;
 };
 

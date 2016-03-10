@@ -12,12 +12,13 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "../configuration/DataMiningConfiguration.hpp"
+
+#include "DataMiningConfigJsonParser.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
+class DataMiningConfigurationLeastSquares : public DataMiningConfigJsonParser {
   friend class ModelFittingDensityEstimation;
 
  private:
@@ -47,7 +48,7 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
   void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
   void setLambda(double lambda);
 
-  virtual DataMiningConfiguration *clone() override;
+  virtual DataMiningConfigJsonParser *clone() override;
 };
 
 }  // namespace base

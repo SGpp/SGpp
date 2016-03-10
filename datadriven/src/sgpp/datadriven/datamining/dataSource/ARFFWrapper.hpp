@@ -24,7 +24,7 @@ namespace datadriven {
 
 class ARFFWrapper : public DataWrapper {
  public:
-  ARFFWrapper(datadriven::DataMiningConfiguration& config);
+  ARFFWrapper(datadriven::DataMiningConfigJsonParser& config);
 
   virtual ~ARFFWrapper();
 

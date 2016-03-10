@@ -11,7 +11,7 @@
 #include <memory>
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,7 +20,7 @@ namespace datadriven {
 
 class SampleProvider {
  public:
-  SampleProvider(datadriven::DataMiningConfiguration& config){};
+  SampleProvider(datadriven::DataMiningConfigJsonParser& config){};
   virtual ~SampleProvider(){};
 
   /**

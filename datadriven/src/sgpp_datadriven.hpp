@@ -44,9 +44,7 @@
  * ************************/
 
 // configuration:
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 
 // dataSource:
 #include <sgpp/datadriven/datamining/dataSource/ARFFWrapper.hpp>

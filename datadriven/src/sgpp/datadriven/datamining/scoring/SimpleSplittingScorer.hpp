@@ -15,7 +15,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/datamining/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -26,7 +26,7 @@ namespace datadriven {
 class SimpleSplittingScorer : public Scorer {
  public:
   SimpleSplittingScorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter,
-                        datadriven::DataMiningConfiguration config);
+                        datadriven::DataMiningConfigJsonParser config);
   virtual ~SimpleSplittingScorer();
 
   virtual double getScore(Dataset& dataset) override;
