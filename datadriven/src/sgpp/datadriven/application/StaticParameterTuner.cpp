@@ -9,6 +9,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <limits>
+#include <tuple>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -389,6 +390,12 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
   return duration;
 }
 
+bool StaticParameterTunerStatisticsTupleComparer(
+    std::tuple<sgpp::base::OCLOperationConfiguration, double, double> left,
+    std::tuple<sgpp::base::OCLOperationConfiguration, double, double> right) {
+  return std::get<1>(left) > std::get<1>(right);
+}
+
 void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName,
                                                  const std::string &platformName,
                                                  const std::string &deviceName,
@@ -396,6 +403,9 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
   if (!collectStatistics) {
     throw;
   }
+
+  std::sort(this->statistics.begin(), this->statistics.end(),
+            StaticParameterTunerStatisticsTupleComparer);
 
   std::ofstream file(statisticsFolder + "/" + statisticsFileName);
 
