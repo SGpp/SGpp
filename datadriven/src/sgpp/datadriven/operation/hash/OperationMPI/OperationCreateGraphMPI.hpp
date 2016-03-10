@@ -15,6 +15,9 @@
 
 #include <vector>
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
 class OperationCreateGraphSlave : public MPISlaveOperation {
  public:
   bool verbose;
@@ -179,4 +182,7 @@ class OperationCreateGraphMPI : public MPIOperation {
   virtual ~OperationCreateGraphMPI() {}
 };
 
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONCREATEGRAPHMPI_H */

@@ -10,6 +10,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
 class MPISlaveOperation {
  public:
   MPISlaveOperation();
@@ -25,4 +28,7 @@ class MPIOperation {
   void start_slave_code(void);
 };
 
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONMPI_H */

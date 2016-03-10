@@ -18,7 +18,7 @@
 
 int main(int argc, char *argv[]) {
   // Init MPI enviroment - always has to be done first
-  MPIEnviroment::init(argc, argv, true);
+  sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
 
   // Loading dataset
   std::string filename = "dataset2_dim2.arff";
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   size_t dimensions = dataset.getNcols();
 
   // Create knn graph
-  OperationCreateGraphMPI op(dataset, dimensions, 12);
+  sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, dimensions, 12);
   std::vector<int> graph = op.create_graph();
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
@@ -39,6 +39,6 @@ int main(int argc, char *argv[]) {
   }
 
   // Cleanup MPI enviroment
-  MPIEnviroment::release();
+  sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
   return 0;
 }
