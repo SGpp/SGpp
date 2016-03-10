@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -29,7 +29,7 @@ class OperationHierarchisationPolyBoundary : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationHierarchisationPolyBoundary(GridStorage* storage,
+  OperationHierarchisationPolyBoundary(GridStorage& storage,
                                        size_t degree) :
     storage(storage), base(degree) {}
 
@@ -56,12 +56,12 @@ class OperationHierarchisationPolyBoundary : public OperationHierarchisation {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Basis object
   SPolyBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONPOLYBOUNDARY_HPP */

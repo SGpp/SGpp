@@ -39,7 +39,7 @@ class SGDEdist(Dist):
         self.bounds = None
         if bounds is not None:
             self.bounds = np.array(bounds, dtype='float')
-        self.dim = grid.getStorage().dim()
+        self.dim = grid.getDimension()
         self.fmin = 0.
         self.scale = 1.
         self.samples = samples
@@ -60,7 +60,7 @@ class SGDEdist(Dist):
         learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
                       regularizationConfig, learnerConfig)
         learner.initialize(samples)
-        return cls(learner.getGrid(), learner.getAlpha(), trainData=samples.array())
+        return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())
 
     @classmethod
     def byConfig(cls, config):
@@ -160,8 +160,8 @@ class SGDEdist(Dist):
 #
 #         # hierarchize using a mod linear grid
 #         gs = self.grid.getStorage()
-#         self.loggrid = Grid.createLinearGrid(gs.dim())
-#         self.loggrid.createGridGenerator().regular(gs.getMaxLevel())
+#         self.loggrid = Grid.createLinearGrid(gs.getDimension())
+#         self.loggrid.getGenerator().regular(gs.getMaxLevel())
 #         if len(invalid) > 0:
 #             self.logalpha = hierarchizeBruteForce(self.loggrid, nodalValues,
 #                                                   ignore=invalid)
@@ -184,7 +184,7 @@ class SGDEdist(Dist):
         dim = self.getDim()
 
         # fg = Grid.createLinearBoundaryGrid(dim)
-        # fg.createGridGenerator().full(level)
+        # fg.getGenerator().full(level)
         # opEval = createOperationEval(self.grid)
         # p = DataVector(dim)
         self.fmin = 0.
@@ -247,7 +247,7 @@ class SGDEdist(Dist):
             x = DataVector([x])
 
         # do the transformation
-        if self.grid.getStorage().dim() == 1:
+        if self.grid.getDimension() == 1:
             op = createOperationRosenblattTransformation1D(self.grid)
             ans = np.ndarray(len(x))
             for i, xi in enumerate(x.array()):
@@ -285,7 +285,7 @@ class SGDEdist(Dist):
             x = DataVector([x])
 
         # do the transformation
-        if self.grid.getStorage().dim() == 1:
+        if self.grid.getDimension() == 1:
             op = createOperationInverseRosenblattTransformation1D(self.grid)
             ans = np.ndarray(len(x))
             for i, xi in enumerate(x.array()):
@@ -322,7 +322,7 @@ class SGDEdist(Dist):
         for i in xrange(gs.size()):
             gp = gs.get(i)
             value = self.alpha[i]
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 level, index = gp.getLevel(d), gp.getIndex(d)
                 value *= index * 2 ** (-2 * level)
             ans += value
@@ -338,7 +338,7 @@ class SGDEdist(Dist):
         for i in xrange(gs.size()):
             gp = gs.get(i)
             value = self.alpha[i]
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 level, index = gp.getLevel(d), gp.getIndex(d)
                 value *= (index * index + 1. / 6.) * 2 ** (-3 * level)
             ans += value
@@ -375,7 +375,7 @@ class SGDEdist(Dist):
 
     def getDim(self):
         if self.grid:
-            return self.grid.getStorage().dim()
+            return self.grid.getDimension()
         else:
             raise Exception('Dimensionality is unknown')
 

@@ -38,8 +38,8 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         A = DataMatrix(gs.size(), gs.size())
         createOperationLTwoDotExplicit(A, grid)
         # multiply the entries with the pdf at the center of the support
-        p = DataVector(gs.dim())
-        q = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
+        q = DataVector(gs.getDimension())
 
         for i in xrange(gs.size()):
             gpi = gs.get(i)

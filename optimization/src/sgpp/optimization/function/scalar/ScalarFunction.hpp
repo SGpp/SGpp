@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -27,14 +27,12 @@ class ScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  ScalarFunction(size_t d) : d(d) {
-  }
+  explicit ScalarFunction(size_t d) : d(d) {}
 
   /**
    * Destructor.
    */
-  virtual ~ScalarFunction() {
-  }
+  virtual ~ScalarFunction() {}
 
   /**
    * Pure virtual method for calculating \f$f(\vec{x})\f$.
@@ -42,14 +40,12 @@ class ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t eval(const base::DataVector& x) = 0;
+  virtual double eval(const base::DataVector& x) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * Pure virtual method for cloning the function.
@@ -59,15 +55,13 @@ class ScalarFunction {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<ScalarFunction>& clone) const = 0;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone) const = 0;
 
  protected:
   /// dimension of the domain
   size_t d;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTION_HPP */

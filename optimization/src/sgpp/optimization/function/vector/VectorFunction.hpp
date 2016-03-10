@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -30,14 +30,12 @@ class VectorFunction {
    * @param d     dimension of the domain
    * @param m     number of components
    */
-  VectorFunction(size_t d, size_t m) : d(d), m(m) {
-  }
+  VectorFunction(size_t d, size_t m) : d(d), m(m) {}
 
   /**
    * Destructor.
    */
-  virtual ~VectorFunction() {
-  }
+  virtual ~VectorFunction() {}
 
   /**
    * Pure virtual method for calculating \f$g(\vec{x})\f$.
@@ -45,22 +43,17 @@ class VectorFunction {
    * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @param[out] value  \f$g(\vec{x})\f$
    */
-  virtual void eval(const base::DataVector& x,
-                    base::DataVector& value) = 0;
+  virtual void eval(const base::DataVector& x, base::DataVector& value) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * @return number \f$m\f$ of components
    */
-  size_t getNumberOfComponents() const {
-    return m;
-  }
+  size_t getNumberOfComponents() const { return m; }
 
   /**
    * Pure virtual method for cloning the function.
@@ -70,8 +63,7 @@ class VectorFunction {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<VectorFunction>& clone) const = 0;
+  virtual void clone(std::unique_ptr<VectorFunction>& clone) const = 0;
 
  protected:
   /// dimension of the domain
@@ -79,8 +71,7 @@ class VectorFunction {
   /// number of components
   size_t m;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_VECTORFUNCTION_HPP */

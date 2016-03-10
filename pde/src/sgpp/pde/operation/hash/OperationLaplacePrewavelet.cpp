@@ -10,43 +10,37 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-OperationLaplacePrewavelet::OperationLaplacePrewavelet(SGPP::base::GridStorage*
-    storage, SGPP::base::GridStorage* shadowstorage) :
-  UpDownOneOpDimWithShadow(storage, shadowstorage) {
+OperationLaplacePrewavelet::OperationLaplacePrewavelet(sgpp::base::GridStorage* storage,
+                                                       sgpp::base::GridStorage* shadowstorage)
+    : UpDownOneOpDimWithShadow(storage, shadowstorage) {}
 
-}
+OperationLaplacePrewavelet::~OperationLaplacePrewavelet() {}
 
-OperationLaplacePrewavelet::~OperationLaplacePrewavelet() {
-}
-
-void OperationLaplacePrewavelet::up(SGPP::base::DataVector& alpha,
-                                    SGPP::base::DataVector& result, size_t dim) {
+void OperationLaplacePrewavelet::up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                    size_t dim) {
   LaplaceUpPrewavelet func(this->storage);
-  SGPP::base::sweep<LaplaceUpPrewavelet> s(func, this->storage);
+  sgpp::base::sweep<LaplaceUpPrewavelet> s(func, *this->storage);
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplacePrewavelet::down(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result, size_t dim) {
-}
+void OperationLaplacePrewavelet::down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                      size_t dim) {}
 
-void OperationLaplacePrewavelet::downOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+void OperationLaplacePrewavelet::downOpDim(sgpp::base::DataVector& alpha,
+                                           sgpp::base::DataVector& result, size_t dim) {
   LaplaceDownGradientPrewavelet func(this->storage);
-  SGPP::base::sweep<LaplaceDownGradientPrewavelet> s(func, this->storage);
+  sgpp::base::sweep<LaplaceDownGradientPrewavelet> s(func, *this->storage);
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplacePrewavelet::upOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+void OperationLaplacePrewavelet::upOpDim(sgpp::base::DataVector& alpha,
+                                         sgpp::base::DataVector& result, size_t dim) {
   LaplaceUpGradientPrewavelet func(this->storage);
-  SGPP::base::sweep<LaplaceUpGradientPrewavelet> s(func, this->storage);
+  sgpp::base::sweep<LaplaceUpGradientPrewavelet> s(func, *this->storage);
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

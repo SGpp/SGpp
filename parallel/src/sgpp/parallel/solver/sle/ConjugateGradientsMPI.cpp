@@ -11,20 +11,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax,
-    double epsilon) : SGPP::solver::SLESolver(imax, epsilon) {
-}
+ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon)
+    : sgpp::solver::SLESolver(imax, epsilon) {}
 
-ConjugateGradientsMPI::~ConjugateGradientsMPI() {
-}
+ConjugateGradientsMPI::~ConjugateGradientsMPI() {}
 
-void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                                  SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
-                                  bool verbose, double max_threshold) {
+void ConjugateGradientsMPI::solve(sgpp::base::OperationMatrix& SystemMatrix,
+                                  sgpp::base::DataVector& alpha, sgpp::base::DataVector& b,
+                                  bool reuse, bool verbose, double max_threshold) {
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(b);
 
@@ -45,9 +42,9 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
   this->nIterations = 0;
 
   // define temporal vectors
-  SGPP::base::DataVector temp(alpha.getSize());
-  SGPP::base::DataVector q(alpha.getSize());
-  SGPP::base::DataVector r(b);
+  sgpp::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector q(alpha.getSize());
+  sgpp::base::DataVector r(b);
 
   double delta_0 = 0.0;
   double delta_old = 0.0;
@@ -79,7 +76,7 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   r.sub(temp);
 
-  SGPP::base::DataVector d(r);
+  sgpp::base::DataVector d(r);
 
   delta_old = 0.0;
   delta_new = r.dotProduct(r);
@@ -91,13 +88,12 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
   this->residuum = (delta_0 / epsilonSquared);
 
   if (verbose == true) {
-    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) <<
-              std::endl;
+    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) << std::endl;
     std::cout << "Target norm:               " << (delta_0) << std::endl;
   }
 
-  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0)
-         && (delta_new > max_threshold)) {
+  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) &&
+         (delta_new > max_threshold)) {
     // q = A*d
     //      ctrl = 'M';
     //      myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
@@ -123,7 +119,6 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
       r.axpy(-a, q);
     }
 
-
     // calculate new deltas and determine beta
     delta_old = delta_new;
     delta_new = r.dotProduct(r);
@@ -147,18 +142,18 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
   //    myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 
   if (verbose == true) {
-    std::cout << "Number of iterations: " << this->nIterations << " (max. " <<
-              this->nMaxIterations << ")" << std::endl;
+    std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations
+              << ")" << std::endl;
     std::cout << "Final norm of residuum: " << delta_new << std::endl;
   }
 
   //  }
 }
 
-void ConjugateGradientsMPI::waitForTask(SGPP::base::OperationMatrix&
-                                        SystemMatrix, SGPP::base::DataVector& alpha) {
+void ConjugateGradientsMPI::waitForTask(sgpp::base::OperationMatrix& SystemMatrix,
+                                        sgpp::base::DataVector& alpha) {
   char ctrl;
-  SGPP::base::DataVector result(alpha.getSize());
+  sgpp::base::DataVector result(alpha.getSize());
 
   do {
     myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
@@ -168,6 +163,5 @@ void ConjugateGradientsMPI::waitForTask(SGPP::base::OperationMatrix&
     }
   } while (ctrl != 'T');
 }
-
-}
-}
+}  // namespace parallel
+}  // namespace sgpp

@@ -13,8 +13,7 @@
 #include <string>
 #include <vector>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,6 +25,11 @@ namespace base {
  */
 class DataVector {
  public:
+  /**
+   * Create a empty DataVector.
+   */
+  DataVector();
+
   /**
    * Create a DataVector with @em size elements (uninitialized values).
    *
@@ -40,7 +44,7 @@ class DataVector {
    * @param size Number of elements
    * @param value Value for all entries
    */
-  DataVector(size_t size, float_t value);
+  DataVector(size_t size, double value);
 
   /**
    * Create a new DataVector that is a copy of vec.
@@ -50,19 +54,19 @@ class DataVector {
   DataVector(const DataVector& vec);
 
   /**
-   * Create a new DataVector from a float_t array with size elements.
+   * Create a new DataVector from a double array with size elements.
    *
-   * @param input float_t array that contains the data
+   * @param input double array that contains the data
    * @param size number of elements
    */
-  DataVector(float_t* input, size_t size);
+  DataVector(double* input, size_t size);
 
   /**
-   * Create a new DataVector from a std::vector<float_t>.
+   * Create a new DataVector from a std::vector<double>.
    *
-   * @param input std::vector<float_t> that contains the data
+   * @param input std::vector<double> that contains the data
    */
-  explicit DataVector(std::vector<float_t> input);
+  explicit DataVector(std::vector<double> input);
 
   /**
    * Create a new DataVector from a std::vector<int>.
@@ -77,6 +81,10 @@ class DataVector {
    * @param DataVectorDef reference to a DataVectorDefinition structure
    */
   explicit DataVector(DataVectorDefinition& DataVectorDef);
+
+  static DataVector fromFile(const std::string& fileName);
+
+  static DataVector fromString(const std::string& serializedVector);
 
   /**
    * Fill DataVectorDefintion with data from the current DataVector
@@ -147,7 +155,7 @@ class DataVector {
    * @param value Value of new element
    * @return Index of new element
    */
-  size_t append(float_t value);
+  size_t append(double value);
 
   /**
    * Inserts a new element at the given index.
@@ -157,14 +165,14 @@ class DataVector {
    * @param index Index of new element
    * @param value Value of new element
    */
-  void insert(size_t index, float_t value);
+  void insert(size_t index, double value);
 
   /**
    * Sets all values of DataVector to value
    *
    * @param value New value for all entries
    */
-  void setAll(float_t value);
+  void setAll(double value);
 
   /**
    * Copies the data from another DataVector vec.
@@ -202,9 +210,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline float_t& operator[](size_t i) {
-    return data[i];
-  }
+  inline double& operator[](size_t i) { return data[i]; }
 
   /**
    * Returns a constant reference to the i-th element.
@@ -212,9 +218,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline const float_t& operator[](size_t i) const {
-    return data[i];
-  }
+  inline const double& operator[](size_t i) const { return data[i]; }
 
   /**
    * Returns the i-th element.
@@ -222,9 +226,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline float_t get(size_t i) const {
-    return data[i];
-  }
+  inline double get(size_t i) const { return data[i]; }
 
   /**
    * Sets the element at index i to value.
@@ -232,7 +234,7 @@ class DataVector {
    * @param i Index
    * @param value New value for element
    */
-  void set(size_t i, float_t value);
+  void set(size_t i, double value);
 
   /**
    * Adds the values from another DataVector to the current values.
@@ -293,7 +295,7 @@ class DataVector {
    *
    * @param scalar the constant
    */
-  void mult(float_t scalar);
+  void mult(double scalar);
 
   /**
    * Squares all elements of the DataVector
@@ -316,14 +318,14 @@ class DataVector {
    *
    * @return The sum of all elements
    */
-  float_t sum() const;
+  double sum() const;
 
   /**
    * calculates the vector's max norm
    *
    * @return the vector's max norm
    */
-  float_t maxNorm() const;
+  double maxNorm() const;
 
   /**
    * Returns the vector's root mean square (RMS)-norm, i.e.,
@@ -333,7 +335,7 @@ class DataVector {
    *
    * @return The vector's root mean square-norm.
    */
-  float_t RMSNorm() const;
+  double RMSNorm() const;
 
   /**
    * Returns the vector's @f$l^2@f$-norm, i.e.,
@@ -341,21 +343,21 @@ class DataVector {
    *
    * @return The vector's @f$l^2@f$-norm.
    */
-  float_t l2Norm() const;
+  double l2Norm() const;
 
   /**
    * Returns the minimum over all entries.
    *
    * @return Minimal value
    */
-  float_t min() const;
+  double min() const;
 
   /**
    * Returns the maximum over all entries.
    *
    * @return global maximum
    */
-  float_t max() const;
+  double max() const;
 
   /**
    * Determines minimum and maximum over all entries.
@@ -363,7 +365,7 @@ class DataVector {
    * @param min Reference variable for the minimum
    * @param max Reference variable for the maximum
    */
-  void minmax(float_t* min, float_t* max) const;
+  void minmax(double* min, double* max) const;
 
   /**
    * Adds a*x to current vector.
@@ -372,7 +374,7 @@ class DataVector {
    * @param a A scalar
    * @param x Reference to the DataVector
    */
-  void axpy(float_t a, DataVector& x);
+  void axpy(double a, DataVector& x);
 
   /**
    * Returns the dot product of the two vectors.
@@ -381,39 +383,35 @@ class DataVector {
    *
    * @return The dot-product
    */
-  float_t dotProduct(const DataVector& vec) const;
+  double dotProduct(const DataVector& vec) const;
 
   /**
    * gets a pointer to the data array
    *
    * @return pointer to the data array
    */
-  float_t* getPointer();
+  double* getPointer();
 
   /**
    * gets a const pointer to the data array
    *
    * @return const pointer to the data array
    */
-  const float_t* getPointer() const;
+  const double* getPointer() const;
 
   /**
    * gets the elements stored in the vector
    *
    * @return elements stored in the vector
    */
-  inline size_t getSize() const {
-    return size;
-  }
+  inline size_t getSize() const { return size; }
 
   /**
    * Returns the number of unused elements.
    *
    * @return number of unused elements
    */
-  inline size_t getUnused() const {
-    return unused;
-  }
+  inline size_t getUnused() const { return unused; }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -428,9 +426,7 @@ class DataVector {
    *
    * @return Increment
    */
-  inline size_t getInc() const {
-    return inc_elems;
-  }
+  inline size_t getInc() const { return inc_elems; }
 
   /**
    * Sets the current number of elements by which the DataVector is extended,
@@ -439,16 +435,14 @@ class DataVector {
    *
    * @param inc_elems Increment
    */
-  void setInc(size_t inc_elems) {
-    this->inc_elems = inc_elems;
-  }
+  void setInc(size_t inc_elems) { this->inc_elems = inc_elems; }
 
   /**
    * Partitions vector into two classes using a choosen border.
    *
    * @param threshold value of the border
    */
-  void partitionClasses(float_t threshold);
+  void partitionClasses(double threshold);
 
   /**
    * Normalizes vector entries to [0,1]
@@ -461,7 +455,7 @@ class DataVector {
    *
    * @param border width of border
    */
-  void normalize(float_t border);
+  void normalize(double border);
 
   /**
    * Writes the data stored in the DataVector into a string
@@ -470,13 +464,14 @@ class DataVector {
    */
   void toString(std::string& text) const;
 
+  void toFile(const std::string& fileName) const;
+
   /**
    * Returns a description of the DataVector as a string.
    *
    * @returns string of the DataVector
    */
   std::string toString() const;
-
 
   /**
    * Destructor
@@ -485,10 +480,10 @@ class DataVector {
 
  private:
   /// Array to store the data
-  float_t* data;
+  double* data;
 
   /// Array of  correction for Kahan's summation in accumulate()
-  float_t* correction;
+  double* correction;
 
   /// Number of elements of the data vector
   size_t size;
@@ -502,6 +497,6 @@ class DataVector {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DATAVECTOR_HPP */

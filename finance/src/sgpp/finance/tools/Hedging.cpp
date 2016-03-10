@@ -10,39 +10,39 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#include <sstream>
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
 
+#include <sstream>
+#include <cmath>
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace finance {
 
-Hedging::Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution,
-                 float_t eps, bool is_log_transformed) :
-  m_res(resolution), m_eps(eps), m_hedge_points(new SGPP::base::DataMatrix(1,
-      hedge_area.getDimensions())), m_is_log_transformed(is_log_transformed) {
-  SGPP::base::EvalCuboidGenerator* myEval = new SGPP::base::EvalCuboidGenerator();
+Hedging::Hedging(sgpp::base::BoundingBox& hedge_area, size_t resolution, double eps,
+                 bool is_log_transformed)
+    : m_res(resolution),
+      m_eps(eps),
+      m_hedge_points(new sgpp::base::DataMatrix(1, hedge_area.getDimensions())),
+      m_is_log_transformed(is_log_transformed) {
+  sgpp::base::EvalCuboidGenerator* myEval = new sgpp::base::EvalCuboidGenerator();
   myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
   delete myEval;
 }
 
-Hedging::~Hedging() {
-  delete m_hedge_points;
-}
+Hedging::~Hedging() { delete m_hedge_points; }
 
-void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid,
-                           SGPP::base::DataVector alpha, std::string file_extension) {
+void Hedging::calc_hedging(sgpp::base::Grid& sparse_grid, sgpp::base::DataVector alpha,
+                           std::string file_extension) {
   std::stringstream sfilename;
   sfilename << "hedging_" << file_extension << ".out";
 
   std::ofstream fileout;
   fileout.open(sfilename.str().c_str());
 
-  SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(
-                                        sparse_grid);
+  std::unique_ptr<sgpp::base::OperationEval> myEval(
+      sgpp::op_factory::createOperationEval(sparse_grid));
 
   // loop overall evaluation points
   for (size_t i = 0; i < m_hedge_points->getNrows(); i++) {
@@ -51,7 +51,6 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid,
     base::DataVector right(m_hedge_points->getNcols());
 
     m_hedge_points->getRow(i, curPoint);
-
 
     // print coordinates into file
     for (size_t j = 0; j < m_hedge_points->getNcols(); j++) {
@@ -65,12 +64,12 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid,
     }
 
     // get option value
-    float_t value = myEval->eval(alpha, curPoint);
+    double value = myEval->eval(alpha, curPoint);
     fileout << value << " ";
 
     // calculate derivatives
-    float_t delta = 0.0;
-    float_t gamma = 0.0;
+    double delta = 0.0;
+    double gamma = 0.0;
 
     for (size_t j = 0; j < m_hedge_points->getNcols(); j++) {
       m_hedge_points->getRow(i, left);
@@ -84,10 +83,11 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid,
         right.set(j, (right.get(j) + m_eps));
       }
 
-      float_t tmp_delta = ((myEval->eval(alpha, right) - myEval->eval(alpha,
-                            left)) / (2.0 * m_eps));
-      float_t tmp_gamma = ((myEval->eval(alpha,
-                                         right) - (2.0 * value) + myEval->eval(alpha, left)) / (m_eps * m_eps));
+      double tmp_delta =
+          ((myEval->eval(alpha, right) - myEval->eval(alpha, left)) / (2.0 * m_eps));
+      double tmp_gamma =
+          ((myEval->eval(alpha, right) - (2.0 * value) + myEval->eval(alpha, left)) /
+           (m_eps * m_eps));
 
       fileout << tmp_delta << " " << tmp_gamma << " ";
 
@@ -102,10 +102,7 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid,
     }
   }
 
-  delete myEval;
   fileout.close();
 }
-
-}
-
-}
+}  // namespace finance
+}  // namespace sgpp

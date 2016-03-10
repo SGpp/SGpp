@@ -18,17 +18,17 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GridDataBase::GridDataBase(size_t dim) : _map(), _dim(static_cast<int>(dim)) {}
 
 GridDataBase::GridDataBase(Grid* grid, DataVector& values) : _map(),
-  _dim(static_cast<int>(grid->getStorage()->dim())) {
-  GridStorage* gs = grid->getStorage();
+  _dim(static_cast<int>(grid->getDimension())) {
+  GridStorage& gs = grid->getStorage();
 
-  for (size_t i = 0; i < gs->size(); i++) {
-    set(gs->get(i), values[gs->seq(gs->get(i))]);
+  for (size_t i = 0; i < gs.getSize(); i++) {
+    set(gs.get(i), values[gs.seq(gs.get(i))]);
   }
 }
 
@@ -77,7 +77,7 @@ bool GridDataBase::hasKey(GridIndex* gi) {
   return _map.find(gi) != _map.end();
 }
 
-void GridDataBase::set(GridIndex* gi, float_t value) {
+void GridDataBase::set(GridIndex* gi, double value) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
@@ -91,20 +91,20 @@ void GridDataBase::set(GridIndex* gi, float_t value) {
 }
 
 void GridDataBase::setValuesFor(Grid* grid, DataVector& values) {
-  GridStorage* gs = grid->getStorage();
+  GridStorage& gs = grid->getStorage();
 
-  for (GridStorage::grid_map_iterator iter = gs->begin(); iter != gs->end();
+  for (GridStorage::grid_map_iterator iter = gs.begin(); iter != gs.end();
        iter++) {
     values[iter->second] = get(iter->first);
   }
 }
 
-float_t GridDataBase::get(GridIndex* gi) {
+double GridDataBase::get(GridIndex* gi) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
     std::cerr << gi->toString() << " not in database" << std::endl;
-    throw new SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "GridDataBase::get : grid point not in database");
   }
 
@@ -137,7 +137,7 @@ void GridDataBase::save(std::string filename, char ftype) {
     if (!fout.is_open()) {
       std::string msg = "Error! Unable to open file '" + filename +
                         "' for read access.";
-      throw new file_exception(msg.c_str());
+      throw file_exception(msg.c_str());
     }
 
     // dump contents to file
@@ -166,7 +166,7 @@ void GridDataBase::save(std::string filename, char ftype) {
     if (!fout.is_open()) {
       std::string msg = "Error! Unable to open file '" + filename +
                         "' for read access.";
-      throw new file_exception(msg.c_str());
+      throw file_exception(msg.c_str());
     }
 
     // dump contents to file
@@ -204,7 +204,7 @@ void GridDataBase::load(const std::string filename) {
 
   if (dim != _dim) {
     std::string msg = "GridDataBase::load Error! Dimensions do not match";
-    throw new file_exception(msg.c_str());
+    throw file_exception(msg.c_str());
   }
 
   _loadData(fin, ftype);
@@ -218,7 +218,7 @@ void GridDataBase::_loadTypeDim(const std::string filename, char& ftype,
   if (!fin.is_open()) {
     std::string msg = "GridDataBase: Error! Unable to open file '" + filename +
                       "' for read access.";
-    throw new file_exception(msg.c_str());
+    throw file_exception(msg.c_str());
   }
 
   fin.read(reinterpret_cast<char*>(&ftype), sizeof(ftype));
@@ -236,7 +236,7 @@ void GridDataBase::_loadTypeDim(const std::string filename, char& ftype,
     if (ftype != ascii) {
       std::string msg = "GridDataBase: Error! Unrecognizable type of file '" +
                         filename + "'";
-      throw new file_exception(msg.c_str());
+      throw file_exception(msg.c_str());
     }
 
     fin >> dim;
@@ -253,7 +253,7 @@ void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
   GridIndex gi(_dim);
   level_t lev;
   index_t ind;
-  float_t val;
+  double val;
 
   // ASCII data
   if (ftype == ascii) {
@@ -293,4 +293,4 @@ GridDataBase::grid_map_iterator GridDataBase::end() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

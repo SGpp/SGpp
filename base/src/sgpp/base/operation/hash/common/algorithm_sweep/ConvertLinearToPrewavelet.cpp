@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void ConvertLinearToPrewavelet::operator()(DataVector& source,
@@ -31,13 +31,13 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   index.get(dim, init_level, init_index);
 
   size_t _seq;
-  float_t _val;
+  double _val;
 
-  float_t* temp = new float_t[1 << (level + 1)];  // The temp values
-  float_t* r = new float_t[1 << (level - 1)];
+  double* temp = new double[1 << (level + 1)];  // The temp values
+  double* r = new double[1 << (level - 1)];
   // The following arrays are required for the triangulation
-  float_t* gam = new float_t[1 << (level - 1)];
-  float_t* u = new float_t[1 << (level - 1)];
+  double* gam = new double[1 << (level - 1)];
+  double* u = new double[1 << (level - 1)];
 
   for (int i = 0; i < 1 << (level - 1); ++i) {
     r[i] = 0.0;
@@ -55,13 +55,13 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
     // special treatment for the first point in the row
     index.set(dim, level, 1);
     _seq = index.seq();
-    _val = storage->end(_seq) ? 0.0 : result[_seq];
+    _val = storage.end(_seq) ? 0.0 : result[_seq];
     r[0] = _val - temp[1] + 0.5 * temp[3];
 
     // special treatment for the last point in the row
     index.set(dim, level, (1 << level) - 1);
     _seq = index.seq();
-    _val = storage->end(_seq) ? 0.0 : result[_seq];
+    _val = storage.end(_seq) ? 0.0 : result[_seq];
     r[(1 << (level - 1)) - 1] = _val - temp[(1 << (level + 1)) - 3]
                                 + 0.5 * temp[(1 << (level + 1)) - 5];
 
@@ -71,7 +71,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
            < (unsigned int) ((1 << level) - 1); ind = ind + 2) {
         index.set(dim, level, ind);
         _seq = index.seq();
-        _val = storage->end(_seq) ? 0.0 : result[_seq];
+        _val = storage.end(_seq) ? 0.0 : result[_seq];
         r[ind / 2] = _val - temp[2 * ind - 1] + 0.5 * temp[2 * ind
                      - 3] + 0.5 * temp[2 * ind + 1];
       }
@@ -79,13 +79,13 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
     // Run the actual triangulation
 
-    float_t bet = 0.0;
+    double bet = 0.0;
 
     // This is the forward-reduction
     for (int i = 0; i < 1 << (level - 1); i++) {
       index.set(dim, level, i * 2 + 1);
 
-      if (storage->end(index.seq())) {
+      if (storage.end(index.seq())) {
         u[i] = 0;
         gam[i] = 0;
         continue;
@@ -105,7 +105,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
         index.set(dim, level, i * 2 - 1);
 
-        if (!storage->end(index.seq()))
+        if (!storage.end(index.seq()))
           gam[i] = 0.4 / bet;
         else
           gam[i] = 0.0;
@@ -133,7 +133,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
       index.set(dim, level, (i * 2 + 1));
       _seq = index.seq();
 
-      if (!storage->end(_seq))
+      if (!storage.end(_seq))
         result[_seq] = u[i];
     }
 
@@ -143,7 +143,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
          = ind + 2) {
       index.set(dim, level, ind);
       _seq = index.seq();
-      _val = storage->end(_seq) ? 0.0 : result[_seq];
+      _val = storage.end(_seq) ? 0.0 : result[_seq];
 
       if (level != max_level) {
         temp[ind] = temp[ind * 2 + 1];
@@ -153,7 +153,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
       index.set(dim, level, ind + 2);
       _seq = index.seq();
-      _val = storage->end(_seq) ? 0.0 : result[_seq];
+      _val = storage.end(_seq) ? 0.0 : result[_seq];
 
       temp[ind] = temp[ind] - 0.6 * _val;
     }
@@ -162,9 +162,9 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   // Treatment of the top-point in this dimension
   index.set(dim, init_level, init_index);
   _seq = index.seq();
-  _val = storage->end(_seq) ? 0.0 : result[_seq];
+  _val = storage.end(_seq) ? 0.0 : result[_seq];
 
-  if (!storage->end(_seq))
+  if (!storage.end(_seq))
     result[_seq] = _val - temp[1];
 
   delete[] temp;
@@ -178,4 +178,4 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

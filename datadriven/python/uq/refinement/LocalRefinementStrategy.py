@@ -28,7 +28,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
     def refine(self, grid, gp):
         ans = []
         gs = grid.getStorage()
-        for d in xrange(gs.dim()):
+        for d in xrange(gs.getDimension()):
             gpl = HashGridIndex(gp)
             gs.left_child(gpl, d)
             ans += insertPoint(grid, gpl)

@@ -8,7 +8,6 @@ import fnmatch
 import subprocess
 
 Import('env')
-
 Import('BUILD_DIR')
 Import('EXAMPLE_DIR')
 Import('PYSGPP_BUILD_PATH')
@@ -18,6 +17,7 @@ Import('installTargetList')
 Import('exampleTargetList')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', 'src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
 
@@ -37,12 +37,6 @@ def isAVXFolder(folder):
 moduleDependencies = ['sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-additionalDependencies = []
-if env['USE_OCL']:
-    additionalDependencies += ['OpenCL']
-
-moduleDependencies = moduleDependencies + additionalDependencies
-
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
     libname += "static"
@@ -50,22 +44,39 @@ if env['USE_STATICLIB']:
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
 
+additionalDependencies = []
+if env['USE_OCL']:
+    additionalDependencies += ['OpenCL']
+
+moduleDependencies = moduleDependencies + additionalDependencies
+
+cpps = []
+hpps = []
 objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
   if os.path.exists(os.path.join(currentFolder, "SConscript")):
-    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    cppsSubmodule, hppsSubmodule, objsSubmodule = \
+            env.SConscript(os.path.join(currentFolder, "SConscript"))
     objs += objsSubmodule
+    for hpp in hppsSubmodule:
+      headerSourceList.append(os.path.join(moduleName, hpp))
+      headerDestList.append(hpp.split(os.sep, 1)[1])
     # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
     subdirNames[:] = []
   else:
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      sourceFile = os.path.join(currentFolder, fileName)
-      objs.append(env.SharedObject(sourceFile))
+      cpp = os.path.join(currentFolder, fileName)
+      cpps.append(cpp)
+      objs.append(env.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
+# env.AppendUnique(LIBPATH=[BUILD_DIR])
 
 if env['USE_STATICLIB']:
     # building static libraries is the same for unix and windows platforms
@@ -74,10 +85,12 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
+    # building of shared libraries differs
     libsuffix = env['SHLIBSUFFIX']
     lib = env.SharedLibrary(target=libname,
                             source=objs,
+                            # this leads to errors as it removes all other set libpaths!
+                            # LIBPATH=BUILD_DIR,
                             LIBS=moduleDependencies)
 
 for lib_str in moduleDependencies:
@@ -91,24 +104,29 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
 # build examples
-if env["ARCH"].upper() != "MIC":
+if env["ARCH"] != "mic":
     example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_program_options"])
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
     for fileName in os.listdir("examples"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            example = example_env.Program(source=os.path.join("examples", fileName))
+            cpp = os.path.join("examples", fileName)
+            cpps.append(cpp)
+            example = example_env.Program(source=cpp)
             example_env.Requires(example, libInstall)
             exampleTargetList.append(example)
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("examples", fileName)
+            hpps.append(hpp)
 
 # build examples for OpenCL
 if env["USE_OCL"]:
     example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["libboost_program_options"])
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_program_options", "boost_filesystem", "boost_system"])
     for fileName in os.listdir("examplesOCL"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
             example = example_env.Program(source=os.path.join("examplesOCL", fileName))
@@ -116,44 +134,67 @@ if env["USE_OCL"]:
             exampleTargetList.append(example)
 
 # build examples for mic
-if env["ARCH"].upper() == "MIC":
+if env["ARCH"] == "mic":
     example_env = env.Clone()
     example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
     for fileName in os.listdir("examplesMIC"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            example = example_env.Program(source=os.path.join("examplesMIC", fileName))
+            cpp = os.path.join("examplesMIC", fileName)
+            cpps.append(cpp)
+            example = example_env.Program(source=cpp)
             example_env.Requires(example, libInstall)
             exampleTargetList.append(example)
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("examplesMIC", fileName)
+            hpps.append(hpp)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
-    Import('boostTestTargetList')
     test_env = env.Clone()
+    test_env.AppendUnique(LIBPATH=[BUILD_DIR])
     test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "z"])
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+            cpp = os.path.join("tests", fileName)
+            cpps.append(cpp)
+            testObjects += [test_env.Object(source=cpp)]
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("tests", fileName)
+            hpps.append(hpp)
     if len(testObjects) > 0:
-        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
+                (".exe" if env['PLATFORM'] == 'win32' else '')
         test = test_env.Program(fileName, testObjects)
         test_env.Requires(test, libInstall)
         if env['RUN_BOOST_TESTS']:
+            Import('boostTestTargetList')
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
 
 # build unit tests
 if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
     test_env = env.Clone()
-    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "z"])
+    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "boost_filesystem", "boost_system", "z"])
     testObjects = []
     for fileName in os.listdir("performanceTests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            testObjects += [test_env.Object(source=os.path.join("performanceTests", fileName))]
+            cpp = os.path.join("performanceTests", fileName)
+            cpps.append(cpp)
+            testObjects += [test_env.Object(source=cpp)]
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("performanceTests", fileName)
+            hpps.append(hpp)
     if len(testObjects) > 0:
         fileName = os.path.join("performanceTests", "test_{}_performance".format(moduleName))
         test = test_env.Program(fileName, testObjects)
         test_env.Requires(test, libInstall)
+
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

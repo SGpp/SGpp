@@ -1,7 +1,7 @@
 /**
-\page code_examples_optimization Short Code Examples: Optimization
+\page code_examples_optimization Optimization Example
 
-On this page, we look at an example application of the SGPP::optimization
+On this page, we look at an example application of the sgpp::optimization
 module.
 The example is written in C++.
 However, as the module is also incorporated in pysgpp, one can also use
@@ -14,25 +14,25 @@ if compiled without support for Armadillo and UMFPACK
 
 Below, you can find the whole C++ example.
 The example minimizes a specific function \f$f\colon [0, 1]^2 \to \mathbb{R}\f$
-using sparse grids and the SGPP::optimization module.
+using sparse grids and the sgpp::optimization module.
 For the basic structure of the optimization, please see
 \ref module_optimization.
 
-\include c++_example.cpp
+\include optimization.cpp
 
 We will now discuss the example in some detail line by line.
 
-\dontinclude c++_example.cpp
+\dontinclude optimization.cpp
 \until sgpp_optimization.hpp
 
-We need to include the headers for the SGPP::base and the SGPP::optimization
+We need to include the headers for the sgpp::base and the sgpp::optimization
 module.
 
 \until };
 
 The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
 is called "objective function" and has to derive from
-SGPP::optimization::ObjectiveFunction.
+sgpp::optimization::ObjectiveFunction.
 In the constructor, we give the dimensionality of the domain
 (in this case \f$d = 2\f$).
 The eval method evaluates the objective function and returns the function
@@ -60,7 +60,7 @@ coefficients of the B-spline sparse grid interpolant
 We define the interpolant \f$\tilde{f}\f$ and its gradient
 \f$\nabla\tilde{f}\f$ for use with the gradient method (steepest descent).
 Of course, one can also use other optimization algorithms from
-SGPP::optimization::optimizer.
+sgpp::optimization::optimizer.
 
 \until ft(x0)
 
@@ -79,7 +79,7 @@ For comparison, we apply the classical gradient-free Nelder-Mead method
 directly to the objective function \f$f\f$.
 
 The example program outputs the following results:
-\verbinclude all_example.output.txt
+\verbinclude optimization.output.txt
 
 We see that both the gradient-based optimization of the smooth sparse grid
 interpolant and the gradient-free optimization of the objective function
@@ -88,41 +88,39 @@ find reasonable approximations of the minimum, which lies at
 
 The example can be compiled, linked, and executed by
 @code
-g++ -std=c++11 -O3 -I../../base/src -I../../optimization/src -L../../lib/sgpp -o c++_example c++_example.cpp -lsgppbase -lsgppoptimization
-export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
-./c++_example
+g++ -std=c++11 -O3 -I../../base/src -I../../optimization/src -L../../lib/sgpp -o optimization optimization.cpp -lsgppbase -lsgppoptimization
+export LD_LIBRARY_PATH="/PATH_TO_SGPP/lib/sgpp"
+./optimization
 @endcode
-For details see \ref code_examples_quick_start.
+For details see \ref code_examples_tutorial.
 
 \section code_examples_optimization_python Python
 
-The C++ code can be translated into the following Python code:
-\include python_example.py
-
-To run the Python example, you need to adjust the environment
-variables \c LD_LIBRARY_PATH and \c PYTHONPATH accordingly
-(see \ref code_examples_quick_start).
+The C++ code can be translated into the following Python code.
 When run, the example gives (nearly) the same output as the C++ example.
+
+\include optimization.py
 
 \section code_examples_optimization_java Java
 
-The C++ code can be translated into the following Java code:
-\include java_example.java
+The C++ code can be translated into the following Java code.
+When run, the example gives (nearly) the same output as the C++ example.
+
+\include optimization.java
 
 The Java and MATLAB examples use this external class:
-\include ExampleFunction.java
 
-To run the Java example, you need to adjust the environment
-variable \c LD_LIBRARY_PATH accordingly
-(see \ref code_examples_quick_start).
-When run, the example gives (nearly) the same output as the C++ example.
+\include ExampleFunction.java
 
 \section code_examples_optimization_matlab MATLAB
 
 The C++ code can be translated into the following MATLAB code:
-\include matlab_example.m
 
-Please note that in order to get SGPP::optimization to work with MATLAB,
+\include optimization.m
+
+In the following, we assume that we want to run the example on Linux.
+
+Please note that in order to get sgpp::optimization to work with MATLAB,
 you have to disable support for Armadillo and UMFPACK when compiling SG++,
 i.e. set USE_ARMADILLO and USE_UMFPACK to "no".
 This is due to incompatible BLAS and LAPACK libraries
@@ -136,25 +134,28 @@ unexpected wrong results (e.g., det [1 2; 3 4] = 2).
 Static linking to Armadillo and UMFPACK would be
 a possible solution to circumvent this problem.
 
-To make SG++ usuable within MATLAB, please follow
-\ref code_examples__matlab "the instructions provided here".
+To make SG++ usable within MATLAB, please follow
+\ref linux_using_matlab_jsgpp "the instructions provided here (for Linux)".
 However, to run the MATLAB example, you additionally need to compile
 the class \c ExampleFunction into a \c .jar file
 (before starting MATLAB):
 \code
-javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
+javac -cp .:/PATH_TO_SGPP/lib/jsgpp/jsgpp.jar ExampleFunction.java
 jar -cf ExampleFunction.jar ExampleFunction.class
 \endcode
+Under Windows, note that you have to replace the <tt>:</tt> delimiter in
+the first line by <tt>;</tt>
+(<tt>:</tt> is reserved for the use after the drive letter).
 After setting the environment variables and the
 \c librarypath.txt correctly
-(\ref code_examples__matlab "as described here"), you can start MATLAB.
+(\ref linux_using_matlab_jsgpp "as described here (for Linux)"),
+you can start MATLAB.
 In order to run the example, you need to add the example objective
 function to MATLAB's Java search path via
 \code
-javaaddpath('/path/to/SGpp/trunk/optimization/examples/ExampleFunction.jar');
+javaaddpath('/PATH_TO_SGPP/optimization/examples/ExampleFunction.jar');
 \endcode
 (i.e., right after adding \c jsgpp.jar to MATLAB's Java path).
 Now, you should be able to run the MATLAB example.
 When run, the example gives (nearly) the same output as the C++ example.
-
 */

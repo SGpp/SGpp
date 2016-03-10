@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -22,10 +22,8 @@ namespace optimization {
  */
 class WrapperVectorFunctionGradient : public VectorFunctionGradient {
  public:
-  typedef std::function<void(const base::DataVector&,
-                             base::DataVector&,
-                             base::DataMatrix&)>
-  FunctionGradientEvalType;
+  typedef std::function<void(const base::DataVector&, base::DataVector&, base::DataMatrix&)>
+      FunctionGradientEvalType;
 
   /**
    * Constructor.
@@ -34,17 +32,13 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
    * @param m         number of components
    * @param fGradient function gradient to be wrapped
    */
-  WrapperVectorFunctionGradient(size_t d,
-                                size_t m,
-                                FunctionGradientEvalType fGradient) :
-    VectorFunctionGradient(d, m), fGradient(fGradient) {
-  }
+  WrapperVectorFunctionGradient(size_t d, size_t m, FunctionGradientEvalType fGradient)
+      : VectorFunctionGradient(d, m), fGradient(fGradient) {}
 
   /**
    * Destructor.
    */
-  virtual ~WrapperVectorFunctionGradient() override {
-  }
+  ~WrapperVectorFunctionGradient() override {}
 
   /**
    * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -52,9 +46,8 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
    * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  inline virtual void eval(const base::DataVector& x,
-                           base::DataVector& value,
-                           base::DataMatrix& gradient) override {
+  inline void eval(const base::DataVector& x, base::DataVector& value,
+                   base::DataMatrix& gradient) override {
     fGradient(x, value, gradient);
   }
 
@@ -62,16 +55,15 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
    * @param[out] clone pointer to cloned object
    */
   void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
-    clone = std::unique_ptr<VectorFunctionGradient>(
-              new WrapperVectorFunctionGradient(d, m, fGradient));
+    clone =
+        std::unique_ptr<VectorFunctionGradient>(new WrapperVectorFunctionGradient(d, m, fGradient));
   }
 
  protected:
   /// function gradient to be wrapped
   FunctionGradientEvalType fGradient;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_WRAPPERVECTORFUNCTIONGRADIENT_HPP */

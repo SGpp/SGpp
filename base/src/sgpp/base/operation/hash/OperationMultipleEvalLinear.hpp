@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,8 +27,7 @@ class OperationMultipleEvalLinear: public OperationMultipleEval {
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalLinear(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -41,11 +40,11 @@ class OperationMultipleEvalLinear: public OperationMultipleEval {
   void multTranspose(DataVector& source, DataVector& result) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALLINEAR_HPP */

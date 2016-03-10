@@ -6,33 +6,31 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 
-
-
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 WaveletGrid::WaveletGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 WaveletGrid::WaveletGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 WaveletGrid::~WaveletGrid() {
 }
 
-SGPP::base::GridType WaveletGrid::getType() {
-  return SGPP::base::GridType::Wavelet;
+sgpp::base::GridType WaveletGrid::getType() {
+  return sgpp::base::GridType::Wavelet;
 }
 
 const SBasis& WaveletGrid::getBasis() {
@@ -40,19 +38,19 @@ const SBasis& WaveletGrid::getBasis() {
   return basis;
 }
 
-Grid* WaveletGrid::unserialize(std::istream& istr) {
-  return new WaveletGrid(istr);
+std::unique_ptr<Grid> WaveletGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new WaveletGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* WaveletGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& WaveletGrid::getGenerator() {
+  return generator;
 }
 
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -9,7 +9,7 @@
 #include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
 
 #include <string>
 #include <vector>
@@ -17,7 +17,7 @@
 
 #include "KernelSourceBuilderMult.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -32,9 +32,9 @@ class KernelDensityMult {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<int> devicePoints;
-  base::OCLClonedBufferSD<T> deviceAlpha;
-  base::OCLClonedBufferSD<T> deviceResultData;
+  base::OCLBufferWrapperSD<int> devicePoints;
+  base::OCLBufferWrapperSD<T> deviceAlpha;
+  base::OCLBufferWrapperSD<T> deviceResultData;
 
   cl_kernel kernelMult;
 
@@ -110,7 +110,8 @@ class KernelDensityMult {
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
         std::cout << "building kernel" << std::endl;
-      this->kernelMult = manager->buildKernel(program_src, device, "multdensity");
+      this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration,
+                                              "multdensity");
     }
 
     // Load data into buffers if not already done
@@ -229,7 +230,7 @@ class KernelDensityMult {
     this->deviceTimingMult += time;
     return 0;
   }
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -280,4 +281,4 @@ class KernelDensityMult {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

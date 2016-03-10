@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_bfs/DehierarchisationFundamentalSpline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 DehierarchisationFundamentalSpline::DehierarchisationFundamentalSpline(
   FundamentalSplineGrid* grid) :
@@ -21,14 +21,14 @@ void DehierarchisationFundamentalSpline::operator()(
   const DataVector& source,
   DataVector& result,
   const grid_iterator& iterator) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *(*storage)[q];
+    const GridIndex& point = *storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -51,14 +51,14 @@ void DehierarchisationFundamentalSpline::operator()(
     }
 
     if (!skipChild) {
-      float_t value = 1.0;
+      double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
         GridIndex::level_type l;
         GridIndex::level_type i;
         iterator.get(t, l, i);
 
-        const float_t val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getCoord(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -79,14 +79,14 @@ void DehierarchisationFundamentalSpline::operator()(
   const DataMatrix& source,
   DataMatrix& result,
   const grid_iterator& iterator) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *(*storage)[q];
+    const GridIndex& point = *storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -109,14 +109,14 @@ void DehierarchisationFundamentalSpline::operator()(
     }
 
     if (!skipChild) {
-      float_t value = 1.0;
+      double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
         GridIndex::level_type l;
         GridIndex::level_type i;
         iterator.get(t, l, i);
 
-        const float_t val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getCoord(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -137,4 +137,4 @@ void DehierarchisationFundamentalSpline::operator()(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

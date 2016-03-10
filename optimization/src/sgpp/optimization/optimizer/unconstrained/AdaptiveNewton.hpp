@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -26,17 +26,17 @@ namespace optimizer {
 class AdaptiveNewton : public UnconstrainedOptimizer {
  public:
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_TOLERANCE = 1e-6;
   /// default step size increase factor
-  static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
+  static constexpr double DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
   /// default step size decrease factor
-  static constexpr float_t DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
+  static constexpr double DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
   /// default damping increase factor
-  static constexpr float_t DEFAULT_DAMPING_INCREASE_FACTOR = 1.0;
+  static constexpr double DEFAULT_DAMPING_INCREASE_FACTOR = 1.0;
   /// default damping decrease factor
-  static constexpr float_t DEFAULT_DAMPING_DECREASE_FACTOR = 0.5;
+  static constexpr double DEFAULT_DAMPING_DECREASE_FACTOR = 0.5;
   /// default line search accuracy
-  static constexpr float_t DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
+  static constexpr double DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
 
   /**
    * Constructor.
@@ -54,15 +54,13 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    * @param dampingDecreaseFactor     damping decrease factor
    * @param lineSearchAccuracy        line search accuracy
    */
-  AdaptiveNewton(ScalarFunction& f,
-                 ScalarFunctionHessian& fHessian,
-                 size_t maxItCount = DEFAULT_N,
-                 float_t tolerance = DEFAULT_TOLERANCE,
-                 float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-                 float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
-                 float_t dampingIncreaseFactor = DEFAULT_DAMPING_INCREASE_FACTOR,
-                 float_t dampingDecreaseFactor = DEFAULT_DAMPING_DECREASE_FACTOR,
-                 float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
+  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
+                 double tolerance = DEFAULT_TOLERANCE,
+                 double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+                 double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
+                 double dampingIncreaseFactor = DEFAULT_DAMPING_INCREASE_FACTOR,
+                 double dampingDecreaseFactor = DEFAULT_DAMPING_DECREASE_FACTOR,
+                 double lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
   /**
    * Constructor.
@@ -82,16 +80,10 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    *                                  solving the linear systems
    *                                  (Hessian as coefficient matrix)
    */
-  AdaptiveNewton(ScalarFunction& f,
-                 ScalarFunctionHessian& fHessian,
-                 size_t maxItCount,
-                 float_t tolerance,
-                 float_t stepSizeIncreaseFactor,
-                 float_t stepSizeDecreaseFactor,
-                 float_t dampingIncreaseFactor,
-                 float_t dampingDecreaseFactor,
-                 float_t lineSearchAccuracy,
-                 const sle_solver::SLESolver& sleSolver);
+  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount,
+                 double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
+                 double dampingIncreaseFactor, double dampingDecreaseFactor,
+                 double lineSearchAccuracy, const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -108,92 +100,90 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   /**
    * @return tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return step size increase factor
    */
-  float_t getStepSizeIncreaseFactor() const;
+  double getStepSizeIncreaseFactor() const;
 
   /**
    * @param stepSizeIncreaseFactor step size increase factor
    */
-  void setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor);
+  void setStepSizeIncreaseFactor(double stepSizeIncreaseFactor);
 
   /**
    * @return step size decrease factor
    */
-  float_t getStepSizeDecreaseFactor() const;
+  double getStepSizeDecreaseFactor() const;
 
   /**
    * @param stepSizeDecreaseFactor step size decrease factor
    */
-  void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
+  void setStepSizeDecreaseFactor(double stepSizeDecreaseFactor);
 
   /**
    * @return damping increase factor
    */
-  float_t getDampingIncreaseFactor() const;
+  double getDampingIncreaseFactor() const;
 
   /**
    * @param dampingIncreaseFactor damping increase factor
    */
-  void setDampingIncreaseFactor(float_t dampingIncreaseFactor);
+  void setDampingIncreaseFactor(double dampingIncreaseFactor);
 
   /**
    * @return damping decrease factor
    */
-  float_t getDampingDecreaseFactor() const;
+  double getDampingDecreaseFactor() const;
 
   /**
    * @param dampingDecreaseFactor damping decrease factor
    */
-  void setDampingDecreaseFactor(float_t dampingDecreaseFactor);
+  void setDampingDecreaseFactor(double dampingDecreaseFactor);
 
   /**
    * @return line search accuracy
    */
-  float_t getLineSearchAccuracy() const;
+  double getLineSearchAccuracy() const;
 
   /**
    * @param lineSearchAccuracy line search accuracy
    */
-  void setLineSearchAccuracy(float_t lineSearchAccuracy);
+  void setLineSearchAccuracy(double lineSearchAccuracy);
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function Hessian
   ScalarFunctionHessian& fHessian;
   /// tolerance
-  float_t theta;
+  double theta;
   /// step size increase factor
-  float_t rhoAlphaPlus;
+  double rhoAlphaPlus;
   /// step size decrease factor
-  float_t rhoAlphaMinus;
+  double rhoAlphaMinus;
   /// damping increase factor
-  float_t rhoLambdaPlus;
+  double rhoLambdaPlus;
   /// damping decrease factor
-  float_t rhoLambdaMinus;
+  double rhoLambdaMinus;
   /// line search accuracy
-  float_t rhoLs;
+  double rhoLs;
   /// default linear solver
   const sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
   const sle_solver::SLESolver& sleSolver;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVENEWTON_HPP */

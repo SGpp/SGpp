@@ -1,13 +1,15 @@
-/*
- * CombiBasiStretching.hpp
- *
- *  Created on: 26 Sep 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIBASISTRETCHING_HPP_
 #define COMBIBASISTRETCHING_HPP_
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <vector>
+
 /**
  *   Implement a point  stretching
  *
@@ -37,12 +39,11 @@ class CombiBasuStretching : public AbstractStretchingMaker {
    * size of the interval and underlying tranformations.
    */
 
-  void get1DStretching(int level, double min, double max,
-                       std::vector<double>* stretching,
+  void get1DStretching(int level, double min, double max, std::vector<double>* stretching,
                        std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return BASU; }
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIBASISTRETCHING_HPP_ */

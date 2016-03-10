@@ -14,7 +14,7 @@
 
 namespace json {
 
-class DictNode: public Node {
+class DictNode : public Node {
  protected:
   std::map<std::string, std::unique_ptr<Node>> attributes;
 
@@ -35,40 +35,38 @@ class DictNode: public Node {
 
   void serialize(std::ostream& outFile, size_t indentWidth) override;
 
-  Node& operator[](const std::string& key) override;
+  Node& operator[](const std::string& key)override;
 
   size_t size() override;
 
   Node* clone() override;
 
-  void addAttribute(const std::string& name,
-                            std::unique_ptr<Node> node) override;
+  void addAttribute(const std::string& name, std::unique_ptr<Node> node) override;
 
   std::unique_ptr<Node> removeAttribute(const std::string& name) override;
 
   // returns the node to which the attribute was added
-  Node& addTextAttr(const std::string& name,
-                            const std::string& value) override;
+  Node& addTextAttr(const std::string& name, const std::string& value) override;
 
   // returns the node to which the attribute was added
-  Node& addIDAttr(const std::string& name,
-                          const std::string& value) override;
+  Node& addIDAttr(const std::string& name, const std::string& value) override;
+
+  // returns the node to which the attribute was added
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
+  Node& addIDAttr(const std::string& name, const char* value) override;
 
   // returns the node to which the attribute was added
   Node& addIDAttr(const std::string& name, const double& value) override;
 
   // returns the node to which the attribute was added
-  Node& addIDAttr(const std::string& name,
-                          const uint64_t& value) override;
+  Node& addIDAttr(const std::string& name, const uint64_t& value) override;
 
   // returns the node to which the attribute was added
   Node& addIDAttr(const std::string& name, const int64_t& value) override;
 
   // returns the node to which the attribute was added
   Node& addIDAttr(const std::string& name, const bool& value) override;
-
-  // returns the node to which the attribute was added
-  Node& addIDAttr(const std::string& name, const char* value) override;
 
   // returns created dict node
   Node& addDictAttr(const std::string& name) override;
@@ -79,38 +77,39 @@ class DictNode: public Node {
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceTextAttr(const std::string& name,
-                                const std::string& value) override;
+  Node& replaceTextAttr(const std::string& name, const std::string& value) override;
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceIDAttr(const std::string& name,
-                              const std::string& value) override;
+  Node& replaceIDAttr(const std::string& name, const std::string& value) override;
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceIDAttr(const std::string& name,
-                              const double& value) override;
+  // cast internally to string, prevents the boolean overload from being used, if the value is a
+  // string literal
+  Node& replaceIDAttr(const std::string& name, const char* value) override;
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceIDAttr(const std::string& name,
-                              const uint64_t& value) override;
+  Node& replaceIDAttr(const std::string& name, const double& value) override;
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceIDAttr(const std::string& name,
-                              const int64_t& value) override;
+  Node& replaceIDAttr(const std::string& name, const uint64_t& value) override;
 
   // returns the node to which the attribute was added
   // replaces a node, adds a new node, if the node does not exist,
   // the old node is deleted
-  Node& replaceIDAttr(const std::string& name,
-                              const bool& value) override;
+  Node& replaceIDAttr(const std::string& name, const int64_t& value) override;
+
+  // returns the node to which the attribute was added
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name, const bool& value) override;
 
   // returns created dict node
   // replaces a node, adds a new node, if the node does not exist,

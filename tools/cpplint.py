@@ -56,7 +56,7 @@ import unicodedata
 _USAGE = """
 Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
                    [--counting=total|toplevel|detailed] [--root=subdir]
-                   [--linelength=digits]
+                   [--linelength=digits] [--ignorecfg=yes|no]
         <file> [file] ...
 
   The style guidelines this tries to follow are those in
@@ -71,7 +71,7 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
   suppresses errors of all categories on that line.
 
   The files passed in will be linted; at least one file must be provided.
-  Default linted extensions are .cc, .cpp, .cu, .cuh and .h.  Change the
+  Default linted extensions are .cc, .cpp, .hpp, .cu, .cuh and .h.  Change the
   extensions with the --extensions flag.
 
   Flags:
@@ -123,7 +123,7 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
 
     linelength=digits
       This is the allowed line length for the project. The default value is
-      80 characters.
+      100 characters.
 
       Examples:
         --linelength=120
@@ -133,6 +133,10 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
 
       Examples:
         --extensions=hpp,cpp
+
+    ignorecfg=yes,no
+      Whether cpplint.py will ignore all CPPLINT.cfg files (see below). The
+      default is not to ignore.
 
     cpplint.py supports per-directory configurations specified in CPPLINT.cfg
     files. CPPLINT.cfg file can contain a number of key=value pairs.
@@ -500,7 +504,12 @@ _line_length = 100
 
 # The allowed extensions for file names
 # This is set by --extensions flag.
+# _valid_extensions = set(['cc', 'h', 'cpp', 'cu', 'cuh'])
 _valid_extensions = set(['cc', 'h', 'cpp', 'hpp', 'cu', 'cuh'])
+
+# Whether to ignore CPPLINT.cfg if it exists.
+# This is set by --ignorecfg flag.
+_ignore_cfg = False
 
 def ParseNolintSuppressions(filename, raw_line, linenum, error):
   """Updates the global list of error-suppressions.
@@ -3887,6 +3896,46 @@ def GetPreviousNonBlankLine(clean_lines, linenum):
     prevlinenum -= 1
   return ('', -1)
 
+def GetPreviousNonBlankMultiLineHelper(clean_lines, linenum, multiline):
+  """Concatenates all immediately preceding lines of linenum, that end with 
+  a backslash with multiline
+  Args:
+    clean_lines A CleansedLines instance containing the file contents.
+    linenum: The number of the line to check.
+    multiline: string, to which the preceding lines should be prepended
+  """
+  prevmultilinenum = linenum - 1
+  while prevmultilinenum >=0:
+    prevtestmultiline = clean_lines.elided[prevmultilinenum]
+    if Search(r'\\\s*$', prevtestmultiline):
+        return GetPreviousNonBlankMultiLineHelper(clean_lines, 
+          prevmultilinenum, prevtestmultiline + multiline)
+    else:
+        break
+  return (multiline, linenum)
+    
+    
+def GetPreviousNonBlankMultiLine(clean_lines, linenum):
+  """Return the most recent non-blank line and its line number.
+
+  Args:
+    clean_lines: A CleansedLines instance containing the file contents.
+    linenum: The number of the line to check.
+
+  Returns:
+    A tuple with two elements.  The first element is the contents of the last
+    non-blank line before the current line, or the empty string if this is the
+    first non-blank line.  The second is the line number of that line, or -1
+    if this is the first non-blank line.
+  """
+
+  prevlinenum = linenum - 1
+  while prevlinenum >= 0:
+    prevline = clean_lines.elided[prevlinenum]
+    if not IsBlankLine(prevline):     # if not a blank line...
+      return GetPreviousNonBlankMultiLineHelper(clean_lines, prevlinenum, prevline)
+    prevlinenum -= 1
+  return ('', -1)
 
 def CheckBraces(filename, clean_lines, linenum, error):
   """Looks for misplaced braces (e.g. at the end of line).
@@ -3908,9 +3957,9 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # perfectly: we just don't complain if the last non-whitespace character on
     # the previous non-blank line is ',', ';', ':', '(', '{', or '}', or if the
     # previous line starts a preprocessor block.
-    prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
+    prevline = GetPreviousNonBlankMultiLine(clean_lines, linenum)[0]
     if (not Search(r'[,;:}{(]\s*$', prevline) and
-        not Match(r'\s*#', prevline)):
+        not Match(r'\s*#', prevline)):  # \s: white space; * previous 0 or multiple times; -> '(one or multiple whitespaces)#'  
       error(filename, linenum, 'whitespace/braces', 4,
             '{ should almost always be at the end of the previous line')
 
@@ -6139,7 +6188,7 @@ def ProcessFile(filename, vlevel, extra_check_functions=[]):
   _SetVerboseLevel(vlevel)
   _BackupFilters()
 
-  if not ProcessConfigOverrides(filename):
+  if (not _ignore_cfg) and (not ProcessConfigOverrides(filename)):
     _RestoreFilters()
     return
 
@@ -6249,7 +6298,8 @@ def ParseArguments(args):
                                                  'filter=',
                                                  'root=',
                                                  'linelength=',
-                                                 'extensions='])
+                                                 'extensions=',
+                                                 'ignorecfg='])
   except getopt.GetoptError:
     PrintUsage('Invalid arguments.')
 
@@ -6290,6 +6340,11 @@ def ParseArguments(args):
           _valid_extensions = set(val.split(','))
       except ValueError:
           PrintUsage('Extensions must be comma seperated list.')
+    elif opt == '--ignorecfg':
+      global _ignore_cfg
+      if val not in ('yes', 'no'):
+        PrintUsage('Valid ignorecfg options are yes and no')
+      _ignore_cfg = (val == 'yes')
 
   if not filenames:
     PrintUsage('No files were specified.')

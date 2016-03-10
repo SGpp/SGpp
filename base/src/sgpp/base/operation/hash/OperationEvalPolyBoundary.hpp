@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -31,7 +31,7 @@ class OperationEvalPolyBoundary : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalPolyBoundary(GridStorage* storage,
+  OperationEvalPolyBoundary(GridStorage& storage,
                             size_t degree) : storage(storage), base(degree) {}
 
   /**
@@ -39,17 +39,17 @@ class OperationEvalPolyBoundary : public OperationEval {
    */
   ~OperationEvalPolyBoundary() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Basis object
   SPolyBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPOLYBOUNDARY_HPP */

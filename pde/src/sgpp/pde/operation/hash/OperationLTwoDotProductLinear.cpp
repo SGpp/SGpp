@@ -12,34 +12,30 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(
-  SGPP::base::GridStorage* storage) : StdUpDown(storage) {
-}
+OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(sgpp::base::GridStorage* storage)
+    : StdUpDown(storage) {}
 
-OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear() {
-}
+OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear() {}
 
-void OperationLTwoDotProductLinear::up(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result, size_t dim) {
+void OperationLTwoDotProductLinear::up(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinear> s(func, this->storage);
+  sgpp::base::sweep<PhiPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationLTwoDotProductLinear::down(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+void OperationLTwoDotProductLinear::down(sgpp::base::DataVector& alpha,
+                                         sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
+  sgpp::base::sweep<PhiPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

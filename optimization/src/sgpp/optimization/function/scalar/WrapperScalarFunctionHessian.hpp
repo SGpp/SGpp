@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -22,10 +22,8 @@ namespace optimization {
  */
 class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
  public:
-  typedef std::function<float_t(const base::DataVector&,
-                                base::DataVector&,
-                                base::DataMatrix&)>
-  FunctionHessianEvalType;
+  typedef std::function<double(const base::DataVector&, base::DataVector&, base::DataMatrix&)>
+      FunctionHessianEvalType;
 
   /**
    * Constructor.
@@ -33,16 +31,13 @@ class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
    * @param d         dimension of the domain
    * @param fHessian  function gradient to be wrapped
    */
-  WrapperScalarFunctionHessian(size_t d,
-                               FunctionHessianEvalType fHessian) :
-    ScalarFunctionHessian(d), fHessian(fHessian) {
-  }
+  WrapperScalarFunctionHessian(size_t d, FunctionHessianEvalType fHessian)
+      : ScalarFunctionHessian(d), fHessian(fHessian) {}
 
   /**
    * Destructor.
    */
-  virtual ~WrapperScalarFunctionHessian() override {
-  }
+  ~WrapperScalarFunctionHessian() override {}
 
   /**
    * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -52,9 +47,8 @@ class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline virtual float_t eval(const base::DataVector& x,
-                              base::DataVector& gradient,
-                              base::DataMatrix& hessian) override {
+  inline double eval(const base::DataVector& x, base::DataVector& gradient,
+                      base::DataMatrix& hessian) override {
     return fHessian(x, gradient, hessian);
   }
 
@@ -62,16 +56,14 @@ class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
    * @param[out] clone pointer to cloned object
    */
   void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
-    clone = std::unique_ptr<ScalarFunctionHessian>(
-              new WrapperScalarFunctionHessian(d, fHessian));
+    clone = std::unique_ptr<ScalarFunctionHessian>(new WrapperScalarFunctionHessian(d, fHessian));
   }
 
  protected:
   /// function Hessian to be wrapped
   FunctionHessianEvalType fHessian;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTIONHESSIAN_HPP */

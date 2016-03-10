@@ -16,7 +16,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0),
@@ -34,11 +34,11 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
   if (this->bFirstTime == true) {
     if (boundaryGrid.getType() == base::GridType::LinearL0Boundary
         || boundaryGrid.getType() == base::GridType::LinearBoundary) {
-      GridStorage* myGridStorage = boundaryGrid.getStorage();
+      GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage->size();
-      this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
+      this->numTotalGridPoints = myGridStorage.getSize();
+      this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
       // std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
@@ -50,7 +50,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
       // create new inner Grid, with one grid point
-      *innerGrid = new LinearGrid(*boundaryGrid.getBoundingBox());
+      *innerGrid = new LinearGrid(boundaryGrid.getBoundingBox());
 
       // Set algorithmic dimensions for inner Grid
       (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
@@ -62,7 +62,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = (*myGridStorage)[i];
+        GridIndex* curPoint = myGridStorage[i];
 
         if (curPoint->isInnerPoint() == true) {
           // handle coefficients
@@ -70,7 +70,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage()->insert(*curPoint);
+          (*innerGrid)->getStorage().insert(*curPoint);
         }
       }
 
@@ -83,11 +83,11 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       this->bFirstTime = false;
     } else if (boundaryGrid.getType() ==
                base::GridType::LinearStretchedBoundary) {
-      GridStorage* myGridStorage = boundaryGrid.getStorage();
+      GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage->size();
-      this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
+      this->numTotalGridPoints = myGridStorage.getSize();
+      this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
       // std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
@@ -99,7 +99,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
       // create new inner Grid, with one grid point
-      *innerGrid = new LinearStretchedGrid(*boundaryGrid.getStretching());
+      *innerGrid = new LinearStretchedGrid(boundaryGrid.getStretching());
 
       // Set algorithmic dimensions for inner Grid
       (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
@@ -111,7 +111,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = (*myGridStorage)[i];
+        GridIndex* curPoint = myGridStorage[i];
 
         if (curPoint->isInnerPoint() == true) {
           // handle coefficients
@@ -119,7 +119,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage()->insert(*curPoint);
+          (*innerGrid)->getStorage().insert(*curPoint);
         }
       }
 
@@ -148,11 +148,11 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
     if (boundaryGrid.getType() == base::GridType::LinearL0Boundary
         || boundaryGrid.getType() == base::GridType::LinearBoundary
         || boundaryGrid.getType() == base::GridType::LinearStretchedBoundary) {
-      GridStorage* myGridStorage = boundaryGrid.getStorage();
+      GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage->size();
-      this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
+      this->numTotalGridPoints = myGridStorage.getSize();
+      this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // allocate the translation array for the coefficients
       delete[] this->conCoefArray;
@@ -162,7 +162,7 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
       std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
       // create new inner Grid, with one grid point
-      (*innerGrid)->getStorage()->emptyStorage();
+      (*innerGrid)->getStorage().emptyStorage();
 
       // Set algorithmic dimensions for inner Grid
       (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
@@ -175,7 +175,7 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = (*myGridStorage)[i];
+        GridIndex* curPoint = myGridStorage[i];
 
         if (curPoint->isInnerPoint() == true) {
           // handle coefficients
@@ -183,7 +183,7 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage()->insert(*curPoint);
+          (*innerGrid)->getStorage().insert(*curPoint);
         }
       }
 
@@ -229,4 +229,4 @@ void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

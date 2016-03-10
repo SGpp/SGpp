@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationStencilHierarchisationModLinear::doHierarchisation(
@@ -23,10 +23,10 @@ void OperationStencilHierarchisationModLinear::doHierarchisation(
   weightStencil.clear();
   StencilHierarchisationModLinear func(this->storage, surplusStencil,
                                        neighborStencil, weightStencil);
-  sweep<StencilHierarchisationModLinear> s(func, this->storage);
+  sweep<StencilHierarchisationModLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
@@ -38,13 +38,13 @@ void OperationStencilHierarchisationModLinear::doDehierarchisation(
   weightStencil.clear();
   StencilDehierarchisationModLinear func(this->storage, surplusStencil,
                                          neighborStencil, weightStencil);
-  sweep<StencilDehierarchisationModLinear> s(func, this->storage);
+  sweep<StencilDehierarchisationModLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

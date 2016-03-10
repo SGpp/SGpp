@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -50,12 +50,12 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of boundary B-spline basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
-    const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double eval(LT l, IT i, double x) override {
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return bsplineBasis.uniformBSpline(
-             x * hInv - static_cast<float_t>(i) +
-             static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+             x * hInv - static_cast<double>(i) +
+             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
              bsplineBasis.getDegree());
   }
 
@@ -65,12 +65,12 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of boundary B-spline basis function
    */
-  inline float_t evalDx(LT l, IT i, float_t x) {
-    const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double evalDx(LT l, IT i, double x) {
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return hInv * bsplineBasis.uniformBSplineDx(
-             x * hInv - static_cast<float_t>(i) +
-             static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+             x * hInv - static_cast<double>(i) +
+             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
              bsplineBasis.getDegree());
   }
 
@@ -80,12 +80,12 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of 2nd derivative of boundary B-spline basis function
    */
-  inline float_t evalDxDx(LT l, IT i, float_t x) {
-    const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double evalDxDx(LT l, IT i, double x) {
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return hInv * hInv * bsplineBasis.uniformBSplineDxDx(
-             x * hInv - static_cast<float_t>(i) +
-             static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+             x * hInv - static_cast<double>(i) +
+             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
              bsplineBasis.getDegree());
   }
 
@@ -105,6 +105,6 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
 typedef BsplineBoundaryBasis<unsigned int, unsigned int> SBsplineBoundaryBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BSPLINE_BOUNDARY_BASE_HPP */

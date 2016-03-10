@@ -11,24 +11,24 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-LearnerSGD::LearnerSGD(SGPP::datadriven::RegularizationType& regularization,
+LearnerSGD::LearnerSGD(sgpp::datadriven::RegularizationType& regularization,
                        const bool isRegression, const bool isVerbose) : Learner(regularization,
                              isRegression, isVerbose) {
 }
 
 void LearnerSGD::train(
-    SGPP::base::DataMatrix& trainDataset,
-    SGPP::base::DataVector& classes,
-    SGPP::base::RegularGridConfiguration& GridConfig,
+    sgpp::base::DataMatrix& trainDataset,
+    sgpp::base::DataVector& classes,
+    sgpp::base::RegularGridConfiguration& GridConfig,
     size_t maxIterations,
-    float_t eps,
-    float_t lambda,
-    float_t gamma) {
-  // using namespace SGPP::base;
-  using SGPP::base::DataVector;
+    double eps,
+    double lambda,
+    double gamma) {
+  // using namespace sgpp::base;
+  using sgpp::base::DataVector;
 
   // Initialize Grid
   InitializeGrid(GridConfig);
@@ -38,8 +38,10 @@ void LearnerSGD::train(
 
   alpha_->setAll(0.0);
 
-  size_t num_coeff = grid_->getStorage()->size();
+  size_t num_coeff = grid_->getSize();
   size_t dim = trainDataset.getNcols();
+
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid_));
 
   // Execute SGD
   size_t numIterations = 0;
@@ -49,13 +51,13 @@ void LearnerSGD::train(
     int k = getRandom(static_cast<int>(trainDataset.getNrows()) - 1);
     DataVector x(dim);
     trainDataset.getRow((size_t)k, x);
-    float_t y = classes[k];
+    double y = classes[k];
 
     // Calculate delta^n according to [Maier BA, 5.10]:
 
     // tmp1 = (b_k^T * a^n - y_k) where
     // b_k = (phi_1(x_k) ... phi_N(x_k))
-    float_t tmp1 = grid_->eval(*alpha_, x) - y;
+    double tmp1 = opEval->eval(*alpha_, x) - y;
 
     // delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
     DataVector delta(num_coeff);
@@ -65,7 +67,7 @@ void LearnerSGD::train(
       unit_alpha.setAll(0.0);
       unit_alpha[i] = 1;
 
-      delta[i] = 2 * gamma * (grid_->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
+      delta[i] = 2 * gamma * (opEval->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
     }
 
     // update alpha
@@ -105,11 +107,11 @@ int LearnerSGD::getRandom(int limit) {
   return r;
 }
 
-SGPP::base::DataVector* LearnerSGD::getAlpha() {
+sgpp::base::DataVector* LearnerSGD::getAlpha() {
   return alpha_;
 }
 
-SGPP::base::Grid* LearnerSGD::getGrid() {
+sgpp::base::Grid* LearnerSGD::getGrid() {
   return grid_;
 }
 
@@ -117,5 +119,5 @@ LearnerSGD::~LearnerSGD() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

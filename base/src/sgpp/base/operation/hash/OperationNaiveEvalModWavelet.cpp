@@ -6,21 +6,21 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalModWavelet.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationNaiveEvalModWavelet::eval(const DataVector& alpha,
+double OperationNaiveEvalModWavelet::eval(const DataVector& alpha,
     const DataVector& point) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
-  float_t result = 0.0;
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
+  double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *(*storage)[i];
-    float_t curValue = 1.0;
+    const GridIndex& gp = *storage[i];
+    double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const float_t val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
 
       if (val1d == 0.0) {
         curValue = 0.0;
@@ -37,4 +37,4 @@ float_t OperationNaiveEvalModWavelet::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

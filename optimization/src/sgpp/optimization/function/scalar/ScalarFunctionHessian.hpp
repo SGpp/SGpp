@@ -7,15 +7,14 @@
 #define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTIONHESSIAN_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <vector>
 #include <cstddef>
 #include <memory>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -34,14 +33,12 @@ class ScalarFunctionHessian {
    *
    * @param d     dimension of the domain
    */
-  ScalarFunctionHessian(size_t d) : d(d) {
-  }
+  explicit ScalarFunctionHessian(size_t d) : d(d) {}
 
   /**
    * Destructor.
    */
-  virtual ~ScalarFunctionHessian() {
-  }
+  virtual ~ScalarFunctionHessian() {}
 
   /**
    * Pure virtual method for calculating \f$f(\vec{x})\f$ together with
@@ -55,16 +52,13 @@ class ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  virtual float_t eval(const base::DataVector& x,
-                       base::DataVector& gradient,
+  virtual double eval(const base::DataVector& x, base::DataVector& gradient,
                        base::DataMatrix& hessian) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * Pure virtual method for cloning the Hessian.
@@ -74,15 +68,13 @@ class ScalarFunctionHessian {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<ScalarFunctionHessian>& clone) const = 0;
+  virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const = 0;
 
  protected:
   /// dimension of the domain
   size_t d;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTIONHESSIAN_HPP */

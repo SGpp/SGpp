@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -31,8 +31,8 @@ class PrecisionConverter {
    * @param src source DataVector, double precision
    * @param dest destination DataVectorSP, single precision
    */
-  static void convertDataVectorToDataVectorSP(const SGPP::base::DataVector& src,
-      SGPP::base::DataVectorSP& dest);
+  static void convertDataVectorToDataVectorSP(const sgpp::base::DataVector& src,
+      sgpp::base::DataVectorSP& dest);
 
   /**
    * Copies data from DataVectorSP object into DataVector object
@@ -41,8 +41,8 @@ class PrecisionConverter {
    * @param dest destination DataVector, double precision
    */
   static void convertDataVectorSPToDataVector(
-    const SGPP::base::DataVectorSP& src,
-    SGPP::base::DataVector& dest);
+    const sgpp::base::DataVectorSP& src,
+    sgpp::base::DataVector& dest);
 
   /**
    * Copies data from DataMatrix object into DataMatrixSP object
@@ -50,8 +50,8 @@ class PrecisionConverter {
    * @param src source DataMatrix, double precision
    * @param dest destination DataMatrixSP, single precision
    */
-  static void convertDataMatrixToDataMatrixSP(const SGPP::base::DataMatrix& src,
-      SGPP::base::DataMatrixSP& dest);
+  static void convertDataMatrixToDataMatrixSP(const sgpp::base::DataMatrix& src,
+      sgpp::base::DataMatrixSP& dest);
 
   /**
    * Copies data from DataMatrixSP object into DataMatrix object
@@ -60,11 +60,11 @@ class PrecisionConverter {
    * @param dest destination DataMatrix, double precision
    */
   static void convertDataMatrixSPToDataMatrix(
-    const SGPP::base::DataMatrixSP& src,
-    SGPP::base::DataMatrix& dest);
+    const sgpp::base::DataMatrixSP& src,
+    sgpp::base::DataMatrix& dest);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PRECISIONCONVERTER_HPP */

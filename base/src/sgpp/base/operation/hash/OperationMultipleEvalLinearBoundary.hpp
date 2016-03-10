@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -29,8 +29,7 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
    * @param dataset the dataset the should be evaluated
    */
   OperationMultipleEvalLinearBoundary(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -43,10 +42,10 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP */

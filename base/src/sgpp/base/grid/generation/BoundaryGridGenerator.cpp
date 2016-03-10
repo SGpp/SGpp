@@ -14,10 +14,10 @@
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-BoundaryGridGenerator::BoundaryGridGenerator(GridStorage* storage,
+BoundaryGridGenerator::BoundaryGridGenerator(GridStorage& storage,
     level_t boundaryLevel) :
   storage(storage),
   boundaryLevel(boundaryLevel) {
@@ -43,7 +43,7 @@ void BoundaryGridGenerator::full(size_t level) {
                        static_cast<HashGenerator::level_t>(level));
 }
 
-void BoundaryGridGenerator::refine(RefinementFunctor* func) {
+void BoundaryGridGenerator::refine(RefinementFunctor& func) {
   HashRefinementBoundaries refine;
   refine.free_refine(this->storage, func);
 }
@@ -53,14 +53,14 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
-                                    DataVector* alpha) {
+void BoundaryGridGenerator::coarsen(CoarseningFunctor& func,
+                                    DataVector& alpha) {
   HashCoarsening coarsen;
   coarsen.free_coarsen(this->storage, func, alpha);
 }
 
-void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func,
-    DataVector* alpha,
+void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+    DataVector& alpha,
     size_t numFirstOnly) {
   HashCoarsening coarsen;
   coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
@@ -71,7 +71,7 @@ size_t BoundaryGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
     size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   refine.refineToMaxLevel(this->storage, func,
@@ -86,4 +86,4 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

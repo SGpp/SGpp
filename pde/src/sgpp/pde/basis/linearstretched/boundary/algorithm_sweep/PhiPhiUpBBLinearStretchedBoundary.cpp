@@ -7,34 +7,30 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-
-
 PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage) {
-}
+    sgpp::base::GridStorage* storage)
+    : PhiPhiUpBBLinearStretched(storage) {}
 
-PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary() {
-}
+PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary() {}
 
-void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
-    source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = this->stretching->getIntervalWidth(dim);
-  //  float_t t = this->stretching->getIntervalOffset(dim);
-
+void PhiPhiUpBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& source,
+                                                   sgpp::base::DataVector& result,
+                                                   grid_iterator& index, size_t dim) {
+  double q = this->stretching->getIntervalWidth(dim);
+  //  double t = this->stretching->getIntervalOffset(dim);
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
     if (!this->storage->end(index.seq())) {
-      //This will be changed to rec
+      // This will be changed to rec
       rec(source, result, index, dim, fl, fr);
     }
 
@@ -53,9 +49,9 @@ void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
 
   // up
   //////////////////////////////////////
-  //Left
+  // Left
   if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-    result[seq_left] = 0.0; // source[seq_left];
+    result[seq_left] = 0.0;  // source[seq_left];
   } else {
     result[seq_left] = fl;
     result[seq_left] += (((1.0 / 6.0) * source[seq_right]) * q);
@@ -63,7 +59,7 @@ void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
 
   // Right
   if (this->stretching->hasDirichletBoundaryRight(dim)) {
-    result[seq_right] = 0.0; //source[seq_right];
+    result[seq_right] = 0.0;  // source[seq_right];
   } else {
     result[seq_right] = fr;
   }
@@ -71,7 +67,5 @@ void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
   index.resetToLeftLevelZero(dim);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace pde
+}  // namespace sgpp

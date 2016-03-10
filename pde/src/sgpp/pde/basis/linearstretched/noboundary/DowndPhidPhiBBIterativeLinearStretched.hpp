@@ -11,8 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -30,7 +29,7 @@ namespace pde {
 class DowndPhidPhiBBIterativeLinearStretched {
  private:
   /// Pointer to the grid's storage object
-  SGPP::base::GridStorage* storage;
+  sgpp::base::GridStorage* storage;
 
  public:
   /**
@@ -38,7 +37,7 @@ class DowndPhidPhiBBIterativeLinearStretched {
    *
    * @param storage Pointer to the grid's storage object
    */
-  DowndPhidPhiBBIterativeLinearStretched(SGPP::base::GridStorage* storage);
+  explicit DowndPhidPhiBBIterativeLinearStretched(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -47,17 +46,17 @@ class DowndPhidPhiBBIterativeLinearStretched {
 
   /**
    * This operations performs the calculation of Down in the direction of dimension <i>dim</i>
-   * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+   * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x}
+   * dx\f$
    *
-   * @param alpha SGPP::base::DataVector that contains the gridpoint's coefficients
-   * @param result SGPP::base::DataVector that contains the result of the down operation
+   * @param alpha sgpp::base::DataVector that contains the gridpoint's coefficients
+   * @param result sgpp::base::DataVector that contains the result of the down operation
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result, size_t dim);
+  virtual void operator()(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                          size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* DOWNDPHIDPHIDOWNBBITERATIVELINEARSTRETCHED_HPP */

@@ -5,16 +5,7 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
-const bool USING_DOUBLE_PRECISION;
-%{
-#if USE_DOUBLE_PRECISION == 1
-    const bool USING_DOUBLE_PRECISION = true;
-#else
-    const bool USING_DOUBLE_PRECISION = false;
-#endif /* USE_DOUBLE_PRECISION */
-%}
-
-%apply (SGPP::float_t* IN_ARRAY1, int DIM1) {(SGPP::float_t* input, int size)}
+%apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
 namespace std {
     %template(IntVector) vector<int>;
@@ -23,44 +14,45 @@ namespace std {
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
     %template(IndexVector) vector<size_t>;
-    %template(IndexValPair) pair<size_t, SGPP::float_t>;
-    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
+    %template(IndexValPair) pair<size_t, double>;
+    %template(IndexValVector) vector<pair<size_t, double> >;
     %template(IndexList) list<size_t>;
     // For OnlinePredictiveRefinementDimension
     %template(refinement_key) std::pair<size_t, unsigned int>;
-    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
+    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };%
-%apply uint32_t *OUTPUT {SGPP::base::HashGridIndex::level_type& l, SGPP::base::HashGridIndex::index_type& i}
+%apply uint32_t *OUTPUT {sgpp::base::HashGridIndex::level_type& l, sgpp::base::HashGridIndex::index_type& i}
 
 // include other interface files
 %import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
-%template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
+%template(SBasis) sgpp::base::Basis<unsigned int, unsigned int>;
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
+%include "OpFactory.i"
 
 
-%ignore SGPP::base::DataVectorSP::DataVectorSP(std::vector<float> input);
-%ignore SGPP::base::DataVectorSP::operator=;
-%ignore SGPP::base::DataVectorSP::operator[];
-%ignore SGPP::base::DataVectorSP::toString(std::string& text) const;
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
+%ignore sgpp::base::DataVectorSP::operator=;
+%ignore sgpp::base::DataVectorSP::operator[];
+%ignore sgpp::base::DataVectorSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
-%ignore SGPP::base::DataMatrixSP::operator=;
-%ignore SGPP::base::DataMatrixSP::operator[];
-%ignore SGPP::base::DataMatrixSP::toString(std::string& text) const;
+%ignore sgpp::base::DataMatrixSP::operator=;
+%ignore sgpp::base::DataMatrixSP::operator[];
+%ignore sgpp::base::DataMatrixSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
-%ignore SGPP::base::BoundingBox::toString(std::string& text);
+%ignore sgpp::base::BoundingBox::toString(std::string& text);
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%ignore SGPP::base::HashGridIndex::operator=;
+%ignore sgpp::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%ignore SGPP::base::HashGridStorage::operator[];
+%ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
@@ -83,15 +75,15 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
-%feature("director") sg::base::AbstractRefinement;
+%feature("director") sgpp::base::AbstractRefinement;
 %include "base/src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
-%feature("director") sg::base::RefinementDecorator;
+%feature("director") sgpp::base::RefinementDecorator;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
-%feature("director") sg::base::HashRefinement;
+%feature("director") sgpp::base::HashRefinement;
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
-%feature("director") sg::base::SubspaceRefinement;
+%feature("director") sgpp::base::SubspaceRefinement;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
@@ -106,8 +98,6 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
-
-%include "base/src/sgpp/base/grid/type/PeriodicGrid.hpp"
 
 %include "base/src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
@@ -147,41 +137,38 @@ namespace std {
 %include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
 %include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
-// static factory methods
-%include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
-
 
 // and the rest
 %apply std::string *INPUT { std::string& istr };
 
-%template(SLinearBase) SGPP::base::LinearBasis<unsigned int, unsigned int>;
-%template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
-%template(SLinearClenshawCurtisBase) SGPP::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBase) SGPP::base::LinearStretchedBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SLinearModifiedBase) SGPP::base::LinearModifiedBasis<unsigned int, unsigned int>;
-%template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
-%template(SPolyBoundaryBase) SGPP::base::PolyBoundaryBasis<unsigned int, unsigned int>;
-//%template(SPolyModifiedBase) SGPP::base::PolyModifiedBasis<unsigned int, unsigned int>;
-%template(SWaveletBase) SGPP::base::WaveletBasis<unsigned int, unsigned int>;
-%template(SWaveletBoundaryBase) SGPP::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
-%template(SWaveletModifiedBase) SGPP::base::WaveletModifiedBasis<unsigned int, unsigned int>;
-%template(SBsplineBase) SGPP::base::BsplineBasis<unsigned int, unsigned int>;
-%template(SBsplineBoundaryBase) SGPP::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
-%template(SBsplineClenshawCurtisBase) SGPP::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
-%template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
-%template(SBsplineModifiedClenshawCurtisBase) SGPP::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
-%template(SFundamentalSplineBase) SGPP::base::FundamentalSplineBasis<unsigned int, unsigned int>;
-%template(SFundamentalSplineModifiedBase) SGPP::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
-%template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
+%template(SLinearBase) sgpp::base::LinearBasis<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) sgpp::base::LinearBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearClenshawCurtisBase) sgpp::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) sgpp::base::LinearStretchedBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) sgpp::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearModifiedBase) sgpp::base::LinearModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyBase) sgpp::base::PolyBasis<unsigned int, unsigned int>;
+%template(SPolyBoundaryBase) sgpp::base::PolyBoundaryBasis<unsigned int, unsigned int>;
+//%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SWaveletBase) sgpp::base::WaveletBasis<unsigned int, unsigned int>;
+%template(SWaveletBoundaryBase) sgpp::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
+%template(SWaveletModifiedBase) sgpp::base::WaveletModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineBase) sgpp::base::BsplineBasis<unsigned int, unsigned int>;
+%template(SBsplineBoundaryBase) sgpp::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
+%template(SBsplineClenshawCurtisBase) sgpp::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedBase) sgpp::base::BsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedClenshawCurtisBase) sgpp::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineBase) sgpp::base::FundamentalSplineBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
+%template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
-%apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };
-%apply std::vector<SGPP::float_t> *INPUT { std::vector<SGPP::float_t>& point }; 
+%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
+%apply std::vector<double> *INPUT { std::vector<double>& point }; 
 
-%template(SGetAffectedBasisFunctions) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBase>;
-%template(SAlgorithmEvaluation) SGPP::base::AlgorithmEvaluation<SGPP::base::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<SGPP::base::DimensionBoundary>;
-%template(Stretching1DVector) std::vector<SGPP::base::Stretching1D>;
+%template(SGetAffectedBasisFunctions) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBase>;
+%template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
+%template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
+%template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
 

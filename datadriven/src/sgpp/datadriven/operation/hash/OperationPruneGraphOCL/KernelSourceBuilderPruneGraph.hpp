@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -172,4 +172,4 @@ class SourceBuilderPruneGraph: public base::KernelSourceBuilderBase<real_type> {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

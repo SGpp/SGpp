@@ -6,40 +6,36 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PolyGrid::PolyGrid(std::istream& istr) :
   Grid(istr),
-  degree(1 << 16),
-  basis_(NULL) {
+  generator(storage),
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SPolyBase(degree));
 }
 
 PolyGrid::PolyGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SPolyBase(degree)) {
 }
 
 PolyGrid::~PolyGrid() {
 }
 
-SGPP::base::GridType PolyGrid::getType() {
-  return SGPP::base::GridType::Poly;
+sgpp::base::GridType PolyGrid::getType() {
+  return sgpp::base::GridType::Poly;
 }
 
 const SBasis& PolyGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -47,8 +43,8 @@ size_t PolyGrid::getDegree() const {
   return this->degree;
 }
 
-Grid* PolyGrid::unserialize(std::istream& istr) {
-  return new PolyGrid(istr);
+std::unique_ptr<Grid> PolyGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new PolyGrid(istr));
 }
 
 void PolyGrid::serialize(std::ostream& ostr) {
@@ -60,9 +56,9 @@ void PolyGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* PolyGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& PolyGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

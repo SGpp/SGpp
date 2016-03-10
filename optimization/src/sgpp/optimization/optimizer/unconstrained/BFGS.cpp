@@ -8,28 +8,21 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-BFGS::BFGS(
-  ScalarFunction& f,
-  ScalarFunctionGradient& fGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor,
-  float_t lineSearchAccuracy) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fGradient(fGradient),
-  theta(tolerance),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor),
-  rhoLs(lineSearchAccuracy) {
-}
+BFGS::BFGS(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
+           double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
+           double lineSearchAccuracy)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fGradient(fGradient),
+      theta(tolerance),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor),
+      rhoLs(lineSearchAccuracy) {}
 
-BFGS::~BFGS() {
-}
+BFGS::~BFGS() {}
 
 void BFGS::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
@@ -42,11 +35,11 @@ void BFGS::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx = NAN;
+  double fx = NAN;
   base::DataVector gradFx(d);
 
   base::DataVector xNew(d);
-  float_t fxNew;
+  double fxNew;
   base::DataVector gradFxNew(d);
 
   base::DataVector delta(d);
@@ -63,7 +56,7 @@ void BFGS::optimize() {
   }
 
   size_t k = 0;
-  float_t alpha = 1.0;
+  double alpha = 1.0;
   base::DataVector dir(d);
   bool inDomain;
 
@@ -80,7 +73,7 @@ void BFGS::optimize() {
       fHist.append(fx);
     }
 
-    const float_t gradFxNorm = gradFx.l2Norm();
+    const double gradFxNorm = gradFx.l2Norm();
 
     if (gradFxNorm == 0.0) {
       break;
@@ -116,7 +109,7 @@ void BFGS::optimize() {
     k++;
 
     // inner product of gradient and search direction
-    const float_t gradFxTimesDir = gradFx.dotProduct(dir);
+    const double gradFxTimesDir = gradFx.dotProduct(dir);
 
     // line search
     while (fxNew > fx + rhoLs * alpha * gradFxTimesDir) {
@@ -153,7 +146,7 @@ void BFGS::optimize() {
     // increase step size
     alpha *= rhoAlphaPlus;
 
-    const float_t deltaTimesY = delta.dotProduct(y);
+    const double deltaTimesY = delta.dotProduct(y);
 
     if (deltaTimesY != 0.0) {
       for (size_t i = 0; i < d; i++) {
@@ -164,7 +157,7 @@ void BFGS::optimize() {
 
       for (size_t i = 0; i < d; i++) {
         for (size_t j = 0; j < d; j++) {
-          float_t entry = delta[i] * delta[j] / deltaTimesY;
+          double entry = delta[i] * delta[j] / deltaTimesY;
 
           for (size_t p = 0; p < d; p++) {
             for (size_t q = 0; q < d; q++) {
@@ -180,9 +173,8 @@ void BFGS::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if delta is smaller than tolerance theta
@@ -204,50 +196,31 @@ void BFGS::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& BFGS::getObjectiveGradient() const {
-  return fGradient;
-}
+ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return fGradient; }
 
-float_t BFGS::getTolerance() const {
-  return theta;
-}
+double BFGS::getTolerance() const { return theta; }
 
-void BFGS::setTolerance(float_t tolerance) {
-  theta = tolerance;
-}
+void BFGS::setTolerance(double tolerance) { theta = tolerance; }
 
-float_t BFGS::getStepSizeIncreaseFactor() const {
-  return rhoAlphaPlus;
-}
+double BFGS::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void BFGS::setStepSizeIncreaseFactor(
-  float_t stepSizeIncreaseFactor) {
+void BFGS::setStepSizeIncreaseFactor(double stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t BFGS::getStepSizeDecreaseFactor() const {
-  return rhoAlphaMinus;
-}
+double BFGS::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void BFGS::setStepSizeDecreaseFactor(
-  float_t stepSizeDecreaseFactor) {
+void BFGS::setStepSizeDecreaseFactor(double stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-float_t BFGS::getLineSearchAccuracy() const {
-  return rhoLs;
-}
+double BFGS::getLineSearchAccuracy() const { return rhoLs; }
 
-void BFGS::setLineSearchAccuracy(
-  float_t lineSearchAccuracy) {
-  rhoLs = lineSearchAccuracy;
-}
+void BFGS::setLineSearchAccuracy(double lineSearchAccuracy) { rhoLs = lineSearchAccuracy; }
 
-void BFGS::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new BFGS(*this));
+void BFGS::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new BFGS(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp

@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,7 +26,7 @@ class Basis {
    * @param x       evaluation point
    * @result        value of the basis function.
    */
-  virtual float_t eval(LT level, IT index, float_t x) = 0;
+  virtual double eval(LT level, IT index, double x) = 0;
 
   /**
    * Destructor.
@@ -43,6 +43,6 @@ class Basis {
 typedef Basis<unsigned int, unsigned int> SBasis;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // BASIS_HPP

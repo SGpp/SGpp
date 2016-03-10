@@ -7,12 +7,11 @@
 #define OPERATIONDENSITYCONDITIONAL_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
+#include <cstring>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -33,10 +32,9 @@ class OperationDensityConditional {
    * @param mdim Marginalize in dimension mdim
    * @param xbar Point at which to conditionalize
    */
-  virtual void doConditional(base::DataVector& alpha, base::Grid*& mg,
-                             base::DataVector& malpha, unsigned int mdim, float_t xbar) = 0;
+  virtual void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
+                             unsigned int mdim, double xbar) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYCONDITIONAL_HPP */

@@ -7,21 +7,17 @@
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-ConstrainedTestProblem::ConstrainedTestProblem(size_t d) :
-  d(d),
-  displacement(d, 0.0) {
-}
+ConstrainedTestProblem::ConstrainedTestProblem(size_t d) : d(d), displacement(d, 0.0) {}
 
-ConstrainedTestProblem::~ConstrainedTestProblem() {
-}
+ConstrainedTestProblem::~ConstrainedTestProblem() {}
 
-float_t ConstrainedTestProblem::getOptimalPoint(base::DataVector& x) {
+double ConstrainedTestProblem::getOptimalPoint(base::DataVector& x) {
   // reverse displace optimal point
-  const float_t fx = getOptimalPointUndisplaced(x);
+  const double fx = getOptimalPointUndisplaced(x);
   x.sub(displacement);
   return fx;
 }
@@ -30,14 +26,13 @@ void ConstrainedTestProblem::generateDisplacement() {
   generateDisplacement(DEFAULT_STANDARD_DEVIATION);
 }
 
-void ConstrainedTestProblem::generateDisplacement(float_t stdDev) {
+void ConstrainedTestProblem::generateDisplacement(double stdDev) {
   // generate displacement until a feasible one is found
 
   do {
     for (size_t t = 0; t < d; t++) {
       // every component is normally distributed
-      displacement[t] =
-        RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
+      displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
     }
   } while (!isDisplacementFeasible());
 
@@ -48,12 +43,9 @@ void ConstrainedTestProblem::generateDisplacement(float_t stdDev) {
   getEqualityConstraintFunction().setDisplacement(displacement);
 }
 
-const base::DataVector& ConstrainedTestProblem::getDisplacement() const {
-  return displacement;
-}
+const base::DataVector& ConstrainedTestProblem::getDisplacement() const { return displacement; }
 
-void ConstrainedTestProblem::setDisplacement(
-  const base::DataVector& displacement) {
+void ConstrainedTestProblem::setDisplacement(const base::DataVector& displacement) {
   this->displacement = displacement;
   // set the displacement also in the objective function and
   // in the constraint functions
@@ -76,7 +68,6 @@ bool ConstrainedTestProblem::isDisplacementFeasible() {
 
   return true;
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp

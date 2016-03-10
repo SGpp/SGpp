@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -19,7 +19,7 @@ namespace base {
  */
 class CoarseningFunctor {
  public:
-  typedef float_t value_type;
+  typedef double value_type;
 
   /**
    * Constructor
@@ -35,19 +35,19 @@ class CoarseningFunctor {
    * This should be returning a coarsening value for every grid point.
    * The point with the lowest value will be removed first.
    *
-   * @param storage pointer to the grids storage object
+   * @param storage reference to the grids storage object
    * @param seq sequence number in the coefficients array
    *
    * @return refinement value
    */
-  virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
+  virtual double operator()(GridStorage& storage, size_t seq) = 0;
 
   /**
    * This should return the initial value of coarsening criterion (e.g. alpha or error).
    *
    * @return the initial value
    */
-  virtual float_t start() const = 0;
+  virtual double start() const = 0;
 
   /**
    * Returns the maximal number of points that should be removed.
@@ -68,10 +68,10 @@ class CoarseningFunctor {
    *
    * @return threshold value for refinement. Default value: 0.
    */
-  virtual float_t getCoarseningThreshold() const = 0;
+  virtual double getCoarseningThreshold() const = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* COARSENINGFUNCTOR_HPP */

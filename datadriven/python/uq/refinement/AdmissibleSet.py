@@ -12,14 +12,14 @@ class AdmissibleSetGenerator(object):
 
     def checkRange(self, gp, maxLevel):
         # # get modified level sum (for linear and trapezoidal grids)
-        # ls = [max(1, gp.getLevel(d)) for d in xrange(gp.dim())]
-        # return sum(ls) < maxLevel + gp.dim() - 1
-        return not any([gp.getLevel(d) > maxLevel for d in xrange(gp.dim())])
+        # ls = [max(1, gp.getLevel(d)) for d in xrange(gp.getDimension())]
+        # return sum(ls) < maxLevel + gp.getDimension() - 1
+        return not any([gp.getLevel(d) > maxLevel for d in xrange(gp.getDimension())])
 
     def insertPoint(self, gp):
         if self.checkRange(gp, self.maxLevel):
             if self.refineInnerNodes:
-                levels = [gp.getLevel(d) > 0 for d in xrange(gp.dim())]
+                levels = [gp.getLevel(d) > 0 for d in xrange(gp.getDimension())]
                 if all(levels):
                     self.admissibleSet[gp.hash()] = gp
             else:
@@ -42,7 +42,7 @@ class RefinableNodesSet(AdmissibleSetGenerator):
 
     def create(self, grid):
         gs = grid.getStorage()
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             if isRefineable(grid, gp):
                 self.insertPoint(gp)
@@ -74,7 +74,7 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
 
     def addChildren(self, grid, gp):
         gs = grid.getStorage()
-        for d in xrange(gs.dim()):
+        for d in xrange(gs.getDimension()):
             # check left child in d
             gpl = HashGridIndex(gp)
             gs.left_child(gpl, d)
@@ -104,5 +104,5 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             self.addChildren(grid, gp)
 
     def toString(self):
-        return str([[ngp.getCoord(d) for d in xrange(ngp.dim())]
+        return str([[ngp.getCoord(d) for d in xrange(ngp.getDimension())]
                     for ngp in self.getAdmissibleSet()])

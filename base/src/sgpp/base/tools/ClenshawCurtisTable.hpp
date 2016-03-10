@@ -13,7 +13,7 @@
 #include <cmath>
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -29,16 +29,13 @@ class ClenshawCurtisTable {
   /// default number of intervals
   static const level_type DEFAULT_MAX_LEVEL = 16;
 
-  inline static ClenshawCurtisTable& getInstance() {
-    static ClenshawCurtisTable clenshawCurtisTable;
-    return clenshawCurtisTable;
-  }
+  static ClenshawCurtisTable& getInstance();
 
   /**
    * @param l       level of the grid point
    * @param i       index of the grid point (can be even)
    */
-  inline float_t getPoint(level_type l, index_type i) const {
+  inline double getPoint(level_type l, index_type i) const {
     if (l <= maxLevel) {
       return table.get((static_cast<index_type>(1) << l) +
                        static_cast<index_type>(l) + i - 1);
@@ -52,7 +49,7 @@ class ClenshawCurtisTable {
    * @param i       index of the grid point (can be even)
    * @param hInv    2^l
    */
-  inline float_t getPoint(level_type l, index_type i,
+  inline double getPoint(level_type l, index_type i,
                           index_type hInv) const {
     if (l <= maxLevel) {
       return table.get(hInv +
@@ -72,18 +69,18 @@ class ClenshawCurtisTable {
    * @param hInv    2^l
    * @param i       index of the grid point (can be even)
    */
-  inline float_t calculatePoint(index_type hInv, index_type i) const {
+  inline double calculatePoint(index_type hInv, index_type i) const {
     return calculatePoint(
-             static_cast<float_t>(1.0) / static_cast<float_t>(hInv), i);
+             1.0 / static_cast<double>(hInv), i);
   }
 
   /**
    * @param h       step width of the grid point (2^(-l))
    * @param i       index of the grid point (can be even)
    */
-  inline float_t calculatePoint(float_t h, index_type i) const {
+  inline double calculatePoint(double h, index_type i) const {
     return (std::cos(
-              M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
+              M_PI * (1.0 - static_cast<double>(i) * h)) + 1.0) / 2.0;
   }
 
  private:
@@ -106,6 +103,6 @@ class ClenshawCurtisTable {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* CLENSHAWCURTISTABLE_HPP */

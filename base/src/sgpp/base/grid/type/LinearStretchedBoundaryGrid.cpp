@@ -8,32 +8,33 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
-#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 LinearStretchedBoundaryGrid::~LinearStretchedBoundaryGrid() {
 }
 
-SGPP::base::GridType LinearStretchedBoundaryGrid::getType() {
-  return SGPP::base::GridType::LinearStretchedBoundary;
+sgpp::base::GridType LinearStretchedBoundaryGrid::getType() {
+  return sgpp::base::GridType::LinearStretchedBoundary;
 }
 
 const SBasis& LinearStretchedBoundaryGrid::getBasis() {
@@ -41,17 +42,17 @@ const SBasis& LinearStretchedBoundaryGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearStretchedBoundaryGrid::unserialize(std::istream& istr) {
-  return new LinearStretchedBoundaryGrid(istr);
+std::unique_ptr<Grid> LinearStretchedBoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearStretchedBoundaryGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearStretchedBoundaryGrid::createGridGenerator() {
-  return new StretchedBoundaryGridGenerator(this->storage);
+GridGenerator& LinearStretchedBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

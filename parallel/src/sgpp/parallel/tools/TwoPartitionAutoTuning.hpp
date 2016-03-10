@@ -6,12 +6,11 @@
 #ifndef TWOPARTIONAUTOTUNING_HPP
 #define TWOPARTIONAUTOTUNING_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 class TwoPartitionAutoTuning {
  public:
@@ -22,8 +21,7 @@ class TwoPartitionAutoTuning {
    * @param partition2Divider the second partition divider, partition2's size is a multiple
    * @param retune_cycles number of iteration after which the problem's separation is re-considered
    */
-  TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider,
-                         size_t retune_cycles);
+  TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
 
   /**
    * Destructor
@@ -66,13 +64,13 @@ class TwoPartitionAutoTuning {
    */
   virtual void resetAutoTuning();
 
-
   /**
    * set the possible divider of partition 2
    *
    * @param partition2Divider the divider of partition 2
    */
   void setPartition2Divider(size_t partition2Divider);
+
  protected:
   /**
    * @brief autoTune this function is called
@@ -103,9 +101,7 @@ class TwoPartitionAutoTuning {
   /// number of updates that cause a tuning update
   size_t _retune;
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif /* TWOPARTIONAUTOTUNING_HPP */

@@ -10,53 +10,46 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
  * Implementation of Laplace for linear functions with boundaries
  *
  */
-class OperationLaplaceLinearBoundary: public UpDownOneOpDim {
+class OperationLaplaceLinearBoundary : public UpDownOneOpDim {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  OperationLaplaceLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceLinearBoundary(sgpp::base::GridStorage* storage);
 
   /**
    * Constructor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
-   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+   * @param coef reference to a sgpp::base::DataVector object that contains the bilinear form's
+   * constant coefficients; one per dimension
    */
-  OperationLaplaceLinearBoundary(SGPP::base::GridStorage* storage,
-                                 SGPP::base::DataVector& coef);
+  OperationLaplaceLinearBoundary(sgpp::base::GridStorage* storage, sgpp::base::DataVector& coef);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceLinearBoundary();
 
-
  protected:
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACELINEARBOUNDARY_HPP */

@@ -16,25 +16,24 @@ int main(int argc, char** argv) {
   //  std::string fileName = "friedman_4d_2000.arff";
   std::string fileName = "debugging.arff";
 
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-  // SGPP::base::DataVector *classes = dataset.getClasses();
-  SGPP::base::DataMatrix& trainingData = dataset.getData();
+  // sgpp::base::DataVector *classes = dataset.getClasses();
+  sgpp::base::DataMatrix& trainingData = dataset.getData();
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
   // create regular grid, level 3
   uint32_t level = 4;
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  SGPP::base::DataVector alpha(gridStorage->size());
+  sgpp::base::DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
 
   std::random_device rd;
@@ -46,15 +45,14 @@ int main(int argc, char** argv) {
     //    std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCL);
 
-  SGPP::base::OperationMultipleEval* eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  SGPP::base::DataVector result(dataset.getNumberInstances());
+  sgpp::base::DataVector result(dataset.getNumberInstances());
 
   eval->eval(alpha, result);
 
@@ -68,9 +66,9 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
-  SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
+  std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
+  sgpp::base::DataVector resultCompare(dataset.getNumberInstances());
   evalCompare->eval(alpha, resultCompare);
 
   //  std::cout << "resultCompare: ";

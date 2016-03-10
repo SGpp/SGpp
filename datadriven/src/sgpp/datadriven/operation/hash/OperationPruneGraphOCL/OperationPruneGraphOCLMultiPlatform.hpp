@@ -22,7 +22,7 @@
 #include "OperationPruneGraphOCL.hpp"
 #include "KernelPruneGraph.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -33,7 +33,7 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
   size_t gridSize;
   size_t dataSize;
   json::Node &configuration;
-  SGPP::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T> *graph_kernel;
+  sgpp::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T> *graph_kernel;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
@@ -50,16 +50,16 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
                                       base::DataMatrix &data, size_t dims,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                       json::Node &configuration, T treshold, size_t k) :
-      OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage()->size()),
+      OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage().getSize()),
       dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()),
       manager(manager), alphaVector(gridSize), dataVector(data.getSize()),
       start_id(0), chunksize(-1) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
-    SGPP::base::GridStorage* gridStorage = grid.getStorage();
+    sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
     for (int i = 0; i < gridSize; i++) {
-      SGPP::base::HashGridIndex *point = gridStorage->get(i);
+      sgpp::base::HashGridIndex *point = gridStorage.get(i);
       pointscount++;
       for (int d = 0; d < dims; d++) {
         pointsVector.push_back(point->getIndex(d));
@@ -104,4 +104,4 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

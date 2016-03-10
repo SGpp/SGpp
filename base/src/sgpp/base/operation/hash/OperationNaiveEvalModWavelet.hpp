@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ class OperationNaiveEvalModWavelet : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalModWavelet(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalModWavelet(GridStorage& storage) : storage(storage) {
   }
 
   /**
@@ -39,16 +39,16 @@ class OperationNaiveEvalModWavelet : public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletModifiedBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALMODWAVELET_HPP */

@@ -10,8 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -34,8 +33,8 @@ class LaplaceEnhancedDownBBLinearBoundary : public LaplaceEnhancedDownBBLinear {
    * @param algo_dim current algorithmic dimension
    * @param q stretching of basis function in the current algorithmic dimension
    */
-  void calcL2Boundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right,
-                      size_t dim, size_t algo_dim, float_t q);
+  void calcL2Boundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim,
+                      size_t algo_dim, double q);
 
   /**
    * calculates the gradient down operation on level 0 basis functions
@@ -48,16 +47,16 @@ class LaplaceEnhancedDownBBLinearBoundary : public LaplaceEnhancedDownBBLinear {
    * @param algo_dim current algorithmic dimension
    * @param q_reci reciprocal of stretching of basis function in the current algorithmic dimension
    */
-  void calcGradBoundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right,
-                        size_t dim, size_t algo_dim, float_t q_reci);
+  void calcGradBoundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim,
+                        size_t algo_dim, double q_reci);
 
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  LaplaceEnhancedDownBBLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit LaplaceEnhancedDownBBLinearBoundary(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -68,18 +67,17 @@ class LaplaceEnhancedDownBBLinearBoundary : public LaplaceEnhancedDownBBLinear {
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    * on a grid with Dirichlet 0 boundary conditions.
    *
-   * @param source SGPP::base::DataMatrix that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-   * @param result SGPP::base::DataMatrix that contains the result of the down operation
+   * @param source sgpp::base::DataMatrix that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
+   * @param result sgpp::base::DataMatrix that contains the result of the down operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
    */
-  virtual void operator()(SGPP::base::DataMatrix& source,
-                          SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
+  virtual void operator()(sgpp::base::DataMatrix& source, sgpp::base::DataMatrix& result,
+                          grid_iterator& index, size_t dim);
 };
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* LAPLACEENHANCEDDOWNBBLINEARBOUNDARY_HPP */

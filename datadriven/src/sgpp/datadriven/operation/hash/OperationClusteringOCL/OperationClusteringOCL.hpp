@@ -18,7 +18,7 @@
 #include <chrono>
 #include <vector>
 #include <string>
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace ClusteringOCL {
 
@@ -33,7 +33,7 @@ class OperationClusteringOCL {
       : verbose(verbose), opencl_configuration(opencl_configuration) {
   }
 
-  std::vector<size_t> calculate_clusters(base::Grid *grid, SGPP::base::DataMatrix &dataset,
+  std::vector<size_t> calculate_clusters(base::Grid *grid, sgpp::base::DataMatrix &dataset,
                                          double lambda, size_t k, double treshold) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     size_t dimension = dataset.getNcols();
@@ -86,4 +86,4 @@ class OperationClusteringOCL {
 };
 }  // namespace ClusteringOCL
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

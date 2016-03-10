@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -34,10 +34,10 @@ class OperationFirstMoment {
    *
    * @param alpha the function's values in the nodal basis
    */
-  virtual float_t doQuadrature(const DataVector& alpha) = 0;
+  virtual double doQuadrature(const DataVector& alpha) = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONFIRSTMOMENT_HPP */

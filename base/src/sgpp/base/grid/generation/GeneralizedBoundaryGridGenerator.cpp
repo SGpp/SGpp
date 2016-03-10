@@ -8,14 +8,14 @@
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "GeneralizedBoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GeneralizedBoundaryGridGenerator::GeneralizedBoundaryGridGenerator(
-  GridStorage* storage) : storage(storage) {
+  GridStorage& storage) : storage(storage) {
 }
 
 GeneralizedBoundaryGridGenerator::~GeneralizedBoundaryGridGenerator() {
@@ -37,7 +37,7 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
                 static_cast<HashGenerator::level_t>(l_user));
 }
 
-// void L0BoundaryGridGenerator::refine(RefinementFunctor* func)
+// void L0BoundaryGridGenerator::refine(RefinementFunctor& func)
 // {
 //   HashRefinementBoundaries refine;
 //   refine.free_refine(this->storage, func);
@@ -49,8 +49,8 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
 //   return refine.getNumberOfRefinablePoints(this->storage);
 // }
 //
-// void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
-// DataVector* alpha)
+// void L0BoundaryGridGenerator::coarsen(CoarseningFunctor& func,
+// DataVector& alpha)
 // {
 //   HashCoarsening coarsen;
 //   coarsen.free_coarsen(this->storage, func, alpha);
@@ -62,7 +62,7 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
 //   return coarsen.getNumberOfRemovablePoints(this->storage);
 // }
 //
-// void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+// void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
 // unsigned int maxLevel)
 // {
 //   HashRefinementBoundariesMaxLevel refine;
@@ -78,5 +78,5 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

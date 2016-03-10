@@ -7,39 +7,30 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-OperationMultipleEvalVectorizedSP::OperationMultipleEvalVectorizedSP(
-  base::GridStorage* storage, base::DataMatrixSP* dataset) {
-  this->storage_ = storage;
+OperationMultipleEvalVectorizedSP::OperationMultipleEvalVectorizedSP(base::GridStorage* storage,
+                                                                     base::DataMatrixSP* dataset)
+    : storage_(*storage) {
   this->dataset_ = dataset;
   this->level_ = NULL;
   this->index_ = NULL;
   this->mask_ = NULL;
   this->offset_ = NULL;
-  this->myTimer_ = new SGPP::base::SGppStopwatch();
+  this->myTimer_ = new sgpp::base::SGppStopwatch();
 }
 
 OperationMultipleEvalVectorizedSP::~OperationMultipleEvalVectorizedSP() {
   delete myTimer_;
 
-  if (this->level_ != NULL)
-    delete this->level_;
+  if (this->level_ != NULL) delete this->level_;
 
-  if (this->index_ != NULL)
-    delete this->index_;
+  if (this->index_ != NULL) delete this->index_;
 
-  if (this->mask_ != NULL)
-    delete this->mask_;
+  if (this->mask_ != NULL) delete this->mask_;
 
-  if (this->offset_ != NULL)
-    delete this->offset_;
+  if (this->offset_ != NULL) delete this->offset_;
 }
-
-}
-}
-
-#endif
+}  // namespace parallel
+}  // namespace sgpp

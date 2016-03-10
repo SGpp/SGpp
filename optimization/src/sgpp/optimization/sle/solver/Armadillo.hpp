@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -32,9 +32,7 @@ class Armadillo : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system,
-                     base::DataVector& b,
-                     base::DataVector& x) const override;
+  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
 
   /**
    * @param       system  system to be solved
@@ -43,13 +41,10 @@ class Armadillo : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system,
-                     base::DataMatrix& B,
-                     base::DataMatrix& X) const override;
+  bool solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const override;
 };
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_ARMADILLO_HPP */

@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -34,9 +34,9 @@ class LinearModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified linear basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
-    const float_t hInvDbl = static_cast<float_t>(hInv);
+    const double hInvDbl = static_cast<double>(hInv);
 
     if (l == 1) {
       // first level
@@ -47,11 +47,11 @@ class LinearModifiedBasis: public Basis<LT, IT> {
     } else if (i == hInv - 1) {
       // right modified basis function
       return ((x >= 1.0 - 2.0 / hInvDbl) ?
-              (hInvDbl * x - static_cast<float_t>(i) + 1.0) : 0.0);
+              (hInvDbl * x - static_cast<double>(i) + 1.0) : 0.0);
     } else {
       // interior basis function
       return std::max(1.0 - std::abs(hInvDbl * x -
-                                     static_cast<float_t>(i)), 0.0);
+                                     static_cast<double>(i)), 0.0);
     }
   }
 };
@@ -60,6 +60,6 @@ class LinearModifiedBasis: public Basis<LT, IT> {
 typedef LinearModifiedBasis<unsigned int, unsigned int> SLinearModifiedBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEAR_MODIFIED_BASE_HPP */

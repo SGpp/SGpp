@@ -18,26 +18,26 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-template<typename CPUImplementation, typename OCLBasisType>
+template <typename CPUImplementation, typename OCLBasisType>
 class SPOCLCPUHybridKernel {
  public:
   SPOCLCPUHybridKernel() {
-    tuningMult = new SGPP::parallel::DynamicTwoPartitionAutoTuning(1,
-        m_oclkernel.getChunkDataPoints(), 10);;
-    tuningMultTrans = new SGPP::parallel::DynamicTwoPartitionAutoTuning(1,
-        m_oclkernel.getChunkGridPoints(), 10);;
+    tuningMult =
+        new sgpp::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkDataPoints(), 10);
+
+    tuningMultTrans =
+        new sgpp::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkGridPoints(), 10);
+
     int num_threads = 1;
-    #pragma omp parallel
-    {
-      num_threads = omp_get_num_threads();
-    }
+#pragma omp parallel
+    { num_threads = omp_get_num_threads(); }
 
     if (num_threads == 1) {
-      throw SGPP::base::operation_exception("OpenCL Hybrid Kernel needs to be executed with at least two threads");
+      throw sgpp::base::operation_exception(
+          "OpenCL Hybrid Kernel needs to be executed with at least two threads");
     }
 
     cpu_times = new double[num_threads];
@@ -49,30 +49,22 @@ class SPOCLCPUHybridKernel {
   }
 
   static const KernelType kernelType = CPUImplementation::kernelType;
-  inline void mult(
-    SGPP::base::DataMatrixSP* level,
-    SGPP::base::DataMatrixSP* index,
-    SGPP::base::DataMatrixSP* mask,
-    SGPP::base::DataMatrixSP* offset,
-    SGPP::base::DataMatrixSP* dataset,
-    SGPP::base::DataVectorSP& alpha,
-    SGPP::base::DataVectorSP& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+  inline void mult(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                   sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset,
+                   sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& alpha,
+                   sgpp::base::DataVectorSP& result, const size_t start_index_grid,
+                   const size_t end_index_grid, const size_t start_index_data,
+                   const size_t end_index_data) {
     int tid = omp_get_thread_num();
     int num_threads = omp_get_num_threads();
     size_t data_range = end_index_data - start_index_data;
 
     // initialize loadbalancing
     if (tuningMult->getProblemSize() != data_range) {
-      #pragma omp barrier
-      #pragma omp master
-      {
-        tuningMult->setProblemSize(data_range);
-      }
-      #pragma omp barrier
+#pragma omp barrier
+#pragma omp master
+      { tuningMult->setProblemSize(data_range); }
+#pragma omp barrier
     }
 
     double gpu_time = 0.0;
@@ -85,14 +77,14 @@ class SPOCLCPUHybridKernel {
 
     if (tid == 0) {
       double loc_start = omp_get_wtime();
-      m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
-                           start_index_grid, end_index_grid, start_index_data, end_index_data_gpu);
+      m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result, start_index_grid,
+                           end_index_grid, start_index_data, end_index_data_gpu);
       gpu_time = omp_get_wtime() - loc_start;
     } else {
       // distribute work evenly across all threads but thread 0 (it starts OpenCL kernels)
       size_t cpu_size = end_index_data - end_index_data_gpu;
       size_t blocksize = CPUImplementation::getChunkDataPoints();
-      cpu_size = (cpu_size / blocksize ) * blocksize;
+      cpu_size = (cpu_size / blocksize) * blocksize;
 
       size_t start_index_data_x86simd = end_index_data_gpu;
       size_t end_index_data_x86simd = start_index_data_x86simd + cpu_size;
@@ -100,8 +92,8 @@ class SPOCLCPUHybridKernel {
       size_t start_index_data_thread;
       size_t end_index_data_thread;
 
-      PartitioningTool::getPartitionSegment(start_index_data_x86simd,
-                                            end_index_data_x86simd, num_threads - 1, tid - 1, &start_index_data_thread,
+      PartitioningTool::getPartitionSegment(start_index_data_x86simd, end_index_data_x86simd,
+                                            num_threads - 1, tid - 1, &start_index_data_thread,
                                             &end_index_data_thread, blocksize);
       double start = omp_get_wtime();
 
@@ -112,14 +104,15 @@ class SPOCLCPUHybridKernel {
       if (tid == num_threads - 1) {
         // handle possible remainder
         OCLBasisType::multDefault(level, index, mask, offset, dataset, alpha, result,
-                                  start_index_grid, end_index_grid, end_index_data_x86simd, end_index_data);
+                                  start_index_grid, end_index_grid, end_index_data_x86simd,
+                                  end_index_data);
       }
 
       cpu_times[tid] = omp_get_wtime() - start;
     }
 
-    #pragma omp barrier
-    #pragma omp master
+#pragma omp barrier
+#pragma omp master
     {
       double max_cpu_time = 0.0;
 
@@ -131,21 +124,15 @@ class SPOCLCPUHybridKernel {
 
       tuningMult->setExecutionTimes(max_cpu_time, gpu_time);
     }
-    #pragma omp barrier
+#pragma omp barrier
   }
 
-  inline void multTranspose(
-    SGPP::base::DataMatrixSP* level,
-    SGPP::base::DataMatrixSP* index,
-    SGPP::base::DataMatrixSP* mask,
-    SGPP::base::DataMatrixSP* offset,
-    SGPP::base::DataMatrixSP* dataset,
-    SGPP::base::DataVectorSP& source,
-    SGPP::base::DataVectorSP& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+  inline void multTranspose(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                            sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset,
+                            sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& source,
+                            sgpp::base::DataVectorSP& result, const size_t start_index_grid,
+                            const size_t end_index_grid, const size_t start_index_data,
+                            const size_t end_index_data) {
     size_t grid_range = end_index_grid - start_index_grid;
 
     int tid = omp_get_thread_num();
@@ -155,12 +142,10 @@ class SPOCLCPUHybridKernel {
     cpu_times[tid] = 0.0;
 
     if (tuningMultTrans->getProblemSize() != grid_range) {
-      #pragma omp barrier
-      #pragma omp master
-      {
-        tuningMultTrans->setProblemSize(grid_range);
-      }
-      #pragma omp barrier
+#pragma omp barrier
+#pragma omp master
+      { tuningMultTrans->setProblemSize(grid_range); }
+#pragma omp barrier
     }
 
     // split result into GPU and CPU partition
@@ -169,36 +154,34 @@ class SPOCLCPUHybridKernel {
 
     if (tid == 0) {
       double loc_start = omp_get_wtime();
-      m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source,
-                                    result,
-                                    start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
+      m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+                                    start_index_grid, end_index_grid_gpu, start_index_data,
+                                    end_index_data);
       gpu_time = omp_get_wtime() - loc_start;
 
     } else {
       size_t start_grid_thread;
       size_t end_grid_thread;
       // distribute work evenly across all threads but thread 0
-      PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid,
-                                            num_threads - 1, tid - 1, &start_grid_thread, &end_grid_thread, 1);
+      PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid, num_threads - 1,
+                                            tid - 1, &start_grid_thread, &end_grid_thread, 1);
       double start = omp_get_wtime();
 
       size_t data_range = end_index_data - start_index_data;
       size_t data_range_vec = (data_range / CPUImplementation::getChunkDataPoints()) *
                               CPUImplementation::getChunkDataPoints();
-      CPUImplementation::multTransposeImpl(level, index, mask, offset, dataset,
-                                           source, result,
+      CPUImplementation::multTransposeImpl(level, index, mask, offset, dataset, source, result,
                                            start_grid_thread, end_grid_thread, start_index_data,
                                            start_index_data + data_range_vec);
       // handle remainder of dataset
-      OCLBasisType::multTransposeDefault(level, index, mask, offset, dataset, source,
-                                         result,
-                                         start_grid_thread, end_grid_thread, start_index_data + data_range_vec,
-                                         end_index_data);
+      OCLBasisType::multTransposeDefault(level, index, mask, offset, dataset, source, result,
+                                         start_grid_thread, end_grid_thread,
+                                         start_index_data + data_range_vec, end_index_data);
       cpu_times[tid] = omp_get_wtime() - start;
     }
 
-    #pragma omp barrier
-    #pragma omp master
+#pragma omp barrier
+#pragma omp master
     {
       double max_cpu_time = 0.0;
 
@@ -210,25 +193,24 @@ class SPOCLCPUHybridKernel {
 
       tuningMultTrans->setExecutionTimes(max_cpu_time, gpu_time);
     }
-    #pragma omp barrier
+#pragma omp barrier
   }
 
-  inline void resetKernel() {
-    m_oclkernel.resetKernel();
-  }
+  inline void resetKernel() { m_oclkernel.resetKernel(); }
 
  private:
   double* cpu_times;
   SPOCLKernelImpl<OCLBasisType> m_oclkernel;
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
   /// Autotuning object for mult routine
-  SGPP::parallel::TwoPartitionAutoTuning* tuningMult;
+  sgpp::parallel::TwoPartitionAutoTuning* tuningMult;
   /// Autotuning object for mult trans routine
-  SGPP::parallel::TwoPartitionAutoTuning* tuningMultTrans;
+  sgpp::parallel::TwoPartitionAutoTuning* tuningMultTrans;
 };
-}
-}
+}  // namespace parallel
+}  // namespace sgpp
+
 #endif
 
-#endif // SPOCLCPUHYBRIDKERNEL_HPP
+#endif  // SPOCLCPUHYBRIDKERNEL_HPP

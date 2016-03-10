@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,12 +26,12 @@ class OperationConvertPrewavelet : public OperationConvert {
      * An adaptive grid with prewavelet ansatz functions requires for operations
    * using the up-down algorithm shadow points. These shadow points a needed just
    * for data transport, thus they do not have an influence on the final function.
-   * Please refer to SGPP::pde::UpDownOneOpDimWithShadow for more information.
+   * Please refer to sgpp::pde::UpDownOneOpDimWithShadow for more information.
    *
      * @param storage Pointer to the grid's gridstorage obejct
    * @param shadowstorage shadow points (see detailed description)
    */
-  OperationConvertPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
+  OperationConvertPrewavelet(GridStorage& storage, GridStorage& shadowstorage) :
     storage(storage), shadowstorage(shadowstorage) {
   }
 
@@ -45,12 +45,12 @@ class OperationConvertPrewavelet : public OperationConvert {
   void doConvertFromLinear(DataVector& alpha) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
-  GridStorage* shadowstorage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
+  GridStorage& shadowstorage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONCONVERTPREWAVELET_HPP */

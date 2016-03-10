@@ -11,7 +11,7 @@
 #include "CL/cl.h"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLPlatformWrapper {
@@ -27,7 +27,13 @@ class OCLPlatformWrapper {
                      const std::vector<cl_device_id> &deviceIds,
                      const std::vector<std::string> &deviceName);
 
+  OCLPlatformWrapper(const OCLPlatformWrapper &original);
+
+  OCLPlatformWrapper &operator=(const OCLPlatformWrapper &other) = delete;
+
+  ~OCLPlatformWrapper();
+
   size_t getDeviceCount();
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

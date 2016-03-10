@@ -10,7 +10,7 @@
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -20,17 +20,17 @@ namespace optimizer {
 class NelderMead : public UnconstrainedOptimizer {
  public:
   /// default reflection coefficient
-  static constexpr float_t DEFAULT_ALPHA = 1.0;
+  static constexpr double DEFAULT_ALPHA = 1.0;
   /// default expansion coefficient
-  static constexpr float_t DEFAULT_BETA = 2.0;
+  static constexpr double DEFAULT_BETA = 2.0;
   /// default contraction coefficient
-  static constexpr float_t DEFAULT_GAMMA = 0.5;
+  static constexpr double DEFAULT_GAMMA = 0.5;
   /// default shrinking coefficient
-  static constexpr float_t DEFAULT_DELTA = 0.5;
+  static constexpr double DEFAULT_DELTA = 0.5;
   /// default maximal number of function evaluations
   static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
   /// edge length of starting simplex
-  static constexpr float_t STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
+  static constexpr double STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
   /**
    * Constructor.
@@ -45,12 +45,9 @@ class NelderMead : public UnconstrainedOptimizer {
    * @param gamma                 contraction coefficient
    * @param delta                 shrinking coefficient
    */
-  NelderMead(ScalarFunction& f,
-             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-             float_t alpha = DEFAULT_ALPHA,
-             float_t beta = DEFAULT_BETA,
-             float_t gamma = DEFAULT_GAMMA,
-             float_t delta = DEFAULT_DELTA);
+  NelderMead(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+             double alpha = DEFAULT_ALPHA, double beta = DEFAULT_BETA,
+             double gamma = DEFAULT_GAMMA, double delta = DEFAULT_DELTA);
 
   /**
    * Destructor.
@@ -62,62 +59,60 @@ class NelderMead : public UnconstrainedOptimizer {
   /**
    * @return          reflection coefficient
    */
-  float_t getAlpha() const;
+  double getAlpha() const;
 
   /**
    * @param alpha     reflection coefficient
    */
-  void setAlpha(float_t alpha);
+  void setAlpha(double alpha);
 
   /**
    * @return          expansion coefficient
    */
-  float_t getBeta() const;
+  double getBeta() const;
 
   /**
    * @param beta      expansion coefficient
    */
-  void setBeta(float_t beta);
+  void setBeta(double beta);
 
   /**
    * @return          contraction coefficient
    */
-  float_t getGamma() const;
+  double getGamma() const;
 
   /**
    * @param gamma     contraction coefficient
    */
-  void setGamma(float_t gamma);
+  void setGamma(double gamma);
 
   /**
    * @return          shrinking coefficient
    */
-  float_t getDelta() const;
+  double getDelta() const;
 
   /**
    * @param delta     shrinking coefficient
    */
-  void setDelta(float_t delta);
+  void setDelta(double delta);
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// reflection coefficient
-  float_t alpha;
+  double alpha;
   /// expansion coefficient
-  float_t beta;
+  double beta;
   /// contraction coefficient
-  float_t gamma;
+  double gamma;
   /// shrinking coefficient
-  float_t delta;
+  double delta;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NELDERMEAD_HPP */

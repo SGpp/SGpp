@@ -6,37 +6,30 @@
 #ifndef X86SIMDKERNELBASE_HPP
 #define X86SIMDKERNELBASE_HPP
 
-#include "CommonX86SimdKernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/CommonX86SimdKernelBase.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class X86SimdKernelBase {
  public:
-  static inline size_t getChunkGridPoints() {
-    return 12;
-  }
+  static inline size_t getChunkGridPoints() { return 12; }
   static inline size_t getChunkDataPoints() {
-    return 24; // must be divisible by 24
+    return 24;  // must be divisible by 24
   }
   static inline void resetKernel() {}
 };
 
 class X86SimdKernelBase1 {
  public:
-  static inline size_t getChunkGridPoints() {
-    return 1;
-  }
-  static inline size_t getChunkDataPoints() {
-    return 1;
-  }
+  static inline size_t getChunkGridPoints() { return 1; }
+  static inline size_t getChunkDataPoints() { return 1; }
   static inline void resetKernel() {}
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace sgpp
 
-#endif // X86SIMDKERNELBASE_HPP
+#endif  // X86SIMDKERNELBASE_HPP

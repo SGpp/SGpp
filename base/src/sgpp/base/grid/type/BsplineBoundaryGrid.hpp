@@ -8,11 +8,12 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -33,9 +34,10 @@ class BsplineBoundaryGrid : public Grid {
    *
    * @param dim the dimension of the grid
    * @param degree the bspline's degree
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   BsplineBoundaryGrid(size_t dim,
                       size_t degree,
@@ -49,7 +51,7 @@ class BsplineBoundaryGrid : public Grid {
   /**
    * @return string that identifies the grid type uniquely
    */
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   /**
    * @return B-spline basis
@@ -59,7 +61,7 @@ class BsplineBoundaryGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -67,7 +69,7 @@ class BsplineBoundaryGrid : public Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   /**
    * Serializes the grid.
@@ -82,15 +84,17 @@ class BsplineBoundaryGrid : public Grid {
   virtual size_t getDegree();
 
  protected:
+  /// grid generator
+  BoundaryGridGenerator generator;
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineBoundaryBase* basis_;
-  /// level at which the boundary points should be inserted
+  std::unique_ptr<SBsplineBoundaryBase> basis_;
+  /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BSPLINETRUNCATEDBOUNDARYGRID_HPP */

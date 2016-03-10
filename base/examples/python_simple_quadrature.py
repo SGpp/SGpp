@@ -23,13 +23,13 @@ print "dimensionality:        {}".format(dim)
 
 # create regular grid, level 3
 level = 3
-gridGen = grid.createGridGenerator()
+gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of grid points: {}".format(gridStorage.size())
+print "number of grid points: {}".format(gridStorage.getSize())
 
 # create coefficient vector
-alpha = DataVector(gridStorage.size())
-for i in xrange(gridStorage.size()):
+alpha = DataVector(gridStorage.getSize())
+for i in xrange(gridStorage.getSize()):
     gp = gridStorage.get(i)
     alpha[i] = f((gp.getCoord(0), gp.getCoord(1)))
 createOperationHierarchisation(grid).doHierarchisation(alpha)

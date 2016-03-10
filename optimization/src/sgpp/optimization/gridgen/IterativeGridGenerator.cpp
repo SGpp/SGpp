@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <numeric>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -12,43 +10,35 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
-namespace SGPP {
+#include <numeric>
+#include <list>
+
+namespace sgpp {
 namespace optimization {
 
-IterativeGridGenerator::IterativeGridGenerator(
-  ScalarFunction& f, base::Grid& grid, size_t N) :
-  f(f),
-  grid(grid),
-  N(N),
-  functionValues(0) {
-}
+IterativeGridGenerator::IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N)
+    : f(f), grid(grid), N(N), functionValues(0) {}
 
-IterativeGridGenerator::~IterativeGridGenerator() {
-}
+IterativeGridGenerator::~IterativeGridGenerator() {}
 
-base::Grid& IterativeGridGenerator::getGrid() const {
-  return grid;
-}
+base::Grid& IterativeGridGenerator::getGrid() const { return grid; }
 
-const base::DataVector& IterativeGridGenerator::getFunctionValues() const {
-  return functionValues;
-}
+const base::DataVector& IterativeGridGenerator::getFunctionValues() const { return functionValues; }
 
 void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {
-  base::GridStorage& gridStorage = *grid.getStorage();
-  std::list<size_t> indicesToRemove(gridStorage.size() - oldGridSize);
+  base::GridStorage& gridStorage = grid.getStorage();
+  std::list<size_t> indicesToRemove(gridStorage.getSize() - oldGridSize);
   std::iota(indicesToRemove.begin(), indicesToRemove.end(), oldGridSize);
   gridStorage.deletePoints(indicesToRemove);
 }
 
 void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
   const size_t d = f.getNumberOfParameters();
-  base::GridStorage& gridStorage = *grid.getStorage();
-  const size_t curGridSize = gridStorage.size();
+  base::GridStorage& gridStorage = grid.getStorage();
+  const size_t curGridSize = gridStorage.getSize();
   base::DataVector& fX = functionValues;
 
-  #pragma omp parallel shared(fX, oldGridSize, gridStorage) \
-  default(none)
+#pragma omp parallel shared(fX, oldGridSize, gridStorage) default(none)
   {
     base::GridIndex* gp;
     base::DataVector x(d);
@@ -63,7 +53,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 
 #endif /* _OPENMP */
 
-    #pragma omp for
+#pragma omp for
 
     for (size_t i = oldGridSize; i < curGridSize; i++) {
       // convert grid point to coordinate vector
@@ -73,11 +63,10 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
         x[t] = gp->getCoord(t);
       }
 
-      const float_t fx = curFPtr->eval(x);
+      const double fx = curFPtr->eval(x);
       fX[i] = fx;
     }
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

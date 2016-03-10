@@ -7,36 +7,34 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
-
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearGrid::LinearGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearGrid::LinearGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearGrid::LinearGrid(BoundingBox& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 LinearGrid::~LinearGrid() {
 }
 
-SGPP::base::GridType LinearGrid::getType() {
-  return SGPP::base::GridType::Linear;
+sgpp::base::GridType LinearGrid::getType() {
+  return sgpp::base::GridType::Linear;
 }
 
 const SBasis& LinearGrid::getBasis() {
@@ -44,18 +42,18 @@ const SBasis& LinearGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearGrid::unserialize(std::istream& istr) {
-  return new LinearGrid(istr);
+std::unique_ptr<Grid> LinearGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& LinearGrid::getGenerator() {
+  return generator;
 }
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

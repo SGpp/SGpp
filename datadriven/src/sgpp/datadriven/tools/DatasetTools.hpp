@@ -16,7 +16,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class DatasetTools {
@@ -31,5 +31,5 @@ class DatasetTools {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

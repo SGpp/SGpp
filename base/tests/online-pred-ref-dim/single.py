@@ -33,7 +33,7 @@ xs = [[0.1, 0.9], [0.9, 0.2], [0.3, 0.5], [0.3, 0.0], [0.9, 0.0]]
 errs = [-2, -0.1, -0.2, -0.2, -1.8]
 
 grid = Grid.createLinearGrid(d)
-grid_gen = grid.createGridGenerator()
+grid_gen = grid.getGenerator()
 grid_gen.regular(l)
 
 trainData = DataMatrix(xs)

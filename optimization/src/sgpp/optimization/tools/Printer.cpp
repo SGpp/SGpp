@@ -11,26 +11,26 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
+#include <string>
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #include <unistd.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
-Printer::Printer() :
-  verbose(DEFAULT_VERBOSITY),
-  statusPrintingEnabled(true),
-  statusLevel(0),
-  indentationLevel(0),
-  cursorInClearLine(true),
-  lastMsgLength(0),
-  lastDuration(0.0),
-  lineLengthLimit(0),
-  indentation(INDENTATION_LENGTH, INDENTATION_CHAR),
-  stream(&std::cout) {
-
+Printer::Printer()
+    : verbose(DEFAULT_VERBOSITY),
+      statusPrintingEnabled(true),
+      statusLevel(0),
+      indentationLevel(0),
+      cursorInClearLine(true),
+      lastMsgLength(0),
+      lastDuration(0.0),
+      lineLengthLimit(0),
+      indentation(INDENTATION_LENGTH, INDENTATION_CHAR),
+      stream(&std::cout) {
 #ifndef _WIN32
   struct winsize w;
 
@@ -39,6 +39,11 @@ Printer::Printer() :
   }
 
 #endif
+}
+
+Printer& Printer::getInstance() {
+  static Printer printer;
+  return printer;
 }
 
 void Printer::printStatusBegin(const std::string& msg) {
@@ -80,13 +85,10 @@ void Printer::printStatusUpdate(const std::string& msg) {
   }
 
   std::string printMsg = msg;
-  const size_t totalIndentationLength =
-    indentationLevel * INDENTATION_LENGTH;
+  const size_t totalIndentationLength = indentationLevel * INDENTATION_LENGTH;
 
-  if ((lineLengthLimit > 0) && (totalIndentationLength +
-                                printMsg.length() > lineLengthLimit)) {
-    printMsg = printMsg.substr(0, lineLengthLimit -
-                               totalIndentationLength - 3) + "...";
+  if ((lineLengthLimit > 0) && (totalIndentationLength + printMsg.length() > lineLengthLimit)) {
+    printMsg = printMsg.substr(0, lineLengthLimit - totalIndentationLength - 3) + "...";
   }
 
   // print indentation
@@ -100,8 +102,8 @@ void Printer::printStatusUpdate(const std::string& msg) {
   // new message is too short ==> print spaces to hide the old one and
   // go back again
   if (lastMsgLength > printMsg.length()) {
-    (*stream) << std::string(lastMsgLength - printMsg.length(), ' ') <<
-              std::string(lastMsgLength - printMsg.length(), '\b');
+    (*stream) << std::string(lastMsgLength - printMsg.length(), ' ')
+              << std::string(lastMsgLength - printMsg.length(), '\b');
   }
 
   (*stream) << std::flush;
@@ -157,8 +159,7 @@ void Printer::printStatusEnd(const std::string& msg) {
 
   // print message
   std::string time_msg =
-    "Done in " +
-    std::to_string(static_cast<size_t>(1000.0 * lastDuration)) + "ms";
+      "Done in " + std::to_string(static_cast<size_t>(1000.0 * lastDuration)) + "ms";
 
   if (msg == "") {
     (*stream) << time_msg << ".";
@@ -187,37 +188,25 @@ bool Printer::isStatusPrintingEnabled() {
   return statusPrintingEnabled;
 }
 
-float_t Printer::getLastDurationSecs() const {
-  return lastDuration;
-}
+double Printer::getLastDurationSecs() const { return lastDuration; }
 
-MutexType& Printer::getMutex() {
-  return mutex;
-}
+MutexType& Printer::getMutex() { return mutex; }
 
-std::ostream* Printer::getStream() const {
-  return stream;
-}
+std::ostream* Printer::getStream() const { return stream; }
 
-void Printer::setStream(std::ostream* stream) {
-  this->stream = stream;
-}
+void Printer::setStream(std::ostream* stream) { this->stream = stream; }
 
-size_t Printer::getLineLengthLimit() {
-  return lineLengthLimit;
-}
+size_t Printer::getLineLengthLimit() { return lineLengthLimit; }
 
 void Printer::setLineLengthLimit(size_t lineLengthLimit) {
   this->lineLengthLimit = lineLengthLimit;
 }
 
-void Printer::printIterativeGridGenerator(
-  const IterativeGridGenerator& grid_gen) const {
-  base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
-  const base::DataVector& functionValues =
-    grid_gen.getFunctionValues();
+void Printer::printIterativeGridGenerator(const IterativeGridGenerator& grid_gen) const {
+  base::GridStorage& gridStorage = grid_gen.getGrid().getStorage();
+  const base::DataVector& functionValues = grid_gen.getFunctionValues();
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     if (i > 0) {
       (*stream) << "\n";
     }
@@ -251,6 +240,5 @@ void Printer::printSLE(SLE& system) const {
 
   (*stream) << "]\n";
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -51,18 +51,14 @@ namespace optimizer {
  * @return                    whether the new point reaches an acceptable
  *                            improvement
  */
-inline bool lineSearchArmijo(ScalarFunction& f, float_t beta,
-                             float_t gamma,
-                             float_t tol, float_t eps,
-                             const base::DataVector& x, float_t fx,
-                             base::DataVector& gradFx,
-                             const base::DataVector& s,
-                             base::DataVector& y,
-                             size_t& evalCounter) {
+inline bool lineSearchArmijo(ScalarFunction& f, double beta, double gamma, double tol,
+                             double eps, const base::DataVector& x, double fx,
+                             base::DataVector& gradFx, const base::DataVector& s,
+                             base::DataVector& y, size_t& evalCounter) {
   const size_t d = x.getSize();
-  float_t sigma = 1.0;
-  const float_t ip = gradFx.dotProduct(s);
-  float_t fy = fx;
+  double sigma = 1.0;
+  const double ip = gradFx.dotProduct(s);
+  double fy = fx;
 
   for (size_t k = 0; k < 100; k++) {
     bool y_in_domain = true;
@@ -82,13 +78,12 @@ inline bool lineSearchArmijo(ScalarFunction& f, float_t beta,
       fy = f.eval(y);
       evalCounter++;
 
-      float_t improvement = fx - fy;
-      float_t rhs = gamma * sigma * (-ip);
+      double improvement = fx - fy;
+      double rhs = gamma * sigma * (-ip);
 
       // check if the absolute improvement is big enough
       if (improvement >= rhs) {
-        return (std::abs(fx - fy) >=
-                tol * (std::abs(fx) + std::abs(fy) + eps));
+        return (std::abs(fx - fy) >= tol * (std::abs(fx) + std::abs(fy) + eps));
       }
     }
 
@@ -98,9 +93,8 @@ inline bool lineSearchArmijo(ScalarFunction& f, float_t beta,
 
   return false;
 }
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_LINESEARCHARMIJO_HPP */

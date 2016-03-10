@@ -6,36 +6,32 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
-#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
   Grid(istr),
-  shadowStorage(NULL) {
+  shadowStorage(storage.getDimension()),
+  generator(storage, shadowStorage) {
 }
 
 PrewaveletGrid::PrewaveletGrid(size_t dim) :
   Grid(dim),
-  shadowStorage(new GridStorage(dim)) {
+  shadowStorage(dim),
+  generator(storage, shadowStorage) {
 }
 
 PrewaveletGrid::~PrewaveletGrid() {
-  if (shadowStorage != NULL) {
-    delete shadowStorage;
-  }
 }
 
-SGPP::base::GridType PrewaveletGrid::getType() {
+sgpp::base::GridType PrewaveletGrid::getType() {
   return base::GridType::Prewavelet;
 }
 
@@ -44,22 +40,22 @@ const SBasis& PrewaveletGrid::getBasis() {
   return basis;
 }
 
-Grid* PrewaveletGrid::unserialize(std::istream& istr) {
-  return new PrewaveletGrid(istr);
+std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new PrewaveletGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* PrewaveletGrid::createGridGenerator() {
-  return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
+GridGenerator& PrewaveletGrid::getGenerator() {
+  return generator;
 }
 
 
-GridStorage* PrewaveletGrid::getShadowStorage() {
-  return this->shadowStorage;
+GridStorage& PrewaveletGrid::getShadowStorage() {
+  return shadowStorage;
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

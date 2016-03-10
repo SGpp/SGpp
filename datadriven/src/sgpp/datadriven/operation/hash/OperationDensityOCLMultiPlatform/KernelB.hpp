@@ -8,7 +8,7 @@
 #include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
 
 #include <CL/cl.h>
 #include <string.h>
@@ -18,7 +18,7 @@
 
 #include "KernelSourceBuilderB.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -33,13 +33,13 @@ class KernelDensityB {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<int> devicePoints;
-  base::OCLClonedBufferSD<T> deviceData;
-  base::OCLClonedBufferSD<T> deviceResultData;
+  base::OCLBufferWrapperSD<int> devicePoints;
+  base::OCLBufferWrapperSD<T> deviceData;
+  base::OCLBufferWrapperSD<T> deviceResultData;
 
   cl_kernel kernelB;
 
-  SGPP::datadriven::DensityOCLMultiPlatform::SourceBuilderB<T> kernelSourceBuilder;
+  sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderB<T> kernelSourceBuilder;
 
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
@@ -114,7 +114,7 @@ class KernelDensityB {
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
         std::cout << "building kernel" << std::endl;
-      this->kernelB = manager->buildKernel(program_src, device, "cscheme");
+      this->kernelB = manager->buildKernel(program_src, device, kernelConfiguration, "cscheme");
     }
 
     // Load data into buffers if not already done
@@ -224,7 +224,7 @@ class KernelDensityB {
     this->deviceTimingMult += time;
     return 0;
   }
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters){
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters){
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -275,4 +275,4 @@ class KernelDensityB {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

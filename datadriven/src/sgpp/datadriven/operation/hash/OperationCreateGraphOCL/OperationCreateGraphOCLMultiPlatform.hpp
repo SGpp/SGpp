@@ -20,7 +20,7 @@
 #include "OperationCreateGraphOCL.hpp"
 #include "KernelCreateGraph.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -91,4 +91,4 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

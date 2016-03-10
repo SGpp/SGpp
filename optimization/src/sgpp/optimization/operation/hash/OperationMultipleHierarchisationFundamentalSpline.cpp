@@ -8,19 +8,18 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
-OperationMultipleHierarchisationFundamentalSpline::OperationMultipleHierarchisationFundamentalSpline(
-  base::FundamentalSplineGrid& grid) :
-  grid(grid), op(&grid) {
-}
+OperationMultipleHierarchisationFundamentalSpline::
+    OperationMultipleHierarchisationFundamentalSpline(base::FundamentalSplineGrid& grid)
+    : grid(grid), op(&grid) {}
 
-OperationMultipleHierarchisationFundamentalSpline::~OperationMultipleHierarchisationFundamentalSpline() {
-}
+OperationMultipleHierarchisationFundamentalSpline::
+    ~OperationMultipleHierarchisationFundamentalSpline() {}
 
 bool OperationMultipleHierarchisationFundamentalSpline::doHierarchisation(
-  base::DataVector& nodeValues) {
+    base::DataVector& nodeValues) {
   Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
   Printer::getInstance().printStatusEnd();
@@ -28,14 +27,14 @@ bool OperationMultipleHierarchisationFundamentalSpline::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationFundamentalSpline::doDehierarchisation(
-  base::DataVector& alpha) {
+    base::DataVector& alpha) {
   Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
   Printer::getInstance().printStatusEnd();
 }
 
 bool OperationMultipleHierarchisationFundamentalSpline::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+    base::DataMatrix& nodeValues) {
   Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
   Printer::getInstance().printStatusEnd();
@@ -43,11 +42,10 @@ bool OperationMultipleHierarchisationFundamentalSpline::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationFundamentalSpline::doDehierarchisation(
-  base::DataMatrix& alpha) {
+    base::DataMatrix& alpha) {
   Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
   Printer::getInstance().printStatusEnd();
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp

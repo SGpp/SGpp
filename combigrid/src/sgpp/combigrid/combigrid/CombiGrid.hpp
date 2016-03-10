@@ -1,9 +1,7 @@
-/*
- * CombiGrid.hpp
- *
- *  Created on: May 22, 2014
- *      Author: petzko
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_HPP_
 #define COMBIGRID_HPP_
@@ -12,13 +10,14 @@
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
 // ------ SGpp includes -------------
-//#include "base/datatypes/DataVector.hpp"
-//#include "base/grid/GridStorage.hpp"
+// #include "base/datatypes/DataVector.hpp"
+// #include "base/grid/GridStorage.hpp"
 #include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
 #include <sgpp/combigrid/fullgrid/GridContainer.hpp>
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
 #include <stdlib.h>
-#include "../utils/combigrid_utils.hpp"
-#include "../utils/combigrid_utils.hpp"
+#include <vector>
 
 namespace combigrid {
 
@@ -54,8 +53,7 @@ class CombiGrid {
     _Tp res = 0.0;
 
     if (_combischeme == NULL) {
-      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.",
-                        __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.", __FILE__, __LINE__)
 
     } else {
       res = _combischeme->evalCombiGrid(_fgrids, coords);
@@ -69,11 +67,9 @@ class CombiGrid {
    * @param coords - a list of coordinates to evaluate the grid on
    * @param results the result vector
    */
-  virtual void eval(std::vector<std::vector<double> >& coords,
-                    std::vector<_Tp>& results) const {
+  virtual void eval(std::vector<std::vector<double> >& coords, std::vector<_Tp>& results) const {
     if (_combischeme == NULL) {
-      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.",
-                        __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.", __FILE__, __LINE__)
     } else {
       _combischeme->evalCombiGrid(_fgrids, coords, results);
     }
@@ -108,9 +104,8 @@ class CombiGrid {
 
       // on state change --> call the combischeme recompute coefficients method!
       if (_combischeme != NULL)
-        COMBIGRID_OUT_WRN(
-            "Combigrid coefficients recalculation failed! Combischeme not set.",
-            __FILE__, __LINE__)
+        COMBIGRID_OUT_WRN("Combigrid coefficients recalculation failed! Combischeme not set.",
+                          __FILE__, __LINE__)
       else
         _combischeme->recomputeCoefficients(_dim, _fgrids);
     }
@@ -122,17 +117,15 @@ class CombiGrid {
    * @param hasBoundaryPts for each dimension if the full grid should have
    * boundary points
    * @param coef the coeficient in the combination scheme */
-  void addFullGrid(const std::vector<int>& levels,
-                   const std::vector<bool>& hasBoundaryPts, _Tp coef) {
-    combigrid::FGridContainer<_Tp>* grid =
-        new FGridContainer<_Tp>(levels, hasBoundaryPts, coef);
+  void addFullGrid(const std::vector<int>& levels, const std::vector<bool>& hasBoundaryPts,
+                   _Tp coef) {
+    combigrid::FGridContainer<_Tp>* grid = new FGridContainer<_Tp>(levels, hasBoundaryPts, coef);
     _fgrids.push_back(grid);
 
     // on state change --> call the combischeme recalculate coefficients method!
     if (_combischeme == NULL)
-      COMBIGRID_OUT_WRN(
-          "Combigrid coefficients recalculation failed! Combischeme not set.",
-          __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Combigrid coefficients recalculation failed! Combischeme not set.",
+                        __FILE__, __LINE__)
     else
       _combischeme->recomputeCoefficients(_dim, _fgrids);
   }
@@ -149,8 +142,7 @@ class CombiGrid {
    */
   void init() {
     if (_combischeme == NULL) {
-      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.",
-                        __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.", __FILE__, __LINE__)
       return;
     }
 
@@ -164,8 +156,8 @@ class CombiGrid {
 
     // create add all full grids to the fullgrid container.
     for (unsigned int i = 0; i < tmp_levels_vtr.size(); i++) {
-      FGridContainer<_Tp>* fg = new FGridContainer<_Tp>(
-          tmp_levels_vtr[i], _hasBoundaryPts, tmp_cf_vector[i]);
+      FGridContainer<_Tp>* fg =
+          new FGridContainer<_Tp>(tmp_levels_vtr[i], _hasBoundaryPts, tmp_cf_vector[i]);
       _fgrids.push_back(fg);
     }
   }
@@ -188,8 +180,7 @@ class CombiGrid {
 
   void re_init() {
     if (_combischeme == NULL) {
-      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.",
-                        __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Combigrid Evaluation failed! Combischeme not set.", __FILE__, __LINE__)
       return;
     }
 
@@ -198,26 +189,23 @@ class CombiGrid {
     std::vector<_Tp> tmp_cf_vector;
 
     // then reinitialize the levels vector and the coefs vector;
-    _combischeme->re_initCombiGrid(_dim, _fgrids, tmp_levels_vtr,
-                                   tmp_cf_vector);
+    _combischeme->re_initCombiGrid(_dim, _fgrids, tmp_levels_vtr, tmp_cf_vector);
 
     // create add all full grids to the fullgrid container.
     for (unsigned int i = 0; i < tmp_levels_vtr.size(); i++) {
-      FGridContainer<_Tp>* fg = new FGridContainer<_Tp>(
-          tmp_levels_vtr[i], _hasBoundaryPts, tmp_cf_vector[i]);
+      FGridContainer<_Tp>* fg =
+          new FGridContainer<_Tp>(tmp_levels_vtr[i], _hasBoundaryPts, tmp_cf_vector[i]);
       _fgrids.push_back(fg);
     }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////Getters &
-  ///Setters//////////////////////////////////////
+  //////////////////////////////// Getters & Setters ////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
   std::vector<_Tp> getCoefs() {
     std::vector<_Tp> vect;
 
-    for (unsigned int i = 0; i < _fgrids.size(); i++)
-      vect.push_back(_fgrids[i]->getCoef());
+    for (unsigned int i = 0; i < _fgrids.size(); i++) vect.push_back(_fgrids[i]->getCoef());
 
     return vect;
   }
@@ -225,8 +213,7 @@ class CombiGrid {
   std::vector<std::vector<int> > getLevelsVector() {
     std::vector<std::vector<int> > vect;
 
-    for (unsigned int i = 0; i < _fgrids.size(); i++)
-      vect.push_back(_fgrids[i]->getFGLevels());
+    for (unsigned int i = 0; i < _fgrids.size(); i++) vect.push_back(_fgrids[i]->getFGLevels());
 
     return vect;
   }
@@ -246,9 +233,8 @@ class CombiGrid {
    * @param stretching - a pointer to a stretching class instance
    *
    * */
-  void initializeActiveGridsDomain(
-      std::vector<double> min, std::vector<double> max,
-      combigrid::AbstractStretchingMaker* stretching) {
+  void initializeActiveGridsDomain(std::vector<double> min, std::vector<double> max,
+                                   combigrid::AbstractStretchingMaker* stretching) {
     for (unsigned int g = 0; g < this->getNrFullGrids(); g++) {
       if (getFullGrid(g)->isActive()) {
         FullGrid<_Tp>* fg = getFullGrid(g)->fg();
@@ -256,8 +242,7 @@ class CombiGrid {
 
         if (domain != NULL) delete domain;
 
-        fg->setDomain(
-            new GridDomain(_dim, fg->getLevels(), min, max, *stretching));
+        fg->setDomain(new GridDomain(_dim, fg->getLevels(), min, max, *stretching));
       }
     }
 
@@ -303,9 +288,7 @@ class CombiGrid {
   Stretching getStretchingType() { return _stretchingType; }
 
   /** return the combi scheme */
-  const AbstractCombiScheme<_Tp>* getCombiScheme() const {
-    return _combischeme;
-  }
+  const AbstractCombiScheme<_Tp>* getCombiScheme() const { return _combischeme; }
 
   /**
    * Attach a new combischeme to this grid! An combischeme captures the
@@ -317,9 +300,7 @@ class CombiGrid {
    * are delegated to the underlying combischeme!
    *
    */
-  void attachCombiScheme(AbstractCombiScheme<_Tp>* scheme) {
-    this->_combischeme = scheme;
-  }
+  void attachCombiScheme(AbstractCombiScheme<_Tp>* scheme) { this->_combischeme = scheme; }
 
   /*
    * Detach the current combischeme, and return it to the user!
@@ -338,8 +319,7 @@ class CombiGrid {
   unsigned int getNrActiveFullGrids() {
     unsigned int ctr = 0;
 
-    for (unsigned int i = 0; i < _fgrids.size(); i++)
-      ctr += _fgrids[i]->isActive() ? 1 : 0;
+    for (unsigned int i = 0; i < _fgrids.size(); i++) ctr += _fgrids[i]->isActive() ? 1 : 0;
 
     return ctr;
   }

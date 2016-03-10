@@ -11,12 +11,12 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
 
-HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(
+HierarchisationLinear::HierarchisationLinear(GridStorage& storage) : storage(
     storage) {
 }
 
@@ -30,26 +30,26 @@ void HierarchisationLinear::operator()(DataVector& source, DataVector& result,
 
 void HierarchisationLinear::rec(DataVector& source, DataVector& result,
                                 grid_iterator& index, size_t dim,
-                                float_t fl, float_t fr) {
+                                double fl, double fr) {
   // current position on the grid
   size_t seq = index.seq();
   // value in the middle, needed for recursive call and
   // calculation of the hierarchical surplus
-  float_t fm = source[seq];
+  double fm = source[seq];
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 
@@ -62,4 +62,4 @@ void HierarchisationLinear::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,24 +11,24 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
-namespace SGPP {
+#include <vector>
+
+namespace sgpp {
 namespace quadrature {
 
 /**
  *
  */
 class HaltonSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
    * @param dimension number of dimensions used for sample generation
    * @param seed custom seed (defaults to default seed of mt19937_64)
    */
-  HaltonSampleGenerator(size_t dimension,
-                        std::uint64_t seed = std::mt19937_64::default_seed);
+  explicit HaltonSampleGenerator(size_t dimension,
+                                 std::uint64_t seed = std::mt19937_64::default_seed);
 
   /**
    * Destructor
@@ -41,19 +41,19 @@ class HaltonSampleGenerator : public SampleGenerator {
    *
    * @param sample DataVector storing the new generated sample vector.
    */
-  virtual void getSample(SGPP::base::DataVector& sample);
+  virtual void getSample(sgpp::base::DataVector& sample);
 
  private:
   size_t index;
   std::vector<size_t> baseVector;
-  std::vector<float_t> iVector;
-  std::vector<float_t> fVector;
-  std::vector<float_t> resultVector;
+  std::vector<double> iVector;
+  std::vector<double> fVector;
+  std::vector<double> resultVector;
   //
   std::uniform_int_distribution<std::uint64_t> distInt;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp
 
 #endif /* HALTONSAMPLEGENERATOR_HPP */

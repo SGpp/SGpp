@@ -7,12 +7,11 @@
 #define OPERATIONDENSITYMARGINALIZE_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
+#include <cstring>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -32,10 +31,9 @@ class OperationDensityMarginalize {
    * @param malpha Coefficient vector for new grid (mg). Will be resized.
    * @param mdim Marginalize in dimension mdim
    */
-  virtual void doMarginalize(base::DataVector& alpha, base::Grid*& mg,
-                             base::DataVector& malpha, unsigned int mdim) = 0;
+  virtual void doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
+                             unsigned int mdim) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGINALIZE_HPP */

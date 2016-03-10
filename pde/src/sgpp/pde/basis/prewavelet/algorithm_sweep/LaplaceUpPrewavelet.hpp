@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
-
-
 
 /**
  * Implements the down Method needed for the Laplace operator on prewavelet grids.
@@ -25,21 +22,22 @@ namespace pde {
  * \f{eqnarray*}{
  * m_{(1,1)(1,1)}&=&\frac{1}{3}\\m_{(2,1)(2,3)}&=&\frac{1}{25}\\m_{(l,1)(l,1)}&=&m_{(l,2^{l}-1)(l,2^{l}-1)}=\frac{44}{75}h_{l}\\m_{(l,1)(l,3)}&=&m_{(l,2^{l}-1)(l,2^{l}-3)}=\frac{11}{75}h_{l}\\m_{(l,i)(l,i)}&=&\frac{18}{25}h_{l}\\m_{(l,i)(l,i\pm2)}&=&\frac{2}{15}h_{l}\\m_{(l,i)(l,i\pm4)}&=&-\frac{11}{75}h_{l}
  * \f}
- * With that, the calculation of the entire matrix is completed, thus no additional up-part is needed.
+ * With that, the calculation of the entire matrix is completed, thus no additional up-part is
+ * needed.
  */
 class LaplaceUpPrewavelet {
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
-  /// Pointer to SGPP::base::GridStorage object
-  SGPP::base::GridStorage* storage;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
+  /// Pointer to sgpp::base::GridStorage object
+  sgpp::base::GridStorage* storage;
 
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  LaplaceUpPrewavelet(SGPP::base::GridStorage* storage);
+  explicit LaplaceUpPrewavelet(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -49,21 +47,18 @@ class LaplaceUpPrewavelet {
   /**
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  void operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                   grid_iterator& index, size_t dim);
 
  protected:
-
 };
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* LAPLACEUPPREWAVELET_HPP */

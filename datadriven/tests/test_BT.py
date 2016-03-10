@@ -43,13 +43,13 @@ def generateBTMatrix(factory, training, verbose=False):
        
     b = createOperationMultipleEval(factory, training)
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     temp = DataVector(training.getNrows())
     
     # create BT matrix
-    m = DataMatrix(training.getNrows(), storage.size())
+    m = DataMatrix(training.getNrows(), storage.getSize())
     
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
       
         # apply unit vectors
         temp.setAll(0.0)
@@ -80,7 +80,7 @@ def readReferenceMatrix(self, storage, filename):
     dat = map(lambda l: l.strip().split(None), dat)
 
     # right number of entries?
-    self.assertEqual(storage.size(), len(dat[0]))
+    self.assertEqual(storage.getSize(), len(dat[0]))
 
     m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
@@ -143,9 +143,9 @@ def readDataVector(filename):
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
 def compareBTMatrices(testCaseClass, m1, m2):
-    from pysgpp import DataVector, cvar
+    from pysgpp import DataVector
 
-    places = 5 if cvar.USING_DOUBLE_PRECISION else 3
+    places = 5
 
     # check dimensions
     testCaseClass.assertEqual(m1.getNrows(), m2.getNrows())
@@ -198,7 +198,7 @@ class TestOperationBTModLinear(unittest.TestCase):
         factory = Grid.createModLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -216,7 +216,7 @@ class TestOperationBTModLinear(unittest.TestCase):
         factory = Grid.createModLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -234,7 +234,7 @@ class TestOperationBTModLinear(unittest.TestCase):
         factory = Grid.createModLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -252,7 +252,7 @@ class TestOperationBTModLinear(unittest.TestCase):
         factory = Grid.createModLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -271,7 +271,7 @@ class TestOperationBTLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -289,7 +289,7 @@ class TestOperationBTLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -307,7 +307,7 @@ class TestOperationBTLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -325,7 +325,7 @@ class TestOperationBTLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -344,7 +344,7 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1, 0)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -362,7 +362,7 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1, 0)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -380,7 +380,7 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3, 0)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -398,7 +398,7 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3, 0)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -417,7 +417,7 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -435,7 +435,7 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -453,7 +453,7 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 2
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
@@ -471,7 +471,7 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)

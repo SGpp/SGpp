@@ -49,8 +49,8 @@ class OperationCreateGraphSlave : public MPISlaveOperation {
                 << dataset_size / dimensions << " datapoints) and graph parameters" << std::endl;
     }
     // Create opencl operation
-    SGPP::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* op =
-        SGPP::datadriven::createNearestNeighborGraphConfigured(dataset, dataset_size,
+    sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* op =
+        sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, dataset_size,
                                                                k, dimensions, "MyOCLConf.cfg");
 
     if (verbose) {
@@ -83,13 +83,13 @@ class OperationCreateGraphSlave : public MPISlaveOperation {
 
 class OperationCreateGraphMPI : public MPIOperation {
  private:
-  SGPP::base::DataMatrix &data;
+  sgpp::base::DataMatrix &data;
   size_t datasize;
   size_t dimensions;
   size_t k;
 
  public:
-  OperationCreateGraphMPI(SGPP::base::DataMatrix& data, size_t dimensions, size_t k)
+  OperationCreateGraphMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k)
       : MPIOperation(typeid(OperationCreateGraphSlave).name()), data(data),
         datasize(data.getSize()), dimensions(dimensions), k(k) {
   }

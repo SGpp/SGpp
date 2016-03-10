@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -29,7 +29,7 @@ class HierarchisationPolyBoundary {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
   /// the base
   SPolyBoundaryBase* base;
@@ -41,7 +41,7 @@ class HierarchisationPolyBoundary {
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param base The polynomial basis functions
    */
-  HierarchisationPolyBoundary(GridStorage* storage, SPolyBoundaryBase* base);
+  HierarchisationPolyBoundary(GridStorage& storage, SPolyBoundaryBase* base);
 
   /**
    * Destructor
@@ -75,6 +75,6 @@ class HierarchisationPolyBoundary {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HIERARCHISATIONPOLY_HPP */

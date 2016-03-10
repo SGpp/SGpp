@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #ifndef LEVELINDEXMASKOFFSETHELPER_HPP
 #define LEVELINDEXMASKOFFSETHELPER_HPP
 
@@ -12,8 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 // comment is true for both DP and SP
 // use constructor to do actual work, in code where we use this, it looks like a
@@ -35,126 +33,106 @@ namespace parallel {
 
 namespace LevelIndexMaskOffsetHelper {
 
-template<KernelType T, typename C> struct rebuild {
-  rebuild(C* op);
+template <KernelType T, typename C>
+struct rebuild {
+  explicit rebuild(C* op);
 };
-template<typename C> struct rebuild<Standard, C> {
-  rebuild(C* op);
+template <typename C>
+struct rebuild<Standard, C> {
+  explicit rebuild(C* op);
 };
-template<typename C> struct rebuild<Mask, C> {
-  rebuild(C* op);
+template <typename C>
+struct rebuild<Mask, C> {
+  explicit rebuild(C* op);
 };
 
-template<KernelType T, typename C>  rebuild<T, C>::rebuild(C* op) {
-  throw base::operation_exception("The rebuild operation for the specified KernelType is not implemented.");
+template <KernelType T, typename C>
+rebuild<T, C>::rebuild(C* op) {
+  throw base::operation_exception(
+      "The rebuild operation for the specified KernelType is not implemented.");
 }
-template<typename C>
+template <typename C>
 inline rebuild<Standard, C>::rebuild(C* op) {
-  if (op->level_ != NULL)
-    delete op->level_;
+  if (op->level_ != NULL) delete op->level_;
 
-  if (op->index_ != NULL)
-    delete op->index_;
+  if (op->index_ != NULL) delete op->index_;
 
-  op->level_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
-  op->index_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
+  op->level_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
 
-  op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
+  op->storage_.getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
-template<typename C>
+template <typename C>
 inline rebuild<Mask, C>::rebuild(C* op) {
-  if (op->level_ != NULL)
-    delete op->level_;
+  if (op->level_ != NULL) delete op->level_;
 
-  if (op->index_ != NULL)
-    delete op->index_;
+  if (op->index_ != NULL) delete op->index_;
 
-  if (op->mask_ != NULL)
-    delete op->mask_;
+  if (op->mask_ != NULL) delete op->mask_;
 
-  if (op->offset_ != NULL)
-    delete op->offset_;
+  if (op->offset_ != NULL) delete op->offset_;
 
-  op->level_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
-  op->index_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
-  op->mask_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                         op->storage_->dim());
-  op->offset_ = new SGPP::base::DataMatrix(op->storage_->size(),
-      op->storage_->dim());
+  op->level_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->mask_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->offset_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
 
-  op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_),
-      *(op->mask_), *(op->offset_));
+  op->storage_.getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_),
+                                                 *(op->offset_));
 }
-}
-
-#if USE_DOUBLE_PRECISION==0
-
+}  // namespace LevelIndexMaskOffsetHelper
 
 namespace LevelIndexMaskOffsetHelperSP {
-template<KernelType T, typename C> struct rebuild {
-  rebuild(C* op);
+template <KernelType T, typename C>
+struct rebuild {
+  explicit rebuild(C* op);
 };
-template<typename C> struct rebuild<Standard, C> {
-  rebuild(C* op);
+template <typename C>
+struct rebuild<Standard, C> {
+  explicit rebuild(C* op);
 };
-template<typename C> struct rebuild<Mask, C> {
-  rebuild(C* op);
+template <typename C>
+struct rebuild<Mask, C> {
+  explicit rebuild(C* op);
 };
 
-template<KernelType T, typename C>  rebuild<T, C>::rebuild(C* op) {
-  throw base::operation_exception("The rebuild operation for the specified KernelType is not implemented.");
+template <KernelType T, typename C>
+rebuild<T, C>::rebuild(C* op) {
+  throw base::operation_exception(
+      "The rebuild operation for the specified KernelType is not implemented.");
 }
-template<typename C>
+template <typename C>
 inline rebuild<Standard, C>::rebuild(C* op) {
-  if (op->level_ != NULL)
-    delete op->level_;
+  if (op->level_ != NULL) delete op->level_;
 
-  if (op->index_ != NULL)
-    delete op->index_;
+  if (op->index_ != NULL) delete op->index_;
 
-  op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
-  op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+  op->level_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
 
-  op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
+  op->storage_.getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
-template<typename C>
+template <typename C>
 inline rebuild<Mask, C>::rebuild(C* op) {
-  if (op->level_ != NULL)
-    delete op->level_;
+  if (op->level_ != NULL) delete op->level_;
 
-  if (op->index_ != NULL)
-    delete op->index_;
+  if (op->index_ != NULL) delete op->index_;
 
-  if (op->mask_ != NULL)
-    delete op->mask_;
+  if (op->mask_ != NULL) delete op->mask_;
 
-  if (op->offset_ != NULL)
-    delete op->offset_;
+  if (op->offset_ != NULL) delete op->offset_;
 
-  op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
-  op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
-  op->mask_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
-  op->offset_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+  op->level_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->mask_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->offset_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
 
-  op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_),
-      *(op->mask_), *(op->offset_));
+  op->storage_.getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_),
+                                                 *(op->offset_));
 }
-}
+}  // namespace LevelIndexMaskOffsetHelperSP
 
-#endif // USE_DOUBLE_PRECISION==0
+}  // namespace parallel
+}  // namespace sgpp
 
-
-}
-}
-
-#endif // LEVELINDEXMASKOFFSETHELPER_HPP
+#endif  // LEVELINDEXMASKOFFSETHELPER_HPP

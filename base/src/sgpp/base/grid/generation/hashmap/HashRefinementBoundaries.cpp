@@ -13,7 +13,7 @@
 #include <memory>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -41,34 +41,34 @@ void HashRefinementBoundaries::addElementToCollection(
 
 
 AbstractRefinement::refinement_list_type HashRefinementBoundaries::getIndicator(
-  GridStorage* storage,
+  GridStorage& storage,
   const GridStorage::grid_map_iterator& iter,
-  const RefinementFunctor* functor) const {
+  const RefinementFunctor& functor) const {
   AbstractRefinement::refinement_list_type list;
   list.emplace_front(std::make_shared<AbstractRefinement::refinement_key_type>(*
                      (iter->first), iter->second),
-                     (*functor)(storage, iter->second));
+                     functor(storage, iter->second));
   return list;
 }
 
 
 
-void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
-    RefinementFunctor* functor,
+void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  size_t refinements_num = functor->getRefinementsNum();
+  size_t refinements_num = functor.getRefinementsNum();
   index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     index = *(iter->first);
 
     GridStorage::grid_map_iterator child_iter;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -76,7 +76,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
       if (source_level == 0) {
         // we only have one child on level 1
         index.set(d, 1, 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -89,7 +89,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
       } else {
         // left child
         index.set(d, source_level + 1, 2 * source_index - 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -102,7 +102,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
 
         // right child
         index.set(d, source_level + 1, 2 * source_index + 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         if (child_iter == end_iter) {
           AbstractRefinement::refinement_list_type current_value_list =
@@ -119,10 +119,10 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
 }
 
 
-void HashRefinementBoundaries::refineGridpointsCollection(GridStorage* storage,
-    RefinementFunctor* functor,
+void HashRefinementBoundaries::refineGridpointsCollection(GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
-  float_t threshold = functor->getRefinementThreshold();
+  double threshold = functor.getRefinementThreshold();
 
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
     if (pair.second >= threshold) {
@@ -131,9 +131,9 @@ void HashRefinementBoundaries::refineGridpointsCollection(GridStorage* storage,
   }
 }
 
-void HashRefinementBoundaries::free_refine(GridStorage* storage,
-    RefinementFunctor* functor) {
-  if (storage->size() == 0) {
+void HashRefinementBoundaries::free_refine(GridStorage& storage,
+    RefinementFunctor& functor) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -145,24 +145,24 @@ void HashRefinementBoundaries::free_refine(GridStorage* storage,
 
 
 size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
-  GridStorage* storage) {
+  GridStorage& storage) {
   size_t counter = 0;
 
-  if (storage->size() == 0) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
   index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     index = *(iter->first);
 
     GridStorage::grid_map_iterator child_iter;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -170,31 +170,31 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
       if (source_level == 0) {
         // level 1
         index.set(d, 1, 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
           counter++;
-	  break;
+          break;
         }
       } else {
         // left child
         index.set(d, source_level + 1, 2 * source_index - 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
           counter++;
-	  break;
+          break;
         }
 
         // right child
         index.set(d, source_level + 1, 2 * source_index + 1);
-        child_iter = storage->find(&index);
+        child_iter = storage.find(&index);
 
         if (child_iter == end_iter) {
           counter++;
-	  break;
+          break;
         }
       }
 
@@ -206,7 +206,7 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
 }
 
 
-void HashRefinementBoundaries::refineGridpoint1D(GridStorage* storage,
+void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
     index_type& index, size_t d) {
   index_t source_index;
   level_t source_level;
@@ -216,7 +216,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage* storage,
     // we only have one child on level 1
     index.set(d, 1, 1);
 
-    if (!storage->has_key(&index)) {
+    if (!storage.has_key(&index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -224,7 +224,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage* storage,
     // generate left child, if necessary
     index.set(d, source_level + 1, 2 * source_index - 1);
 
-    if (!storage->has_key(&index)) {
+    if (!storage.has_key(&index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -232,7 +232,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage* storage,
     // generate right child, if necessary
     index.set(d, source_level + 1, 2 * source_index + 1);
 
-    if (!storage->has_key(&index)) {
+    if (!storage.has_key(&index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -242,21 +242,21 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage* storage,
 }
 
 
-void HashRefinementBoundaries::refineGridpoint(GridStorage* storage,
+void HashRefinementBoundaries::refineGridpoint(GridStorage& storage,
     size_t refine_index) {
-  index_type index(*(*storage)[refine_index]);
+  index_type index(*storage[refine_index]);
 
   // Sets leaf property of index, which is refined to false
-  (*storage)[refine_index]->setLeaf(false);
+  storage[refine_index]->setLeaf(false);
 
-  for (size_t d = 0; d < storage->dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     refineGridpoint1D(storage, index, d);
   }
 }
 
 
 
-void HashRefinementBoundaries::createGridpoint(GridStorage* storage,
+void HashRefinementBoundaries::createGridpoint(GridStorage& storage,
     index_type& index) {
   // create grid with its needed childern and parents
   createGridpointGeneral(storage, index);
@@ -265,14 +265,14 @@ void HashRefinementBoundaries::createGridpoint(GridStorage* storage,
 }
 
 void HashRefinementBoundaries::createGridpoint1D(index_type& index,
-    size_t d, GridStorage* storage, index_t& source_index,
+    size_t d, GridStorage& storage, index_t& source_index,
     level_t& source_level) {
   index.get(d, source_level, source_index);
 
   if (source_level == 1) {
     // check if we need some additional points on the boundaries,
     // only needed on a N dim grid
-    if (storage->dim() > 1) {
+    if (storage.getDimension() > 1) {
       // test if there are boundaries in every dimension for this grid point
       // left boundary
       index.set(d, 0, 0);
@@ -291,22 +291,22 @@ void HashRefinementBoundaries::createGridpoint1D(index_type& index,
                                         source_level);
 }
 
-void HashRefinementBoundaries::createGridpointGeneral(GridStorage* storage,
+void HashRefinementBoundaries::createGridpointGeneral(GridStorage& storage,
     index_type& index) {
   index_t source_index;
   level_t source_level;
 
-  for (size_t d = 0; d < storage->dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     createGridpoint1D(index, d, storage, source_index, source_level);
   }
 
-  storage->insert(index);
+  storage.insert(index);
 }
 
 
 void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
-  GridStorage* storage, index_type& index) {
-  for (size_t d = 0; d < storage->dim(); d++) {
+  GridStorage& storage, index_type& index) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
     index.get(d, source_level, source_index);
@@ -316,44 +316,44 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
     if (source_level == 0) {
       // check if we need some additional points on the boundaries,
       // only needed on a N dim grid
-      if (storage->dim() > 1) {
+      if (storage.getDimension() > 1) {
         // if we have already a left boundary...
         index.set(d, 0, 0);
 
-        if (storage->has_key(&index)) {
+        if (storage.has_key(&index)) {
           // ... we have to read leaf property
           bool Leaf = index.isLeaf();
           // ... we have to generate the correspondending right boundary
           index.set(d, 0, 1);
 
-          if (!storage->has_key(&index)) {
+          if (!storage.has_key(&index)) {
             bool saveLeaf = index.isLeaf();
             index.setLeaf(Leaf);
             createGridpoint(storage, index);
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the left boundary
-            (storage->get((storage->find(&index))->second))->setLeaf(Leaf);
+            (storage.get((storage.find(&index))->second))->setLeaf(Leaf);
           }
         }
 
         // if we have already a right boundary...
         index.set(d, 0, 1);
 
-        if (storage->has_key(&index)) {
+        if (storage.has_key(&index)) {
           // ... we have to read leaf property
           bool Leaf = index.isLeaf();
           // ... we have to generate the correspondending right boundary
           index.set(d, 0, 0);
 
-          if (!storage->has_key(&index)) {
+          if (!storage.has_key(&index)) {
             bool saveLeaf = index.isLeaf();
             index.setLeaf(Leaf);
             createGridpoint(storage, index);
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the right boundary
-            (storage->get((storage->find(&index))->second))->setLeaf(Leaf);
+            (storage.get((storage.find(&index))->second))->setLeaf(Leaf);
           }
         }
 
@@ -365,4 +365,4 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

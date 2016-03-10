@@ -28,14 +28,14 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
     basis = getBasis(grid)
     A = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float')
+    s = np.ndarray(gs.getDimension(), dtype='float')
     # run over all rows
     for i, gpi in enumerate(admissibleSet.values()):
         # run over all columns
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.get(j)
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
                 ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -77,7 +77,7 @@ def computeBFGridPoint(basis, U, gpi, gps):
     @param gps: list of HashGridIndex
     """
     n = len(gps)
-    s = np.ndarray(gpi.dim(), dtype='float')
+    s = np.ndarray(gpi.getDimension(), dtype='float')
     ans = DataVector(n)
 
     # run over all grid points
@@ -90,7 +90,7 @@ def computeBFGridPoint(basis, U, gpi, gps):
 
 
 def computeBFPairwise(basis, U, gpi, gpj):
-    for d in xrange(gpj.dim()):
+    for d in xrange(gpj.getDimension()):
         # get level index
         lid, iid = gpi.getLevel(d), gpi.getIndex(d)
         ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -134,13 +134,13 @@ def computeBF(grid, U, admissibleSet):
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
     ngrid = Grid.createPolyBoundaryGrid(1, 2)
-    ngrid.createGridGenerator().regular(2)
+    ngrid.getGenerator().regular(2)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
 
     A = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float')
+    s = np.ndarray(gs.getDimension(), dtype='float')
 
 #     # pre compute basis evaluations
 #     basis_eval = {}
@@ -190,7 +190,7 @@ def computeBF(grid, U, admissibleSet):
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.get(j)
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
                 ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -254,18 +254,18 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
     A = DataMatrix(gs.size(), gs.size())
     createOperationLTwoDotExplicit(A, grid)
     # multiply the entries with the pdf at the center of the support
-    p = DataVector(gs.dim())
-    q = DataVector(gs.dim())
+    p = DataVector(gs.getDimension())
+    q = DataVector(gs.getDimension())
 
     B = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-#     s = np.ndarray(gs.dim(), dtype='float')
+#     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.seq(gpi)
         gpi.getCoords(p)
         for j in xrange(gs.size()):
             gs.get(j).getCoords(q)
-#             for d in xrange(gs.dim()):
+#             for d in xrange(gs.getDimension()):
 #                 # get level index
 #                 xlow = max(p[0], q[0])
 #                 xhigh = min(p[1], q[1])
@@ -294,13 +294,13 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float')
+    s = np.ndarray(gs.getDimension(), dtype='float')
 
     # run over all rows
-    p = DataVector(gs.dim())
+    p = DataVector(gs.getDimension())
     for i, gpi in enumerate(admissibleSet.values()):
         gpi.getCoords(p)
-        for d in xrange(gs.dim()):
+        for d in xrange(gs.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             xlow = (iid - 1) * 2 ** -lid

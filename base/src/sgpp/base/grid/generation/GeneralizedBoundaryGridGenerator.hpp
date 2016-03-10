@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    *
    * @param storage template type that holds the grid points
    */
-  explicit GeneralizedBoundaryGridGenerator(GridStorage* storage);
+  explicit GeneralizedBoundaryGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -44,19 +44,19 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    * @param l_user the number of fullgrids cut off from the boundaries.
    * */
   void truncated(size_t level, size_t l_user) override;
-  void refine(RefinementFunctor* func) override {}
+  void refine(RefinementFunctor& func) override {}
   size_t getNumberOfRefinablePoints() override {
     return 0;
   };
 
-  void coarsen(CoarseningFunctor* func, DataVector* alpha) override {}
-  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+  void coarsen(CoarseningFunctor& func, DataVector& alpha) override {}
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
                          size_t numFirstOnly) override {}
   size_t getNumberOfRemovablePoints() override {
     return 0;
   }
 
-  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override {
+  void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override {
     throw generation_exception("refineMaxLevel is not implemented");
   }
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override {
@@ -66,11 +66,11 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
   }
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_ */

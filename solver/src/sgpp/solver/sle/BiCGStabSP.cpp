@@ -5,24 +5,19 @@
 
 #include <sgpp/solver/sle/BiCGStabSP.hpp>
 
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-BiCGStabSP::BiCGStabSP(size_t imax,
-                       float epsilon) : SGPP::solver::SLESolverSP(imax, epsilon) {
-}
+BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : sgpp::solver::SLESolverSP(imax, epsilon) {}
 
-BiCGStabSP::~BiCGStabSP() {
-}
+BiCGStabSP::~BiCGStabSP() {}
 
-void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
-                       SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse,
-                       bool verbose, float max_threshold) {
+void BiCGStabSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::DataVectorSP& alpha,
+                       sgpp::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
   this->nIterations = 1;
   float epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -31,8 +26,8 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
     alpha.setAll(0.0f);
   }
 
-  //Calculate r0
-  SGPP::base::DataVectorSP r(alpha.getSize());
+  // Calculate r0
+  sgpp::base::DataVectorSP r(alpha.getSize());
   SystemMatrix.mult(alpha, r);
   r.sub(b);
 
@@ -40,13 +35,13 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   float delta = 0.0f;
 
   if (verbose == true) {
-    std::cout <<  "delta_0 " << delta_0 << std::endl;
+    std::cout << "delta_0 " << delta_0 << std::endl;
   }
 
-  //Choose r0 as r
-  SGPP::base::DataVectorSP rZero(r);
+  // Choose r0 as r
+  sgpp::base::DataVectorSP rZero(r);
   // Set p as r0
-  SGPP::base::DataVectorSP p(rZero);
+  sgpp::base::DataVectorSP p(rZero);
 
   float rho = rZero.dotProduct(r);
   float rho_new = 0.0f;
@@ -55,9 +50,9 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   float omega = 0.0f;
   float beta = 0.0f;
 
-  SGPP::base::DataVectorSP s(alpha.getSize());
-  SGPP::base::DataVectorSP v(alpha.getSize());
-  SGPP::base::DataVectorSP w(alpha.getSize());
+  sgpp::base::DataVectorSP s(alpha.getSize());
+  sgpp::base::DataVectorSP v(alpha.getSize());
+  sgpp::base::DataVectorSP w(alpha.getSize());
 
   s.setAll(0.0);
   v.setAll(0.0);
@@ -68,7 +63,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
     s.setAll(0.0f);
     SystemMatrix.mult(p, s);
 
-    //std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+    // std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
 
     sigma = s.dotProduct(rZero);
 
@@ -80,23 +75,23 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
 
     // w = r - a*s
     w = r;
-    w.axpy((-1.0f)*a, s);
+    w.axpy((-1.0f) * a, s);
 
     // v = Aw
     v.setAll(0.0f);
     SystemMatrix.mult(w, v);
 
-    //std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
+    // std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
     omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
     // x = x - a*p - omega*w
-    alpha.axpy((-1.0f)*a, p);
-    alpha.axpy((-1.0f)*omega, w);
+    alpha.axpy((-1.0f) * a, p);
+    alpha.axpy((-1.0f) * omega, w);
 
     // r = r - a*s - omega*v
-    r.axpy((-1.0f)*a, s);
-    r.axpy((-1.0f)*omega, v);
+    r.axpy((-1.0f) * a, s);
+    r.axpy((-1.0f) * omega, v);
 
     rho_new = r.dotProduct(rZero);
 
@@ -117,7 +112,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
     rho = rho_new;
 
     // p = r + beta*(p - omega*s)
-    p.axpy((-1.0f)*omega, s);
+    p.axpy((-1.0f) * omega, s);
     p.mult(beta);
     p.add(r);
 
@@ -125,5 +120,5 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   }
 }
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp

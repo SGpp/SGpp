@@ -8,12 +8,12 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OperationPruneGraphOCLMultiPlatform.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-SGPP::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
+sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
                                     base::DataMatrix &data, double treshold, size_t k,
                                     std::string opencl_conf);
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

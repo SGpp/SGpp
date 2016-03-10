@@ -11,7 +11,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -26,15 +26,15 @@ namespace optimizer {
 class NLCG : public UnconstrainedOptimizer {
  public:
   /// default beta (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_BETA = 0.5;
+  static constexpr double DEFAULT_BETA = 0.5;
   /// default gamma (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_GAMMA = 1e-2;
+  static constexpr double DEFAULT_GAMMA = 1e-2;
   /// default tolerance (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
+  static constexpr double DEFAULT_TOLERANCE = 1e-8;
   /// default epsilon (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_EPSILON = 1e-18;
+  static constexpr double DEFAULT_EPSILON = 1e-18;
   /// default restart threshold
-  static constexpr float_t DEFAULT_RESTART_THRESHOLD = 0.1;
+  static constexpr double DEFAULT_RESTART_THRESHOLD = 0.1;
 
   /**
    * Constructor.
@@ -48,14 +48,10 @@ class NLCG : public UnconstrainedOptimizer {
    * @param epsilon           epsilon (parameter for Armijo's rule)
    * @param restartThreshold  restart threshold
    */
-  NLCG(ScalarFunction& f,
-       ScalarFunctionGradient& fGradient,
-       size_t maxItCount = DEFAULT_N,
-       float_t beta = DEFAULT_BETA,
-       float_t gamma = DEFAULT_GAMMA,
-       float_t tolerance = DEFAULT_TOLERANCE,
-       float_t epsilon = DEFAULT_EPSILON,
-       float_t restartThreshold = DEFAULT_RESTART_THRESHOLD);
+  NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
+       double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+       double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
+       double restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
   /**
    * Destructor.
@@ -72,76 +68,74 @@ class NLCG : public UnconstrainedOptimizer {
   /**
    * @return              beta (parameter for Armijo's rule)
    */
-  float_t getBeta() const;
+  double getBeta() const;
 
   /**
    * @param beta          beta (parameter for Armijo's rule)
    */
-  void setBeta(float_t beta);
+  void setBeta(double beta);
 
   /**
    * @return              gamma (parameter for Armijo's rule)
    */
-  float_t getGamma() const;
+  double getGamma() const;
 
   /**
    * @param gamma         gamma (parameter for Armijo's rule)
    */
-  void setGamma(float_t gamma);
+  void setGamma(double gamma);
 
   /**
    * @return              tolerance (parameter for Armijo's rule)
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance     tolerance (parameter for Armijo's rule)
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return              epsilon (parameter for Armijo's rule)
    */
-  float_t getEpsilon() const;
+  double getEpsilon() const;
 
   /**
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  void setEpsilon(float_t epsilon);
+  void setEpsilon(double epsilon);
 
   /**
    * @return                  restart threshold
    */
-  float_t getRestartThreshold() const;
+  double getRestartThreshold() const;
 
   /**
    * @param restartThreshold  restart threshold
    */
-  void setRestartThreshold(float_t restartThreshold);
+  void setRestartThreshold(double restartThreshold);
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function gradient
   ScalarFunctionGradient& fGradient;
   /// beta (parameter for Armijo's rule)
-  float_t beta;
+  double beta;
   /// gamma (parameter for Armijo's rule)
-  float_t gamma;
+  double gamma;
   /// tolerance (parameter for Armijo's rule)
-  float_t tol;
+  double tol;
   /// epsilon (parameter for Armijo's rule)
-  float_t eps;
+  double eps;
   /// restart threshold
-  float_t alpha;
+  double alpha;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NLCG_HPP */

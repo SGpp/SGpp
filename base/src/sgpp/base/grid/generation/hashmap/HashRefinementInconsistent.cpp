@@ -11,14 +11,14 @@
 #include <limits>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
-void HashRefinementInconsistent::createGridpoint(GridStorage* storage,
+void HashRefinementInconsistent::createGridpoint(GridStorage& storage,
     index_type& index) {
-  storage->insert(index);
+  storage.insert(index);
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

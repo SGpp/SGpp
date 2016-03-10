@@ -44,7 +44,7 @@ class TestClassifier(unittest.TestCase):
         foldingPolicy = FoldingPolicy(dataContainer)
         self.classifier.setFoldingPolicy(foldingPolicy)
         grid = Grid.createLinearGrid(dim)
-        storage = grid.createGridGenerator()
+        storage = grid.getGenerator()
         storage.regular(level)
         self.classifier.setGrid(grid)
         self.classifier.setLearnedKnowledge(LearnedKnowledge())
@@ -97,7 +97,7 @@ class TestClassifier(unittest.TestCase):
             data.setRow(i, temp)
 
         val = self.classifier.applyData(data)
-        places = 7 if cvar.USING_DOUBLE_PRECISION else 6
+        places = 7
 
         self.assertEqual(len(val), len(correct))
         for i in xrange(len(correct)):
@@ -113,7 +113,7 @@ class TestClassifier(unittest.TestCase):
                    -0.61865507797281593660]
 
         alpha = self.classifier.learnData()
-        places = 7 if cvar.USING_DOUBLE_PRECISION else 6
+        places = 7
         for i in xrange(len(alpha)):
             self.assertAlmostEqual(correct[i], alpha[i], places=places)
 
@@ -139,7 +139,7 @@ class TestClassifier(unittest.TestCase):
         foldingPolicy = SequentialFoldingPolicy(dataContainer, 10)
         self.classifier.setFoldingPolicy(foldingPolicy)
         grid = Grid.createLinearGrid(dim)
-        storage = grid.createGridGenerator()
+        storage = grid.getGenerator()
         storage.regular(level)
         self.classifier.setGrid(grid)
         self.classifier.setLearnedKnowledge(LearnedKnowledge())

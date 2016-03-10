@@ -7,36 +7,30 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
+dPhidPhiUpModLinear::dPhidPhiUpModLinear(sgpp::base::GridStorage* storage) : storage(storage) {}
 
+dPhidPhiUpModLinear::~dPhidPhiUpModLinear() {}
 
-dPhidPhiUpModLinear::dPhidPhiUpModLinear(SGPP::base::GridStorage* storage) :
-  storage(storage) {
-}
-
-dPhidPhiUpModLinear::~dPhidPhiUpModLinear() {
-}
-
-void dPhidPhiUpModLinear::operator()(SGPP::base::DataVector& source,
-                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t f = 0.0;
+void dPhidPhiUpModLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                     grid_iterator& index, size_t dim) {
+  double f = 0.0;
   rec(source, result, index, dim, f);
 }
 
-void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source,
-                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& f) {
+void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                              grid_iterator& index, size_t dim, double& f) {
   size_t seq = index.seq();
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t alpha_value = source[seq];
-  float_t ht = pow(2.0, static_cast<int>(l));
+  double alpha_value = source[seq];
+  double ht = pow(2.0, static_cast<int>(l));
 
   if (l == 1) {
     f = 0.0;
@@ -59,9 +53,7 @@ void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source,
     }
 
     result[seq] = 0.0;
-  }
-  // left boundary
-  else if (i == 1) {
+  } else if (i == 1) {  // left boundary
     f = 0.0;
 
     if (!index.hint()) {
@@ -77,9 +69,7 @@ void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source,
     result[seq] = ht * f;
 
     f += 2.0 * alpha_value;
-  }
-  // right boundary
-  else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+  } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {  // right boundary
     f = 0.0;
 
     if (!index.hint()) {
@@ -97,8 +87,5 @@ void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source,
     f += 2.0 * alpha_value;
   }
 }
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

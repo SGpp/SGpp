@@ -7,25 +7,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+DPhidPhiUpBBLinear::DPhidPhiUpBBLinear(sgpp::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+DPhidPhiUpBBLinear::~DPhidPhiUpBBLinear() {}
 
-DPhidPhiUpBBLinear::DPhidPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-
-DPhidPhiUpBBLinear::~DPhidPhiUpBBLinear() {
-}
-
-
-void DPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = boundingBox->getIntervalWidth(dim);
-  float_t t = boundingBox->getIntervalOffset(dim);
+void DPhidPhiUpBBLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                    grid_iterator& index, size_t dim) {
+  double q = boundingBox->getIntervalWidth(dim);
+  double t = boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -34,8 +27,8 @@ void DPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (useBB) {
     recBB(source, result, index, dim, fl, fr, q, t);
@@ -44,17 +37,16 @@ void DPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void DPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                             SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                             float_t& fr) {
+void DPhidPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                             grid_iterator& index, size_t dim, double& fl, double& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -74,9 +66,9 @@ void DPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
 
   index.get(dim, current_level, current_index);
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
-  //  float_t alpha_value = source[seq];
+  //  double alpha_value = source[seq];
 
   // transposed operations:
   result[seq] = fm;
@@ -85,17 +77,17 @@ void DPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + fr;
 }
 
-void DPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
-                               SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                               float_t& fr, float_t q, float_t t) {
+void DPhidPhiUpBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                               grid_iterator& index, size_t dim, double& fl, double& fr,
+                               double q, double t) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -115,9 +107,9 @@ void DPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
 
   index.get(dim, current_level, current_index);
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
-  //  float_t alpha_value = source[seq];
+  //  double alpha_value = source[seq];
 
   // transposed operations:
   result[seq] = fm;
@@ -126,7 +118,5 @@ void DPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + fr;
 }
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

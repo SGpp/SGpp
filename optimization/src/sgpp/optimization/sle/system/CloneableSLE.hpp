@@ -6,13 +6,12 @@
 #ifndef SGPP_OPTIMIZATION_SLE_SYSTEM_CLONEABLESLE_HPP
 #define SGPP_OPTIMIZATION_SLE_SYSTEM_CLONEABLESLE_HPP
 
-#include <memory>
-
 #include <sgpp/globaldef.hpp>
-
 #include <sgpp/optimization/sle/system/SLE.hpp>
 
-namespace SGPP {
+#include <memory>
+
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -26,14 +25,12 @@ class CloneableSLE : public SLE {
   /**
    * Constructor.
    */
-  CloneableSLE() : SLE() {
-  }
+  CloneableSLE() : SLE() {}
 
   /**
    * Destructor.
    */
-  virtual ~CloneableSLE() override {
-  }
+  ~CloneableSLE() override {}
 
   /**
    * Pure virtual method for cloning the linear system.
@@ -48,12 +45,9 @@ class CloneableSLE : public SLE {
   /**
    * @return whether this system derives from CloneableSLE or not (true)
    */
-  virtual bool isCloneable() const override {
-    return true;
-  }
+  bool isCloneable() const override { return true; }
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_CLONEABLESLE_HPP */

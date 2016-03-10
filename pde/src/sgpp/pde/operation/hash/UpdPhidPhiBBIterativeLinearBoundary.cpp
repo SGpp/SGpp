@@ -8,38 +8,36 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    sgpp::base::GridStorage* storage)
+    : storage(storage) {}
 
-UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary() {
-}
+UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary() {}
 
-void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result, size_t dim) {
+void UpdPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& alpha,
+                                                     sgpp::base::DataVector& result, size_t dim) {
   // Bounding Box handling
-  SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
-  float_t q = boundingBox->getIntervalWidth(dim);
-  float_t Qqout = 1.0 / q;
+  sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+  double q = boundingBox->getIntervalWidth(dim);
+  double Qqout = 1.0 / q;
 
   // init the coefficients of the ansatz functions with boundary
   result.setAll(0.0);
 
   if (q != 1.0) {
     // traverse all basis function by sequence number
-    for (size_t i = 0; i < storage->size(); i++) {
-      SGPP::base::GridStorage::index_type::level_type level;
-      SGPP::base::GridStorage::index_type::index_type index;
+    for (size_t i = 0; i < storage->getSize(); i++) {
+      sgpp::base::GridStorage::index_type::level_type level;
+      sgpp::base::GridStorage::index_type::index_type index;
       (*storage)[i]->get(dim, level, index);
 
       if (level == 0) {
         // up
         if (index == 1) {
-          SGPP::base::GridIndex index_zero = *(*storage)[i];
+          sgpp::base::GridIndex index_zero = *(*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -50,15 +48,15 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
     }
   } else {
     // traverse all basis function by sequence number
-    for (size_t i = 0; i < storage->size(); i++) {
-      SGPP::base::GridStorage::index_type::level_type level;
-      SGPP::base::GridStorage::index_type::index_type index;
+    for (size_t i = 0; i < storage->getSize(); i++) {
+      sgpp::base::GridStorage::index_type::level_type level;
+      sgpp::base::GridStorage::index_type::index_type index;
       (*storage)[i]->get(dim, level, index);
 
       if (level == 0) {
         // up
         if (index == 1) {
-          SGPP::base::GridIndex index_zero = *(*storage)[i];
+          sgpp::base::GridIndex index_zero = *(*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -69,6 +67,5 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp

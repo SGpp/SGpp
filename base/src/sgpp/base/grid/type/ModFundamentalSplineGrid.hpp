@@ -8,11 +8,12 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,7 +45,7 @@ class ModFundamentalSplineGrid : public Grid {
   /**
    * @return string that identifies the grid type uniquely
    */
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   /**
    * @return fundamental spline basis
@@ -54,7 +55,7 @@ class ModFundamentalSplineGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -62,7 +63,7 @@ class ModFundamentalSplineGrid : public Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   /**
    * Serializes the grid.
@@ -77,13 +78,15 @@ class ModFundamentalSplineGrid : public Grid {
   virtual size_t getDegree();
 
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   /// fundamental spline degree
   size_t degree;
   /// fundamental spline basis
-  const SFundamentalSplineModifiedBase* basis_;
+  std::unique_ptr<SFundamentalSplineModifiedBase> basis_;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODFUNDAMENTALSPLINEGRID_HPP */

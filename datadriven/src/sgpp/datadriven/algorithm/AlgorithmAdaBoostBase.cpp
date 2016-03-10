@@ -12,43 +12,43 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
     size_t gridType, base::HashGenerator::level_t gridLevel,
     base::DataMatrix& trainData, base::DataVector& trainDataClass,
-    size_t NUM, float_t lambda, size_t IMAX, float_t eps, size_t IMAX_final,
-    float_t eps_final, float_t firstLabel, float_t secondLabel,
-    float_t threshold, float_t maxLambda, float_t minLambda, size_t searchNum,
+    size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final,
+    double eps_final, double firstLabel, double secondLabel,
+    double threshold, double maxLambda, double minLambda, size_t searchNum,
     bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda,
-    float_t percentOfAda, size_t mode) {
+    double percentOfAda, size_t mode) {
   if (refine && (gridType != 1 && gridType != 2 && gridType != 3)) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
       "or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
       "Grid, 3 = ModLinear Grid)!");
   }
 
   if (refine && (percentOfAda >= 1.0 || percentOfAda <= 0.0)) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only "
       "number between 0 and 1 is the supported percent to Adaptive!");
   }
 
   if (refineMode != 1 && refineMode != 2) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
      "or 2 are supported refine mode(1 : use grid point number, 2: use grid "
      "point percentage)!");
   }
 
-  base::GridStorage* gridStorage = SparseGrid.getStorage();
+  base::GridStorage* gridStorage = &SparseGrid.getStorage();
   this->grid = &SparseGrid;
   this->type = gridType;
-  this->gridPoint = gridStorage->size();
+  this->gridPoint = gridStorage->getSize();
   this->level = static_cast<base::HashGenerator::level_t>(gridLevel);
   this->lamb = lambda;
   this->data = &trainData;
   this->classes = &trainDataClass;
   this->numData = trainData.getNrows();
-  this->dim = gridStorage->dim();
+  this->dim = gridStorage->getDimension();
   this->numBaseLearners = NUM;
   this->imax = IMAX;
   this->epsilon = eps;
@@ -61,10 +61,12 @@ AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
   this->lambSteps = searchNum;
 
   if (searchNum == 1)
-    this->lambStepsize = (log((float_t)maxLambda) - log((float_t)minLambda))/2;
+    this->lambStepsize = (log(static_cast<double>(maxLambda)) -
+        log(static_cast<double>(minLambda)))/2;
   else
-    this->lambStepsize = (log((float_t)maxLambda) - log((float_t)minLambda)) /
-                           ((float_t)searchNum - 1);
+    this->lambStepsize = (log(static_cast<double>(maxLambda)) -
+        log(static_cast<double>(minLambda))) /
+                           (static_cast<double>(searchNum) - 1);
 
   this->actualBaseLearners = 0;
   this->refinement = refine;
@@ -86,8 +88,8 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
-  weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(*this->grid);
+  weight.setAll(1.0 / static_cast<double>(this->numData));
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -114,14 +116,14 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
     if (this->maxGridPoint->get(count) < this->gridPoint)
-      this->maxGridPoint->set(count, (float_t)this->gridPoint);
+      this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
       if (count == 0)
-        this->sumGridPoint->set(count, (float_t)gridPoint);
+        this->sumGridPoint->set(count, static_cast<double>(gridPoint));
       else
         this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) +
-          (float_t)gridPoint);
+                                static_cast<double>(gridPoint));
     }
 
     alpha_train.setAll(0.0);
@@ -149,7 +151,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     for (size_t i = 0; i < this->numData; i++) {
       base::DataVector p_train_private(this->dim);
       this->data->getRow(i, p_train_private);
-      float_t value_train = opEval->eval(alpha_train, p_train_private);
+      double value_train = opEval->eval(alpha_train, p_train_private);
       newclasses.set(i, hValue(value_train));
     }
 
@@ -168,9 +170,9 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
 
     // find the optimal lambda to minimize the weighted error
     if (this->lambSteps > 0 && count > 0) {
-      float_t cur_lambda;
-      float_t weighterror;
-      float_t minWeightError = weightError.get(count);
+      double cur_lambda;
+      double weighterror;
+      double minWeightError = weightError.get(count);
 
       for (size_t it = 0; it < this->lambSteps; it++) {
         std::cout << std::endl;
@@ -178,13 +180,13 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
                   this->actualBaseLearners << "th weak learner." << std::endl;
         std::cout << std::endl;
         alpha_train.setAll(0.0);
-        cur_lambda = exp(this->lambLogMax - (float_t)it * this->lambStepsize);
+        cur_lambda = exp(this->lambLogMax - static_cast<double>(it) * this->lambStepsize);
 
         alphaSolver(cur_lambda, weight, alpha_train, true);
 
         for (size_t i = 0; i < this->numData; i++) {
           this->data->getRow(i, p_train);
-          float_t value_seach = opEval->eval(alpha_train, p_train);
+          double value_seach = opEval->eval(alpha_train, p_train);
           newclasses.set(i, hValue(value_seach));
         }
 
@@ -227,7 +229,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     }
 
     // calculate the weight of this weak classif
-    float_t hypoweight;
+    double hypoweight;
 
     if (weightError.get(count) == 0) {
       hypoweight = log(1e+10);
@@ -245,7 +247,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     for (size_t i = 0; i < numData; i++) {
       base::DataVector p_train_private(this->dim);
       this->data->getRow(i, p_train_private);
-      float_t value_train = opEval->eval(alpha_learn, p_train_private);
+      double value_train = opEval->eval(alpha_learn, p_train_private);
 
       // when there is only one baselearner actually, we do as following,
       // just use normal classify to get the value
@@ -265,7 +267,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     for (size_t i = 0; i < testData.getNrows(); i++) {
       base::DataVector p_test_private(this->dim);
       testData.getRow(i, p_test_private);
-      float_t value_test = opEval->eval(alpha_learn, p_test_private);
+      double value_test = opEval->eval(alpha_learn, p_test_private);
 
       // when there is only one baselearner actually, we do as following,
       // just use normal classify to get the value
@@ -279,7 +281,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
                                count - 1) + hypoweight * hValue(value_test));
     }
 
-    float_t helper;
+    double helper;
 
     for (size_t i = 0; i < this->numData; i++) {
       // helper = weight.get(i)*exp(-hypoWeight.get(count) * newclasses.get(i)*
@@ -294,7 +296,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
 
     // normalization constant, this expression equals to normalizer = 2 *
     //  sqrt((weightError.get(count)) * (1.0 - weightError.get(count)));
-    float_t normalizer = tmpweight.sum();
+    double normalizer = tmpweight.sum();
 
     // get new weights vector
     // base::DataVector tmpweighthelp(this->numData);
@@ -310,42 +312,37 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      base::GridGenerator* gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
-      delete gridGen;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
-  weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(
-                                        *this->grid);
+  weight.setAll(1.0 / static_cast<double>(this->numData));
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -366,14 +363,14 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
     if (this->maxGridPoint->get(count) < this->gridPoint)
-      this->maxGridPoint->set(count, (float_t)this->gridPoint);
+      this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
       if (count == 0)
-        this->sumGridPoint->set(count, (float_t)gridPoint);
+        this->sumGridPoint->set(count, static_cast<double>(gridPoint));
       else
         this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) +
-          (float_t)gridPoint);
+                                static_cast<double>(gridPoint));
     }
 
     alpha_train.setAll(0.0);
@@ -403,8 +400,8 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     for (size_t i = 0; i < numData; i++) {
       base::DataVector p_train_private(this->dim);
       this->data->getRow(i, p_train_private);
-      float_t value_train = opEval->eval(alpha_learn, p_train_private);
-      float_t helper = weight.get(i) * exp(-this->classes->get(i)*value_train);
+      double value_train = opEval->eval(alpha_learn, p_train_private);
+      double helper = weight.get(i) * exp(-this->classes->get(i)*value_train);
       tmpweight.set(i, helper);
 
       // when there is only one baselearner actually, we do as following,
@@ -422,7 +419,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
 
     // normalize weight
     // update the weight
-    float_t normalizer = tmpweight.sum();
+    double normalizer = tmpweight.sum();
     tmpweight.mult(1.0 / normalizer);
     weight = tmpweight;
 
@@ -432,7 +429,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     for (size_t i = 0; i < testData.getNrows(); i++) {
       base::DataVector p_test_private(this->dim);
       testData.getRow(i, p_test_private);
-      float_t value_test = opEval->eval(alpha_learn, p_test_private);
+      double value_test = opEval->eval(alpha_learn, p_test_private);
 
       // when there is only one baselearner actually, we do as following,
       // just use normal classify to get the value
@@ -449,33 +446,29 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      base::GridGenerator* gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
-      delete gridGen;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
@@ -483,13 +476,13 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     base::DataMatrix& algorithmValueTest, std::string lossFucType) {
   if (lossFucType != "linear" && lossFucType != "square"
       && lossFucType != "exponential") {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : "
       "An unknown loss function type was specified!");
   }
 
   base::DataVector weight(this->numData);
-  weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(*this->grid);
+  weight.setAll(1.0 / static_cast<double>(this->numData));
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -504,8 +497,8 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
   base::DataVector value_train(this->numData);
   // to store the prediction testing values
   base::DataVector value_test(testData.getNrows());
-  float_t maxloss;
-  float_t meanloss;
+  double maxloss;
+  double meanloss;
   base::DataVector beta(this->numBaseLearners);  // [0,1]
   base::DataVector logBetaSumR(this->numBaseLearners);  // [0,1]
 
@@ -522,14 +515,14 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
     if (this->maxGridPoint->get(count) < this->gridPoint)
-      this->maxGridPoint->set(count, (float_t)this->gridPoint);
+      this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
       if (count == 0)
-        this->sumGridPoint->set(count, (float_t)gridPoint);
+        this->sumGridPoint->set(count, static_cast<double>(gridPoint));
       else
         this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) +
-                               (float_t)gridPoint);
+                                static_cast<double>(gridPoint));
     }
 
     alpha_train.setAll(0.0);
@@ -580,7 +573,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
       for (size_t i = 0; i < numData; i++)
         lossFuc.set(i, 1 - exp(loss.get(i)));
     } else {
-      throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 "
+      throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 "
         ": An unknown loss function type was specified!");
     }
 
@@ -597,7 +590,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     beta.set(count, meanloss / (1 - meanloss));
 
     base::DataVector TrValueHelper(this->numData);
-    float_t loghelp = log(1 / beta.get(count));
+    double loghelp = log(1 / beta.get(count));
 
     if (count == 0) {
       logBetaSumR.set(count, loghelp);
@@ -620,7 +613,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     tmpweight.componentwise_mult(weight);
     // normalize weight
     // update the weight
-    float_t normalizer = tmpweight.sum();
+    double normalizer = tmpweight.sum();
     tmpweight.mult(1.0 / normalizer);
     weight = tmpweight;
 
@@ -649,53 +642,48 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      base::GridGenerator* gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
-      delete gridGen;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
-    base::DataMatrix& algorithmValueTest, float_t Tvalue,
+    base::DataMatrix& algorithmValueTest, double Tvalue,
     std::string powerType) {
   if (Tvalue >= 1 || Tvalue <= 0) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
       "the Tvalue must lie between 0 and 1!");
   }
 
   if (powerType != "linear" && powerType != "square" && powerType != "cubic") {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
       "An unknown power type was specified!");
   }
 
   base::DataVector weight(this->numData);
-  weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(
-                                        *this->grid);
+  weight.setAll(1.0 / static_cast<double>(this->numData));
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -711,7 +699,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
 
   base::DataVector beta(this->numBaseLearners);
   base::DataVector logBetaSumR(this->numBaseLearners);
-  float_t errorRate;
+  double errorRate;
 
   for (size_t count = 0; count < this->numBaseLearners; count++) {
     (this->actualBaseLearners)++;
@@ -726,14 +714,14 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
     if (this->maxGridPoint->get(count) < this->gridPoint)
-      this->maxGridPoint->set(count, (float_t)this->gridPoint);
+      this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
       if (count == 0)
-        this->sumGridPoint->set(count, (float_t)gridPoint);
+        this->sumGridPoint->set(count, static_cast<double>(gridPoint));
       else
         this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) +
-                               (float_t)gridPoint);
+                                static_cast<double>(gridPoint));
     }
 
     alpha_train.setAll(0.0);
@@ -779,11 +767,11 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     else if (powerType == "cubic")
       beta.set(count, errorRate * errorRate * errorRate);
     else
-      throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT "
+      throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT "
         ": An unknown power type was specified!");
 
     base::DataVector TrValueHelper(this->numData);
-    float_t loghelp = log(1 / beta.get(count));
+    double loghelp = log(1 / beta.get(count));
 
     if (count == 0) {
       logBetaSumR.set(count, loghelp);
@@ -809,7 +797,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
 
     // normalize weight
     // update the weight
-    float_t normalizer = tmpweight.sum();
+    double normalizer = tmpweight.sum();
     tmpweight.mult(1.0 / normalizer);
     weight = tmpweight;
 
@@ -838,33 +826,29 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      base::GridGenerator* gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
-      delete gridGen;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::eval(base::DataMatrix& testData,
@@ -886,7 +870,7 @@ void AlgorithmAdaBoostBase::eval(base::DataMatrix& testData,
   } else if (this->boostMode == 2) {
     doRealAdaBoost(weightsMatrix, testData, algorithmValueTrain, algorithmValueTest);
   } else {
-    throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for "
+    throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for "
       "the boost mode(1 = Discrete Adaboost, 2 = Real Adaboost)!");
   }
 }
@@ -910,8 +894,8 @@ void AlgorithmAdaBoostBase::classif(base::DataMatrix& testData,
 }
 
 void AlgorithmAdaBoostBase::getAccuracy(base::DataMatrix& testData,
-                                        base::DataVector& testDataClass, float_t* accuracy_train,
-                                        float_t* accuracy_test) {
+                                        base::DataVector& testDataClass, double* accuracy_train,
+                                        double* accuracy_test) {
   /* get the accuracy */
   size_t right_test = 0;
   size_t right_train = 0;
@@ -928,7 +912,7 @@ void AlgorithmAdaBoostBase::getAccuracy(base::DataMatrix& testData,
       right_train = right_train + 1;
   }
 
-  *accuracy_train = float_t(right_train) / float_t(this->numData);
+  *accuracy_train = static_cast<double>(right_train) / static_cast<double>(this->numData);
 
   // for testing data
   for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -936,13 +920,13 @@ void AlgorithmAdaBoostBase::getAccuracy(base::DataMatrix& testData,
       right_test = right_test + 1;
   }
 
-  *accuracy_test = float_t(right_test) / float_t(classTest.getSize());
+  *accuracy_test = static_cast<double>(right_test) / static_cast<double>(classTest.getSize());
 }
 
 void AlgorithmAdaBoostBase::getROC(base::DataMatrix& validationData,
-                                   base::DataVector& validationDataClass, float_t* acc,
-                                   float_t* sensitivity, float_t* specificity, float_t* precision,
-                                   float_t* recall, float_t* fOneScore) {
+                                   base::DataVector& validationDataClass, double* acc,
+                                   double* sensitivity, double* specificity, double* precision,
+                                   double* recall, double* fOneScore) {
   size_t truePos = 0;
   size_t predictPos = 0;
   size_t trueNeg = 0;
@@ -979,10 +963,10 @@ void AlgorithmAdaBoostBase::getROC(base::DataMatrix& validationData,
       trueNeg += 1;
   }
 
-  *acc = float_t(truePos + trueNeg) / float_t(classValidation.getSize());
-  *sensitivity = float_t(truePos) / float_t(actualPos);
-  *specificity = float_t(trueNeg) / float_t(actualNeg);
-  *precision = float_t(truePos) / float_t(predictPos);
+  *acc = static_cast<double>(truePos + trueNeg) / static_cast<double>(classValidation.getSize());
+  *sensitivity = static_cast<double>(truePos) / static_cast<double>(actualPos);
+  *specificity = static_cast<double>(trueNeg) / static_cast<double>(actualNeg);
+  *precision = static_cast<double>(truePos) / static_cast<double>(predictPos);
   *recall = *sensitivity;
   *fOneScore = 2 * (*precision) * (*recall) / ((*precision) + (*recall));
 }
@@ -990,8 +974,8 @@ void AlgorithmAdaBoostBase::getROC(base::DataMatrix& validationData,
 void AlgorithmAdaBoostBase::getAccuracyBL(base::DataMatrix& testData,
     base::DataVector& testDataClass,
     base::DataMatrix& algorithmValueTrain,
-    base::DataMatrix& algorithmValueTest, float_t* accuracy_train,
-    float_t* accuracy_test, size_t yourBaseLearner) {
+    base::DataMatrix& algorithmValueTest, double* accuracy_train,
+    double* accuracy_test, size_t yourBaseLearner) {
   size_t right_test = 0;
   size_t right_train = 0;
 
@@ -1002,7 +986,7 @@ void AlgorithmAdaBoostBase::getAccuracyBL(base::DataMatrix& testData,
       right_train = right_train + 1;
   }
 
-  *accuracy_train = float_t(right_train) / float_t(this->numData);
+  *accuracy_train = static_cast<double>(right_train) / static_cast<double>(this->numData);
 
   // for testing data
   for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -1011,7 +995,7 @@ void AlgorithmAdaBoostBase::getAccuracyBL(base::DataMatrix& testData,
       right_test = right_test + 1;
   }
 
-  *accuracy_test = float_t(right_test) / float_t(testDataClass.getSize());
+  *accuracy_test = static_cast<double>(right_test) / static_cast<double>(testDataClass.getSize());
 }
 
 void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
@@ -1019,7 +1003,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
   bool final_ada = false;
 
   for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++) {
-    base::GridGenerator* myGenerator = this->grid->createGridGenerator();
+    base::GridGenerator& myGenerator = this->grid->getGenerator();
     size_t refineNumber;
 
     if (this->refineMode == 1) {
@@ -1028,25 +1012,22 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
       else
         refineNumber = this->numOfAda;
     } else if (this->refineMode == 2) {
-      refineNumber = (size_t)(this->perOfAda * (float_t)(this->grid->getSize()));
+      refineNumber = (size_t)(this->perOfAda * static_cast<double>(this->grid->getSize()));
 
       // force to refine at least one point
       if (refineNumber == 0)
         refineNumber = 1;
     } else {
       // should not happen because this exception should have been thrown some lines upwards!
-      throw new base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported "
+      throw base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported "
         "refine mode(1 : use grid point number, 2: use grid point percentage)!");
     }
 
-    base::SurplusRefinementFunctor* myRefineFunc = new
-    base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
-    myGenerator->refine(myRefineFunc);
-    delete myRefineFunc;
-    delete myGenerator;
+    base::SurplusRefinementFunctor myRefineFunc(alpha_ada, refineNumber, 0.0);
+    myGenerator.refine(myRefineFunc);
 
-    base::GridStorage* gridStorage_ada = this->grid->getStorage();
-    size_t gridPts = gridStorage_ada->size();
+    base::GridStorage* gridStorage_ada = &this->grid->getStorage();
+    size_t gridPts = gridStorage_ada->getSize();
 
     std::cout << std::endl;
     std::cout << "Refinement time step: " << adaptiveStep << ", new grid size: " <<
@@ -1056,17 +1037,18 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
       final_ada = true;
 
       if (curBaseLearner == 1) {
-        this->maxGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
-        this->sumGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
+        this->maxGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
+        this->sumGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
       } else {
         if (gridPts > this->maxGridPoint->get(curBaseLearner - 2))
-          this->maxGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
+          this->maxGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
         else
           this->maxGridPoint->set(curBaseLearner - 1,
                                   this->maxGridPoint->get(curBaseLearner - 2));
 
         this->sumGridPoint->set(curBaseLearner - 1,
-                                this->sumGridPoint->get(curBaseLearner - 2) + (float_t)gridPts);
+                                this->sumGridPoint->get(curBaseLearner - 2) +
+                                static_cast<double>(gridPts));
       }
     }
 
@@ -1078,7 +1060,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
   }
 }
 
-float_t AlgorithmAdaBoostBase::hValue(float_t realValue) {
+double AlgorithmAdaBoostBase::hValue(double realValue) {
   if (realValue >= this->threshold) {
     if (labelOne > labelTwo)
       return labelOne;
@@ -1098,7 +1080,7 @@ size_t AlgorithmAdaBoostBase::getActualBL() {
 
 size_t AlgorithmAdaBoostBase::getMeanGridPoint(size_t baselearner) {
   size_t mean = (size_t)(this->sumGridPoint->get(baselearner - 1) /
-                         (float_t)baselearner);
+      static_cast<double>(baselearner));
   return mean;
 }
 
@@ -1112,4 +1094,4 @@ size_t AlgorithmAdaBoostBase::getSumGridPoint(size_t baselearner) {
   return sum;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

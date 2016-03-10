@@ -1,17 +1,15 @@
 /**
-@page module_base Module SGPP::base
+@page module_base Module sgpp::base
 
-- the main SGPP::base::Grid class
+- the main sgpp::base::Grid class
 - different types of sparse grids (with or without grid points on the boundary etc.)
-- different types of basis function (piecewise linear/polynomial, b-splines, pre-wavelets, ...)
+- different types of basis functions (piecewise linear/polynomial, B-splines, pre-wavelets, …)
 - the underlying data structures
-- data types (SGPP::base::DataVector and SGPP::base::DataMatrix)
+- data types (sgpp::base::DataVector and sgpp::base::DataMatrix)
 - basic operations such as hierarchization and dehierarchization
-- evaluation, evaluation of multiple data points
+- evaluation and evaluation at multiple data points
 - adaptive refinement
 - refinement specified via functors
 - quadrature
 - basic OpenMP support
-
-
-**/
+*/

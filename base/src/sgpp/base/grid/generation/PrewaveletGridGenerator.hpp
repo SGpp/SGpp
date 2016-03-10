@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -20,9 +20,9 @@ namespace base {
  */
 class PrewaveletGridGenerator: public GridGenerator {
  protected:
-  /// pointer to the storage object
-  GridStorage* storage;
-  GridStorage* shadowstorage;
+  /// reference to the storage object
+  GridStorage& storage;
+  GridStorage& shadowstorage;
   typedef GridStorage::index_type index_type;
   typedef index_type::index_type index_t;
   typedef index_type::level_type level_t;
@@ -64,12 +64,12 @@ class PrewaveletGridGenerator: public GridGenerator {
    * An adaptive grid with prewavelet ansatz functions requires for operations
    * using the up-down algorithm shadow points. These shadow points a needed just
    * for data transport, thus they do not have an influence on the final function.
-   * Please refer to SGPP::pde::UpDownOneOpDimWithShadow for more information.
+   * Please refer to sgpp::pde::UpDownOneOpDimWithShadow for more information.
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param shadowstorage shadow points (see detailed description)
    */
-  PrewaveletGridGenerator(GridStorage* storage, GridStorage* shadowstorage);
+  PrewaveletGridGenerator(GridStorage& storage, GridStorage& shadowstorage);
 
   /**
    * Destructor
@@ -79,19 +79,19 @@ class PrewaveletGridGenerator: public GridGenerator {
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
-  void refine(RefinementFunctor* func) override;
+  void refine(RefinementFunctor& func) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
                          size_t numFirstOnly) override;
   size_t getNumberOfRemovablePoints() override;
 
-  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PREWAVELETGRIDGENERATOR_HPP */

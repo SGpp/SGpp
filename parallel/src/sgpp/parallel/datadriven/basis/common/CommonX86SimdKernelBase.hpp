@@ -19,5 +19,4 @@
 #undef __AVX__
 #endif
 
-
-#endif // KERNELMACROS_HPP
+#endif  // KERNELMACROS_HPP

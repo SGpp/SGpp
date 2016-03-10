@@ -12,7 +12,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -21,9 +21,9 @@ class OperationDensityOCL: public base::OperationMatrix {
   OperationDensityOCL()  {
   }
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
-  virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) = 0;
+  virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b) = 0;
 };
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

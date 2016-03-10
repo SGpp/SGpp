@@ -64,7 +64,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
 
-      if not config.CheckLib('OpenCL', language="c++", autoadd=0):
+      if not config.CheckLib('OpenCL', language="c++", autoadd=1):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
         
@@ -174,23 +174,36 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # compiler setup should be always after checking headers and flags, as they can make the checks invalid
     # e.g. by setting "-Werror"
 
+    # TODO check
     if env['PLATFORM'] not in ['cygwin', 'win32']:
         if env['OPT'] == True:
-           env.Append(CPPFLAGS=['-O3'])
+           env.Append(CPPFLAGS=['-O3', '-g'])
         else:
            env.Append(CPPFLAGS=['-g', '-O0'])
-
-    if not env['USE_DOUBLE_PRECISION']:
-       env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
     # make settings case-insensitive
     env['COMPILER'] = env['COMPILER'].lower()
     env['ARCH'] = env['ARCH'].lower()
 
-    if env['COMPILER'] == 'gnu':
-        gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
-        gcc_ver = env._get_major_minor_revision(gcc_ver_str)
-        print "Using default gcc " + gcc_ver_str
+    if env['COMPILER'] == 'gnu' or env['COMPILER'] == 'openmpi' or env['COMPILER'] == 'mpich':
+        if env['COMPILER'] == 'openmpi':
+            env['CC'] = ('mpicc.openmpi')
+            env['LINK'] = ('mpic++.openmpi')
+            env['CXX'] = ('mpic++.openmpi')
+            print "Using openmpi"
+        elif env['COMPILER'] == 'mpich':
+            env['CC'] = ('mpicc.mpich')
+            env['LINK'] = ('mpic++.mpich')
+            env['CXX'] = ('mpic++.mpich')
+            print "Using mpich"
+        else:  # gnu
+            gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
+            gcc_ver = env._get_major_minor_revision(gcc_ver_str)
+            print "Using default gcc " + gcc_ver_str
+            
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
 
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
@@ -218,15 +231,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
-
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.Append(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -257,13 +261,16 @@ Please install the corresponding package, e.g. using command on Ubuntu
             # also use "lib" prefix on MinGW for consistency with Linux
             # (default is no prefix)
             env['SHLIBPREFIX'] = 'lib'
-            
     elif env['COMPILER'] == 'clang':
         print "Using clang"
 
         env['CC'] = ('clang')
         env['LINK'] = ('clang++')
         env['CXX'] = ('clang++')
+
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
 
         allWarnings = "-Wall -Wextra".split(" ")
 
@@ -277,15 +284,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
-
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.Append(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -308,32 +306,33 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
             sys.exit(1)
 
-    elif env['COMPILER'] == 'intel':
-        print "Using icc"
+    elif env['COMPILER'] == 'intel' or env['COMPILER'] == 'intel.mpi':
         env.AppendUnique(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing',
                                '-ip', '-ipo', '-funroll-loops',
                                '-ansi-alias', '-fp-speculation=safe',
                                '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
+        if env['COMPILER'] == 'intel.mpi':
+            env['CC'] = ('mpiicc')
+            env['LINK'] = ('mpiicpc')
+            env['CXX'] = ('mpiicpc')
+            print "Using intel mpi"
+        else:
+            env['CC'] = ('icc')
+            env['LINK'] = ('icpc')
+            env['CXX'] = ('icpc')
+            print "Using icc"
+        
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
 
-        env['CC'] = ('icc')
-        env['LINK'] = ('icpc')
-        env['CXX'] = ('icpc')
 
         env.AppendUnique(CPPFLAGS=['-openmp'])
         env.AppendUnique(LINKFLAGS=['-openmp'])
 
         if env['USE_STATICLIB']:
             env.AppendUnique(CPPFLAGS=['-D_USE_STATICLIB'])
-
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.AppendUnique(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.AppendUnique(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -358,7 +357,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang, and intel"
+        print "Available configurations are: gnu, clang, intel, openmpi, mpich or intel.mpi"
         sys.exit(1)
 
     # special treatment for different platforms
@@ -395,16 +394,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
           (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
-
-    # check for mpic++
-    if not env['CXX']=='mpic++':
-        env['SG_PARALLEL'] = 0
-        print 'Hint: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
-    elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = '1'
-        print 'Parallel module ("SG_PARALLEL") enabled'
-    else:
-        print 'Parallel module ("SG_PARALLEL") disabled'
 
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line

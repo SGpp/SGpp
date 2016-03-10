@@ -12,8 +12,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -26,18 +27,18 @@ namespace solver {
  * A: mass matrix
  * L: space discretization (L-Operator)
  */
-class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
+class OperationParabolicPDESolverSystem : public sgpp::base::OperationMatrix {
  protected:
   /// Pointer to the alphas (ansatzfunctions' coefficients)
-  SGPP::base::DataVector* alpha_complete;
+  sgpp::base::DataVector* alpha_complete;
   /// Pointer to the alphas from the last timestep, needed when using variable timestep sizes
-  SGPP::base::DataVector* alpha_complete_old;
+  sgpp::base::DataVector* alpha_complete_old;
   /// Pointer to temporary alphas, needed when using variable timestep sizes
-  SGPP::base::DataVector* alpha_complete_tmp;
+  sgpp::base::DataVector* alpha_complete_tmp;
   /// Pointer to the grid from the last iteration
-  SGPP::base::GridStorage* oldGridStorage;
+  sgpp::base::GridStorage* oldGridStorage;
   /// Pointer to the grid from the last aborted iteration
-  SGPP::base::GridStorage* secondGridStorage;
+  sgpp::base::GridStorage* secondGridStorage;
 
   /**
    *  specifies in which solver this matrix is used, valid values are:
@@ -47,13 +48,13 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
    */
   std::string tOperationMode;
   /// the size of one timestep used in the ODE Solver
-  float_t TimestepSize;
+  double TimestepSize;
   /// the size of the last timestep
-  float_t TimestepSize_old;
+  double TimestepSize_old;
 
-  SGPP::base::DataVector* rhs;
+  sgpp::base::DataVector* rhs;
   /// Pointer to the grid object
-  SGPP::base::Grid* BoundGrid;
+  sgpp::base::Grid* BoundGrid;
   /// Stores number of average gridpoints, inner grid
   size_t numSumGridpointsInner;
   /// Stores number of average gridpoints, complete grid
@@ -76,18 +77,18 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   /**
    * Multiplicates a vector with the matrix
    *
-   * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
+   * @param alpha sgpp::base::DataVector that contains the ansatzfunctions' coefficients
+   * @param result sgpp::base::DataVector into which the result of the space discretization
+   * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result) = 0;
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) = 0;
 
   /**
    * generates the right hand side of the system
    *
    * @return returns the rhs
    */
-  virtual SGPP::base::DataVector* generateRHS() = 0;
+  virtual sgpp::base::DataVector* generateRHS() = 0;
 
   /**
    * performs some action that might be needed after a timestep has be finished in the ODE
@@ -96,7 +97,6 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   virtual void finishTimestep() = 0;
 
   virtual void coarsenAndRefine(bool isLastTimestep = false) = 0;
-
 
   /**
    * Implements some start jobs of every timestep, e.g.discounting boundaries
@@ -108,7 +108,7 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
    *
    * @return returns a pointer to the underlying grid object
    */
-  SGPP::base::Grid* getGrid();
+  sgpp::base::Grid* getGrid();
 
   /**
    * gets a pointer to the sparse grids coefficients used in the CG method to solve
@@ -117,14 +117,14 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
    *
    * @return alpha vector for CG method
    */
-  virtual SGPP::base::DataVector* getGridCoefficientsForCG() = 0;
+  virtual sgpp::base::DataVector* getGridCoefficientsForCG() = 0;
 
   /**
    * gets a pointer to the sparse grids coefficients with evtl. boundaries
    *
    * @return alpha vector of complete grid
    */
-  SGPP::base::DataVector* getGridCoefficients();
+  sgpp::base::DataVector* getGridCoefficients();
 
   /**
    * defines the used ODE Solver for this instance, this is important because
@@ -161,7 +161,7 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
    *
    * @param newTimestepSize the size of the next timestep
    */
-  void setTimestepSize(float_t newTimestepSize);
+  void setTimestepSize(double newTimestepSize);
 
   /**
    * aborts the current timestep execution
@@ -174,20 +174,21 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   void saveAlpha();
 
   /**
-   * stores the values of the (dehierarchized) grid in the SGPP::base::DataVector Values used by time step size control methods
+   * stores the values of the (dehierarchized) grid in the sgpp::base::DataVector Values used by
+   * time step size control methods
    *
-   * @param Values SGPP::base::DataVector in which the values will be stored
+   * @param Values sgpp::base::DataVector in which the values will be stored
    */
-  void getGridCoefficientsForSC(SGPP::base::DataVector& Values);
+  void getGridCoefficientsForSC(sgpp::base::DataVector& Values);
 
-  SGPP::base::GridStorage* getGridStorage();
+  sgpp::base::GridStorage* getGridStorage();
 
-  SGPP::base::GridStorage* getOldGridStorage();
+  sgpp::base::GridStorage* getOldGridStorage();
 
-  SGPP::base::GridStorage* getSecondGridStorage();
+  sgpp::base::GridStorage* getSecondGridStorage();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEM_HPP */

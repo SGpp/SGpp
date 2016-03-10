@@ -8,21 +8,15 @@
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>
 
-using namespace SGPP::base;
-
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
-NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension,
-    std::uint64_t seed) :
-  SampleGenerator(dimension, seed),
-  uniformRealDist(0, 1) {
-}
+NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension, std::uint64_t seed)
+    : SampleGenerator(dimension, seed), uniformRealDist(0, 1) {}
 
-NaiveSampleGenerator::~NaiveSampleGenerator() {
-}
+NaiveSampleGenerator::~NaiveSampleGenerator() {}
 
-void NaiveSampleGenerator::getSample(DataVector& sample) {
+void NaiveSampleGenerator::getSample(base::DataVector& sample) {
   // generate random sample with dimensionality corresponding to the
   // size of the given datavector (in 0 to 1)
   for (size_t i = 0; i < sample.getSize(); i++) {
@@ -30,5 +24,5 @@ void NaiveSampleGenerator::getSample(DataVector& sample) {
   }
 }
 
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp

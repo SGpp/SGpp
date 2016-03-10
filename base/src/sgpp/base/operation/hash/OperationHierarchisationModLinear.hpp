@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,7 +26,7 @@ class OperationHierarchisationModLinear : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationHierarchisationModLinear(GridStorage* storage) :
+  explicit OperationHierarchisationModLinear(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -39,10 +39,10 @@ class OperationHierarchisationModLinear : public OperationHierarchisation {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONMODLINEAR_HPP */

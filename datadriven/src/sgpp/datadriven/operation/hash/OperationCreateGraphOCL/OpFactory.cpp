@@ -10,7 +10,7 @@
 #include <string>
 #include "OpFactory.hpp"
 #include "KernelCreateGraph.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
@@ -19,8 +19,8 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
     std::cout << "Using configuration file " << opencl_conf << std::endl;
-    SGPP::base::OCLOperationConfiguration *parameters =
-        new SGPP::base::OCLOperationConfiguration(opencl_conf);
+    sgpp::base::OCLOperationConfiguration *parameters =
+        new sgpp::base::OCLOperationConfiguration(opencl_conf);
     manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
     parameters->serialize("MyOCLConfDebug.cfg");
     if (parameters->contains("INTERNAL_PRECISION") == false) {
@@ -71,8 +71,8 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
     std::cout << "Using configuration file " << opencl_conf << std::endl;
-    SGPP::base::OCLOperationConfiguration *parameters =
-        new SGPP::base::OCLOperationConfiguration(opencl_conf);
+    sgpp::base::OCLOperationConfiguration *parameters =
+        new sgpp::base::OCLOperationConfiguration(opencl_conf);
     manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
     parameters->serialize("MyOCLConfDebug.cfg");
     if (parameters->contains("INTERNAL_PRECISION") == false) {
@@ -117,4 +117,4 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
     return NULL;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

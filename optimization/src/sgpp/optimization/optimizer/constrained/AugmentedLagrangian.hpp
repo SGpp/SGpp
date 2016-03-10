@@ -12,7 +12,9 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
-namespace SGPP {
+#include <vector>
+
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -22,13 +24,13 @@ namespace optimizer {
 class AugmentedLagrangian : public ConstrainedOptimizer {
  public:
   /// default point tolerance
-  static constexpr float_t DEFAULT_X_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_X_TOLERANCE = 1e-6;
   /// default constraint tolerance
-  static constexpr float_t DEFAULT_CONSTRAINT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_CONSTRAINT_TOLERANCE = 1e-6;
   /// default penalty start value
-  static constexpr float_t DEFAULT_PENALTY_START_VALUE = 1.0;
+  static constexpr double DEFAULT_PENALTY_START_VALUE = 1.0;
   /// default penalty increase factor
-  static constexpr float_t DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
+  static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
 
   /**
    * Constructor.
@@ -46,20 +48,13 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  AugmentedLagrangian(ScalarFunction& f,
-                      ScalarFunctionGradient& fGradient,
-                      VectorFunction& g,
-                      VectorFunctionGradient& gGradient,
-                      VectorFunction& h,
-                      VectorFunctionGradient& hGradient,
-                      size_t maxItCount = DEFAULT_N,
-                      float_t xTolerance = DEFAULT_X_TOLERANCE,
-                      float_t constraintTolerance =
-                        DEFAULT_CONSTRAINT_TOLERANCE,
-                      float_t penaltyStartValue =
-                        DEFAULT_PENALTY_START_VALUE,
-                      float_t penaltyIncreaseFactor =
-                        DEFAULT_PENALTY_INCREASE_FACTOR);
+  AugmentedLagrangian(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
+                      VectorFunctionGradient& gGradient, VectorFunction& h,
+                      VectorFunctionGradient& hGradient, size_t maxItCount = DEFAULT_N,
+                      double xTolerance = DEFAULT_X_TOLERANCE,
+                      double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                      double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                      double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
 
   /**
    * Destructor.
@@ -97,42 +92,42 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /**
    * @return point tolerance
    */
-  float_t getXTolerance() const;
+  double getXTolerance() const;
 
   /**
    * @param xTolerance point tolerance
    */
-  void setXTolerance(float_t xTolerance);
+  void setXTolerance(double xTolerance);
 
   /**
    * @return constraint tolerance
    */
-  float_t getConstraintTolerance() const;
+  double getConstraintTolerance() const;
 
   /**
    * @param constraintTolerance constraint tolerance
    */
-  void setConstraintTolerance(float_t constraintTolerance);
+  void setConstraintTolerance(double constraintTolerance);
 
   /**
    * @return penalty start value
    */
-  float_t getPenaltyStartValue() const;
+  double getPenaltyStartValue() const;
 
   /**
    * @param penaltyStartValue penalty start value
    */
-  void setPenaltyStartValue(float_t penaltyStartValue);
+  void setPenaltyStartValue(double penaltyStartValue);
 
   /**
    * @return penalty increase factor
    */
-  float_t getPenaltyIncreaseFactor() const;
+  double getPenaltyIncreaseFactor() const;
 
   /**
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  void setPenaltyIncreaseFactor(float_t penaltyIncreaseFactor);
+  void setPenaltyIncreaseFactor(double penaltyIncreaseFactor);
 
   /**
    * @return vector in which the k-th entry indicates the number of
@@ -144,8 +139,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function gradient
@@ -155,19 +149,18 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /// equality constraint function gradient
   VectorFunctionGradient& hGradient;
   /// point tolerance
-  float_t theta;
+  double theta;
   /// constraint tolerance
-  float_t epsilon;
+  double epsilon;
   /// penalty start value
-  float_t mu0;
+  double mu0;
   /// penalty increase factor
-  float_t rhoMuPlus;
+  double rhoMuPlus;
   /// search history (inner iterations)
   std::vector<size_t> kHist;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_AUGMENTEDLAGRANGIAN_HPP */

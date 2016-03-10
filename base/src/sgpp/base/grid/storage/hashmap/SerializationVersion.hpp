@@ -18,7 +18,8 @@
  * Version 6: added PointDistribution to HashGridIndex
  *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
  * Version 7: PointDistribution changed from enum to enum class
+ * Version 8: Add custom boundaryLevel (>= 1) for LinearBoundaryGrid etc.
  */
-#define SERIALIZATION_VERSION 7
+#define SERIALIZATION_VERSION 8
 
 #endif /* SERIALIZATIONVERSION_HPP */

@@ -8,12 +8,13 @@
 #include <mpi.h>
 #endif
 #endif
-#include "OCLPDEKernels.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -26,9 +27,9 @@ extern cl_mem d_ptrResultPinnedBound[NUMDEVS];
 
 extern cl_mem d_ptrParResultBound[NUMDEVS];
 extern cl_mem d_ptrAlphaBound[NUMDEVS];
-extern cl_mem
-d_ptrLevelIndexLevelintconBound[NUMDEVS]; // constant memory buffer holding all three components
-extern cl_mem d_ptrLcl_qBound[NUMDEVS]; // Also holds q_inverse
+extern cl_mem d_ptrLevelIndexLevelintconBound[NUMDEVS];  // constant memory buffer holding all three
+                                                         // components
+extern cl_mem d_ptrLcl_qBound[NUMDEVS];                  // Also holds q_inverse
 
 extern unsigned* offsetBound;
 extern REAL* ptrResultBound;
@@ -39,12 +40,11 @@ extern REAL* ptrLevel_intTBound;
 extern REAL* ptrParResultBound;
 extern REAL* ptrAlphaEndBound;
 extern REAL*
-ptrLevelIndexLevelintBound;  // for the constant memory buffer holding all three components
-extern REAL* ptrLcl_qBound;             // Also holds q_inverse
+    ptrLevelIndexLevelintBound;  // for the constant memory buffer holding all three components
+extern REAL* ptrLcl_qBound;      // Also holds q_inverse
 extern REAL* ptrResultTempBound;
 extern REAL* ptrResultZeroBound;
 extern REAL* ptrResultPinnedBound;
-
 
 extern size_t storageSizeBound;
 extern size_t storageSizePaddedBound;
@@ -71,33 +71,36 @@ extern size_t isFirstTimeLaplaceBound;
 extern size_t isFirstTimeLTwoDotBound;
 extern size_t isFirstTimeLTwoDotLaplaceBound;
 
-/// Returns the string with the OpenCL code for the Reduction kernel for the operators on the boundary grid.
+/// Returns the string with the OpenCL code for the Reduction kernel for the operators on the
+/// boundary grid.
 std::string ReduceBoundKernelStr();
-/// Compiles the OpenCL code for the Reduction kernel for the operators on the boundary grid and saves it in kernel[id]. kernel_src must match the name of the OpenCL function.
+/// Compiles the OpenCL code for the Reduction kernel for the operators on the boundary grid and
+/// saves it in kernel[id]. kernel_src must match the name of the OpenCL function.
 void CompileReduceBound(int id, std::string kernel_src, cl_kernel* kernel);
-/// Returns the string with the OpenCL code for the LTwoDot function for the operators on the boundary grid.
+/// Returns the string with the OpenCL code for the LTwoDot function for the operators on the
+/// boundary grid.
 std::string BoundLTwoDotFunction();
-/// Allocates and initializes the main part of the buffers needed by the OpenCL code for the operators on the boundary grid.
-void SetBuffersBound(REAL* ptrLevel,
-                     REAL* ptrIndex,
-                     REAL* ptrLevel_int,
-                     size_t localStorageSize,
-                     size_t localdim, SGPP::base::GridStorage* storage);
+/// Allocates and initializes the main part of the buffers needed by the OpenCL code for the
+/// operators on the boundary grid.
+void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
+                     size_t localdim, sgpp::base::GridStorage* storage);
 #ifdef USE_MPI
 extern int* MPIOffsetListBound;
 extern int* MPISizeListBound;
-/// Creates partitions of the work load along the j-direction for the operators on the boundary grid.
+/// Creates partitions of the work load along the j-direction for the operators on the boundary
+/// grid.
 void SetUpMPIBound();
-/// Computes the sum of all subresults result on all processes. Then it distributes results for the inner grid back into the complete grid containing the boundary
-void MPI_ShareResultAllReduceBound(SGPP::base::DataVector& result);
+/// Computes the sum of all subresults result on all processes. Then it distributes results for the
+/// inner grid back into the complete grid containing the boundary
+void MPI_ShareResultAllReduceBound(sgpp::base::DataVector& result);
 #endif
 /// Deallocates all data pertaining to the Laplace operator on the boundary grid
 void CleanUpLaplaceBound();
 /// Deallocates all data pertaining to the LTwoDot operator on the boundary grid
 void CleanUpLTwoDotBound();
-/// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the boundary grid
+/// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the boundary
+/// grid
 void CleanUpLTwoDotLaplaceBound();
-
-}
-}
-}
+}  // namespace oclpdekernels
+}  // namespace parallel
+}  // namespace sgpp

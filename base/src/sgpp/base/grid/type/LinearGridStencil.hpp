@@ -8,12 +8,12 @@
 
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
-
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -21,6 +21,8 @@ namespace base {
  */
 class LinearGridStencil : public GridStencil {
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   explicit LinearGridStencil(std::istream& istr);
 
  public:
@@ -43,16 +45,16 @@ class LinearGridStencil : public GridStencil {
    */
   ~LinearGridStencil() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARGRIDSTENCIL_HPP */

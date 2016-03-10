@@ -23,9 +23,9 @@ int main(int argc, char *argv[]) {
   // Loading dataset
   std::string filename = "dataset2_dim2.arff";
   std::cout << "Loading file: " << filename << std::endl;
-  SGPP::datadriven::Dataset data =
-      SGPP::datadriven::ARFFTools::readARFF(filename);
-  SGPP::base::DataMatrix& dataset = data.getData();
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& dataset = data.getData();
   size_t dimensions = dataset.getNcols();
 
   // Create knn graph

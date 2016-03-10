@@ -6,14 +6,13 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
-namespace SGPP {
+#include <cstddef>
+
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -33,16 +32,14 @@ namespace optimization {
 class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
  public:
   /// default adaptivity
-  static constexpr float_t DEFAULT_ADAPTIVITY = 0.85;
+  static constexpr double DEFAULT_ADAPTIVITY = 0.85;
   /// default level of initial regular sparse grid
   static const base::level_t DEFAULT_INITIAL_LEVEL = 3;
   /// default maximal level of grid points
   static const base::level_t DEFAULT_MAX_LEVEL = 20;
 
   /// exponentiation methods
-  enum PowMethod {
-    STD_POW, FAST_POW
-  };
+  enum PowMethod { STD_POW, FAST_POW };
 
   /**
    * Constructor.
@@ -58,14 +55,11 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
    *                      (fastPow is faster than std::pow,
    *                      but only approximative)
    */
-  IterativeGridGeneratorRitterNovak(
-    ScalarFunction& f,
-    base::Grid& grid,
-    size_t N,
-    float_t adaptivity = DEFAULT_ADAPTIVITY,
-    base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
-    base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-    PowMethod powMethod = STD_POW);
+  IterativeGridGeneratorRitterNovak(ScalarFunction& f, base::Grid& grid, size_t N,
+                                    double adaptivity = DEFAULT_ADAPTIVITY,
+                                    base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
+                                    base::level_t maxLevel = DEFAULT_MAX_LEVEL,
+                                    PowMethod powMethod = STD_POW);
 
   /**
    * Destructor.
@@ -82,12 +76,12 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   /**
    * @return            adaptivity between 0 and 1
    */
-  float_t getAdaptivity() const;
+  double getAdaptivity() const;
 
   /**
    * @param adaptivity  adaptivity between 0 and 1
    */
-  void setAdaptivity(float_t adaptivity);
+  void setAdaptivity(double adaptivity);
 
   /**
    * @return              level of initial regular sparse grid
@@ -121,7 +115,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
 
  protected:
   /// adaptivity
-  float_t gamma;
+  double gamma;
   /// level of initial regular sparse grid
   base::level_t initialLevel;
   /// maximal level of grid points
@@ -129,8 +123,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   /// exponentiation method
   PowMethod powMethod;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */

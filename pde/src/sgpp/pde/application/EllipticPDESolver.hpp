@@ -10,8 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -20,8 +19,6 @@ namespace pde {
  *
  */
 class EllipticPDESolver : public PDESolver {
- protected:
-
  public:
   /**
    * Std-Constructor of the solver
@@ -37,18 +34,17 @@ class EllipticPDESolver : public PDESolver {
    * abstract method to solve an elliptic PDE. All solver of elliptic PDEs
    * have to implement this method.
    *
-   * @param alpha the coefficients of the Sparse Gird's basis functions will be in this vector after solving
+   * @param alpha the coefficients of the Sparse Gird's basis functions will be in this vector after
+   * solving
    * @param rhs the right hand side of the SLE
    * @param maxCGIterations the maximum of interation in the CG solver
    * @param epsilonCG the epsilon used in the CG
    * @param verbose enables verbose output during solving
    */
-  virtual void solvePDE(SGPP::base::DataVector& alpha,
-                        SGPP::base::DataVector& rhs, size_t maxCGIterations, float_t epsilonCG,
-                        bool verbose = false) = 0;
+  virtual void solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs,
+                        size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* ELLIPTICPDESOLVER_HPP */

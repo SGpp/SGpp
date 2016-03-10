@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
@@ -25,9 +26,9 @@ int main() {
   std::string filename = "dataset2_dim2.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
-  SGPP::datadriven::Dataset data =
-      SGPP::datadriven::ARFFTools::readARFF(filename);
-  SGPP::base::DataMatrix& dataset = data.getData();
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& dataset = data.getData();
   dimension = dataset.getNcols();
   std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
             << dataset.getNrows() << " datapoints." << std::endl;
@@ -44,22 +45,22 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
   std::cin >> treshold;
   // Create Grid
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dimension);
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(tiefe);
-  size_t gridsize = grid->getStorage()->size();
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(tiefe);
+  size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  SGPP::base::DataVector alpha(gridsize);
-  SGPP::base::DataVector result(gridsize);
+  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector result(gridsize);
 
-  sg::solver::ConjugateGradients *solver = new sg::solver::ConjugateGradients(1000, 0.001);
-  SGPP::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
-      SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
+  sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
+      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
 
   std::cout << "Creating rhs" << std::endl;
-  SGPP::base::DataVector b(gridsize);
+  sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
   for (size_t i = 0; i < 300; i++)
     std::cout << b[i] << " ";
@@ -73,22 +74,20 @@ int main() {
     alpha[i] = alpha[i]*1.0/(max-min);
 
   std::cout << "Starting graph creation..." << std::endl;
-  SGPP::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
-      SGPP::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
+      sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
                                                              "MyOCLConf.cfg");
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
   std::cout << "Starting graph pruning" << std::endl;
-  SGPP::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
-      SGPP::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
+      sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
                                                             treshold, k, "MyOCLConf.cfg");
   operation_prune->prune_graph(graph);
 
-  SGPP::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
   // cleanup
-  delete gridGen;
-  delete grid;
   delete operation_mult;
   delete solver;
 }

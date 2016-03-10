@@ -12,17 +12,16 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-CMAES::CMAES(ScalarFunction& f, size_t maxFcnEvalCount) :
-  UnconstrainedOptimizer(f, maxFcnEvalCount) {
-}
+CMAES::CMAES(ScalarFunction& f, size_t maxFcnEvalCount)
+    : UnconstrainedOptimizer(f, maxFcnEvalCount) {}
 
-CMAES::~CMAES() {
-}
+CMAES::~CMAES() {}
 
 void CMAES::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (CMA-ES)...");
@@ -34,40 +33,33 @@ void CMAES::optimize() {
   xHist.resize(0, d);
   fHist.resize(0);
 
-  const float_t dDbl = static_cast<float_t>(d);
+  const double dDbl = static_cast<double>(d);
 
-  const float_t E =
-    std::sqrt(dDbl) * (1.0 - 1.0 / (4.0 * dDbl) +
-                       1.0 / (21.0 * dDbl * dDbl));
+  const double E = std::sqrt(dDbl) * (1.0 - 1.0 / (4.0 * dDbl) + 1.0 / (21.0 * dDbl * dDbl));
 
   const size_t lambda = 4 + static_cast<size_t>(3.0 * std::log(dDbl));
-  const float_t muPrime = static_cast<float_t>(lambda) / 2.0;
+  const double muPrime = static_cast<double>(lambda) / 2.0;
   const size_t mu = static_cast<size_t>(muPrime);
 
   base::DataVector wPrime(mu);
 
   for (size_t i = 0; i < mu; i++) {
-    wPrime[i] = std::log(muPrime + 0.5) -
-                std::log(static_cast<float_t>(i) + 1.0);
+    wPrime[i] = std::log(muPrime + 0.5) - std::log(static_cast<double>(i) + 1.0);
   }
 
   base::DataVector w(wPrime);
   w.mult(1.0 / wPrime.sum());
 
-  const float_t muEff = 1.0 / std::pow(w.l2Norm(), 2.0);
-  const float_t cSigma = (muEff + 2.0) / (dDbl + muEff + 5.0);
-  const float_t dSigma =
-    1.0 + 2.0 * std::max(0.0, std::sqrt((muEff - 1.0) /
-                                        (dDbl + 1.0)) - 1.0) + cSigma;
+  const double muEff = 1.0 / std::pow(w.l2Norm(), 2.0);
+  const double cSigma = (muEff + 2.0) / (dDbl + muEff + 5.0);
+  const double dSigma =
+      1.0 + 2.0 * std::max(0.0, std::sqrt((muEff - 1.0) / (dDbl + 1.0)) - 1.0) + cSigma;
 
-  const float_t cC = (4.0 + muEff / dDbl) /
-                     (dDbl + 4.0 + 2.0 * muEff / dDbl);
-  const float_t c1 =
-    2.0 / (std::pow(static_cast<float_t>(dDbl + 1.3), 2.0) + muEff);
-  const float_t alphaMu = 2.0;
-  const float_t cMu =
-    std::min(1.0 - c1, alphaMu * (muEff - 2.0 + 1.0 / muEff) /
-             (std::pow(dDbl + 2.0, 2.0) + alphaMu * muEff / 2.0));
+  const double cC = (4.0 + muEff / dDbl) / (dDbl + 4.0 + 2.0 * muEff / dDbl);
+  const double c1 = 2.0 / (std::pow(static_cast<double>(dDbl + 1.3), 2.0) + muEff);
+  const double alphaMu = 2.0;
+  const double cMu = std::min(1.0 - c1, alphaMu * (muEff - 2.0 + 1.0 / muEff) /
+                                             (std::pow(dDbl + 2.0, 2.0) + alphaMu * muEff / 2.0));
 
   base::DataVector pSigma(d, 0.0);
   base::DataVector pC(d, 0.0);
@@ -80,7 +72,7 @@ void CMAES::optimize() {
   }
 
   base::DataVector m(x0);
-  float_t sigma = 0.3;
+  double sigma = 0.3;
 
   base::DataMatrix X(d, lambda), Y(d, lambda);
   base::DataVector x(d), y(d), tmp(d);
@@ -142,9 +134,7 @@ void CMAES::optimize() {
     numberOfFcnEvals += lambda;
 
     std::sort(fXOrder.begin(), fXOrder.end(),
-    [&](size_t a, size_t b) {
-      return (fX[a] < fX[b]);
-    });
+              [&fX](size_t a, size_t b) { return (fX[a] < fX[b]); });
 
     for (size_t t = 0; t < d; t++) {
       yW[t] = 0.0;
@@ -163,12 +153,13 @@ void CMAES::optimize() {
 
     sigma *= std::exp(cSigma / dSigma * (pSigma.l2Norm() / E - 1.0));
 
-    const float_t hSigma =
-      ((pSigma.l2Norm() /
-        std::sqrt(1.0 - std::pow(1.0 - cSigma,
-                                 2.0 * (static_cast<float_t>(k) + 1.0)))
-        < (1.4 + 2.0 / (dDbl + 1.0)) * E) ? 1.0 : 0.0);
-    const float_t delta = (1.0 - hSigma) * cC * (2.0 - cC);
+    const double hSigma =
+        ((pSigma.l2Norm() /
+              std::sqrt(1.0 - std::pow(1.0 - cSigma, 2.0 * (static_cast<double>(k) + 1.0))) <
+          (1.4 + 2.0 / (dDbl + 1.0)) * E)
+             ? 1.0
+             : 0.0);
+    const double delta = (1.0 - hSigma) * cC * (2.0 - cC);
 
     tmp = yW;
     tmp.mult(hSigma * std::sqrt(cC * (2.0 - cC) * muEff));
@@ -177,12 +168,10 @@ void CMAES::optimize() {
 
     for (size_t t1 = 0; t1 < d; t1++) {
       for (size_t t2 = 0; t2 < d; t2++) {
-        CNew(t1, t2) = (1.0 - c1 - cMu) * C(t1, t2) +
-                       c1 * (pC[t1] * pC[t2] + delta * C(t1, t2));
+        CNew(t1, t2) = (1.0 - c1 - cMu) * C(t1, t2) + c1 * (pC[t1] * pC[t2] + delta * C(t1, t2));
 
         for (size_t i = 0; i < mu; i++) {
-          CNew(t1, t2) += cMu * w[i] * Y(t1, fXOrder[i]) *
-                          Y(t2, fXOrder[i]);
+          CNew(t1, t2) += cMu * w[i] * Y(t1, fXOrder[i]) * Y(t2, fXOrder[i]);
         }
       }
     }
@@ -191,7 +180,7 @@ void CMAES::optimize() {
     k++;
 
     Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-        std::to_string(fX[fXOrder[0]]));
+                                             std::to_string(fX[fXOrder[0]]));
 
     X.getColumn(fXOrder[0], x);
     xHist.appendRow(x);
@@ -203,15 +192,13 @@ void CMAES::optimize() {
   fOpt = fX[fXOrder[0]];
 
   Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-      std::to_string(fX[fXOrder[0]]));
+                                           std::to_string(fX[fXOrder[0]]));
   Printer::getInstance().printStatusEnd();
 }
 
-void CMAES::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new CMAES(*this));
+void CMAES::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new CMAES(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp

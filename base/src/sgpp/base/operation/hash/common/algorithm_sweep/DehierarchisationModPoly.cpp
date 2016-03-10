@@ -14,11 +14,11 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
-DehierarchisationModPoly::DehierarchisationModPoly(GridStorage* storage,
+DehierarchisationModPoly::DehierarchisationModPoly(GridStorage& storage,
     SPolyModifiedBase* base) : storage(storage), base(base) {
 }
 
@@ -56,14 +56,14 @@ void DehierarchisationModPoly::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, koeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, koeffs);
     }
 
@@ -75,4 +75,4 @@ void DehierarchisationModPoly::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

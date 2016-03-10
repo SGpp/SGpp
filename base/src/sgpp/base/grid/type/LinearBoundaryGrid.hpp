@@ -7,11 +7,12 @@
 #define LINEARTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,9 +27,10 @@ class LinearBoundaryGrid : public Grid {
    * Constructor Linear Truncated Boundary Grid
    *
    * @param dim           the dimension of the grid
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   explicit LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
@@ -36,9 +38,10 @@ class LinearBoundaryGrid : public Grid {
    * Constructor Linear Truncated Boundary Grid
    *
    * @param BB the BoundingBox of the grid
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   explicit LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
 
@@ -47,22 +50,24 @@ class LinearBoundaryGrid : public Grid {
    */
   ~LinearBoundaryGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   void serialize(std::ostream& ostr) override;
 
  protected:
-  /// level at which the boundary points should be inserted
+  /// grid generator
+  BoundaryGridGenerator generator;
+  /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARTRUNCATEDBOUNDARYGRID_HPP */

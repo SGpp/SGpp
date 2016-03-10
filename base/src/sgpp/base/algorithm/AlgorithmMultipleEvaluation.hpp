@@ -19,7 +19,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,7 +44,7 @@ class AlgorithmMultipleEvaluation {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
+  void mult_transpose(GridStorage& storage, BASIS& basis, DataVector& source,
                       DataMatrix& x, DataVector& result) {
     result.setAll(0.0);
     size_t source_size = source.getSize();
@@ -75,13 +75,13 @@ class AlgorithmMultipleEvaluation {
     }
   }
   // implementation requires OpenMP 4.0 support
-  //        void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
+  //        void mult_transpose(GridStorage& storage, BASIS& basis, DataVector& source,
   //                            DataMatrix& x, DataVector& result) {
   //          result.setAll(0.0);
   //          size_t source_size = source.getSize();
   //
   //          #pragma omp declare reduction(accumulate :
-  // ...      SGPP::base::DataVector : omp_out.add(omp_in))
+  // ...      sgpp::base::DataVector : omp_out.add(omp_in))
   // ...      initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //          #pragma omp parallel
@@ -109,7 +109,7 @@ class AlgorithmMultipleEvaluation {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x,
+  void mult(GridStorage& storage, BASIS& basis, DataVector& source, DataMatrix& x,
             DataVector& result) {
     result.setAll(0.0);
     size_t result_size = result.getSize();
@@ -132,6 +132,6 @@ class AlgorithmMultipleEvaluation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORTIHMMULTIPLEEVALUATION_HPP */

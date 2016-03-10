@@ -1,33 +1,35 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include "BasisEval.hpp"
 
-using namespace SGPP;
-using namespace SGPP::base;
-
-SGPP::float_t basisEvalDx(
-  SBasis& basis, level_t l, index_t i, SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
-    dynamic_cast<SBsplineModifiedClenshawCurtisBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
+double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                          sgpp::base::index_t i, double x) {
+  sgpp::base::SBsplineBase* bsplineBasis =
+      dynamic_cast<sgpp::base::SBsplineBase*>(&basis);
+  sgpp::base::SBsplineBoundaryBase* bsplineBoundaryBasis =
+      dynamic_cast<sgpp::base::SBsplineBoundaryBase*>(&basis);
+  sgpp::base::SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
+      dynamic_cast<sgpp::base::SBsplineClenshawCurtisBase*>(&basis);
+  sgpp::base::SBsplineModifiedBase* bsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
+  sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
+      dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
+  sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
+  sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
+      dynamic_cast<sgpp::base::SFundamentalSplineModifiedBase*>(&basis);
+  sgpp::base::SWaveletBase* waveletBasis =
+      dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
+  sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
+      dynamic_cast<sgpp::base::SWaveletBoundaryBase*>(&basis);
+  sgpp::base::SWaveletModifiedBase* waveletModifiedBasis =
+      dynamic_cast<sgpp::base::SWaveletModifiedBase*>(&basis);
 
   if (bsplineBasis != nullptr) {
     return bsplineBasis->evalDx(l, i, x);
@@ -55,28 +57,28 @@ SGPP::float_t basisEvalDx(
   }
 }
 
-SGPP::float_t basisEvalDxDx(
-  SBasis& basis, level_t l, index_t i, SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
-    dynamic_cast<SBsplineModifiedClenshawCurtisBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
+double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                            sgpp::base::index_t i, double x) {
+  sgpp::base::SBsplineBase* bsplineBasis =
+      dynamic_cast<sgpp::base::SBsplineBase*>(&basis);
+  sgpp::base::SBsplineBoundaryBase* bsplineBoundaryBasis =
+      dynamic_cast<sgpp::base::SBsplineBoundaryBase*>(&basis);
+  sgpp::base::SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
+      dynamic_cast<sgpp::base::SBsplineClenshawCurtisBase*>(&basis);
+  sgpp::base::SBsplineModifiedBase* bsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
+  sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
+      dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
+  sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
+  sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
+      dynamic_cast<sgpp::base::SFundamentalSplineModifiedBase*>(&basis);
+  sgpp::base::SWaveletBase* waveletBasis =
+      dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
+  sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
+      dynamic_cast<sgpp::base::SWaveletBoundaryBase*>(&basis);
+  sgpp::base::SWaveletModifiedBase* waveletModifiedBasis =
+      dynamic_cast<sgpp::base::SWaveletModifiedBase*>(&basis);
 
   if (bsplineBasis != nullptr) {
     return bsplineBasis->evalDxDx(l, i, x);

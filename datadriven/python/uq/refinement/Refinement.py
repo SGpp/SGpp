@@ -259,7 +259,7 @@ class Refinement(object):
             # alpha[gs.seq(gp)] = 2.0
             # refFunc = SurplusRefinementFunctor(alpha, 1, 1)
             # ## TODO: try refineMaxLevel(refFunc, maxLevel)
-            # grid.createGridGenerator().refine(refFunc)
+            # grid.getGenerator().refine(refFunc)
 
             # nps = []
             # for i in xrange(gs.size()):
@@ -301,7 +301,7 @@ class Refinement(object):
 
 #         if not simulate:
 #             gs = grid.getStorage()
-#             p = DataVector(gs.dim())
+#             p = DataVector(gs.getDimension())
 #
 #             for gp in refinedPoints:
 #                 gp.getCoords(p)

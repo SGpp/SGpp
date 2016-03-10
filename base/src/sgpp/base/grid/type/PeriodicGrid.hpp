@@ -7,11 +7,12 @@
 #define PERIODICGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -19,6 +20,8 @@ namespace base {
  */
 class PeriodicGrid : public Grid {
  protected:
+  /// grid generator
+  PeriodicGridGenerator generator;
   explicit PeriodicGrid(std::istream& istr);
 
  public:
@@ -34,16 +37,16 @@ class PeriodicGrid : public Grid {
    */
   ~PeriodicGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   const SBasis& getBasis() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PERIODICGRID_HPP */

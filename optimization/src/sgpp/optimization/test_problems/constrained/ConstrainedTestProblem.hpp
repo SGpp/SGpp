@@ -6,13 +6,13 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
 #include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
 
-namespace SGPP {
+#include <cstddef>
+
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -27,7 +27,7 @@ namespace test_problems {
 class ConstrainedTestProblem {
  public:
   /// default standard deviation for the displacement vector
-  static constexpr float_t DEFAULT_STANDARD_DEVIATION = 0.01;
+  static constexpr double DEFAULT_STANDARD_DEVIATION = 0.01;
 
   /**
    * Constructor.
@@ -36,7 +36,7 @@ class ConstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  ConstrainedTestProblem(size_t d);
+  explicit ConstrainedTestProblem(size_t d);
 
   /**
    * Destructor.
@@ -66,7 +66,7 @@ class ConstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPoint(base::DataVector& x);
+  double getOptimalPoint(base::DataVector& x);
 
   /**
    * Pure virtual method returning the minimal point
@@ -78,7 +78,7 @@ class ConstrainedTestProblem {
    * @return          minimal function value
    *                  \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x) = 0;
+  virtual double getOptimalPointUndisplaced(base::DataVector& x) = 0;
 
   /**
    * Generate normally distributed pseudorandom displacement with
@@ -95,7 +95,7 @@ class ConstrainedTestProblem {
    *
    * @param stdDev standard deviation of the displacement coordinates
    */
-  void generateDisplacement(float_t stdDev);
+  void generateDisplacement(double stdDev);
 
   /**
    * @return                currently used displacement
@@ -136,9 +136,8 @@ class ConstrainedTestProblem {
    */
   virtual bool isDisplacementFeasible();
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP */

@@ -37,11 +37,11 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
 
         # interpolating 1d sparse grid
         ngrid = Grid.createPolyBoundaryGrid(1, 2)
-        ngrid.createGridGenerator().regular(2)
+        ngrid.getGenerator().regular(2)
         ngs = ngrid.getStorage()
         nodalValues = DataVector(ngs.size())
 
-        for d in xrange(gpi.dim()):
+        for d in xrange(gpi.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)

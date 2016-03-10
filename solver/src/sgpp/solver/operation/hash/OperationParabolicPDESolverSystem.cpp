@@ -9,8 +9,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem() {
@@ -19,40 +20,31 @@ OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem() {
   this->bnewODESolver = false;
 }
 
-OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem() {
-}
+OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem() {}
 
-SGPP::base::DataVector*
-OperationParabolicPDESolverSystem::getGridCoefficients() {
+sgpp::base::DataVector* OperationParabolicPDESolverSystem::getGridCoefficients() {
   return this->alpha_complete;
 }
 
-SGPP::base::Grid* OperationParabolicPDESolverSystem::getGrid() {
-  return this->BoundGrid;
-}
+sgpp::base::Grid* OperationParabolicPDESolverSystem::getGrid() { return this->BoundGrid; }
 
 void OperationParabolicPDESolverSystem::setODESolver(std::string ode) {
   this->tOperationMode = ode;
   this->bnewODESolver = true;
 }
 
-std::string OperationParabolicPDESolverSystem::getODESolver() {
-  return this->tOperationMode;
-}
+std::string OperationParabolicPDESolverSystem::getODESolver() { return this->tOperationMode; }
 
-void OperationParabolicPDESolverSystem::setTimestepSize(
-  float_t newTimestepSize) {
+void OperationParabolicPDESolverSystem::setTimestepSize(double newTimestepSize) {
   this->TimestepSize_old = this->TimestepSize;
   this->TimestepSize = newTimestepSize;
 }
 
 void OperationParabolicPDESolverSystem::abortTimestep() {
   delete this->secondGridStorage;
-  this->secondGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
+  this->secondGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
-  if ((this->alpha_complete)->getSize() !=
-      (this->alpha_complete_tmp)->getSize()) {
+  if ((this->alpha_complete)->getSize() != (this->alpha_complete_tmp)->getSize()) {
     (this->alpha_complete)->resize((this->alpha_complete_tmp)->getSize());
   }
 
@@ -61,11 +53,9 @@ void OperationParabolicPDESolverSystem::abortTimestep() {
 
 void OperationParabolicPDESolverSystem::saveAlpha() {
   delete this->oldGridStorage;
-  this->oldGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
+  this->oldGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
-  if ((this->alpha_complete_old)->getSize() !=
-      (this->alpha_complete_tmp)->getSize())
+  if ((this->alpha_complete_old)->getSize() != (this->alpha_complete_tmp)->getSize())
     (this->alpha_complete_old)->resize((this->alpha_complete_tmp)->getSize());
 
   *(this->alpha_complete_old) = *(this->alpha_complete_tmp);
@@ -84,28 +74,22 @@ size_t OperationParabolicPDESolverSystem::getSumGridPointsInner() {
   return this->numSumGridpointsInner;
 }
 
-void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(
-  SGPP::base::DataVector& Values) {
+void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(sgpp::base::DataVector& Values) {
   Values = *(this->alpha_complete);
-  SGPP::base::OperationHierarchisation* myHierarchisation =
-    SGPP::op_factory::createOperationHierarchisation(*BoundGrid);
-  myHierarchisation->doDehierarchisation(Values);
-  delete myHierarchisation;
+  sgpp::op_factory::createOperationHierarchisation(*BoundGrid)->doDehierarchisation(Values);
 }
 
-SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
-  return (this->BoundGrid)->getStorage();
+sgpp::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
+  return &this->BoundGrid->getStorage();
 }
 
-SGPP::base::GridStorage*
-OperationParabolicPDESolverSystem::getOldGridStorage() {
+sgpp::base::GridStorage* OperationParabolicPDESolverSystem::getOldGridStorage() {
   return oldGridStorage;
 }
 
-SGPP::base::GridStorage*
-OperationParabolicPDESolverSystem::getSecondGridStorage() {
+sgpp::base::GridStorage* OperationParabolicPDESolverSystem::getSecondGridStorage() {
   return secondGridStorage;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp

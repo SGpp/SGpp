@@ -13,7 +13,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,7 +27,7 @@ class OperationNaiveEvalHessianWavelet : public OperationNaiveEvalHessian {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalHessianWavelet(GridStorage* storage) : storage(
+  explicit OperationNaiveEvalHessianWavelet(GridStorage& storage) : storage(
       storage) {
   }
 
@@ -44,19 +44,19 @@ class OperationNaiveEvalHessianWavelet : public OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  float_t evalHessian(const DataVector& alpha,
+  double evalHessian(const DataVector& alpha,
                       const DataVector& point,
                       DataVector& gradient,
                       DataMatrix& hessian) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALHESSIANWAVELET_HPP */

@@ -17,30 +17,31 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
- * This class implements OperationMultipleEvalSP for a grids with linear basis ansatzfunctions without boundaries
+ * This class implements OperationMultipleEvalSP for a grids with linear basis ansatzfunctions
+ * without boundaries
  *
  * However in this case high efficient vector code (Intel Array Building Blocks) is generated
  * to implement a iterative OperationB version. In addition cache blocking is used
  * in order to assure a most efficient cache usage.
  *
  * IMPORTANT REMARK:
- * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+ * In order to use this routine you have to keep following points in mind (for multVectorized and
+ * multTransposeVectorized):
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSPArBBLinear : public
-  SGPP::parallel::OperationMultipleEvalVectorizedSP {
+class OperationMultipleEvalIterativeSPArBBLinear
+    : public sgpp::parallel::OperationMultipleEvalVectorizedSP {
  public:
   /**
    * Construtor of OperationBLinearSP
    *
-   * Within the construct SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are set up.
+   * Within the construct sgpp::base::DataMatrixSP Level and sgpp::base::DataMatrixSP Index are set
+   * up.
    * If the grid changes during your calculations and you don't want to create
    * a new instance of this class, you have to call rebuildLevelAndIndex before
    * doing any further mult or multTranspose calls.
@@ -48,27 +49,26 @@ class OperationMultipleEvalIterativeSPArBBLinear : public
    * @param storage Pointer to the grid's gridstorage obejct
    * @param dataset dataset that should be evaluated
    */
-  OperationMultipleEvalIterativeSPArBBLinear(SGPP::base::GridStorage* storage,
-      SGPP::base::DataMatrixSP* dataset);
+  OperationMultipleEvalIterativeSPArBBLinear(sgpp::base::GridStorage* storage,
+                                             sgpp::base::DataMatrixSP* dataset);
 
   /**
    * Destructor
    */
   virtual ~OperationMultipleEvalIterativeSPArBBLinear();
 
-  virtual double multVectorized(SGPP::base::DataVectorSP& alpha,
-                                SGPP::base::DataVectorSP& result);
+  virtual double multVectorized(sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& result);
 
-  virtual double multTransposeVectorized(SGPP::base::DataVectorSP& source,
-                                         SGPP::base::DataVectorSP& result);
+  virtual double multTransposeVectorized(sgpp::base::DataVectorSP& source,
+                                         sgpp::base::DataVectorSP& result);
 
   virtual void rebuildLevelAndIndex();
 
  protected:
   /// Pointer to the grid's gridstorage object
-  SGPP::base::GridStorage* storage;
+  sgpp::base::GridStorage* storage;
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch* myTimer;
+  sgpp::base::SGppStopwatch* myTimer;
   /// Object to access the OCL Kernel
   ArBBKernels* myArBBKernels;
   /// Object to access the ArBB 2D Kernel
@@ -80,10 +80,7 @@ class OperationMultipleEvalIterativeSPArBBLinear : public
   /// Object to access the ArBB 10D Kernel
   ArBBKernels10D* myArBBKernels10D;
 };
-
-}
-}
-
-#endif
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVESPARBBLINEAR_HPP */

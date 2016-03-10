@@ -22,7 +22,7 @@
 #include "KernelMult.hpp"
 #include "KernelB.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
@@ -31,11 +31,11 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
  private:
   size_t dims;
   size_t gridSize;
-  SGPP::base::Grid& grid;
+  sgpp::base::Grid& grid;
   json::Node &firstKernelConfig;
   json::Node &secondKernelConfig;
-  SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
-  SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T> *bKernel;
+  sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
+  sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityB<T> *bKernel;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
   std::vector<int> points;
@@ -49,7 +49,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    json::Node &firstKernelConfig, json::Node &secondKernelConfig,
                                    T lambda) : OperationDensityOCL(), dims(dimensions),
-                                               gridSize(grid.getStorage()->size()), grid(grid),
+                                               gridSize(grid.getStorage().getSize()), grid(grid),
                                                firstKernelConfig(firstKernelConfig),
                                                secondKernelConfig(secondKernelConfig),
                                                devices(manager->getDevices()),
@@ -57,10 +57,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                                chunksize(-1) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
-    SGPP::base::GridStorage* gridStorage = grid.getStorage();
+    sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
     for (int i = 0; i < gridSize; i++) {
-      SGPP::base::HashGridIndex *point = gridStorage->get(i);
+      sgpp::base::HashGridIndex *point = gridStorage.get(i);
       pointscount++;
       for (int d = 0; d < dims; d++) {
         points.push_back(point->getIndex(d));
@@ -108,7 +108,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       result[i] = resultVector[i];
   }
 
-  void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) {
+  void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     if (verbose) {
       std::cout << "starting rhs kernel methode! datasize: " << b.getSize() << std::endl;
@@ -133,4 +133,4 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
 
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

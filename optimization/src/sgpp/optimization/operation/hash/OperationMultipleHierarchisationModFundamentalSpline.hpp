@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODFUNDAMENTALSPLINE_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODFUNDAMENTALSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -13,23 +13,23 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
  * Hierarchisation operation for modified B-spline basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationModFundamentalSpline :
-  public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationModFundamentalSpline
+    : public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  OperationMultipleHierarchisationModFundamentalSpline(
-    base::ModFundamentalSplineGrid& grid);
+  explicit OperationMultipleHierarchisationModFundamentalSpline(
+      base::ModFundamentalSplineGrid& grid);
 
   /**
    * Destructor.
@@ -72,8 +72,7 @@ class OperationMultipleHierarchisationModFundamentalSpline :
   /// hierarchization operation
   base::OperationHierarchisationModFundamentalSpline op;
 };
+}  // namespace optimization
+}  // namespace sgpp
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODFUNDAMENTALSPLINE_HPP */

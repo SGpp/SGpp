@@ -7,17 +7,16 @@
 #define OPERATIONDENSITYSAMPLING1D_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
+#include <cstring>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
- * Sample 1D Probability Density Function
- */
+*Sample 1D Probability Density Function
+*/
 
 class OperationDensitySampling1D {
  public:
@@ -32,10 +31,9 @@ class OperationDensitySampling1D {
    * @param samples Output DataVector
   * @param seedp seed
    */
-  virtual void doSampling1D(base::DataVector* alpha, size_t num_samples,
-                            base::DataVector*& samples, unsigned int* seedp) = 0;
+  virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples,
+                            unsigned int* seedp) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP */

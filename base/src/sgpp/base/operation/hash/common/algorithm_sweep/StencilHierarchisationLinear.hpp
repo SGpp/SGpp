@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -26,7 +26,7 @@ class StencilHierarchisationLinear {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -38,7 +38,7 @@ class StencilHierarchisationLinear {
    * @param weightStencil storage holding the weight in order to calculate the surplus at each node using it's neighbors
    */
   StencilHierarchisationLinear(
-    GridStorage* storage,
+    GridStorage& storage,
     OperationStencilHierarchisation::IndexStencil& surplusStencil,
     OperationStencilHierarchisation::IndexStencil& neighborStencil,
     OperationStencilHierarchisation::WeightStencil& weightStencil);
@@ -81,6 +81,6 @@ class StencilHierarchisationLinear {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STENCILHIERARCHISATIONLINEAR_HPP */

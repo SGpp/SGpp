@@ -5,37 +5,31 @@
 
 #include <sgpp/finance/operation/hash/OperationLELinearBoundary.hpp>
 
-
 #include <sgpp/pde/operation/hash/DowndPhidPhiBBIterativeLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/UpdPhidPhiBBIterativeLinearBoundary.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-OperationLELinearBoundary::OperationLELinearBoundary(SGPP::base::GridStorage*
-    storage) : SGPP::pde::StdUpDown(storage) {
-}
+OperationLELinearBoundary::OperationLELinearBoundary(sgpp::base::GridStorage* storage)
+    : sgpp::pde::StdUpDown(storage) {}
 
-OperationLELinearBoundary::~OperationLELinearBoundary() {
-}
+OperationLELinearBoundary::~OperationLELinearBoundary() {}
 
-void OperationLELinearBoundary::up(SGPP::base::DataVector& alpha,
-                                   SGPP::base::DataVector& result, size_t dim) {
+void OperationLELinearBoundary::up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                   size_t dim) {
   // Dphi * dphi
-  SGPP::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+  sgpp::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
   myUp(alpha, result, dim);
 }
 
-void OperationLELinearBoundary::down(SGPP::base::DataVector& alpha,
-                                     SGPP::base::DataVector& result, size_t dim) {
+void OperationLELinearBoundary::down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                                     size_t dim) {
   // Dphi * dphi
-  SGPP::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+  sgpp::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
   myDown(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace sgpp

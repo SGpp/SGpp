@@ -19,7 +19,7 @@
 #include <memory>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /***
@@ -51,7 +51,7 @@ class AbstractRefinement_refinement_key {
    */
   const std::vector<level_t> getLevelVector() {
     if (level_vector.empty()) {
-      for (size_t d = 0; d < index.dim(); d++) {
+      for (size_t d = 0; d < index.getDimension(); d++) {
         level_vector.push_back(index.getLevel(d));
       }
     }
@@ -107,7 +107,7 @@ class AbstractRefinement {
   /**
    * Type of functor value assigned to each refinement atom
    */
-  typedef float_t refinement_value_type;  // refinement functor value
+  typedef double refinement_value_type;  // refinement functor value
 
 
   /**
@@ -146,8 +146,8 @@ class AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage* storage,
-                           RefinementFunctor* functor) = 0;
+  virtual void free_refine(GridStorage& storage,
+                           RefinementFunctor& functor) = 0;
 
 
   /**
@@ -157,7 +157,7 @@ class AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @return The number of grid points that can be refined
    */
-  virtual size_t getNumberOfRefinablePoints(GridStorage* storage) = 0;
+  virtual size_t getNumberOfRefinablePoints(GridStorage& storage) = 0;
 
 
   /**
@@ -166,7 +166,7 @@ class AbstractRefinement {
    * @param index point to refine
    * @param d direction
    */
-  virtual void refineGridpoint1D(GridStorage* storage, index_type& index,
+  virtual void refineGridpoint1D(GridStorage& storage, index_type& index,
                                  size_t d) = 0;
 
 
@@ -176,7 +176,7 @@ class AbstractRefinement {
   * @param seq sequential number of the grid point
   * @param d direction
   */
-  virtual void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
+  virtual void refineGridpoint1D(GridStorage& storage, size_t seq, size_t d);
 
 
   /**
@@ -184,7 +184,7 @@ class AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param index grid point index
    */
-  bool isRefinable(GridStorage* storage, index_type& index);
+  bool isRefinable(GridStorage& storage, index_type& index);
 
   /**
    * Destructor
@@ -212,7 +212,7 @@ class AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param refine_index The index in the hashmap of the point that should be refined
    */
-  virtual void refineGridpoint(GridStorage* storage, size_t refine_index) = 0;
+  virtual void refineGridpoint(GridStorage& storage, size_t refine_index) = 0;
 
   /**
    * This method creates a new point on the grid. It checks if some parents or
@@ -221,7 +221,7 @@ class AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param index The point that should be inserted
    */
-  virtual void createGridpoint(GridStorage* storage, index_type& index) = 0;
+  virtual void createGridpoint(GridStorage& storage, index_type& index) = 0;
 
 
   /**
@@ -230,11 +230,11 @@ class AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param index The point that should be inserted
    */
-  virtual void createGridpointSubroutine(GridStorage* storage,
+  virtual void createGridpointSubroutine(GridStorage& storage,
                                          index_type& index) {
     // For efficiency this function is defined the header file, this way it
     // be easily inlined by compiler.
-    if (!storage->has_key(&index)) {
+    if (!storage.has_key(&index)) {
       // save old leaf value
       bool saveLeaf = index.isLeaf();
       index.setLeaf(false);
@@ -243,7 +243,7 @@ class AbstractRefinement {
       index.setLeaf(saveLeaf);
     } else {
       // set stored index to false
-      (storage->get((storage->find(&index))->second))->setLeaf(false);
+      (storage.get((storage.find(&index))->second))->setLeaf(false);
     }
   }
 
@@ -259,7 +259,7 @@ class AbstractRefinement {
    */
   virtual void createGridpoint1D(
     index_type& index,
-    size_t d, GridStorage* storage,
+    size_t d, GridStorage& storage,
     index_t& source_index, level_t& source_level);
 
 
@@ -273,8 +273,8 @@ class AbstractRefinement {
    *  and corresponding refinement values (usually empty)
    */
   virtual void collectRefinablePoints(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     refinement_container_type& collection) = 0;
 
 
@@ -287,8 +287,8 @@ class AbstractRefinement {
    *  and corresponding refinement values
    */
   virtual void refineGridpointsCollection(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     refinement_container_type& collection) = 0;
 
 
@@ -305,9 +305,9 @@ class AbstractRefinement {
    * @return
    */
   virtual refinement_list_type getIndicator(
-    GridStorage* storage,
+    GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const = 0;
+    const RefinementFunctor& functor) const = 0;
 
   friend class
   // need to be a friend since it delegates the calls to
@@ -317,6 +317,6 @@ class AbstractRefinement {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ABSTRACTREFINEMENT_HPP */

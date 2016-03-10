@@ -14,7 +14,7 @@
 #include <memory>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -40,14 +40,12 @@ class VectorFunctionHessian {
    * @param d     dimension of the domain
    * @param m     number of components
    */
-  VectorFunctionHessian(size_t d, size_t m) : d(d), m(m) {
-  }
+  VectorFunctionHessian(size_t d, size_t m) : d(d), m(m) {}
 
   /**
    * Destructor.
    */
-  virtual ~VectorFunctionHessian() {
-  }
+  virtual ~VectorFunctionHessian() {}
 
   /**
    * Pure virtual method for calculating \f$g(\vec{x})\f$
@@ -61,24 +59,18 @@ class VectorFunctionHessian {
    *                      \f$\nabla^2 g_i(\vec{x}) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  virtual void eval(const base::DataVector& x,
-                    base::DataVector& value,
-                    base::DataMatrix& gradient,
+  virtual void eval(const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient,
                     std::vector<base::DataMatrix>& hessian) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * @return number \f$m\f$ of components
    */
-  size_t getNumberOfComponents() const {
-    return m;
-  }
+  size_t getNumberOfComponents() const { return m; }
 
   /**
    * Pure virtual method for cloning the Hessian.
@@ -88,8 +80,7 @@ class VectorFunctionHessian {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<VectorFunctionHessian>& clone) const = 0;
+  virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const = 0;
 
  protected:
   /// dimension of the domain
@@ -97,8 +88,7 @@ class VectorFunctionHessian {
   /// number of components
   size_t m;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_VECTORFUNCTIONHESSIAN_HPP */

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationHierarchisationPoly.hpp"
+#include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
 
 #include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPoly.hpp>
@@ -12,29 +12,29 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
-  HierarchisationPoly func(this->storage, &this->base);
-  sweep<HierarchisationPoly> s(func, this->storage);
+  HierarchisationPoly func(storage, &base);
+  sweep<HierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationPoly func(this->storage, &this->base);
-  sweep<DehierarchisationPoly> s(func, this->storage);
+  DehierarchisationPoly func(storage, &base);
+  sweep<DehierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
     s.sweep1D(source, alpha, i);
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

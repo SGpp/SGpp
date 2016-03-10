@@ -1,16 +1,15 @@
-/*
- * CombiBasuStretching.cpp
- *
- *  Created on: 26 Sep 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/domain/CombiBasuStretching.hpp>
-#include <sgpp/globaldef.hpp>
 
-void combigrid::CombiBasuStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>* stretching,
-    std::vector<double>* jacobian) const {
+#include <vector>
+
+void combigrid::CombiBasuStretching::get1DStretching(int level, double min, double max,
+                                                     std::vector<double>* stretching,
+                                                     std::vector<double>* jacobian) const {
   int N = powerOfTwo[level];  // N is the number of subintervals... N+1 the
                               // number of points!
   jacobian->clear();

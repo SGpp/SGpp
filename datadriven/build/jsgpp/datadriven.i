@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 %{
@@ -20,7 +20,8 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
 #endif
 
-%include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
+%include "OpFactory.i"
+
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
@@ -32,37 +33,36 @@
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-//%apply std::vector<std::pair<size_t, float_t> > *OUTPUT { std::vector<std::pair<size_t, float_t> >& result };
-//%apply std::vector<float_t> *INPUT { std::vector<float_t>& point }; 
+//%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
+//%apply std::vector<double> *INPUT { std::vector<double>& point };
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
-
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityMarginalizeKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityConditionalKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
-/*%nodefaultdtor SGPP::datadriven::OperationTest;
+/*%nodefaultdtor sgpp::datadriven::OperationTest;
 class OperationTest
 {
 public:
-  virtual float_t test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) = 0;
-  virtual float_t testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) = 0;
-  virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) = 0;
-  virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) = 0;
+  virtual double test(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes) = 0;
+  virtual double testMSE(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data, sgpp::base::DataVector& refValues) = 0;
+  virtual double testWithCharacteristicNumber(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes, sgpp::base::DataVector& charaNumbers) = 0;
+  virtual void calculateROCcurve(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes, sgpp::base::DataVector& thresholds, sgpp::base::DataMatrix& ROC_curve) = 0;
 };
 
 class OperationRegularizationDiagonal
 {
 public:
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) = 0;
   static const int HKMIX = 1;
   static const int H0HKLAPLACE = 2;
   static const int ISOTROPIC_PENALTY = 3;

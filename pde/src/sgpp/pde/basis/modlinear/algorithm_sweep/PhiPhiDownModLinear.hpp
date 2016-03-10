@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace pde {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -24,17 +21,17 @@ namespace pde {
  */
 class PhiPhiDownModLinear {
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
-  /// Pointer to SGPP::base::GridStorage object
-  SGPP::base::GridStorage* storage;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
+  /// Pointer to sgpp::base::GridStorage object
+  sgpp::base::GridStorage* storage;
 
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  PhiPhiDownModLinear(SGPP::base::GridStorage* storage);
+  explicit PhiPhiDownModLinear(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -44,33 +41,30 @@ class PhiPhiDownModLinear {
   /**
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  void operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                   grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Down
    *
-   * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
-   * @param result SGPP::base::DataVector in which the result of the operation is stored
+   * @param source sgpp::base::DataVector that contains the coefficients of the ansatzfunction
+   * @param result sgpp::base::DataVector in which the result of the operation is stored
    * @param index reference to a griditerator object that is used navigate through the grid
    * @param dim the dimension in which the operation is executed
    * @param fl function value on the left boundary
    * @param fr function value on the right boundary
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t fl, float_t fr);
+  void rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result, grid_iterator& index,
+           size_t dim, double fl, double fr);
 };
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace sgpp
 
 #endif /* PHIPHIDOWNMODLINEAR_HPP */

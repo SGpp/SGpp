@@ -5,20 +5,16 @@
 
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 #include <sgpp/globaldef.hpp>
 
 #include <cstdlib>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-float_t DatasetGenerator::uniform(float_t a, float_t b) {
-  return a + static_cast<float_t>(rand()) / RAND_MAX * (b - a);
+double DatasetGenerator::uniform(double a, double b) {
+  return a + static_cast<double>(rand()) / RAND_MAX * (b - a);
 }
 DatasetGenerator::~DatasetGenerator() {}
 
@@ -32,10 +28,10 @@ DatasetGenerator::~DatasetGenerator() {}
  * @param stddev std deviation of distribution
  * @return normally distributed random var
  */
-float_t DatasetGenerator::normal(float_t mean, float_t stddev) {
-  float_t u1 = static_cast<float_t>(rand()) / RAND_MAX;
-  float_t u2 = static_cast<float_t>(rand()) / RAND_MAX;
-  float_t stdnormal = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
+double DatasetGenerator::normal(double mean, double stddev) {
+  double u1 = static_cast<double>(rand()) / RAND_MAX;
+  double u2 = static_cast<double>(rand()) / RAND_MAX;
+  double stdnormal = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
   return mean + stdnormal * stddev;
 }
 
@@ -50,7 +46,7 @@ void Friedman1Generator::createData(size_t offset, size_t size,
       trData.set(i, j, uniform(0.0, 1.0));
     }
 
-    float_t cls = 10.0 * sin(M_PI * trData.get(i, 0) * trData.get(i, 1))
+    double cls = 10.0 * sin(M_PI * trData.get(i, 0) * trData.get(i, 1))
                   + 20.0 * (trData.get(i, 2) - 0.5) * (trData.get(i, 2) - 0.5)
                   + 10.0 * trData.get(i, 3)
                   + 5.0 * trData.get(i, 4) + normal(0.0, 1.0);
@@ -75,8 +71,8 @@ void Friedman2Generator::createData(size_t offset, size_t size,
     trData.set(i, 1, uniform(40.0 * M_PI, 560.0 * M_PI));
     trData.set(i, 2, uniform(0.0, 1.0));
     trData.set(i, 3, uniform(1.0, 11.0));
-    float_t tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i, 1) * trData.get(i, 3));
-    float_t cls = sqrt(trData.get(i, 0) * trData.get(i, 0) + tmp * tmp) + normal(0.0, 125.0);
+    double tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i, 1) * trData.get(i, 3));
+    double cls = sqrt(trData.get(i, 0) * trData.get(i, 0) + tmp * tmp) + normal(0.0, 125.0);
     classes.set(i, cls);
   }
 
@@ -101,9 +97,9 @@ void Friedman3Generator::createData(size_t offset, size_t size,
     trData.set(i, 1, uniform(40.0 * M_PI, 560.0 * M_PI));
     trData.set(i, 2, uniform(0.0, 1.0));
     trData.set(i, 3, uniform(1.0, 11.0));
-    float_t tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i,
+    double tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i,
                   1) * trData.get(i, 3));
-    float_t cls = atan(tmp / trData.get(i, 0)) + normal(0.0, 0.1);
+    double cls = atan(tmp / trData.get(i, 0)) + normal(0.0, 0.1);
     classes.set(i, cls);
   }
 
@@ -117,5 +113,5 @@ size_t Friedman3Generator::getDims() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

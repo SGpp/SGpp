@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OperationDensityOCLMultiPlatform.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DensityOCLMultiPlatform::OperationDensityOCL*
@@ -66,4 +66,4 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   return NULL;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

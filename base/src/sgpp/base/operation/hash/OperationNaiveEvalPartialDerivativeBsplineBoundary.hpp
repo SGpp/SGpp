@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,7 +28,7 @@ class OperationNaiveEvalPartialDerivativeBsplineBoundary :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalPartialDerivativeBsplineBoundary(GridStorage* storage,
+  OperationNaiveEvalPartialDerivativeBsplineBoundary(GridStorage& storage,
       size_t degree) :
     storage(storage), base(degree) {
   }
@@ -45,18 +45,18 @@ class OperationNaiveEvalPartialDerivativeBsplineBoundary :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
+  double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
                                 size_t derivDim) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPARTIALDERIVATIVEBSPLINEBOUNDARY_HPP */

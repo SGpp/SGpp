@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -29,7 +29,7 @@ class OperationNaiveEvalModBsplineClenshawCurtis :
    * @param degree    B-spline degree
    */
   OperationNaiveEvalModBsplineClenshawCurtis(
-    GridStorage* storage, size_t degree) :
+    GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -44,16 +44,16 @@ class OperationNaiveEvalModBsplineClenshawCurtis :
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineModifiedClenshawCurtisBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALMODBSPLINECLENSHAWCURTIS_HPP */

@@ -10,23 +10,19 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 class BiCGStab : public SLESolver {
- private:
-
-
  public:
   /**
    * Std-Constructor
    */
-  BiCGStab(size_t imax, float_t epsilon);
+  BiCGStab(size_t imax, double epsilon);
 
   /**
    * Std-Destructor
@@ -41,12 +37,12 @@ class BiCGStab : public SLESolver {
    * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
    * http://netlib.org
    */
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false,
-                     bool verbose = false, float_t max_threshold = -1.0);
+  virtual void solve(sgpp::base::OperationMatrix& SystemMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, bool reuse = false, bool verbose = false,
+                     double max_threshold = -1.0);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace sgpp
 
 #endif /*BICGSTAB_HPP */

@@ -7,23 +7,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(sgpp::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+XPhidPhiUpBBLinear::~XPhidPhiUpBBLinear() {}
 
-XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-XPhidPhiUpBBLinear::~XPhidPhiUpBBLinear() {
-}
-
-void XPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-  float_t q = boundingBox->getIntervalWidth(dim);
-  float_t t = boundingBox->getIntervalOffset(dim);
+void XPhidPhiUpBBLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                    grid_iterator& index, size_t dim) {
+  double q = boundingBox->getIntervalWidth(dim);
+  double t = boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -32,8 +27,8 @@ void XPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (useBB) {
     recBB(source, result, index, dim, fl, fr, q, t);
@@ -42,17 +37,16 @@ void XPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void XPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                             SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                             float_t& fr) {
+void XPhidPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                             grid_iterator& index, size_t dim, double& fl, double& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -72,12 +66,12 @@ void XPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
 
   index.get(dim, current_level, current_index);
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  float_t helper = (1.0 / static_cast<float_t>(1 << (current_level + 1))) *
-                   (static_cast<float_t>(current_index));
+  double helper = (1.0 / static_cast<double>(1 << (current_level + 1))) *
+                   (static_cast<double>(current_index));
 
   // transposed operations:
   result[seq] = fm;
@@ -86,17 +80,17 @@ void XPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + ((alpha_value * helper) + fr);
 }
 
-void XPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
-                               SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                               float_t& fr, float_t q, float_t t) {
+void XPhidPhiUpBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                               grid_iterator& index, size_t dim, double& fl, double& fr,
+                               double q, double t) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -116,12 +110,13 @@ void XPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
 
   index.get(dim, current_level, current_index);
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  float_t helper = (1.0 / static_cast<float_t>(1 << (current_level + 1))) *
-                   (q * static_cast<float_t>(current_index)) + (0.5 * t);
+  double helper = (1.0 / static_cast<double>(1 << (current_level + 1))) *
+                       (q * static_cast<double>(current_index)) +
+                   (0.5 * t);
 
   // transposed operations:
   result[seq] = fm;
@@ -130,7 +125,5 @@ void XPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + ((alpha_value * helper) + fr);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

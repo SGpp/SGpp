@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GaussHermiteQuadRule1D.hpp"
+#include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
@@ -536,8 +536,8 @@ GaussHermiteQuadRule1D::~GaussHermiteQuadRule1D() {
 }
 
 void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
-    DataVector& pcoordinates, DataVector& pweights, float_t mean,
-    float_t stdd) {
+    DataVector& pcoordinates, DataVector& pweights, double mean,
+    double stdd) {
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
       "GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized : "
@@ -553,4 +553,4 @@ void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

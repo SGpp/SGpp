@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLLaplaceBound.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLLaplaceBound.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
 extern cl_kernel LTwoDotLaplaceBoundKernel[NUMDEVS];
 extern REAL TimestepCoeff;
-
 
 extern double LTwoDotLaplaceBoundAllReduceTime;
 extern double LTwoDotLaplaceBoundExecTime;
@@ -22,21 +22,20 @@ extern double CounterLTwoDotLaplaceBound;
 extern double LTwoDotLaplaceBoundStartupTime;
 extern double* LTwoDotLaplaceBoundAll;
 
-/// Returns the string with the OpenCL code for the function declaration for the combined LTwoDot + Laplace operator on the boundary grid.
+/// Returns the string with the OpenCL code for the function declaration for the combined LTwoDot +
+/// Laplace operator on the boundary grid.
 std::string LTwoDotLaplaceBoundHeader();
 
-/// Generates and compiles the OpenCL code for the function for the combined LTwoDot+Laplace operator on the boundary grid.
-void CompileLTwoDotLaplaceBound(int id, std::string kernel_src,
-                                cl_kernel* kernel);
+/// Generates and compiles the OpenCL code for the function for the combined LTwoDot+Laplace
+/// operator on the boundary grid.
+void CompileLTwoDotLaplaceBound(int id, std::string kernel_src, cl_kernel* kernel);
 
 /// Compiles all kernels pertaining to the combined LTwoDot + Laplace operator on boundary grids.
 void CompileLTwoDotLaplaceBoundKernels();
 
-/// Sets arguments for all kernels pertaining to the combined LTwoDot+Laplace operator on boundary grids.
+/// Sets arguments for all kernels pertaining to the combined LTwoDot+Laplace operator on boundary
+/// grids.
 void SetArgumentsLTwoDotLaplaceBound();
-
-
-}
-}
-}
-
+}  // namespace oclpdekernels
+}  // namespace parallel
+}  // namespace sgpp

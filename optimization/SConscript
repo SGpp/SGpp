@@ -17,7 +17,7 @@ Import("exampleTargetList")
 Import("config")
 Import('headerSourceList')
 Import('headerDestList')
-
+Import('lintAction')
 
 moduleDependencies = ["sgppbase"]
 Export('moduleDependencies')
@@ -35,61 +35,64 @@ if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
             config.CheckLib("umfpack", language="C++"):
         moduleDependencies.append("umfpack")
         env["CPPDEFINES"]["USE_UMFPACK"] = "1"
-        print "SGPP::optimization will be compiled with UMFPACK."
+        print "sgpp::optimization will be compiled with UMFPACK."
     else:
         env["CPPDEFINES"]["DONT_USE_UMFPACK"] = "1"
-        print "SGPP::optimization will be compiled without UMFPACK (not found)."
+        print "sgpp::optimization will be compiled without UMFPACK (not found)."
 else:
-    print "SGPP::optimization will be compiled without UMFPACK."
+    print "sgpp::optimization will be compiled without UMFPACK."
 
 if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
     if config.CheckHeader("eigen3/Eigen/Dense", language="C++"):
         env["CPPDEFINES"]["USE_EIGEN"] = "1"
-        print "SGPP::optimization will be compiled with Eigen."
+        print "sgpp::optimization will be compiled with Eigen."
     else:
         env["CPPDEFINES"]["DONT_USE_EIGEN"] = "1"
-        print "SGPP::optimization will be compiled without Eigen (not found)."
+        print "sgpp::optimization will be compiled without Eigen (not found)."
 else:
-    print "SGPP::optimization will be compiled without Eigen."
+    print "sgpp::optimization will be compiled without Eigen."
 
 if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
     if config.CheckHeader("armadillo", language="C++") and \
             config.CheckLib("armadillo", language="C++"):
         moduleDependencies.append("armadillo")
         env["CPPDEFINES"]["USE_ARMADILLO"] = "1"
-        print "SGPP::optimization will be compiled with Armadillo."
+        print "sgpp::optimization will be compiled with Armadillo."
     else:
         env["CPPDEFINES"]["DONT_USE_ARMADILLO"] = "1"
-        print "SGPP::optimization will be compiled without Armadillo (not found)."
+        print "sgpp::optimization will be compiled without Armadillo (not found)."
 else:
-    print "SGPP::optimization will be compiled without Armadillo."
+    print "sgpp::optimization will be compiled without Armadillo."
 
 if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
     if config.CheckHeader("gmm/gmm.h", language="C++"):
         env["CPPDEFINES"]["USE_GMMPP"] = "1"
-        print "SGPP::optimization will be compiled with Gmm++."
+        print "sgpp::optimization will be compiled with Gmm++."
     else:
         env["CPPDEFINES"]["DONT_USE_GMMPP"] = "1"
-        print "SGPP::optimization will be compiled without Gmm++ (not found)."
+        print "sgpp::optimization will be compiled without Gmm++ (not found)."
 else:
-    print "SGPP::optimization will be compiled without Gmm++."
+    print "sgpp::optimization will be compiled without Gmm++."
 
 
 
 dependencies = ["base"]
 
-srcs = []
+cpps = []
+hpps = []
+objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("src"):
     for fileName in fnmatch.filter(fileNames, "*.cpp"):
-        srcs.append(os.path.join(currentFolder, fileName))
+        cpp = os.path.join(currentFolder, fileName)
+        cpps.append(cpp)
+        objs.append(env.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
-
-objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 if env['USE_STATICLIB']:
     libsuffix = env['LIBSUFFIX']
@@ -115,13 +118,20 @@ for lib_str in moduleDependencies:
 
 libInstall = env.Install(BUILD_DIR, lib)
 
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
-        exampleTargetList.append(example)
+# build examples
+if env["ARCH"] != "mic":
+    example_env = env.Clone()
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            cpp = os.path.join("examples", fileName)
+            cpps.append(cpp)
+            example = example_env.Program(source=cpp)
+            example_env.Requires(example, libInstall)
+            exampleTargetList.append(example)
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("examples", fileName)
+            hpps.append(hpp)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
@@ -131,7 +141,12 @@ if env['COMPILE_BOOST_TESTS']:
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+            cpp = os.path.join("tests", fileName)
+            cpps.append(cpp)
+            testObjects += [test_env.Object(source=cpp)]
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("tests", fileName)
+            hpps.append(hpp)
     if len(testObjects) > 0:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
                 (".exe" if env['PLATFORM'] == 'win32' else '')
@@ -141,6 +156,11 @@ if env['COMPILE_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
 
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

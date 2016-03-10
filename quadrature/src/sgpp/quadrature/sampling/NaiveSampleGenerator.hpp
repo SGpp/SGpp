@@ -9,32 +9,29 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
-#include <random>
-
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
  * The class NaiveSampleGenerator implements a simple MonteCarlo sample
  * generator. A sample is generated using the standard random number
- * generator from cmath and transforming the values to float_t range 0.0 to
+ * generator from cmath and transforming the values to double range 0.0 to
  * 1.0.
  */
 class NaiveSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
    * @param dimension number of dimensions used for sample generation
    * @param seed custom seed (defaults to default seed of mt19937_64)
    */
-  NaiveSampleGenerator(size_t dimension,
-                       std::uint64_t seed = std::mt19937_64::default_seed);
+  explicit NaiveSampleGenerator(size_t dimension,
+                                std::uint64_t seed = std::mt19937_64::default_seed);
 
   /**
    * Destructor
@@ -47,13 +44,13 @@ class NaiveSampleGenerator : public SampleGenerator {
    *
    * @param sample DataVector storing the new generated sample vector.
    */
-  virtual void getSample(SGPP::base::DataVector& sample);
+  virtual void getSample(sgpp::base::DataVector& sample);
 
  private:
-  std::uniform_real_distribution<float_t> uniformRealDist;
+  std::uniform_real_distribution<double> uniformRealDist;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp
 
 #endif /* NAIVESAMPLEGENERATOR_HPP */

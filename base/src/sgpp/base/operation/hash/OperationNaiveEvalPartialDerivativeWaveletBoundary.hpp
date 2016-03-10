@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,7 +28,7 @@ class OperationNaiveEvalPartialDerivativeWaveletBoundary :
    * @param storage   storage of the sparse grid
    */
   explicit OperationNaiveEvalPartialDerivativeWaveletBoundary(
-    GridStorage* storage) :
+    GridStorage& storage) :
     storage(storage) {
   }
 
@@ -44,18 +44,18 @@ class OperationNaiveEvalPartialDerivativeWaveletBoundary :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
+  double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
                                 size_t derivDim) override;
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBoundaryBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALPARTIALDERIVATIVEWAVELETBOUNDARY_HPP */

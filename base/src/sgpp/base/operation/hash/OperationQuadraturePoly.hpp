@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,7 +27,7 @@ class OperationQuadraturePoly : public OperationQuadrature {
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationQuadraturePoly(GridStorage* storage, size_t degree) : storage(storage),
+  OperationQuadraturePoly(GridStorage& storage, size_t degree) : storage(storage),
     base(degree) {}
 
   ~OperationQuadraturePoly() override {}
@@ -37,16 +37,16 @@ class OperationQuadraturePoly : public OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(DataVector& alpha) override;
+  double doQuadrature(DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Basis object
   SPolyBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONQUADRATURE_HPP */

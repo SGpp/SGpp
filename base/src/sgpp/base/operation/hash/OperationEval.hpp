@@ -8,16 +8,12 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#ifdef _WIN32
-#pragma warning(disable: 4267)
-#endif
-
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -42,8 +38,8 @@ class OperationEval {
    * @param alpha The coefficients of the sparse grid's basis functions
    * @param point The coordinates of the evaluation point
    */
-  float_t eval(const DataVector& alpha,
-               const std::vector<float_t>& point) {
+  double eval(const DataVector& alpha,
+               const std::vector<double>& point) {
     DataVector p(point);
     return eval(alpha, p);
   }
@@ -54,11 +50,11 @@ class OperationEval {
    * @param alpha The coefficients of the sparse grid's basis functions
    * @param point The coordinates of the evaluation point
    */
-  virtual float_t eval(const DataVector& alpha,
+  virtual double eval(const DataVector& alpha,
                        const DataVector& point) = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVAL_HPP */

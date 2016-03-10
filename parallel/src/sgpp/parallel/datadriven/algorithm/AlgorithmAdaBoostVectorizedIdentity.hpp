@@ -12,35 +12,36 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /*
  * Algorithm for Adaboosting
- * This algorithm is to train Train base learner according to sample distribution and obtain hypothesis
+ * This algorithm is to train Train base learner according to sample distribution and obtain
+ * hypothesis
  * get the hypothesis weight
  * Then combine hypothesis linearly
  *
- * The main idea behind the algorithm is to get a better accuracy in classify dateset according to the training dataset
+ * The main idea behind the algorithm is to get a better accuracy in classify dateset according to
+ * the training dataset
  *
  * Vectorized MultipleEvalulation Operations are used!
  */
-class AlgorithmAdaBoostVectorizedIdentity : public
-  SGPP::datadriven::AlgorithmAdaBoostBase {
+class AlgorithmAdaBoostVectorizedIdentity : public sgpp::datadriven::AlgorithmAdaBoostBase {
  protected:
   /// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
   VectorizationType vecMode;
 
-  virtual void alphaSolver(double& lambda, SGPP::base::DataVector& weight,
-                           SGPP::base::DataVector& alpha, bool final);
+  virtual void alphaSolver(double& lambda, sgpp::base::DataVector& weight,
+                           sgpp::base::DataVector& alpha, bool final);
 
  public:
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)
+   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 =
+   * ModLinear Grid)
    * @param gridLevel reference to the level of grid
    * @param trainData reference to the training dataset
    * @param trainDataClass reference to the class of training dataset
@@ -64,14 +65,15 @@ class AlgorithmAdaBoostVectorizedIdentity : public
    * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
    * @param mode the adaboost type to choose
    */
-  AlgorithmAdaBoostVectorizedIdentity(SGPP::base::Grid& SparseGrid,
-                                      size_t gridType, int gridLevel, SGPP::base::DataMatrix& trainData,
-                                      SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX,
-                                      double eps, size_t IMAX_final, double eps_final, double firstLabel,
-                                      double secondLabel, double threshold, double maxLambda, double minLambda,
-                                      size_t searchNum, bool refine, size_t refineMode, size_t refineNum,
-                                      size_t numberOfAda, double percentOfAda, VectorizationType vecMode,
-                                      size_t mode);
+  AlgorithmAdaBoostVectorizedIdentity(sgpp::base::Grid& SparseGrid, size_t gridType, int gridLevel,
+                                      sgpp::base::DataMatrix& trainData,
+                                      sgpp::base::DataVector& trainDataClass, size_t NUM,
+                                      double lambda, size_t IMAX, double eps, size_t IMAX_final,
+                                      double eps_final, double firstLabel, double secondLabel,
+                                      double threshold, double maxLambda, double minLambda,
+                                      size_t searchNum, bool refine, size_t refineMode,
+                                      size_t refineNum, size_t numberOfAda, double percentOfAda,
+                                      VectorizationType vecMode, size_t mode);
 
   /**
    * Std-Deconstructor
@@ -79,8 +81,7 @@ class AlgorithmAdaBoostVectorizedIdentity : public
   virtual ~AlgorithmAdaBoostVectorizedIdentity();
 };
 
-}
-
-}
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif /* ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP */

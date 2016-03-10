@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 /**
  * Implements the hierarchisation on a sprase grid with mod linear base functions
@@ -24,11 +24,11 @@ namespace base {
  */
 void OperationHierarchisationModLinear::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationModLinear func(this->storage);
-  sweep<HierarchisationModLinear> s(func, this->storage);
+  HierarchisationModLinear func(storage);
+  sweep<HierarchisationModLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
@@ -40,14 +40,14 @@ void OperationHierarchisationModLinear::doHierarchisation(
  *
  */
 void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationModLinear func(this->storage);
-  sweep<DehierarchisationModLinear> s(func, this->storage);
+  DehierarchisationModLinear func(storage);
+  sweep<DehierarchisationModLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

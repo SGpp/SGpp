@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -29,7 +29,7 @@ class OperationEvalModBspline : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalModBspline(GridStorage* storage, size_t degree) :
+  OperationEvalModBspline(GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree) {}
 
@@ -38,17 +38,17 @@ class OperationEvalModBspline : public OperationEval {
    */
   ~OperationEvalModBspline() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Mod Bspline Basis object
   SBsplineModifiedBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALMODBSPLINE_HPP */

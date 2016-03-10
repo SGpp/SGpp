@@ -5,9 +5,9 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include "OperationMultipleEvalPolyBoundary.hpp"
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationMultipleEvalPolyBoundary::mult(DataVector& alpha,
@@ -25,4 +25,4 @@ void OperationMultipleEvalPolyBoundary::multTranspose(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

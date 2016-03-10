@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void SubspaceRefinement::addElementToCollection(
@@ -29,7 +29,7 @@ void SubspaceRefinement::addElementToCollection(
     element) {
       bool result = true;
 
-      for (size_t d = 0; d < key_value.first->getIndex().dim(); d++) {
+      for (size_t d = 0; d < key_value.first->getIndex().getDimension(); d++) {
         result = result
                  && (key_value.first->getIndex().getLevel(d) ==
                      element.first->getIndex().getLevel(d));
@@ -54,9 +54,9 @@ void SubspaceRefinement::addElementToCollection(
 }
 
 
-void SubspaceRefinement::free_refine(GridStorage* storage,
-                                     RefinementFunctor* functor) {
-  if (storage->size() == 0) {
+void SubspaceRefinement::free_refine(GridStorage& storage,
+                                     RefinementFunctor& functor) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -68,19 +68,19 @@ void SubspaceRefinement::free_refine(GridStorage* storage,
 
 
 
-void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
-    RefinementFunctor* functor,
+void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
-  if (functor->getRefinementsNum() == 0) return;
+  if (functor.getRefinementsNum() == 0) return;
 
-  size_t refinements_num = functor->getRefinementsNum();
+  size_t refinements_num = functor.getRefinementsNum();
 
   index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
 
   // start iterating over whole grid
-  for (GridStorage::grid_map_iterator iter = storage->begin();
+  for (GridStorage::grid_map_iterator iter = storage.begin();
        iter != end_iter; iter++) {
     index = *(iter->first);
 
@@ -91,7 +91,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
     // check for each grid point whether it can be refined
     // (i.e., whether not all kids exist yet)
     // if yes, check whether it belongs to the refinements_num largest ones
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -100,7 +100,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
 
       // test existence of left child
       index.set(d, source_level + 1, 2 * source_index - 1);
-      child_iter = storage->find(&index);
+      child_iter = storage.find(&index);
 
       // if there no more grid points --> test if we should refine the grid
       if (child_iter == end_iter) {
@@ -118,7 +118,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
 
       // test existence of right child
       index.set(d, source_level + 1, 2 * source_index + 1);
-      child_iter = storage->find(&index);
+      child_iter = storage.find(&index);
 
       if (child_iter == end_iter) {
         AbstractRefinement::refinement_list_type current_value_list =
@@ -152,11 +152,11 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
 }
 
 
-void SubspaceRefinement::refineGridpointsCollection(GridStorage* storage,
-    RefinementFunctor* functor,
+void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  HashGridIndex grid_index(storage->dim());
+  HashGridIndex grid_index(storage.getDimension());
 
   // refine all points of the subspace in all dimensions
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
@@ -165,14 +165,14 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage* storage,
 
     for (IndexInSubspaceGenerator::iterator index_it = subspace.begin();
          index_it != subspace.end(); index_it++) {
-      for (size_t d = 0; d < storage->dim(); d++) {
+      for (size_t d = 0; d < storage.getDimension(); d++) {
         grid_index.set(d, level_vector[d], (*index_it)[d]);
       }
 
-      refineGridpoint(storage, storage->seq(&grid_index));
+      refineGridpoint(storage, storage.seq(&grid_index));
     }
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

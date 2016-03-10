@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -23,19 +23,19 @@ namespace datadriven {
  * application of classification for the Systemmatrix by using a
  * density function
  */
-class DensitySystemMatrix : public SGPP::base::OperationMatrix {
+class DensitySystemMatrix : public sgpp::base::OperationMatrix {
  private:
   /// the lambda, the regularisation parameter
-  float_t lambda;
+  double lambda;
   /// Operation A for calculating the data matrix
   /// (L2 Dot-Product of basis functions)
-  SGPP::base::OperationMatrix* A;
+  sgpp::base::OperationMatrix* A;
   /// OperationB for calculating the data matrix
-  SGPP::base::OperationMultipleEval* B;
+  sgpp::base::OperationMultipleEval* B;
   /// OperationMatrix, the regularisation method
-  SGPP::base::OperationMatrix* C;
+  sgpp::base::OperationMatrix* C;
   /// Training data
-  SGPP::base::DataMatrix* data;
+  sgpp::base::DataMatrix* data;
 
  public:
   /**
@@ -46,8 +46,8 @@ class DensitySystemMatrix : public SGPP::base::OperationMatrix {
    * @param C the regression functional
    * @param lambdaRegression the regression parameter
    */
-  DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData,
-                      SGPP::base::OperationMatrix& C, float_t lambdaRegression);
+  DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
+                      sgpp::base::OperationMatrix& C, double lambdaRegression);
 
   /**
    * Generates the left hand side of the classification equation
@@ -55,7 +55,7 @@ class DensitySystemMatrix : public SGPP::base::OperationMatrix {
    * @param alpha parameters for the sparse grid functions
    * @param result reference to the vector which will contain the result
    */
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
@@ -63,7 +63,7 @@ class DensitySystemMatrix : public SGPP::base::OperationMatrix {
    * @param b reference to the vector which will contain the result of the
    * matrix vector multiplication on the rhs
    */
-  void generateb(SGPP::base::DataVector& b);
+  void generateb(sgpp::base::DataVector& b);
 
   /**
    * Std-Destructor
@@ -72,6 +72,6 @@ class DensitySystemMatrix : public SGPP::base::OperationMatrix {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DENSITYSYSTEMMATRIX_HPP */

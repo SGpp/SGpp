@@ -9,6 +9,7 @@ import os
 import SGppConfigure
 from SCons.Script.SConscript import SConsEnvironment
 import warnings
+import subprocess
 
 from Helper import *
 
@@ -62,7 +63,6 @@ vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
-vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 
 
 for moduleName in moduleNames:
@@ -82,12 +82,12 @@ vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
 vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test. Currently only buildable with OpenCL enabled', False))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
-vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
+vars.Add(BoolVariable('RUN_CPPLINT', 'Check compliance to Google\'s style guide using cpplint.', True))
 
-vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for sgpp::optimization).', False))
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 vars.Add(BoolVariable('PRINT_INSTRUCTIONS', 'Print instruction for installing SG++.', True))
 
@@ -220,6 +220,13 @@ if env['PLATFORM'] == 'win32':
       env["ENV"]["PATH"] = os.pathsep.join([
           env["ENV"].get("PATH", ""),
           env["BOOST_LIBRARY_PATH"]])
+
+#Mac OS X doens't use LD_LIBRARY_PATH 
+elif env['PLATFORM'] == 'darwin':
+    env["ENV"]["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join([
+        env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", ""),
+        BUILD_DIR.abspath])
+
 else:
     env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
         env["ENV"].get("LD_LIBRARY_PATH", ""),
@@ -250,6 +257,38 @@ if env['PLATFORM'] == 'win32':
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
                                               PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
+
+def lintAction(target, source, env):
+    p = subprocess.Popen(["python", "tools/cpplint.py", "--ignorecfg=yes",
+                          "--extensions=cpp,hpp", "--linelength=100",
+                          source[0].abspath],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # wait for termination and get output on stdout and stderr
+    stdout, stderr = p.communicate()
+    # cpplint prints on stderr
+    for line in stderr.splitlines():
+        # skip status lines, empty lines, and some warning types
+        if ("Done processing " in line) or \
+                ("Total errors found: " in line) or \
+                ("Is this a non-const reference? " +
+                 "If so, make const or use a pointer:" in line) or \
+                ("Consider using rand_r(...) instead of rand(...) for " +
+                 "improved thread safety." in line) or \
+                ("<chrono> is an unapproved C++11 header." in line) or \
+                (line == ""):
+            pass
+        else:
+            parts = line.split(":  ")
+            location = parts[0]
+            message = ":  ".join(parts[1:])
+            print location + ": warning: " + message
+    # touch file without writing anything
+    # (to indicate for the next run of SCons that we already checked this file)
+    with open(target[0].abspath, "w"): pass
+
+env.Export('lintAction')
+
 # -------------------------------------------------------------------------
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
@@ -366,6 +405,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   if env['PLATFORM'] == 'win32':
     # install the python library to that temporary folder
     dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+    
 
   # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
@@ -407,35 +447,38 @@ def printFinished(target, source, env):
   import string
   if env['PLATFORM'] in ['cygwin', 'win32']:
     filename = "INSTRUCTIONS_WINDOWS"
+  if env['PLATFORM'] == 'darwin' :
+    filename = "INSTRUCTIONS_MAC"
   else:
     filename = "INSTRUCTIONS"
-
+ 
   with open(filename) as f:
     instructionsTemplate = string.Template(f.read())
     print
     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-
+ 
 if env["PRINT_INSTRUCTIONS"]:
     dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
 for i in range(len(dependencies) - 1):
   env.Depends(dependencies[i + 1], dependencies[i])
-
+ 
 # Stuff needed for system install
 env.Clean("distclean",
   [
     "config.log",
   ])
-Default(libraryTargetList, dependencies)
-
+# TODO(killian): the next line messes up the dependency tracking, seems to not be required, please check (reported by David)
+#Default(libraryTargetList, dependencies)
+    
 ils = env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
-
+   
 headerFinalDestList = []
 for headerDest in headerDestList:
   headerFinalDestList.append(os.path.join( env.get('INCLUDEDIR'), headerDest))
-
+   
 iis = env.Alias('install-inc-sgpp', InstallAs(headerFinalDestList, headerSourceList))
-
+   
 env.Alias('install', [ils, iis])

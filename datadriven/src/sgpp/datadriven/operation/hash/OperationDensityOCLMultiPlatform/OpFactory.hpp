@@ -7,10 +7,10 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OperationDensityOCLMultiPlatform.hpp"
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-SGPP::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
+sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf);
 }

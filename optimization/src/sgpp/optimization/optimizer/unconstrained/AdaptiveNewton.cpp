@@ -9,57 +9,44 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 
-namespace SGPP {
+#include <algorithm>
+
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveNewton::AdaptiveNewton(
-  ScalarFunction& f,
-  ScalarFunctionHessian& fHessian,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor,
-  float_t dampingIncreaseFactor,
-  float_t dampingDecreaseFactor,
-  float_t lineSearchAccuracy) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fHessian(fHessian),
-  theta(tolerance),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor),
-  rhoLambdaPlus(dampingIncreaseFactor),
-  rhoLambdaMinus(dampingDecreaseFactor),
-  rhoLs(lineSearchAccuracy),
-  defaultSleSolver(sle_solver::GaussianElimination()),
-  sleSolver(defaultSleSolver) {
-}
+AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian,
+                               size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+                               double stepSizeDecreaseFactor, double dampingIncreaseFactor,
+                               double dampingDecreaseFactor, double lineSearchAccuracy)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fHessian(fHessian),
+      theta(tolerance),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor),
+      rhoLambdaPlus(dampingIncreaseFactor),
+      rhoLambdaMinus(dampingDecreaseFactor),
+      rhoLs(lineSearchAccuracy),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(defaultSleSolver) {}
 
-AdaptiveNewton::AdaptiveNewton(
-  ScalarFunction& f,
-  ScalarFunctionHessian& fHessian,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor,
-  float_t dampingIncreaseFactor,
-  float_t dampingDecreaseFactor,
-  float_t lineSearchAccuracy,
-  const sle_solver::SLESolver& sleSolver) :
-  UnconstrainedOptimizer(f, N),
-  fHessian(fHessian),
-  theta(tolerance),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor),
-  rhoLambdaPlus(dampingIncreaseFactor),
-  rhoLambdaMinus(dampingDecreaseFactor),
-  rhoLs(lineSearchAccuracy),
-  defaultSleSolver(sle_solver::GaussianElimination()),
-  sleSolver(sleSolver) {
-}
+AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian,
+                               size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+                               double stepSizeDecreaseFactor, double dampingIncreaseFactor,
+                               double dampingDecreaseFactor, double lineSearchAccuracy,
+                               const sle_solver::SLESolver& sleSolver)
+    : UnconstrainedOptimizer(f, N),
+      fHessian(fHessian),
+      theta(tolerance),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor),
+      rhoLambdaPlus(dampingIncreaseFactor),
+      rhoLambdaMinus(dampingDecreaseFactor),
+      rhoLs(lineSearchAccuracy),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(sleSolver) {}
 
-AdaptiveNewton::~AdaptiveNewton() {
-}
+AdaptiveNewton::~AdaptiveNewton() {}
 
 void AdaptiveNewton::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
@@ -72,7 +59,7 @@ void AdaptiveNewton::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx = NAN;
+  double fx = NAN;
   base::DataVector gradFx(d);
   base::DataMatrix hessianFx(d, d);
 
@@ -80,23 +67,22 @@ void AdaptiveNewton::optimize() {
   bool lsSolved;
 
   base::DataVector xNew(x0);
-  float_t fxNew;
+  double fxNew;
 
   FullSLE system(hessianFx);
   size_t k = 0;
-  float_t alpha = 1.0;
-  float_t lambda = 1.0;
+  double alpha = 1.0;
+  double lambda = 1.0;
   base::DataVector dir(d);
   bool inDomain;
 
   size_t breakIterationCounter = 0;
   const size_t BREAK_ITERATION_COUNTER_MAX = 10;
 
-  const float_t ALPHA1 = 1e-6;
-  const float_t ALPHA2 = 1e-6;
-  const float_t P = 0.1;
-  const bool statusPrintingEnabled =
-    Printer::getInstance().isStatusPrintingEnabled();
+  const double ALPHA1 = 1e-6;
+  const double ALPHA2 = 1e-6;
+  const double P = 0.1;
+  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
   while (k < N) {
     // calculate gradient and Hessian
@@ -108,7 +94,7 @@ void AdaptiveNewton::optimize() {
       fHist.append(fx);
     }
 
-    const float_t gradFxNorm = gradFx.l2Norm();
+    const double gradFxNorm = gradFx.l2Norm();
 
     if (gradFxNorm == 0.0) {
       break;
@@ -132,12 +118,11 @@ void AdaptiveNewton::optimize() {
       Printer::getInstance().enableStatusPrinting();
     }
 
-    const float_t dirNorm = dir.l2Norm();
+    const double dirNorm = dir.l2Norm();
 
     // acceptance criterion
     if (lsSolved && (b.dotProduct(dir) >=
-                     std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) *
-                     dirNorm * dirNorm)) {
+                     std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) * dirNorm * dirNorm)) {
       // normalize search direction
       for (size_t t = 0; t < d; t++) {
         dir[t] /= dirNorm;
@@ -167,16 +152,15 @@ void AdaptiveNewton::optimize() {
     k++;
 
     // inner product of gradient and search direction
-    float_t gradFxTimesDir = gradFx.dotProduct(dir);
+    double gradFxTimesDir = gradFx.dotProduct(dir);
 
     // line search
-    while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) &&
-           (alpha > 0.0)) {
+    while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) && (alpha > 0.0)) {
       alpha *= rhoAlphaMinus;
 
       // increase damping
       if (rhoLambdaPlus != 1.0) {
-        const float_t oldLambda = lambda;
+        const double oldLambda = lambda;
         lambda *= rhoLambdaPlus;
 
         for (size_t t = 0; t < d; t++) {
@@ -222,15 +206,14 @@ void AdaptiveNewton::optimize() {
     fHist.append(fx);
 
     // increase step size
-    alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
+    alpha = std::min(rhoAlphaPlus * alpha, 1.0);
 
     // decrease damping
     lambda *= rhoLambdaMinus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha * dir is smaller than tolerance theta
@@ -252,68 +235,45 @@ void AdaptiveNewton::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {
-  return fHessian;
-}
+ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const { return fHessian; }
 
-float_t AdaptiveNewton::getTolerance() const {
-  return theta;
-}
+double AdaptiveNewton::getTolerance() const { return theta; }
 
-void AdaptiveNewton::setTolerance(float_t tolerance) {
-  theta = tolerance;
-}
+void AdaptiveNewton::setTolerance(double tolerance) { theta = tolerance; }
 
-float_t AdaptiveNewton::getStepSizeIncreaseFactor() const {
-  return rhoAlphaPlus;
-}
+double AdaptiveNewton::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void AdaptiveNewton::setStepSizeIncreaseFactor(
-  float_t stepSizeIncreaseFactor) {
+void AdaptiveNewton::setStepSizeIncreaseFactor(double stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t AdaptiveNewton::getStepSizeDecreaseFactor() const {
-  return rhoAlphaMinus;
-}
+double AdaptiveNewton::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void AdaptiveNewton::setStepSizeDecreaseFactor(
-  float_t stepSizeDecreaseFactor) {
+void AdaptiveNewton::setStepSizeDecreaseFactor(double stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-float_t AdaptiveNewton::getDampingIncreaseFactor() const {
-  return rhoLambdaPlus;
-}
+double AdaptiveNewton::getDampingIncreaseFactor() const { return rhoLambdaPlus; }
 
-void AdaptiveNewton::setDampingIncreaseFactor(
-  float_t dampingIncreaseFactor) {
+void AdaptiveNewton::setDampingIncreaseFactor(double dampingIncreaseFactor) {
   rhoLambdaPlus = dampingIncreaseFactor;
 }
 
-float_t AdaptiveNewton::getDampingDecreaseFactor() const {
-  return rhoLambdaMinus;
-}
+double AdaptiveNewton::getDampingDecreaseFactor() const { return rhoLambdaMinus; }
 
-void AdaptiveNewton::setDampingDecreaseFactor(
-  float_t dampingDecreaseFactor) {
+void AdaptiveNewton::setDampingDecreaseFactor(double dampingDecreaseFactor) {
   rhoLambdaMinus = dampingDecreaseFactor;
 }
 
-float_t AdaptiveNewton::getLineSearchAccuracy() const {
-  return rhoLs;
-}
+double AdaptiveNewton::getLineSearchAccuracy() const { return rhoLs; }
 
-void AdaptiveNewton::setLineSearchAccuracy(
-  float_t lineSearchAccuracy) {
+void AdaptiveNewton::setLineSearchAccuracy(double lineSearchAccuracy) {
   rhoLs = lineSearchAccuracy;
 }
 
-void AdaptiveNewton::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new AdaptiveNewton(*this));
+void AdaptiveNewton::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new AdaptiveNewton(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace sgpp

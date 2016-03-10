@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -27,10 +27,8 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalPeriodic(Grid& grid,
-                                DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalPeriodic(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -43,10 +41,10 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALPERIODIC_HPP */

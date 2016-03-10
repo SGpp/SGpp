@@ -1,22 +1,25 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
+#include <vector>
+
 #include "GridCreator.hpp"
 
-const bool use_double_precision =
-#if USE_DOUBLE_PRECISION
-  true;
-#else
-  false;
-#endif /* USE_DOUBLE_PRECISION */
-
-using namespace SGPP;
-using namespace SGPP::optimization;
+using sgpp::optimization::OperationMultipleHierarchisation;
+using sgpp::optimization::Printer;
+using sgpp::optimization::RandomNumberGenerator;
+using sgpp::optimization::ScalarFunction;
+using sgpp::optimization::test_problems::Sphere;
 
 BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
   Printer::getInstance().setVerbosity(-1);
@@ -26,32 +29,33 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
   const size_t p = 5;
   const size_t l = 4;
   const size_t m = 4;
-  const SGPP::float_t tol = (use_double_precision ? 1e-4 : 1e-1);
+  const double tol = 1e-4;
 
-  test_functions::Sphere f(d);
+  Sphere testProblem(d);
+  ScalarFunction& f = testProblem.getObjectiveFunction();
 
   // Test All The Grids!
-  std::vector<std::unique_ptr<base::Grid>> grids;
+  std::vector<std::unique_ptr<sgpp::base::Grid>> grids;
   createSupportedGrids(d, p, grids);
 
   for (auto& grid : grids) {
-    base::DataVector functionValues(0);
-    f.generateDisplacement();
+    sgpp::base::DataVector functionValues(0);
+    testProblem.generateDisplacement();
     createSampleGrid(*grid, l, f, functionValues);
 
-    base::DataMatrix functionValuesMatrix(grid->getSize(), m);
+    sgpp::base::DataMatrix functionValuesMatrix(grid->getSize(), m);
 
     for (size_t j = 0; j < m; j++) {
-      base::DataVector column(0);
-      f.generateDisplacement();
+      sgpp::base::DataVector column(0);
+      testProblem.generateDisplacement();
       createSampleGrid(*grid, l, f, column);
       functionValuesMatrix.setColumn(j, column);
     }
 
     std::unique_ptr<OperationMultipleHierarchisation> op(
-      op_factory::createOperationMultipleHierarchisation(*grid));
+      sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
 
-    base::DataVector functionValues2(functionValues);
+    sgpp::base::DataVector functionValues2(functionValues);
     op->doHierarchisation(functionValues2);
     op->doDehierarchisation(functionValues2);
 
@@ -59,7 +63,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
       BOOST_CHECK_CLOSE(functionValues[i], functionValues2[i], tol);
     }
 
-    base::DataMatrix functionValuesMatrix2(functionValuesMatrix);
+    sgpp::base::DataMatrix functionValuesMatrix2(functionValuesMatrix);
     op->doHierarchisation(functionValuesMatrix2);
     op->doDehierarchisation(functionValuesMatrix2);
 

@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DehierarchisationPolyBoundary.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPolyBoundary.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
 DehierarchisationPolyBoundary::DehierarchisationPolyBoundary(
-  GridStorage* storage, SPolyBoundaryBase* base) :
+  GridStorage& storage, SPolyBoundaryBase* base) :
   storage(storage), base(base) {
 }
 
@@ -53,8 +53,8 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // Dehierarchisation
-  float_t x = static_cast<float_t>(cur_ind) /
-              static_cast<float_t>(1 << cur_lev);
+  double x = static_cast<double>(cur_ind) /
+              static_cast<double>(1 << cur_lev);
   // v_i * 1 + sum_{j < i} v_j * \phi(x_i)
   result[seq] = source[seq]
                 + base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
@@ -71,14 +71,14 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
@@ -94,4 +94,4 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

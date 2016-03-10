@@ -3,10 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATION_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATION_HPP
-
-#include <vector>
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIER_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIER_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -14,7 +12,9 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 
-namespace SGPP {
+#include <vector>
+
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -26,14 +26,12 @@ class OperationMultipleHierarchisation {
   /**
    * Constructor.
    */
-  OperationMultipleHierarchisation() {
-  }
+  OperationMultipleHierarchisation() {}
 
   /**
    * Destructor.
    */
-  virtual ~OperationMultipleHierarchisation() {
-  }
+  virtual ~OperationMultipleHierarchisation() {}
 
   /**
    * Virtual method for hierarchizing for one set of function values.
@@ -75,8 +73,7 @@ class OperationMultipleHierarchisation {
    */
   virtual void doDehierarchisation(base::DataMatrix& alpha) = 0;
 };
+}  // namespace optimization
+}  // namespace sgpp
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATION_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIER_HPP */

@@ -3,23 +3,23 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationNaiveEvalPolyBoundary.hpp"
+#include <sgpp/base/operation/hash/OperationNaiveEvalPolyBoundary.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationNaiveEvalPolyBoundary::eval(const DataVector& alpha,
+double OperationNaiveEvalPolyBoundary::eval(const DataVector& alpha,
     const DataVector& point) {
-  const size_t n = storage->size();
-  const size_t dim = storage->dim();
-  float_t result = 0.0;
+  const size_t n = storage.getSize();
+  const size_t dim = storage.getDimension();
+  double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *(*storage)[i];
-    float_t curValue = 1.0;
+    const GridIndex& gp = *storage[i];
+    double curValue = 1.0;
 
     for (size_t idim = 0; idim < dim; idim++) {
-      const float_t val1d = base.evalSave(gp.getLevel(idim),
+      const double val1d = base.evalSave(gp.getLevel(idim),
                                           gp.getIndex(idim), point[idim]);
 
       if (val1d == 0.0) {
@@ -37,4 +37,4 @@ float_t OperationNaiveEvalPolyBoundary::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

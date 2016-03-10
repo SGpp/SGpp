@@ -11,10 +11,10 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-SquareRootGridGenerator::SquareRootGridGenerator(GridStorage* storage) :
+SquareRootGridGenerator::SquareRootGridGenerator(GridStorage& storage) :
   storage(storage) {
 }
 
@@ -30,7 +30,7 @@ void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {
   throw generation_exception("Method is not implemented");
 }
 
-// void L0BoundaryGridGenerator::refine(RefinementFunctor* func)
+// void L0BoundaryGridGenerator::refine(RefinementFunctor& func)
 // {
 //   HashRefinementBoundaries refine;
 //   refine.free_refine(this->storage, func);
@@ -42,8 +42,8 @@ void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {
 //   return refine.getNumberOfRefinablePoints(this->storage);
 // }
 //
-// void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
-// DataVector* alpha)
+// void L0BoundaryGridGenerator::coarsen(CoarseningFunctor& func,
+// DataVector& alpha)
 // {
 //   HashCoarsening coarsen;
 //   coarsen.free_coarsen(this->storage, func, alpha);
@@ -55,7 +55,7 @@ void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {
 //   return coarsen.getNumberOfRemovablePoints(this->storage);
 // }
 //
-// void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+// void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
 // unsigned int maxLevel)
 // {
 //   HashRefinementBoundariesMaxLevel refine;
@@ -71,5 +71,5 @@ void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

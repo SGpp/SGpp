@@ -20,14 +20,14 @@
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "AdaptiveOCLKernelImpl.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 template <typename T>
 class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
  protected:
   size_t m_dims;
-  SGPP::base::DataMatrix preparedDataset;
+  sgpp::base::DataMatrix preparedDataset;
   base::OCLOperationConfiguration parameters;
   T* kernelDataset = nullptr;
   size_t datasetSize = 0;
@@ -49,23 +49,22 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   uint32_t m_hardAdaptivityLimit = 1;
 
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
   base::GridStorage* storage;
 
-  float_t duration;
+  double duration;
 
   std::shared_ptr<base::OCLManager> manager;
   std::unique_ptr<AdaptiveOCLKernelImpl<T>> kernel;
 
  public:
-  OperationMultiEvalAdaptiveOCL(
-      base::Grid& grid, base::DataMatrix& dataset,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters)
+  OperationMultiEvalAdaptiveOCL(base::Grid& grid, base::DataMatrix& dataset,
+                                std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(*parameters),
-        myTimer(SGPP::base::SGppStopwatch()),
+        myTimer(sgpp::base::SGppStopwatch()),
         duration(-1.0) {
     this->manager = std::make_shared<base::OCLManager>(parameters);
 
@@ -73,7 +72,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->kernel = std::unique_ptr<AdaptiveOCLKernelImpl<T>>(
         new AdaptiveOCLKernelImpl<T>(m_dims, this->manager, parameters));
 
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
     this->gridSize = grid.getSize();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
@@ -86,18 +85,16 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-    this->kernelDataset = new T[this->preparedDataset.getNrows() *
-                                this->preparedDataset.getNcols()];
+    this->kernelDataset =
+        new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
     for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
       this->kernelDataset[i] = (T) this->preparedDataset[i];
     }
 
     m_softAdaptivityLimit =
-        static_cast<float>(
-            this->parameters["ADAPTIVE_STREAMING_DENSITY"].getUInt()) /
-        100.f;
-    m_hardAdaptivityLimit = static_cast<uint32_t>(
-        this->parameters["ADAPTIVE_STREAMING_HARD_LIMIT"].getUInt());
+        static_cast<float>(this->parameters["ADAPTIVE_STREAMING_DENSITY"].getUInt()) / 100.f;
+    m_hardAdaptivityLimit =
+        static_cast<uint32_t>(this->parameters["ADAPTIVE_STREAMING_HARD_LIMIT"].getUInt());
 
     // create the kernel specific data structures
     this->prepare();
@@ -120,8 +117,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     }
   }
 
-  void mult(SGPP::base::DataVector& alpha,
-            SGPP::base::DataVector& result) override {
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -145,10 +141,9 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       resultArray[i] = 0.0;
     }
 
-    this->kernel->mult(m_streamingArray, m_subspaceArray, m_metaInfo,
-                       this->gridSize, this->kernelDataset, this->datasetSize,
-                       this->alphas, resultArray, gridFrom, gridTo, datasetFrom,
-                       datasetTo, this->numSubspaces, m_streamElementCount,
+    this->kernel->mult(m_streamingArray, m_subspaceArray, m_metaInfo, this->gridSize,
+                       this->kernelDataset, this->datasetSize, this->alphas, resultArray, gridFrom,
+                       gridTo, datasetFrom, datasetTo, this->numSubspaces, m_streamElementCount,
                        m_subElementCount);
 
     for (size_t i = 0; i < result.getSize(); i++) {
@@ -160,8 +155,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(SGPP::base::DataVector& source,
-                     SGPP::base::DataVector& result) override {
+  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -186,11 +180,10 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       resultArray[i] = 0.0;
     }
 
-    this->kernel->multTranspose(
-        m_streamingArray, m_subspaceArray, m_metaInfo, this->gridSize,
-        this->kernelDataset, this->preparedDataset.getNcols(), this->alphas,
-        resultArray, gridFrom, gridTo, datasetFrom, datasetTo,
-        this->numSubspaces, m_streamElementCount, m_subElementCount);
+    this->kernel->multTranspose(m_streamingArray, m_subspaceArray, m_metaInfo, this->gridSize,
+                                this->kernelDataset, this->preparedDataset.getNcols(), this->alphas,
+                                resultArray, gridFrom, gridTo, datasetFrom, datasetTo,
+                                this->numSubspaces, m_streamElementCount, m_subElementCount);
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
@@ -201,7 +194,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() { return this->duration; }
+  double getDuration() { return this->duration; }
 
   void prepare() override {
     this->buildDatastructure();
@@ -212,7 +205,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 
  private:
-  size_t padDataset(SGPP::base::DataMatrix& dataset) {
+  size_t padDataset(sgpp::base::DataMatrix& dataset) {
     size_t dataBlocking = parameters["LOCAL_SIZE"].getUInt();
 
     size_t vecWidth = dataBlocking;
@@ -223,7 +216,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     size_t loopCount = vecWidth - remainder;
 
     if (loopCount != vecWidth) {
-      SGPP::base::DataVector lastRow(dataset.getNcols());
+      sgpp::base::DataVector lastRow(dataset.getNcols());
       size_t oldSize = dataset.getNrows();
       dataset.getRow(dataset.getNrows() - 1, lastRow);
       dataset.resize(dataset.getNrows() + loopCount);
@@ -302,8 +295,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     if (subSize <= m_hardAdaptivityLimit) {
       return true;
     } else {
-      float subspaceDensity =
-          static_cast<float>(numIndices) / static_cast<float>(subSize);
+      float subspaceDensity = static_cast<float>(numIndices) / static_cast<float>(subSize);
 
       if (subspaceDensity <= m_softAdaptivityLimit) {
         return true;
@@ -313,8 +305,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     }
   }
 
-  void addMetaEntry(uint32_t* level, uint32_t startIndex, uint32_t numIndices,
-                    bool isStreaming) {
+  void addMetaEntry(uint32_t* level, uint32_t startIndex, uint32_t numIndices, bool isStreaming) {
     size_t metaInfoStepSize = m_dims + 3;
     m_metaInfo[metaInfoStepSize * m_metaCounter] = isStreaming ? 1 : 0;
     m_metaInfo[metaInfoStepSize * m_metaCounter + 1] = startIndex;
@@ -327,8 +318,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     m_metaCounter++;
   }
 
-  void addToStreamingArray(uint32_t* level, std::vector<uint32_t> indexList,
-                           uint32_t numIndices) {
+  void addToStreamingArray(uint32_t* level, std::vector<uint32_t> indexList, uint32_t numIndices) {
     // read and store indices
     for (size_t i = 0; i < numIndices; i++) {
       size_t indexStepSize = (m_dims + 1);  // indexVector + gridIndex
@@ -341,27 +331,22 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
 
       // store gridIndex
       T gridIndex = (T)(indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
-      m_streamingArray[(m_streamingCounter + i) * indexStepSize + m_dims] =
-          gridIndex;
+      m_streamingArray[(m_streamingCounter + i) * indexStepSize + m_dims] = gridIndex;
     }
 
-    addMetaEntry(level, static_cast<uint32_t>(m_streamingCounter), numIndices,
-                 true);
+    addMetaEntry(level, static_cast<uint32_t>(m_streamingCounter), numIndices, true);
     m_streamingCounter += numIndices;
   }
 
-  void addToSubspaceArray(uint32_t* level, std::vector<uint32_t> indexList,
-                          uint32_t numIndices) {
+  void addToSubspaceArray(uint32_t* level, std::vector<uint32_t> indexList, uint32_t numIndices) {
     uint32_t subSize = getSubspaceSize(level);
     uint32_t indexStepSize = static_cast<uint32_t>(m_dims + 1);
 
     for (size_t i = 0; i < subSize; i++) {
       for (size_t d = 0; d < m_dims; d++) {
-        m_subspaceArray[(m_subspaceCounter + i) * indexStepSize + d] =
-            static_cast<T>(0);
+        m_subspaceArray[(m_subspaceCounter + i) * indexStepSize + d] = static_cast<T>(0);
       }
-      m_subspaceArray[(m_subspaceCounter + i) * indexStepSize + m_dims] =
-          static_cast<T>(NAN);
+      m_subspaceArray[(m_subspaceCounter + i) * indexStepSize + m_dims] = static_cast<T>(NAN);
     }
 
     // read and store indices
@@ -393,35 +378,31 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       if (levelIndexSum == m_dims * 2) {
         gridIndex = 0;
       }
-      m_subspaceArray[(m_subspaceCounter + linIndex) * indexStepSize + m_dims] =
-          gridIndex;
+      m_subspaceArray[(m_subspaceCounter + linIndex) * indexStepSize + m_dims] = gridIndex;
     }
 
-    addMetaEntry(level, static_cast<uint32_t>(m_subspaceCounter), subSize,
-                 false);
+    addMetaEntry(level, static_cast<uint32_t>(m_subspaceCounter), subSize, false);
     m_subspaceCounter += subSize;
   }
 
   void buildDatastructure() {
-    size_t dataBlocking = parameters["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    size_t transGridBlocking =
-        parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    size_t dataBlocking = parameters["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+    size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
     // TODO(leiterrl): is this a bug, Raphael? (David)
     size_t blockingSize = std::max(dataBlocking, transGridBlocking);
 
-    uint32_t localWorkSize =
-        static_cast<uint32_t>(parameters["LOCAL_SIZE"].getUInt()) *
-        static_cast<uint32_t>(blockingSize);
+    uint32_t localWorkSize = static_cast<uint32_t>(parameters["LOCAL_SIZE"].getUInt()) *
+                             static_cast<uint32_t>(blockingSize);
 
-    size_t remainder = this->storage->size() % localWorkSize;
+    size_t remainder = this->storage->getSize() % localWorkSize;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = localWorkSize - remainder;
     }
 
-    this->gridSize = this->storage->size() + padding;
+    this->gridSize = this->storage->getSize() + padding;
 
     m_streamingCounter = 0;
     m_subspaceCounter = 0;
@@ -448,8 +429,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       uint32_t* level = new uint32_t[this->m_dims];
       uint32_t* index = new uint32_t[this->m_dims];
 
-      if (gridIndex < this->storage->size()) {
-        SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+      if (gridIndex < this->storage->getSize()) {
+        sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
         for (size_t d = 0; d < this->m_dims; d++) {
           point->get(d, curLevel, curIndex);
@@ -514,8 +495,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
 
     printf("GridPoints: %lu Subspaces: %lu \n", this->gridSize, numSubspaces);
     printf("Subspace Utilization: %f \n",
-           (static_cast<double>(this->gridSize)) /
-               static_cast<double>(numSubspaces));
+           (static_cast<double>(this->gridSize)) / static_cast<double>(numSubspaces));
 
     // TODO(leiterrl): dont repeat the loop
     // iterate our previously constructed map and fill our arrays
@@ -525,8 +505,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       it_type kv = flatLevelList.find(flatLevel);
 
       uint32_t numIndices = static_cast<uint32_t>(
-          (static_cast<size_t>(kv->second.size()) - this->m_dims) /
-          (this->m_dims + 1));
+          (static_cast<size_t>(kv->second.size()) - this->m_dims) / (this->m_dims + 1));
 
       // read the level
       uint32_t* level = new uint32_t[this->m_dims];
@@ -541,8 +520,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       }
     }
 
-    uint32_t metaInfoSize = static_cast<uint32_t>(m_dims) +
-                            3;  // level vector + start, size and type
+    uint32_t metaInfoSize =
+        static_cast<uint32_t>(m_dims) + 3;  // level vector + start, size and type
     uint32_t subElementSize = static_cast<uint32_t>(m_dims) + 1;
     uint32_t streamElementSize = static_cast<uint32_t>(m_dims) + 1;
 
@@ -554,8 +533,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       // as mentioned above this preserves the initial order of appearance
       it_type kv = flatLevelList.find(flatLevel);
 
-      uint32_t numIndices = static_cast<uint32_t>(
-          (kv->second.size() - this->m_dims) / (this->m_dims + 1));
+      uint32_t numIndices =
+          static_cast<uint32_t>((kv->second.size() - this->m_dims) / (this->m_dims + 1));
 
       // read the level
       uint32_t* level = new uint32_t[this->m_dims];
@@ -574,4 +553,4 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

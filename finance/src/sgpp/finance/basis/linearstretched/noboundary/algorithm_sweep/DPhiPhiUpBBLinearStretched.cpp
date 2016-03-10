@@ -7,41 +7,34 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
+DPhiPhiUpBBLinearStretched::DPhiPhiUpBBLinearStretched(sgpp::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
+DPhiPhiUpBBLinearStretched::~DPhiPhiUpBBLinearStretched() {}
 
-DPhiPhiUpBBLinearStretched::DPhiPhiUpBBLinearStretched(SGPP::base::GridStorage*
-    storage) : storage(storage), stretching(storage->getStretching()) {
-}
-
-
-DPhiPhiUpBBLinearStretched::~DPhiPhiUpBBLinearStretched() {
-}
-
-void DPhiPhiUpBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void DPhiPhiUpBBLinearStretched::operator()(sgpp::base::DataVector& source,
+                                            sgpp::base::DataVector& result, grid_iterator& index,
+                                            size_t dim) {
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   rec(source, result, index, dim, fl, fr);
 }
 
-
-void DPhiPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                                     float_t& fr) {
+void DPhiPhiUpBBLinearStretched::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                     grid_iterator& index, size_t dim, double& fl, double& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double fml = 0.0;
+  double fmr = 0.0;
 
-  SGPP::base::GridStorage::index_type::level_type current_level;
-  SGPP::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::GridStorage::index_type::level_type current_level;
+  sgpp::base::GridStorage::index_type::index_type current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -60,24 +53,22 @@ void DPhiPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
   }
 
   index.get(dim, current_level, current_index);
-  float_t posl = 0, posr = 0, posc = 0;
+  double posl = 0, posr = 0, posc = 0;
   this->stretching->getAdjacentPositions(static_cast<int>(current_level),
-                                         static_cast<int>(current_index), dim, posc, posl, posr );
-  float_t fm = fml + fmr;
+                                         static_cast<int>(current_index), dim, posc, posl, posr);
+  double fm = fml + fmr;
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
   // transposed operations:
   result[seq] = fm;
 
-  float_t baseLength = posr - posl;
-  float_t leftLength = posc - posl;
-  float_t rightLength = posr - posc;
+  double baseLength = posr - posl;
+  double leftLength = posc - posl;
+  double rightLength = posr - posc;
   fl = (0.5) * alpha_value + fl + fm * (rightLength / baseLength);
   fr = (-0.5) * alpha_value + fr + fm * (leftLength / baseLength);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace sgpp

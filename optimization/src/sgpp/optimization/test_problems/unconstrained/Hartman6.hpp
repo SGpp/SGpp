@@ -7,11 +7,11 @@
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_HARTMAN6_HPP
 
 #include <sgpp/globaldef.hpp>
-
-#include <cmath>
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
-namespace SGPP {
+#include <cmath>
+
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -54,14 +54,12 @@ class Hartman6Objective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  double evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
 /**
@@ -98,16 +96,14 @@ class Hartman6 : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  double getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
   Hartman6Objective f;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_HARTMAN6_HPP */

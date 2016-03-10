@@ -11,7 +11,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 // copies the whole buffer on all devices, retrieves only the part
@@ -59,4 +59,4 @@ class OCLStretchedBufferMultiPlatform {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -28,13 +28,13 @@ class DMSystemMatrixBaseSP : public base::OperationMatrixSP {
   /// the lambda, the regularisation parameter
   float lambda_;
   /// time needed for Mult
-  float_t completeTimeMult_;
+  double completeTimeMult_;
   /// time needed only for the computation of mult, interesting on accelerator boards
-  float_t computeTimeMult_;
+  double computeTimeMult_;
   /// time needed for Mult transposed
-  float_t completeTimeMultTrans_;
+  double completeTimeMultTrans_;
   /// time needed only for the computation of mult transposed, interesting on accelerator boards
-  float_t computeTimeMultTrans_;
+  double computeTimeMultTrans_;
   /// Stopwatch needed to determine the durations of mult and mult transposed
   base::SGppStopwatch* myTimer_;
 
@@ -87,11 +87,11 @@ class DMSystemMatrixBaseSP : public base::OperationMatrixSP {
    * @param timeMultTrans variable to store everall time needed for Mult Transposed
    * @param computeMultTrans variable to store compute time needed for Mult Transposed
    */
-  virtual void getTimers(float_t& timeMult, float_t& computeMult,
-                         float_t& timeMultTrans, float_t& computeMultTrans);
+  virtual void getTimers(double& timeMult, double& computeMult,
+                         double& timeMultTrans, double& computeMultTrans);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DMSYSTEMMATRIXSPBASE_HPP */

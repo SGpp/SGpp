@@ -8,7 +8,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class LinearLoadBalancer {
@@ -19,9 +19,8 @@ class LinearLoadBalancer {
   double* partition;
 
  public:
-  LinearLoadBalancer(
-      std::shared_ptr<OCLManager> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters)
+  LinearLoadBalancer(std::shared_ptr<OCLManager> manager,
+                     std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : deviceCount(manager->num_devices), parameters(parameters) {
     this->weights = new double[manager->num_devices];
     this->partition = new double[manager->num_devices];
@@ -38,19 +37,18 @@ class LinearLoadBalancer {
     delete[] this->partition;
   }
 
-  void getPartitionSegments(size_t start, size_t end, size_t blockSize,
-                            size_t* segmentStart, size_t* segmentEnd) {
-    bool setVerboseLoadBalancing =
-        (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
+  void getPartitionSegments(size_t start, size_t end, size_t blockSize, size_t* segmentStart,
+                            size_t* segmentEnd) {
+    bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
     size_t totalSize = end - start;
 
     // check for valid input
     if (blockSize == 0) {
-      throw SGPP::base::operation_exception("blockSize must not be zero!");
+      throw sgpp::base::operation_exception("blockSize must not be zero!");
     }
 
     if (totalSize % blockSize != 0) {
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "totalSize must be divisible by blockSize without remainder, "
           "but it is not!");
     }
@@ -58,16 +56,14 @@ class LinearLoadBalancer {
     size_t currentStartIndex = start;
 
     for (size_t i = 0; i < this->deviceCount; i++) {
-      size_t partitionElements =
-          static_cast<size_t>(static_cast<double>(totalSize) * partition[i]);
+      size_t partitionElements = static_cast<size_t>(static_cast<double>(totalSize) * partition[i]);
 
       if (currentStartIndex != end && partitionElements == 0) {
         partitionElements = 1;
       }
 
       // last device has to ensure that all data is in one partition
-      if (currentStartIndex + partitionElements > end ||
-          i == this->deviceCount - 1) {
+      if (currentStartIndex + partitionElements > end || i == this->deviceCount - 1) {
         partitionElements = end - currentStartIndex;
       }
 
@@ -85,18 +81,16 @@ class LinearLoadBalancer {
       segmentEnd[i] = currentStartIndex + partitionElements;
 
       if (setVerboseLoadBalancing) {
-        std::cout << "device: " << i << " from: " << segmentStart[i]
-                  << " to: " << segmentEnd[i] << std::endl;
+        std::cout << "device: " << i << " from: " << segmentStart[i] << " to: " << segmentEnd[i]
+                  << std::endl;
       }
 
       currentStartIndex += partitionElements;
     }
   }
 
-  // TODO(pfandedd): consider inactive device due to nothing to do?
   void update(double* timings) {
-    bool setVerboseLoadBalancing =
-        (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
+    bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
     // recalculate weights
     for (size_t i = 0; i < this->deviceCount; i++) {
@@ -125,12 +119,11 @@ class LinearLoadBalancer {
       }
 
       if (setVerboseLoadBalancing) {
-        std::cout << "device: " << i << " partition size: " << partition[i]
-                  << std::endl;
+        std::cout << "device: " << i << " partition size: " << partition[i] << std::endl;
       }
     }
   }
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

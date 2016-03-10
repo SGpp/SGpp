@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -31,7 +31,7 @@ class HierarchisationLinearBoundary: public HierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinearBoundary(GridStorage* storage);
+  explicit HierarchisationLinearBoundary(GridStorage& storage);
 
   /**
    * Destructor
@@ -57,6 +57,6 @@ class HierarchisationLinearBoundary: public HierarchisationLinear {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HIERARCHISATIONLINEARBOUNDARY_HPP */

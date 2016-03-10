@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationHierarchisationModWavelet(GridStorage* storage) :
+  explicit OperationHierarchisationModWavelet(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -51,10 +51,10 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONMODWAVELET_HPP */

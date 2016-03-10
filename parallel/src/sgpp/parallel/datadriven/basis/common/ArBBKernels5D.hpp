@@ -6,12 +6,11 @@
 #ifndef ARBBKERNELS5D_HPP
 #define ARBBKERNELS5D_HPP
 
-#include <cstdlib>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstdlib>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -27,27 +26,22 @@ class ArBBKernels5D {
 
   ~ArBBKernels5D();
 
-  double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
-                       double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
-                       size_t storageSize, size_t dims);
+  double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex,
+                       double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
 
-  double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel,
-                  double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize,
-                  size_t dims);
+  double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex,
+                  double* ptrResult, size_t result_size, size_t storageSize, size_t dims);
 
-  double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
-                         float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize,
+  double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex,
+                         float* ptrGlobalResult, size_t sourceSize, size_t storageSize,
                          size_t dims);
 
-  double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
-                    float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize,
-                    size_t dims);
+  double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex,
+                    float* ptrResult, size_t result_size, size_t storageSize, size_t dims);
 
   void resetKernels();
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace sgpp
 
 #endif /* ARBBKERNELS5D_HPP */
