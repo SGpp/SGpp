@@ -27,11 +27,14 @@ namespace sgpp {
 namespace datadriven {
 
 StaticParameterTuner::StaticParameterTuner(sgpp::base::OCLOperationConfiguration &fixedParameters,
-                                           bool collectStatistics, bool verbose)
+                                           bool verbose)
     : verbose(verbose),
-      collectStatistics(collectStatistics),
+      collectStatistics(false),
       statisticsFolder("."),
-      fixedParameters(fixedParameters) {}
+      scenarioName(""),
+      fixedParameters(fixedParameters),
+      configuredExperiments(0),
+      currentExperiment(0) {}
 
 void StaticParameterTuner::addParameter(const std::string &name,
                                         const std::vector<std::string> &valueRange) {
@@ -40,6 +43,20 @@ void StaticParameterTuner::addParameter(const std::string &name,
 
 sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
     sgpp::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
+  uint64_t configuredDevices = 0;
+  for (const std::string &platformName : this->fixedParameters["PLATFORMS"].keys()) {
+    json::Node &platformNode = this->fixedParameters["PLATFORMS"][platformName];
+    for (const std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      if (!deviceNode.contains("COUNT") || deviceNode["COUNT"].getUInt() > 0) {
+        configuredDevices += 1;
+      }
+    }
+  }
+  uint64_t currentDevice = 1;
+
+  // use the precision configuration from the scenario and overwrite the precision from the
+  // submitted configuration
   if (scenario.getInternalPrecision() == InternalPrecision::Float) {
     this->fixedParameters.replaceIDAttr("INTERNAL_PRECISION", "float");
   } else {
@@ -72,7 +89,11 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         }
       }
 
-      std::cout << "tuning for device: " << deviceName << std::endl;
+      if (verbose) {
+        std::cout << "tuning for device: " << deviceName << " (" << currentDevice << "/"
+                  << configuredDevices << ")" << std::endl;
+      }
+      currentDevice += 1;
 
       // temporarily remove all other devices
       std::vector<std::string> otherDevicesName;
@@ -138,15 +159,13 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
 
-        std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
         std::string statisticsFileName =
-            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" +
-            kernelName + "_" + floatString + ".csv";
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + scenarioName + ".csv";
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
       if (addedScheduleSize) {
-        deviceNode["KERNEL_SCHEDULE_SIZE"].erase();
+        deviceNode["KERNELS"][kernelName]["KERNEL_SCHEDULE_SIZE"].erase();
       }
 
       if (addedCountLimit) {
@@ -170,14 +189,19 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
     }
   }
 
-  std::cout << "after tuning: " << std::endl;
-  std::cout << this->fixedParameters << std::endl;
+  if (verbose) {
+    std::cout << "after tuning: " << std::endl;
+    std::cout << this->fixedParameters << std::endl;
+  }
 
   return this->fixedParameters;
 }
 
-void StaticParameterTuner::setStatisticsFolder(const std::string &statisticsFolder) {
+void StaticParameterTuner::enableStatistics(const std::string &statisticsFolder,
+                                            const std::string &scenarioName) {
+  this->collectStatistics = true;
   this->statisticsFolder = statisticsFolder;
+  this->scenarioName = scenarioName;
 }
 
 void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &scenario,
@@ -187,6 +211,15 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
   if (collectStatistics) {
     this->statistics.clear();
   }
+
+  for (size_t i = 0; i < tunableParameters.size(); i++) {
+    TunableParameter &tunableParameter = tunableParameters[i];
+    if (i == 0) {
+      configuredExperiments = tunableParameter.getValues().size();
+    }
+    configuredExperiments *= tunableParameter.getValues().size();
+  }
+  currentExperiment = 1;
 
   //    sgpp::base::OCLOperationConfiguration &currentParameters =
   //    fixedParameters;
@@ -222,6 +255,12 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
     std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
   }
 
+  if (verbose) {
+    std::cout << "evaluating combination (" << currentExperiment << "/" << configuredExperiments
+              << ") for current device" << std::endl;
+  }
+  currentExperiment += 1;
+
   // evaluate initial parameter combination
   double shortestDuration;
   double highestGFlops;
@@ -253,8 +292,13 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
         std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
       }
 
-      // evaluate current parameter combination
+      if (verbose) {
+        std::cout << "evaluating combination (" << currentExperiment << "/" << configuredExperiments
+                  << ") for current device" << std::endl;
+      }
+      currentExperiment += 1;
 
+      // evaluate current parameter combination
       double duration;
       double GFlops;
       evaluateSetup(scenario, fixedParameters, kernelName, duration, GFlops);

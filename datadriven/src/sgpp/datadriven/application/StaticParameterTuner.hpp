@@ -27,12 +27,15 @@ class StaticParameterTuner {
 
   bool collectStatistics;
   std::string statisticsFolder;
+  std::string scenarioName;
 
   std::vector<std::tuple<sgpp::base::OCLOperationConfiguration, double, double>> statistics;
 
   sgpp::base::OCLOperationConfiguration fixedParameters;
 
   std::vector<TunableParameter> tunableParameters;
+  uint64_t configuredExperiments;
+  uint64_t currentExperiment;
 
   double evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
                        sgpp::base::OCLOperationConfiguration &currentParameters,
@@ -45,9 +48,9 @@ class StaticParameterTuner {
 
  public:
   StaticParameterTuner(sgpp::base::OCLOperationConfiguration &fixedParameters,
-                       bool collectStatistics = false, bool verbose = false);
+                       bool verbose = false);
 
-  void setStatisticsFolder(const std::string &statisticsFolder);
+  void enableStatistics(const std::string &statisticsFolder, const std::string &scenarioName);
 
   void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 

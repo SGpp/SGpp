@@ -40,15 +40,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
@@ -86,15 +83,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
@@ -133,15 +127,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
@@ -180,15 +171,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
@@ -227,15 +215,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
@@ -275,15 +260,12 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
-
-    BOOST_CHECK(!boost::filesystem::exists(boost::filesystem::path(statisticsFolderName)));
-
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
         BOOST_MESSAGE("created output directory: " << statisticsFolderName);
