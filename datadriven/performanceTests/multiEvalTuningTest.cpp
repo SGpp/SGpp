@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   }
 
   staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   }
 
   staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});

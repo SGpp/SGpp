@@ -84,10 +84,6 @@ class Configuration {
           kernelNode.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
         }
 
-        if (kernelNode.contains("KERNEL_TRANS_DATA_BLOCK_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
-        }
-
         if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
         }
