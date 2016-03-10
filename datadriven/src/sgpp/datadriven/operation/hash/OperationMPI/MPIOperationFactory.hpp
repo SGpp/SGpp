@@ -6,6 +6,10 @@
 #define MPIOPERATIONFACTORY_H
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
+
 MPISlaveOperation* create_mpi_operation(char *classname) {
   if (std::strcmp(classname, "OperationCreateGraphSlave"))  {
     return new OperationCreateGraphSlave();
@@ -13,4 +17,7 @@ MPISlaveOperation* create_mpi_operation(char *classname) {
   return NULL;
 }
 
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* MPIOPERATIONFACTORY_H */

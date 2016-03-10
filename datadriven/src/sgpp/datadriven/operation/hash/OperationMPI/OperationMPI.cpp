@@ -9,6 +9,9 @@
 #include "OperationMPI.hpp"
 #include "MPIEnviroment.hpp"
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
 MPISlaveOperation::MPISlaveOperation(void) {
 }
 
@@ -41,3 +44,7 @@ void MPIOperation::start_slave_code(void) {
 }
 MPIOperation::~MPIOperation(void) {
 }
+
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp

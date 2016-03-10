@@ -9,6 +9,10 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
+
 class MPIEnviroment {
  private:
   static MPIEnviroment *singleton_instance;
@@ -28,4 +32,8 @@ class MPIEnviroment {
   static int get_node_count(void);
   ~MPIEnviroment();
 };
+
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* MPIENVIROMENT_H */

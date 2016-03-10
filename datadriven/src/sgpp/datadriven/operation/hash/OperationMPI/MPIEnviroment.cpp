@@ -6,6 +6,9 @@
 #include "MPIOperationFactory.hpp"
 #include "MPIEnviroment.hpp"
 
+namespace sgpp {
+namespace datadriven {
+namespace clusteringmpi {
 MPIEnviroment* MPIEnviroment::singleton_instance = NULL;
 
 MPIEnviroment::MPIEnviroment(int argc, char *argv[],
@@ -121,3 +124,7 @@ int MPIEnviroment::get_node_count(void) {
 
 MPIEnviroment::~MPIEnviroment(void) {
 }
+
+}  // namespace clusteringmpi
+}  // namespace datadriven
+}  // namespace sgpp
