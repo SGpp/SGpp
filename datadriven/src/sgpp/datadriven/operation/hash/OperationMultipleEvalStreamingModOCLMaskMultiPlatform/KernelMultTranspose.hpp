@@ -97,7 +97,7 @@ class KernelMultTranspose {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    transGridBlockingSize = kernelConfiguration["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    transGridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = localSize * transGridBlockingSize;
   }
@@ -150,9 +150,21 @@ class KernelMultTranspose {
 
       size_t rangeSizeUnblocked = kernelEndGrid - kernelStartGrid;
 
+      //      if (verbose) {
+      //        std::cout << "device: " << device->platformId << " kernel from: " << kernelStartGrid
+      //                  << " to: " << kernelEndGrid << " -> range: " << rangeSizeUnblocked <<
+      //                  std::endl;
+      //      }
+
       if (verbose) {
-        std::cout << "device: " << device->platformId << " kernel from: " << kernelStartGrid
-                  << " to: " << kernelEndGrid << " -> range: " << rangeSizeUnblocked << std::endl;
+#pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
+        {
+          std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
+                    << " kernel from: " << kernelStartGrid << " to: " << kernelEndGrid
+                    << " -> range: " << rangeSizeUnblocked
+                    << " (with blocking: " << (rangeSizeUnblocked / this->transGridBlockingSize)
+                    << ")" << std::endl;
+        }
       }
 
       initGridBuffersTranspose(level, index, mask, offset, kernelStartGrid, kernelEndGrid);
@@ -232,10 +244,8 @@ class KernelMultTranspose {
         cl_event clTiming;
 
         // enqueue kernels
-        size_t local = kernelConfiguration["LOCAL_SIZE"].getUInt();
-
         err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, 0,
-                                     &rangeSizeBlocked, &local, 0, nullptr, &clTiming);
+                                     &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
