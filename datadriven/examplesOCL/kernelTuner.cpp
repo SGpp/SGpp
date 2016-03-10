@@ -67,14 +67,14 @@ int main(int argc, char **argv) {
 
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
-  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
   size_t dotPos = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPos);
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+  std::string statisticsFolderName = "statistics";
 
   if (collectStatistics) {
-    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
 
     if (boost::filesystem::exists(boost::filesystem::path(statisticsFolderName))) {
       std::cerr << "error: statistics output directory already exists: " << statisticsFolderName
