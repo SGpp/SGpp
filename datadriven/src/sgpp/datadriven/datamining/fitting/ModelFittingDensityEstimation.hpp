@@ -37,7 +37,7 @@ struct DataMiningConfigurationDensityEstimationType {
 
 class ModelFittingDensityEstimation : public datadriven::ModelFittingBase {
  public:
-  ModelFittingDensityEstimation(datadriven::DataMiningConfiguration config);
+  ModelFittingDensityEstimation(datadriven::DataMiningConfigJsonParser config);
 
   virtual ~ModelFittingDensityEstimation();
 

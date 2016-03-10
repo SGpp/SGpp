@@ -16,7 +16,7 @@
 namespace sgpp {
 namespace datadriven {
 
-FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config)
+FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfigJsonParser& config)
     : SampleProvider(config) {}
 
 FunctionWrapper::~FunctionWrapper() {

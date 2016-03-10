@@ -13,7 +13,7 @@ namespace sgpp {
 namespace datadriven {
 
 DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
-    : DataMiningConfiguration() {
+    : DataMiningConfigJsonParser() {
   // set default config
   gridConfig.dim_ = 0;
   gridConfig.level_ = 2;
@@ -48,7 +48,7 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
 
 DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares(
     const std::string &fileName)
-    : DataMiningConfiguration(fileName) {
+    : DataMiningConfigJsonParser(fileName) {
   try {
     gridConfig.dim_ = 0;
     gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getUInt());
@@ -133,8 +133,8 @@ void DataMiningConfigurationLeastSquares::setRegularizationConfig(
 
 void DataMiningConfigurationLeastSquares::setLambda(double lambda) { this->lambda = lambda; }
 
-DataMiningConfiguration *DataMiningConfigurationLeastSquares::clone() {
-  DataMiningConfiguration *clone = new DataMiningConfigurationLeastSquares(*this);
+DataMiningConfigJsonParser *DataMiningConfigurationLeastSquares::clone() {
+  DataMiningConfigJsonParser *clone = new DataMiningConfigurationLeastSquares(*this);
   return clone;
 }
 

@@ -26,7 +26,7 @@
 namespace sgpp {
 namespace datadriven {
 
-ARFFWrapper::ARFFWrapper(datadriven::DataMiningConfiguration& config)
+ARFFWrapper::ARFFWrapper(datadriven::DataMiningConfigJsonParser& config)
     : DataWrapper(config), seed(0), dimension(0), numberInstances(0) {
   std::string line;
   std::ifstream myfile(filename.c_str());

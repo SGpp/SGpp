@@ -26,7 +26,7 @@ namespace datadriven {
 
 SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
                                              std::shared_ptr<ModelFittingBase> fitter,
-                                             datadriven::DataMiningConfiguration config)
+                                             datadriven::DataMiningConfigJsonParser config)
     : Scorer(metric, fitter) {
   try {
     trainPortion = config["trainPortion"].getDouble();
