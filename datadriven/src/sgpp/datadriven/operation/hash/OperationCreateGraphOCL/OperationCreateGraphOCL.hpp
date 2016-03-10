@@ -70,7 +70,8 @@ class OperationCreateGraphOCL {
   OperationCreateGraphOCL()  {
   }
 
-  virtual void create_graph(std::vector<int> &resultVector) = 0;
+  virtual void create_graph(std::vector<int> &resultVector, int startid = 0,
+                            int chunksize = -1) = 0;
   static std::vector<size_t> find_clusters(std::vector<int> &graph, size_t k) {
     std::vector<size_t> clusters(graph.size()/k);
     size_t clustercount = 0;

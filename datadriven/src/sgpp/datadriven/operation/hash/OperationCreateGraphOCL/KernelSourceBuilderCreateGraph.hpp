@@ -77,7 +77,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
   std::string copy_k_registers_into_global(size_t k) {
     std::stringstream output;
     for (size_t i = 0; i < k; i++) {
-      output << this->indent[0] << "neighbors[global_index * "<< k
+      output << this->indent[0] << "neighbors[chunk_index * "<< k
              << " + " << i << "] = k_register" << i << ";" << std::endl;
     }
     return output.str();
@@ -109,6 +109,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                  << "{" << std::endl
                  << this->indent[0] << "size_t global_index = startid + get_global_id(0);"
                  << std::endl
+                 << this->indent[0] << "size_t chunk_index = get_global_id(0);" << std::endl
                  << init_k_registers(k)
                  << this->indent[0] << "for (unsigned int i = 0; i <    " << dataSize
                  << "; i++) {" << std::endl
