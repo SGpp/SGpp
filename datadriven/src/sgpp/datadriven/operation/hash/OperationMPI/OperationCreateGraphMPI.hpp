@@ -77,7 +77,7 @@ class OperationCreateGraphSlave : public MPISlaveOperation {
         // Send results back
         MPI_Send(partial_graph.data(), datainfo[1] * k, MPI_INT, 0, 1, MPI_COMM_WORLD);
       }
-      }while(true);
+    }while(true);
   }
 };
 
@@ -95,7 +95,6 @@ class OperationCreateGraphMPI : public MPIOperation {
   }
   std::vector<int> create_graph(void) {
     this->start_slave_code();
-    MPI_Status stat;
     int *graph = new int[datasize / dimensions * k];
     std::vector<int> returngraph(graph, graph + (datasize / dimensions *k));
 
@@ -109,73 +108,21 @@ class OperationCreateGraphMPI : public MPIOperation {
       MPI_Send(&k, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
 
     // Create packages and let the slaves solve them
-    unsigned int packagesize = 2000;
-    if (packagesize > datasize / dimensions / MPIEnviroment::get_node_count()) {
-      packagesize = static_cast<unsigned int>(datasize / dimensions /
-                                              MPIEnviroment::get_node_count());
-    }
-    unsigned int send_packageindex = 0;
-    unsigned int received_packageindex = 0;
-    unsigned int packagecount = static_cast<unsigned int>(datasize / dimensions / packagesize);
-    int packageinfo[2];
-    unsigned int *startindices = new unsigned int[MPIEnviroment::get_node_count()-1];
-    packageinfo[1] = packagesize;
-    // Send first packages
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++) {
-      packageinfo[0] = send_packageindex * packagesize;
-      MPI_Send(packageinfo, 2, MPI_INT, dest, 1, MPI_COMM_WORLD);
-      startindices[dest - 1] = packageinfo[0];
-      send_packageindex++;
-    }
-
-    // Receive and send packages until all are done
-    int messagesize;
-    while (received_packageindex != packagecount+1) {
-      MPI_Probe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &stat);
-      MPI_Get_count(&stat, MPI_INT, &messagesize);  // Count should be packagesize*k
-      std::cerr << "Received graph package [" << received_packageindex+1
-                << " / " << packagecount+1 << "] from node "<< stat.MPI_SOURCE
-                << "! Messagesize: " << messagesize << std::endl;
-      int source = stat.MPI_SOURCE;
-      int start = startindices[source-1];
-      int *partial_result = new int[messagesize];
-      MPI_Recv(partial_result, messagesize, MPI_INT, stat.MPI_SOURCE,
-               stat.MPI_TAG, MPI_COMM_WORLD, &stat);
-
-      // Send next package
-      if (send_packageindex < packagecount) {
-        packageinfo[0] = send_packageindex * packagesize;
-        MPI_Send(packageinfo, 2, MPI_INT, source, 1, MPI_COMM_WORLD);
-        startindices[source - 1] = packageinfo[0];
-        send_packageindex++;
-      } else if (send_packageindex == packagecount) {
-        // Send last package
-        packageinfo[0] = send_packageindex * packagesize;
-        packageinfo[1] = static_cast<unsigned int>((datasize / dimensions) % packagesize);
-        if (packageinfo[1] == 0) {
-          send_packageindex++;
-          std::cerr << "Received graph package [" << received_packageindex+1
-                    << " / " << packagecount+1 << "] (empty package)" << std::endl;
-          received_packageindex++;
-        } else {
-          MPI_Send(packageinfo, 2, MPI_INT, source, 1, MPI_COMM_WORLD);
-          startindices[source-1] = packageinfo[0];
-          send_packageindex++;
-          // std::cerr<<"Last Package"<<send_packageindex-1<<" sent! Size: "<<packageinfo[1];
-        }
-      } else {
-        std::cerr << "No more graph packages to send!" << std::endl;
-      }
+    int *partial_result = new int[2000 * k];
+    SimpleQueue<int> workitem_queue(datasize / dimensions, 2000);
+    int chunkid = 0;
+    int messagesize = workitem_queue.receive_result(chunkid, partial_result);
+    while (messagesize > 0) {
       // Store result
-      for (int i = 0; i < messagesize; i++)
-        returngraph[start*k+i] = partial_result[i];
-      delete [] partial_result;
-      received_packageindex++;
+      for (int i = 0; i < messagesize; i++) {
+        returngraph[chunkid*k+i] = partial_result[i];
+      }
+      messagesize = workitem_queue.receive_result(chunkid, partial_result);
     }
     int exitmessage[2] = {-2, -2};
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(exitmessage, 2, MPI_INT, dest, 1, MPI_COMM_WORLD);
-    delete [] startindices;
+    delete [] partial_result;
     delete [] graph;
     return returngraph;
   }
