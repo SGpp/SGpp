@@ -34,8 +34,8 @@ class MetaLearner {
 
   bool verbose;
 
-  LearnerBase* myLearner = nullptr;
-  LearnerBase* referenceLearner = nullptr;
+  std::unique_ptr<LearnerBase> myLearner;
+  std::unique_ptr<LearnerBase> referenceLearner;
 
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
@@ -50,8 +50,7 @@ class MetaLearner {
 
   void writeRefinementResults(
       std::string fileName, std::string fileHeader,
-      std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
-          datasetDetails,
+      std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetails,
       std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
           datasetDetailsReference,
       bool referenceComparison);
@@ -66,15 +65,7 @@ class MetaLearner {
               sgpp::base::AdpativityConfiguration adaptivityConfiguration, double lambda,
               bool verbose = false);
 
-  ~MetaLearner() {
-    if (this->myLearner != nullptr) {
-      delete this->myLearner;
-    }
-
-    if (this->referenceLearner != nullptr) {
-      delete this->referenceLearner;
-    }
-  }
+  ~MetaLearner() {}
 
   void learn(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
              std::string& datasetFileName, bool isRegression = true);
@@ -105,26 +96,6 @@ class MetaLearner {
   double learnAndCompareString(
       sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
       std::string& content, size_t gridGranularity);
-
-  void refinementAndOverallPerformance(
-      std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
-      std::vector<std::string> datasets, std::vector<std::string> experimentHeaders,
-      std::string metaInformation, std::string fileName, bool referenceComparison = false);
-
-  void regularGridSpeedup(
-      sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-      std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances,
-      std::string metaInformation, std::string experimentName);
-
-  void appendToPerformanceRun(
-      std::string fileName, std::string changingRowName, std::string currentValues,
-      std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
-      std::vector<std::string> datasets, std::vector<std::string> datasetNames,
-      std::string metaInformation, bool removeOld);
-
-  void testRegular(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                   size_t dim, size_t level, size_t instances, double& duration,
-                   double& durationReference);
 
   sgpp::base::Grid& getLearnedGrid();
 

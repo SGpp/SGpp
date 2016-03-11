@@ -10,31 +10,23 @@
 
 #include <cmath>
 
-
 namespace sgpp {
 namespace datadriven {
 
 LearnerSGD::LearnerSGD(sgpp::datadriven::RegularizationType& regularization,
-                       const bool isRegression, const bool isVerbose) : Learner(regularization,
-                             isRegression, isVerbose) {
-}
+                       const bool isRegression, const bool isVerbose)
+    : Learner(regularization, isRegression, isVerbose) {}
 
-void LearnerSGD::train(
-    sgpp::base::DataMatrix& trainDataset,
-    sgpp::base::DataVector& classes,
-    sgpp::base::RegularGridConfiguration& GridConfig,
-    size_t maxIterations,
-    double eps,
-    double lambda,
-    double gamma) {
+void LearnerSGD::train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
+                       sgpp::base::RegularGridConfiguration& GridConfig, size_t maxIterations,
+                       double eps, double lambda, double gamma) {
   // using namespace sgpp::base;
   using sgpp::base::DataVector;
 
   // Initialize Grid
   InitializeGrid(GridConfig);
 
-  if (grid_ == NULL)
-    return;
+  if (grid_ == NULL) return;
 
   alpha_->setAll(0.0);
 
@@ -107,17 +99,11 @@ int LearnerSGD::getRandom(int limit) {
   return r;
 }
 
-sgpp::base::DataVector* LearnerSGD::getAlpha() {
-  return alpha_;
-}
+sgpp::base::DataVector& LearnerSGD::getAlpha() { return *alpha_; }
 
-sgpp::base::Grid* LearnerSGD::getGrid() {
-  return grid_;
-}
+sgpp::base::Grid& LearnerSGD::getGrid() { return *grid_; }
 
-LearnerSGD::~LearnerSGD() {
-}
+LearnerSGD::~LearnerSGD() {}
 
 }  // namespace datadriven
 }  // namespace sgpp
-

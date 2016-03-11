@@ -32,9 +32,9 @@ namespace datadriven {
 class LearnerBase {
  protected:
   /// the grid's coefficients
-  sgpp::base::DataVector* alpha_;
+  std::unique_ptr<sgpp::base::DataVector> alpha_;
   /// sparse grid object
-  sgpp::base::Grid* grid_;
+  std::unique_ptr<sgpp::base::Grid> grid_;
   /// is verbose output enabled
   bool isVerbose_;
   /// is regression selected
@@ -100,8 +100,8 @@ class LearnerBase {
    * @param trainDataset training dataset
    * @param lambda lambda regularization parameter
    */
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(sgpp::base::DataMatrix& trainDataset,
-                                                               double lambda) = 0;
+  virtual std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) = 0;
 
  public:
   /**
@@ -199,8 +199,8 @@ class LearnerBase {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(sgpp::base::DataMatrix& testDataset,
-                              const sgpp::base::DataVector& classesReference,
-                              const double threshold = 0.0);
+                             const sgpp::base::DataVector& classesReference,
+                             const double threshold = 0.0);
 
   /**
    * compute the accuracy for given testDataset.
@@ -218,8 +218,8 @@ class LearnerBase {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(const sgpp::base::DataVector& classesComputed,
-                              const sgpp::base::DataVector& classesReference,
-                              const double threshold = 0.0);
+                             const sgpp::base::DataVector& classesReference,
+                             const double threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
