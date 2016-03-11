@@ -26,9 +26,7 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
-    : alpha_(NULL),
-      grid_(NULL),
-      isVerbose_(isVerbose),
+    : isVerbose_(isVerbose),
       isRegression_(isRegression),
       isTrained_(false),
       execTime_(0.0),
@@ -41,9 +39,7 @@ LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
 
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename,
                          const bool isRegression, const bool isVerbose)
-    : alpha_(NULL),
-      grid_(NULL),
-      isVerbose_(isVerbose),
+    : isVerbose_(isVerbose),
       isRegression_(isRegression),
       isTrained_(false),
       execTime_(0.0),
@@ -69,31 +65,20 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
   this->stepGByte_ = -1.0;
   this->currentRefinementStep = 0;
 
-  // safety, should not happen
-  if (alpha_ != NULL) delete alpha_;
-
-  if (grid_ != NULL) delete grid_;
-
-  grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize()).release();
-  alpha_ = new sgpp::base::DataVector(*(copyMe.alpha_));
+  grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize());
+  alpha_ = std::make_unique<sgpp::base::DataVector>(*(copyMe.alpha_));
 }
 
-LearnerBase::~LearnerBase() {
-  // if user does no cleaning
-  if (alpha_ != NULL) delete alpha_;
-
-  if (grid_ != NULL) delete grid_;
-}
+LearnerBase::~LearnerBase() {}
 
 void LearnerBase::InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig) {
   if (GridConfig.type_ == sgpp::base::GridType::LinearBoundary) {
-    grid_ = new sgpp::base::LinearBoundaryGrid(GridConfig.dim_);
+    grid_ = std::make_unique<sgpp::base::LinearBoundaryGrid>(GridConfig.dim_);
   } else if (GridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid_ = new sgpp::base::ModLinearGrid(GridConfig.dim_);
+    grid_ = std::make_unique<sgpp::base::ModLinearGrid>(GridConfig.dim_);
   } else if (GridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid_ = new sgpp::base::LinearGrid(GridConfig.dim_);
+    grid_ = std::make_unique<sgpp::base::LinearGrid>(GridConfig.dim_);
   } else {
-    grid_ = NULL;
     throw base::application_exception(
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
@@ -102,7 +87,7 @@ void LearnerBase::InitializeGrid(const sgpp::base::RegularGridConfiguration& Gri
   grid_->getGenerator().regular(GridConfig.level_);
 
   // Create alpha
-  alpha_ = new sgpp::base::DataVector(grid_->getSize());
+  alpha_ = std::make_unique<sgpp::base::DataVector>(grid_->getSize());
   alpha_->setAll(0.0);
 }
 
@@ -124,8 +109,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
                                  const sgpp::base::AdpativityConfiguration& AdaptConfig,
-                                 const bool testAccDuringAdapt,
-                                 const double lambdaRegularization) {
+                                 const bool testAccDuringAdapt, const double lambdaRegularization) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
@@ -150,31 +134,35 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   double oldAcc = 0.0;
 
   // Construct Grid
-  if (alpha_ != NULL) delete alpha_;
-
-  if (grid_ != NULL) delete grid_;
+  //  if (alpha_ != NULL) delete alpha_;
+  //  if (grid_ != NULL) delete grid_;
 
   if (isTrained_ == true) isTrained_ = false;
 
   InitializeGrid(GridConfig);
 
   // check if grid was created
-  if (grid_ == NULL) return result;
+  if (!grid_.operator bool()) {
+    throw base::application_exception("error: couldn't create grid");
+  }
 
   // create DMSystem
-  sgpp::datadriven::DMSystemMatrixBase* DMSystem =
+  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> DMSystem =
       createDMSystem(trainDataset, lambdaRegularization);
 
   // check if System was created
-  if (DMSystem == NULL) return result;
+  if (!DMSystem.operator bool()) {
+    throw base::application_exception("error: couldn't create DMSystem");
+  }
 
-  sgpp::solver::SLESolver* myCG;
+  std::unique_ptr<sgpp::solver::SLESolver> myCG;
 
   if (SolverConfigRefine.type_ == sgpp::solver::SLESolverType::CG) {
-    myCG = new sgpp::solver::ConjugateGradients(SolverConfigRefine.maxIterations_,
-                                                SolverConfigRefine.eps_);
+    myCG = std::make_unique<sgpp::solver::ConjugateGradients>(SolverConfigRefine.maxIterations_,
+                                                              SolverConfigRefine.eps_);
   } else if (SolverConfigRefine.type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
-    myCG = new sgpp::solver::BiCGStab(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
+    myCG = std::make_unique<sgpp::solver::BiCGStab>(SolverConfigRefine.maxIterations_,
+                                                    SolverConfigRefine.eps_);
   } else {
     throw base::application_exception(
         "LearnerBase::train: An unsupported SLE solver type was chosen!");
@@ -186,8 +174,10 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   if (isVerbose_) std::cout << "Starting Learning...." << std::endl;
 
   // execute adaptsteps
-  sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
-  sgpp::base::SGppStopwatch* myStopwatch2 = new sgpp::base::SGppStopwatch();
+  std::unique_ptr<sgpp::base::SGppStopwatch> myStopwatch =
+      std::make_unique<sgpp::base::SGppStopwatch>();
+  std::unique_ptr<sgpp::base::SGppStopwatch> myStopwatch2 =
+      std::make_unique<sgpp::base::SGppStopwatch>();
 
   for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
     if (isVerbose_)
@@ -297,10 +287,10 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
 
   isTrained_ = true;
 
-  delete myStopwatch;
-  delete myStopwatch2;
-  delete myCG;
-  delete DMSystem;
+  //  delete myStopwatch;
+  //  delete myStopwatch2;
+  //  delete myCG;
+  //  delete DMSystem;
 
   return result;
 }
@@ -337,8 +327,8 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
 }
 
 double LearnerBase::getAccuracy(sgpp::base::DataMatrix& testDataset,
-                                 const sgpp::base::DataVector& classesReference,
-                                 const double threshold) {
+                                const sgpp::base::DataVector& classesReference,
+                                const double threshold) {
   // evaluate test dataset
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
@@ -348,8 +338,8 @@ double LearnerBase::getAccuracy(sgpp::base::DataMatrix& testDataset,
 }
 
 double LearnerBase::getAccuracy(const sgpp::base::DataVector& classesComputed,
-                                 const sgpp::base::DataVector& classesReference,
-                                 const double threshold) {
+                                const sgpp::base::DataVector& classesReference,
+                                const double threshold) {
   double result = -1.0;
 
   if (classesComputed.getSize() != classesReference.getSize()) {

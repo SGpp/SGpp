@@ -24,11 +24,11 @@ class Learner : public LearnerBase {
   /// regularization mode
   sgpp::datadriven::RegularizationType CMode_;
   /// regularization operator
-  sgpp::base::OperationMatrix* C_;
+  std::unique_ptr<sgpp::base::OperationMatrix> C_;
 
   /// construct system matrix
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(
-    sgpp::base::DataMatrix& trainDataset, double lambda);
+  virtual std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda);
 
  public:
   /**
@@ -38,8 +38,7 @@ class Learner : public LearnerBase {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  Learner(sgpp::datadriven::RegularizationType& regularization,
-          const bool isRegression,
+  Learner(sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
           const bool isVerbose = true);
 
   /**
@@ -52,8 +51,8 @@ class Learner : public LearnerBase {
    * @param isVerbose set to true in order to allow console output
    */
   Learner(const std::string tGridFilename, const std::string tAlphaFilename,
-          sgpp::datadriven::RegularizationType& regularization,
-          const bool isRegression, const bool isVerbose = true);
+          sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
+          const bool isVerbose = true);
 
   /**
    * Destructor

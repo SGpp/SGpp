@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -24,7 +23,7 @@ namespace datadriven {
 class DMSystemMatrixBase : public base::OperationMatrix {
  protected:
   /// the dataset
-  base::DataMatrix* dataset_;
+  base::DataMatrix& dataset_;
   /// the lambda, the regularisation parameter
   double lambda_;
   /// time needed for Mult
@@ -52,17 +51,16 @@ class DMSystemMatrixBase : public base::OperationMatrix {
    */
   virtual ~DMSystemMatrixBase();
 
-  virtual void mult(base::DataVector& alpha,
-                    base::DataVector& result) = 0;
+  virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
 
   /**
    * Generates the right hand side of the classification equation
    *
    * @param classes the class information of the training data
-   * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
+   * @param b reference to the vector that will contain the result of the matrix vector
+   *multiplication on the rhs
    */
-  virtual void generateb(base::DataVector& classes,
-                         base::DataVector& b) = 0;
+  virtual void generateb(base::DataVector& classes, base::DataVector& b) = 0;
 
   /**
    * forward declaration
@@ -86,8 +84,8 @@ class DMSystemMatrixBase : public base::OperationMatrix {
    * @param timeMultTrans variable to store everall time needed for Mult Transposed
    * @param computeMultTrans variable to store compute time needed for Mult Transposed
    */
-  virtual void getTimers(double& timeMult, double& computeMult,
-                         double& timeMultTrans, double& computeMultTrans);
+  virtual void getTimers(double& timeMult, double& computeMult, double& timeMultTrans,
+                         double& computeMultTrans);
 };
 
 }  // namespace datadriven
