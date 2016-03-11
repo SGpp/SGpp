@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "sgpp/globaldef.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
 #include "LearnerLeastSquaresIdentity.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
