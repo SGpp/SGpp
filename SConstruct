@@ -18,8 +18,8 @@ EnsurePythonVersion(2, 7)
 EnsureSConsVersion(2, 1)
 print "Using SCons", SCons.__version__
 
-scons_ver = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
-if scons_ver < (2, 3, 0):
+sconsVersion = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
+if sconsVersion < (2, 3, 0):
   Helper.printWarning("You are using an older version of scons than we do!",
                       "SGpp officially supports scons >= 2.3.0.",
                       "There are reports that it also compiles with scons >= 2.1.0.")
@@ -227,7 +227,7 @@ if not env.GetOption("clean"):
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 if env["PLATFORM"] == "win32":
-  Helper.set_win32_spawn(env)
+  Helper.setWin32Spawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
@@ -391,21 +391,17 @@ if env["PYDOC"] and env["SG_PYTHON"]:
       with open(os.path.join(module, "Doxyfile"), "w") as doxyFile:
         doxyFile.write(data.replace("$modname", module).replace("$quiet", "YES"))
 
-    doxy_env = env.Clone()
-
-    doxygen = doxy_env.Command(os.path.join(module, "doc/xml/index.xml"), "",
+    doxygen = env.Command(os.path.join(module, "doc/xml/index.xml"), "",
                                "doxygen " + os.path.join(module, "Doxyfile"))
-
-    doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
-    doxy2swig = doxy_env.Command(os.path.join("pysgpp", module + "_doc.i"), doxygen,
-                                 doxy2swig_command)
+    doxy2swig = env.Command(os.path.join("pysgpp", module + "_doc.i"), doxygen,
+                                 "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET")
+    pydocTargetList.append(doxy2swig)
 
     for root, dirs, files in os.walk(os.path.join(module, "src")):
       for file in files:
         if "cpp" in file or "hpp" in file:
-          doxy_env.Depends(doxygen, os.path.join(root, file))
-          doxy_env.Depends(doxy2swig, os.path.join(root, file))
-    pydocTargetList.append(doxy2swig)
+          env.Depends(doxygen, os.path.join(root, file))
+          env.Depends(doxy2swig, os.path.join(root, file))
 
 # compile pysgpp
 if env["SG_PYTHON"]:

@@ -172,54 +172,53 @@ def flatDependencyGraph(dependencies, acc):
 # On win32, the command lines are limited to a ridiculously short length
 # (1000 chars). However, compiler/linker command lines easily exceed that
 # length. The following is a fix for that.
-# It has to be enabled with "env["SPAWN"] = win32_spawn".
+# It has to be enabled with "env["SPAWN"] = win32Spawn".
 # (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
-def set_win32_spawn(env):
+def setWin32Spawn(env):
   import win32file
   import win32event
   import win32process
   import win32security
 
-  def win32_spawn(sh, escape, cmd, args, spawnenv):
-    for var in spawnenv:
-      spawnenv[var] = spawnenv[var].encode("ascii", "replace")
+  def win32Spawn(sh, escape, cmd, args, spawnEnv):
+    for var in spawnEnv:
+      spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
 
     sAttrs = win32security.SECURITY_ATTRIBUTES()
-    StartupInfo = win32process.STARTUPINFO()
+    startupInfo = win32process.STARTUPINFO()
     newargs = " ".join(map(escape, args[1:]))
-    cmdline = cmd + " " + newargs
+    cmdLine = cmd + " " + newargs
 
     # check for any special operating system commands
     if cmd == "del":
       for arg in args[1:]:
         win32file.DeleteFile(arg)
-      exit_code = 0
+      exitCode = 0
     else:
       # otherwise execute the command.
       try:
         hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
-            None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
+            None, cmdLine, None, None, 1, 0, spawnEnv, None, startupInfo)
       except:
         import win32api
-        error_code = win32api.GetLastError()
+        errorCode = win32api.GetLastError()
         raise RuntimeError("Could not execute the following " +
-          "command line (error code {}): {}".format(
-          error_code, cmdline))
+          "command line (error code {}): {}".format(errorCode, cmdLine))
       win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
-      exit_code = win32process.GetExitCodeProcess(hProcess)
+      exitCode = win32process.GetExitCodeProcess(hProcess)
       win32file.CloseHandle(hProcess)
       win32file.CloseHandle(hThread)
-    return exit_code
+    return exitCode
 
-  env["SPAWN"] = win32_spawn
+  env["SPAWN"] = win32Spawn
 
 # get all subdirs of path, required by CheckJNI
 def getSubdirs(path):
-  pathlist = []
+  pathList = []
   for f in os.listdir(path):
     if os.path.isdir(os.path.join(path, f)):
-      pathlist.append(os.path.join(path, f))
-  return pathlist
+      pathList.append(os.path.join(path, f))
+  return pathList
 
 # Custom test for executables used during configuration
 def CheckExec(context, cmd):
@@ -276,9 +275,9 @@ def CheckJNI(context):
     if not fdir:
       continue
     # os.path.realpath to resolve links
-    basedir = os.path.dirname(os.path.realpath(fdir))
-    for subdir in ["..", os.path.join("..", "..")]:
-      pname = os.path.join(basedir, subdir, "include")
+    baseDir = os.path.dirname(os.path.realpath(fdir))
+    for subDir in ["..", os.path.join("..", "..")]:
+      pname = os.path.join(baseDir, subDir, "include")
       if os.path.exists(os.path.join(pname, "jni.h")):
         context.env.Append(CPPPATH=[pname] + getSubdirs(pname))
         res = "... found in " + pname
