@@ -226,7 +226,7 @@ TODO: August 11 2014
  	implementations so that the get1Dstretching() method returns the correct jacobian --- aghh... 
   	
  	iii) ensure full Sg++ build with python and java support, with test etc... given the newly added source file StretchingFactory.cpp
-		DONE WITH FLAG NO_UNIT_TESTS=1
+		DONE WITH FLAG RUN_PYTHON_TESTS=0
 		
 	iv) Consider how to utilize the nested structures of all stretchings up to now so that the transform_grid function does not interpolate  
 	unnecessarily DONE... 
