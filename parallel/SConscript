@@ -103,5 +103,4 @@ if "USE_MPI" in env["CPPDEFINES"]:
   module.buildExamples("examplesMPI")
 else:
   module.buildExamples()
-module.runPythonTests()
 module.runCpplint()
