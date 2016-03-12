@@ -12,6 +12,7 @@ module = ModuleHelper.Module(moduleDependencies)
 
 module.scanSource()
 module.buildLibrary()
+module.generatePythonDocstrings()
 module.buildExamples()
 module.runPythonTests()
 module.runCpplint()

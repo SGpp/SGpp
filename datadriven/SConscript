@@ -23,6 +23,8 @@ module = ModuleHelper.Module(moduleDependencies, additionalDependencies,
 
 module.scanSource()
 module.buildLibrary()
+module.generatePythonDocstrings()
+
 if env["ARCH"] == "mic":
   module.buildExamples("examplesMIC")
 else:
@@ -32,6 +34,7 @@ if env["USE_OCL"]:
       additionalExampleDependencies=["boost_program_options",
                                      "boost_filesystem",
                                      "boost_system"])
+
 module.runPythonTests()
 module.buildBoostTests()
 module.runBoostTests()
