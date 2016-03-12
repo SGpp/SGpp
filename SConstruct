@@ -433,8 +433,10 @@ def installPythonLibToTmp(target, source, env):
 if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   if env["PLATFORM"] == "win32":
     # install the python library to that temporary folder
-    env.Depends(env.Command("installPythonLibToTmp", [pysgppTempFolder], installPythonLibToTmp),
-                finalStepDependencies)
+    installPythonLibToTmpCommand = env.Command("installPythonLibToTmp", [pysgppTempFolder],
+                                               installPythonLibToTmp)
+    env.Depends(installPythonLibToTmpCommand, finalStepDependencies)
+    env.Depends(pythonTestTargetList, installPythonLibToTmpCommand)
 
   # serialize tests (from https://bitbucket.org/scons/scons/wiki/FrequentlyAskedQuestions#
   # markdown-header-how-do-i-prevent-commands-from-being-executed-in-parallel)
