@@ -85,7 +85,7 @@ class SimpleQueue {
     int messagesize = 0;
     if (received_packageindex != packagecount+1) {
       MPI_Probe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &stat);
-      MPI_Get_count(&stat, MPI_INT, &messagesize);  // Count should be packagesize*k
+      MPI_Get_count(&stat, mpi_typ, &messagesize);  // Count should be packagesize*k
       std::cerr << "Received work package [" << received_packageindex+1
                 << " / " << packagecount+1 << "] from node "<< stat.MPI_SOURCE
                 << "! Messagesize: " << messagesize << std::endl;
