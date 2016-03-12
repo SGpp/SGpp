@@ -43,7 +43,7 @@ Compile Standard:
 #Compile OSX:
 #  stage: platforms
 #  script:
-#    - scons -j4 CXX="g++-5" CC="g++-5" COMPILER=GNU ARCH=SSE3 VERBOSE=1 OPT=1 PYDOC=0 NO_UNIT_TESTS=1 SG_JAVA=0 CPPFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0" RUN_BOOST_TESTS=0
+#    - scons -j4 CXX="g++-5" CC="g++-5" COMPILER=GNU ARCH=SSE3 VERBOSE=1 OPT=1 PYDOC=0 RUN_PYTHON_TESTS=0 SG_JAVA=0 CPPFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0" RUN_BOOST_TESTS=0
 #  tags:
 #    - osx
 #    - gcc
