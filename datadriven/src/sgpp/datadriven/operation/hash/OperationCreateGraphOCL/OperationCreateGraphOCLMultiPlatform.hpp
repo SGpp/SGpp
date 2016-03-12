@@ -60,7 +60,7 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
                                             manager, configuration);
   }
 
-  ~OperationCreateGraphOCLMultiPlatform(void) {
+  virtual ~OperationCreateGraphOCLMultiPlatform(void) {
     delete graph_kernel;
   }
   void set_problemchunk(size_t start_id, size_t chunksize) {

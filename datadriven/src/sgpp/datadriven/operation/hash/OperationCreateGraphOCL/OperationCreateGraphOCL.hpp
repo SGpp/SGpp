@@ -88,6 +88,8 @@ class OperationCreateGraphOCL {
     std::cout << "Found " << clustercount << " clusters!" << std::endl;
     return clusters;
   }
+
+  virtual ~OperationCreateGraphOCL(void) {}
 };
 
 }  // namespace DensityOCLMultiPlatform
