@@ -11,13 +11,13 @@ import re
 import sys
 
 def printInfo(*s):
-  print("Info:", "\n      ".join(s))
+  print("Info:", "\n      ".join([str(x) for x in s]))
 
 def printWarning(*s):
-  print("Warning:", "\n         ".join(s), file=sys.stderr)
+  print("Warning:", "\n         ".join([str(x) for x in s]), file=sys.stderr)
 
 def printErrorAndExit(*s):
-  print("Error:", "\n       ".join(s), file=sys.stderr)
+  print("Error:", "\n       ".join([str(x) for x in s]), file=sys.stderr)
   sys.exit(1)
 
 # get all folders containing an "SConscript*" file
@@ -43,6 +43,9 @@ def getModules(ignoreFolders):
       languageSupport.append(module)
       continue
     modules.append(module)
+
+  modules.sort()
+  languageSupport.sort()
   return modules, languageSupport
 
 # Definition of flags / command line parameters for SCons
@@ -195,7 +198,7 @@ def set_win32_spawn(env):
       # otherwise execute the command.
       try:
         hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
-        None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
+            None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
       except:
         import win32api
         error_code = win32api.GetLastError()

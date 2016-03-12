@@ -228,11 +228,11 @@ def checkPython(config):
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
         Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ",",
                             "skipping Python unit tests.")
-        config.env["NO_UNIT_TESTS"] = True
+        config.env["RUN_PYTHON_TESTS"] = False
     except:
       Helper.printWarning("Warning: Numpy doesn't seem to be installed,"
                           "skipping Python unit tests.")
-      config.env["NO_UNIT_TESTS"] = True
+      config.env["RUN_PYTHON_TESTS"] = False
   else:
     Helper.printWarning("Python extension (SG_PYTHON) not enabled,",
                         "skipping Python unit tests.")
@@ -313,8 +313,8 @@ def configureGNUCompiler(config):
   # required for profiling
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
 
-  if config.env["USE_STATICLIB"]:
-    config.env.Append(CPPFLAGS=["-D_USE_STATICLIB"])
+  if config.env["BUILD_STATICLIB"]:
+    config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
 
   if config.env["ARCH"] == "sse3":
     config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -365,8 +365,8 @@ def configureClangCompiler(config):
   config.env.Append(CPPFLAGS=["-fopenmp=libomp"])
   config.env.Append(LINKFLAGS=["-fopenmp=libomp"])
 
-  if config.env["USE_STATICLIB"]:
-    config.env.Append(CPPFLAGS=["-D_USE_STATICLIB"])
+  if config.env["BUILD_STATICLIB"]:
+    config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
 
   if config.env["ARCH"] == "sse3":
     config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -413,8 +413,8 @@ def configureIntelCompiler(config):
   config.env.AppendUnique(CPPFLAGS=["-openmp"])
   config.env.AppendUnique(LINKFLAGS=["-openmp"])
 
-  if config.env["USE_STATICLIB"]:
-    config.env.AppendUnique(CPPFLAGS=["-D_USE_STATICLIB"])
+  if config.env["BUILD_STATICLIB"]:
+    config.env.AppendUnique(CPPFLAGS=["-D_BUILD_STATICLIB"])
 
   if config.env["ARCH"] == "sse3":
     config.env.AppendUnique(CPPFLAGS=["-msse3"])
