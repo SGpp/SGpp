@@ -109,4 +109,4 @@ if env["PLATFORM"] != "win32":
   # so we disable this feature
   moduleSetupPython = env.Command("setupPython", [], setupPython)
   pyEnv.Depends(installLibWrapperPython, moduleSetupPython)
-installTargetList.append(installLibPython)
+libraryTargetList.append(installLibPython)

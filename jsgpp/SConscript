@@ -43,7 +43,7 @@ libJava = javaEnv.SharedLibrary(target="jsgpp",
                                 LIBS=flattenedDependencyGraph)
 #TODO libs are set hacky!
 installLibJava = javaEnv.Install(JSGPP_BUILD_PATH, libJava)
-installTargetList.append(installLibJava)
+libraryTargetList.append(installLibJava)
 
 # do javac compilation and jar packing in separate SCons process
 # (see SConstruct_jsgpp_jar for more details)
@@ -53,4 +53,4 @@ jar = javaEnv.Command(target="jsgpp.jar",
                           format(".bat" if env["PLATFORM"] == "win32" else "",
                                  JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
 javaEnv.AlwaysBuild(jar)
-installTargetList.append(jar)
+libraryTargetList.append(jar)

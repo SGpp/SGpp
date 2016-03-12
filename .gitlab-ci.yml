@@ -71,7 +71,7 @@ Test PYDOC:
 Test StaticLib:
   stage: switches
   script:
-    - scons -j $(nproc) VERBOSE=1 COMPILER=gnu ARCH=avx OPT=1 PYDOC=0 USE_STATICLIB=1
+    - scons -j $(nproc) VERBOSE=1 COMPILER=gnu ARCH=avx OPT=1 PYDOC=0 BUILD_STATICLIB=1
   tags:
     - ubuntu
     - gcc
@@ -102,7 +102,7 @@ Test StaticLib:
 #Test Win32-msvc-StaticLib:
 #  stage: switches
 #  script:
-#    - scons COMPILER=vcc ARCH=sse3 PYDOC=0 VERBOSE=1 USE_STATICLIB=1 SG_PARALLEL=0 SG_COMBIGRID=0 MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+#    - scons COMPILER=vcc ARCH=sse3 PYDOC=0 VERBOSE=1 BUILD_STATICLIB=1 SG_PARALLEL=0 SG_COMBIGRID=0 MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 #  tags:
 #    - windows
 #    - msvc

@@ -21,7 +21,7 @@ class Module(object):
     variables = inspect.stack()[1][0].f_globals
     for name, value in variables.iteritems():
       globals()[name] = value
-  
+
   def scanSource(self, sourceFolder="src"):
     sourceFolder = os.path.join(Dir(".").abspath, sourceFolder)
 
@@ -52,7 +52,7 @@ class Module(object):
 
   def buildLibrary(self):
     self.libname = "sgpp%s" % moduleName
-    if env["USE_STATICLIB"]:
+    if env["BUILD_STATICLIB"]:
       self.libname += "static"
       self.moduleDependencies = [module + "static" for module in self.moduleDependencies]
 
@@ -61,7 +61,7 @@ class Module(object):
     moduleDependencies = self.moduleDependencies
     env.Export("moduleDependencies")
 
-    if env["USE_STATICLIB"]:
+    if env["BUILD_STATICLIB"]:
       libsuffix = env["LIBSUFFIX"]
       self.lib = env.StaticLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
                                    LIBS=self.moduleDependencies + self.additionalDependencies)
@@ -76,8 +76,7 @@ class Module(object):
         env.Depends(self.lib, otherLib)
 
     self.libInstall = env.Install(BUILD_DIR, self.lib)
-    libraryTargetList.append(self.lib)
-    installTargetList.append(self.libInstall)
+    libraryTargetList.append(self.libInstall)
 
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     exampleEnv = env.Clone()
@@ -96,9 +95,9 @@ class Module(object):
         self.hpps.append(hpp)
 
   def runPythonTests(self):
-    if not env["NO_UNIT_TESTS"] and env["SG_PYTHON"]:
+    if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
       moduleTest = env.Test(os.path.join("tests", "test_{}.py".format(moduleName)))
-      testTargetList.append(moduleTest)
+      pythonTestTargetList.append(moduleTest)
 
   def buildBoostTests(self, boostTestFolder="tests", compileFlag="COMPILE_BOOST_TESTS"):
     if env[compileFlag]:
