@@ -17,6 +17,7 @@ module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
 module.scanSource()
 module.buildLibrary()
+module.generatePythonDocstrings()
 if env["ARCH"] != "mic":
   module.buildExamples()
 module.buildBoostTests()

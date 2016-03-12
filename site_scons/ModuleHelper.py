@@ -113,6 +113,28 @@ class Module(object):
     self.libInstall = env.Install(BUILD_DIR, self.lib)
     libraryTargetList.append(self.libInstall)
 
+  def generatePythonDocstrings(self):
+    """Generate Python docstrings for pysgpp.
+    """
+    if env["PYDOC"] and env["SG_PYTHON"]:
+      # read module Doxygen file
+      with open(File("#/moduleDoxy").abspath, "r") as f:
+        moduleDoxy = f.read()
+
+      if not env.GetOption("clean"):
+        # write module-specific Doxyfile
+        with open("Doxyfile", "w") as f:
+          f.write(moduleDoxy.replace("$modname", moduleName).replace("$quiet", "YES"))
+
+      # execute Doxygen
+      doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
+      env.Depends(doxygen, self.cpps + self.hpps)
+
+      # call doxy2swig.py, converting the Doxygen XML output to a SWIG *.i file
+      doxy2swig = env.Command(os.path.join("#", "pysgpp", moduleName + "_doc.i"), doxygen,
+                              "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET")
+      pydocTargetList.append(doxy2swig)
+
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     """Build the examples.
     """

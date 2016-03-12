@@ -98,6 +98,7 @@ module = ModuleHelper.Module(moduleDependencies, excludeFiles=excludeFiles)
 
 module.scanSource()
 module.buildLibrary()
+module.generatePythonDocstrings()
 if "USE_MPI" in env["CPPDEFINES"]:
   module.buildExamples("examplesMPI")
 else:

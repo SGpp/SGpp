@@ -377,32 +377,6 @@ for moduleFolder in moduleFolders:
 
 Export("flattenedDependencyGraph")
 
-# add docstrings to pysgpp
-if env["PYDOC"] and env["SG_PYTHON"]:
-  data = open("moduleDoxy", "r").read()
-  for module in moduleFolders:
-    if not env["SG_" + module.upper()]:
-      continue
-
-    env.Clean("clean", [os.path.join(module, "Doxyfile"),
-                        os.path.join(module, "doc/xml/")])
-
-    if not env.GetOption("clean"):
-      with open(os.path.join(module, "Doxyfile"), "w") as doxyFile:
-        doxyFile.write(data.replace("$modname", module).replace("$quiet", "YES"))
-
-    doxygen = env.Command(os.path.join(module, "doc/xml/index.xml"), "",
-                               "doxygen " + os.path.join(module, "Doxyfile"))
-    doxy2swig = env.Command(os.path.join("pysgpp", module + "_doc.i"), doxygen,
-                                 "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET")
-    pydocTargetList.append(doxy2swig)
-
-    for root, dirs, files in os.walk(os.path.join(module, "src")):
-      for file in files:
-        if "cpp" in file or "hpp" in file:
-          env.Depends(doxygen, os.path.join(root, file))
-          env.Depends(doxy2swig, os.path.join(root, file))
-
 # compile pysgpp
 if env["SG_PYTHON"]:
   env.SConscript("#/pysgpp/SConscript", {"env": env, "moduleName": "pysgpp"})
@@ -426,7 +400,7 @@ def installPythonLibToTmp(target, source, env):
                        "--quiet",
                        "install", "--install-lib=%s" % pysgppTempFolder])
   if p != 0:
-    Helper.printErrorAndExit("Installing python package to the temporary folder",
+    Helper.printErrorAndExit("Installing Python package to the temporary folder",
                              pysgppTempFolder,
                              "failed. Python unit tests cannot be run automatically.")
 
@@ -503,15 +477,24 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 
 doxygen = env.Doxygen("Doxyfile")
 env.Alias("doxygen", doxygen)
-env.Clean("clean", ["Doxyfile", "doxygen_warnings.log", "doc/html", "doc/xml"])
 
 # Things to be cleaned
 #########################################################################
 
-env.Clean("clean", ["config.log", "build.log"])
+# build + log files
+env.Clean("clean", ["lib/", "jsgpp/java/", "config.log", "build.log"])
+# Doxygen stuff
+env.Clean("clean", ["Doxyfile", "doxygen_warnings.log", "doc/html/", "doc/xml/",
+                    "base/doc/doxygen/examples.doxy", "base/doc/doxygen/modules.doxy"])
+
+for module in moduleFolders:
+  # PYDOC stuff
+  env.Clean("clean", [module + "/Doxyfile", module + "/doc/doxygen_warnings.log",
+                      module + "/doc/xml/"])
 
 # Default targets
 #########################################################################
+
 if not GetOption("clean"):
   env.Default(finalStepDependencies)
 else:

@@ -98,7 +98,6 @@ def setupPython(target, source, env):
   fd.close()
 
 if env["PYDOC"]:
-  Import("pydocTargetList")
   pyEnv.Depends(libPython, pydocTargetList)
 
 installLibPython = pyEnv.Install(PYSGPP_BUILD_PATH, libPython)
