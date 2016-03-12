@@ -47,6 +47,9 @@ for wrapper in languageSupport:
 print "Available modules:", ", ".join(moduleNames)
 print "Available language support:", ", ".join(languageSupportNames)
 
+# Define and read variables
+#########################################################################
+
 vars = Variables("custom.py")
 
 # define the flags
@@ -127,12 +130,14 @@ env = Environment(variables=vars, ENV=os.environ, tools=[])
 if (env["PLATFORM"].lower() == "win32") and \
    (env["COMPILER"].lower() == "gnu"):
   # MinGW: use gcc toolschain
-  tools = ["gnulink", "gcc", "g++", "gas", "ar", "swig"]
+  tools = ["gnulink", "gcc", "g++", "gas", "ar", "swig", "doxygen"]
 else:
   # otherwise: use default toolchain
-  tools = ["default"]
+  tools = ["default", "doxygen"]
 
-# initialize environment
+# Initialize environment
+#########################################################################
+
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
 
 # fail if unknown variables where encountered on the command line
@@ -261,8 +266,9 @@ else:
       env["ENV"].get("LD_LIBRARY_PATH", ""),
       BUILD_DIR.abspath])
 
-# -------------------------------------------------------------------------
-# add the pysgpp package path to the environment
+# Add the pysgpp package path to the environment
+#########################################################################
+
 if env["PLATFORM"] == "win32":
   # try to import pysgpp to detect an already existing installation, which
   # could cause trouble
@@ -288,7 +294,9 @@ if env["PLATFORM"] == "win32":
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
                                               PYSGPP_PACKAGE_PATH.abspath])
-# -------------------------------------------------------------------------
+
+# Style checker
+#########################################################################
 
 def lintAction(target, source, env):
   p = subprocess.Popen(["python", "tools/cpplint.py", "--ignorecfg=yes",
@@ -320,10 +328,9 @@ def lintAction(target, source, env):
 
 env.Export("lintAction")
 
-# -------------------------------------------------------------------------
+# Custom builders for Python and Boost tests
+#########################################################################
 
-# add custom builder to trigger the unittests after the build
-# and to enable a special import test
 if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   # do the actual thing
   builder = Builder(action="python $SOURCE", chdir=0)
@@ -335,7 +342,8 @@ if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE")
   env.Append(BUILDERS={"BoostTest" : builder})
 
-
+# Building the modules
+#########################################################################
 
 libraryTargetList = []
 pythonTestTargetList = []
@@ -376,14 +384,10 @@ if env["PYDOC"] and env["SG_PYTHON"]:
     if not env["SG_" + module.upper()]:
       continue
 
-    if env.GetOption("clean"):
-      if os.path.exists(os.path.join(module, "Doxyfile")):
-        os.remove(os.path.join(module, "Doxyfile"))
-      doxypath = os.path.join(module, "doc/xml/")
-      if os.path.exists(doxypath):
-        for file in os.listdir(doxypath):
-          os.remove(os.path.join(doxypath, file))
-    else:
+    env.Clean("clean", [os.path.join(module, "Doxyfile"),
+                        os.path.join(module, "doc/xml/")])
+
+    if not env.GetOption("clean"):
       with open(os.path.join(module, "Doxyfile"), "w") as doxyFile:
         doxyFile.write(data.replace("$modname", module).replace("$quiet", "YES"))
 
@@ -479,11 +483,9 @@ def printInstructions(target, source, env):
 printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
 env.Depends(printInstructionsTarget, finalStepDependencies)
 finalStepDependencies.append(printInstructionsTarget)
-env.Default(finalStepDependencies)
 
 # System-wide installation
 #########################################################################
-env.Clean("distclean", ["config.log"])
 
 installLibSGpp = env.Alias("install-lib-sgpp",
                            env.Install(os.path.join(env.get("LIBDIR"), "sgpp"),
@@ -497,3 +499,22 @@ installIncSGpp = env.Alias("install-inc-sgpp",
                            env.InstallAs(headerFinalDestList, headerSourceList))
 
 env.Alias("install", [installLibSGpp, installIncSGpp])
+
+# Doxygen
+#########################################################################
+
+doxygen = env.Doxygen("Doxyfile")
+env.Alias("doxygen", doxygen)
+env.Clean("clean", ["Doxyfile", "doxygen_warnings.log", "doc/html", "doc/xml"])
+
+# Things to be cleaned
+#########################################################################
+
+env.Clean("clean", ["config.log", "build.log"])
+
+# Default targets
+#########################################################################
+if not GetOption("clean"):
+  env.Default(finalStepDependencies)
+else:
+  env.Default(finalStepDependencies + ["clean"])
