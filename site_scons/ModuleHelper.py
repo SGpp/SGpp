@@ -10,97 +10,145 @@ import os
 class Module(object):
   def __init__(self, moduleDependencies, additionalDependencies=[],
                additionalBoostTestDependencies=[], excludeFiles=[]):
+    # moduleDependencies: list of SG++ modules (e.g., "sgppbase") which are needed for this module
     self.moduleDependencies = moduleDependencies
+    # additionalDependencies: list of other libraries on which the module depends
+    # (used for the module library itself, the examples, and the Boost tests)
     self.additionalDependencies = additionalDependencies
+    # additionalBoostTestDependencies: list of other libraries on which the Boost tests depend
     self.additionalBoostTestDependencies = additionalBoostTestDependencies
+    # excludeFiles: source/header files which should be excluded from building
     self.excludeFiles = excludeFiles
     self.cpps = []
     self.hpps = []
     self.objs = []
 
+    # inject those variables in the module namespace
+    # which were imported in the SConscript files, including env;
+    # this assumes that the __init__ was called directly in the SConscript at top-level,
+    # not in a function
+    # (not a very nice method, but passing the variables in function arguments
+    # would be very tedious)
     variables = inspect.stack()[1][0].f_globals
     for name, value in variables.iteritems():
       globals()[name] = value
 
   def scanSource(self, sourceFolder="src"):
+    """Scan the given directory for source and header files.
+    """
+    # the sourceFolder is relative to the current directory
+    # ==> make absolute path
     sourceFolder = os.path.join(Dir(".").abspath, sourceFolder)
 
     for currentFolder, subdirNames, fileNames in os.walk(sourceFolder, topdown=True):
+      # sort subdirectories and files
       subdirNames.sort()
       fileNames.sort()
+
+      # check if there's a submodule SConscript in the current folder
       sconscriptPath = os.path.join(currentFolder, "SConscript")
+
       if (currentFolder != sourceFolder) and os.path.exists(sconscriptPath):
+        # call submodule SConscript, tell it that's it's our module calling
         module = self
         env.SConscript(sconscriptPath, exports="module")
         # remove subfolders from iteration as they are already processed
         # (this is why topdown=True is required)
         subdirNames[:] = []
       else:
+        # process source files
         for fileName in fnmatch.filter(fileNames, "*.cpp"):
           if fileName in self.excludeFiles: continue
           cpp = os.path.join(currentFolder, fileName)
           self.cpps.append(cpp)
           self.objs.append(env.SharedObject(cpp))
+
+        # process header files
         for fileName in fnmatch.filter(fileNames, "*.hpp"):
           if fileName in self.excludeFiles: continue
           hpp = os.path.join(currentFolder, fileName)
           self.hpps.append(hpp)
 
+    # append headers to install list
     for hpp in self.hpps:
       headerSourceList.append(os.path.join(moduleName, hpp))
       headerDestList.append(hpp.split(os.sep, 1)[1])
 
   def buildLibrary(self):
-    self.libname = "sgpp%s" % moduleName
+    """Build the module.
+    """
+
+    # name of the library to build
+    self.libname = "sgpp" + moduleName
+
+    # change library names if we're linking statically
     if env["BUILD_STATICLIB"]:
       self.libname += "static"
       self.moduleDependencies = [module + "static" for module in self.moduleDependencies]
 
+    # export library name and dependencies
     libname = self.libname
     env.Export("libname")
     moduleDependencies = self.moduleDependencies
     env.Export("moduleDependencies")
 
     if env["BUILD_STATICLIB"]:
+      # build static library
       libsuffix = env["LIBSUFFIX"]
       self.lib = env.StaticLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
                                    LIBS=self.moduleDependencies + self.additionalDependencies)
     else:
+      # build shared library
       libsuffix = env["SHLIBSUFFIX"]
       self.lib = env.SharedLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
                                    LIBS=self.moduleDependencies + self.additionalDependencies)
 
+    # set module dependencies
     for module in self.moduleDependencies:
       if module.startswith("sgpp"):
         otherLib = os.path.join("#", BUILD_DIR.path, env["LIBPREFIX"] + module + libsuffix)
         env.Depends(self.lib, otherLib)
 
+    # install the library
     self.libInstall = env.Install(BUILD_DIR, self.lib)
     libraryTargetList.append(self.libInstall)
 
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
+    """Build the examples.
+    """
+    # set libraries
     exampleEnv = env.Clone()
     exampleEnv.AppendUnique(LIBS=[self.libname] +
                                  self.moduleDependencies + self.additionalDependencies +
                                  additionalExampleDependencies)
+
+    # for each example
     for fileName in os.listdir(exampleFolder):
       if fnmatch.fnmatch(fileName, "*.cpp"):
+        # source file
         cpp = os.path.join(exampleFolder, fileName)
         self.cpps.append(cpp)
         example = exampleEnv.Program(source=cpp)
         exampleEnv.Depends(example, self.libInstall)
         exampleTargetList.append(example)
       elif fnmatch.fnmatch(fileName, "*.hpp"):
+        # header file
         hpp = os.path.join(exampleFolder, fileName)
         self.hpps.append(hpp)
 
   def runPythonTests(self):
+    """Run the Python tests.
+    """
     if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
+      # run Python test
       moduleTest = env.Test(os.path.join("tests", "test_{}.py".format(moduleName)))
       pythonTestTargetList.append(moduleTest)
 
   def buildBoostTests(self, boostTestFolder="tests", compileFlag="COMPILE_BOOST_TESTS"):
+    """Compile the Boost tests.
+    """
     if env[compileFlag]:
+      # set libraries
       testEnv = env.Clone()
       testEnv.AppendUnique(LIBS=[self.libname] +
                                 self.moduleDependencies + self.additionalDependencies +
@@ -108,14 +156,20 @@ class Module(object):
                                 self.additionalBoostTestDependencies)
 
       testObjs = []
+
+      # for each test
       for currentFolder, subdirNames, fileNames in os.walk(boostTestFolder, topdown=True):
         for fileName in fnmatch.filter(fileNames, "*.cpp"):
+          # source file
           cpp = os.path.join(currentFolder, fileName)
           self.cpps.append(cpp)
           testObjs.append(testEnv.SharedObject(cpp))
         for fileName in fnmatch.filter(fileNames, "*.hpp"):
+          # header file
           hpp = os.path.join(currentFolder, fileName)
           self.hpps.append(hpp)
+
+      # only build Boost test executable if there are any tests
       if len(testObjs) > 0:
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
@@ -125,12 +179,18 @@ class Module(object):
 
   def runBoostTests(self, boostTestFolder="tests",
                     compileFlag="COMPILE_BOOST_TESTS", runFlag="RUN_BOOST_TESTS"):
+    """Run the Boost tests.
+    """
     if env[compileFlag] and env[runFlag]:
+      # run Boost tests
       testRun = env.BoostTest(self.boostTestExecutable + "_run", source=self.boostTestExecutable)
       boostTestTargetList.append(testRun)
 
   def runCpplint(self):
+    """Run the style checker.
+    """
     if env['RUN_CPPLINT']:
+      # run the style checker on all source and header files
       for path in self.cpps + self.hpps:
         lintCommand = env.Command(path + ".lint", path, lintAction)
         env.Depends(self.lib, lintCommand)
