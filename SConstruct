@@ -130,10 +130,10 @@ env = Environment(variables=vars, ENV=os.environ, tools=[])
 if (env["PLATFORM"].lower() == "win32") and \
    (env["COMPILER"].lower() == "gnu"):
   # MinGW: use gcc toolschain
-  tools = ["gnulink", "gcc", "g++", "gas", "ar", "swig", "doxygen"]
+  tools = ["gnulink", "gcc", "g++", "gas", "ar", "swig"]
 else:
   # otherwise: use default toolchain
-  tools = ["default", "doxygen"]
+  tools = ["default"]
 
 # Initialize environment
 #########################################################################
@@ -475,7 +475,7 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 # Doxygen
 #########################################################################
 
-doxygen = env.Doxygen("Doxyfile")
+doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
 env.Alias("doxygen", doxygen)
 
 # Things to be cleaned
