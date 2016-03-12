@@ -5,14 +5,22 @@
 #ifndef MPIOPERATIONFACTORY_H
 #define MPIOPERATIONFACTORY_H
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationRhsMPI.hpp>
 
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
 MPISlaveOperation* create_mpi_operation(char *classname) {
-  if (std::strcmp(classname, "OperationCreateGraphSlave"))  {
+  std::cout << classname << std::endl;
+  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi25OperationCreateGraphSlave")
+      == 0)  {
+    std::cout << "blub1" << std::endl;
     return new OperationCreateGraphSlave();
+  }
+  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi17OperationRhsSlave") == 0)  {
+    std::cout << "blub2" << std::endl;
+    return new OperationRhsSlave();
   }
   return NULL;
 }

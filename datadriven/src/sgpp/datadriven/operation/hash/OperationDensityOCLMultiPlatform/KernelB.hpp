@@ -120,11 +120,19 @@ class KernelDensityB {
     // Load data into buffers if not already done
     if (!deviceData.isInitialized())
       deviceData.intializeTo(data, 1, 0, data.size());
-    std::vector<T> zeros(gridSize);
-    for (size_t i = 0; i < gridSize; i++) {
-      zeros[i] = 0.0;
+    if (chunksize == 1) {
+      std::vector<T> zeros(gridSize);
+      for (size_t i = 0; i < gridSize; i++) {
+        zeros[i] = 0.0;
+        deviceResultData.intializeTo(zeros, 1, 0, gridSize);
+      }
+    } else {
+      std::vector<T> zeros(chunksize);
+      for (size_t i = 0; i < chunksize; i++) {
+        zeros[i] = 0.0;
+      }
+      deviceResultData.intializeTo(zeros, 1, 0, chunksize);
     }
-    deviceResultData.intializeTo(zeros, 1, 0, gridSize);
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
@@ -182,8 +190,13 @@ class KernelDensityB {
     clFinish(device->commandQueue);
 
     std::vector<T> &hostTemp = deviceResultData.getHostPointer();
-    for (size_t i = 0; i < gridSize; i++)
-      result[i] = hostTemp[i];
+    if (chunksize == 1) {
+      for (size_t i = 0; i < gridSize; i++)
+        result[i] = hostTemp[i];
+    } else {
+      for (size_t i = 0; i < chunksize; i++)
+        result[i] = hostTemp[i];
+    }
 
     // determine kernel execution time
     cl_ulong startTime = 0;

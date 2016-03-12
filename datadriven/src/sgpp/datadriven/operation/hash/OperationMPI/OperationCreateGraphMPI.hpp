@@ -78,6 +78,8 @@ class OperationCreateGraphSlave : public MPISlaveOperation {
         MPI_Send(partial_graph.data(), datainfo[1] * k, MPI_INT, 0, 1, MPI_COMM_WORLD);
       }
     }while(true);
+    delete op;
+    delete [] dataset;
   }
 };
 

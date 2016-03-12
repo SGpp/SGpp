@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 #pragma once
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
@@ -31,7 +31,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
  private:
   size_t dims;
   size_t gridSize;
-  sgpp::base::Grid& grid;
   json::Node &firstKernelConfig;
   json::Node &secondKernelConfig;
   sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
@@ -49,7 +48,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    json::Node &firstKernelConfig, json::Node &secondKernelConfig,
                                    T lambda) : OperationDensityOCL(), dims(dimensions),
-                                               gridSize(grid.getStorage().getSize()), grid(grid),
+                                               gridSize(grid.getStorage().getSize()),
                                                firstKernelConfig(firstKernelConfig),
                                                secondKernelConfig(secondKernelConfig),
                                                devices(manager->getDevices()),
@@ -70,6 +69,28 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     if (verbose)
       std::cout << "Grid stored into integer array! Number of gridpoints: "
                 << pointscount << std::endl;
+    multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+                                          points, lambda);
+    bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
+                                    points);
+  }
+  OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
+                                   std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                                   json::Node &firstKernelConfig, json::Node &secondKernelConfig,
+                                   T lambda) : OperationDensityOCL(), dims(dimensions),
+                                               gridSize(gridsize),
+                                               firstKernelConfig(firstKernelConfig),
+                                               secondKernelConfig(secondKernelConfig),
+                                               devices(manager->getDevices()),
+                                               manager(manager), lambda(lambda), start_id(0),
+                                               chunksize(-1) {
+    verbose = true;
+    for (int i = 0; i < gridSize; i++) {
+      for (int d = 0; d < dims; d++) {
+        points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
+        points.push_back(gridpoints[2 * dimensions * i + 2 * d + 1]);
+      }
+    }
     multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
                                           points, lambda);
     bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
@@ -108,10 +129,14 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       result[i] = resultVector[i];
   }
 
-  void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b) {
+  void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
+                 size_t start_id = 0, size_t chunksize = -1) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     if (verbose) {
-      std::cout << "starting rhs kernel methode! datasize: " << b.getSize() << std::endl;
+      if (chunksize == -1)
+        std::cout << "starting rhs kernel methode! datasize: " << b.getSize() << std::endl;
+      else
+        std::cout << "starting rhs kernel methode! datasize: " << chunksize << std::endl;
     }
     std::vector<T> bVector(b.getSize());
     std::vector<T> datasetVector(dataset.getSize());

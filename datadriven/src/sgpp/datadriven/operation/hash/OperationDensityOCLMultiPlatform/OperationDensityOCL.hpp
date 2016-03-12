@@ -6,7 +6,6 @@
 #pragma once
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
@@ -21,7 +20,8 @@ class OperationDensityOCL: public base::OperationMatrix {
   OperationDensityOCL()  {
   }
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
-  virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b) = 0;
+  virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
+                         size_t start_id = 0,  size_t chunksize = 0) = 0;
 };
 
 }  // namespace DensityOCLMultiPlatform
