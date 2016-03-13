@@ -6,6 +6,7 @@
 import glob
 import os
 import subprocess
+import textwrap
 import SCons
 from SCons.Script.SConscript import SConsEnvironment
 
@@ -68,15 +69,15 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "the following values are possible: " +
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
-vars.Add(BoolVariable("OPT", "Sets optimization on and off", False))
+vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
-                                "by setting SG_DATADRIVEN = 0; " +
+                                "by setting SG_DATADRIVEN=0; " +
                                 "if False, the modules must be enabled explicitly, e.g., " +
-                                "by setting SG_DATADRIVEN = 1", True))
+                                "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
 
@@ -110,15 +111,15 @@ vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost
 vars.Add(BoolVariable("RUN_CPPLINT",
                       "Check compliance to Google's style guide using cpplint", True))
 
-vars.Add(BoolVariable("USE_ARMADILLO", "Sets if Armadillo should be used " +
+vars.Add(BoolVariable("USE_ARMADILLO", "Set if Armadillo should be used " +
                                        "(only relevant for sgpp::optimization)", False))
-vars.Add(BoolVariable("USE_EIGEN", "Sets if Eigen should be used " +
+vars.Add(BoolVariable("USE_EIGEN", "Set if Eigen should be used " +
                                    "(only relevant for sgpp::optimization)", False))
-vars.Add(BoolVariable("USE_GMMPP", "Sets if Gmm++ should be used " +
+vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
-vars.Add(BoolVariable("USE_UMFPACK", "Sets if UMFPACK should be used " +
+vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
-vars.Add(BoolVariable("BUILD_STATICLIB", "Sets if static libraries should be built " +
+vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
 
@@ -190,23 +191,31 @@ env.Export("moduleNames")
 env.Export("moduleFolders")
 
 # help text
-Help("""---------------------------------------------------------------------
+Help("""
+--------------------------------------------------------------------------------
 
-Type "scons [NAME=VALUE [NAME=VALUE ...]]" to build the libraries.
+Type "scons" to build the libraries.
 
-There are compiler optimizations for different platforms which can be
-specified via parameters.
+You can set build options in the command line. For example, use
+"scons COMPILER=intel" to use the Intel compiler. Boolean flags such as OPT can
+be set using various notations (1/0, true/false, yes/no). Use the SG_* flags to
+disable building of specific modules (e.g., "scons SG_DATADRIVEN=0"). If you
+want to see the compiler and linker commands, use "scons VERBOSE=1". Use
+"scons -j 4" to enable parallel building on four cores.
 
-Parameters can be set either by setting the corresponding environment
-variables, or directly via the command line, e.g.,
-> scons VERBOSE=True
-to enable verbose compilation.
+You can find a list of options below this text.
 
----------------------------------------------------------------------
+Type "scons doxygen" to build the Doxygen documentation, which can afterwards be
+accessed via doc/html/index.html. If you additionally exclude modules (e.g.,
+"scons SG_DATADRIVEN=0 doxygen"), then only the documentation for the remaining
+modules will be built.
+
+--------------------------------------------------------------------------------
 
 Parameters are:
 """ +
-vars.GenerateHelpText(env))
+"\n".join([textwrap.fill(line, 80)
+           for line in vars.GenerateHelpText(env).splitlines()]))
 
 # add trailing slashes were required and if not present
 BUILD_DIR = Dir(os.path.join("lib", "sgpp"))
@@ -362,9 +371,11 @@ env.Export("headerDestList")
 
 # compile selected modules
 flattenedDependencyGraph = []
+
 for moduleFolder in moduleFolders:
   if not env["SG_" + moduleFolder.upper()]:
     continue
+
   print "Preparing to build module:", moduleFolder
   # SConscript("src/sgpp/SConscript" + moduleFolder, variant_dir="#/tmp/build/", duplicate=0)
   env.SConscript("#/" + moduleFolder + "/SConscript", {"env": env, "moduleName": moduleFolder})
@@ -384,6 +395,9 @@ if env["SG_PYTHON"]:
 # compile jsgpp
 if env["SG_JAVA"]:
   env.SConscript("#/jsgpp/SConscript", {"env": env, "moduleName": "jsgpp"})
+
+if (not env["SG_PYTHON"]) and (not env["SG_JAVA"]) and (len(flattenedDependencyGraph) == 0):
+  Helper.printErrorAndExit("You must enable at least one module (e.g., SG_BASE=1).")
 
 # Python tests
 #########################################################################
