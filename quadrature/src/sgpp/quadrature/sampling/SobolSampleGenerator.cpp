@@ -21,7 +21,7 @@ SobolSampleGenerator::SobolSampleGenerator(size_t dimensions, std::uint64_t seed
 SobolSampleGenerator::~SobolSampleGenerator() {}
 
 size_t SobolSampleGenerator::i4_bit_hi1(std::uint64_t n) {
-  double i = floor(n);
+  double i = floor(static_cast<double>(n));
   size_t bit = 0;
 
   while (true) {
@@ -36,7 +36,7 @@ size_t SobolSampleGenerator::i4_bit_hi1(std::uint64_t n) {
 
 size_t SobolSampleGenerator::i4_bit_lo0(std::uint64_t n) {
   size_t bit = 0;
-  double i = floor(n);
+  double i = floor(static_cast<double>(n));
   double i2;
 
   while (true) {
@@ -134,7 +134,7 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
     base::DataVector temp_dv7(d7, 40);
     v->setColumn(7, temp_dv7);
 
-    atmost = (size_t)(pow(2., (double)log_max) - 1);
+    atmost = static_cast<size_t>(pow(2., static_cast<double>(log_max)) - 1);
     //
     //    Find the number of bits in ATMOST.
     //
@@ -177,7 +177,7 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
       size_t m = 0;
 
       while (true) {
-        j = (size_t)floor(j / (size_t)2);
+        j = static_cast<size_t>(floor(static_cast<double>(j) / 2.));
 
         if (j <= 0) break;
 
@@ -192,7 +192,7 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
       size_t j2;
 
       for (size_t k = m; k > 0; k--) {  // k um +1 geshifted
-        j2 = (size_t)floor(j / (size_t)2);
+        j2 = static_cast<size_t>(floor(static_cast<double>(j) / 2.));
         includ[k - 1] = (j != 2 * j2);
         j = j2;
       }
@@ -211,13 +211,12 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
 
         for (size_t k = 1; k < m + 1; k++) {
           l = 2 * l;
-
           if (includ[k - 1]) {
             newv = newv ^ (l * (size_t)v->get(i - 1, j - k - 1));
           }
         }
 
-        v->set(i - 1, j - 1, (double)newv);
+        v->set(i - 1, j - 1, static_cast<double>(newv));
       }
     }
 
@@ -244,7 +243,7 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
     for (size_t i = 0; i < dim_num; i++) lastq[i] = 0;
   }
 
-  seed = (std::uint64_t)floor(seed);
+  seed = static_cast<std::uint64_t>(floor(static_cast<double>(seed)));
   size_t l = 0;
 
   if (seed == 0) {
@@ -301,12 +300,12 @@ void SobolSampleGenerator::getSample(base::DataVector& dv) {
   //
 
   for (size_t i = 1; i < dim_num + 1; i++) {
-    dv[i - 1] = (double)lastq[i - 1] * recipd;
+    dv[i - 1] = static_cast<double>(lastq[i - 1]) * recipd;
     lastq[i - 1] = lastq[i - 1] ^ (size_t)v->get(i - 1, l - 1);
   }
 
   seed_save = seed;
   seed += 1;
 }
-}
-}
+}  // namespace quadrature
+}  // namespace sgpp

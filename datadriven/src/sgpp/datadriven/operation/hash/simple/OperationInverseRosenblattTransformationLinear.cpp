@@ -182,8 +182,9 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
   return;
 }
 
-double OperationInverseRosenblattTransformationLinear::doTransformation1D(
-    base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
+double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::Grid* grid1d,
+                                                                          base::DataVector* alpha1d,
+                                                                          double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
