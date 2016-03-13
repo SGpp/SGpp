@@ -7,6 +7,8 @@ import fnmatch
 import inspect
 import os
 
+import Helper
+
 class Module(object):
   def __init__(self, moduleDependencies, additionalDependencies=[],
                additionalBoostTestDependencies=[], excludeFiles=[]):
@@ -32,6 +34,14 @@ class Module(object):
     variables = inspect.stack()[1][0].f_globals
     for name, value in variables.iteritems():
       globals()[name] = value
+
+    # check module dependencies, fail if a dependency is missing
+    for module in self.moduleDependencies:
+      if module.startswith("sgpp") and (not env["SG_" + module[4:].upper()]):
+        Helper.printErrorAndExit(
+            "The \"{}\" module depends on the \"{}\" module, ".format(moduleName, module[4:]),
+            "which is currently not enabled. Please enable it by setting SG_{}=1.".format(
+                module[4:].upper()))
 
   def scanSource(self, sourceFolder="src"):
     """Scan the given directory for source and header files.
