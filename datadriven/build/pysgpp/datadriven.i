@@ -48,6 +48,10 @@
 
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
+// --------------------------------------
+// renaming ambiguous function declarations for python
+%ignore base::datadriven::OperationRosenblattTransformation::doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf, size_t dim_start);
+
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
 /*%nodefaultdtor sgpp::datadriven::OperationTest;

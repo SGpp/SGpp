@@ -66,7 +66,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    *
    * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
    */
-  void initialize(base::DataMatrix& samples);
+  virtual void initialize(base::DataMatrix& samples);
 
   /**
    * This methods evaluates the sparse grid density at a single point
@@ -162,7 +162,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @return
    */
   double computeResidual(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& test,
-                          double lambdaReg);
+                         double lambdaReg);
 
   /**
    * generates the regularization matrix

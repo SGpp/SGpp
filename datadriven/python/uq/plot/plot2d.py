@@ -76,26 +76,34 @@ def plotFunction2d(f, addContour=True, n=101,
                    xlim=[0, 1], ylim=[0, 1]):
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
-    X, Y = np.meshgrid(x, y)
+#     X, Y = np.meshgrid(x, y)
     Z = np.ones(n * n).reshape(n, n)
 
-    for i in xrange(len(X)):
-        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f(xi, 1 - yi)
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    for i in range(len(x)):
+        for j in range(len(y)):
+            Z[j, i] = f(xv[j, i], yv[j, i])
 
-    plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
+#     for i in xrange(len(X)):
+#         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
+#             Z[i, j] = f(xi, 1 - yi)
+
+    plt.imshow(Z[::-1, :], interpolation='bilinear',
+               extent=(xlim[0], xlim[1], xlim[0], xlim[1]))
 
     plt.jet()
     plt.colorbar()
 
     if addContour:
-        cs = plt.contour(X, 1 - Y, Z, colors='black')
+        cs = plt.contour(xv, yv, Z, colors='black')
+#         cs = plt.contour(X, 1 - Y, Z, colors='black')
         plt.clabel(cs, inline=1, fontsize=18)
 
     return
 
 
-def plotSG2d(grid, alpha, addContour=True, n=100):
+def plotSG2d(grid, alpha, addContour=True, n=100,
+             show_negative=False, show_grid_points=False):
     gs = grid.getStorage()
 
     gpxp = []
@@ -104,7 +112,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100):
     gpxn = []
     gpyn = []
 
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         if alpha[i] > 0:
             gpxp.append(gs.get(i).getCoord(0))
             gpyp.append(gs.get(i).getCoord(1))
@@ -146,13 +154,14 @@ def plotSG2d(grid, alpha, addContour=True, n=100):
 
     plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
 
-    if len(neg_z) > 0:
+    if len(neg_z) > 0 and show_negative:
         plt.plot(neg_x, neg_y, linestyle=' ', marker='o', color='red')
         plt.title("[%g, %g]" % (min(neg_z), max(neg_z)))
 
     # plot surpluses
-    plt.plot(gpxp, gpyp, "^ ", color="white")
-    plt.plot(gpxn, gpyn, "v ", color="red")
+    if show_grid_points:
+        plt.plot(gpxp, gpyp, "^ ", color="white")
+        plt.plot(gpxn, gpyn, "v ", color="red")
 
     plt.jet()
     plt.colorbar()

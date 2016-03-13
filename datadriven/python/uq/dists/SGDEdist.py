@@ -55,10 +55,11 @@ class SGDEdist(Dist):
         # print "Vol: %g" % (self.scale - self.fmin)
 
     @classmethod
-    def byLearnerSGDE(cls, samples, gridConfig, adaptConfig, solverConfig,
-                      regularizationConfig, learnerConfig):
+    def byLearnerSGDE(cls, samples, gridConfig, adaptConfig,
+                      solverConfig, regularizationConfig,
+                      learnerConfig):
         learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
-                      regularizationConfig, learnerConfig)
+                              regularizationConfig, learnerConfig)
         learner.initialize(samples)
         return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())
 

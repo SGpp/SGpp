@@ -211,6 +211,6 @@ class SobolSampleGenerator : public SampleGenerator {
   double** sobol_points(char* dir_file);
 };
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SOBOLSAMPLEGENERATOR_H_ */

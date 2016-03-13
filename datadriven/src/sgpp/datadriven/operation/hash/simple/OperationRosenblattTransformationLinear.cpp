@@ -186,8 +186,8 @@ void OperationRosenblattTransformationLinear::doTransformation_in_next_dim(
 }
 
 double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* grid1d,
-                                                                    base::DataVector* alpha1d,
-                                                                    double coord1d) {
+                                                                   base::DataVector* alpha1d,
+                                                                   double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
