@@ -87,6 +87,14 @@ class Configuration {
         if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
         }
+
+        if (kernelNode.contains("KERNEL_PREFETCH_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_PREFETCH_SIZE", 64ul);
+        }
+
+        if (kernelNode.contains("KERNEL_TRANS_PREFETCH_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_TRANS_PREFETCH_SIZE", 64ul);
+        }
       }
     }
   }
