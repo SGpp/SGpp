@@ -30,6 +30,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
   bool useLocalMemory;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
+  size_t prefetchSize;
 
   std::string getLevel(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
@@ -64,7 +65,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
     if (kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool()) {
-      output << "locData[(" << dim << " * " << localWorkgroupSize << ") + k]";
+      output << "locData[(" << dim << " * " << prefetchSize << ") + k]";
     } else {
       output << "ptrData[(" << dim << " * sourceSize) + k]";
     }
@@ -113,6 +114,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
     transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    prefetchSize = kernelConfiguration["KERNEL_PREFETCH_SIZE"].getUInt();
   }
 
   std::string generateSource() {
@@ -145,9 +147,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
                  << std::endl;
     sourceStream << "                  __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "                  uint sourceSize," << std::endl;
-    sourceStream << "                  uint start_data," << std::endl;
-    sourceStream << "                  uint end_data) {" << std::endl;
+    sourceStream << "                  int sourceSize," << std::endl;
+    sourceStream << "                  int start_data," << std::endl;
+    sourceStream << "                  int end_data) {" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int groupSize = get_local_size(0);" << std::endl;
@@ -162,9 +164,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locData["
-                   << dims * localWorkgroupSize << "];" << std::endl;
+                   << dims * prefetchSize << "];" << std::endl;
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locSource["
-                   << localWorkgroupSize << "];" << std::endl
+                   << prefetchSize << "];" << std::endl
                    << std::endl;
     }
 
@@ -212,19 +214,20 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "for(int dataBlockStart = start_data; dataBlockStart < "
-                                         "end_data; dataBlockStart += " << localWorkgroupSize
-                   << ") {" << std::endl;
+                                         "end_data; dataBlockStart += " << prefetchSize << ") {"
+                   << std::endl;
 
+      sourceStream << this->indent[1] << "if (localIdx < " << prefetchSize << ") {" << std::endl;
       if (dims > maxDimUnroll) {
-        sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {"
+        sourceStream << this->indent[1] << "for (int d = 0; d < " << dims << "; d++) {"
                      << std::endl;
-        sourceStream << this->indent[2] << "locData[(" << localWorkgroupSize
+        sourceStream << this->indent[2] << "locData[(" << prefetchSize
                      << " * d) + localIdx] = ptrData[(d * sourceSize) + "
                         "dataBlockStart + localIdx];" << std::endl;
         sourceStream << this->indent[1] << "}" << std::endl;
       } else {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locData[(" << localWorkgroupSize << " * " << d
+          sourceStream << this->indent[1] << "locData[(" << prefetchSize << " * " << d
                        << ") + localIdx] = ptrData[(" << d
                        << " * sourceSize) + dataBlockStart + localIdx];" << std::endl;
         }
@@ -232,9 +235,11 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
       sourceStream << this->indent[1]
                    << "locSource[localIdx] = ptrSource[localIdx + dataBlockStart];" << std::endl;
+
+      sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << std::endl;
-      sourceStream << this->indent[1] << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {"
+      sourceStream << this->indent[1] << "for(int k = 0; k < " << prefetchSize << "; k++) {"
                    << std::endl;
 
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
@@ -253,7 +258,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << std::endl;
 
     if (dims > maxDimUnroll) {
-      sourceStream << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
+      sourceStream << this->indent[1] << "for (int unrollDim = 0; unrollDim < "
                    << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                    << ") {" << std::endl;
 
