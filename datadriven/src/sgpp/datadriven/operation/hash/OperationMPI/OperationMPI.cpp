@@ -17,8 +17,9 @@ MPISlaveOperation::MPISlaveOperation(void) {
 
 MPISlaveOperation::~MPISlaveOperation(void) {
 }
-MPIOperation::MPIOperation(std::string slave_class_name) {
+MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
   int message[1];
+  index++;
   // Command for creation and execution of a slave
   message[0] = 1;
   for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
@@ -34,10 +35,23 @@ MPIOperation::MPIOperation(std::string slave_class_name) {
   delete [] class_message;
 }
 
+int MPIOperation::index = 0;
 void MPIOperation::start_slave_code(void) {
   int message[1];
   // Command for creation and execution of a slave
+  message[0] = object_index + 10;
+  for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
+    MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, MPI_COMM_WORLD);
+  }
+}
+void MPIOperation::release_slave_objects(void) {
+  int message[1];
+  // Kill all slave objects
   message[0] = 2;
+  for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
+    MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, MPI_COMM_WORLD);
+  }
+  message[0] = object_index + 10;
   for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
     MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, MPI_COMM_WORLD);
   }

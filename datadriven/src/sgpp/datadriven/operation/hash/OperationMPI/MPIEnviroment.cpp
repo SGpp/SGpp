@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+#include <vector>
 
 #include "MPIOperationFactory.hpp"
 #include "MPIEnviroment.hpp"
@@ -29,7 +30,7 @@ void MPIEnviroment::slave_mainloop(void) {
     if (verbose) {
       std::cout << "Node " << rank << ": Started slave mainloop" << std::endl;
     }
-    MPISlaveOperation* slave_op = NULL;
+    std::vector<MPISlaveOperation*> slave_ops;
     do {
       int messagesize = 0;
       MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
@@ -42,37 +43,43 @@ void MPIEnviroment::slave_mainloop(void) {
                   << "! Going to ignore this..." << std::endl;
         delete [] message;
         continue;
-      }
-      if (message[0] == -1) {
+      } else if (message[0] == -1) {
+        for (auto p : slave_ops) {
+          if (p != NULL)
+            delete p;
+        }
         delete [] message;
         break;
-      }
-      if (message[0] == 1) {
+      } else if (message[0] == 1) {
         // Create operation here
         MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
         MPI_Get_count(&stat, MPI_CHAR, &messagesize);
         char *classname = new char[messagesize];
         MPI_Recv(classname, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
                  MPI_COMM_WORLD, &stat);
-        if (slave_op != NULL) {
-          std::cout << "Warning! Overriding existing mpi operation with operation "
-                    << classname << " in node " << rank << std::endl;
-          delete slave_op;
-        }
-        slave_op = create_mpi_operation(classname);
+        slave_ops.push_back(create_mpi_operation(classname));
         if (verbose) {
           std::cout << "Node " << rank << ": Created slave operation \""
                     << classname << "\"" << std::endl;
         }
-      }
-      if (message[0] == 2) {
+      } else if (message[0] == 2) {
+        MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+        MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
+                 MPI_COMM_WORLD, &stat);
+        delete slave_ops[message[0] - 10];
+        slave_ops[message[0] - 10] = NULL;
+        if (verbose) {
+          std::cout << "Node " << rank << ": Deleted slave operation with ID: "
+                    << message[0] - 10 << "" << std::endl;
+        }
+      } else if (message[0] >= 10) {
         // run operation here
         if (verbose) {
           std::cout << "Node " << rank << ": Starting slave operation " << std::endl;
         }
-        if (slave_op == NULL)
+        if (slave_ops[message[0] - 10] == NULL)
           throw std::logic_error("Trying to run an non existing slave operation!");
-        slave_op->slave_code();
+        slave_ops[message[0] - 10]->slave_code();
       }
       delete [] message;
     }while(true);
