@@ -21,8 +21,7 @@
 namespace sgpp {
 namespace datadriven {
 
-
-class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
+class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
  protected:
   // Mapping from class index to class number:
   std::map<int, double> index_to_class_;
@@ -42,8 +41,7 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
   std::vector<sgpp::base::OperationMatrix*> CVec_;
 
  public:
-  LearnerDensityBased(sgpp::datadriven::RegularizationType&,
-                      const bool isRegression,
+  LearnerDensityBased(sgpp::datadriven::RegularizationType&, const bool isRegression,
                       const bool isVerbose = true);
   virtual ~LearnerDensityBased();
 
@@ -52,8 +50,7 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
    *
    * @param GridConfig grid config
    */
-  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration&
-                              GridConfig);
+  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig);
 
   /**
    * Learning a dataset with spatially adaptive sparse grids
@@ -69,19 +66,17 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
    *   refinement step
    * @param lambda regularization parameter lambda
    */
-  virtual LearnerTiming train(sgpp::base::DataMatrix& testDataset,
-                              sgpp::base::DataVector& classes,
+  virtual LearnerTiming train(sgpp::base::DataMatrix& testDataset, sgpp::base::DataVector& classes,
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
                               const sgpp::base::AdpativityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const double lambda);
 
-
   virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix& testDataset);
   /// construct system matrix
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(
-    sgpp::base::DataMatrix& trainDataset, double lambda);
+  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) override;
 
   /**
    * Returns the execution time
@@ -97,9 +92,7 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
   /**
    * Get Prior
    */
-  bool getWithPrior() {
-    return withPrior;
-  }
+  bool getWithPrior() { return withPrior; }
 
   /**
    * Set prior
@@ -114,9 +107,7 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
   /**
    * Get number of classes
    */
-  size_t getNrClasses() {
-    return nrClasses;
-  }
+  size_t getNrClasses() { return nrClasses; }
 
   /**
    * Set number of classes
@@ -133,4 +124,3 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
 }  // namespace sgpp
 
 #endif /* LEARNERDENSITYBASED_HPP_ */
-

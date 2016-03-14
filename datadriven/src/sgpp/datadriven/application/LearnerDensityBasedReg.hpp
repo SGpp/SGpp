@@ -22,7 +22,7 @@ namespace datadriven {
  * using density estimation on Sparse Grids.
  *
  */
-class LearnerDensityBasedReg: public LearnerBase {
+class LearnerDensityBasedReg : public LearnerBase {
  public:
   /**
    * Constructor
@@ -30,9 +30,8 @@ class LearnerDensityBasedReg: public LearnerBase {
    * @param regularization regularization type
    * @param border offset for the normalization of the class data
    */
-  LearnerDensityBasedReg(
-    sgpp::datadriven::RegularizationType& regularization,
-    double border = 0.);
+  explicit LearnerDensityBasedReg(sgpp::datadriven::RegularizationType& regularization,
+                                  double border = 0.);
 
   /**
    * Destructor
@@ -45,14 +44,15 @@ class LearnerDensityBasedReg: public LearnerBase {
    * @param trainDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular start grid
-   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
+   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
+   *the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
    * @param AdaptConfig configuration of the adaptivity strategy
-   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
+   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert
+   *refinement step
    * @param lambda regularization parameter lambda
    */
-  virtual LearnerTiming train(sgpp::base::DataMatrix& trainDataset,
-                              sgpp::base::DataVector& classes,
+  virtual LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
@@ -83,7 +83,7 @@ class LearnerDensityBasedReg: public LearnerBase {
   /// regularization mode
   sgpp::datadriven::RegularizationType CMode_;
   /// regularization operator
-  sgpp::base::OperationMatrix* C_;
+  std::unique_ptr<sgpp::base::OperationMatrix> C_;
   /// maximum value (used for de-normalization)
   double maxValue_;
   /// minimum value (used for de-normalization)
@@ -94,12 +94,11 @@ class LearnerDensityBasedReg: public LearnerBase {
   /**
    * inherited from LearnerBase, but not used
    */
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(
-    sgpp::base::DataMatrix& trainDataset, double lambda);
+  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) override;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
 
 #endif /* LEARNERDENSITYBASEDREG_HPP_ */
-
