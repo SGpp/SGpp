@@ -64,7 +64,7 @@ def copyGrid(grid, level=0, deg=1):
         newGrid.getGenerator().regular(level)
     newGs = newGrid.getStorage()
     # insert grid points
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
 
         # insert grid point
@@ -374,7 +374,7 @@ def evalSGFunction(grid, alpha, p):
         gs = grid.getStorage()
 
         res = 0.0
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             val = 1.0
             for d in xrange(gs.getDimension()):
@@ -415,7 +415,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
     for d in xrange(gs.getDimension()):
         # compute starting points by level sum
         ixs = {}
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             accLevel = gs.get(i).getLevel(d)
             if accLevel in ixs:
                 ixs[accLevel].append(i)
@@ -486,9 +486,9 @@ def dehierarchize(grid, alpha):
     # dehierarchization
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
-    nodalValues = DataVector(gs.size())
-    A = DataMatrix(gs.size(), gs.getDimension())
-    for i in xrange(gs.size()):
+    nodalValues = DataVector(gs.getSize())
+    A = DataMatrix(gs.getSize(), gs.getDimension())
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         A.setRow(i, p)
     opEval = createOperationMultipleEval(grid, A)
@@ -517,7 +517,7 @@ def dehierarchizeList(grid, alpha, gps):
 def balance(grid):
     gs = grid.getStorage()
     newgps = []
-    gps = [gs.get(i) for i in xrange(gs.size())]
+    gps = [gs.get(i) for i in xrange(gs.getSize())]
 
     while len(gps) > 0:
         gp = gps.pop()
