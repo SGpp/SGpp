@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "sgpp/globaldef.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
 #include "LearnerLeastSquaresIdentity.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
@@ -25,8 +26,8 @@ namespace datadriven {
 MetaLearner::MetaLearner(sgpp::base::RegularGridConfiguration gridConfig,
                          sgpp::solver::SLESolverConfiguration solverConfig,
                          sgpp::solver::SLESolverConfiguration solverFinalStep,
-                         sgpp::base::AdpativityConfiguration adaptivityConfiguration,
-                         double lambda, bool verbose) {
+                         sgpp::base::AdpativityConfiguration adaptivityConfiguration, double lambda,
+                         bool verbose) {
   this->csvSep = "& ";
   this->gridConfig = gridConfig;
   this->solverConfig = solverConfig;
@@ -67,8 +68,8 @@ void MetaLearner::learnString(
 
   //    bool isRegression = true; // treat everything as if it were a
   //    regression, as classification is not fully supported by Learner
-  LearnerLeastSquaresIdentity *myLearner =
-      new LearnerLeastSquaresIdentity(isRegression, this->verbose);
+  std::unique_ptr<LearnerLeastSquaresIdentity> myLearner =
+      std::make_unique<LearnerLeastSquaresIdentity>(isRegression, this->verbose);
   myLearner->setImplementation(operationConfiguration);
 
   LearnerTiming timings =
@@ -78,22 +79,19 @@ void MetaLearner::learnString(
   this->myTiming = timings;
   this->ExecTimesOnStep = myLearner->getRefinementExecTimes();
 
-  if (this->myLearner != nullptr) {
-    delete this->myLearner;
-  }
-  this->myLearner = myLearner;
+  this->myLearner = std::move(myLearner);
 }
 
 base::Grid &MetaLearner::getLearnedGrid() {
-  if (this->myLearner == nullptr) {
-    throw;
+  if (!this->myLearner.operator bool()) {
+    throw base::application_exception("error: cannot get grid if nothing was learned before");
   }
   return this->myLearner->getGrid();
 }
 
 base::DataVector &MetaLearner::getLearnedAlpha() {
-  if (this->myLearner == nullptr) {
-    throw;
+  if (!this->myLearner.operator bool()) {
+    throw base::application_exception("error: cannot get surplusses if nothing was learned before");
   }
   return this->myLearner->getAlpha();
 }
@@ -121,11 +119,8 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
   base::DataVector &classesVector = dataset.getTargets();
   base::DataMatrix &trainingData = dataset.getData();
 
-  //    // treat everything as if it were a regression, as classification is not
-  //    fully supported by Learner
-  //    bool isRegression = true;
-  LearnerLeastSquaresIdentity *referenceLearner =
-      new LearnerLeastSquaresIdentity(isRegression, this->verbose);
+  std::unique_ptr<LearnerLeastSquaresIdentity> referenceLearner =
+      std::make_unique<LearnerLeastSquaresIdentity>(isRegression, this->verbose);
   sgpp::datadriven::OperationMultipleEvalConfiguration operationConfiguration(
       OperationMultipleEvalType::DEFAULT, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
   referenceLearner->setImplementation(operationConfiguration);
@@ -136,12 +131,7 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
   this->referenceTiming = timings;
   this->ExecTimesOnStepReference = referenceLearner->getRefinementExecTimes();
 
-  // referenceLearner->dumpFunction("referenceGridFunction", 50);
-  if (this->referenceLearner != nullptr) {
-    delete this->referenceLearner;
-  }
-
-  this->referenceLearner = referenceLearner;
+  this->referenceLearner = std::move(referenceLearner);
 }
 
 void MetaLearner::learnAndTest(
@@ -219,8 +209,8 @@ void MetaLearner::learnAndTestString(
     }
 
     if (verbose) {
-      std::cout << "hits (%): " << (static_cast<double>(hits) /
-          static_cast<double>(testInstances)) << std::endl;
+      std::cout << "hits (%): " << (static_cast<double>(hits) / static_cast<double>(testInstances))
+                << std::endl;
     }
   }
 }
@@ -335,259 +325,6 @@ double MetaLearner::learnAndCompareString(
   }
 
   return squareSum;
-}
-
-void MetaLearner::writeRefinementResults(
-    std::string fileName, std::string fileHeader,
-    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetails,
-    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
-        datasetDetailsReference,
-    bool referenceComparison) {
-  std::ofstream myFile;
-  myFile.open(fileName, std::ios::out);
-  myFile << "# " << fileHeader << std::endl;
-  myFile << "refinement";
-
-  for (auto datasetDetail : datasetDetails) {
-    myFile << csvSep << datasetDetail.first << "/mine";
-
-    if (referenceComparison) {
-      myFile << csvSep << datasetDetail.first << "/reference";
-      myFile << csvSep << datasetDetail.first << "/speedup";
-    }
-  }
-
-  myFile << std::endl;
-  size_t refinements = datasetDetails[0].second.size();
-
-  for (size_t i = 0; i < refinements; i++) {
-    bool first = true;
-
-    for (size_t datasetIndex = 0; datasetIndex < datasetDetails.size(); datasetIndex++) {
-      std::pair<size_t, double> stepTuple = datasetDetails[datasetIndex].second[i];
-      double executionTime = stepTuple.second;
-
-      if (first) {
-        // refinement steps
-        myFile << stepTuple.first;
-        first = false;
-      }
-
-      // execution time at refinement step
-      myFile << csvSep << executionTime;
-
-      if (referenceComparison) {
-        std::pair<std::string, std::vector<std::pair<size_t, double> > > datasetTuple =
-            datasetDetailsReference[datasetIndex];
-        std::pair<size_t, double> stepTupleReference = datasetTuple.second[i];
-        double executionTimeReference = stepTupleReference.second;
-        myFile << csvSep << executionTimeReference;
-        // speedup
-        myFile << csvSep << executionTimeReference / executionTime;
-      }
-    }
-
-    myFile << std::endl;
-  }
-
-  myFile.close();
-}
-
-void MetaLearner::refinementAndOverallPerformance(
-    std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
-    std::vector<std::string> datasets, std::vector<std::string> experimentHeaders,
-    std::string metaInformation, std::string experimentName, bool referenceComparison) {
-  for (sgpp::datadriven::OperationMultipleEvalConfiguration *operationConfiguration :
-       operationConfigurations) {
-    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
-        refinementDetails;
-    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
-        refinementDetailsReference;
-
-    std::string kernelMetaInformation =
-        metaInformation + " kernel: " + operationConfiguration->getName();
-
-    std::ofstream myFile;
-    std::string experimentFile =
-        "results/data/overall_" + experimentName + "_" + operationConfiguration->getName() + ".csv";
-    remove(experimentFile.c_str());
-    std::string experimentDetailsFile = "results/data/refinement_" + experimentName + "_" +
-                                        operationConfiguration->getName() + ".csv";
-    myFile.open(experimentFile, std::ios::out | std::ios::app);
-    myFile << "# " << kernelMetaInformation << std::endl;
-    myFile << "experiment" << csvSep << "duration" << csvSep << "durationLastIt";
-
-    if (referenceComparison) {
-      myFile << csvSep << "durationRef";
-      myFile << csvSep << "durationLastItRef";
-      myFile << csvSep << "speedup";
-      myFile << csvSep << "speedupLastIt";
-    }
-
-    myFile << std::endl;
-
-    for (size_t i = 0; i < datasets.size(); i++) {
-      this->learn(*operationConfiguration, datasets[i]);
-      refinementDetails.push_back(make_pair(datasets[i], this->ExecTimesOnStep));
-
-      if (referenceComparison) {
-        this->learnReference(datasets[i]);
-        refinementDetailsReference.push_back(
-            make_pair(datasets[i], this->ExecTimesOnStepReference));
-      }
-
-      myFile << experimentHeaders[i] << csvSep << this->myTiming.timeComplete_;
-
-      size_t lastStep = this->ExecTimesOnStep.size() - 1;
-      myFile << csvSep << this->ExecTimesOnStep[lastStep].second;
-
-      if (referenceComparison) {
-        myFile << csvSep << this->referenceTiming.timeComplete_;
-        myFile << csvSep << this->ExecTimesOnStepReference[lastStep].second;
-        myFile << csvSep << this->referenceTiming.timeComplete_ / this->myTiming.timeComplete_;
-        myFile << csvSep
-               << this->ExecTimesOnStepReference[lastStep].second /
-                      this->ExecTimesOnStep[lastStep].second;
-      }
-
-      myFile << std::endl;
-    }
-
-    myFile.close();
-
-    this->writeRefinementResults(experimentDetailsFile, kernelMetaInformation, refinementDetails,
-                                 refinementDetailsReference, referenceComparison);
-  }
-}
-
-void MetaLearner::regularGridSpeedup(
-    sgpp::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
-    std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances,
-    std::string metaInformation, std::string experimentName) {
-  std::string kernelMetaInformation =
-      metaInformation + " kernel: " + operationConfiguration.getName();
-
-  std::ofstream myFile;
-  std::string experimentFile =
-      "results/data/" + experimentName + "_" + operationConfiguration.getName() + ".csv";
-  remove(experimentFile.c_str());
-
-  myFile.open(experimentFile, std::ios::out | std::ios::app);
-  myFile << "# " << kernelMetaInformation << std::endl;
-
-  myFile << "dim" << csvSep;
-  myFile << "level" << csvSep;
-  myFile << "duration" << csvSep;
-  myFile << "durationRef" << csvSep;
-  myFile << "speedup" << std::endl;
-
-  for (size_t dim : dimList) {
-    for (size_t level : levelList) {
-      double duration;
-      double durationReference;
-      this->testRegular(operationConfiguration, dim, level, instances, duration, durationReference);
-
-      myFile << dim << csvSep << level << csvSep << duration << csvSep << durationReference
-             << csvSep;
-      myFile << (durationReference / duration) << std::endl;
-    }
-
-    myFile << std::endl;
-  }
-
-  myFile.close();
-}
-
-void MetaLearner::appendToPerformanceRun(
-    std::string fileName, std::string changingRowName, std::string currentValues,
-    std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
-    std::vector<std::string> datasets, std::vector<std::string> datasetNames,
-    std::string metaInformation, bool removeOld) {
-  if (removeOld) {
-    std::ifstream fileForTest(fileName.c_str());
-
-    if (!fileForTest.good()) {
-      fileForTest.close();
-      std::cout << "info: no old file to delete" << std::endl;
-    } else {
-      fileForTest.close();
-      int returnCode = remove(fileName.c_str());
-
-      if (returnCode == 0) {
-        std::cout << "old result file deleted" << std::endl;
-      } else {
-        std::cout << "error: should remove old file, but couldn't, return code: " << returnCode
-                  << std::endl;
-        throw;
-      }
-    }
-
-    std::ofstream myFile;
-    myFile.open(fileName, std::ios::out | std::ios::app);
-    myFile << "# " << metaInformation << std::endl;
-    myFile << changingRowName;
-
-    for (sgpp::datadriven::OperationMultipleEvalConfiguration *operationConfiguration :
-         operationConfigurations) {
-      for (std::string datasetName : datasetNames) {
-        myFile << csvSep << operationConfiguration->getName() << "/" << datasetName;
-      }
-    }
-
-    myFile << std::endl;
-    myFile.close();
-  }
-
-  std::ofstream myFile;
-  myFile.open(fileName, std::ios::out | std::ios::app);
-  std::cout << "filename: " << fileName << std::endl;
-  myFile << currentValues;
-
-  for (sgpp::datadriven::OperationMultipleEvalConfiguration *operationConfiguration :
-       operationConfigurations) {
-    for (std::string dataset : datasets) {
-      this->learn(*operationConfiguration, dataset);
-      myFile << csvSep << this->myTiming.timeComplete_;
-    }
-  }
-
-  myFile << std::endl;
-  myFile.close();
-}
-
-double fRand(double fMin, double fMax) {
-  double f = static_cast<double>(rand()) / RAND_MAX;
-  return fMin + f * (fMax - fMin);
-}
-
-void MetaLearner::testRegular(
-    sgpp::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
-    size_t level, size_t instances, double &duration, double &durationReference) {
-  srand(static_cast<unsigned int>(time(NULL)));
-  this->gridConfig.dim_ = dim;
-
-  base::DataMatrix testTrainingData(instances, dim);
-
-  for (size_t i = 0; i < instances; i++) {
-    for (size_t d = 0; d < dim; d++) {
-      // testTrainingData.set(i, d, unif(re));
-      testTrainingData.set(i, d, fRand(0.0, 1.0));
-    }
-  }
-
-  bool isRegression = true;
-  LearnerLeastSquaresIdentity *learner =
-      new LearnerLeastSquaresIdentity(isRegression, this->verbose);
-  learner->setImplementation(operationConfiguration);
-
-  LearnerLeastSquaresIdentity *learnerReference =
-      new LearnerLeastSquaresIdentity(isRegression, this->verbose);
-  sgpp::datadriven::OperationMultipleEvalConfiguration referenceOperationConfiguration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
-  learnerReference->setImplementation(referenceOperationConfiguration);
-
-  duration = learner->testRegular(this->gridConfig, testTrainingData);
-  durationReference = learnerReference->testRegular(this->gridConfig, testTrainingData);
 }
 
 LearnerTiming MetaLearner::getLearnerTiming() { return this->myTiming; }

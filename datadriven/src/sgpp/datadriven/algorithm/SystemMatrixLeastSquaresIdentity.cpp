@@ -19,21 +19,15 @@ SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(base::Grid& g
                                                                    base::DataMatrix& trainData,
                                                                    double lambda)
     : DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
-  this->dataset_ = new base::DataMatrix(trainData);
-  this->instances = this->dataset_->getNrows();
-  // this->paddedInstances = PaddingAssistant::padDataset(*(this->dataset_));
-  // datadriven::OperationMultipleEvalType type =
-  // datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
-  this->B = op_factory::createOperationMultipleEval(grid, *(this->dataset_),
-                                                    this->implementationConfiguration).release();
+  this->instances = this->dataset_.getNrows();
+  this->B = op_factory::createOperationMultipleEval(grid, this->dataset_,
+                                                    this->implementationConfiguration);
+
   // padded during Operator construction, fetch new size
-  this->paddedInstances = this->dataset_->getNrows();
+  this->paddedInstances = this->dataset_.getNrows();
 }
 
-SystemMatrixLeastSquaresIdentity::~SystemMatrixLeastSquaresIdentity() {
-  delete this->B;
-  delete this->dataset_;
-}
+SystemMatrixLeastSquaresIdentity::~SystemMatrixLeastSquaresIdentity() {}
 
 void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha, base::DataVector& result) {
   base::DataVector temp(this->paddedInstances);
@@ -59,6 +53,13 @@ void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector& classes, base
 }
 
 void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
+
+void SystemMatrixLeastSquaresIdentity::setImplementation(
+    datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
+  this->implementationConfiguration = operationConfiguration;
+  this->B = op_factory::createOperationMultipleEval(this->grid, this->dataset_,
+                                                    this->implementationConfiguration);
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

@@ -29,14 +29,13 @@ LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGrid
 
 LearnerLeastSquaresIdentity::~LearnerLeastSquaresIdentity() {}
 
-sgpp::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(
+std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> LearnerLeastSquaresIdentity::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
-  if (this->grid_ == NULL) return NULL;
-
-  sgpp::datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
-      new sgpp::datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid_), trainDataset, lambda);
+  std::unique_ptr<sgpp::datadriven::SystemMatrixLeastSquaresIdentity> systemMatrix =
+      std::make_unique<sgpp::datadriven::SystemMatrixLeastSquaresIdentity>(*(this->grid_),
+                                                                           trainDataset, lambda);
   systemMatrix->setImplementation(this->implementationConfiguration);
-  return systemMatrix;
+  return std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase>(systemMatrix.release());
 }
 
 void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& trainDataset,
@@ -61,9 +60,9 @@ void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& t
 sgpp::base::DataVector LearnerLeastSquaresIdentity::predict(sgpp::base::DataMatrix& testDataset) {
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
 
-  sgpp::op_factory::createOperationMultipleEval(
-        *(this->grid_), testDataset, this->implementationConfiguration)->
-            mult(*alpha_, classesComputed);
+  sgpp::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
+                                                this->implementationConfiguration)
+      ->mult(*alpha_, classesComputed);
 
   return classesComputed;
 }
@@ -73,8 +72,8 @@ double LearnerLeastSquaresIdentity::testRegular(
   InitializeGrid(GridConfig);
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> MultEval(
-      sgpp::op_factory::createOperationMultipleEval(
-      *(this->grid_), testDataset, this->implementationConfiguration));
+      sgpp::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
+                                                    this->implementationConfiguration));
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
 
