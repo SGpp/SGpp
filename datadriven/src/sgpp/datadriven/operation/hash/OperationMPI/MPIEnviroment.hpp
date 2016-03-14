@@ -46,6 +46,7 @@ class SimpleQueue {
   size_t packagesize;
   size_t workitem_count;
   MPI_Datatype mpi_typ;
+
  public:
   SimpleQueue(size_t workitem_count, size_t packagesize)  : packagesize(packagesize),
                                                             workitem_count(workitem_count) {

@@ -44,14 +44,14 @@ int main(int argc, char *argv[]) {
   }
 
   // Create knn graph
-  /*sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, dimensions, 12);
+  sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, dimensions, 12);
   std::vector<int> graph = op.create_graph();
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
       std::cout << graph[i * 12 + node] << " ";
     }
     std::cout << "" << "\n";
-    }*/
+  }
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();

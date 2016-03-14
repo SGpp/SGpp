@@ -22,10 +22,14 @@ class MPISlaveOperation {
 };
 
 class MPIOperation {
+ private:
+  static int index;
+  int object_index;
  public:
   explicit MPIOperation(std::string slave_class_name);
   virtual ~MPIOperation(void);
   void start_slave_code(void);
+  void release_slave_objects(void);
 };
 
 }  // namespace clusteringmpi
