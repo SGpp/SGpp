@@ -42,13 +42,13 @@ class Interpolant(Learner):
         # as the grids
         assert gs.getDimension() == points.getDim()
 
-        nodalValues = DataVector(gs.size())
+        nodalValues = DataVector(gs.getSize())
         nodalValues.setAll(0.0)
 
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
         cnt = 0
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             gp.getCoords(p)
             x = tuple(p.array())
@@ -56,12 +56,12 @@ class Interpolant(Learner):
                 # # search for 2*d closest grid points
                 # q = DataVector(gs.getDimension())
                 # l = np.array([])
-                # for j in xrange(gs.size()):
+                # for j in xrange(gs.getSize()):
                 #     gs.get(j).getCoords(q)
                 #     q.sub(p)
                 #     l = np.append(l, q.l2Norm())
 
-                # n = min(gs.size(), gs.getDimension())
+                # n = min(gs.getSize(), gs.getDimension())
 
                 # ixs = np.argsort(l)
                 # # nodalValues[i] = np.mean(l[ixs[:n]])
@@ -73,7 +73,7 @@ class Interpolant(Learner):
 
         if cnt > 0:
             print '%i/%i of the grid points have \
-                   been set to 0' % (cnt, gs.size())
+                   been set to 0' % (cnt, gs.getSize())
             pdb.set_trace()
 
         # hierarchization
