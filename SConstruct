@@ -142,7 +142,8 @@ else:
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
 
 # fail if unknown variables where encountered on the command line
-unknownVariables = vars.UnknownVariables()
+unknownVariables = [var for var in vars.UnknownVariables()
+                    if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables.keys(),
