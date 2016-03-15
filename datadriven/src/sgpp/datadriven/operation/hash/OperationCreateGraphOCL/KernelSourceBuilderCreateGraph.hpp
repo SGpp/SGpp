@@ -64,13 +64,13 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
   std::string find_max_index(size_t k, bool unroll) {
     std::stringstream output;
     if (!unroll) {
-      output << this->indent[2] << "for (unsigned int j = 0; j < "
+      output << this->indent[2] << "for (unsigned int j = 1; j < "
              << k << "; j++) {" << std::endl
              << this->indent[3] << "if (k_dists[maxindex] < k_dists[j])" << std::endl
              << this->indent[4] << "maxindex = j;" << std::endl
              << this->indent[2] << "}" << std::endl;
     } else {
-    for (size_t i = 0; i < k; i++) {
+    for (size_t i = 1; i < k; i++) {
       output << this->indent[2] << "if (k_dists[maxindex] < k_dists[" << i << "])" << std::endl;
       output << this->indent[3] << "maxindex  = " << i << "; " << std::endl;
       }
@@ -81,6 +81,16 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
       output << this->indent[3] << "maxindex  = " << i << "; " << std::endl;
       output << this->indent[3] << "maxdist  = k_dists["  << i << "]; }" << std::endl;
       }*/
+    return output.str();
+  }
+  std::string save_from_global_to_local(size_t dimensions) {
+    std::stringstream output;
+    output << this->indent[0] << this->floatType() << " datapoint["
+           << dimensions << "];" << std::endl;
+    for (size_t i = 0; i < dimensions; i++) {
+      output << this->indent[1] << "datapoint[" << i << "] = data[global_index * "
+             << dimensions << " + " << i << "];" << std::endl;
+    }
     return output.str();
   }
   std::string copy_k_registers_into_global(size_t k) {
@@ -120,17 +130,19 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                  << std::endl
                  << this->indent[0] << "size_t chunk_index = get_global_id(0);" << std::endl
                  << init_k_registers(k)
+                 << save_from_global_to_local(dimensions)
+                 << this->indent[2] << this->floatType() << " dist = 0.0;" << std::endl
                  << this->indent[0] << "for (unsigned int i = 0; i <    " << dataSize
                  << "; i++) {" << std::endl
                  << this->indent[1] << "if (i != global_index) {" << std::endl
                  << "//get distance to current point" << std::endl
-                 << this->indent[2] << this->floatType() << " dist = 0.0;" << std::endl
+                 << this->indent[2] << "dist = 0.0;" << std::endl
                  << this->indent[2] << "for (unsigned int j = 0; j <     " << dimensions
                  << " ; j++) {" << std::endl
-                 << this->indent[3] << "dist += (data[global_index* " << dimensions
-                 << "     + j] - data[j + i* " << dimensions << " ])" << std::endl
-                 << this->indent[3] << "* (data[j + global_index* " << dimensions
-                 << " ] - data[j + i* " << dimensions << " ]);" << std::endl
+                 << this->indent[3] << "dist += (datapoint[j] - data[j + i* "
+                 << dimensions << " ])" << std::endl
+                 << this->indent[3] << "* (datapoint[j] - data[j + i* "
+                 << dimensions << " ]);" << std::endl
                  << this->indent[2] << "}" << std::endl
                  << this->indent[2] << "int maxindex = 0;" << std::endl
                  << find_max_index(k, true)
