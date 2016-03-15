@@ -96,12 +96,9 @@ class OperationDensitySlave : public MPISlaveOperation {
           old_partial_size = datainfo[1];
         }
         // Run partial multiplication
-        std::cerr << "vor mult" << std::endl;
         op->partial_mult(alpha, partial_result, datainfo[0], datainfo[1]);
-        std::cerr << "nach mult" << std::endl;
         // Send results back
         MPI_Send(partial_result, datainfo[1], MPI_DOUBLE, 0, 1, MPI_COMM_WORLD);
-        std::cerr << "nach send" << std::endl;
       }
     }while(true);
     delete op;
@@ -111,12 +108,11 @@ class OperationDensitySlave : public MPISlaveOperation {
 
 class OperationDensityMPI : public MPIOperation, public base::OperationMatrix {
  private:
-  bool slaves_running;
   size_t gridsize;
 
  public:
   OperationDensityMPI(base::Grid& grid, size_t dimensions, double lambda) :
-      MPIOperation(typeid(OperationDensitySlave).name()), slaves_running(false) {
+      MPIOperation(typeid(OperationDensitySlave).name()) {
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     gridsize = gridStorage.getSize();
     int *gridpoints = new int[gridsize * 2 * dimensions];

@@ -40,8 +40,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
   std::vector<int> points;
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   T lambda;
-  size_t start_id;
-  size_t chunksize;
 
  public:
   OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
@@ -52,8 +50,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                                firstKernelConfig(firstKernelConfig),
                                                secondKernelConfig(secondKernelConfig),
                                                devices(manager->getDevices()),
-                                               manager(manager), lambda(lambda), start_id(0),
-                                               chunksize(-1) {
+                                               manager(manager), lambda(lambda) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -82,8 +79,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                                firstKernelConfig(firstKernelConfig),
                                                secondKernelConfig(secondKernelConfig),
                                                devices(manager->getDevices()),
-                                               manager(manager), lambda(lambda), start_id(0),
-                                               chunksize(-1) {
+                                               manager(manager), lambda(lambda) {
     verbose = true;
     for (int i = 0; i < gridSize; i++) {
       for (int d = 0; d < dims; d++) {
@@ -102,11 +98,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     delete bKernel;
   }
 
-  void set_problemchunk(size_t start_id, size_t chunksize) {
-    this->start_id = start_id;
-    this->chunksize = chunksize;
-  }
-  void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) {
+  void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) override {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(chunksize);
     for (size_t i = 0; i < chunksize; i++) {
@@ -142,7 +134,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->multKernel->mult(alphaVector, resultVector, 0, -1);
+    this->multKernel->mult(alphaVector, resultVector, 0, 0);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
@@ -154,13 +146,13 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
   }
 
   void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
-                 size_t start_id = 0, size_t chunksize = -1) {
+                 size_t start_id = 0, size_t chunksize = 0) override {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     if (verbose) {
-      if (chunksize == -1)
+      if (chunksize == 0)
         std::cout << "starting rhs kernel methode! datasize: " << b.getSize() << std::endl;
       else
-        std::cout << "starting rhs kernel methode! datasize: " << chunksize << std::endl;
+        std::cout << "starting rhs kernel methode! chunksize: " << chunksize << std::endl;
     }
     std::vector<T> bVector(b.getSize());
     std::vector<T> datasetVector(dataset.getSize());
@@ -168,6 +160,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     for (size_t i = 0; i < dataset.getSize(); i++)
       datasetVector[i] = static_cast<T>(data_raw[i]);
     start = std::chrono::system_clock::now();
+
     bKernel->rhs(datasetVector, bVector, start_id, chunksize);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;

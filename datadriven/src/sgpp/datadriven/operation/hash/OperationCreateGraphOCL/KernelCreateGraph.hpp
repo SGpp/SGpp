@@ -103,7 +103,7 @@ class KernelCreateGraph {
                                           "connectNeighbors");
     }
 
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       std::vector<int> zeros(data.size()*k/dims);
       for (size_t i = 0; i < data.size()*k/dims; i++)
         zeros[i] = 0.0;
@@ -141,7 +141,7 @@ class KernelCreateGraph {
 
     // enqueue kernel
     size_t globalworkrange[1];
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       globalworkrange[0] = data.size()/dims;
     } else {
       globalworkrange[0] = chunksize;
@@ -165,7 +165,7 @@ class KernelCreateGraph {
 
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
 
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       for (size_t i = 0; i < data.size()*k/dims; i++)
         result[i] = hostTemp[i];
     } else {
