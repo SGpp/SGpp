@@ -48,13 +48,17 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
 
   std::string init_k_registers(size_t k) {
     std::stringstream output;
-    for (size_t i = 0; i < k; i++) {
+    output << this->indent[0] << "int k_reg["<< k << "];" << std::endl;
+    output << this->indent[0] << this->floatType() << " k_dists["<< k << "];" << std::endl;
+    output << this->indent[0] << "for (int i = 0; i < " << k << "; i++)" << std::endl;
+    output << this->indent[1] << "k_dists[i] = 4.0;" << std::endl;
+    /*for (size_t i = 0; i < k; i++) {
       output << this->indent[0] << "int k_register" << i << " = " << i << "; " << std::endl;
     }
     for (size_t i = 0; i < k; i++) {
       output << this->indent[0] << this->floatType()
              << " dist_k" << i << " = 4.0;" << std::endl;
-    }
+             }*/
     return output.str();
   }
   std::string replace_max_k_register(size_t k) {
@@ -78,7 +82,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     std::stringstream output;
     for (size_t i = 0; i < k; i++) {
       output << this->indent[0] << "neighbors[chunk_index * "<< k
-             << " + " << i << "] = k_register" << i << ";" << std::endl;
+             << " + " << i << "] = k_reg[" << i << "];" << std::endl;
     }
     return output.str();
   }
@@ -111,6 +115,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                  << std::endl
                  << this->indent[0] << "size_t chunk_index = get_global_id(0);" << std::endl
                  << init_k_registers(k)
+                 << this->indent[0] << "int maxindex = 0;" << std::endl
                  << this->indent[0] << "for (unsigned int i = 0; i <    " << dataSize
                  << "; i++) {" << std::endl
                  << this->indent[1] << "if (i != global_index) {" << std::endl
@@ -123,7 +128,15 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                  << this->indent[3] << "* (data[j + global_index* " << dimensions
                  << " ] - data[j + i* " << dimensions << " ]);" << std::endl
                  << this->indent[2] << "}" << std::endl
-                 << replace_max_k_register(k)
+                 << this->indent[2] << "for (unsigned int j = 0; j < "
+                 << k << "; j++) {" << std::endl
+                 << this->indent[3] << "if (k_dists[maxindex] < k_dists[j])" << std::endl
+                 << this->indent[4] << "maxindex = j;" << std::endl
+                 << this->indent[2] << "}" << std::endl
+                 << this->indent[2] << "if (dist < k_dists[maxindex]) {" << std::endl
+                 << this->indent[3] << "k_reg[maxindex] = i;" << std::endl
+                 << this->indent[3] << "k_dists[maxindex] = dist;" << std::endl
+                 << this->indent[2] << "}" << std::endl
                  << this->indent[1] << "}" << std::endl
                  << this->indent[0] << "}" << std::endl
                  << copy_k_registers_into_global(k)
