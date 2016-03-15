@@ -20,6 +20,7 @@ class OperationDensityOCL: public base::OperationMatrix {
   OperationDensityOCL()  {
   }
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
+  virtual void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) = 0;
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) = 0;
 };
