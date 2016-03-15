@@ -6,6 +6,7 @@
 #define MPIOPERATIONFACTORY_H
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationRhsMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationDensityMPI.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -15,12 +16,13 @@ MPISlaveOperation* create_mpi_operation(char *classname) {
   std::cout << classname << std::endl;
   if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi25OperationCreateGraphSlave")
       == 0)  {
-    std::cout << "blub1" << std::endl;
     return new OperationCreateGraphSlave();
   }
   if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi17OperationRhsSlave") == 0)  {
-    std::cout << "blub2" << std::endl;
     return new OperationRhsSlave();
+  }
+  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi21OperationDensitySlave") == 0)  {
+    return new OperationDensitySlave();
   }
   return NULL;
 }

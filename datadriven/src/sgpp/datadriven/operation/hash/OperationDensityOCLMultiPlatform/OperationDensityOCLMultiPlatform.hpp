@@ -106,6 +106,30 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     this->start_id = start_id;
     this->chunksize = chunksize;
   }
+  void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) {
+    std::vector<T> alphaVector(gridSize);
+    std::vector<T> resultVector(chunksize);
+    for (size_t i = 0; i < chunksize; i++) {
+      resultVector[i] =(result[i]);
+    }
+    for (auto i = 0; i < gridSize; ++i) {
+      alphaVector[i] = alpha[i];
+    }
+
+    if (verbose)
+      std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    this->multKernel->mult(alphaVector, resultVector, start_id, chunksize);
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+
+    if (verbose) {
+      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
+    }
+    for (size_t i = 0; i < chunksize; i++)
+      result[i] = resultVector[i];
+  }
 
   void mult(base::DataVector& alpha, base::DataVector& result) override {
     std::vector<T> alphaVector(gridSize);
@@ -118,7 +142,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->multKernel->mult(alphaVector, resultVector, start_id, chunksize);
+    this->multKernel->mult(alphaVector, resultVector, 0, -1);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 

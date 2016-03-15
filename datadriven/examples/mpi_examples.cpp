@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationRhsMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationDensityMPI.hpp>
 
 #include <iostream>
 #include <vector>
@@ -36,7 +37,17 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
+  sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
+  alpha.setAll(1.0);
+  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 2, 0.0001);
+  mult_op.mult(alpha, result);
+  for (auto i = 0; i < 100; ++i) {
+    std::cout << result[i] << " ";
+  }
+
+
+  /*sgpp::base::DataVector result(gridsize);
   sgpp::datadriven::clusteringmpi::OperationRhsMPI rhs_op(*grid, 2, dataset);
   result = rhs_op.create_rhs();
   for (auto i = 0; i < 100; ++i) {
@@ -51,7 +62,7 @@ int main(int argc, char *argv[]) {
       std::cout << graph[i * 12 + node] << " ";
     }
     std::cout << "" << "\n";
-  }
+    }*/
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
