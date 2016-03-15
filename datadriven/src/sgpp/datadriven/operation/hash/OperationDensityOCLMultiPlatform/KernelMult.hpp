@@ -116,7 +116,7 @@ class KernelDensityMult {
 
     // Load data into buffers if not already done
     deviceAlpha.intializeTo(alpha, 1, 0, gridSize);
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       std::vector<T> zeros(gridSize);
       for (size_t i = 0; i < gridSize; i++) {
         zeros[i] = 0.0;
@@ -176,7 +176,7 @@ class KernelDensityMult {
     if (verbose)
       std::cout << "Starting the kernel" << std::endl;
     size_t globalworkrange[1];
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       globalworkrange[0] = gridSize;
     } else {
       globalworkrange[0] = chunksize;
@@ -197,7 +197,7 @@ class KernelDensityMult {
     clFinish(device->commandQueue);
 
     std::vector<T> &hostTemp = deviceResultData.getHostPointer();
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       for (size_t i = 0; i < gridSize; i++)
         result[i] = hostTemp[i];
     } else {

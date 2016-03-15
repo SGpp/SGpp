@@ -68,7 +68,7 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
     this->chunksize = chunksize;
   }
 
-  void create_graph(std::vector<int> &resultVector, int startid = 0, int chunksize = -1) {
+  void create_graph(std::vector<int> &resultVector, int startid = 0, int chunksize = 0) {
     if (verbose)
       std::cout << "Creating graph for " << dataVector.size() << " datapoints" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;

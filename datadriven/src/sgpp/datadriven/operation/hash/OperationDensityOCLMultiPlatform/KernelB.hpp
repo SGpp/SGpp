@@ -98,11 +98,12 @@ class KernelDensityB {
   }
 
   double rhs(std::vector<T> &data, std::vector<T> &result,
-             size_t startid = 0, size_t chunksize = -1) {
+             size_t startid = 0, size_t chunksize = 0) {
     if (verbose) {
       std::cout << "entering mult, device: " << device->deviceName << " ("
                 << device->deviceId << ")" << std::endl;
     }
+
     this->dataSize = data.size()/dims;
 
     // Build kernel if not already done
@@ -120,12 +121,12 @@ class KernelDensityB {
     // Load data into buffers if not already done
     if (!deviceData.isInitialized())
       deviceData.intializeTo(data, 1, 0, data.size());
-    if (chunksize == 1) {
+    if (chunksize == 0) {
       std::vector<T> zeros(gridSize);
       for (size_t i = 0; i < gridSize; i++) {
         zeros[i] = 0.0;
-        deviceResultData.intializeTo(zeros, 1, 0, gridSize);
       }
+      deviceResultData.intializeTo(zeros, 1, 0, gridSize);
     } else {
       std::vector<T> zeros(chunksize);
       for (size_t i = 0; i < chunksize; i++) {
@@ -168,7 +169,7 @@ class KernelDensityB {
     if (verbose)
       std::cout << "Starting the kernel" << std::endl;
     size_t globalworkrange[1];
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       globalworkrange[0] = gridSize;
     } else {
       globalworkrange[0] = chunksize;
@@ -190,7 +191,7 @@ class KernelDensityB {
     clFinish(device->commandQueue);
 
     std::vector<T> &hostTemp = deviceResultData.getHostPointer();
-    if (chunksize == 1) {
+    if (chunksize == 0) {
       for (size_t i = 0; i < gridSize; i++)
         result[i] = hostTemp[i];
     } else {

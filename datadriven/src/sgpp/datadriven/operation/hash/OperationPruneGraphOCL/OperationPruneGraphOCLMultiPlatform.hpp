@@ -52,8 +52,7 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
                                       json::Node &configuration, T treshold, size_t k) :
       OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage().getSize()),
       dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()),
-      manager(manager), alphaVector(gridSize), dataVector(data.getSize()),
-      start_id(0), chunksize(-1) {
+      manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -83,17 +82,12 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     delete graph_kernel;
   }
 
-  void set_problemchunk(size_t start_id, size_t chunksize) {
-    this->start_id = start_id;
-    this->chunksize = chunksize;
-  }
-
   virtual void prune_graph(std::vector<int> &graph) {
     if (verbose)
       std::cout << "Pruning graph for" << graph.size() << " nodes" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->graph_kernel->prune_graph(graph, start_id, chunksize);
+    this->graph_kernel->prune_graph(graph, 0, 0);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 

@@ -167,7 +167,7 @@ class KernelPruneGraph {
     if (verbose)
       std::cout << "Starting the kernel" << std::endl;
     size_t globalworkrange[1];
-    if (chunksize == -1) {
+    if (chunksize == 0) {
       globalworkrange[0] = graph.size()/k;
     } else {
       globalworkrange[0] = chunksize;
