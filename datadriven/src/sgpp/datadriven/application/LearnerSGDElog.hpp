@@ -37,7 +37,7 @@ class LearnerSGDElog : public datadriven::LearnerSGDE {
                  sgpp::base::AdpativityConfiguration& adaptivityConfig,
                  sgpp::solver::SLESolverConfiguration& solverConfig,
                  sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                 LearnerSGDEConfiguration& learnerSGDEConfig);
+                 datadriven::CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
 
   virtual ~LearnerSGDElog();
 

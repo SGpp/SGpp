@@ -42,9 +42,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         D = T.getTransformations()
         # compute the integral of the product
         gs = grid.getStorage()
-        acc = DataVector(gs.size())
+        acc = DataVector(gs.getSize())
         acc.setAll(1.)
-        tmp = DataVector(gs.size())
+        tmp = DataVector(gs.getSize())
         err = 0
         # run over all dimensions
         for i, dims in enumerate(W.getTupleIndices()):
@@ -108,9 +108,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 #                                 .createGrid()
         # compute nodalValues
 #         ngs = ngrid.getStorage()
-#         nodalValues = DataVector(ngs.size())
+#         nodalValues = DataVector(ngs.getSize())
 #         p = DataVector(ngs.getDimension())
-#         for i in xrange(ngs.size()):
+#         for i in xrange(ngs.getSize()):
 #             ngs.get(i).getCoords(p)
 #             nodalValues[i] = evalSGFunction(grid, alpha, p) - mean
 #
@@ -121,7 +121,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         ngrid, nalpha = grid, alpha
 
         # compute the integral of the product times the pdf
-        acc = DataMatrix(ngs.size(), ngs.size())
+        acc = DataMatrix(ngs.getSize(), ngs.getSize())
         acc.setAll(1.)
         err = 0
         for i, dims in enumerate(W.getTupleIndices()):

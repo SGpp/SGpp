@@ -1,0 +1,246 @@
+from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp import DataMatrix, DataVector
+
+from ASGCStatistics import ASGCStatistics
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+
+
+class ASGCUQManager(object):
+    
+    def __init__(self):
+        # interacting objects
+        self.uqSetting = None
+        self.knowledge = ASGCKnowledge()
+        self.sampler = None
+        self.learner = None
+
+        self.stats = ASGCStatistics()
+
+        # test set
+        self.testSet = None
+        self.learnWithTest = False
+
+        self.dataContainer = {}
+
+        # simulation based parameters
+        self.__params = None
+        self._qoi = '_'
+        self.__knowledgeTypes = [KnowledgeTypes.SIMPLE]
+        self.__timeStepsOfInterest = [0]
+
+    def hasMoreSamples(self):
+        return self.sampler.hasMoreSamples()
+
+    def runNextSamples(self):
+        samples = self.sampler.nextSamples(self.knowledge, self._qoi,
+                                           self.__timeStepsOfInterest)
+        if len(samples) > 0:
+            self.uqSetting.runSamples(samples)
+        self.learnData()
+
+    # ----------------------------------------------------------------
+    def __prepareDataContainer(self, data, name):
+        """
+        Prepare data for learning
+        @param data: dictionary loaded from UQSetting
+        @return dictionary {dtype: {t: <DataContainer>}}
+        """
+        ans = {}
+        U = self.getParameters()\
+                .activeParams()\
+                .getIndependentJointDistribution()
+        for dtype in self.getKnowledgeTypes():
+            ans[dtype] = {}
+            dim = self.sampler.getGrid().getStorage().getDimension()
+
+            # prepare data container depending on the given knowledge type
+            tmp = KnowledgeTypes.transformData(data, U, dtype)
+
+            # load data for all time steps
+            for t, values in tmp.items():
+                size = len(values)
+                mydata = DataMatrix(size, dim)
+                sol = DataVector(size)
+                for i, (sample, res) in enumerate(values.items()):
+                    p = DataVector(sample.getActiveUnit())
+                    mydata.setRow(i, p)
+                    sol[i] = float(res)
+                ans[dtype][t] = DataContainer(points=mydata, values=sol, name=name)
+        return ans
+
+    # @profile
+    def updateDataContainer(self):
+        """
+        Sets the training dataContainerDict container given a UQSetting
+
+        WARNING: This method has severe performance issues. It needs
+        to be improved such that it loads just the last computed
+        chunk of samples.
+        """
+        # load the results for the new samples
+        if len(self.dataContainer) == 0:
+            ps = None
+        else:
+            # load time steps and quantity of interest
+            # lookup for new samples
+            ps = []
+            dataContainer = self.dataContainer.itervalues().next().itervalues().next()
+            for sample in self.uqSetting.getSamplesStats().values():
+                if sample.getActiveUnit() not in dataContainer:
+                    ps.append(sample)
+            assert dataContainer.getSize() == self.uqSetting.getSize() - len(ps)
+
+        resultsDict = self.uqSetting.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi, ps)
+
+        # prepare the results as dictionary
+        dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
+        # set the new dataContainerDict container
+        for dtype, values in dataContainerDict.items():
+            if dtype not in self.dataContainer:
+                self.dataContainer[dtype] = {}
+
+            for t, newDataContainer in values.items():
+                if t not in self.dataContainer[dtype]:
+                    self.dataContainer[dtype][t] = newDataContainer
+                else:
+                    if newDataContainer.getSize() > 0:
+                        self.dataContainer[dtype][t] = \
+                            DataContainer.merge([self.dataContainer[dtype][t],
+                                                newDataContainer])
+
+        # if there is a test setting given, combine the train and the
+        # test dataContainerDict container
+        if self.testSet is not None:
+            dataContainerDict = self.testSet.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi)
+            dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
+            for dtype, values in dataContainerDict.items():
+                for t, newDataContainer in values.items():
+                    if newDataContainer.getSize() > 0:
+                        self.dataContainer[dtype][t] = \
+                            DataContainer.merge([self.dataContainer[dtype][t],
+                                                 newDataContainer])
+
+    def learnData(self):
+        """
+        Learn the available data
+        @param dataset: UQSetting storing the simulation results
+        """
+        # learn the data
+        self.updateDataContainer()
+        if self.learnWithTest:
+            self.learnDataWithTest()
+        else:
+            self.learnDataWithoutTest()
+
+    # ----------------------------------------------------------------
+    def learnDataWithoutTest(self, *args, **kws):
+        # learn data
+        self.learner.grid = self.sampler.getGrid()
+        print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
+                                          self.sampler.getGrid().getSize())
+        for dtype, values in self.dataContainer.items():
+            knowledge = {}
+            print KnowledgeTypes.toString(dtype)
+            # do the learning
+            for t, dataContainer in values.items():
+                print "t = %g, " % t,
+                if dataContainer is not None:
+                    # learn data, if there is any available
+                    self.learner.dataContainer = dataContainer
+                    self.learner.learnData()
+
+                    # update the knowledge
+                    self.knowledge.update(copyGrid(self.learner.grid),
+                                          DataVector(self.learner.alpha),
+                                          self._qoi,
+                                          t,
+                                          dtype,
+                                          self.sampler.getCurrentIterationNumber())
+
+                    # update results
+                    self.stats.updateResults(t, dtype, self.learner)
+            print
+
+    def learnDataWithTest(self, dataset=None, *args, **kws):
+        print "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
+                                                    self.sampler.getGrid().getSize())
+        # learn data
+        for dtype, values in self.dataContainer.items():
+            knowledge = {}
+            # do the learning
+            for t, dataContainer in values.items():
+                print "t = %g, " % t,
+                if dataContainer is not None:
+                    # learn data, if there is any available
+                    self.learner.dataContainer = dataContainer
+                    self.learner.learnDataWithTest(dtype=dtype)
+
+                    # update the knowledge
+                    self.knowledge.update(copyGrid(self.learner.grid),
+                                          DataVector(self.learner.alpha),
+                                          self._qoi,
+                                          t,
+                                          dtype,
+                                          self.sampler.getCurrentIterationNumber())
+
+                    # update results
+                    self.stats.updateResults(t, dtype, self.learner)
+
+            print
+
+    def getParameters(self):
+        return self.__params
+
+    def setParameters(self, value):
+        self.__params = value
+
+    def getRefinement(self):
+        return self._refinement
+
+    def getTestSet(self):
+        return testSet
+
+    def setTestSet(self, value):
+        self.testSet = value
+
+    def setLearnWithTest(self, value):
+        self.learnWithTest = value
+
+    def getKnowledgeTypes(self):
+        return self.__knowledgeTypes
+
+    def setKnowledgeTypes(self, value):
+        self.__knowledgeTypes = value
+
+    def getQoI(self):
+        return self._qoi
+
+    def getTimeStepsOfInterest(self):
+        return self.__timeStepsOfInterest
+
+    def getRefinement(self):
+        return self.refinementManager
+
+    def setRefinement(self, value):
+        self.refinementManager = value
+
+    def setQoI(self, value):
+        self._qoi = value
+
+    def setTimeStepsOfInterest(self, value):
+        self.__timeStepsOfInterest = value
+
+    def getDim(self):
+        return self.__params.getDim()
+
+    def getGrid(self):
+        return self.sampler.getGrid()
+
+    def setSampler(self, sampler):
+        self.sampler = sampler
+
+    def getKnowledge(self):
+        return self.knowledge

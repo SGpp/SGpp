@@ -23,7 +23,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
 
     # insert grid points
     n_gp = HashGridIndex(n_dim)
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
         for d in range(dim):
             if d == dd:
@@ -41,11 +41,11 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     n_gs.recalcLeafProperty()
 
     # create coefficient vector
-    n_alpha = DataVector(n_gs.size())
+    n_alpha = DataVector(n_gs.getSize())
     n_alpha.setAll(0.0)
 
     # set function values for n_alpha
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
 
         for d in range(dim):

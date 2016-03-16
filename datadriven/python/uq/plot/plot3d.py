@@ -57,7 +57,7 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     ax.plot_wireframe(X, Y, Z)
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.getSize()))
+    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.getSize()), color="red")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)

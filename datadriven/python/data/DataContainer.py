@@ -83,7 +83,7 @@ class DataContainer(object):
         return DataEntry(self.tempPoint, self.tempValue)
 
     def __contains__(self, key):
-        return key in self.dataDict[self.name]
+        return tuple(key) in self.dataDict[self.name]
 
     def delTrainingData(self):
         del self.dataDict[self.TRAIN_CATEGORY]

@@ -36,7 +36,7 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
         if gridType == Linear:
             return Grid.createLinearGrid(dim)
         elif gridType == LinearBoundary:
-            return Grid.createLinearBoundaryGrid(dim)
+            return Grid.createLinearBoundaryGrid(dim, 1)
         elif gridType == LinearL0Boundary:
             return Grid.createLinearBoundaryGrid(dim, 0)
         else:
@@ -46,9 +46,9 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
     gsResult = gridResult.getStorage()
-    ps = DataMatrix(gsResult.size(), gsResult.getDimension())
+    ps = DataMatrix(gsResult.getSize(), gsResult.getDimension())
     p = DataVector(gsResult.getDimension())
-    for i in xrange(gsResult.size()):
+    for i in xrange(gsResult.getSize()):
         gsResult.get(i).getCoords(p)
         ps.setRow(i, p)
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
@@ -365,8 +365,10 @@ def evalSGFunctionMulti(grid, alpha, A):
 
 def evalSGFunction(grid, alpha, p):
     try:
-        # raise Exception()
-        return createOperationEval(grid).eval(alpha, p)
+        if isinstance(p, DataMatrix):
+            return evalSGFunctionMulti(grid, alpha, p)
+        else:
+            return createOperationEval(grid).eval(alpha, p)
     except Exception:
         # import ipdb; ipdb.set_trace()
         # alternative
@@ -378,7 +380,7 @@ def evalSGFunction(grid, alpha, p):
             gp = gs.get(i)
             val = 1.0
             for d in xrange(gs.getDimension()):
-                x = max(0.0, basis.eval(gp.getLevel(d), gp.getIndex(d), p[d]))
+                val *= max(0.0, basis.eval(gp.getLevel(d), gp.getIndex(d), p[d]))
                 val *= x
             res += alpha[i] * val
         return res

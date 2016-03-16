@@ -5,49 +5,75 @@ from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
 
 import numpy as np
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
+from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d
 
 # define random variables
 builder = ParameterBuilder()
 up = builder.defineUncertainParameters()
 
-up.new().isCalled('y1').withUniformDistribution(-1, 1)
-up.new().isCalled('y2').withUniformDistribution(-1, 1)
-up.new().isCalled('y3').withUniformDistribution(-1, 1)
+up.new().isCalled('y1').withUniformDistribution(0, 1)
+up.new().isCalled('y2').withUniformDistribution(0, 1)
 
 params = builder.andGetResult()
+
+# define UQ setting
+builder = ASGCUQManagerBuilder()
+builder.withParameters(params)\
+       .withTypesOfKnowledge([KnowledgeTypes.SIMPLE,
+                              KnowledgeTypes.SQUARED])\
+       .useInterpolation()
 
 # define model function
 def g(x, **kws):
     return np.prod([4 * xi * (1 - xi) for xi in x])
 
-uqSetting = UQBuilder().withSimulation(g)\
-                       .andGetResult()
+builder.defineUQSetting().withSimulation(g)
 
-# define learner
-builder = SimulationLearnerBuilder()
-builder.buildInterpolant()
-builder.withGrid().withLevel(4)
-builder.withSpecification().withParameters(params)
+samplerSpec = builder.defineSampler()
+samplerSpec.withGrid().withLevel(3).withPolynomialBase(2)
+samplerSpec.withRefinement()\
+           .withAdaptThreshold(1e-10)\
+           .withAdaptPoints(5)\
+           .withBalancing()\
+           .refineMostPromisingNodes().withSquaredSurplusRanking()\
+                                      .createAllChildrenOnRefinement()
+#         ref.withBalancing()\
+#            .addMostPromisingChildren().withLinearSurplusEstimationRanking()
 
-learner = builder.andGetResult()
+samplerSpec.withStopPolicy().withAdaptiveIterationLimit(0)
 
-# define sampling strategy
-builder = ASGCSamplerBuilder()
-builder.withLearner(learner)\
-       .withSpecification().withParameters(params)
-# stop policy
-builder.withStopPolicy().withAdaptiveIterationLimit(0)
-sampler = builder.andGetResult()
+uqManager = builder.andGetResult()
 
 # ----------------------------------------------
 # first run
-while sampler.hasMoreSamples():
-    samples = sampler.nextSamples()
-    uqSetting.runSamples(samples)
-    sampler.learnData(uqSetting)
+while uqManager.hasMoreSamples():
+    uqManager.runNextSamples()
 
 # ----------------------------------------------
 # build analysis
-builder = ASGCAnalysisBuilder()
-builder.withLearner(learner)\
-       .withAnalyticEstimationStrategy()
+analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                .withAnalyticEstimationStrategy()\
+                                .andGetResult()
+
+print analysis.computeMoments()['data']
+
+import matplotlib.pyplot as plt
+for dtype, config in [("gaussianKDE", {}),
+                      ("sgde", {"grid_type": "Linear",
+                                "grid_level": 5,
+                                "crossValidation_enable": True})]:
+    U = analysis.estimateDensity(dtype=dtype, config=config)
+    plt.figure()
+    plotDensity1d(U)
+    plt.title(dtype)
+
+#     x = np.linspace(0, 1, 100)
+#     y = [U.cdf(xi) for xi in x]
+#     plt.figure()
+#     plt.plot(x, y)
+#     plt.title(dtype)
+
+    plt.show()
+

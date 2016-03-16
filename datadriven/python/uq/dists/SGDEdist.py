@@ -8,6 +8,7 @@ from pysgpp import (DataVector,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
                     DataMatrix,
+                    LearnerSGDEConfiguration,
                     LearnerSGDE)
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                hierarchize,
@@ -16,12 +17,14 @@ from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
 
 import os
 import warnings
+import tempfile, uuid, json
 
 from Dist import Dist
 import ConfigParser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations import isNumerical, isList
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
+from pysgpp.extensions.datadriven.uq.operations.general import isMatrix
 
 
 class SGDEdist(Dist):
@@ -30,8 +33,7 @@ class SGDEdist(Dist):
     """
 
     def __init__(self, grid, alpha, trainData=None,
-                 samples=None, bounds=None, transformation=None,
-                 surfaceFile=None):
+                 samples=None, bounds=None, transformation=None):
         super(SGDEdist, self).__init__()
 
         self.grid, self.alpha = grid, alpha  # makePositive(grid, alpha)
@@ -39,12 +41,11 @@ class SGDEdist(Dist):
         self.bounds = None
         if bounds is not None:
             self.bounds = np.array(bounds, dtype='float')
-        self.dim = grid.getDimension()
+        self.dim = grid.getStorage().getDimension()
         self.fmin = 0.
         self.scale = 1.
         self.samples = samples
         self.transformation = transformation
-        self.surfaceFile = surfaceFile
 
         # self.computeLogDensity()
         self.computeBounds()
@@ -55,27 +56,37 @@ class SGDEdist(Dist):
         # print "Vol: %g" % (self.scale - self.fmin)
 
     @classmethod
-    def byLearnerSGDE(cls, samples, gridConfig, adaptConfig,
-                      solverConfig, regularizationConfig,
-                      learnerConfig):
-        learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
-                              regularizationConfig, learnerConfig)
+    def byLearnerSGDEConfig(cls, samples, config={}):
+        """
+
+        @param cls:
+        @param samples:
+        @param learnerSGDEConfig: dict
+        """
+        # --------------------------------------------------------------------
+        # write config to file
+        # get temp directory
+        sgdeTempFolder = os.path.join(tempfile.gettempdir(),
+                                      "sgde-config-%s" % str(uuid.uuid4()))
+        # create temp folder
+        os.makedirs(sgdeTempFolder)
+        filename_config = os.path.join(sgdeTempFolder, "learnerSGDEConfig.json") 
+        fd = open(filename_config, "w")
+        json.dump(config, fd, ensure_ascii=True)
+        fd.close()
+        # --------------------------------------------------------------------
+        if not isMatrix(samples):
+            samples = DataMatrix(samples.reshape(len(samples), 1))
+        learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
+        learner = LearnerSGDE(learnerSGDEConfig)
+        print samples
         learner.initialize(samples)
+
         return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())
 
     @classmethod
-    def byConfig(cls, config):
-        if config is not None and os.path.exists(config):
-            # init density function
-            gridfile, alphafile, traindatafile, samplefile, surfacefile = \
-                cls.computeDensity(config)
-            return cls.byFiles(gridfile, alphafile, traindatafile, samplefile,
-                               surfacefile)
-
-    @classmethod
     def byFiles(cls, gridFile, alphaFile,
-                trainDataFile=None, samplesFile=None,
-                surfaceFile=None):
+                trainDataFile=None, samplesFile=None):
         if os.path.exists(gridFile):
             grid = readGrid(gridFile)
         else:
@@ -102,46 +113,7 @@ class SGDEdist(Dist):
             else:
                 raise Exception('The samples file "%s" does not exist' % samplesFile)
 
-        if surfaceFile is not None and surfaceFile != "" and \
-                not os.path.exists(surfaceFile):
-            raise Exception('The surface file does not exist.')
-
-        return cls(grid, alpha, trainData=trainData, samples=samples,
-                   surfaceFile=surfaceFile)
-
-    @classmethod
-    def computeDensity(self, config,
-                       pathsgpp='/home/franzefn/workspace/SGppUncertaintyQuantification/lib/sgpp',
-                       cluster='/home/franzefn/workspace/clustc/cluster'):
-        if not os.path.exists(config):
-            raise Exception('the config file "%s" does not exist' % config)
-
-        os.environ['LD_LIBRARY_PATH'] = pathsgpp
-        # ret = subprocess.Popen([clustc, "-c %s" % config], shell=True, env=os.environ)
-        # ret = subprocess.call([clustc, "-c %s" % config], shell=True)
-        ret = os.system("%s -c %s > out_sgde.log" % (cluster, config))
-        if ret != 0:
-            raise Exception('The density estimation exited unexpectedly')
-
-        # extract grid and alpha from config
-        s = cp.ConfigParser()
-        s.read(config)
-
-        gridfile = s.get('dmest', 'writegridfile')
-        alphafile = s.get('dmest', 'writealphafile')
-        traindatafile = s.get('files', 'inFileTrain')
-
-        samplesfile = None
-        if 'samp_numsamples' in s.options('dmest') and \
-                s.get('dmest', 'samp_numsamples') > 0 and \
-                'samp_outfile' in s.options('dmest'):
-            samplesfile = s.get('dmest', 'samp_outFile')
-
-        surfacefile = None
-        if 'printsurfacefile' in s.options('dmest'):
-            surfacefile = s.get('dmest', 'printsurfacefile')
-
-        return gridfile, alphafile, traindatafile, samplesfile, surfacefile
+        return cls(grid, alpha, trainData=trainData, samples=samples)
 
 #     def computeLogDensity(self):
 #         # dehierarchize
@@ -189,7 +161,7 @@ class SGDEdist(Dist):
         # opEval = createOperationEval(self.grid)
         # p = DataVector(dim)
         self.fmin = 0.
-        # for i in xrange(gs.size()):
+        # for i in xrange(gs.getSize()):
         #     gs.get(i).getCoords(p)
         #     fx = opEval.eval(self.alpha, p)
         #     if fx < 0:
@@ -248,7 +220,7 @@ class SGDEdist(Dist):
             x = DataVector([x])
 
         # do the transformation
-        if self.grid.getDimension() == 1:
+        if self.dim == 1:
             op = createOperationRosenblattTransformation1D(self.grid)
             ans = np.ndarray(len(x))
             for i, xi in enumerate(x.array()):
@@ -286,7 +258,7 @@ class SGDEdist(Dist):
             x = DataVector([x])
 
         # do the transformation
-        if self.grid.getDimension() == 1:
+        if self.dim == 1:
             op = createOperationInverseRosenblattTransformation1D(self.grid)
             ans = np.ndarray(len(x))
             for i, xi in enumerate(x.array()):
@@ -320,7 +292,7 @@ class SGDEdist(Dist):
         ans = 0.
         gs = self.grid.getStorage()
 
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             value = self.alpha[i]
             for d in xrange(gs.getDimension()):
@@ -336,7 +308,7 @@ class SGDEdist(Dist):
         ans = 0.
         gs = self.grid.getStorage()
 
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             value = self.alpha[i]
             for d in xrange(gs.getDimension()):
@@ -347,26 +319,9 @@ class SGDEdist(Dist):
         return ans - mean ** 2
 
     def rvs(self, n=1):
-        if self.samples is None or n > len(self.samples):
-            warnings.warn("there are not engouh samples available in SGDEdist. Returning uniformly distributed samples.")
-            return np.random.rand(n * self.dim).reshape(n, self.dim)
-        # raise AttributeError('too much samples required. I have %i < %i available' % (len(self.samples), n))
-        else:
-            ixs = np.random.randint(0, len(self.samples), n)
-            return self.samples[ixs, :]
-
-            # i = 0
-            # samples = np.ones(n * self.getDim()).reshape(n, self.getDim())
-            # while i < n:
-            #     # choose a sample randomly
-            #     ix = np.random.randint(0, len(self.samples), 1)
-            #     sample = self.samples[ix, :]
-            #     # transform the sample to the real space
-            #     sample = self.transformation.trans(sample, ixs=[0, 1])
-            #     samples[i, :] = sample
-            #     i += 1
-
-            # return samples
+        # # use inverse Rosenblatt transformation to get samples
+        uniform_samples = DataMatrix(np.random.rand((n, self.dim)))
+        return self.ppf(uniform_samples)
 
     def getDistributions(self):
         return [self]
@@ -375,38 +330,7 @@ class SGDEdist(Dist):
         return self.bounds
 
     def getDim(self):
-        if self.grid:
-            return self.grid.getDimension()
-        else:
-            raise Exception('Dimensionality is unknown')
-
-    def gnuplot(self, jpegFile, gnuplotConfig=None):
-        if self.surfaceFile is not None and \
-                os.path.exists(self.surfaceFile):
-            gnuplot = """
-            set terminal jpeg
-            set output "%s"
-
-            set view map
-            set size ratio .9
-
-            set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back
-            set object 1 rect fc rgb "black" fillstyle solid 1.0
-
-            splot '%s' using 1:2:3 with points pointtype 5 pointsize 1 palette linewidth 0
-            """
-
-            if gnuplotConfig is None:
-                gnuplotConfig = 'gnuplot.config'
-
-            fd = open(gnuplotConfig, "w")
-            fd.write(gnuplot % (jpegFile, self.surfaceFile))
-            fd.close()
-            os.system("gnuplot %s" % gnuplotConfig)
-            # -----------------------------------------------------------
-        else:
-            raise Exception('surface file "%s" not found. specify "printSurfaceFile" in [dmest] section of config' % self.surfaceFile)
-        return
+        return self.dim
 
     def __str__(self):
         return "SGDE"
