@@ -77,7 +77,7 @@ class ASGCAnalysis(Analysis):
         grid = self.__knowledge.getGrid(qoi)
         for t in ts:
             alpha = self.__knowledge.getAlpha(qoi, t, dtype)
-            ans[t] = evalSGFunction(grid, alpha, samples).array()
+            ans[t] = evalSGFunction(grid, alpha, DataMatrix(samples)).array()
 
         if len(ts) == 1:
             ans = ans[ts[0]]
@@ -98,24 +98,24 @@ class ASGCAnalysis(Analysis):
         # evaluate the function
         return transformed_samples
 
-    def __estimateDensityByConfig(self, dtype, samples, config={}):
+    def __estimateDensityByConfig(self, dtype, samples, config={}, *args, **kws):
         if dtype == "gaussianKDE":
-            return GaussianKDEDist(samples)
+            return GaussianKDEDist(samples, *args, **kws)
         elif dtype == "sgde":
-            return SGDEdist.byLearnerSGDEConfig(samples, config)
+            return SGDEdist.byLearnerSGDEConfig(samples, config, *args, **kws)
         else:
             raise AttributeError("density estimation type %s is not known. Select one in [gaussianKDE, sgde]")
 
-    def estimateDensity(self, ts=[0], n=10000, dtype="gaussianKDE", config={}):
+    def estimateDensity(self, ts=[0], n=10000, dtype="gaussianKDE", config={}, *args, **kws):
         samples = self.generateUnitSamples(n)
         time_dependent_values = self.eval(samples, ts=ts)
 
         if len(ts) == 1:
-            return self.__estimateDensityByConfig(dtype, time_dependent_values, config)
+            return self.__estimateDensityByConfig(dtype, time_dependent_values, config, *args, **kws)
 
         ans = {}
         for t, values in time_dependent_values.items():
-            ans[t] = self.__estimateDensityByConfig(dtype, values, config)
+            ans[t] = self.__estimateDensityByConfig(dtype, values, config, *args, **kws)
         
         return ans
 

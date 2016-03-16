@@ -25,6 +25,8 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.operations import isNumerical, isList
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
 from pysgpp.extensions.datadriven.uq.operations.general import isMatrix
+from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 
 
 class SGDEdist(Dist):
@@ -38,17 +40,18 @@ class SGDEdist(Dist):
 
         self.grid, self.alpha = grid, alpha  # makePositive(grid, alpha)
         self.trainData = trainData
-        self.bounds = None
-        if bounds is not None:
-            self.bounds = np.array(bounds, dtype='float')
         self.dim = grid.getStorage().getDimension()
+
+        self.trans = self.computeLinearTransformation(trainData)
+        if self.dim != self.trans.getBounds().shape[0]:
+            raise AttributeError("the dimensionality of the domain differs from the one of the grid")
+
         self.fmin = 0.
         self.scale = 1.
         self.samples = samples
         self.transformation = transformation
 
         # self.computeLogDensity()
-        self.computeBounds()
         self.computeMin()
         self.computeScale()
         self.vol = 1.  # / np.prod(np.diff(self.bounds))
@@ -56,7 +59,7 @@ class SGDEdist(Dist):
         # print "Vol: %g" % (self.scale - self.fmin)
 
     @classmethod
-    def byLearnerSGDEConfig(cls, samples, config={}):
+    def byLearnerSGDEConfig(cls, samples, config={}, *args, **kws):
         """
 
         @param cls:
@@ -74,14 +77,19 @@ class SGDEdist(Dist):
         fd = open(filename_config, "w")
         json.dump(config, fd, ensure_ascii=True)
         fd.close()
+
+        # transform the samples linearly to [0, 1]
+        if len(samples.shape) == 1:
+            samples = samples.reshape(len(samples), 1)
+
+        trans = cls.computeLinearTransformation(samples)
+        unit_samples = DataMatrix(trans.probabilisticToUnitMatrix(samples))
         # --------------------------------------------------------------------
-        if not isMatrix(samples):
-            samples = DataMatrix(samples.reshape(len(samples), 1))
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
-        learner.initialize(samples)
+        learner.initialize(unit_samples)
 
-        return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())
+        return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples)
 
     @classmethod
     def byFiles(cls, gridFile, alphaFile,
@@ -171,21 +179,29 @@ class SGDEdist(Dist):
         self.scale = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
         # assert self.scale > 0
 
-    def computeBounds(self):
-        if self.bounds is None:
-            self.bounds = [[0, 1] for _ in xrange(self.getDim())]
-            if len(self.bounds) == 1:
-                self.bounds = self.bounds[0]
+    @classmethod
+    def computeLinearTransformation(self, trainData):
+        num_dims = trainData.shape[1]
+        bounds = np.ndarray((num_dims, 2))
+        bounds[:, 0] = trainData.min(axis=0) * -0.95
+        bounds[:, 1] = trainData.max(axis=0) * 1.05
+
+        # init linear transformation
+        trans = JointTransformation()
+        for idim in xrange(num_dims):
+            trans.add(LinearTransformation(bounds[idim, 0], bounds[idim, 1]))
+
+        return trans
 
     def pdf(self, x):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
+        if isList(x) or isinstance(x, DataVector):
+            x = DataVector(self.trans.probabilisticToUnit(x))
         elif isNumerical(x):
-            return evalSGFunction(self.grid, self.alpha, DataVector([x]))
+            x = DataVector(self.trans.probabilisticToUnit([x]))
 
         if isinstance(x, DataMatrix):
-            A = x
+            A = DataMatrix(self.trans.probabilisticToUnitMatrix(x.array()))
         elif isinstance(x, DataVector):
             A = DataMatrix(1, len(x))
             A.setRow(0, x)
@@ -193,7 +209,17 @@ class SGDEdist(Dist):
             raise AttributeError('data type "%s" is not supported in SGDEdist' % type(x))
 
         # evaluate the sparse grid density
-        fx = evalSGFunctionMulti(self.grid, self.alpha, A)
+        fx = 1. / self.trans.vol() * evalSGFunction(self.grid, self.alpha, A)
+
+#         # sanity check -> boundaries are not checked in multiEval
+#         v = DataVector(A.getNcols())
+#         for isample in xrange(A.getNcols()):
+#             A.getRow(isample, v)
+#             print v
+#             print self.getBounds()
+#             for idim in xrange(A.getNcols()):
+#                 if A.get(isample, idim) < 0 or A.get(isample, idim) > 1:
+#                     fx[isample] = 0.0
 
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
@@ -213,10 +239,10 @@ class SGDEdist(Dist):
 
     def cdf(self, x):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
+        if isList(x) or isinstance(x, DataVector):
+            x = DataVector(self.trans.probabilisticToUnit(x))
         elif isNumerical(x):
-            x = DataVector([x])
+            x = DataVector(self.trans.probabilisticToUnit([x]))
 
         # do the transformation
         if self.dim == 1:
@@ -230,7 +256,7 @@ class SGDEdist(Dist):
                 return ans
         else:
             if isinstance(x, DataMatrix):
-                A = x
+                A = DataMatrix(self.trans.probabilisticToUnitMatrix(x.array()))
                 B = DataMatrix(A.getNrows(), A.getNcols())
                 B.setAll(0.0)
             elif isinstance(x, DataVector):
@@ -326,7 +352,7 @@ class SGDEdist(Dist):
         return [self]
 
     def getBounds(self):
-        return self.bounds
+        return self.trans.getBounds()
 
     def getDim(self):
         return self.dim
