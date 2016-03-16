@@ -10,6 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/tools/json/JSON.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
@@ -17,18 +18,19 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-struct LearnerSGDEConfiguration {
+struct CrossvalidationForRegularizationConfiguration {
   // parameters for cross-validation
-  bool doCrossValidation_;  // enables cross-validation
-  size_t kfold_;            // number of batches for cross validation
-  int seed_;                // seed for randomized k-fold
-  bool shuffle_;            // randomized/sequential k-fold
-  bool silent_;             // verbosity
+  bool enable_;   // enables cross-validation
+  size_t kfold_;  // number of batches for cross validation
+  int seed_;      // seed for randomized k-fold
+  bool shuffle_;  // randomized/sequential k-fold
+  bool silent_;   // verbosity
 
   // regularization parameter optimization
   double lambda_;       // regularization parameter
@@ -41,6 +43,28 @@ struct LearnerSGDEConfiguration {
 };
 
 // --------------------------------------------------------------------------
+class LearnerSGDE;
+
+class LearnerSGDEConfiguration : public json::JSON {
+  friend class LearnerSGDE;
+
+ public:
+  LearnerSGDEConfiguration();
+  explicit LearnerSGDEConfiguration(const std::string& fileName);
+
+  virtual LearnerSGDEConfiguration* clone();
+
+  sgpp::base::GridType stringToGridType(std::string& gridType);
+  sgpp::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
+  sgpp::solver::SLESolverType stringToSolverType(std::string& solverType);
+
+ private:
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+};
 
 class LearnerSGDE : public datadriven::DensityEstimator {
  public:
@@ -57,7 +81,9 @@ class LearnerSGDE : public datadriven::DensityEstimator {
               sgpp::base::AdpativityConfiguration& adaptivityConfig,
               sgpp::solver::SLESolverConfiguration& solverConfig,
               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-              LearnerSGDEConfiguration& learnerSGDEConfig);
+              CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
+
+  explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
   virtual ~LearnerSGDE();
 
   /**
@@ -188,7 +214,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  LearnerSGDEConfiguration learnerSGDEConfig;
+  CrossvalidationForRegularizationConfiguration crossvalidationConfig;
 };
 
 }  // namespace datadriven

@@ -27,9 +27,9 @@ LearnerSGDElog::LearnerSGDElog(base::RegularGridConfiguration& gridConfig,
                                base::AdpativityConfiguration& adaptivityConfig,
                                solver::SLESolverConfiguration& solverConfig,
                                datadriven::RegularizationConfiguration& regularizationConfig,
-                               LearnerSGDEConfiguration& learnerSGDEConfig)
+                               CrossvalidationForRegularizationConfiguration& crossvalidationConfig)
     : datadriven::LearnerSGDE(gridConfig, adaptivityConfig, solverConfig, regularizationConfig,
-                              learnerSGDEConfig) {}
+                              crossvalidationConfig) {}
 
 LearnerSGDElog::~LearnerSGDElog() {}
 
@@ -50,7 +50,7 @@ void LearnerSGDElog::train(base::Grid& grid, base::DataVector& alpha, base::Data
   alpha.resize(grid.getSize());
   alpha.setAll(0.0);
 
-  if (!learnerSGDEConfig.silent_) {
+  if (!crossvalidationConfig.silent_) {
     std::cout << "# LearnerSGDE: grid points " << grid.getSize() << std::endl;
   }
 

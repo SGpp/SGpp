@@ -47,20 +47,20 @@ int main(int argc, char** argv) {
 
   // configure learner
   std::cout << "# create learner config" << std::endl;
-  sgpp::datadriven::LearnerSGDEConfiguration learnerConfig;
-  learnerConfig.doCrossValidation_ = true;
-  learnerConfig.kfold_ = 3;
-  learnerConfig.lambdaStart_ = 1e-1;
-  learnerConfig.lambdaEnd_ = 1e-10;
-  learnerConfig.lambdaSteps_ = 3;
-  learnerConfig.logScale_ = true;
-  learnerConfig.shuffle_ = true;
-  learnerConfig.seed_ = 1234567;
-  learnerConfig.silent_ = false;
+  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  crossvalidationConfig.enable_ = true;
+  crossvalidationConfig.kfold_ = 3;
+  crossvalidationConfig.lambdaStart_ = 1e-1;
+  crossvalidationConfig.lambdaEnd_ = 1e-10;
+  crossvalidationConfig.lambdaSteps_ = 3;
+  crossvalidationConfig.logScale_ = true;
+  crossvalidationConfig.shuffle_ = true;
+  crossvalidationConfig.seed_ = 1234567;
+  crossvalidationConfig.silent_ = false;
 
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-                                        learnerConfig);
+                                        crossvalidationConfig);
   learner.initialize(samples);
 
   sgpp::datadriven::GaussianKDE kde(samples);

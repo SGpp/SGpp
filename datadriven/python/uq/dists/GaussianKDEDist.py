@@ -16,6 +16,9 @@ class GaussianKDEDist(Dist):
                  bounds=None,
                  transformation=None):
         super(GaussianKDEDist, self).__init__()
+        if not isMatrix(trainData):
+            trainData = trainData.reshape(len(trainData), 1)
+
         self.trainData = DataMatrix(trainData)
         self.dist = GaussianKDE(self.trainData)
         self.bounds = bounds

@@ -10,7 +10,7 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
 
 
-class Refinement(object):
+class RefinementManager(object):
 
     def __init__(self, admissibleSet=None, criterion=None,
                  localRefinementStrategy=None, red=None,
@@ -30,6 +30,9 @@ class Refinement(object):
         else:
             self._red = red
 
+        self._adaptPoints = 0
+        self._adaptRate = 0
+        self._adaptThreshold = 0.0
         self._maxLevel = min(31, maxLevel)
         self._adaptTimeWindow = []
         self._balancing = False
@@ -39,6 +42,16 @@ class Refinement(object):
         self._localRefinementStrategy = localRefinementStrategy
         self.refOnBorder = True
         self._averageWeightening = False
+
+
+    def setAdaptThreshold(self, value):
+        self._adaptThreshold = value
+
+    def setAdaptPoints(self, value):
+        self._adaptPoints = value
+
+    def setAdaptRate(self, value):
+        self._adaptRate = value
 
     def setAdaptTimeWindow(self, window):
         self._adaptTimeWindow = window
@@ -85,20 +98,45 @@ class Refinement(object):
     def refineOnTheBorder(self, refOnBorder):
         self.refOnBorder = refOnBorder
 
-    def candidates(self, learner, ts=None):
+    # # Calculates the number of points which should be refined
+    #
+    # @param refinablePoints: integer number of points which can be refined
+    # @return: integer number of point which should be refined
+    def getNumOfPointsToRefine(self, refinablePoints):
+        ratePoints = self._adaptRate * refinablePoints
+        if self._adaptPoints == 0:
+            return ratePoints
+        elif self._adaptRate == 0:
+            return self._adaptPoints
+        else:
+            return min(ratePoints, self._adaptPoints)
+
+
+    def refineGrid(self, grid, knowledge, params, qoi="_", refinets=[0]):
+        # check if this method is used in the right context
+        if grid.getType() not in (Linear,
+                                  LinearL0Boundary,
+                                  LinearBoundary,
+                                  ModLinear,
+                                  Poly,
+                                  PolyBoundary):
+                raise AttributeError('Grid type %s is not supported' %
+                                     grid.getType())
+
+        # get refinement candidates
+        print "compute ranking"
+        B = self.candidates(grid, knowledge, params, qoi, refinets)
+
+        # now do the refinement
+        return self.__refine(grid, B, simulate=False)
+
+
+    def candidates(self, grid, knowledge, params, qoi="_", ts=None):
         """
         Load the candidates for refinement
         @param learner: Learner
         @param ts: list of numeric, time steps
         """
-        if ts is None or len(ts) == 0:
-            # get time setting
-            ts = learner.getTimeStepsOfInterest()
-
-        qoi = learner.getQoI()
-        grid = learner.getGrid()
-        params = learner.getParameters()
-
         # get knowledge type that is needed by refinement criterion
         dtype = self._criterion.getKnowledgeType()
 
@@ -112,7 +150,7 @@ class Refinement(object):
         # run over the coefficients for all time steps
         for i, t in enumerate(ts):
             # get surpluses
-            alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
+            alphas = knowledge.getAlpha(qoi, t, dtype)
             # update refinement criterion
             self._criterion.update(grid, alphas, self._admissibleSet)
             # rank each admissible point
@@ -186,8 +224,7 @@ class Refinement(object):
         w = self._red(v)
 
         # get just the ones which are higher than the threshold
-        x = learner.getAdaptThreshold()
-        B = [(y, data[ix]) for ix, y in enumerate(w) if y > x]
+        B = [(y, data[ix]) for ix, y in enumerate(w) if y > self._adaptThreshold]
 
         # check if there are any nodes left
         if len(B) == 0:
@@ -198,47 +235,24 @@ class Refinement(object):
 
         return B
 
-    def refineGrid(self, learner, ts=None):
-        # check if this method is used in the right context
-        if learner.getGrid().getType() not in (Linear,
-                                               LinearL0Boundary,
-                                               LinearBoundary,
-                                               ModLinear,
-                                               Poly,
-                                               PolyBoundary):
-            raise AttributeError('Grid type %s is not supported' %
-                                 learner.getGrid().getType())
-
-        # get refinement candidates
-        print "compute ranking"
-        B = self.candidates(learner, ts)
-
-        # now do the refinement
-        return self.__refine(learner, B, simulate=False)
-
-    def __refine(self, learner, B, simulate=False):
+    def __refine(self, grid, B, simulate=False):
         # get sparse grid
-        grid = learner.getGrid()
         if simulate:
-            oldGrid = grid
             grid = copyGrid(grid)
-            learner.grid = grid
 
         # find how many points should be refined
-        pointsNum = learner.getNumOfPointsToRefine(len(B))
+        pointsNum = self.getNumOfPointsToRefine(len(B))
 
         # refine now step by step
         newGridPoints = []
         refinedPoints = []
         gs = grid.getStorage()
-        iteration = learner.iteration
+
         # size of grid before refinement
-        n1 = gs.size()
+        n1 = gs.getSize()
 
         # as long as the end of learning has not been reached, continue...
-        while pointsNum > 0 and len(B) > 0 and \
-            (not learner.stopPolicy or
-             not learner.stopPolicy.hasLimitReached(learner)):
+        while pointsNum > 0 and len(B) > 0:
             # note: the highest rated grid point is at the end of B
             vi, gp = B.pop()
 
@@ -254,7 +268,7 @@ class Refinement(object):
             # ## set surplus vector such that just the desired point
             # ## is going to be refined and nothing else
             # oldgs = HashGridStorage(gs)
-            # alpha = DataVector(gs.size())
+            # alpha = DataVector(gs.getSize())
             # alpha.setAll(0.0)
             # alpha[gs.seq(gp)] = 2.0
             # refFunc = SurplusRefinementFunctor(alpha, 1, 1)
@@ -262,13 +276,12 @@ class Refinement(object):
             # grid.getGenerator().refine(refFunc)
 
             # nps = []
-            # for i in xrange(gs.size()):
+            # for i in xrange(gs.getSize()):
             #     if not oldgs.has_key(gs.get(i)):
             #         nps.append(i)
 
             # check there have been added some new points
-            if not learner.stopPolicy or \
-                    learner.stopPolicy.hasGridSizeChanged(learner):
+            if len(nps) > 0:
                 # if something has been refined then reduce the number
                 # of points which should still be refined
                 pointsNum -= 1
@@ -276,9 +289,6 @@ class Refinement(object):
                 # store which point has been refined
                 refinedPoints.append(HashGridIndex(gp))
                 newGridPoints += nps
-
-                # increase iteration of the learner
-                learner.iteration += 1
 
         # balance the grid
         if self._balancing:
@@ -289,17 +299,10 @@ class Refinement(object):
             self._admissibleSet.update(grid, newGridPoints)
 
         # make sure that I have collected all the new grid points
-        assert len(newGridPoints) == gs.size() - n1
-
-        # reset the iteration variable @TODO: the iteration variable
-        # is ambiguous. It represents in the TrainingStopPolicy the
-        # number of refinement steps, in the context of ASGC it
-        # represents the number of refinements. So here we neglect the
-        # first part and use it just internally so that the
-        # hasLimitReached works.
-        learner.iteration = iteration
+        assert len(newGridPoints) == gs.getSize() - n1
 
 #         if not simulate:
+#             import matplotlib.pyplot as plt
 #             gs = grid.getStorage()
 #             p = DataVector(gs.getDimension())
 #
@@ -308,7 +311,7 @@ class Refinement(object):
 #                 plt.plot(p[0], p[1], marker='o', markersize=20,
 #                          linestyle='', color='green')
 #
-#             for i in xrange(gs.size()):
+#             for i in xrange(gs.getSize()):
 #                 gs.get(i).getCoords(p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='blue')
@@ -318,13 +321,10 @@ class Refinement(object):
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='red')
 #
-#             plt.title("size = %i" % gs.size())
+#             plt.title("size = %i" % gs.getSize())
 #             plt.xlim(0, 1)
 #             plt.ylim(0, 1)
+#             plt.show()
 #             plt.savefig('%i.png' % learner.iteration)
-
-        # reset the learner if the refinement is just simulated
-        if simulate:
-            learner.grid = oldGrid
 
         return newGridPoints

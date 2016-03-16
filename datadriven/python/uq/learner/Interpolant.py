@@ -18,17 +18,8 @@ class Interpolant(Learner):
     def __init__(self):
         super(Interpolant, self).__init__()
         # Error per basis function
-        self.errors = None
-        # Error vector
-        self.error = None
-
-        # init stats
-        self.trainAccuracy = []
-        self.trainCount = []
-        self.trainingOverall = []
-        self.testAccuracy = []
-        self.testCount = []
-        self.testingOverall = []
+        self.trainErrors = DataVector(0)
+        self.testErrors = DataVector(0)
 
     def doLearningIteration(self, points):
         """
@@ -111,6 +102,7 @@ class Interpolant(Learner):
         self.notifyEventControllers(LearnerEvents.LEARNING_COMPLETE)
         return self.alpha
 
+
     def learnDataWithTest(self, dataset=None, *args, **kws):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
 
@@ -132,40 +124,11 @@ class Interpolant(Learner):
     def updateResults(self, alpha, trainSubset, testSubset=None,
                       dtype=KnowledgeTypes.SIMPLE):
         # evaluate MSE of training data set -> should be zero
-        mse = self.evalError(trainSubset, alpha)
-        self.trainAccuracy.append(mse)
-        self.trainCount.append(len(self.error))
-        self.trainingOverall.append(float(np.mean(self.trainAccuracy)))
+        self.trainErrors = self.evalError(trainSubset, alpha)
 
         # store interpolation quality
         if testSubset:
-            # L2 error and MSE
-            mse = self.evalError(testSubset, alpha)
-            self.testAccuracy.append(mse)
-            self.testCount.append(len(self.error))
-            # testing overall
-            self.testingOverall.append(float(np.mean(self.testAccuracy)))
-
-    def getL2NormError(self):
-        """
-        calculate L2-norm of error
-        @return: last L2-norm of error
-        """
-        return np.sqrt(self.error.sum())
-
-    def getMaxError(self):
-        """
-        calculate max error
-        @return: max error
-        """
-        return np.sqrt(self.error.max())
-
-    def getMinError(self):
-        """
-        calculate min error
-        @return: min error
-        """
-        return np.sqrt(self.error.min())
+            self.testErrors = self.evalError(testSubset, alpha)
 
     def evalError(self, data, alpha):
         """
@@ -181,9 +144,64 @@ class Interpolant(Learner):
         if size == 0:
             return 0
 
-        self.error = evalSGFunctionMulti(self.grid, alpha, points)
+        error = evalSGFunctionMulti(self.grid, alpha, points)
         # compute L2 error
-        self.error.sub(values)
-        self.error.sqr()
+        error.sub(values)
+        error.sqr()
 
-        return self.error.sum() / len(self.error)
+        return error
+
+    def getSize(self, dtype="train"):
+        if dtype == "train":
+            return len(self.trainErrors)
+        else:
+            return len(self.testErrors)
+
+    def getL2NormError(self, dtype="train"):
+        """
+        calculate L2-norm of error
+        @return: last L2-norm of error
+        """
+        if dtype == "train":
+            value = self.trainErrors.sum()
+        else:
+            value = self.testErrors.sum()
+            
+        return np.sqrt(value)
+
+    def getMaxError(self, dtype="train"):
+        """
+        calculate max error
+        @return: max error
+        """
+        if dtype == "train":
+            value = self.trainErrors.max()
+        else:
+            value = self.testErrors.max()
+
+        return np.sqrt(value)
+
+    def getMinError(self, dtype="train"):
+        """
+        calculate min error
+        @return: min error
+        """
+        if dtype == "train":
+            value = self.trainErrors.min()
+        else:
+            value = self.testErrors.min()
+
+        return np.sqrt(value)
+
+
+    def getErrorPerSample(self, dtype="train"):
+        if dtype == "sample":
+            return self.trainErrors
+        else:
+            return self.testErrors
+
+    def getMSE(self, dtype="train"):
+        if dtype == "train":
+            return self.trainErrors.sum() / self.getSize("train")
+        else:
+            return self.testErrors.sum() / self.getSize("test")
