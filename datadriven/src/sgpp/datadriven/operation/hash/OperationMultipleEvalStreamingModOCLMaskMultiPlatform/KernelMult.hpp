@@ -132,9 +132,7 @@ class KernelMult {
           manager->buildKernel(program_src, device, kernelConfiguration, "multOCLMask");
     }
 
-    if (!deviceLevel.isInitialized()) {
-      initGridBuffers(level, index, mask, offset, alpha, start_index_grid, end_index_grid);
-    }
+    initGridBuffers(level, index, mask, offset, alpha, start_index_grid, end_index_grid);
 
     this->deviceTimingMult = 0.0;
 

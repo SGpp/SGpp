@@ -160,6 +160,15 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       alphaArray[i] = 0.0;
     }
 
+    //    std::cout << "--- printing non-zero alpha: ---" << std::endl;
+    //
+    //    for (size_t i = 0; i < 100; i++) {
+    //      if (alpha[i] != 0.0) {
+    //        std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
+    //      }
+    //    }
+    //    std::cout << "--- finished printing non-zero alpha: ---" << std::endl;
+
     std::vector<T> resultArray(this->datasetSizeBuffers);
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
@@ -186,6 +195,15 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    //    std::cout << "--- printing non-zero result: ---" << std::endl;
+    //
+    //    for (size_t i = 0; i < 100; i++) {
+    //      if (resultArray[i] != 0.0) {
+    //        std::cout << "resultArray[" << i << "] = " << resultArray[i] << std::endl;
+    //      }
+    //    }
+    //    std::cout << "--- finished printing non-zero result: ---" << std::endl;
 
     this->duration = this->myTimer.stop();
   }

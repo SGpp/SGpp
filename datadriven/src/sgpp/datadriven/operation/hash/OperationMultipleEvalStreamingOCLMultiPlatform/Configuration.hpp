@@ -74,6 +74,14 @@ class Configuration {
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
         }
+
+        if (kernelNode.contains("KERNEL_PREFETCH_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_PREFETCH_SIZE", 64ul);
+        }
+
+        if (kernelNode.contains("KERNEL_TRANS_PREFETCH_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_TRANS_PREFETCH_SIZE", 64ul);
+        }
       }
     }
   }
