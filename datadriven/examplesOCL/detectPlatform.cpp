@@ -9,7 +9,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char **argv) {
-  sgpp::base::OCLManagerMultiPlatform manager;
+  sgpp::base::OCLManagerMultiPlatform manager(true);
 
   auto configuration = manager.getConfiguration();
 

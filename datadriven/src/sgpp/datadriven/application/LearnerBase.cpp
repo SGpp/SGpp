@@ -248,13 +248,13 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
       postProcessing(trainDataset, SolverConfigFinal.type_, myCG->getNumberIterations());
     }
 
-    double tmp1, tmp2, tmp3, tmp4;
-    DMSystem->getTimers(tmp1, tmp2, tmp3, tmp4);
+    double timeMult, computeMult, timeMultTrans, computeMultTrans;
+    DMSystem->getTimers(timeMult, computeMult, timeMultTrans, computeMultTrans);
     result.timeComplete_ = execTime_;
-    result.timeMultComplete_ = tmp1;
-    result.timeMultCompute_ = tmp2;
-    result.timeMultTransComplete_ = tmp3;
-    result.timeMultTransCompute_ = tmp4;
+    result.timeMultComplete_ = timeMult;
+    result.timeMultCompute_ = computeMult;
+    result.timeMultTransComplete_ = timeMultTrans;
+    result.timeMultTransCompute_ = computeMultTrans;
     result.timeRegularization_ = 0.0;
     result.GFlop_ = GFlop_;
     result.GByte_ = GByte_;
