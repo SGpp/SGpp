@@ -288,8 +288,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
 
       for (size_t i = 0; i < dataBlockSize; i++) {
         sourceStream << this->indent[1] << this->floatType() << " curSupport_" << i
-                     << " = locAlpha[k];"
-                     << std::endl;  // TODO(pfandedd): verify that this fix works
+                     << " = locAlpha[k];" << std::endl;
       }
       sourceStream << std::endl;
 
