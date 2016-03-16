@@ -15,6 +15,8 @@ if env["USE_OCL"]:
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
+performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
+
 if env[performanceTestFlag]:
   additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
 
@@ -40,5 +42,5 @@ module.buildBoostTests()
 module.runBoostTests()
 module.buildBoostTests("performanceTests", compileFlag=performanceTestFlag)
 module.runBoostTests("performanceTests", compileFlag=performanceTestFlag,
-                     runFlag=performanceTestFlag)
+                     runFlag=performanceTestRunFlag)
 module.runCpplint()

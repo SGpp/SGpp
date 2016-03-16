@@ -203,6 +203,7 @@ class Module(object):
 
       # only build Boost test executable if there are any tests
       if len(testObjs) > 0:
+
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
             (".exe" if env["PLATFORM"] == "win32" else "")
