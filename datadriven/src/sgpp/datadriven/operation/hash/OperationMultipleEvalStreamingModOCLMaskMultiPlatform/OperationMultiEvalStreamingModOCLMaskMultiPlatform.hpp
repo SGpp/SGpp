@@ -318,6 +318,10 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // size for distributing schedules of different size
     this->gridSizeBuffers = storage.getSize() + padding + overallGridBlockingSize;
 
+    std::cout << "gridSizeUnpadded: " << storage.getSize() << std::endl;
+    std::cout << "gridSizePadded: " << gridSizePadded << std::endl;
+    std::cout << "gridSizeBuffers: " << gridSizeBuffers << std::endl;
+
     sgpp::base::HashGridIndex::level_type curLevel;
     sgpp::base::HashGridIndex::index_type curIndex;
 
