@@ -71,6 +71,7 @@ void MetaLearner::learnString(
   std::unique_ptr<LearnerLeastSquaresIdentity> myLearner =
       std::make_unique<LearnerLeastSquaresIdentity>(isRegression, this->verbose);
   myLearner->setImplementation(operationConfiguration);
+  myLearner->setReuseCoefficients(false);
 
   LearnerTiming timings =
       myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
@@ -124,6 +125,7 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
   sgpp::datadriven::OperationMultipleEvalConfiguration operationConfiguration(
       OperationMultipleEvalType::DEFAULT, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
   referenceLearner->setImplementation(operationConfiguration);
+  referenceLearner->setReuseCoefficients(false);
 
   LearnerTiming timings =
       referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,
