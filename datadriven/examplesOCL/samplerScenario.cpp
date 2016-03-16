@@ -66,7 +66,7 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 
 int main(int argc, char **argv) {
   std::string scenarioFileName =
-      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
+      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
   std::string parameterFile("reproduce.cfg");
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   std::string datasetFile = scenario.getDatasetFileName();
   try {

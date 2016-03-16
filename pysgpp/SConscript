@@ -2,122 +2,110 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
+
 import os
 import sys
 
-Import('env')
-Import('BUILD_DIR')
-Import('PYSGPP_PACKAGE_PATH')
-Import('PYSGPP_BUILD_PATH')
-Import('moduleFolders')
-Import('moduleName')
-Import('libraryTargetList')
-Import('installTargetList')
-Import('flattenedDependencyGraph')
+Import("*")
 
-# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+# as the dependency tracking for swig is buggy in scons,
+# always trigger a "reswig" by removing the swig wrapper
 if os.path.exists("pysgpp_wrap.cc"):
-    os.remove("pysgpp_wrap.cc")
+  os.remove("pysgpp_wrap.cc")
 
-py_env = env.Clone()
+pyEnv = env.Clone()
 
-py_env.AppendUnique(CPPFLAGS=['-w'])
-if env['PLATFORM'] == 'cygwin':
-    py_env.Append(LIBS=['python2.7'])
-elif env['PLATFORM'] == 'darwin':
-    py_env['SHLIBSUFFIX'] = '.so'
+pyEnv.AppendUnique(CPPFLAGS=["-w"])
+if env["PLATFORM"] == "cygwin":
+  pyEnv.Append(LIBS=["python2.7"])
+elif env["PLATFORM"] == "darwin":
+  pyEnv["SHLIBSUFFIX"] = ".so"
 
 # build python module with swig
-swigflags = ['-c++', '-python', '-fvirtual']
+swigFlags = ["-c++", "-python", "-fvirtual"]
 
-swigflags.extend(['-D' + c + "=" + py_env['CPPDEFINES'][c]
-                  for c in py_env['CPPDEFINES']])
-
-# tell SWIG that we're on Windows
-# (SCons/SWIG do not seem to set this flag automatically)
-if env['COMPILER'] == 'vcc':
-    swigflags.append('-DSWIGWIN')
+swigFlags.extend(["-D" + c + "=" + pyEnv["CPPDEFINES"][c]
+                  for c in pyEnv["CPPDEFINES"]])
 
 # Python docstrings in SWIG-generated Python file
-if env['PYDOC']:
-    swigflags.append('-DPYDOC')
+if env["PYDOC"]:
+  swigFlags.append("-DPYDOC")
 
-py_env.AppendUnique(SWIGFLAGS=swigflags)
+pyEnv.AppendUnique(SWIGFLAGS=swigFlags)
 
 pythonLibPaths = [BUILD_DIR]
-if env['PLATFORM'] == 'win32':
-    # guess python lib path
-    pythonLibPath = os.path.join(os.path.split(sys.executable)[0], 'libs')
-    if os.path.exists(pythonLibPath):
-        pythonLibPaths.append(pythonLibPath)
-    else:
-        sys.stderr.write("Error: I can't find the python lib path; the guessed location was %s\n" % pythonLibPath)
-        sys.exit(1)
+if env["PLATFORM"] == "win32":
+  # guess python lib path
+  pythonLibPath = os.path.join(os.path.split(sys.executable)[0], "libs")
+  if os.path.exists(pythonLibPath):
+    pythonLibPaths.append(pythonLibPath)
+  else:
+    sys.stderr.write("Error: I can't find the python lib path; " +
+                     "the guessed location was %s\n" % pythonLibPath)
+    sys.exit(1)
 
 libs = [flattenedDependencyGraph]
 
-if (env['PLATFORM'] == 'win32') and (env['COMPILER'] == 'gnu'):
-    py_env.AppendUnique(CPPDEFINES=['MS_WIN64'])
-    # TODO: replace hard-coded 'python27'
-    libs.append('python27')
+if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
+  pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])
+  # TODO: replace hard-coded "python27"
+  libs.append("python27")
 
-libPython = py_env.SharedLibrary(target='pysgpp_swig',
-                                 source=["pysgpp.i"],
-                                 SHLIBPREFIX='_',
-                                 LIBPATH=pythonLibPaths,
-                                 LIBS=libs)
+libPython = pyEnv.SharedLibrary(target="pysgpp_swig",
+                                source=["pysgpp.i"],
+                                SHLIBPREFIX="_",
+                                LIBPATH=pythonLibPaths,
+                                LIBS=libs)
 # TODO libs are set hacky!
 
 # install python libraries routine
 def setupPython(target, source, env):
-    # read all modules which have a python extension
-    pythonModuleFolders = [moduleFolder
-                           for moduleFolder in moduleFolders
-                           if os.path.exists(os.path.join(moduleFolder, "python"))]
+  # read all modules which have a python extension
+  pythonModuleFolders = [moduleFolder
+                         for moduleFolder in moduleFolders
+                         if os.path.exists(os.path.join(moduleFolder, "python"))]
 
-    # create folder for extensions if it doesn't already exist
-    extensionsPath = os.path.join(PYSGPP_BUILD_PATH.abspath, "extensions")
-    if not os.path.exists(extensionsPath):
-        os.makedirs(extensionsPath)
+  # create folder for extensions if it doesn't already exist
+  extensionsPath = os.path.join(PYSGPP_BUILD_PATH.abspath, "extensions")
+  if not os.path.exists(extensionsPath):
+    os.makedirs(extensionsPath)
 
-    # create symlinks in extensions folder of pysgpp
-    for pythonModuleFolder in pythonModuleFolders:
-        src = Dir(os.path.join(pythonModuleFolder,
-                               "python")).abspath
-        dst = os.path.join(extensionsPath, pythonModuleFolder)
-        if not os.path.exists(dst):
-            if os.path.lexists(dst):
-                os.remove(dst)
-            os.symlink(src, dst)
+  # create symlinks in extensions folder of pysgpp
+  for pythonModuleFolder in pythonModuleFolders:
+    src = Dir(os.path.join(pythonModuleFolder, "python")).abspath
+    dst = os.path.join(extensionsPath, pythonModuleFolder)
+    if not os.path.exists(dst):
+      if os.path.lexists(dst):
+        os.remove(dst)
+      os.symlink(src, dst)
 
-    # create __init__.py file which imports all the extensions
-    fd = open(os.path.join(extensionsPath, "__init__.py"), "w")
-    for pythonModuleFolder in pythonModuleFolders:
-        fd.write("import %s%s" % (pythonModuleFolder, os.linesep))
-    fd.close()
+  # create __init__.py file which imports all the extensions
+  fd = open(os.path.join(extensionsPath, "__init__.py"), "w")
+  for pythonModuleFolder in pythonModuleFolders:
+    fd.write("import %s%s" % (pythonModuleFolder, os.linesep))
+  fd.close()
 
-    # create __init__.py file which imports the extension package and the
-    # pysgpp_swig module
-    fd = open(os.path.join(PYSGPP_BUILD_PATH.abspath, "__init__.py"), "w")
-    fd.write("from pysgpp_swig import *%s" % os.linesep)
-    fd.write("import extensions%s" % os.linesep)
-    fd.close()
+  # create __init__.py file which imports the extension package and the
+  # pysgpp_swig module
+  fd = open(os.path.join(PYSGPP_BUILD_PATH.abspath, "__init__.py"), "w")
+  fd.write("from pysgpp_swig import *%s" % os.linesep)
+  fd.write("import extensions%s" % os.linesep)
+  fd.close()
 
-    # create__init__.py file which makes the lib folder a python package
-    # -> this is the root for the pysgpp package
-    fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
-    fd.close()
+  # create__init__.py file which makes the lib folder a python package
+  # -> this is the root for the pysgpp package
+  fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
+  fd.close()
 
-if env['PYDOC']:
-    Import('pydocTargetList')
-    py_env.Depends(libPython, pydocTargetList)
+if env["PYDOC"]:
+  pyEnv.Depends(libPython, pydocTargetList)
 
-installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
-installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
-py_env.Depends(installLibPython, installLibWrapperPython)
-if env['PLATFORM'] != 'win32':
-    # windows does not support symbolic links out of the box
-    # so we disable this feature
-    moduleSetupPython = env.Command('setupPython', [], setupPython)
-    py_env.Depends(installLibWrapperPython, moduleSetupPython)
-installTargetList.append(installLibPython)
+installLibPython = pyEnv.Install(PYSGPP_BUILD_PATH, libPython)
+installLibWrapperPython = pyEnv.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
+pyEnv.Depends(installLibPython, installLibWrapperPython)
+if env["PLATFORM"] != "win32":
+  # windows does not support symbolic links out of the box
+  # so we disable this feature
+  moduleSetupPython = env.Command("setupPython", [], setupPython)
+  pyEnv.Depends(installLibWrapperPython, moduleSetupPython)
+libraryTargetList.append(installLibPython)
