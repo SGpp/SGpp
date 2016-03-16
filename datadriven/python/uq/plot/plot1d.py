@@ -10,7 +10,7 @@ def plotDensity1d(U, n=1000, *args, **kws):
     bounds = U.getBounds()
     if len(bounds) == 1:
         bounds = bounds[0]
-    x = np.linspace(bounds[0], bounds[1], n)
+    x = np.linspace(bounds[0] * -0.90, bounds[1] * 1.15, n)
     y = [U.pdf([xi]) for xi in x]
 
     plt.plot(x, y, *args, **kws)

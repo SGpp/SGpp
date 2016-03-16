@@ -62,29 +62,39 @@ print analysis.computeMoments()['data']
 
 distKDE = analysis.estimateDensity(dtype="gaussianKDE")
 config = {"grid_dim": 2,
-          "grid_level": 8,
+          "grid_level": 6,
           "grid_type": "Linear",
           "refinement_numSteps": 0,
           "refinement_numPoints": 10,
-          "regularization_type": "Laplace",
-          "crossValidation_lambda": 5e-4,
-          "crossValidation_enable": False,
+          "regularization_type": "Identity",
+          "crossValidation_lambda": 1e-3,
+          "crossValidation_enable": True,
           "crossValidation_kfold": 5,
           "crossValidation_silent": False}
 distSGDE = analysis.estimateDensity(dtype="sgde", config=config)
 
+# ---------------------------------------------------------------------------
+print distSGDE.getBounds(), distSGDE.getSamples().shape, distSGDE.pdf(1.79753700978)
+y = analysis.eval(analysis.generateUnitSamples())
+
+
 import matplotlib.pyplot as plt
 plt.figure()
-plotDensity1d(distKDE, label="KDE")
 plotDensity1d(distSGDE, label="SGDE")
+plotDensity1d(distKDE, label="KDE")
 samples = distSGDE.getSamples()
 plt.scatter(samples, np.zeros(samples.shape[0]))
+plt.hist(y, normed=True, cumulative=False, label="hist")
 plt.legend()
 
-x = np.linspace(0, 1, 100)
+x = np.linspace(distSGDE.getBounds()[0, 0],
+                distSGDE.getBounds()[0, 1],
+                100)
+
 plt.figure()
-plt.plot(x, [distKDE.cdf(xi) for xi in x], label="KDE")
 plt.plot(x, [distSGDE.cdf(xi) for xi in x], label="SGDE")
+plt.plot(x, [distKDE.cdf(xi) for xi in x], label="KDE")
+plt.hist(y, normed=True, cumulative=True, label="hist")
 plt.legend()
 
 plt.show()

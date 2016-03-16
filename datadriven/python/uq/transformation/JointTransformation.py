@@ -70,3 +70,10 @@ class JointTransformation(Transformation):
 
     def getTransformations(self):
         return self.__trans
+
+    def getBounds(self):
+        ans = np.ndarray((len(self.__trans), 2))
+        for i, trans in enumerate(self.__trans):
+            ans[i, :] = trans.getBounds()
+        return ans
+
