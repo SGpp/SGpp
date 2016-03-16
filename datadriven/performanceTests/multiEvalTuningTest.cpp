@@ -25,7 +25,7 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 
-std::string scenarioBaseDir = "datadriven/performanceTests/scenarios/s";
+std::string scenarioBaseDir = "datadriven/performanceTests/scenarios/";
 
 BOOST_AUTO_TEST_SUITE(AutoTuningPaper)
 
