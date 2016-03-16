@@ -30,7 +30,7 @@
    },
    "testset": {
       "hasTestDataset": true,
-      "testFileName": "friedman2_4d_300000_StreamingOCLMultiPlatform_float_AlphaReference.vec",
+      "testFileName": "datadriven/performanceTests/scenarios/friedman2_4d_300000_StreamingOCLMultiPlatform_float_AlphaReference.vec",
       "expectedMSE": 0.000000001,
       "expectedLargestDifference": 0.001
    }
