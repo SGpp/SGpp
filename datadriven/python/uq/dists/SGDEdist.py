@@ -331,6 +331,9 @@ class SGDEdist(Dist):
     def getDim(self):
         return self.dim
 
+    def getSamples(self):
+        return self.trainData
+
     def __str__(self):
         return "SGDE"
 
