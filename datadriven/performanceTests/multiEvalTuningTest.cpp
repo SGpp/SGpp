@@ -25,6 +25,8 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 
+std::string scenarioBaseDir = "datadriven/performanceTests/scenarios/s";
+
 BOOST_AUTO_TEST_SUITE(AutoTuningPaper)
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
@@ -38,7 +40,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
@@ -81,7 +83,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
@@ -125,7 +127,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
@@ -169,7 +171,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
@@ -213,7 +215,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
@@ -258,7 +260,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
 
