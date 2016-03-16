@@ -66,9 +66,9 @@ LearnerTiming LearnerDensityBasedReg::train(
   result.GFlop_ = 0.0;
   result.GByte_ = 0.0;
 
-  execTime_ = 0.0;
-  GFlop_ = 0.0;
-  GByte_ = 0.0;
+  execTime = 0.0;
+  GFlop = 0.0;
+  GByte = 0.0;
 
   double oldAcc = 0.0;
 
@@ -88,7 +88,7 @@ LearnerTiming LearnerDensityBasedReg::train(
   std::unique_ptr<sgpp::base::SGppStopwatch> myStopwatch =
       std::make_unique<sgpp::base::SGppStopwatch>();
 
-  if (isVerbose_) std::cout << "Starting Learning...." << std::endl;
+  if (isVerbose) std::cout << "Starting Learning...." << std::endl;
 
   // Normalize "class" vector and append it to the train data matrix to create a m x (n+1) matrix
   // for estimation of Pr[x, t]:
@@ -123,15 +123,15 @@ LearnerTiming LearnerDensityBasedReg::train(
   //
   //  if (grid_ != NULL) delete grid_;
 
-  if (isTrained_ == true) isTrained_ = false;
+  if (isTrained == true) isTrained = false;
 
   InitializeGrid(config_adap);
 
   // check if grid was created
-  if (grid_ == NULL) return result;
+  if (grid == NULL) return result;
 
   for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
-    if (isVerbose_)
+    if (isVerbose)
       std::cout << std::endl
                 << "Doing refinement: " << i << std::endl;
 
@@ -139,16 +139,16 @@ LearnerTiming LearnerDensityBasedReg::train(
 
     // Do Refinements
     if (i > 0) {
-      sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha_, AdaptConfig.noPoints_);
-      grid_->getGenerator().refine(myRefineFunc);
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.noPoints_);
+      grid->getGenerator().refine(myRefineFunc);
 
-      alpha_->resize(grid_->getSize());
+      alpha->resize(grid->getSize());
 
       // DMSystem->rebuildLevelAndIndex();   not implemented
 
-      if (isVerbose_) std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
+      if (isVerbose) std::cout << "New Grid Size: " << grid->getSize() << std::endl;
     } else {
-      if (isVerbose_) std::cout << "Grid Size: " << grid_->getSize() << std::endl;
+      if (isVerbose) std::cout << "Grid Size: " << grid->getSize() << std::endl;
     }
 
     // regularization term:
@@ -157,15 +157,15 @@ LearnerTiming LearnerDensityBasedReg::train(
     //    if (C_ != NULL) delete C_;
 
     if (this->CMode_ == sgpp::datadriven::RegularizationType::Laplace) {
-      C_ = sgpp::op_factory::createOperationLaplace(*grid_);
+      C_ = sgpp::op_factory::createOperationLaplace(*grid);
     } else if (this->CMode_ == sgpp::datadriven::RegularizationType::Identity) {
-      C_ = sgpp::op_factory::createOperationIdentity(*grid_);
+      C_ = sgpp::op_factory::createOperationIdentity(*grid);
     } else {
       // should not happen
     }
 
-    sgpp::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_, lambda);
-    sgpp::base::DataVector rhs(grid_->getSize());
+    sgpp::datadriven::DensitySystemMatrix DMatrix(*grid, densityMatrix, *C_, lambda);
+    sgpp::base::DataVector rhs(grid->getSize());
     DMatrix.generateb(rhs);
 
     if (i == AdaptConfig.numRefinements_) {
@@ -173,9 +173,9 @@ LearnerTiming LearnerDensityBasedReg::train(
       myCG->setEpsilon(SolverConfigFinal.eps_);
     }
 
-    myCG->solve(DMatrix, *alpha_, rhs, false, false, -1.0);
+    myCG->solve(DMatrix, *alpha, rhs, false, false, -1.0);
 
-    if (isVerbose_) {
+    if (isVerbose) {
       std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
       std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
     }
@@ -183,10 +183,10 @@ LearnerTiming LearnerDensityBasedReg::train(
     if (testAccDuringAdapt) {
       double acc = getAccuracy(trainDataset, classes);
 
-      if (isVerbose_) std::cout << "MSE (train): " << acc << std::endl;
+      if (isVerbose) std::cout << "MSE (train): " << acc << std::endl;
 
       if ((i > 0) && (oldAcc <= acc)) {
-        if (isVerbose_) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+        if (isVerbose) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
         break;
       }
@@ -194,7 +194,7 @@ LearnerTiming LearnerDensityBasedReg::train(
       oldAcc = acc;
     }
 
-    execTime_ += myStopwatch->stop();
+    execTime += myStopwatch->stop();
 
     // use post-processing to determine Flops and time
     if (i < AdaptConfig.numRefinements_) {
@@ -204,14 +204,14 @@ LearnerTiming LearnerDensityBasedReg::train(
     }
   }
 
-  result.timeComplete_ = execTime_;
+  result.timeComplete_ = execTime;
 
-  isTrained_ = true;
+  isTrained = true;
 
-  if (isVerbose_) {
+  if (isVerbose) {
     std::cout << "Finished Training!" << std::endl
               << std::endl;
-    std::cout << "Training took: " << execTime_ << " seconds" << std::endl
+    std::cout << "Training took: " << execTime << " seconds" << std::endl
               << std::endl;
   }
 
@@ -234,14 +234,14 @@ sgpp::base::DataVector LearnerDensityBasedReg::predict(sgpp::base::DataMatrix& t
   for (size_t i = 0; i < m; i++) {
     testDataset.getRow(i, point);
 
-    sgpp::base::Grid* tempGrid = grid_.get();
+    sgpp::base::Grid* tempGrid = grid.get();
     sgpp::base::Grid* lastGrid = NULL;
-    sgpp::base::DataVector* lastAlpha = alpha_.get();
+    sgpp::base::DataVector* lastAlpha = alpha.get();
 
     // Conditionalize for all dimensions, but the last one:
     for (size_t j = 0; j < dim; j++) {
       sgpp::base::DataVector* tempAlpha = new sgpp::base::DataVector(1);
-      sgpp::op_factory::createOperationDensityConditional(*grid_)
+      sgpp::op_factory::createOperationDensityConditional(*grid)
           ->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
       if (j > 0) {
@@ -270,9 +270,9 @@ sgpp::base::DataVector LearnerDensityBasedReg::predict(sgpp::base::DataMatrix& t
 void LearnerDensityBasedReg::dumpDensityAtPoint(sgpp::base::DataVector& point, std::string fileName,
                                                 unsigned int resolution) {
   size_t dim = point.getSize();
-  sgpp::base::Grid* tempGrid = grid_.get();
+  sgpp::base::Grid* tempGrid = grid.get();
   sgpp::base::Grid* lastGrid = NULL;
-  sgpp::base::DataVector* lastAlpha = alpha_.get();
+  sgpp::base::DataVector* lastAlpha = alpha.get();
 
   // Conditionalize for all dimensions, but the last one:
   for (size_t j = 0; j < dim; j++) {

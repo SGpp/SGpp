@@ -126,9 +126,9 @@ LearnerTiming LearnerDensityBased::train(
   result.GFlop_ = 0.0;
   result.GByte_ = 0.0;
 
-  execTime_ = 0.0;
-  GFlop_ = 0.0;
-  GByte_ = 0.0;
+  execTime = 0.0;
+  GFlop = 0.0;
+  GByte = 0.0;
 
   double oldAcc = 0.0;
 
@@ -147,7 +147,7 @@ LearnerTiming LearnerDensityBased::train(
   // Pre-Procession
   // preProcessing();
 
-  if (isVerbose_) std::cout << "Starting Learning...." << std::endl;
+  if (isVerbose) std::cout << "Starting Learning...." << std::endl;
 
   sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
 
@@ -202,7 +202,7 @@ LearnerTiming LearnerDensityBased::train(
 
   //  if (grid_ != NULL) delete grid_;
 
-  if (isTrained_ == true) isTrained_ = false;
+  if (isTrained == true) isTrained = false;
 
   setNrClasses(class_indeces.size());
   InitializeGrid(GridConfig);
@@ -211,7 +211,7 @@ LearnerTiming LearnerDensityBased::train(
   if (gridVec_.size() != class_indeces.size()) return result;
 
   for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
-    if (isVerbose_)
+    if (isVerbose)
       std::cout << std::endl
                 << "Doing refinement: " << i << std::endl;
 
@@ -225,12 +225,12 @@ LearnerTiming LearnerDensityBased::train(
 
         // DMSystem->rebuildLevelAndIndex();   not implemented
 
-        if (isVerbose_)
+        if (isVerbose)
           std::cout << "New Grid Size[" << ii << "]: " << gridVec_[ii]->getSize() << std::endl;
       }
     } else {
       for (size_t ii = 0; ii < gridVec_.size(); ii++) {
-        if (isVerbose_)
+        if (isVerbose)
           std::cout << "Grid Size[" << ii << "]: " << gridVec_[ii]->getSize() << std::endl;
       }
     }
@@ -273,9 +273,9 @@ LearnerTiming LearnerDensityBased::train(
       alphaVec_[ii].copyFrom(alpha);
     }
 
-    execTime_ += myStopwatch->stop();
+    execTime += myStopwatch->stop();
 
-    if (isVerbose_) {
+    if (isVerbose) {
       std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
       std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
     }
@@ -295,29 +295,29 @@ LearnerTiming LearnerDensityBased::train(
       result.timeMultTransComplete_ = tmp3;
       result.timeMultTransCompute_ = tmp4;*/
     result.timeRegularization_ = 0.0;
-    result.GFlop_ = GFlop_;
-    result.GByte_ = GByte_;
+    result.GFlop_ = GFlop;
+    result.GByte_ = GByte;
 
     if (testAccDuringAdapt) {
       double acc = getAccuracy(trainDataset, classes);
 
-      if (isVerbose_) {
-        if (isRegression_) {
-          if (isVerbose_) std::cout << "MSE (train): " << acc << std::endl;
+      if (isVerbose) {
+        if (isRegression) {
+          if (isVerbose) std::cout << "MSE (train): " << acc << std::endl;
         } else {
-          if (isVerbose_) std::cout << "Acc (train): " << acc << std::endl;
+          if (isVerbose) std::cout << "Acc (train): " << acc << std::endl;
         }
       }
 
-      if (isRegression_) {
+      if (isRegression) {
         if ((i > 0) && (oldAcc <= acc)) {
-          if (isVerbose_) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+          if (isVerbose) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
           break;
         }
       } else {
         if ((i > 0) && (oldAcc >= acc)) {
-          if (isVerbose_) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+          if (isVerbose) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
           break;
         }
@@ -327,14 +327,14 @@ LearnerTiming LearnerDensityBased::train(
     }
   }
 
-  if (isVerbose_) {
+  if (isVerbose) {
     std::cout << "Finished Training!" << std::endl
               << std::endl;
-    std::cout << "Training took: " << execTime_ << " seconds" << std::endl
+    std::cout << "Training took: " << execTime << " seconds" << std::endl
               << std::endl;
   }
 
-  isTrained_ = true;
+  isTrained = true;
 
   delete myStopwatch;
   delete myCG;
@@ -344,7 +344,7 @@ LearnerTiming LearnerDensityBased::train(
 }
 
 sgpp::base::DataVector LearnerDensityBased::predict(sgpp::base::DataMatrix& testDataset) {
-  if (isTrained_) {
+  if (isTrained) {
     sgpp::base::DataVector result(testDataset.getNrows());
 
     for (unsigned int i = 0; i < testDataset.getNrows(); i++) {
@@ -381,7 +381,7 @@ sgpp::base::DataVector LearnerDensityBased::predict(sgpp::base::DataMatrix& test
   }
 }
 
-time_t LearnerDensityBased::getExecTime() { return (time_t) this->execTime_; }
+time_t LearnerDensityBased::getExecTime() { return (time_t) this->execTime; }
 
 size_t LearnerDensityBased::getNrGridPoints() {
   size_t maxGrid = 0;

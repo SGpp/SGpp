@@ -42,14 +42,14 @@ LearnerVectorizedIdentity::~LearnerVectorizedIdentity() {}
 
 sgpp::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
-  if (this->grid_ == NULL) return NULL;
+  if (this->grid == NULL) return NULL;
 
 #ifndef USE_MPI
-  return new sgpp::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda,
+  return new sgpp::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid), trainDataset, lambda,
                                                               this->vecType_);
 #else
   return sgpp::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
-      *(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
+      *(this->grid), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
 }
 
@@ -58,16 +58,16 @@ void LearnerVectorizedIdentity::postProcessing(const sgpp::base::DataMatrix& tra
                                                const size_t numNeededIterations) {
   LearnerVectorizedPerformance currentPerf =
       LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(
-          *this->grid_, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
+          *this->grid, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
 
-  this->GFlop_ += currentPerf.GFlop_;
-  this->GByte_ += currentPerf.GByte_;
+  this->GFlop += currentPerf.GFlop_;
+  this->GByte += currentPerf.GByte_;
 
   // Caluate GFLOPS and GBytes/s and write them to console
-  if (this->isVerbose_) {
+  if (this->isVerbose) {
     std::cout << std::endl;
-    std::cout << "Current GFlop/s: " << this->GFlop_ / this->execTime_ << std::endl;
-    std::cout << "Current GByte/s: " << this->GByte_ / this->execTime_ << std::endl;
+    std::cout << "Current GFlop/s: " << this->GFlop / this->execTime << std::endl;
+    std::cout << "Current GByte/s: " << this->GByte / this->execTime << std::endl;
     std::cout << std::endl;
   }
 }
@@ -87,8 +87,8 @@ sgpp::base::DataVector LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix
   }
 
   std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval =
-      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid_, vecType_, &tmpDataSet);
-  MultEval->multVectorized(*alpha_, classesComputed);
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet);
+  MultEval->multVectorized(*alpha, classesComputed);
 
   // removed the padded instances
   classesComputed.resize(originalSize);

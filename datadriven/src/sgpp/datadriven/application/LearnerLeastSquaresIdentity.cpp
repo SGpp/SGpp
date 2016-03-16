@@ -21,18 +21,18 @@ LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const bool isRegression
                                                          const bool verbose)
     : sgpp::datadriven::LearnerBase(isRegression, verbose) {}
 
-LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGridFilename,
-                                                         const std::string tAlphaFilename,
-                                                         const bool isRegression,
-                                                         const bool verbose)
-    : sgpp::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose) {}
+// LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGridFilename,
+//                                                         const std::string tAlphaFilename,
+//                                                         const bool isRegression,
+//                                                         const bool verbose)
+//    : sgpp::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose) {}
 
 LearnerLeastSquaresIdentity::~LearnerLeastSquaresIdentity() {}
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> LearnerLeastSquaresIdentity::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
   std::unique_ptr<sgpp::datadriven::SystemMatrixLeastSquaresIdentity> systemMatrix =
-      std::make_unique<sgpp::datadriven::SystemMatrixLeastSquaresIdentity>(*(this->grid_),
+      std::make_unique<sgpp::datadriven::SystemMatrixLeastSquaresIdentity>(*(this->grid),
                                                                            trainDataset, lambda);
   systemMatrix->setImplementation(this->implementationConfiguration);
   return std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase>(systemMatrix.release());
@@ -43,16 +43,16 @@ void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& t
                                                  const size_t numNeededIterations) {
   LearnerVectorizedPerformance currentPerf =
       LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(
-          *this->grid_, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
+          *this->grid, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
 
-  this->GFlop_ += currentPerf.GFlop_;
-  this->GByte_ += currentPerf.GByte_;
+  this->GFlop += currentPerf.GFlop_;
+  this->GByte += currentPerf.GByte_;
 
   // Calculate GFLOPS and GBytes/s and write them to console
-  if (this->isVerbose_) {
+  if (this->isVerbose) {
     std::cout << std::endl;
-    std::cout << "Current GFlop/s: " << this->GFlop_ / this->execTime_ << std::endl;
-    std::cout << "Current GByte/s: " << this->GByte_ / this->execTime_ << std::endl;
+    std::cout << "Current GFlop/s: " << this->GFlop / this->execTime << std::endl;
+    std::cout << "Current GByte/s: " << this->GByte / this->execTime << std::endl;
     std::cout << std::endl;
   }
 }
@@ -60,9 +60,8 @@ void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& t
 sgpp::base::DataVector LearnerLeastSquaresIdentity::predict(sgpp::base::DataMatrix& testDataset) {
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
 
-  sgpp::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
-                                                this->implementationConfiguration)
-      ->mult(*alpha_, classesComputed);
+  sgpp::op_factory::createOperationMultipleEval(
+      *(this->grid), testDataset, this->implementationConfiguration)->mult(*alpha, classesComputed);
 
   return classesComputed;
 }
@@ -72,22 +71,22 @@ double LearnerLeastSquaresIdentity::testRegular(
   InitializeGrid(GridConfig);
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> MultEval(
-      sgpp::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
+      sgpp::op_factory::createOperationMultipleEval(*(this->grid), testDataset,
                                                     this->implementationConfiguration));
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
 
   classesComputed.setAll(0.0);
 
-  execTime_ = 0.0;
+  execTime = 0.0;
 
   sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
   myStopwatch->start();
 
-  MultEval->mult(*alpha_, classesComputed);
+  MultEval->mult(*alpha, classesComputed);
   double stopTime = myStopwatch->stop();
-  this->execTime_ += stopTime;
-  std::cout << "execution duration: " << this->execTime_ << std::endl;
+  this->execTime += stopTime;
+  std::cout << "execution duration: " << this->execTime << std::endl;
 
   return stopTime;
 }
