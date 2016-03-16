@@ -276,7 +276,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 }
 
 double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
-                                     base::DataMatrix& test, double lambdaReg) {
+                                    base::DataMatrix& test, double lambdaReg) {
   std::unique_ptr<base::OperationMatrix> C = computeRegularizationMatrix(grid);
 
   base::DataVector rhs(grid.getSize());
