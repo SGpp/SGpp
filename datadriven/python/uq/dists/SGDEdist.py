@@ -79,7 +79,6 @@ class SGDEdist(Dist):
             samples = DataMatrix(samples.reshape(len(samples), 1))
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
-        print samples
         learner.initialize(samples)
 
         return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())

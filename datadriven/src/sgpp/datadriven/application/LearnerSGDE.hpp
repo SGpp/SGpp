@@ -54,6 +54,7 @@ class LearnerSGDEConfiguration : public json::JSON {
 
   virtual LearnerSGDEConfiguration* clone();
 
+  void initConfig();
   sgpp::base::GridType stringToGridType(std::string& gridType);
   sgpp::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
   sgpp::solver::SLESolverType stringToSolverType(std::string& solverType);
@@ -167,7 +168,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param ndim number of dimensions
    * @return grid
    */
-  std::shared_ptr<base::Grid> createRegularGrid(size_t ndim);
+  std::shared_ptr<base::Grid> createRegularGrid();
 
   /**
    * Does cross-validation to obtain a suitable regularization parameter
