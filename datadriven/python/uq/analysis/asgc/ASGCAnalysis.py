@@ -6,6 +6,7 @@
 #
 from pysgpp.extensions.datadriven.uq.dists.GaussianKDEDist import GaussianKDEDist
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -108,7 +109,7 @@ class ASGCAnalysis(Analysis):
     def estimateDensity(self, ts=[0], n=10000, dtype="gaussianKDE", config={}):
         samples = self.generateUnitSamples(n)
         time_dependent_values = self.eval(samples, ts=ts)
-        
+
         if len(ts) == 1:
             return self.__estimateDensityByConfig(dtype, time_dependent_values, config)
 

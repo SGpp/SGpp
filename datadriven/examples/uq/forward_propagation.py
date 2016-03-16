@@ -27,12 +27,13 @@ builder.withParameters(params)\
 
 # define model function
 def g(x, **kws):
-    return np.prod([4 * xi * (1 - xi) for xi in x])
+    return np.sum(x)
+#     return np.prod([4 * xi * (1 - xi) for xi in x])
 
 builder.defineUQSetting().withSimulation(g)
 
 samplerSpec = builder.defineSampler()
-samplerSpec.withGrid().withLevel(3).withPolynomialBase(2)
+samplerSpec.withGrid().withLevel(3)  # .withPolynomialBase(2)
 samplerSpec.withRefinement()\
            .withAdaptThreshold(1e-10)\
            .withAdaptPoints(5)\
@@ -61,23 +62,14 @@ print analysis.computeMoments()['data']
 
 distKDE = analysis.estimateDensity(dtype="gaussianKDE")
 config = {"grid_dim": 2,
-          "grid_level": 6,
+          "grid_level": 8,
           "grid_type": "Linear",
           "refinement_numSteps": 0,
           "refinement_numPoints": 10,
-          "solver_maxIterations": 100,
-          "solver_eps": 1e-10,
-          "solver_threshold": 1e-10,
           "regularization_type": "Laplace",
-          "crossValidation_lambda": 1e-5,
-          "crossValidation_enable": True,
+          "crossValidation_lambda": 5e-4,
+          "crossValidation_enable": False,
           "crossValidation_kfold": 5,
-          "crossValidation_lambdaStart": 1e-1,
-          "crossValidation_lambdaEnd": 1e-10,
-          "crossValidation_lambdaSteps": 5,
-          "crossValidation_logScale": True,
-          "crossValidation_shuffle": False,
-          "crossValidation_seed": 1234567,
           "crossValidation_silent": False}
 distSGDE = analysis.estimateDensity(dtype="sgde", config=config)
 
@@ -85,6 +77,8 @@ import matplotlib.pyplot as plt
 plt.figure()
 plotDensity1d(distKDE, label="KDE")
 plotDensity1d(distSGDE, label="SGDE")
+samples = distSGDE.getSamples()
+plt.scatter(samples, np.zeros(samples.shape[0]))
 plt.legend()
 
 x = np.linspace(0, 1, 100)
