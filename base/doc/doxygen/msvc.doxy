@@ -150,7 +150,7 @@ If you want to build a static library, run the following:
 @verbatim
 scons SG_PARALLEL=0 ^
   SG_COMBIGRID=0 ^
-  USE_STATICLIB=1 ^
+  BUILD_STATICLIB=1 ^
   TARGETCPU=VCC ^
   MSVC_USE_SCRIPT="C:\PATH_TO_VISUAL_STUDIO\VC\bin\vcvars32.bat"
 @endverbatim
@@ -192,7 +192,7 @@ Please execute
 @verbatim
 scons SG_PARALLEL=0 ^
   SG_COMBIGRID=0 ^
-  USE_STATICLIB=0 ^
+  BUILD_STATICLIB=0 ^
   TARGETCPU=VCC ^
   MSVC_USE_SCRIPT="C:\PATH_TO_VISUAL_STUDIO\VC\bin\vcvars32.bat"
 @endverbatim

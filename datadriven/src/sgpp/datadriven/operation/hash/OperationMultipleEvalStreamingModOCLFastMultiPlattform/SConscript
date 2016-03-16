@@ -1,21 +1,11 @@
-import os
-import fnmatch
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-Import('env')
+import ModuleHelper
 
-cpps = []
-hpps = []
-objs = []
+Import("*")
 
-if env['USE_OCL']:
-  for currentFolder, subdirNames, fileNames in os.walk("."):
-    for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      cpp = os.path.join(currentFolder, fileName)
-      cpps.append(cpp)
-      objs.append(env.SharedObject(cpp))
-  for fileName in fnmatch.filter(fileNames, '*.hpp'):
-    hpp = os.path.join(currentFolder, fileName)
-    hpps.append(hpp)
-
-returnTuple = (cpps, hpps, objs)
-Return('returnTuple')
+if env["USE_OCL"]:
+  module.scanSource(".")

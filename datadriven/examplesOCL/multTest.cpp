@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman_4d.arff";
+  std::string fileName = "friedman2_4d_300000.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
@@ -56,11 +56,11 @@ int main(int argc, char** argv) {
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("reproduce.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
   sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);

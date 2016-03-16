@@ -94,7 +94,7 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       state = PARSER_STATE::VALUE;
       i += 1;
     } else if (state == PARSER_STATE::VALUE) {
-//      size_t next;
+      //      size_t next;
       double value = std::atof(&(serializedVector[i]));
       v.append(value);
       state = PARSER_STATE::COMMAEND;
@@ -187,6 +187,29 @@ void DataVector::resizeZero(size_t size) {
   // set new elements to zero
   for (size_t i = std::min(this->size, size); i < size; i++) {
     newdata[i] = 0.0;
+  }
+
+  delete[] this->data;
+
+  this->data = newdata;
+  this->size = size;
+  this->unused = 0;
+}
+
+void DataVector::resize(size_t size, double value) {
+  // don't do anyhing, if vector already has the correct size
+  if (size == this->size) {
+    return;
+  }
+
+  // create new vector
+  double* newdata = new double[size];
+  // copy entries of old vector
+  std::memcpy(newdata, this->data, std::min(this->size, size) * sizeof(double));
+
+  // set new elements to zero
+  for (size_t i = std::min(this->size, size); i < size; i++) {
+    newdata[i] = value;
   }
 
   delete[] this->data;

@@ -18,9 +18,12 @@
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
 
+std::string baseFolder = "datadriven/performanceTests/scenarios/";
+
 void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
                    DataVector &alpha) {
-  DataVector alphaReference = DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  DataVector alphaReference =
+      DataVector::fromFile(baseFolder + testsetConfiguration.alphaReferenceFileName);
 
   if (alphaReference.getSize() != alpha.getSize()) {
     throw sgpp::base::application_exception("error: size of reference vector doesn't match");
@@ -35,6 +38,7 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 
     outFile << "alpha[" << i << "] = " << alpha[i] << ", alphaReference[" << i
             << "] = " << alphaReference[i] << " difference: " << difference << std::endl;
+    //    outFile << alpha[i] << std::endl;
 
     if (difference > largestDifference) {
       largestDifference = difference;
@@ -61,7 +65,8 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 }
 
 int main(int argc, char **argv) {
-  std::string scenarioFileName("friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario");
+  std::string scenarioFileName =
+      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
   std::string parameterFile("reproduce.cfg");
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
@@ -76,7 +81,7 @@ int main(int argc, char **argv) {
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   std::string datasetFile = scenario.getDatasetFileName();
   try {

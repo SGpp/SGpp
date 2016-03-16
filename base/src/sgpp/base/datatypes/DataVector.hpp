@@ -120,6 +120,17 @@ class DataVector {
   void resizeZero(size_t nrows);
 
   /**
+   * Resizes the DataVector to size elements.
+   * All new additional entries are set to a specified initial value.
+   * If nrows is smaller than the current number of rows,
+   * all superfluous entries are removed.
+   *
+   * @param nrows New number of rows of the DataVector
+   * @param value Initial value for the new entries
+   */
+  void resize(size_t size, double value);
+
+  /**
    * Resizes the DataVector by removing entries. Throws an exception
    * if boundaries a violated.
    *

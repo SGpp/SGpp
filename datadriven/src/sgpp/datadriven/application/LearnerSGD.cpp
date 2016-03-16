@@ -26,14 +26,14 @@ void LearnerSGD::train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVec
   // Initialize Grid
   InitializeGrid(GridConfig);
 
-  if (grid_ == NULL) return;
+  if (grid == NULL) return;
 
-  alpha_->setAll(0.0);
+  alpha->setAll(0.0);
 
-  size_t num_coeff = grid_->getSize();
+  size_t num_coeff = grid->getSize();
   size_t dim = trainDataset.getNcols();
 
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid_));
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
 
   // Execute SGD
   size_t numIterations = 0;
@@ -49,7 +49,7 @@ void LearnerSGD::train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVec
 
     // tmp1 = (b_k^T * a^n - y_k) where
     // b_k = (phi_1(x_k) ... phi_N(x_k))
-    double tmp1 = opEval->eval(*alpha_, x) - y;
+    double tmp1 = opEval->eval(*alpha, x) - y;
 
     // delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
     DataVector delta(num_coeff);
@@ -59,13 +59,13 @@ void LearnerSGD::train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVec
       unit_alpha.setAll(0.0);
       unit_alpha[i] = 1;
 
-      delta[i] = 2 * gamma * (opEval->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
+      delta[i] = 2 * gamma * (opEval->eval(unit_alpha, x) * tmp1 + lambda * (*alpha)[i]);
     }
 
     // update alpha
     // a^{n+1} = a^n - delta^n
     for (unsigned int i = 0; i < num_coeff; i++) {
-      (*alpha_)[i] = (*alpha_)[i] - delta[i];
+      (*alpha)[i] = (*alpha)[i] - delta[i];
     }
 
     // check if below eps
@@ -85,7 +85,7 @@ void LearnerSGD::train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVec
     numIterations++;
   }
 
-  isTrained_ = true;
+  isTrained = true;
 }
 
 int LearnerSGD::getRandom(int limit) {
@@ -99,9 +99,9 @@ int LearnerSGD::getRandom(int limit) {
   return r;
 }
 
-sgpp::base::DataVector& LearnerSGD::getAlpha() { return *alpha_; }
+sgpp::base::DataVector& LearnerSGD::getAlpha() { return *alpha; }
 
-sgpp::base::Grid& LearnerSGD::getGrid() { return *grid_; }
+sgpp::base::Grid& LearnerSGD::getGrid() { return *grid; }
 
 LearnerSGD::~LearnerSGD() {}
 

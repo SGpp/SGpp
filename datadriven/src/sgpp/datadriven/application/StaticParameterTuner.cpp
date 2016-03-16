@@ -476,6 +476,10 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
                         " (excepted: " +
                         std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
     throw base::application_exception(message.c_str());
+  } else {
+    if (verbose) {
+      std::cout << "verification passed" << std::endl;
+    }
   }
 }
 
