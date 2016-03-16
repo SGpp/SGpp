@@ -33,42 +33,11 @@ namespace sgpp {
 namespace datadriven {
 
 // --------------------------------------------------------------------------------------------
-LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() {
-  // set default config
-  gridConfig.dim_ = 0;
-  gridConfig.level_ = 2;
-  gridConfig.type_ = base::GridType::Linear;
-  gridConfig.maxDegree_ = 1;
-  gridConfig.boundaryLevel_ = 0;
-
-  // configure adaptive refinement
-  adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.noPoints_ = 0;
-
-  // configure solver
-  solverConfig.type_ = solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 100;
-  solverConfig.eps_ = 1e-10;
-  solverConfig.threshold_ = 1e-10;
-
-  // configure regularization
-  regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
-
-  // configure learner
-  crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 10;
-  crossvalidationConfig.lambda_ = 1e-5;
-  crossvalidationConfig.lambdaStart_ = 1e-1;
-  crossvalidationConfig.lambdaEnd_ = 1e-10;
-  crossvalidationConfig.lambdaSteps_ = 10;
-  crossvalidationConfig.logScale_ = true;
-  crossvalidationConfig.shuffle_ = true;
-  crossvalidationConfig.seed_ = 1234567;
-  crossvalidationConfig.silent_ = true;
-}
+LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() { initConfig(); }
 
 LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     : json::JSON(fileName) {
+  initConfig();
   // initialize structs from file
   // configure grid
   try {
@@ -117,11 +86,45 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       crossvalidationConfig.shuffle_ = (*this)["crossValidation_shuffle"].getBool();
     if (this->contains("crossValidation_seed"))
       crossvalidationConfig.seed_ = static_cast<int>((*this)["crossValidation_seed"].getInt());
-    if (this->contains("crossValidation_verbose"))
-      crossvalidationConfig.silent_ = (*this)["crossValidation_verbose"].getBool();
+    if (this->contains("crossValidation_silent"))
+      crossvalidationConfig.silent_ = (*this)["crossValidation_silent"].getBool();
   } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
   }
+}
+
+void LearnerSGDEConfiguration::initConfig() {
+  // set default config
+  gridConfig.dim_ = 0;
+  gridConfig.level_ = 6;
+  gridConfig.type_ = base::GridType::Linear;
+  gridConfig.maxDegree_ = 1;
+  gridConfig.boundaryLevel_ = 0;
+
+  // configure adaptive refinement
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.noPoints_ = 5;
+
+  // configure solver
+  solverConfig.type_ = solver::SLESolverType::CG;
+  solverConfig.maxIterations_ = 100;
+  solverConfig.eps_ = 1e-10;
+  solverConfig.threshold_ = 1e-10;
+
+  // configure regularization
+  regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
+
+  // configure learner
+  crossvalidationConfig.enable_ = true;
+  crossvalidationConfig.kfold_ = 5;
+  crossvalidationConfig.lambda_ = 1e-5;
+  crossvalidationConfig.lambdaStart_ = 1e-1;
+  crossvalidationConfig.lambdaEnd_ = 1e-10;
+  crossvalidationConfig.lambdaSteps_ = 5;
+  crossvalidationConfig.logScale_ = true;
+  crossvalidationConfig.shuffle_ = false;
+  crossvalidationConfig.seed_ = 1234567;
+  crossvalidationConfig.silent_ = true;
 }
 
 LearnerSGDEConfiguration* LearnerSGDEConfiguration::clone() {
@@ -231,10 +234,9 @@ LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
 LearnerSGDE::~LearnerSGDE() {}
 
 void LearnerSGDE::initialize(base::DataMatrix& psamples) {
-  base::DataMatrix mysamples(psamples);
-  samples = std::make_shared<base::DataMatrix>(mysamples);
-  size_t ndim = psamples.getNcols();
-  grid = createRegularGrid(ndim);
+  samples = std::make_shared<base::DataMatrix>(psamples);
+  gridConfig.dim_ = psamples.getNcols();
+  grid = createRegularGrid();
   alpha = std::make_shared<base::DataVector>(grid->getSize());
 
   // optimize the regularization parameter
@@ -283,7 +285,7 @@ std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {
 
 std::shared_ptr<base::DataMatrix> LearnerSGDE::getSamples() { return samples; }
 
-size_t LearnerSGDE::getDim() { return samples->getNcols(); }
+size_t LearnerSGDE::getDim() { return gridConfig.dim_; }
 
 size_t LearnerSGDE::getNsamples() { return samples->getNrows(); }
 
@@ -293,15 +295,15 @@ std::shared_ptr<base::Grid> LearnerSGDE::getGrid() { return grid; }
 
 // ---------------------------------------------------------------------------
 
-std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid(size_t ndim) {
+std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::Linear) {
-    uGrid = base::Grid::createLinearGrid(ndim);
+    uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
   } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-    uGrid = base::Grid::createLinearBoundaryGrid(ndim, 0);
+    uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
   } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-    uGrid = base::Grid::createLinearBoundaryGrid(ndim, 1);
+    uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
   } else {
     throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }
@@ -362,7 +364,7 @@ double LearnerSGDE::optimizeLambdaCV() {
 
     for (size_t j = 0; j < kfold; j++) {
       // initialize standard grid and alpha vector
-      grid = createRegularGrid(getDim());
+      grid = createRegularGrid();
       alpha.setAll(0.0);
 
       // compute density
