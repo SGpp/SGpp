@@ -35,6 +35,7 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 
     outFile << "alpha[" << i << "] = " << alpha[i] << ", alphaReference[" << i
             << "] = " << alphaReference[i] << " difference: " << difference << std::endl;
+    //    outFile << alpha[i] << std::endl;
 
     if (difference > largestDifference) {
       largestDifference = difference;
@@ -61,7 +62,8 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 }
 
 int main(int argc, char **argv) {
-  std::string scenarioFileName("friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario");
+  std::string scenarioFileName(
+      "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float.scenario");
   std::string parameterFile("reproduce.cfg");
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
   std::string datasetFile = scenario.getDatasetFileName();
   try {

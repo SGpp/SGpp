@@ -175,8 +175,9 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   buffer = buffer.substr(0, buffer.find('\0'));
 
   if (verbose) {
-    std::cout << "--- Build Log ---" << std::endl
-              << buffer << std::endl;
+    std::cout << "--- Begin Build Log ---" << std::endl;
+    std::cout << buffer << std::endl;
+    std::cout << "--- End Build Log ---" << std::endl;
   }
 
   // report the error if the build failed
