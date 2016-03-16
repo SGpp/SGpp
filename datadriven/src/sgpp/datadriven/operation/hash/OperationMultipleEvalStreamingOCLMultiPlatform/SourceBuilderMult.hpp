@@ -31,7 +31,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
   size_t dataBlockSize;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
-  size_t transPrefetchSize;
+  size_t prefetchSize;
 
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
@@ -113,7 +113,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
     transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
-    transPrefetchSize = kernelConfiguration["KERNEL_TRANS_PREFETCH_SIZE"].getUInt();
+    prefetchSize = kernelConfiguration["KERNEL_PREFETCH_SIZE"].getUInt();
   }
 
   std::string generateSource() {
@@ -150,18 +150,17 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     sourceStream << "             int end_grid) {" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
-    sourceStream << this->indent[0] << "int groupSize = get_local_size(0);" << std::endl;
     sourceStream << this->indent[0] << "int globalSize = get_global_size(0);" << std::endl;
 
     sourceStream << std::endl;
 
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locLevel["
-                   << dims * transPrefetchSize << "];" << std::endl;
+                   << dims * prefetchSize << "];" << std::endl;
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locIndex["
-                   << dims * transPrefetchSize << "];" << std::endl;
+                   << dims * prefetchSize << "];" << std::endl;
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locAlpha["
-                   << transPrefetchSize << "];" << std::endl;
+                   << prefetchSize << "];" << std::endl;
       sourceStream << std::endl;
     }
 
@@ -208,35 +207,34 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       sourceStream
           << this->indent[0]
           << "for(int gridBlockStart = start_grid; gridBlockStart < end_grid; gridBlockStart += "
-          << transPrefetchSize << ") {" << std::endl;
+          << prefetchSize << ") {" << std::endl;
 
-      sourceStream << this->indent[1] << "if (localIdx < " << transPrefetchSize << ") {"
-                   << std::endl;
+      sourceStream << this->indent[1] << "if (localIdx < " << prefetchSize << ") {" << std::endl;
       if (dims > maxDimUnroll) {
         sourceStream << this->indent[1] << "for (int d = 0; d < " << dims << "; d++) {"
                      << std::endl;
-        sourceStream << this->indent[2]
-                     << "locLevel[d * groupSize + localIdx] = ptrLevel[gridBlockStart * " << dims
-                     << " +  (groupSize * d) + localIdx];" << std::endl;
+        sourceStream << this->indent[2] << "locLevel[d * " << prefetchSize
+                     << " + localIdx] = ptrLevel[gridBlockStart * " << dims << " +  ("
+                     << prefetchSize << " * d) + localIdx];" << std::endl;
         sourceStream << this->indent[1] << "}" << std::endl;
 
         sourceStream << this->indent[1] << "for (int d = 0; d < " << dims << "; d++) {"
                      << std::endl;
-        sourceStream << this->indent[2]
-                     << "locIndex[d * groupSize + localIdx] = ptrIndex[gridBlockStart * " << dims
-                     << " +  (groupSize * d) + localIdx];" << std::endl;
+        sourceStream << this->indent[2] << "locIndex[d * " << prefetchSize
+                     << " + localIdx] = ptrIndex[gridBlockStart * " << dims << " +  ("
+                     << prefetchSize << " * d) + localIdx];" << std::endl;
         sourceStream << this->indent[1] << "}" << std::endl;
       } else {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locLevel[" << d
-                       << " * groupSize + localIdx] = ptrLevel[gridBlockStart * " << dims
-                       << " +  (groupSize * " << d << ") + localIdx];" << std::endl;
+          sourceStream << this->indent[1] << "locLevel[" << d << " * " << prefetchSize
+                       << " + localIdx] = ptrLevel[gridBlockStart * " << dims << " +  ("
+                       << prefetchSize << " * " << d << ") + localIdx];" << std::endl;
         }
         sourceStream << this->indent[1] << std::endl;
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locIndex[" << d
-                       << " * groupSize + localIdx] = ptrIndex[gridBlockStart * " << dims
-                       << " +  (groupSize * " << d << ") + localIdx];" << std::endl;
+          sourceStream << this->indent[1] << "locIndex[" << d << " * " << prefetchSize
+                       << " + localIdx] = ptrIndex[gridBlockStart * " << dims << " +  ("
+                       << prefetchSize << " * " << d << ") + localIdx];" << std::endl;
         }
       }
 
@@ -247,7 +245,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << std::endl;
-      sourceStream << this->indent[1] << "for(int k = 0; k < " << transPrefetchSize << "; k++) {"
+      sourceStream << this->indent[1] << "for(int k = 0; k < " << prefetchSize << "; k++) {"
                    << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
         sourceStream << this->indent[2] << this->floatType() << " curSupport_" << i
