@@ -31,7 +31,7 @@
    "testset": {
       "hasTestDataset": true,
       "testFileName": "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double_AlphaReference.vec",
-      "expectedMSE": 0,
-      "expectedLargestDifference": 0
+      "expectedMSE": 0.0000000001,
+      "expectedLargestDifference": 0.0001
    }
 }
