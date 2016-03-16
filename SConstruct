@@ -146,7 +146,7 @@ unknownVariables = [var for var in vars.UnknownVariables()
                     if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
-                           unknownVariables.keys(),
+                           unknownVariables,
                            "Type \"scons -h\" to list all available variables.")
 
 # set "dynamic" defaults of variables
