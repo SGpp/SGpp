@@ -85,6 +85,9 @@ class LearnerSGDE : public datadriven::DensityEstimator {
               CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
+
+  LearnerSGDE(const LearnerSGDE& learnerSGDE);
+
   virtual ~LearnerSGDE();
 
   /**
@@ -206,6 +209,9 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    */
   void splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,
                 std::vector<std::shared_ptr<base::DataMatrix> >& stest);
+
+  double variance(base::Grid& grid, base::DataVector& alpha);
+  double mean(base::Grid& grid, base::DataVector& alpha);
 
   std::shared_ptr<base::Grid> grid;
   std::shared_ptr<base::DataVector> alpha;

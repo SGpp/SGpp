@@ -5,8 +5,10 @@ from pysgpp import (DataVector, DataMatrix, GaussianKDE,
     createOperationInverseRosenblattTransformationKDE)
 import numpy as np
 
+from EstimatedDist import EstimatedDist
 
-class GaussianKDEDist(Dist):
+
+class GaussianKDEDist(EstimatedDist):
     """
     Gaussian KDE using SG++ implementation
     """
@@ -15,25 +17,10 @@ class GaussianKDEDist(Dist):
                  trainData,
                  bounds=None,
                  transformation=None):
-        super(GaussianKDEDist, self).__init__()
-        if not isMatrix(trainData):
-            trainData = trainData.reshape(len(trainData), 1)
+        super(GaussianKDEDist, self).__init__(trainData)
 
-        self.trainData = DataMatrix(trainData)
-        self.dist = GaussianKDE(self.trainData)
-        self.bounds = bounds
-        if self.bounds is None:
-            self.bounds = [[np.min(trainData[:, i]),
-                            np.max(trainData[:, i])]
-                           for i in xrange(trainData.shape[1])]
-        if len(self.bounds) == 1:
-            self.bounds = self.bounds[0]
-        if transformation is not None:
-            self.bounds = [trans.getBounds()
-                           for trans in transformation.getTransformations()]
-        self.dim = trainData.shape[1]
-        self.bandwidths = DataVector(self.dim)
-        self.dist.getBandwidths(self.bandwidths)
+        trainData_matrix = DataMatrix(self.trainData)
+        self.dist = GaussianKDE(trainData_matrix)
 
     def pdf(self, x):
         # convert the parameter to the right format
@@ -148,30 +135,3 @@ class GaussianKDEDist(Dist):
 
     def __str__(self):
         return "GaussianKDEDist"
-
-#     def toJson(self):
-#         """
-#         Returns a string that represents the object
-#         """
-#         serializationString = '"module" : "' + \
-#                               self.__module__ + '",\n'
-#         # serialize dists
-#         attrName = "config"
-#         attrValue = self.__getattribute__(attrName)
-#         serializationString += '"' + attrName + '": "' + attrValue + '"'
-#
-#         return "{" + serializationString + "} \n"
-#
-#     @classmethod
-#     def fromJson(cls, jsonObject):
-#         """
-#         Restores the TNormal object from the json object with its
-#         attributes.
-#         @param jsonObject: json object
-#         @return: the restored SGDEdist object
-#         """
-#         key = 'config'
-#         if key in jsonObject:
-#             config = jsonObject[key]
-#
-#         return LibAGFDist(config)

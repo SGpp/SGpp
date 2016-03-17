@@ -353,38 +353,23 @@ def isRefineable(grid, gp):
 #     return tmp
 
 
-def evalSGFunctionMulti(grid, alpha, A):
-    if not isinstance(A, DataMatrix):
-        raise AttributeError('A has to be a DataMatrix')
-    size = A.getNrows()
-    opEval = createOperationMultipleEval(grid, A)
-    res = DataVector(size)
-    opEval.mult(alpha, res)
-    return res
+def evalSGFunctionMulti(grid, alpha, samples):
+    if len(samples.shape) == 1:
+        raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
+    samples_matrix = DataMatrix(samples)
+    opEval = createOperationMultipleEval(grid, samples_matrix)
+    res_vec = DataVector(samples.shape[0])
+    alpha_vec = DataVector(alpha)
+    opEval.mult(alpha_vec, res_vec)
+    return res_vec.array()
 
 
 def evalSGFunction(grid, alpha, p):
-    try:
-        if isinstance(p, DataMatrix):
-            return evalSGFunctionMulti(grid, alpha, p)
-        else:
-            return createOperationEval(grid).eval(alpha, p)
-    except Exception:
-        # import ipdb; ipdb.set_trace()
-        # alternative
-        basis = getBasis(grid)
-        gs = grid.getStorage()
-
-        res = 0.0
-        for i in xrange(gs.getSize()):
-            gp = gs.get(i)
-            val = 1.0
-            for d in xrange(gs.getDimension()):
-                val *= max(0.0, basis.eval(gp.getLevel(d), gp.getIndex(d), p[d]))
-                val *= x
-            res += alpha[i] * val
-        return res
-
+    if len(p.shape) == 1:
+        p_vec = DataVector(p)
+        return createOperationEval(grid).eval(alpha, p_vec)
+    else:
+        return evalSGFunctionMulti(grid, alpha, p)
 
 def evalHierToTop(basis, grid, coeffs, gp, d):
     gs = grid.getStorage()
@@ -474,7 +459,7 @@ def hierarchize(grid, nodalValues, ignore=None):
         # if ignore is None or len(ignore) > 0:
         alpha = DataVector(nodalValues)
         createOperationHierarchisation(grid).doHierarchisation(alpha)
-        return alpha
+        return alpha.array()
 #         print "using brute force hierarchization"
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)
     except Exception, e:
@@ -495,7 +480,7 @@ def dehierarchize(grid, alpha):
         A.setRow(i, p)
     opEval = createOperationMultipleEval(grid, A)
     opEval.mult(alpha, nodalValues)
-    return nodalValues
+    return nodalValues.array()
 
 
 def dehierarchizeList(grid, alpha, gps):
@@ -714,15 +699,14 @@ def estimateConvergence(grid, gp, v):
 
 def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     # check if interpolation property is given
-    evalValues = dehierarchize(grid, alpha)
+    evalValues = dehierarchize(grid, DataVector(alpha))
 
-    error = []
-    nodes = []
+    error = np.array([])
+    nodes = np.array([])
     head = True
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
-    for i, (nodal, value) in enumerate(zip(nodalValues.array(),
-                                           evalValues.array())):
+    for i, (nodal, value) in enumerate(zip(nodalValues, evalValues)):
         # compute the relative error
         if abs(nodal) > 1e-14:
             rel_error = min(abs(nodal - value) / nodal,
@@ -752,8 +736,8 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                     ("%g" % value).rjust(spacing),
                     ("%g" % rel_error).rjust(spacing),
                     ("%g" % abs(nodal - value)).rjust(spacing))
-            nodes.append(i)
-            error.append(rel_error)
+            nodes = np.append(nodes, [i])
+            error = np.append(rel_error, [rel_error])
 
     return error, nodes
 

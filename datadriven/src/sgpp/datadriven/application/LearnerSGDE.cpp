@@ -19,6 +19,11 @@
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 
 #include <stddef.h>
 #include <algorithm>
@@ -231,7 +236,20 @@ LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
                   learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
                   learnerSGDEConfig.crossvalidationConfig) {}
 
+LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
+  grid = learnerSGDE.grid;
+  alpha = learnerSGDE.alpha;
+  samples = learnerSGDE.samples;
+  gridConfig = learnerSGDE.gridConfig;
+  adaptivityConfig = learnerSGDE.adaptivityConfig;
+  solverConfig = learnerSGDE.solverConfig;
+  regularizationConfig = learnerSGDE.regularizationConfig;
+  crossvalidationConfig = learnerSGDE.crossvalidationConfig;
+}
+
 LearnerSGDE::~LearnerSGDE() {}
+
+// -----------------------------------------------------------------------------------------------
 
 void LearnerSGDE::initialize(base::DataMatrix& psamples) {
   samples = std::make_shared<base::DataMatrix>(psamples);
@@ -262,12 +280,14 @@ void LearnerSGDE::pdf(base::DataMatrix& points, base::DataVector& res) {
   op_factory::createOperationMultipleEval(*grid, points)->eval(*alpha, res);
 }
 
-double LearnerSGDE::mean() {
-  return op_factory::createOperationFirstMoment(*grid)->doQuadrature(*alpha);
+double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
+  return op_factory::createOperationFirstMoment(grid)->doQuadrature(alpha);
 }
 
-double LearnerSGDE::variance() {
-  double secondMoment = op_factory::createOperationSecondMoment(*grid)->doQuadrature(*alpha);
+double LearnerSGDE::mean() { return mean(*grid, *alpha); }
+
+double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
+  double secondMoment = op_factory::createOperationSecondMoment(grid)->doQuadrature(alpha);
 
   // use Steiners translation theorem to compute the variance
   double firstMoment = mean();
@@ -275,7 +295,63 @@ double LearnerSGDE::variance() {
   return res;
 }
 
-void LearnerSGDE::cov(base::DataMatrix& cov) { return; }
+double LearnerSGDE::variance() { return variance(*grid, *alpha); }
+
+void LearnerSGDE::cov(base::DataMatrix& cov) {
+  size_t ndim = grid->getStorage().getDimension();
+
+  if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
+    // throw error -> covariance matrix has wrong size
+    throw base::data_exception("LearnerSGDE::cov : covariance matrix has the wrong size");
+  }
+
+  // prepare covariance marix
+  cov.setAll(0.0);
+
+  // generate 1d densities and compute means and variances
+  std::vector<double> means(ndim);
+  std::vector<double> variances(ndim);
+
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg =
+      op_factory::createOperationDensityMargTo1D(*grid);
+
+  base::Grid* marginalizedGrid = NULL;
+  base::DataVector* marginalizedAlpha = new base::DataVector(0);
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    opMarg->margToDimX(&*alpha, marginalizedGrid, marginalizedAlpha, idim);
+    // store moments
+    means[idim] = mean(*marginalizedGrid, *marginalizedAlpha);
+    variances[idim] = variance(*marginalizedGrid, *marginalizedAlpha);
+
+    delete marginalizedGrid;
+  }
+
+  // helper variables
+  std::vector<size_t> mdims(2);
+  double covij = 0.0;
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    // diagonal is equal to the variance of the marginalized densities
+    cov.set(idim, idim, variances[idim]);
+
+    for (size_t jdim = idim + 1; jdim < ndim; jdim++) {
+      // marginalize the density
+      mdims[0] = idim;
+      mdims[1] = jdim;
+      opMarg->margToDimXs(&*alpha, marginalizedGrid, marginalizedAlpha, mdims);
+      // -----------------------------------------------------
+      // compute the covariance of Cov(X_i, X_j)
+      covij = mean(*marginalizedGrid, *marginalizedAlpha) - means[idim] * means[jdim];
+      cov.set(idim, jdim, covij);
+      cov.set(jdim, idim, covij);
+      // -----------------------------------------------------
+      delete marginalizedGrid;
+    }
+  }
+
+  delete marginalizedAlpha;
+}
 
 std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {
   std::shared_ptr<base::DataVector> isamples = std::make_shared<base::DataVector>(getNsamples());

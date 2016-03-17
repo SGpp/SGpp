@@ -211,7 +211,7 @@ class HDMRAnalytic(object):
         # higher order terms terms
         for sign, pperm in fi['var']:
             grid, alpha = self.__expectation_funcs[pperm]
-            p = DataVector([x[ix] for ix in pperm])
+            p = np.array([x[ix] for ix in pperm])
             val = evalSGFunction(grid, alpha, p)
             s += sign * val
 

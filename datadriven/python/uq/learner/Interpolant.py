@@ -18,8 +18,8 @@ class Interpolant(Learner):
     def __init__(self):
         super(Interpolant, self).__init__()
         # Error per basis function
-        self.trainErrors = DataVector(0)
-        self.testErrors = DataVector(0)
+        self.trainErrors = np.array([])
+        self.testErrors = np.array([])
 
     def doLearningIteration(self, points):
         """
@@ -33,8 +33,7 @@ class Interpolant(Learner):
         # as the grids
         assert gs.getDimension() == points.getDim()
 
-        nodalValues = DataVector(gs.getSize())
-        nodalValues.setAll(0.0)
+        nodalValues = np.ndarray(gs.getSize())
 
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
@@ -138,24 +137,20 @@ class Interpolant(Learner):
         @param alpha: DataVector hierarchical coefficients
         @return: mean squared error
         """
-        points = data.getPoints()
-        values = data.getValues()
-        size = points.getNrows()
-        if size == 0:
-            return 0
+        points = data.getPoints().array()
+        values_model = data.getValues()
+        if points.shape[1] == 0:
+            return np.array([])
 
-        error = evalSGFunctionMulti(self.grid, alpha, points)
+        values_surrogate = evalSGFunctionMulti(self.grid, alpha, points)
         # compute L2 error
-        error.sub(values)
-        error.sqr()
-
-        return error
+        return np.sqrt((values_surrogate - values_model) ** 2)
 
     def getSize(self, dtype="train"):
         if dtype == "train":
-            return len(self.trainErrors)
+            return self.trainErrors.shape[0]
         else:
-            return len(self.testErrors)
+            return self.testErrors.shape[0]
 
     def getL2NormError(self, dtype="train"):
         """
