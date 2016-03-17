@@ -229,9 +229,8 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
   std::vector<double> means(ndim);
   std::vector<double> variances(ndim);
 
-  GaussianKDE copyKDE(*this);
-  std::unique_ptr<OperationDensityMarginalizeKDE> opMarg =
-      op_factory::createOperationDensityMarginalizeKDE(copyKDE);
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg =
+      op_factory::createOperationDensityMarginalizeKDE(*this);
   GaussianKDE kdeMarginalized;
 
   for (size_t idim = 0; idim < ndim; idim++) {

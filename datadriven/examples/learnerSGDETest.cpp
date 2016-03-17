@@ -70,9 +70,9 @@ int main(int argc, char** argv) {
   std::cout << covSgde.toString() << std::endl;
 
   sgpp::datadriven::GaussianKDE kde(samples);
-  //  sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
-  //  kde.cov(covKDE);
-  //  std::cout << covKDE.toString() << std::endl;
+  sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
+  kde.cov(covKDE);
+  std::cout << covKDE.toString() << std::endl;
 
   sgpp::base::DataVector x(learner.getDim());
 
