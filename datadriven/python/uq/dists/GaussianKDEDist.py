@@ -1,8 +1,8 @@
 from Dist import Dist
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 from pysgpp import (DataVector, DataMatrix, GaussianKDE,
-    createOperationRosenblattTransformationKDE,
-    createOperationInverseRosenblattTransformationKDE)
+                    createOperationRosenblattTransformationKDE,
+                    createOperationInverseRosenblattTransformationKDE)
 import numpy as np
 
 from EstimatedDist import EstimatedDist
@@ -24,22 +24,16 @@ class GaussianKDEDist(EstimatedDist):
 
     def pdf(self, x):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
+        if isNumerical(x):
+            x = np.array([[x]])
+        elif isList(x) or len(x.shape) == 1:
+            x = np.array([x]).reshape(len(x), 1)
 
-        if isinstance(x, DataMatrix):
-            A = x
-            res = DataVector(A.getNrows())
-            res.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            res = DataVector(1)
-            res.setAll(0)
-
-        self.dist.pdf(A, res)
+        # transform the samples to the unit hypercube
+        x_matrix = DataMatrix(x)
+        res_vec = DataVector(x.shape[0])
+        self.dist.pdf(x_matrix, res_vec)
+        res = res_vec.array()
 
         if len(res) == 1:
             return res[0]
@@ -123,15 +117,6 @@ class GaussianKDEDist(EstimatedDist):
         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
         self.dist.corrcoef(corrMatrix)
         return corrMatrix.array()
-
-    def getBounds(self):
-        return self.bounds
-
-    def getDim(self):
-        return self.dim
-
-    def getDistributions(self):
-        return [self]
 
     def __str__(self):
         return "GaussianKDEDist"

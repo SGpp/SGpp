@@ -6,7 +6,7 @@ from pysgpp import (createOperationQuadrature,
                     createOperationInverseRosenblattTransformation1D,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
-                    DataMatrix,
+                    DataMatrix, DataVector,
                     LearnerSGDEConfiguration,
                     LearnerSGDE)
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
@@ -40,6 +40,9 @@ class SGDEdist(EstimatedDist):
         super(SGDEdist, self).__init__(learner.getSamples().array())
 
         self.dist = learner
+        self.grid = learner.getGrid()
+        self.alpha = learner.getSurpluses()
+
         if self.dim != learner.getDim():
             raise AttributeError("the dimensionality of the domain differs from the one of the grid")
 
@@ -85,9 +88,12 @@ class SGDEdist(EstimatedDist):
 
         # transform the samples to the unit hypercube
         x_unit = DataMatrix(self.trans.probabilisticToUnitMatrix(x))
+        fx_vec = DataVector(x.shape[0])
 
         # evaluate the sparse grid density
-        fx = 1. / self.trans.vol() * self.dist.pdf(x_unit)
+        self.dist.pdf(x_unit, fx_vec)
+        
+        fx = 1. / self.trans.vol() * fx_vec.array()
 
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
@@ -177,22 +183,16 @@ class SGDEdist(EstimatedDist):
         self.dist.cov(covMatrix)
         return covMatrix.array()
 
+    def corrcoef(self):
+        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
+        self.dist.corrcoef(corrMatrix)
+        return corrMatrix.array()
+
+
     def rvs(self, n=1):
         # use inverse Rosenblatt transformation to get samples
         uniform_samples = np.random.rand((n, self.dim))
         return self.ppf(uniform_samples)
-
-    def getDistributions(self):
-        return [self]
-
-    def getBounds(self):
-        return self.trans.getBounds()
-
-    def getDim(self):
-        return self.dim
-
-    def getSamples(self):
-        return self.trainData
 
     def __str__(self):
         return "SGDE"
