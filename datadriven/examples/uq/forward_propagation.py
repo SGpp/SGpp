@@ -84,9 +84,6 @@ config = {"grid_dim": 2,
           "crossValidation_silent": False}
 distSGDE = analysis.estimateDensity(dtype="sgde", config=config)
 
-print distSGDE.cov()
-# print distKDE.cov()
-
 # ---------------------------------------------------------------------------
 print distSGDE.getBounds(), distSGDE.getSamples().shape, distSGDE.pdf(1.79753700978)
 y = analysis.eval(analysis.generateUnitSamples())
