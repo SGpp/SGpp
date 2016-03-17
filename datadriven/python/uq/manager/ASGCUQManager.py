@@ -31,6 +31,8 @@ class ASGCUQManager(object):
         self.__knowledgeTypes = [KnowledgeTypes.SIMPLE]
         self.__timeStepsOfInterest = [0]
 
+        self.verbose = True
+
     def hasMoreSamples(self):
         return self.sampler.hasMoreSamples()
 
@@ -139,14 +141,16 @@ class ASGCUQManager(object):
     def learnDataWithoutTest(self, *args, **kws):
         # learn data
         self.learner.grid = self.sampler.getGrid()
-        print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
-                                          self.sampler.getGrid().getSize())
+        if self.verbose:
+            print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
+                                              self.sampler.getGrid().getSize())
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             print KnowledgeTypes.toString(dtype)
             # do the learning
             for t, dataContainer in values.items():
-                print "t = %g, " % t,
+                if self.verbose:
+                    print "t = %g, " % t,
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer
@@ -165,14 +169,17 @@ class ASGCUQManager(object):
             print
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
-        print "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
-                                                    self.sampler.getGrid().getSize())
+        if self.verbose:
+            print "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
+                                                        self.sampler.getGrid().getSize())
         # learn data
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             # do the learning
             for t, dataContainer in values.items():
-                print "t = %g, " % t,
+                if self.verbose:
+                    print "t = %g, " % t,
+
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer

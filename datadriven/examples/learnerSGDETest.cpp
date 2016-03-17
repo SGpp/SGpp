@@ -6,6 +6,7 @@
 #include <string>
 
 #include "sgpp/globaldef.hpp"
+#include "sgpp/base/datatypes/DataMatrix.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/datadriven/application/LearnerSGDE.hpp"
 #include "sgpp/base/grid/Grid.hpp"
@@ -23,7 +24,7 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
-  gridConfig.level_ = 4;
+  gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
@@ -48,8 +49,9 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
-  crossvalidationConfig.enable_ = true;
+  crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
+  crossvalidationConfig.lambda_ = 3.16228e-06;
   crossvalidationConfig.lambdaStart_ = 1e-1;
   crossvalidationConfig.lambdaEnd_ = 1e-10;
   crossvalidationConfig.lambdaSteps_ = 3;
@@ -63,7 +65,15 @@ int main(int argc, char** argv) {
                                         crossvalidationConfig);
   learner.initialize(samples);
 
+  sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
+  learner.cov(covSgde);
+  std::cout << covSgde.toString() << std::endl;
+
   sgpp::datadriven::GaussianKDE kde(samples);
+  //  sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
+  //  kde.cov(covKDE);
+  //  std::cout << covKDE.toString() << std::endl;
+
   sgpp::base::DataVector x(learner.getDim());
 
   for (size_t i = 0; i < x.getSize(); i++) {

@@ -77,7 +77,7 @@ class ASGCAnalysis(Analysis):
         grid = self.__knowledge.getGrid(qoi)
         for t in ts:
             alpha = self.__knowledge.getAlpha(qoi, t, dtype)
-            ans[t] = evalSGFunction(grid, alpha, DataMatrix(samples)).array()
+            ans[t] = evalSGFunction(grid, alpha, samples)
 
         if len(ts) == 1:
             ans = ans[ts[0]]
@@ -89,14 +89,8 @@ class ASGCAnalysis(Analysis):
     # -----------------------------------------------------------------
     def generateUnitSamples(self, n=10000):
         samples = self.__params.getIndependentJointDistribution().rvs(n)
-        transformed_samples = DataMatrix(samples.shape[0], samples.shape[1])
         trans = self.__params.getJointTransformation()
-        for i, sample in enumerate(samples):
-            q = trans.probabilisticToUnit(sample)
-            transformed_samples.setRow(i, DataVector(list(q)))
-
-        # evaluate the function
-        return transformed_samples
+        return trans.probabilisticToUnitMatrix(samples)
 
     def __estimateDensityByConfig(self, dtype, samples, config={}, *args, **kws):
         if dtype == "gaussianKDE":
