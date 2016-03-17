@@ -7,16 +7,16 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationRhsMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationDensityMPI.hpp>
-
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
+
 MPISlaveOperation* create_mpi_operation(char *classname) {
   std::cout << classname << std::endl;
-  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi25OperationCreateGraphSlave")
+  if (std::strcmp(classname, "OperationCreateGraphSlave")
       == 0)  {
-    return new OperationCreateGraphSlave();
+    return OperationCreateGraphMPI::create_slave();
   }
   if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi17OperationRhsSlave") == 0)  {
     return new OperationRhsSlave();

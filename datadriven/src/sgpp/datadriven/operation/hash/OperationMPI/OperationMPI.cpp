@@ -26,10 +26,10 @@ MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
     MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, MPI_COMM_WORLD);
   }
 
-  char *class_message = new char[slave_class_name.size()];
-  snprintf(class_message, slave_class_name.size(), "%s", slave_class_name.c_str());
+  char *class_message = new char[slave_class_name.size() + 1];
+  snprintf(class_message, slave_class_name.size() + 1, "%s", slave_class_name.c_str());
   for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
-    MPI_Send(class_message, static_cast<int>(slave_class_name.size()),
+    MPI_Send(class_message, static_cast<int>(slave_class_name.size() + 1),
              MPI_CHAR, i, 1, MPI_COMM_WORLD);
   }
   delete [] class_message;
