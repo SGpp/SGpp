@@ -393,7 +393,7 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
 bool StaticParameterTunerStatisticsTupleComparer(
     std::tuple<sgpp::base::OCLOperationConfiguration, double, double> left,
     std::tuple<sgpp::base::OCLOperationConfiguration, double, double> right) {
-  return std::get<1>(left) > std::get<1>(right);
+  return std::get<1>(left) < std::get<1>(right);
 }
 
 void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName,
