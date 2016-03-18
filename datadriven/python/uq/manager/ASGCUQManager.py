@@ -146,7 +146,8 @@ class ASGCUQManager(object):
                                               self.sampler.getGrid().getSize())
         for dtype, values in self.dataContainer.items():
             knowledge = {}
-            print KnowledgeTypes.toString(dtype)
+            if self.verbose:
+                print KnowledgeTypes.toString(dtype)
             # do the learning
             for t, dataContainer in values.items():
                 if self.verbose:

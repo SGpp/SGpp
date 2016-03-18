@@ -32,6 +32,7 @@ class UQBuilder(object):
         Constructor
         """
         self.__filename = None
+        self.__verbose = False
         self.__specification = UQSpecification()
 
     def withPreprocessor(self, transformation):
@@ -111,6 +112,9 @@ class UQBuilder(object):
         self.__specification.setSaveAfterEachRun(True)
         return self
 
+    def verbose(self):
+        self.__verbose = True
+
     def fromFile(self, filename):
         """
         If the given file name exists, then the informations it
@@ -141,4 +145,5 @@ class UQBuilder(object):
             else:
                 print "WARNING: the specified file does not exist ('%s') in cwd '%s'" % (filename, os.getcwd())
 
+        ans.setVerbose(self.__verbose)
         return ans

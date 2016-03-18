@@ -95,7 +95,7 @@ class AdmissibleSetDescriptor(object):
         return self
 
     def refineInnerNodes(self):
-        admissibleSet = self._refinement.getAdmissibleSetCreator()
+        admissibleSet = self._refinement.getAdmissibleSet()
         admissibleSet.refineInnerNodes = True
         return self
 

@@ -532,11 +532,12 @@ class UQSetting(object):
             if self._verbose:
                 print "-" * 60
                 print "Run: %i/%i (%i)" % (i + 1, len(samples), self.getSize())
-                ret = self.run(sample, *args, **kws)
 
-                # check if run was successful
-                if ret == 1:
-                    print "Warning: invalid sample %s" % sample
+            ret = self.run(sample, *args, **kws)
+
+            # check if run was successful
+            if ret == 1:
+                print "Warning: invalid sample %s" % sample
 
         if self._verbose:
             print "-" * 60

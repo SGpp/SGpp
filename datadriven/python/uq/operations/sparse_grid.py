@@ -114,6 +114,7 @@ def isValid1d(grid, level, index):
 def isValid(grid, gp):
     valid = True
     d = 0
+
     while valid and d < gp.getDimension():
         valid = isValid1d(grid, gp.getLevel(d), gp.getIndex(d))
         d += 1
@@ -122,13 +123,12 @@ def isValid(grid, gp):
     if valid:
         minLevel = 0 if hasBorder(grid) else 1
         for d in xrange(gp.getDimension()):
-            if gp.getCoord(d) > 1 or gp.getCoord(d) < 0:
-                x = [gp.getCoord(d) for d in xrange(gp.getDimension())]
-                level = [gp.getLevel(d) for d in xrange(gp.getDimension())]
-                index = [gp.getIndex(d) for d in xrange(gp.getDimension())]
-                raise AttributeError('grid point out of range %s, (%s, %s), \
-                                    minLevel = %i' % (x, level, index,
-                                                      minLevel))
+            x = gp.getCoord(d)
+            if x > 1 or x < 0:
+                raise AttributeError('grid point out of range %s, (l=%s, i=%s), minLevel = %i' % (x,
+                                                                                                  gp.getLevel(d),
+                                                                                                  gp.getIndex(d),
+                                                                                                  minLevel))
     return valid
 
 
@@ -285,22 +285,28 @@ def insertTruncatedBorder(grid, gp):
     ans = []
     while len(gps) > 0:
         gp = gps.pop()
+        p = DataVector(gp.getDimension())
+        gp.getCoords(p)
         for d in xrange(gs.getDimension()):
             # right border in d
             rgp = HashGridIndex(gp)
             gs.right_levelzero(rgp, d)
             # insert the point
             if not gs.has_key(rgp):
-                ans += insertPoint(grid, rgp)
-                gps.append(rgp)
+                added_grid_points = insertPoint(grid, rgp)
+                if len(added_grid_points) > 0:
+                    ans += added_grid_points
+                    gps.append(rgp)
 
             # left border in d
             lgp = HashGridIndex(gp)
             gs.left_levelzero(lgp, d)
             # insert the point
-            if not gs.has_key(rgp):
-                ans += insertPoint(grid, lgp)
-                gps.append(lgp)
+            if not gs.has_key(lgp):
+                added_grid_points = insertPoint(grid, lgp)
+                if len(added_grid_points) > 0:
+                    ans += added_grid_points
+                    gps.append(lgp)
     return ans
 
 
@@ -323,7 +329,6 @@ def insertPoint(grid, gp):
 
 def isRefineable(grid, gp):
     gs = grid.getStorage()
-
     for d in xrange(gs.getDimension()):
         # left child in dimension dim
         gpl = HashGridIndex(gp)
