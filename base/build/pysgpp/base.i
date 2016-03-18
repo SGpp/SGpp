@@ -145,6 +145,9 @@ namespace std {
 %include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
 %include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
+%include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
+
 
 // and the rest
 %apply std::string *INPUT { std::string& istr };

@@ -3,11 +3,12 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
-from pysgpp.extensions.datadriven.uq.operations.general import isList
+from pysgpp.extensions.datadriven.uq.operations.general import isList, \
+    isNumerical
 
 class EstimatedDist(Dist):
 
-    def __init__(self, trainData):
+    def __init__(self, trainData, bounds=None):
         super(EstimatedDist, self).__init__()
 
         if isList(trainData) or len(trainData.shape) == 1:
@@ -15,31 +16,47 @@ class EstimatedDist(Dist):
 
         self.trainData = trainData
         self.dim = trainData.shape[1]
-        self.trans = self.computeLinearTransformation(trainData)
+        self.trans = None
+        if bounds is not None:
+            self.trans = self.computeLinearTransformation(bounds)
+            self.bounds = self.trans.getBounds()
+        else:
+            self.bounds = [[0, 1]] * self.dim
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
         return self.ppf(DataMatrix(unif))
 
     @classmethod
-    def computeLinearTransformation(self, trainData):
-        num_dims = trainData.shape[1]
-        bounds = np.ndarray((num_dims, 2))
-        bounds[:, 0] = trainData.min(axis=0) * -0.95
-        bounds[:, 1] = trainData.max(axis=0) * 1.05
+    def computeLinearTransformation(self, bounds):
+        if bounds.shape[1] != 2:
+            raise AttributeError("EstimatedDist - bounds have the wrong shape")
 
         # init linear transformation
         trans = JointTransformation()
-        for idim in xrange(num_dims):
+        for idim in xrange(bounds.shape[0]):
             trans.add(LinearTransformation(bounds[idim, 0], bounds[idim, 1]))
 
         return trans
+
+    def _convertEvalPoint(self, x):
+        # convert the parameter to the right format
+        if self.dim == 1:
+            if isNumerical(x):
+                x = np.array([[x]])
+            elif isList(x) or len(x.shape) == 1:
+                x = np.array([x]).reshape(len(x), 1)
+        else:
+            x = np.array(x)
+            if len(x.shape) == 1:
+                x = np.array([x])
+        return x
 
     def getDistributions(self):
         return [self]
 
     def getBounds(self):
-        return self.trans.getBounds()
+        return self.bounds
 
     def getDim(self):
         return self.dim
