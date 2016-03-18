@@ -44,7 +44,7 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     Z = np.zeros(n * n).reshape(n, n)
     for i in xrange(len(X)):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f(evalSGFunction(grid, alpha, DataVector([x, y])))
+            Z[i, j] = f(evalSGFunction(grid, alpha, np.array([x, y])))
 
     # get grid points
     gs = grid.getStorage()

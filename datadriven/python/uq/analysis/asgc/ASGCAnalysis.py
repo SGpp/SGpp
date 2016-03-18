@@ -65,6 +65,15 @@ class ASGCAnalysis(Analysis):
     def getUQManager(self):
         return self.__uqManager
 
+    def getGrid(self):
+        qoi = self.__uqManager.getQoI()
+        return self.__knowledge.getGrid(qoi)
+
+    def getSurpluses(self):
+        qoi = self.__uqManager.getQoI()
+        return self.__knowledge.getAlpha(qoi=qoi)
+
+
     def setVerbose(self, verbose):
         self.__verbose = verbose
 

@@ -171,22 +171,25 @@ class SGDEdist(EstimatedDist):
                 return B.array()
 
     def mean(self):
-        return createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
+        ans = createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
+        return ans / self.trans.vol()
 
     def var(self):
         second_moment = createOperationSecondMoment(self.grid).doQuadrature(self.alpha)
         first_moment = self.mean()
-        return second_moment - first_moment ** 2
+        ans = second_moment - first_moment ** 2
+        return ans / self.trans.vol()
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
         self.dist.cov(covMatrix)
-        return covMatrix.array()
+        return covMatrix.array() / self.trans.vol()
 
     def corrcoef(self):
-        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.corrcoef(corrMatrix)
-        return corrMatrix.array()
+        raise NotImplementedError
+#         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
+#         self.dist.corrcoef(corrMatrix)
+#         return corrMatrix.array()
 
 
     def rvs(self, n=1):

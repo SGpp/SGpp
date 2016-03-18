@@ -44,6 +44,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     n_alpha = DataVector(n_gs.getSize())
     n_alpha.setAll(0.0)
 
+    basis = getBasis(grid)
     # set function values for n_alpha
     for i in xrange(gs.getSize()):
         gp = gs.get(i)
@@ -66,11 +67,11 @@ def __doMarginalize(grid, alpha, dd, measure=None):
         else:
             dist, trans = measure[0][dd], measure[1][dd]
             lf = LinearGaussQuadratureStrategy([dist], [trans])
-            basis = getBasis(grid)
             gpdd = HashGridIndex(1)
             gpdd.set(0, dd_level, dd_index)
             q, err = lf.computeLinearFormByList([gpdd], basis)
-            q = q[0]
+            q = q[0] * trans.vol()
+            err *= trans.vol()
 
         # search for the corresponding index
         j = n_gs.seq(n_gp)
