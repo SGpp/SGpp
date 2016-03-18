@@ -36,8 +36,8 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, learner, trainData):
-        super(SGDEdist, self).__init__(trainData)
+    def __init__(self, learner, trainData, bounds=None):
+        super(SGDEdist, self).__init__(trainData, bounds)
 
         self.dist = learner
         self.grid = learner.getGrid()
@@ -47,7 +47,7 @@ class SGDEdist(EstimatedDist):
             raise AttributeError("the dimensionality of the domain differs from the one of the grid")
 
     @classmethod
-    def byLearnerSGDEConfig(cls, samples, config={}, *args, **kws):
+    def byLearnerSGDEConfig(cls, samples, bounds=None, config={}):
         """
 
         @param cls:
@@ -70,24 +70,28 @@ class SGDEdist(EstimatedDist):
         if len(samples.shape) == 1:
             samples = samples.reshape(len(samples), 1)
 
-        trans = cls.computeLinearTransformation(samples)
-        unit_samples = DataMatrix(trans.probabilisticToUnitMatrix(samples))
+        if bounds is not None:
+            trans = cls.computeLinearTransformation(bounds)
+            unit_samples = trans.probabilisticToUnitMatrix(samples)
+        else:
+            unit_samples = samples
+
+        unit_samples = DataMatrix(unit_samples)
         # --------------------------------------------------------------------
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples)
 
-        return cls(learner, samples)
+        return cls(learner, samples, bounds)
 
     def pdf(self, x):
         # convert the parameter to the right format
-        if isNumerical(x):
-            x = np.array([[x]])
-        elif isList(x) or len(x.shape) == 1:
-            x = np.array([x]).reshape(len(x), 1)
+        x = self._convertEvalPoint(x)
 
         # transform the samples to the unit hypercube
-        x_unit = DataMatrix(self.trans.probabilisticToUnitMatrix(x))
+        if self.trans is not None:
+            x = self.trans.probabilisticToUnitMatrix(x)
+        x_unit = DataMatrix(x)
         fx_vec = DataVector(x.shape[0])
 
         # evaluate the sparse grid density
@@ -105,13 +109,13 @@ class SGDEdist(EstimatedDist):
 
     def cdf(self, x):
         # convert the parameter to the right format
-        if isNumerical(x):
-            x = np.array([[x]])
-        elif isList(x) or len(x.shape) == 1:
-            x = np.array([x]).reshape(len(x), 1)
+        x = self._convertEvalPoint(x)
 
         # transform the samples to the unit hypercube
-        x_unit = self.trans.probabilisticToUnitMatrix(x)
+        if self.trans is not None:
+            x_unit = self.trans.probabilisticToUnitMatrix(x)
+        else:
+            x_unit = x
 
         # do the transformation
         if self.dim == 1:
@@ -140,10 +144,7 @@ class SGDEdist(EstimatedDist):
 
     def ppf(self, x):
         # convert the parameter to the right format
-        if isNumerical(x):
-            x = np.array([[x]])
-        elif isList(x) or len(x.shape) == 1:
-            x = np.array([x]).reshape(len(x), 1)
+        x = self._convertEvalPoint(x)
 
         # do the transformation
         if self.dim == 1:
@@ -172,18 +173,27 @@ class SGDEdist(EstimatedDist):
 
     def mean(self):
         ans = createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
-        return ans / self.trans.vol()
+        if self.trans is not None:
+            ans *= self.trans.vol()
+        return ans
 
     def var(self):
         second_moment = createOperationSecondMoment(self.grid).doQuadrature(self.alpha)
         first_moment = self.mean()
         ans = second_moment - first_moment ** 2
-        return ans / self.trans.vol()
+
+        if self.trans is not None:
+            ans *= self.trans.vol() ** 2
+
+        return ans
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
         self.dist.cov(covMatrix)
-        return covMatrix.array() / self.trans.vol()
+        ans = covMatrix.array()
+        if self.trans is not None:
+            ans *= self.trans.vol()
+        return ans
 
     def corrcoef(self):
         raise NotImplementedError

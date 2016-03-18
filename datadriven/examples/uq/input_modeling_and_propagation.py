@@ -9,7 +9,7 @@ from pysgpp import DataMatrix
 import numpy as np
 
 # -------------------- prepare data
-U = J([TNormal(0.5, 0.06, 0, 1)])
+U = Multivariate_J([TNormal(0.5, 0.06, 0, 1)])
 np.random.seed(12345)
 samples = DataMatrix(U.rvs(1000))
 # ---------- using SGDE from SG++ ------------------------

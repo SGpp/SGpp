@@ -12,8 +12,8 @@ import numpy as np
 def plotDensity3d(U, n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    xlim = [0, 1]  # U.getBounds()[0]
-    ylim = [0, 1]  # U.getBounds()[1]
+    xlim = U.getBounds()[0]
+    ylim = U.getBounds()[1]
     X = np.linspace(xlim[0], xlim[1], n)
     Y = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(X, Y)
@@ -23,14 +23,15 @@ def plotDensity3d(U, n=50):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
             Z[i, j] = U.pdf([x, y])
 
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                           cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    ax.plot_wireframe(X, Y, Z)
+#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+#                            cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
     # ax.set_zlim(0, 2)
 
-    fig.colorbar(surf, shrink=0.5, aspect=5)
+#     fig.colorbar(surf, shrink=0.5, aspect=5)
 
     return fig, ax
 
