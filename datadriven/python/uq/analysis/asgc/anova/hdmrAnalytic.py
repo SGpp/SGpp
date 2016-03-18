@@ -72,16 +72,20 @@ class HDMRAnalytic(object):
         self.__estimation = AnalyticEstimationStrategy()
 
     def __computeMean(self):
-        print "estimate mean: ",
+        if self._verbose:
+            print "estimate mean: ",
         self.__E, _ = self.__estimation.mean(self.__grid, self.__alpha,
                                              self.__U, self.__T)
-        print self.__E
+        if self._verbose:
+            print self.__E
 
     def __computeVariance(self):
-        print "estimate variance: ",
+        if self._verbose:
+            print "estimate variance: ",
         self.__V, _ = self.__estimation.var(self.__grid, self.__alpha,
                                             self.__U, self.__T, self.__E)
-        print self.__V
+        if self._verbose:
+            print self.__V
 
     def getSortedPermutations(self, keys):
         """

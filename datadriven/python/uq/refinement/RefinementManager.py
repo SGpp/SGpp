@@ -263,7 +263,9 @@ class RefinementManager(object):
                      len(refinedPoints), vi)
 
             # refine the grid
+            oldSize = grid.getSize()
             nps = self._localRefinementStrategy.refine(grid, gp)
+            assert grid.getSize() == oldSize + len(nps)
 
             # ## set surplus vector such that just the desired point
             # ## is going to be refined and nothing else
@@ -298,9 +300,6 @@ class RefinementManager(object):
         if not simulate:
             self._admissibleSet.update(grid, newGridPoints)
 
-        # make sure that I have collected all the new grid points
-        assert len(newGridPoints) == gs.getSize() - n1
-
 #         if not simulate:
 #             import matplotlib.pyplot as plt
 #             gs = grid.getStorage()
@@ -326,5 +325,8 @@ class RefinementManager(object):
 #             plt.ylim(0, 1)
 #             plt.show()
 #             plt.savefig('%i.png' % learner.iteration)
+
+        # make sure that I have collected all the new grid points
+        assert len(newGridPoints) == gs.getSize() - n1
 
         return newGridPoints

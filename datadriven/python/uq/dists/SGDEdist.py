@@ -36,8 +36,8 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, learner):
-        super(SGDEdist, self).__init__(learner.getSamples().array())
+    def __init__(self, learner, trainData):
+        super(SGDEdist, self).__init__(trainData)
 
         self.dist = learner
         self.grid = learner.getGrid()
@@ -77,7 +77,7 @@ class SGDEdist(EstimatedDist):
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples)
 
-        return cls(learner)
+        return cls(learner, samples)
 
     def pdf(self, x):
         # convert the parameter to the right format
