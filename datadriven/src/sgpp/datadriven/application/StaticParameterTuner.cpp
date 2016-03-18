@@ -478,7 +478,8 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     throw base::application_exception(message.c_str());
   } else {
     if (verbose) {
-      std::cout << "verification passed" << std::endl;
+      std::cout << "verification passed (mse: " << mse
+                << ", largestDifference: " << largestDifference << ")" << std::endl;
     }
   }
 }
