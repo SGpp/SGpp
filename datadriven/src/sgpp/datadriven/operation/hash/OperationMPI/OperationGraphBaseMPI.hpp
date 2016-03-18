@@ -10,27 +10,16 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
 /// Base class for kNN graph operations with MPI
-class OperationGraphMethodMPI : public MPIOperation {
- public:
-  virtual ~OperationGraphMethodMPI(void) {
-  }
-
- protected:
-  sgpp::base::DataMatrix &data;
-  size_t datasize;
-  size_t dimensions;
-  size_t k;
-
-  OperationGraphMethodMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k,
-                          std::string slave_class_id)
-      : MPIOperation(slave_class_id), data(data),
-        datasize(data.getSize()), dimensions(dimensions), k(k) {
+class OperationGraphMethodMPI : virtual public MPIOperation {
+ private:
+  void send_dataset(void) {
     // Sending dataset to slaves
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(data.getPointer(), static_cast<int>(data.getSize()), MPI_DOUBLE,
@@ -42,8 +31,27 @@ class OperationGraphMethodMPI : public MPIOperation {
   }
 
  protected:
+  sgpp::base::DataMatrix &data;
+  size_t datasize;
+  size_t dimensions;
+  size_t k;
+  /// Protected constructor - creates slave operations and sends the dataset to them
+  OperationGraphMethodMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k,
+                          std::string slave_class_id)
+      : MPIOperation(slave_class_id), data(data),
+        datasize(data.getSize()), dimensions(dimensions), k(k) {
+    send_dataset();
+  }
+  /// Protected constructor - expects slaves already exist and just sends the dataset to them
+  OperationGraphMethodMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k)
+      : MPIOperation(), data(data), datasize(data.getSize()), dimensions(dimensions),
+        k(k) {
+    send_dataset();
+  }
+
+ protected:
   /// Slave base class for kNN graph operations
-  class OperationGraphMethodSlave : public MPISlaveOperation {
+  class OperationGraphMethodSlave : virtual public MPISlaveOperation {
    protected:
     bool verbose;
     int k;
@@ -77,6 +85,9 @@ class OperationGraphMethodMPI : public MPIOperation {
     }
     virtual void slave_code(void) = 0;
   };
+ public:
+  virtual ~OperationGraphMethodMPI(void) {
+  }
 };
 }  // namespace clusteringmpi
 }  // namespace datadriven

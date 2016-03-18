@@ -17,13 +17,9 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 /// Base class for grid releated mpi operations
-class OperationGridMethod : public MPIOperation {
- protected:
-  size_t gridsize;
-
-  /// Protected constructor - sends grid to all slave operations
-  OperationGridMethod(base::Grid &grid, std::string slave_id)
-      : MPIOperation(slave_id) {
+class OperationGridMethod : virtual public MPIOperation {
+ private:
+  void send_grid(base::Grid &grid) {
     // Store grid in integer array
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     gridsize = gridStorage.getSize();
@@ -51,8 +47,21 @@ class OperationGridMethod : public MPIOperation {
   }
 
  protected:
+  size_t gridsize;
+
+  /// Protected constructor - creates slave operations and sends the grid to them
+  OperationGridMethod(base::Grid &grid, std::string slave_id)
+      : MPIOperation(slave_id) {
+    send_grid(grid);
+  }
+  /// Protected constructor - expects slaves already exist and just sends the grid to them
+  explicit OperationGridMethod(base::Grid &grid) : MPIOperation() {
+    send_grid(grid);
+  }
+
+ protected:
   /// Abstract base class for grid related slave operations
-  class OperationGridMethodSlave : public MPISlaveOperation {
+  class OperationGridMethodSlave : virtual public MPISlaveOperation {
    protected:
     bool verbose;
     int grid_dimensions;
