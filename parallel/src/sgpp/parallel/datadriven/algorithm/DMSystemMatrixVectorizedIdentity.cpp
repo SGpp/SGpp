@@ -29,20 +29,23 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(
         "DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
   }
 
-  this->dataset_ = new sgpp::base::DataMatrix(trainData);
-  this->numTrainingInstances_ = this->dataset_->getNrows();
+  // already initialized in constructor DMSystemMatrixBase
+  //  this->dataset_ = new sgpp::base::DataMatrix(trainData);
+  this->numTrainingInstances_ = this->dataset_.getNrows();
   this->numPatchedTrainingInstances_ =
-      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(this->dataset_, vecMode_);
 
   if (this->vecMode_ != ArBB) {
-    this->dataset_->transpose();
+    this->dataset_.transpose();
   }
 
   this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_,
-                                                                     this->dataset_);
+                                                                     &this->dataset_);
 }
 
-DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() { delete this->dataset_; }
+DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() {
+  //    delete this->dataset_;
+}
 
 void DMSystemMatrixVectorizedIdentity::mult(sgpp::base::DataVector& alpha,
                                             sgpp::base::DataVector& result) {
