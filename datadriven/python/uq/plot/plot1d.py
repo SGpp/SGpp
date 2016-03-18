@@ -35,7 +35,7 @@ def plotNodal1d(grid, alpha):
 
 def plotSG1d(grid, alpha, n=1000, f=lambda x: x, **kws):
     x = np.linspace(0, 1, n)
-    y = [f(evalSGFunction(grid, alpha, DataVector([xi])))
+    y = [f(evalSGFunction(grid, alpha, np.array([xi])))
          for xi in x]
 
     plt.plot(x, y, **kws)
@@ -88,7 +88,9 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
             plt.ylim(0, 1)
             plt.xlim(-0.2, 2)
             plt.legend(plots,
-                       [r"$S_{%s}$" % (name,) for name in names[::-1]])
+                       [r"$S_{%s}$ = %g" % (name, value)
+                        for (name, value) in zip(names[::-1],
+                                                 sobolIndices[::-1])])
 
     else:
         y0 = np.zeros(sobolIndices.shape[0])
