@@ -1,52 +1,43 @@
-from pysgpp import (RegularGridConfiguration, Linear, LinearBoundary,
-                    AdpativityConfiguration,
-                    SLESolverConfiguration,
-                    RegularizationConfiguration, Laplace,
-                    LearnerSGDEConfiguration,
-                    DataVector, DataMatrix, Grid, LearnerSGDE)
-from pysgpp.extensions.datadriven.uq.dists import SGDEdist, TNormal, J
-from pysgpp import DataMatrix
+from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+
 import numpy as np
+import matplotlib.pyplot as plt
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d
 
 # -------------------- prepare data
-U = Multivariate_J([TNormal(0.5, 0.06, 0, 1)])
+C = np.array([[0.1, 0.08],
+              [0.08, 0.1]]) / 10.
+U = MultivariateNormal([0.5, 0.5], C, 0, 1)
+
 np.random.seed(12345)
-samples = DataMatrix(U.rvs(1000))
+samples = U.rvs(1000)
+testSamples = U.rvs(1000)
 # ---------- using SGDE from SG++ ------------------------
-gridConfig = RegularGridConfiguration()
-gridConfig.dim_ = U.getDim()
-gridConfig.level_ = 6
-gridConfig.type_ = LinearBoundary
+dist = SGDEdist.byLearnerSGDEConfig(samples,
+                                    config={"grid_level": 6,
+                                            "grid_type": "Linear",
+                                            "refinement_numSteps": 0,
+                                            "refinement_numPoints": 3,
+                                            "regularization_type": "Laplace",
+                                            "crossValidation_lambda": 0.000562341,
+                                            "crossValidation_enable": False,
+                                            "crossValidation_kfold": 5,
+                                            "crossValidation_silent": False},
+                                    bounds=U.getBounds())
 
-adaptConfig = AdpativityConfiguration()
-adaptConfig.noPoints_ = 10
-adaptConfig.numRefinements_ = 0
+fig, ax = plotDensity3d(U)
+ax.set_title("true density")
+fig.show()
+fig, ax = plotDensity3d(dist)
+ax.set_title("estimated density")
+fig.show()
 
-solverConfig = SLESolverConfiguration()
-solverConfig.maxIterations_ = 100
-solverConfig.eps_ = 1e-10
-solverConfig.threshold_ = 1e-10
+print "mean = %g" % dist.mean()
+print "var = %g" % dist.var()
+print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
+print "CE = %g" % dist.crossEntropy(testSamples)
+print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+# print "|C - C_tilde| = %g" % np.linalg.norm(C - dist.cov())
 
-regularizationConfig = RegularizationConfiguration()
-regularizationConfig.regType_ = Laplace
-
-learnerConfig = LearnerSGDEConfiguration()
-learnerConfig.doCrossValidation_ = False
-learnerConfig.kfold_ = 0
-learnerConfig.lambdaStart_ = 1e-1
-learnerConfig.lambdaEnd_ = 1e-10
-learnerConfig.lambdaSteps_ = 0
-learnerConfig.logScale_ = True
-learnerConfig.shuffle_ = False
-learnerConfig.seed_ = 1234567
-learnerConfig.silent_ = False
-
-learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
-                      regularizationConfig, learnerConfig)
-learner.initialize(samples)
-grid = learner.getGrid()
-print learner.getDim(), learner.getNsamples()
-print learner.getGrid()
-print learner.getSurpluses()
-# dist = SGDEdist.byLearnerSGDE(samples, gridConfig, adaptConfig, solverConfig,
-#                               regularizationConfig, learnerConfig)
+plt.show()
