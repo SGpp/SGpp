@@ -18,8 +18,8 @@ MPISlaveOperation* create_mpi_operation(char *classname) {
       == 0)  {
     return OperationCreateGraphMPI::create_slave();
   }
-  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi17OperationRhsSlave") == 0)  {
-    return new OperationRhsSlave();
+  if (std::strcmp(classname, "OperationRhsSlave") == 0)  {
+    return OperationRhsMPI::create_slave();
   }
   if (std::strcmp(classname, "OperationDensitySlave") == 0)  {
     return OperationDensityMPI::create_slave();

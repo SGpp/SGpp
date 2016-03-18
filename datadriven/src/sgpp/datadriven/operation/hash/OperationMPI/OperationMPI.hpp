@@ -13,6 +13,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
+/// Base class for alls MPI slave node operations
 class MPISlaveOperation {
  public:
   MPISlaveOperation();
@@ -21,12 +22,16 @@ class MPISlaveOperation {
   virtual void slave_code(void) = 0;
 };
 
+/// Base class for MPI master node operations
 class MPIOperation {
  private:
   static int index;
   int object_index;
  public:
+  /// Constructor - creates all slave operations of the given name
   explicit MPIOperation(std::string slave_class_name);
+  /// Constructor - does not create any slave operations
+  explicit MPIOperation();
   virtual ~MPIOperation(void);
   void start_slave_code(void);
   void release_slave_objects(void);

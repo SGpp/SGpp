@@ -34,6 +34,8 @@ MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
   }
   delete [] class_message;
 }
+MPIOperation::MPIOperation(void) {
+}
 
 int MPIOperation::index = 0;
 void MPIOperation::start_slave_code(void) {
