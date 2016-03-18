@@ -31,25 +31,26 @@ LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vec
                                                      const bool verbose)
     : sgpp::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {}
 
-LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename,
-                                                     const std::string tAlphaFilename,
-                                                     const VectorizationType vecType,
-                                                     const bool isRegression, const bool verbose)
-    : sgpp::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
-      vecType_(vecType) {}
+// LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename,
+//                                                     const std::string tAlphaFilename,
+//                                                     const VectorizationType vecType,
+//                                                     const bool isRegression, const bool verbose)
+//    : sgpp::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
+//      vecType_(vecType) {}
 
 LearnerVectorizedIdentity::~LearnerVectorizedIdentity() {}
 
-sgpp::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(
+std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> LearnerVectorizedIdentity::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
   if (this->grid == NULL) return NULL;
 
 #ifndef USE_MPI
-  return new sgpp::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid), trainDataset, lambda,
-                                                              this->vecType_);
+  return std::make_unique<sgpp::parallel::DMSystemMatrixVectorizedIdentity>(
+      *(this->grid), trainDataset, lambda, this->vecType_);
 #else
-  return sgpp::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
-      *(this->grid), trainDataset, lambda, this->vecType_, this->mpiType_);
+  return std::uniqu_ptr<datadriven::DMSystemMatrixBase>(
+      sgpp::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
+          *(this->grid), trainDataset, lambda, this->vecType_, this->mpiType_));
 #endif
 }
 
