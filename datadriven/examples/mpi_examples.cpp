@@ -22,15 +22,8 @@ int main(int argc, char *argv[]) {
   // Init MPI enviroment - always has to be done first
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
 
-  // Loading dataset
-  std::string filename = "dataset2_dim2.arff";
-  std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data =
-      sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& dataset = data.getData();
-  size_t dimensions = dataset.getNcols();
 
-  /*// Create Grid
+  // Create Grid
   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(10);
@@ -40,12 +33,19 @@ int main(int argc, char *argv[]) {
   sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
-  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 2, 0.0001);
+  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 0.0001);
   mult_op.mult(alpha, result);
   for (auto i = 0; i < 100; ++i) {
     std::cout << result[i] << " ";
   }
 
+  // Loading dataset
+  /*std::string filename = "dataset2_dim2.arff";
+  std::cout << "Loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& dataset = data.getData();
+  size_t dimensions = dataset.getNcols();
 
   sgpp::base::DataVector result(gridsize);
   sgpp::datadriven::clusteringmpi::OperationRhsMPI rhs_op(*grid, 2, dataset);
@@ -55,14 +55,14 @@ int main(int argc, char *argv[]) {
   }*/
 
   // Create knn graph
-  sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, dimensions, 12);
+  /*sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, dimensions, 12);
   std::vector<int> graph = op.create_graph();
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
       std::cout << graph[i * 12 + node] << " ";
     }
     std::cout << "" << "\n";
-    }
+    }*/
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();

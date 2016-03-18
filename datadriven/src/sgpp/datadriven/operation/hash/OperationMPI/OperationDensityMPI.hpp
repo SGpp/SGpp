@@ -7,10 +7,7 @@
 
 #include <mpi.h>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGridBaseMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 
 #include <sstream>
@@ -18,126 +15,14 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class OperationDensitySlave : public MPISlaveOperation {
- private:
-  int dimensions;
-  double lambda;
-  int complete_gridsize = 0;
-  int *grid;
 
+class OperationDensityMPI : public OperationGridMethod, public base::OperationMatrix {
  public:
-  bool verbose;
-  OperationDensitySlave()
-      : MPISlaveOperation() {
-    verbose = true;
-    MPI_Status stat;
-    // Receive grid
-    complete_gridsize = 0;
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-    MPI_Get_count(&stat, MPI_INT, &complete_gridsize);
-    grid = new int[complete_gridsize];
-    MPI_Recv(grid, complete_gridsize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-             MPI_COMM_WORLD, &stat);
-    // Receive dimensions
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-    MPI_Recv(&dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-             MPI_COMM_WORLD, &stat);
-    // Receive lambda
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-    MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
-             MPI_COMM_WORLD, &stat);
-  }
-  virtual ~OperationDensitySlave() {
-    delete [] grid;
-  }
-  virtual void slave_code(void) {
-    MPI_Status stat;
-
-    // Receive alpha vector
-    int gridsize = complete_gridsize / (2 * dimensions);
-    int buffer_size = 0;
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-    MPI_Get_count(&stat, MPI_DOUBLE, &buffer_size);
-    if (buffer_size != gridsize) {
-      std::stringstream errorString;
-      errorString << "Error: Gridsize " << gridsize << " and the size of the alpha vector "
-                  << buffer_size << " should match!" << std::endl;
-      throw std::logic_error(errorString.str());
-    }
-    double *alpha = new double[gridsize];
-    MPI_Recv(alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
-             MPI_COMM_WORLD, &stat);
-
-
-    DensityOCLMultiPlatform::OperationDensityOCL *op =
-        sgpp::datadriven::createDensityOCLMultiPlatformConfigured(grid, complete_gridsize /
-                                                                  (2 * dimensions), dimensions,
-                                                                  lambda, "MyOCLConf.cfg");
-    int datainfo[2];
-    double *partial_result = NULL;
-    int old_partial_size = 0;
-    do {
-      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-      MPI_Recv(datainfo, 2, MPI_INT, 0, stat.MPI_TAG, MPI_COMM_WORLD, &stat);
-      // Check for exit
-      if (datainfo[0] == -2 && datainfo[1] == -2) {
-        std::cerr << "Node" << MPIEnviroment::get_node_rank()
-                  << " received exit signal" << std::endl;
-        break;
-      } else {
-        if (verbose) {
-          std::cout << "Node " << MPIEnviroment::get_node_rank()
-                    << ": Received work package" << std::endl;
-        }
-        if (datainfo[1] != old_partial_size || partial_result == NULL) {
-          if (partial_result != NULL)
-            delete [] partial_result;
-          partial_result = new double[datainfo[1]];
-          old_partial_size = datainfo[1];
-        }
-        // Run partial multiplication
-        op->partial_mult(alpha, partial_result, datainfo[0], datainfo[1]);
-        // Send results back
-        MPI_Send(partial_result, datainfo[1], MPI_DOUBLE, 0, 1, MPI_COMM_WORLD);
-      }
-    }while(true);
-    delete op;
-    delete [] alpha;
-  }
-};
-
-class OperationDensityMPI : public MPIOperation, public base::OperationMatrix {
- private:
-  size_t gridsize;
-
- public:
-  OperationDensityMPI(base::Grid& grid, size_t dimensions, double lambda) :
-      MPIOperation(typeid(OperationDensitySlave).name()) {
-    sgpp::base::GridStorage& gridStorage = grid.getStorage();
-    gridsize = gridStorage.getSize();
-    int *gridpoints = new int[gridsize * 2 * dimensions];
-    size_t pointscount = 0;
-    for (size_t i = 0; i < gridsize; i++) {
-      sgpp::base::HashGridIndex *point = gridStorage.get(i);
-      pointscount++;
-      for (size_t d = 0; d < dimensions; d++) {
-        gridpoints[i * 2 * dimensions + 2 * d] = point->getIndex(d);
-        gridpoints[i * 2 * dimensions + 2 * d + 1] = point->getLevel(d);
-      }
-    }
-
-    // Send grid to slaves
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(gridpoints, static_cast<int>(gridsize * 2 * dimensions), MPI_INT,
-               dest, 1, MPI_COMM_WORLD);
-    // Send dimensions to slaves
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(&dimensions, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
+  OperationDensityMPI(base::Grid& grid, double lambda) :
+      OperationGridMethod(grid, "OperationDensitySlave") {
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
-
-    delete [] gridpoints;
   }
   virtual ~OperationDensityMPI() {}
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {
@@ -163,6 +48,82 @@ class OperationDensityMPI : public MPIOperation, public base::OperationMatrix {
       MPI_Send(exitmessage, 2, MPI_INT, dest, 1, MPI_COMM_WORLD);
     delete [] partial_result;
   }
+
+  static MPISlaveOperation* create_slave(void) {
+    return new OperationDensitySlave();
+  }
+
+ private:
+  class OperationDensitySlave : public OperationGridMethodSlave {
+   private:
+    double lambda;
+
+   public:
+    bool verbose;
+    OperationDensitySlave()
+        : OperationGridMethodSlave() {
+      // Receive lambda
+      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+      MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
+               MPI_COMM_WORLD, &stat);
+    }
+    virtual ~OperationDensitySlave() {
+    }
+    virtual void slave_code(void) {
+      MPI_Status stat;
+
+      // Receive alpha vector
+      int gridsize = complete_gridsize / (2 * grid_dimensions);
+      int buffer_size = 0;
+      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+      MPI_Get_count(&stat, MPI_DOUBLE, &buffer_size);
+      if (buffer_size != gridsize) {
+        std::stringstream errorString;
+        errorString << "Error: Gridsize " << gridsize << " and the size of the alpha vector "
+                    << buffer_size << " should match!" << std::endl;
+        throw std::logic_error(errorString.str());
+      }
+      double *alpha = new double[gridsize];
+      MPI_Recv(alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
+               MPI_COMM_WORLD, &stat);
+
+
+      DensityOCLMultiPlatform::OperationDensityOCL *op =
+          sgpp::datadriven::createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
+                                                                    (2 * grid_dimensions), grid_dimensions,
+                                                                    lambda, "MyOCLConf.cfg");
+      int datainfo[2];
+      double *partial_result = NULL;
+      int old_partial_size = 0;
+      do {
+        MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+        MPI_Recv(datainfo, 2, MPI_INT, 0, stat.MPI_TAG, MPI_COMM_WORLD, &stat);
+        // Check for exit
+        if (datainfo[0] == -2 && datainfo[1] == -2) {
+          std::cerr << "Node" << MPIEnviroment::get_node_rank()
+                    << " received exit signal" << std::endl;
+          break;
+        } else {
+          if (verbose) {
+            std::cout << "Node " << MPIEnviroment::get_node_rank()
+                      << ": Received work package" << std::endl;
+          }
+          if (datainfo[1] != old_partial_size || partial_result == NULL) {
+            if (partial_result != NULL)
+              delete [] partial_result;
+            partial_result = new double[datainfo[1]];
+            old_partial_size = datainfo[1];
+          }
+          // Run partial multiplication
+          op->partial_mult(alpha, partial_result, datainfo[0], datainfo[1]);
+          // Send results back
+          MPI_Send(partial_result, datainfo[1], MPI_DOUBLE, 0, 1, MPI_COMM_WORLD);
+        }
+      }while(true);
+      delete op;
+      delete [] alpha;
+    }
+  };
 };
 
 

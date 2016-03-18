@@ -21,8 +21,8 @@ MPISlaveOperation* create_mpi_operation(char *classname) {
   if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi17OperationRhsSlave") == 0)  {
     return new OperationRhsSlave();
   }
-  if (std::strcmp(classname, "N4sgpp10datadriven13clusteringmpi21OperationDensitySlave") == 0)  {
-    return new OperationDensitySlave();
+  if (std::strcmp(classname, "OperationDensitySlave") == 0)  {
+    return OperationDensityMPI::create_slave();
   }
   return NULL;
 }
