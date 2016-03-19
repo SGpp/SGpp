@@ -18,6 +18,7 @@ MPISlaveOperation::MPISlaveOperation(void) {
 MPISlaveOperation::~MPISlaveOperation(void) {
 }
 MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
+    std::cerr << "ctor base method" << std::endl;
   int message[1];
   index++;
   // Command for creation and execution of a slave

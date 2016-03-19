@@ -89,7 +89,6 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
         }
       }while(true);
       delete op;
-      delete [] dataset;
     }
   };
 };
