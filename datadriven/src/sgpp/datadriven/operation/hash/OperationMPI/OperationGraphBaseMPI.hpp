@@ -17,7 +17,7 @@ namespace datadriven {
 namespace clusteringmpi {
 
 /// Base class for kNN graph operations with MPI
-class OperationGraphMethodMPI : virtual public MPIOperation {
+class OperationGraphMethodMPI : public MPIOperation {
  private:
   void send_dataset(void) {
     // Sending dataset to slaves

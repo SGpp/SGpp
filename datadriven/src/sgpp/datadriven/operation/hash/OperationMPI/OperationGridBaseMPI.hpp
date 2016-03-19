@@ -17,7 +17,7 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 /// Base class for grid releated mpi operations
-class OperationGridMethod : virtual public MPIOperation {
+class OperationGridMethod : public MPIOperation {
  private:
   void send_grid(base::Grid &grid) {
     // Store grid in integer array
@@ -52,6 +52,7 @@ class OperationGridMethod : virtual public MPIOperation {
   /// Protected constructor - creates slave operations and sends the grid to them
   OperationGridMethod(base::Grid &grid, std::string slave_id)
       : MPIOperation(slave_id) {
+    std::cerr << "ctor grid method" << std::endl;
     send_grid(grid);
   }
   /// Protected constructor - expects slaves already exist and just sends the grid to them

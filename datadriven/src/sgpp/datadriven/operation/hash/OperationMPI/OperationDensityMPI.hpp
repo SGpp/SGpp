@@ -57,6 +57,7 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
   class OperationDensitySlave : public OperationGridMethodSlave {
    private:
     double lambda;
+    DensityOCLMultiPlatform::OperationDensityOCL *op;
 
    public:
     bool verbose;
@@ -66,8 +67,14 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
       MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
       MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
                MPI_COMM_WORLD, &stat);
+
+      // Create opencl operation
+      op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
+                                                  (2 * grid_dimensions), grid_dimensions,
+                                                  lambda, "MyOCLConf.cfg");
     }
     virtual ~OperationDensitySlave() {
+      delete op;
     }
     virtual void slave_code(void) {
       MPI_Status stat;
@@ -88,10 +95,6 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
                MPI_COMM_WORLD, &stat);
 
 
-      DensityOCLMultiPlatform::OperationDensityOCL *op =
-          sgpp::datadriven::createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
-                                                                    (2 * grid_dimensions), grid_dimensions,
-                                                                    lambda, "MyOCLConf.cfg");
       int datainfo[2];
       double *partial_result = NULL;
       int old_partial_size = 0;
@@ -120,7 +123,6 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
           MPI_Send(partial_result, datainfo[1], MPI_DOUBLE, 0, 1, MPI_COMM_WORLD);
         }
       }while(true);
-      delete op;
       delete [] alpha;
     }
   };
