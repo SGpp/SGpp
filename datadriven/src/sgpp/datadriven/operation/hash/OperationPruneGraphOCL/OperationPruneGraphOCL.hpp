@@ -23,7 +23,8 @@ class OperationPruneGraphOCL {
   OperationPruneGraphOCL()  {
   }
 
-  virtual void prune_graph(std::vector<int> &graph) = 0;
+  virtual void prune_graph(std::vector<int> &graph, size_t startid = 0, size_t chunksize = 0) = 0;
+  virtual ~OperationPruneGraphOCL(void) {}
 };
 
 }  // namespace DensityOCLMultiPlatform

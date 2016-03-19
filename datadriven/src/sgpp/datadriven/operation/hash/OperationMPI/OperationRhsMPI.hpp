@@ -9,12 +9,10 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationGraphBaseMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <string>
+
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-
-
-
 
 /// MPI operation for creating right hand side clustering vector
 class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodMPI {
@@ -25,7 +23,7 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
   }
   base::DataVector create_rhs(void) {
     // Start slave operations
-    this->OperationGridMethod::start_slave_code();
+    OperationGridMethod::start_slave_code();
 
     // Return vector
     base::DataVector ret_rhs(gridsize);
@@ -66,9 +64,9 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
     virtual ~OperationRhsSlave() {}
     virtual void slave_code(void) {
       DensityOCLMultiPlatform::OperationDensityOCL *op =
-          sgpp::datadriven::createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
-                                                                    (2 * grid_dimensions), dimensions,
-                                                                    0.0, "MyOCLConf.cfg");
+          createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
+                                                  (2 * grid_dimensions), dimensions,
+                                                  0.0, "MyOCLConf.cfg");
 
       base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);
       int datainfo[2];
