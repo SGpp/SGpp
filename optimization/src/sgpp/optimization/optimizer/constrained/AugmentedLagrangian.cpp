@@ -376,7 +376,8 @@ AugmentedLagrangian::AugmentedLagrangian(ScalarFunction& f, ScalarFunctionGradie
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
-      kHist() {}
+      xHistInner(0, 0),
+      kHistInner() {}
 
 AugmentedLagrangian::~AugmentedLagrangian() {}
 
@@ -389,7 +390,8 @@ void AugmentedLagrangian::optimize() {
   fOpt = NAN;
   xHist.resize(0, d);
   fHist.resize(0);
-  kHist.clear();
+  xHistInner.resize(0, d);
+  kHistInner.clear();
 
   const size_t mG = g.getNumberOfComponents();
   const size_t mH = h.getNumberOfComponents();
@@ -427,9 +429,9 @@ void AugmentedLagrangian::optimize() {
     unconstrainedOptimizer.optimize();
     xNew = unconstrainedOptimizer.getOptimalPoint();
 
-    const size_t numberInnerEvaluations =
-        unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
-    k += numberInnerEvaluations;
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    const size_t numberInnerIterations = innerPoints.getNrows();
+    k += numberInnerIterations;
 
     x = xNew;
     fx = f.eval(x);
@@ -439,7 +441,15 @@ void AugmentedLagrangian::optimize() {
 
     xHist.appendRow(x);
     fHist.append(fx);
-    kHist.push_back(numberInnerEvaluations);
+    xHistInner.resize(xHistInner.getNrows() + numberInnerIterations, d);
+
+    for (size_t i = 0; i < numberInnerIterations; i++) {
+      for (size_t t = 0; t < d; t++) {
+        xHistInner(xHistInner.getNrows() - numberInnerIterations + i, t) = innerPoints(i, t);
+      }
+    }
+
+    kHistInner.push_back(numberInnerIterations);
 
     // status printing
     Printer::getInstance().printStatusUpdate(
@@ -553,8 +563,12 @@ void AugmentedLagrangian::setPenaltyIncreaseFactor(double penaltyIncreaseFactor)
   rhoMuPlus = penaltyIncreaseFactor;
 }
 
-const std::vector<size_t>& AugmentedLagrangian::getHistoryOfInnerIterations() const {
-  return kHist;
+const base::DataMatrix& AugmentedLagrangian::getHistoryOfInnerIterationPoints() const {
+  return xHistInner;
+}
+
+const std::vector<size_t>& AugmentedLagrangian::getHistoryOfInnerIterationNumbers() const {
+  return kHistInner;
 }
 
 void AugmentedLagrangian::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
