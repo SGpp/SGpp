@@ -77,17 +77,48 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
                                            configuration, pointsVector, alphaVector,
                                            dataVector);
   }
+  OperationPruneGraphOCLMultiPlatform(int *gridpoints, size_t gridSize, size_t dimensions,
+                                      double *alpha, base::DataMatrix &data,
+                                      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                                      json::Node &configuration, T treshold, size_t k) :
+      OperationPruneGraphOCL(), dims(dimensions), gridSize(gridSize),
+      dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()),
+      manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
+    verbose = true;
+    // Store Grid in a opencl compatible buffer
+    std::vector<int> points;
+    for (size_t i = 0; i < gridSize; i++) {
+      for (int d = 0; d < dims; d++) {
+        points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
+        points.push_back(gridpoints[2 * dimensions * i + 2 * d + 1]);
+      }
+    }
+    if (verbose)
+      std::cout << "Grid stored into integer array! Number of gridpoints: "
+                << gridSize << std::endl;
+    for (size_t i = 0; i < gridSize; i++)
+      alphaVector[i] = static_cast<T>(alpha[i]);
+    double *data_raw = data.getPointer();
+    for (size_t i = 0; i < data.getSize(); i++)
+      dataVector[i] = static_cast<T>(data_raw[i]);
+    if (verbose)
+      std::cout << "Daa stored into float array! Number of datapoints: "
+                << data.getSize() << std::endl;
+    graph_kernel = new KernelPruneGraph<T>(devices[0], dims, treshold, k, manager,
+                                           configuration, points, alphaVector,
+                                           dataVector);
+  }
 
   ~OperationPruneGraphOCLMultiPlatform() {
     delete graph_kernel;
   }
 
-  virtual void prune_graph(std::vector<int> &graph) {
+  virtual void prune_graph(std::vector<int> &graph, size_t startid = 0, size_t chunksize = 0) {
     if (verbose)
       std::cout << "Pruning graph for" << graph.size() << " nodes" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->graph_kernel->prune_graph(graph, 0, 0);
+    this->graph_kernel->prune_graph(graph, startid, chunksize);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 

@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreateGraphMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationRhsMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationDensityMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreatePrunedGraphMPI.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 #include <iostream>
@@ -63,13 +64,22 @@ int main(int argc, char *argv[]) {
 
 
   // Create knn graph
-  sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, 2, 12);
+  /*sgpp::datadriven::clusteringmpi::OperationCreateGraphMPI op(dataset, 2, 12);
   std::vector<int> graph = op.create_graph();
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
       std::cout << graph[i * 12 + node] << " ";
     }
-    std::cout << "" << "\n";
+  }*/
+
+  // Prune knn graph
+  sgpp::datadriven::clusteringmpi::OperationCreatePrunedGraph prune_op(*grid, alpha,  dataset, 12);
+  std::vector<int> pruned_graph = prune_op.createPrunedGraph(0.7);
+  for (size_t i = 0; i < 100; ++i) {
+    for (size_t node = 0; node < 12; ++node) {
+      std::cout << pruned_graph[i * 12 + node] << " ";
+    }
+    std::cout << "\n";
   }
 
 

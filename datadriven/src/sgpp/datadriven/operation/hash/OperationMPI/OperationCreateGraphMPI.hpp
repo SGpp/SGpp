@@ -27,8 +27,7 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
   }
   std::vector<int> create_graph(void) {
     this->start_slave_code();
-    int *graph = new int[datasize / dimensions * k];
-    std::vector<int> returngraph(graph, graph + (datasize / dimensions *k));
+    std::vector<int> returngraph(datasize / dimensions *k);
 
     // Create packages and let the slaves solve them
     int *partial_result = new int[2000 * k];
@@ -46,10 +45,10 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(exitmessage, 2, MPI_INT, dest, 1, MPI_COMM_WORLD);
     delete [] partial_result;
-    delete [] graph;
     return returngraph;
   }
   virtual ~OperationCreateGraphMPI() {}
+
  protected:
   class OperationCreateGraphSlave : public OperationGraphMethodSlave {
    public:
