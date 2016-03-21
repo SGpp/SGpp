@@ -1,6 +1,6 @@
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
 from pysgpp import createOperationSecondMoment, \
     createOperationFirstMoment, Grid, DataVector, \
     createOperationDensityMargTo1D
@@ -33,7 +33,7 @@ dist = SGDEdist.byLearnerSGDEConfig(samples,
 fig, ax = plotDensity3d(U)
 ax.set_title("true density")
 fig.show()
-fig, ax = plotDensity3d(dist)
+fig, ax, _ = plotSG3d(dist.grid, dist.alpha)
 ax.set_title("estimated density")
 fig.show()
 
@@ -41,6 +41,5 @@ print "mean = %g ~ %g" % (m.prod(), dist.mean())
 print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
 print "cross entropy = %g" % dist.crossEntropy(testSamples)
 print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
-print "|C - C_tilde| = %g" % np.linalg.norm(C - dist.cov())
 
 plt.show()
