@@ -7,16 +7,16 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctio
 
 
 def plotDensity2d(U, n=50, addContour=True):
-    xlim, ylim = [0, 1], [0, 1]  # U.getBounds()
+    xlim, ylim = U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
-    X, Y = np.meshgrid(x, y)
     Z = np.ones((n, n))
 
-    for i in xrange(len(X)):
-        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = U.pdf([xi, 1 - yi])
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
+            Z[j, i] = U.pdf([xv[j, i], yv[j, i]])
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
 
@@ -28,7 +28,7 @@ def plotDensity2d(U, n=50, addContour=True):
     cbar.ax.set_ylabel(r'$\hat{f}(\xi_1, \xi_2)$')
 
     if addContour:
-        cs = plt.contour(X, 1 - Y, Z, colors='black')
+        cs = plt.contour(xv, yv, Z, colors='black')
         plt.clabel(cs, inline=1, fontsize=18)
 
 def plotSGDE2d(U, n=100):
@@ -44,13 +44,16 @@ def plotSGDE2d(U, n=100):
     neg_y = []
     neg_z = []
     xlim, ylim = U.getBounds()
-    for xi in np.linspace(xlim[0], ylim[1], n):
-        for yi in np.linspace(ylim[0], ylim[1], n):
-            value = U.pdf([yi, 1 - xi])
+
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
+            value = U.pdf([xv[j, i], yv[j, i]])
+
             if value < 0 and abs(value) > 1e-14:
-                neg_x.append(yi)
-                neg_y.append(1 - xi)
-                neg_z.append(U.pdf([yi, 1 - xi]))
+                neg_x.append(xv[j, i])
+                neg_y.append(yv[j, i])
+                neg_z.append(value)
 
     # plot image of density
     plotDensity2d(U)
@@ -80,8 +83,8 @@ def plotFunction2d(f, addContour=True, n=101,
     Z = np.ones(n * n).reshape(n, n)
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in range(len(x)):
-        for j in range(len(y)):
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
             Z[j, i] = f(xv[j, i], yv[j, i])
 
 #     for i in xrange(len(X)):
@@ -122,7 +125,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
 
     x = np.linspace(0, 1, n)
     y = np.linspace(0, 1, n)
-    X, Y = np.meshgrid(x, y)
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     Z = np.ones(n * n).reshape(n, n)
 
     neg_x = []
@@ -133,22 +136,22 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     p = DataVector(2)
     # do vectorized evaluation
     k = 0
-    for i in xrange(len(X)):
-        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            p[0] = xi
-            p[1] = 1 - yi
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
+            p[0] = xv[i, j]
+            p[1] = xy[i, j]
             A.setRow(k, p)
             k += 1
 
     res = evalSGFunctionMulti(grid, alpha, A)
 
     k = 0
-    for i in xrange(len(X)):
-        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
             Z[i, j] = res[k]
             if Z[i, j] < 0 and abs(Z[i, j]) > 1e-13:
-                neg_x.append(xi)
-                neg_y.append(1 - yi)
+                neg_x.append(xv[i, j])
+                neg_y.append(xy[i, j])
                 neg_z.append(res[k])
             k += 1
 
