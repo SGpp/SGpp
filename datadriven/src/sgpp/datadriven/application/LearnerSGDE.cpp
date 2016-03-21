@@ -301,16 +301,16 @@ void LearnerSGDE::cov(base::DataMatrix& cov) {
   size_t ndim = grid->getStorage().getDimension();
 
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
-    // throw error -> covariance matrix has wrong size
-    throw base::data_exception("LearnerSGDE::cov : covariance matrix has the wrong size");
+    // covariance matrix has wrong size -> resize
+    cov.resize(ndim, ndim);
   }
 
   // prepare covariance marix
   cov.setAll(0.0);
 
   // generate 1d densities and compute means and variances
-  std::vector<double> means(ndim);
-  std::vector<double> variances(ndim);
+  base::DataVector means(ndim);
+  base::DataVector variances(ndim);
 
   std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg =
       op_factory::createOperationDensityMargTo1D(*grid);
