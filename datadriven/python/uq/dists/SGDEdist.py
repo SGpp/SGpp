@@ -213,12 +213,7 @@ class SGDEdist(EstimatedDist):
             return second_moment - self.mean() ** 2
 
     def cov(self):
-        covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.cov(covMatrix)
-        ans = covMatrix.array()
-        if self.trans is not None:
-            ans *= self.trans.vol()
-        return ans
+        raise NotImplementedError
 
     def corrcoef(self):
         raise NotImplementedError

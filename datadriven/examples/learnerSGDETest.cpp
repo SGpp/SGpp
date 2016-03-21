@@ -89,4 +89,13 @@ int main(int argc, char** argv) {
             << std::endl;
   std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
             << std::endl;
+
+  sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
+  std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
+  learner.cov(C);
+  std::cout << C.toString() << std::endl;
+
+  std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
+  kde.cov(C);
+  std::cout << C.toString() << std::endl;
 }

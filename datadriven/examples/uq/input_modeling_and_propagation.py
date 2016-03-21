@@ -1,14 +1,18 @@
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d
+from pysgpp import createOperationSecondMoment, \
+    createOperationFirstMoment, Grid, DataVector, \
+    createOperationDensityMargTo1D
 
 import numpy as np
 import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d
 
 # -------------------- prepare data
 C = np.array([[0.1, 0.08],
               [0.08, 0.1]]) / 10.
-U = MultivariateNormal([0.5, 0.5], C, 0, 1)
+m = np.array([0.5, 0.5])
+U = MultivariateNormal(m, C, 0, 1)
 
 np.random.seed(12345)
 samples = U.rvs(1000)
@@ -33,11 +37,10 @@ fig, ax = plotDensity3d(dist)
 ax.set_title("estimated density")
 fig.show()
 
-print "mean = %g" % dist.mean()
-print "var = %g" % dist.var()
-print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
-print "CE = %g" % dist.crossEntropy(testSamples)
+print "mean = %g ~ %g" % (m.prod(), dist.mean())
+print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
+print "cross entropy = %g" % dist.crossEntropy(testSamples)
 print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
-# print "|C - C_tilde| = %g" % np.linalg.norm(C - dist.cov())
+print "|C - C_tilde| = %g" % np.linalg.norm(C - dist.cov())
 
 plt.show()
