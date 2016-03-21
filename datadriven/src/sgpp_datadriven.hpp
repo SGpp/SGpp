@@ -37,6 +37,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
 
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>

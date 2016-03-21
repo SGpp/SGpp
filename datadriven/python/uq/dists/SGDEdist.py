@@ -6,7 +6,7 @@ from pysgpp import (createOperationQuadrature,
                     createOperationInverseRosenblattTransformation1D,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
-                    DataMatrix, DataVector,
+                    DataMatrix, DataVector, Grid,
                     LearnerSGDEConfiguration,
                     LearnerSGDE)
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
@@ -29,6 +29,7 @@ from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import J
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 from pysgpp import createOperationFirstMoment, \
     createOperationSecondMoment
+from pysgpp._pysgpp_swig import createOperationDensityMargTo1D
 
 
 class SGDEdist(EstimatedDist):
@@ -42,6 +43,8 @@ class SGDEdist(EstimatedDist):
         self.dist = learner
         self.grid = learner.getGrid()
         self.alpha = learner.getSurpluses()
+
+        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
 
         if self.dim != learner.getDim():
             raise AttributeError("the dimensionality of the domain differs from the one of the grid")
@@ -172,20 +175,42 @@ class SGDEdist(EstimatedDist):
                 return B.array()
 
     def mean(self):
-        ans = createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
-        if self.trans is not None:
-            ans *= self.trans.vol()
-        return ans
+        if self.trans is None:
+            return createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
+        else:
+            first_moment = 0.0
+            gs = self.grid.getStorage()
+            for i in xrange(gs.getSize()):
+                gp = gs.get(i)
+                p = 1.0
+                for idim in xrange(gs.getDimension()):
+                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    index, level = gp.getIndex(idim), gp.getLevel(idim)
+                    p *= (b - a) * index * 4 ** -level + a * 2 ** -level
+
+                first_moment += self.alpha[i] * p
+
+            return first_moment
 
     def var(self):
-        second_moment = createOperationSecondMoment(self.grid).doQuadrature(self.alpha)
-        first_moment = self.mean()
-        ans = second_moment - first_moment ** 2
+        if self.trans is None:
+            return createOperationSecondMoment(self.grid).doQuadrature(self.alpha) - self.mean() ** 2
+        else:
+            # compute the second moment
+            second_moment = 0.0
+            gs = self.grid.getStorage()
+            for i in xrange(gs.getSize()):
+                gp = gs.get(i)
+                p = 1.0
+                for idim in xrange(gs.getDimension()):
+                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    index, level = gp.getIndex(idim), gp.getLevel(idim)
+                    p *= (b - a) ** 2 * (index * index + 1. / 6.) * 8 ** -level + 2 * (b - a) * a * index * 4 ** -level + a * a * 2 ** -level
 
-        if self.trans is not None:
-            ans *= self.trans.vol() ** 2
+                second_moment += self.alpha[i] * p
 
-        return ans
+            # compute the variance
+            return second_moment - self.mean() ** 2
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
