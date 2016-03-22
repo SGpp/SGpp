@@ -72,7 +72,7 @@ void MetaLearner::learnString(
       std::make_unique<LearnerLeastSquaresIdentity>(isRegression, this->verbose);
   myLearner->setImplementation(operationConfiguration);
   // TODO(pfandedd): reenabled after performance calculator has been adjusted
-  myLearner->setReuseCoefficients(true);
+  myLearner->setReuseCoefficients(false);
 
   LearnerTiming timings =
       myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
@@ -127,7 +127,7 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
       OperationMultipleEvalType::DEFAULT, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
   referenceLearner->setImplementation(operationConfiguration);
   // TODO(pfandedd): reenabled after performance calculator has been adjusted
-  referenceLearner->setReuseCoefficients(true);
+  referenceLearner->setReuseCoefficients(false);
 
   LearnerTiming timings =
       referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,

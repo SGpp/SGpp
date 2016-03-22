@@ -226,9 +226,6 @@ class KernelMult {
 
         // enqueue kernel
 
-        //                std::cout << "commandQueue: " << device->commandQueue
-        //                << std::endl;
-
         char deviceName[128] = {0};
         cl_uint err;
         err = clGetDeviceInfo(device->deviceId, CL_DEVICE_NAME, 128 * sizeof(char), &deviceName,
@@ -241,9 +238,6 @@ class KernelMult {
           throw base::operation_exception(errorString.str());
         }
 
-        //                std::cout << "OCL Info: detected device, name: \"" <<
-        //                deviceName << "\"" << std::endl;
-
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0,
                                      &rangeSizeAfterBlocking, &localSize, 0, nullptr, &clTiming);
 
@@ -255,21 +249,14 @@ class KernelMult {
         }
 
         clFinish(device->commandQueue);
-        //                std::cout << "executed kernel: " << device->deviceId
-        //                << "" << std::endl;
 
         deviceResultData.readFromBuffer();
 
-        //                std::cout << "read from device: " << device->deviceId
-        //                << "" << std::endl;
         clFinish(device->commandQueue);
 
         std::vector<T> &hostTemp = deviceResultData.getHostPointer();
         size_t deviceIndex = 0;
         for (size_t i = 0; i < rangeSize; i++) {
-          //          if (kernelStartData + i >= datasetSize) {
-          //            break;
-          //          }
           result[kernelStartData + i] = hostTemp[deviceIndex];
           deviceIndex += 1;
         }
