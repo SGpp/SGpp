@@ -41,12 +41,6 @@ class Configuration {
         json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
                                      ? deviceNode["KERNELS"][kernelName]
                                      : deviceNode["KERNELS"].addDictAttr(kernelName);
-        //            std::cout << "in kernel augment" << std::endl;
-        //            std::cout << "-----------------------------------" << std::endl;
-        //            for (std::string &key: kernelNode.keys()) {
-        //                std::cout << "key: " << key << " value: " << kernelNode[key].get() <<
-        //                std::endl;
-        //            }
 
         // set verbosity for the individual kernels
         if (kernelNode.contains("VERBOSE") == false) {
@@ -95,6 +89,10 @@ class Configuration {
 
         if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+        }
+
+        if (kernelNode.contains("KERNEL_PREFETCH_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_PREFETCH_SIZE", 64ul);
         }
       }
     }

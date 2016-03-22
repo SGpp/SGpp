@@ -290,8 +290,8 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     gridSizePadded = storage.getSize() + padding;
     gridSizeBuffers = storage.getSize() + commonGridPadding;
 
-    level = std::vector<T>(gridSizePadded * dims);
-    index = std::vector<T>(gridSizePadded * dims);
+    level = std::vector<T>(gridSizeBuffers * dims);
+    index = std::vector<T>(gridSizeBuffers * dims);
 
     base::HashGridIndex::level_type curLevel;
     base::HashGridIndex::index_type curIndex;

@@ -29,8 +29,8 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
   size_t localWorkgroupSize;
   bool useLocalMemory;
   size_t dataBlockSize;
-  size_t transGridBlockSize;
   uint64_t maxDimUnroll;
+  size_t prefetchSize;
 
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
@@ -133,8 +133,8 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
     dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
-    transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    prefetchSize = kernelConfiguration["KERNEL_PREFETCH_SIZE"].getUInt();
   }
 
   std::string generateSource() {
@@ -163,9 +163,9 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
                  << std::endl;
     sourceStream << "             __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "             uint resultSize," << std::endl;
-    sourceStream << "             uint start_grid," << std::endl;
-    sourceStream << "             uint end_grid) {" << std::endl;
+    sourceStream << "             int resultSize," << std::endl;
+    sourceStream << "             int start_grid," << std::endl;
+    sourceStream << "             int end_grid) {" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
     sourceStream << std::endl;
@@ -206,7 +206,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       }
     }
 
-    sourceStream << this->indent[0] << "size_t dimLevelIndex;" << std::endl;
+    sourceStream << this->indent[0] << "int dimLevelIndex;" << std::endl;
 
     sourceStream << std::endl;
 
@@ -214,22 +214,17 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     // pointer to level/index directly)
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locLevel["
-                   << dims * localWorkgroupSize << "];" << std::endl;
+                   << dims * prefetchSize << "];" << std::endl;
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locIndex["
-                   << dims * localWorkgroupSize << "];" << std::endl;
+                   << dims * prefetchSize << "];" << std::endl;
       sourceStream << this->indent[0] << "__local " << this->floatType() << " locAlpha["
-                   << localWorkgroupSize << "];" << std::endl;
+                   << prefetchSize << "];" << std::endl;
       sourceStream << std::endl;
 
-      sourceStream << this->indent[0]
-                   << "// grid is always divisible by workgroup size (by padding)" << std::endl;
-      sourceStream << this->indent[0] << "uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
-      sourceStream << this->indent[0] << "uint fastChunkSizeGrid = (chunkSizeGrid / "
-                   << localWorkgroupSize << ") * " << localWorkgroupSize << ";" << std::endl;
-      sourceStream << this->indent[0]
-                   << "for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
-                   << localWorkgroupSize << ") {" << std::endl;
+      sourceStream << this->indent[0] << "for(int j = start_grid; j < end_grid; j+=" << prefetchSize
+                   << ") {" << std::endl;
 
+      sourceStream << this->indent[1] << "if (localIdx < " << prefetchSize << ") {" << std::endl;
       for (size_t d = 0; d < dims; d++) {
         sourceStream << this->indent[1] << "locLevel[(localIdx * " << dims << ") + " << d
                      << "] = ptrLevel[((j + localIdx) * " << dims << ") + " << d << "];"
@@ -241,17 +236,16 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
 
       sourceStream << this->indent[1] << "locAlpha[localIdx] = ptrAlpha[j + localIdx];"
                    << std::endl;
+      sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << std::endl;
-      sourceStream << this->indent[1] << "for (size_t m = 0; m < " << localWorkgroupSize
-                   << "; m++) {" << std::endl;
+      sourceStream << this->indent[1] << "for (int m = 0; m < " << prefetchSize << "; m++) {"
+                   << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
         sourceStream << this->indent[2] << "curSupport_" << i << " = locAlpha[m];" << std::endl
                      << std::endl;
       }
     } else {
-      sourceStream << this->indent[0]
-                   << "// Iterate over all grid points (slow ones, without cache)" << std::endl;
       sourceStream << this->indent[0] << "for (int m = start_grid; m < end_grid; m++) {"
                    << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
@@ -261,7 +255,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     }
 
     if (dims > maxDimUnroll) {
-      sourceStream << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
+      sourceStream << this->indent[1] << "for (int unrollDim = 0; unrollDim < "
                    << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                    << ") {" << std::endl;
       sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, std::min(maxDimUnroll, dims),

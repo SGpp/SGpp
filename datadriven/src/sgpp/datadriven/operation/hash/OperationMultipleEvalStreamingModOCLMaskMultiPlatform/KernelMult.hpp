@@ -211,20 +211,20 @@ class KernelMult {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint),
+        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_int),
                              &rangeSizeUnblocked);  // resultsize == number of entries in dataset
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 8, sizeof(cl_uint), &kernelStartGrid);
+        err = clSetKernelArg(this->kernelMult, 8, sizeof(cl_int), &kernelStartGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 9, sizeof(cl_uint), &kernelEndGrid);
+        err = clSetKernelArg(this->kernelMult, 9, sizeof(cl_int), &kernelEndGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -232,13 +232,6 @@ class KernelMult {
         }
 
         cl_event clTiming = nullptr;
-
-        // enqueue kernel
-        //                size_t localSize =
-        //                kernelConfiguration["LOCAL_SIZE"].getUInt();
-
-        //                std::cout << "commandQueue: " << device->commandQueue
-        //                << std::endl;
 
         char deviceName[128] = {0};
         cl_uint err;
@@ -252,9 +245,6 @@ class KernelMult {
           throw sgpp::base::operation_exception(errorString.str());
         }
 
-        //                std::cout << "OCL Info: detected device, name: \"" <<
-        //                deviceName << "\"" << std::endl;
-
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0,
                                      &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
 
@@ -266,20 +256,14 @@ class KernelMult {
         }
 
         clFinish(device->commandQueue);
-        //                std::cout << "executed kernel: " << device->deviceId
-        //                << "" << std::endl;
 
         deviceResultData.readFromBuffer();
 
-        //                std::cout << "read from device: " << device->deviceId
-        //                << "" << std::endl;
         clFinish(device->commandQueue);
 
         std::vector<real_type> &hostTemp = deviceResultData.getHostPointer();
         size_t deviceIndex = 0;
         for (size_t i = 0; i < rangeSizeUnblocked; i++) {
-          //                    std::cout << "resultDevice[" << deviceIndex <<
-          //                    "] = " << hostTemp[deviceIndex] << std::endl;
           result[kernelStartData + i] = hostTemp[deviceIndex];
           deviceIndex += 1;
         }
@@ -326,21 +310,6 @@ class KernelMult {
   }
 
  private:
-  //  void releaseGridBuffers() {
-  //    this->deviceLevel.freeBuffer();
-  //    this->deviceIndex.freeBuffer();
-  //    this->deviceMask.freeBuffer();
-  //    this->deviceOffset.freeBuffer();
-  //    this->deviceAlpha.freeBuffer();
-  //  }
-  //
-  //  void releaseDataBuffers() {
-  //    this->deviceData.freeBuffer();
-  //    this->deviceResultData.freeBuffer();
-  //  }
-  //
-  //  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
-
   void initGridBuffers(std::vector<real_type> &level, std::vector<real_type> &index,
                        std::vector<real_type> &mask, std::vector<real_type> &offset,
                        std::vector<real_type> &alpha, size_t kernelStartGrid,

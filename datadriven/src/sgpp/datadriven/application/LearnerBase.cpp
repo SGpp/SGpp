@@ -225,7 +225,6 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
       myCG->setEpsilon(SolverConfigFinal.eps_);
     }
 
-    // TODO(pfandedd): reusage of alpha disabled for paper experiments, reenable afterwards
     myCG->solve(*DMSystem, *alpha, b, reuseCoefficients, solverVerbose, 0.0);
 
     double stopTime = myStopwatch->stop();

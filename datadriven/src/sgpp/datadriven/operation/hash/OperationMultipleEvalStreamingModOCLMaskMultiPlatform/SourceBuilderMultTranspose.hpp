@@ -212,15 +212,15 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
                  << std::endl;
     sourceStream << "           __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "           uint dataBlockStart," << std::endl;
-    sourceStream << "           uint dataBlockEnd)" << std::endl;
+    sourceStream << "           int dataBlockStart," << std::endl;
+    sourceStream << "           int dataBlockEnd)" << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[indentLevel] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int localIdx = get_local_id(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int groupSize = get_local_size(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int globalSize = get_global_size(0);"
                  << std::endl;
-    sourceStream << this->indent[indentLevel] << "uint rangeData = dataBlockEnd - dataBlockStart;"
+    sourceStream << this->indent[indentLevel] << "int rangeData = dataBlockEnd - dataBlockStart;"
                  << std::endl;
 
     sourceStream << std::endl;
@@ -363,7 +363,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     sourceStream << std::endl;
 
     if (dims > maxDimUnroll) {
-      sourceStream << this->indent[indentLevel] << "for (size_t unrollDim = 0; unrollDim < "
+      sourceStream << this->indent[indentLevel] << "for (int unrollDim = 0; unrollDim < "
                    << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                    << ") {" << std::endl;
 

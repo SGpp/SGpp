@@ -134,7 +134,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
     std::stringstream output;
 
     if (dims > maxDimUnroll) {
-      output << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
+      output << this->indent[1] << "for (int unrollDim = 0; unrollDim < "
              << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll << ") {"
              << std::endl;
       output << this->unrolledBasisFunctionEvalulation1D(dims, 0, std::min(maxDimUnroll, dims),
@@ -192,9 +192,9 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
     sourceStream << "           __global const " << this->floatType() << "* ptrAlpha," << std::endl;
     sourceStream << "           __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "           uint resultSize," << std::endl;
-    sourceStream << "           uint start_grid," << std::endl;
-    sourceStream << "           uint end_grid) " << std::endl;
+    sourceStream << "           int resultSize," << std::endl;
+    sourceStream << "           int start_grid," << std::endl;
+    sourceStream << "           int end_grid) " << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
@@ -254,18 +254,12 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
       }
     }
 
-    sourceStream << this->indent[0] << "size_t dimLevelIndex;" << std::endl;
+    sourceStream << this->indent[0] << "int dimLevelIndex;" << std::endl;
     sourceStream << std::endl;
 
     if (useLocalMemory) {
-      sourceStream << this->indent[0] << "// Iterate over all grid points (fast ones, with cache)"
-                   << std::endl;
-      sourceStream << this->indent[0] << "uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
-      sourceStream << this->indent[0] << "uint fastChunkSizeGrid = (chunkSizeGrid / "
-                   << prefetchSize << ") * " << prefetchSize << ";" << std::endl;
-      sourceStream << this->indent[0]
-                   << "for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
-                   << prefetchSize << ") {" << std::endl;
+      sourceStream << this->indent[0] << "for(int j = start_grid; j < end_grid; j+=" << prefetchSize
+                   << ") {" << std::endl;
 
       sourceStream << this->indent[1] << "if (localIdx < " << prefetchSize << ") {" << std::endl;
       for (size_t d = 0; d < dims; d++) {
