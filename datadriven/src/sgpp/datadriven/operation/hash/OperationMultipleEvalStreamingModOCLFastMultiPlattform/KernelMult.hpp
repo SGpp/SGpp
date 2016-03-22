@@ -202,20 +202,20 @@ class KernelMult {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint),
+        err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_int),
                              &rangeSize);  // resultsize == number of entries in dataset
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_uint), &kernelStartGrid);
+        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_int), &kernelStartGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint), &kernelEndGrid);
+        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_int), &kernelEndGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
