@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERLEASTSQUARESIDENTITY_HPP
-#define LEARNERLEASTSQUARESIDENTITY_HPP
+#pragma once
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -82,5 +81,3 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERLEASTSQUARESIDENTITY_HPP */

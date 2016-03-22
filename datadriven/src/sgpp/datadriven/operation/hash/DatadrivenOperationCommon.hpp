@@ -23,10 +23,9 @@ enum class OperationMultipleEvalSubType {
   OCL,
   OCLFASTMP,
   OCLMP,
-  OCLMASKMP
+  OCLMASKMP,
+  OCLOPT
 };
-
-
 
 class OperationMultipleEvalConfiguration {
  private:

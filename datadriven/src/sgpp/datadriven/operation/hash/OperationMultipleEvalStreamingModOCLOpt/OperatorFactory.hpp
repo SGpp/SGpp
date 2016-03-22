@@ -8,14 +8,15 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include "OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp"
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include "OperationMultiEvalStreamingModOCLOpt.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(
+base::OperationMultipleEval* createStreamingModOCLOptConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
-}
-}
+
+}  // namespace datadriven
+}  // namespace sgpp

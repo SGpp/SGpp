@@ -26,7 +26,7 @@ namespace sgpp {
 namespace datadriven {
 
 template <typename T>
-class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::OperationMultipleEval {
+class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval {
  protected:
   bool verbose;
   size_t dims;
@@ -37,13 +37,19 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   size_t datasetSizePadded;
   size_t datasetSizeBuffers;
   /// Member to store the sparse grid's levels for better vectorization
-  std::vector<T> level;
+  std::vector<T> levelMask;
   /// Member to store the sparse grid's indices for better vectorization
-  std::vector<T> index;
+  std::vector<T> indexMask;
   /// Member to store the sparse grid's mask for better vectorization
-  std::vector<T> mask;
+  std::vector<T> maskMask;
   /// Member to store the sparse grid's offset for better vectorization
-  std::vector<T> offset;
+  std::vector<T> offsetMask;
+
+  /// Member to store the sparse grid's levels for better vectorization
+  std::vector<T> levelFast;
+  /// Member to store the sparse grid's indices for better vectorization
+  std::vector<T> indexFast;
+
   size_t gridSizeUnpadded;
   size_t gridSizePadded;
   size_t gridSizeBuffers;
@@ -58,8 +64,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
 
-  std::vector<StreamingModOCLMaskMultiPlatform::KernelMult<T>> multKernels;
-  std::vector<StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
+  std::vector<StreamingModOCLOpt::KernelMult<T>> multKernels;
+  std::vector<StreamingModOCLOpt::KernelMultTranspose<T>> multTransposeKernels;
 
   std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMult;
   std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
@@ -68,10 +74,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   size_t overallDataBlockingSize;
 
  public:
-  OperationMultiEvalStreamingModOCLMaskMultiPlatform(
-      base::Grid &grid, base::DataMatrix &dataset,
-      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters)
+  OperationMultiEvalStreamingModOCLOpt(base::Grid &grid, base::DataMatrix &dataset,
+                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                                       std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(parameters),
@@ -84,6 +89,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     this->dims = dataset.getNcols();  // be aware of transpose!
 
+    // padded grid size is set by prepare
+
     // initialized in prepare
     this->gridSizeUnpadded = 0;
     this->gridSizePadded = 0;
@@ -93,6 +100,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->datasetSizeUnpadded = 0;
     this->datasetSizePadded = 0;
     this->datasetSizeBuffers = 0;
+
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
 
@@ -121,8 +129,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"][StreamingModOCLOpt::Configuration::getKernelName()];
 
       multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                                queueLoadBalancerMult);
@@ -136,7 +144,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->prepare();
   }
 
-  ~OperationMultiEvalStreamingModOCLMaskMultiPlatform() {}
+  ~OperationMultiEvalStreamingModOCLOpt() {}
 
   void mult(sgpp::base::DataVector &alpha, sgpp::base::DataVector &result) override {
     this->prepare();
@@ -171,9 +179,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
-                                       this->kernelDataset, alphaArray, resultArray, gridFrom,
-                                       gridTo, datasetFrom, datasetTo);
+      this->multKernels[threadId].mult(this->levelFast, this->indexFast, this->kernelDataset,
+                                       alphaArray, resultArray, gridFrom, gridTo, datasetFrom,
+                                       datasetTo);
     }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
@@ -198,6 +206,13 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     size_t gridTo = this->gridSizePadded;
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
+
+    //        if (omp_get_thread_num() == 0) {
+    //        queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose,
+    //        gridFrom, gridTo, overallGridBlockingSize);
+    //        }
+
+    // #pragma omp barrier
 
     queueLoadBalancerMultTrans->initialize(gridFrom, gridTo);
 
@@ -225,8 +240,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       size_t threadId = omp_get_thread_num();
 
       this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->mask, this->offset, this->kernelDataset, sourceArray,
-          resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+          this->levelMask, this->indexMask, this->maskMask, this->offsetMask, this->kernelDataset,
+          sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
     }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
@@ -245,6 +260,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
   void prepare() override {
     this->recalculateLevelIndexMask();
+    this->recalculateLevelIndexFast();
 
     for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
       this->multKernels[deviceIndex].resetKernel();
@@ -293,8 +309,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
    * grids
    */
   void recalculateLevelIndexMask() {
-    //    size_t commonGridPadding = calculateCommonGridPadding();
-
     size_t remainder = storage.getSize() % overallGridBlockingSize;
     size_t padding = 0;
 
@@ -305,84 +319,125 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     gridSizeUnpadded = storage.getSize();
 
     // size to distribute, not actual padded grid size
-    this->gridSizePadded = storage.getSize() + padding;
+    gridSizePadded = storage.getSize() + padding;
 
     // size for distributing schedules of different size
-    this->gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
+    gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
 
     sgpp::base::HashGridIndex::level_type curLevel;
     sgpp::base::HashGridIndex::index_type curIndex;
 
-    this->level = std::vector<T>(gridSizeBuffers * this->dims);
-    this->index = std::vector<T>(gridSizeBuffers * this->dims);
-    this->mask = std::vector<T>(gridSizeBuffers * this->dims);
-    this->offset = std::vector<T>(gridSizeBuffers * this->dims);
+    this->levelMask = std::vector<T>(gridSizeBuffers * this->dims);
+    this->indexMask = std::vector<T>(gridSizeBuffers * this->dims);
+    this->maskMask = std::vector<T>(gridSizeBuffers * this->dims);
+    this->offsetMask = std::vector<T>(gridSizeBuffers * this->dims);
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
         storage.get(i)->get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
-          this->level[i * this->dims + dim] = 0.0;
-          this->index[i * this->dims + dim] = 0.0;
+          this->levelMask[i * this->dims + dim] = 0.0;
+          this->indexMask[i * this->dims + dim] = 0.0;
           if (std::is_same<T, double>::value) {
             uint64_t intmask = 0x0000000000000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           } else {
             uint32_t intmask = 0x00000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           }
-          this->offset[i * this->dims + dim] = 1.0;
+          this->offsetMask[i * this->dims + dim] = 1.0;
         } else if (curIndex == 1) {
-          this->level[i * this->dims + dim] = static_cast<T>(-1.0) * static_cast<T>(1 << curLevel);
-          this->index[i * this->dims + dim] = 0.0;
+          this->levelMask[i * this->dims + dim] =
+              static_cast<T>(-1.0) * static_cast<T>(1 << curLevel);
+          this->indexMask[i * this->dims + dim] = 0.0;
           if (std::is_same<T, double>::value) {
             uint64_t intmask = 0x0000000000000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           } else {
             uint32_t intmask = 0x00000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           }
-          this->offset[i * this->dims + dim] = 2.0;
+          this->offsetMask[i * this->dims + dim] = 2.0;
         } else if (curIndex ==
                    static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
-          this->level[i * this->dims + dim] = static_cast<T>(1 << curLevel);
-          this->index[i * this->dims + dim] = static_cast<T>(curIndex);
+          this->levelMask[i * this->dims + dim] = static_cast<T>(1 << curLevel);
+          this->indexMask[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {
             uint64_t intmask = 0x0000000000000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           } else {
             uint32_t intmask = 0x00000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           }
-          this->offset[i * this->dims + dim] = 1.0;
+          this->offsetMask[i * this->dims + dim] = 1.0;
         } else {
-          this->level[i * this->dims + dim] = static_cast<T>(1 << curLevel);
-          this->index[i * this->dims + dim] = static_cast<T>(curIndex);
+          this->levelMask[i * this->dims + dim] = static_cast<T>(1 << curLevel);
+          this->indexMask[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {
             uint64_t intmask = 0x8000000000000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           } else {
             uint32_t intmask = 0x80000000;
-            this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+            this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
           }
-          this->offset[i * this->dims + dim] = 1.0;
+          this->offsetMask[i * this->dims + dim] = 1.0;
         }
       }
     }
 
     for (size_t i = storage.getSize(); i < gridSizeBuffers; i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        this->level[i * this->dims + dim] = 0;
-        this->index[i * this->dims + dim] = 0;
+        this->levelMask[i * this->dims + dim] = 0;
+        this->indexMask[i * this->dims + dim] = 0;
         if (std::is_same<T, double>::value) {
           uint64_t intmask = 0x0000000000000000;
-          this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+          this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
         } else {
           uint32_t intmask = 0x00000000;
-          this->mask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
+          this->maskMask[i * this->dims + dim] = *reinterpret_cast<T *>(&intmask);
         }
-        this->offset[i * this->dims + dim] = 1.0;
+        this->offsetMask[i * this->dims + dim] = 1.0;
+      }
+    }
+  }
+
+  void recalculateLevelIndexFast() {
+    // gridSizeUnpadded, gridSizePadded and gridSizeBuffers are initialized in
+    // recalculateLevelIndexMask()
+    base::GridStorage &storage = grid.getStorage();
+
+    size_t remainder = storage.getSize() % overallGridBlockingSize;
+    size_t padding = 0;
+
+    if (remainder != 0) {
+      padding = overallGridBlockingSize - remainder;
+    }
+
+    size_t gridSize = storage.getSize() + padding + overallGridBlockingSize;
+
+    levelFast = std::vector<T>(gridSize * dims);
+    indexFast = std::vector<T>(gridSize * dims);
+
+    base::HashGridIndex::level_type curLevel;
+    base::HashGridIndex::index_type curIndex;
+
+    /// pointer to index_type
+    base::HashGridStorage::index_pointer gridPoint;
+
+    for (size_t i = 0; i < storage.getSize(); i++) {
+      gridPoint = storage.get(i);
+      for (size_t dim = 0; dim < dims; dim++) {
+        gridPoint->get(dim, curLevel, curIndex);
+        levelFast[i * dims + dim] = static_cast<T>(1 << curLevel);
+        indexFast[i * dims + dim] = static_cast<T>(curIndex);
+      }
+    }
+
+    for (size_t i = storage.getSize(); i < gridSize; i++) {
+      for (size_t dim = 0; dim < storage.getDimension(); dim++) {
+        levelFast[i * dims + dim] = 1.0;
+        indexFast[i * dims + dim] = 1.0;
       }
     }
   }
@@ -394,8 +449,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"][StreamingModOCLOpt::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(commonPaddingRequiredment,
                                            kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt() *
@@ -411,8 +466,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"][StreamingModOCLOpt::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(
           commonPaddingRequiredment, kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt() *

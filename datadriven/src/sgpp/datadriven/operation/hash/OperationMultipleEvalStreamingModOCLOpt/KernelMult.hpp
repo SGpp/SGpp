@@ -20,7 +20,7 @@
 
 namespace sgpp {
 namespace datadriven {
-namespace StreamingModOCLFastMultiPlatform {
+namespace StreamingModOCLOpt {
 
 template <typename T>
 class KernelMult {
@@ -353,6 +353,6 @@ class KernelMult {
     deviceResultData.intializeTo(zeros, 1, 0, range);
   }
 };
-}  // namespace StreamingModOCLFastMultiPlatform
+}  // namespace StreamingModOCLOpt
 }  // namespace datadriven
 }  // namespace sgpp

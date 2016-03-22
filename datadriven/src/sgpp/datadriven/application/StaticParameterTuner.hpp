@@ -16,7 +16,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/TunableParameter.hpp"
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 namespace sgpp {
 namespace datadriven {
