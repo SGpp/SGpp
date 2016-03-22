@@ -228,13 +228,13 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_int), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_uint), &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_int), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;

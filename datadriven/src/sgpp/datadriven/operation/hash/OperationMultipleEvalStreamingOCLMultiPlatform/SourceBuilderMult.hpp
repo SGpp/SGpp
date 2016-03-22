@@ -29,7 +29,6 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
   size_t localWorkgroupSize;
   bool useLocalMemory;
   size_t dataBlockSize;
-  size_t transGridBlockSize;
   uint64_t maxDimUnroll;
   size_t prefetchSize;
 
@@ -111,7 +110,6 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
     dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
-    transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
     prefetchSize = kernelConfiguration["KERNEL_PREFETCH_SIZE"].getUInt();
   }
@@ -120,10 +118,6 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
       return this->reuseSource("StreamingOCLMultiPlatform_mult.cl");
     }
-
-    size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    bool useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    uint64_t maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream sourceStream;
 

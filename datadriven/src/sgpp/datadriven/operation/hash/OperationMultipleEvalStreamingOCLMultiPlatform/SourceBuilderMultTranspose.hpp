@@ -122,10 +122,6 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
       return this->reuseSource("StreamingOCLMultiPlatform_multTrans.cl");
     }
 
-    size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    bool useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    uint64_t maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
-
     std::stringstream sourceStream;
 
     if (std::is_same<real_type, double>::value) {
