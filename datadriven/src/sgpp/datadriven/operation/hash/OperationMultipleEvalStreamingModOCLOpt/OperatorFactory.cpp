@@ -8,12 +8,12 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include "Configuration.hpp"
-#include "OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
+#include "OperationMultiEvalStreamingModOCLOpt.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
+base::OperationMultipleEval* createStreamingModOCLOptConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
@@ -29,18 +29,18 @@ base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
     parameters = manager->getConfiguration();
   }
 
-  StreamingModOCLMaskMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
+  StreamingModOCLOpt::Configuration::augmentDefaultParameters(*parameters);
 
   if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
-    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<float>(
-        grid, dataset, manager, parameters);
+    return new datadriven::OperationMultiEvalStreamingModOCLOpt<float>(grid, dataset, manager,
+                                                                       parameters);
   } else if ((*parameters)["INTERNAL_PRECISION"].get() == "double") {
-    return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<double>(
-        grid, dataset, manager, parameters);
+    return new datadriven::OperationMultiEvalStreamingModOCLOpt<double>(grid, dataset, manager,
+                                                                        parameters);
   } else {
     throw base::factory_exception(
         "Error creating "
-        "operation\"OperationMultiEvalStreamingModOCLMaskMultiPlatform\": "
+        "operation\"OperationMultiEvalStreamingModOCLOpt\": "
         "invalid value for parameter \"INTERNAL_PRECISION\"");
   }
 }

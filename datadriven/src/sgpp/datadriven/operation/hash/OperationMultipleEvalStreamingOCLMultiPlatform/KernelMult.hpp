@@ -106,10 +106,10 @@ class KernelMult {
     //    releaseGridBuffers();
   }
 
-  double mult(std::vector<T> &level, std::vector<T> &index, size_t gridSize,
-              std::vector<T> &dataset, size_t datasetSize, std::vector<T> &alpha,
-              std::vector<T> &result, const size_t start_index_grid, const size_t end_index_grid,
-              const size_t start_index_data, const size_t end_index_data) {
+  double mult(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
+              std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid,
+              const size_t end_index_grid, const size_t start_index_data,
+              const size_t end_index_data) {
     if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
       {
@@ -267,9 +267,9 @@ class KernelMult {
         std::vector<T> &hostTemp = deviceResultData.getHostPointer();
         size_t deviceIndex = 0;
         for (size_t i = 0; i < rangeSize; i++) {
-          if (kernelStartData + i >= datasetSize) {
-            break;
-          }
+          //          if (kernelStartData + i >= datasetSize) {
+          //            break;
+          //          }
           result[kernelStartData + i] = hostTemp[deviceIndex];
           deviceIndex += 1;
         }
@@ -320,19 +320,6 @@ class KernelMult {
   }
 
  private:
-  //  void releaseGridBuffers() {
-  //    this->deviceLevel.freeBuffer();
-  //    this->deviceIndex.freeBuffer();
-  //    this->deviceAlpha.freeBuffer();
-  //  }
-
-  //  void releaseDataBuffers() {
-  //    this->deviceData.freeBuffer();
-  //    this->deviceResultData.freeBuffer();
-  //  }
-  //
-  //  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
-
   void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha,
                        size_t kernelStartGrid, size_t kernelEndGrid) {
     deviceLevel.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);

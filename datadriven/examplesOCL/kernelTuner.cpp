@@ -10,7 +10,7 @@
 #include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 #include "sgpp/datadriven/application/LearnerScenario.hpp"

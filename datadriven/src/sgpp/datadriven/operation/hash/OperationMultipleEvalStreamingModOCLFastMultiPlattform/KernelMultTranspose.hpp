@@ -268,9 +268,6 @@ class KernelMultTranspose {
 
         std::vector<T> &deviceResultGridTransposeHost = deviceResultGridTranspose.getHostPointer();
         for (size_t i = 0; i < rangeSize; i++) {
-          if (kernelStartGrid + i >= end_index_grid) {
-            break;
-          }
           result[kernelStartGrid + i] = deviceResultGridTransposeHost[i];
         }
 
