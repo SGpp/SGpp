@@ -12,6 +12,7 @@
 #include "sgpp/base/grid/Grid.hpp"
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
 #include "sgpp/datadriven/application/GaussianKDE.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 
 int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
