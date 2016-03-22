@@ -43,7 +43,8 @@ void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& t
                                                  const size_t numNeededIterations) {
   LearnerVectorizedPerformance currentPerf =
       LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(
-          *this->grid, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
+          *this->grid, trainDataset.getNrows(), solver, numNeededIterations, sizeof(double),
+          reuseCoefficients, true);
 
   this->GFlop += currentPerf.GFlop_;
   this->GByte += currentPerf.GByte_;
