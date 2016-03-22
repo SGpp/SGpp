@@ -117,6 +117,14 @@ class KernelCreateGraph {
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
+    // enqueue kernel
+    size_t globalworkrange[1];
+    if (chunksize == 0) {
+      globalworkrange[0] = data.size()/dims;
+    } else {
+      globalworkrange[0] = chunksize;
+    }
+
     // Set kernel arguments
     err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceData.getBuffer());
     if (err != CL_SUCCESS) {
@@ -136,20 +144,20 @@ class KernelCreateGraph {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
+    err = clSetKernelArg(this->kernel, 3, sizeof(cl_uint), globalworkrange);
+    if (err != CL_SUCCESS) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      throw base::operation_exception(errorString.str());
+    }
 
     cl_event clTiming = nullptr;
 
-    // enqueue kernel
-    size_t globalworkrange[1];
-    if (chunksize == 0) {
-      globalworkrange[0] = data.size()/dims;
-    } else {
-      globalworkrange[0] = chunksize;
-    }
+    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
     if (verbose)
       std::cout << "Starting the kernel for " << globalworkrange[0] << " items" << std::endl;
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
-                                 NULL, 0, nullptr, &clTiming);
+                                 &localSize, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue kernel command! Error code: "

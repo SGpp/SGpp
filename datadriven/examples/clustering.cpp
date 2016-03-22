@@ -21,8 +21,8 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe, k;
-  double lambda, treshold;
+  size_t dimension, tiefe = 10, k = 12;
+  double lambda = 0.001, treshold = 0.7;
   std::string filename = "dataset2_dim2.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
@@ -33,7 +33,7 @@ int main() {
   std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
             << dataset.getNrows() << " datapoints." << std::endl;
 
-  std::cout << "Size of Grid (3-18): ";
+  /*std::cout << "Size of Grid (3-18): ";
   std::cin >> tiefe;
   std::cout << "Lambda (controlls smoothness of the density function."
             << " 0.01 - 0.0001 recommended.): ";
@@ -43,9 +43,9 @@ int main() {
   std::cin >> k;
   std::cout << "Treshold (nodes and edges will be removed if their density is below this "
             << "treshold. 0 - 0.2 recommended.): ";
-  std::cin >> treshold;
+            std::cin >> treshold;*/
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
@@ -71,7 +71,7 @@ int main() {
   double max = alpha.max();
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
-    alpha[i] = alpha[i]*1.0/(max-min);
+  alpha[i] = alpha[i]*1.0/(max-min);*/
 
   std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
@@ -80,7 +80,15 @@ int main() {
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
-  std::cout << "Starting graph pruning" << std::endl;
+  for (auto i = 0; i < 100; ++i) {
+    for (auto j = 0; j < 12; ++j) {
+      std::cout << graph[i * 12 + j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+
+  /*std::cout << "Starting graph pruning" << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
       sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
                                                             treshold, k, "MyOCLConf.cfg");
@@ -89,5 +97,5 @@ int main() {
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
   // cleanup
   delete operation_mult;
-  delete solver;
+  delete solver;*/
 }
