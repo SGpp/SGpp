@@ -29,6 +29,8 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
   size_t dataBlockSize;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
+  bool use_select;
+
 
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
@@ -72,8 +74,14 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
              << this->indent[2] << "}" << std::endl;
     } else {
       for (size_t i = 1; i < k; i++) {
-        output << this->indent[2] << "if (k_dists[maxindex] < k_dists[" << i << "])" << std::endl;
-        output << this->indent[3] << "maxindex  = " << i << "; " << std::endl;
+        if (use_select) {
+          output << this->indent[2] << "maxindex = select(" << i
+                 << ",maxindex,k_dists[maxindex] > k_dists["
+                 << i << "]);" << std::endl;
+        } else {
+          output << this->indent[2] << "if (k_dists[maxindex] < k_dists[" << i << "])" << std::endl;
+          output << this->indent[3] << "maxindex  = " << i << "; " << std::endl;
+        }
       }
     }
     // Enables vectorization but slows kernel down (longer ifs...)
@@ -106,11 +114,16 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
  public:
   SourceBuilderCreateGraph(std::shared_ptr<base::OCLDevice> device,
                            json::Node &kernelConfiguration, size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims), use_select(false) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
       useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    if (kernelConfiguration.contains("USE_SELECT")) {
+      if (kernelConfiguration["USE_SELECT"].getBool()) {
+        use_select = true;
+      }
+    }
     std::cout << "Local Size: " << localWorkgroupSize << "  Use: " << useLocalMemory << std::endl;
   }
 
@@ -198,7 +211,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[2] << "}" << std::endl
                    << this->indent[1] << "}" << std::endl
                    << this->indent[0] << "}" << std::endl;
-          }
+    }
     sourceStream << copy_k_registers_into_global(k)
                  << "}" << std::endl
                  << "}" << std::endl;
