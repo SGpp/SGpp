@@ -257,29 +257,28 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
  private:
   void padDataset(sgpp::base::DataMatrix &dataset) {
-    size_t oldSize = dataset.getNrows();
+    datasetSizeUnpadded = dataset.getNrows();
 
     size_t commonDatasetPadding = calculateCommonDatasetPadding();
 
     // Assure that data has a even number of instances -> padding might be
     // needed
-    size_t remainder = oldSize % commonDatasetPadding;
+    size_t remainder = datasetSizeUnpadded % commonDatasetPadding;
     // round up to next number divisible by padding (distributable to threads)
     // then add another padding (for irregular schedules)
     size_t padding = commonDatasetPadding - remainder;
 
-    datasetSizeUnpadded = dataset.getNrows();
     // excluding the additional padding for irregular schedules
     datasetSizePadded = dataset.getNrows() + padding;
     // totol size for buffer allocation
     datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     sgpp::base::DataVector lastRow(dataset.getNcols());
-    dataset.getRow(oldSize - 1, lastRow);
+    dataset.getRow(datasetSizeUnpadded - 1, lastRow);
     dataset.resize(datasetSizeBuffers);
 
-    for (size_t i = 0; i < datasetSizeBuffers; i++) {
-      dataset.setRow(oldSize + i, lastRow);
+    for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+      dataset.setRow(i, lastRow);
     }
   }
 
