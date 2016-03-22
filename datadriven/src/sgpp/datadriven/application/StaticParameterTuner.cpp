@@ -140,17 +140,9 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       bool addedScheduleSize = false;
       if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
         addedScheduleSize = true;
-        // multiples of 1024 should run with any kernel
+        // TODO(pfandedd): improve, for now multiples of 1024 should run with any kernel
         deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ul);
       }
-
-      //            if (useDoublePrecision) {
-      //                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION",
-      //                "double");
-      //            } else {
-      //                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION",
-      //                "float");
-      //            }
 
       this->tuneParameters(scenario, platformName, deviceName, kernelName);
 
@@ -351,6 +343,10 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
   } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
     operationType = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
     operationSubType = sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
+  } else if (kernelName.compare("StreamingModOCLOpt") == 0) {
+    operationType = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = sgpp::datadriven::OperationMultipleEvalSubType::OCLOPT;
+
   } else {
     throw sgpp::base::application_exception(
         "error: configured kernel is not known to static parameter tuner");
