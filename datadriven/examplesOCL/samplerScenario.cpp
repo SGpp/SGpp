@@ -64,13 +64,14 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 }
 
 int main(int argc, char **argv) {
-  std::string scenarioFileName =
-      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
+  //  std::string scenarioFileName =
+  //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
-  // + opt!
+  std::string scenarioFileName =
+      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_double.scenario";
 
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float.scenario";
@@ -78,8 +79,10 @@ int main(int argc, char **argv) {
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_float.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_float.scenario";
+  //  std::string scenarioFileName =
+  //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_float.scenario";
 
-  std::string parameterFile("reproduce.cfg");
+  std::string parameterFile("tahiti_double_tuned.cfg");
 
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
