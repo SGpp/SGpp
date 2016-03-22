@@ -266,7 +266,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     // replicate last row for padding
-    base::DataVector lastRow(dataset.getNcols());
+    base::DataVector lastRow(dims);
     dataset.getRow(datasetSizeUnpadded - 1, lastRow);
     dataset.resize(datasetSizeBuffers);
 

@@ -82,7 +82,7 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
       state = PARSER_STATE::ROWVALUE;
       i++;
     } else if (state == PARSER_STATE::ROWVALUE) {
-//      size_t next;
+      //      size_t next;
       double value = std::atof(&(serializedVector[i]));
       row.append(value);
       state = PARSER_STATE::ROWCOMMAEND;
@@ -305,6 +305,8 @@ void DataMatrix::getRow(size_t row, std::vector<double>& vec) const {
 void DataMatrix::setRow(size_t row, const DataVector& vec) {
   if (vec.getSize() != this->ncols) {
     throw sgpp::base::data_exception("DataMatrix::setRow : Dimensions do not match");
+  } else if (row >= this->nrows) {
+    throw sgpp::base::data_exception("DataMatrix::setRow : \"row\" out of bounds");
   }
 
   for (size_t i = 0; i < this->ncols; i++) {

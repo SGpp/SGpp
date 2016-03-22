@@ -256,23 +256,22 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
 
  private:
   void padDataset(base::DataMatrix& dataset) {
+    datasetSizeUnpadded = dataset.getNrows();
     // Assure that data has a even number of instances -> padding might be
     // needed
-    size_t remainder = dataset.getNrows() % commonDatasetPadding;
+    size_t remainder = datasetSizeUnpadded % commonDatasetPadding;
     size_t padding = commonDatasetPadding - remainder;
 
-    datasetSizeUnpadded = dataset.getNrows();
     datasetSizePadded = dataset.getNrows() + padding;
     datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     if (padding != commonDatasetPadding) {
-      base::DataVector lastRow(dataset.getNcols());
-      size_t oldSize = dataset.getNrows();
-      dataset.getRow(dataset.getNrows() - 1, lastRow);
-      dataset.resize(dataset.getNrows() + padding);
+      base::DataVector lastRow(dims);
+      dataset.getRow(datasetSizeUnpadded - 1, lastRow);
+      dataset.resize(datasetSizeBuffers);
 
-      for (size_t i = 0; i < padding; i++) {
-        dataset.setRow(oldSize + i, lastRow);
+      for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+        dataset.setRow(i, lastRow);
       }
     }
   }
