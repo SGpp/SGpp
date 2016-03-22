@@ -153,15 +153,15 @@ class SGDEdist(EstimatedDist):
         if self.dim == 1:
             op = createOperationInverseRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
-            for i, xi in enumerate(x_unit[:, 0]):
+            for i, xi in enumerate(x[:, 0]):
                 ans[i] = op.doTransformation1D(self.alpha, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
                 return ans
         else:
-            A = DataMatrix(x_unit)
-            B = DataMatrix(x_unit.shape[0], x_unit.shape[1])
+            A = DataMatrix(x)
+            B = DataMatrix(x.shape[0], x.shape[1])
             B.setAll(0.0)
 
             # do the transformation
@@ -169,7 +169,7 @@ class SGDEdist(EstimatedDist):
             op.doTransformation(self.alpha, A, B)
 
             # extract the outcome
-            if x_unit.shape == (1, 1):
+            if x.shape == (1, 1):
                 return B.get(0, 0)
             else:
                 return B.array()

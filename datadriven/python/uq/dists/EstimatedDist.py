@@ -29,6 +29,8 @@ class EstimatedDist(Dist):
 
     @classmethod
     def computeLinearTransformation(self, bounds):
+        if len(bounds.shape) == 1:
+            bounds = np.array([bounds])
         if bounds.shape[1] != 2:
             raise AttributeError("EstimatedDist - bounds have the wrong shape")
 
