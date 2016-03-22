@@ -4,9 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
-from pysgpp.extensions.datadriven.uq.dists.GaussianKDEDist import GaussianKDEDist
-from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
-from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -32,6 +30,9 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.tools import writeAlphaARFF, writeGrid
 from pysgpp.extensions.datadriven.uq.analysis import Analysis
+from pysgpp.extensions.datadriven.uq.dists.GaussianKDEDist import GaussianKDEDist
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 
 class ASGCAnalysis(Analysis):
