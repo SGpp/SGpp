@@ -263,7 +263,7 @@ if env["PLATFORM"] == "win32":
 
   # also add the Boost library path to the PATH
   # so that the Boost test *.dll can be found when running the tests
-  if env["RUN_BOOST_TESTS"]:
+  if env["COMPILE_BOOST_TESTS"]:
     env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
                                           env["BOOST_LIBRARY_PATH"]])
 # Mac OS X doesn't use LD_LIBRARY_PATH

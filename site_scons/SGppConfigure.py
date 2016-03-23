@@ -410,8 +410,8 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  config.env.AppendUnique(CPPFLAGS=["-openmp"])
-  config.env.AppendUnique(LINKFLAGS=["-openmp"])
+  config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
+  config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.AppendUnique(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -431,6 +431,7 @@ def configureIntelCompiler(config):
   elif config.env["ARCH"] == "mic":
     config.env.AppendUnique(CPPFLAGS=["-mmic"])
     config.env.AppendUnique(LINKFLAGS=["-mmic"])
+    config.env["CPPDEFINES"]["USEMIC"] = 1
   else:
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")

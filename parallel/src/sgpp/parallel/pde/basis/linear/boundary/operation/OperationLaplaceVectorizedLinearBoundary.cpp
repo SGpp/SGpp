@@ -678,6 +678,7 @@ void OperationLaplaceVectorizedLinearBoundary::mult_dirichlet_mic(size_t process
           temp_index_ptr += BLOCK_LENGTH;
           ++i_idx;
         }
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
         gradient_temp_ptr1 = gradient_temp_ptr;
         for (size_t d_outer = 0; d_outer < max_dims; d_outer++) {
           // D + 2
@@ -715,11 +716,14 @@ void OperationLaplaceVectorizedLinearBoundary::mult_dirichlet_mic(size_t process
           mm_result2 = _mm512_add_pd(mm_result2, mm_element2);
           gradient_temp_ptr1 += VECTOR_SIZE;
         }
+
         double* operation_result_dest_ptr =
             operation_result_matrix_->getPointer() +
             (ii - process_i_start) * operation_result_matrix_->getNcols();
+
         _mm512_store_pd(operation_result_dest_ptr + j, mm_result);
         _mm512_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+#endif
       }
     }
   }
