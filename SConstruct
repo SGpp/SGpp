@@ -358,6 +358,7 @@ if env["COMPILE_BOOST_TESTS"]:
 libraryTargetList = []
 pythonTestTargetList = []
 boostTestTargetList = []
+boostTestRunTargetList = []
 exampleTargetList = []
 pydocTargetList = []
 headerSourceList = []
@@ -365,6 +366,7 @@ headerDestList = []
 env.Export("libraryTargetList")
 env.Export("pythonTestTargetList")
 env.Export("boostTestTargetList")
+env.Export("boostTestRunTargetList")
 env.Export("exampleTargetList")
 env.Export("pydocTargetList")
 env.Export("headerSourceList")
@@ -437,10 +439,15 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
 # Boost tests
 #########################################################################
 
-if env["COMPILE_BOOST_TESTS"] and env["RUN_BOOST_TESTS"]:
+if env["COMPILE_BOOST_TESTS"]:
   env.Depends(boostTestTargetList, finalStepDependencies)
   finalStepDependencies.append(boostTestTargetList)
   env.SideEffect("sideEffectFinalSteps", boostTestTargetList)
+
+  if env["RUN_BOOST_TESTS"]:
+    env.Depends(boostTestRunTargetList, finalStepDependencies)
+    finalStepDependencies.append(boostTestRunTargetList)
+    env.SideEffect("sideEffectFinalSteps", boostTestRunTargetList)
 
 # Examples
 #########################################################################
