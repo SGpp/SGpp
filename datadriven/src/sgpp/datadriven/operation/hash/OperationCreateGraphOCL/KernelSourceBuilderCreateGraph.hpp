@@ -30,6 +30,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
   bool use_select;
+  bool use_approx;
 
 
   std::string getData(std::string dim, size_t dataBlockingIndex) {
@@ -114,7 +115,8 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
  public:
   SourceBuilderCreateGraph(std::shared_ptr<base::OCLDevice> device,
                            json::Node &kernelConfiguration, size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims), use_select(false) {
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims), use_select(false),
+      use_approx(false) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
@@ -122,6 +124,11 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     if (kernelConfiguration.contains("USE_SELECT")) {
       if (kernelConfiguration["USE_SELECT"].getBool()) {
         use_select = true;
+      }
+    }
+    if (kernelConfiguration.contains("USE_APPROX")) {
+      if (kernelConfiguration["USE_APPROX"].getBool()) {
+        use_approx = true;
       }
     }
     std::cout << "Local Size: " << localWorkgroupSize << "  Use: " << useLocalMemory << std::endl;
@@ -154,12 +161,12 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                  << this->indent[0] << "__private int chunk_index = get_global_id(0);" << std::endl
                  << this->indent[0] << "__private int maxindex = 0;" << std::endl
                  << this->indent[0] << "if (chunk_index < chunksize) {" << std::endl;
-    if (!useLocalMemory)
+    if (!use_approx)
       sourceStream << init_k_registers(k) << std::endl;
     sourceStream << save_from_global_to_private(dimensions)
                  << this->indent[0] << "__private " << this->floatType() << " dist = 0.0;"
                  << std::endl;
-    if (useLocalMemory) {
+    if (use_approx) {
       sourceStream << this->indent[0] << "__local " << this->floatType() << " data_local["
                    << localWorkgroupSize * dimensions  << "];" << std::endl
                    << this->indent[0] << "__private " << this->floatType() << " dist_reg["
@@ -179,7 +186,6 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (unsigned int i = 0 ; i < " << localWorkgroupSize
                    << "; i++) {" << std::endl
-                   << this->indent[1] << "if (i + group * " << localWorkgroupSize << " != global_index) {" << std::endl
                    << this->indent[2] << "dist = 0.0;" << std::endl
                    << this->indent[2] << "for (unsigned int j = 0; j <     " << dimensions
                    << " ; j++) {" << std::endl
@@ -188,11 +194,11 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[3] << "* (datapoint[j] - data_local[j + i* "
                    << dimensions << " ]);" << std::endl
                    << this->indent[2] << "}" << std::endl
-                   << this->indent[2] << "if (dist < dist_reg[i]) {" << std::endl
+                   << this->indent[2] << "if (dist < dist_reg[i] && i + group * "
+                   << localWorkgroupSize << " != global_index) {" << std::endl
                    << this->indent[3] << "dist_reg[i] = dist;" << std::endl
                    << this->indent[3] << "index_reg[i] = group;" << std::endl
                    << this->indent[2] << "}" << std::endl
-                   << this->indent[1] << "}" << std::endl
                    << this->indent[1] << "}" << std::endl
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[0] << "}" << std::endl
@@ -209,6 +215,39 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << localWorkgroupSize << ";" << std::endl
                    << this->indent[1] << "dist_reg[maxindex] = 4.0;" << std::endl
                    << this->indent[0] << "}" << std::endl;
+    } else if (useLocalMemory) {
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " data_local["
+                   << localWorkgroupSize * dimensions << "];" << std::endl
+                   <<  this->indent[0] << "for (unsigned int group = 0; group < "
+                   << 100000 / localWorkgroupSize << "; group++) {" << std::endl
+                   << this->indent[1] << "for (unsigned int j = 0; j <     " << dimensions
+                   << " ; j++) " << std::endl
+                   << this->indent[2] << "data_local[local_id * " << dimensions
+                   << " + j] = data[group * " << localWorkgroupSize * dimensions
+                   << "  + local_id * " <<  dimensions << " + j];" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
+                   << this->indent[1] << "for (unsigned int i = 0 ; i < " << localWorkgroupSize
+                   << "; i++) {" << std::endl
+                   << this->indent[2] << "dist = 0.0;" << std::endl
+                   << this->indent[2] << "for (unsigned int j = 0; j <     " << dimensions
+                   << " ; j++) {" << std::endl
+                   << this->indent[3] << "dist += (datapoint[j] - data_local[j + i * "
+                   << dimensions << " ])" << std::endl
+                   << this->indent[3] << "* (datapoint[j] - data_local[j + i* "
+                   << dimensions << " ]);" << std::endl
+                   << this->indent[2] << "}" << std::endl
+                   << this->indent[2] << "maxindex = 0;" << std::endl
+                   << find_max_index(k, true)
+                   << this->indent[2] << "if (dist < k_dists[maxindex] && i + group * "
+                   << localWorkgroupSize << " != global_index) {" << std::endl
+                   << this->indent[3] << "k_reg[maxindex] = i + group * " << localWorkgroupSize
+                   << ";" << std::endl
+                   << this->indent[3] << "k_dists[maxindex] = dist;" << std::endl
+                   << this->indent[2] << "}" << std::endl
+                   << this->indent[1] << "}" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
+                   << this->indent[0] << "}" << std::endl
+                   << copy_k_registers_into_global(k);
     } else {
       sourceStream << this->indent[0] << "for (unsigned int i = 0; i <    " << dataSize
                    << "; i++) {" << std::endl
