@@ -243,8 +243,8 @@ class DataContainer(object):
         newContainer = DataContainer(points=self.getPoints(), values=self.getValues(), name=self.name)
         for k in self.points.keys():
             if k != self.name:
-                newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.specifications[k], k)
-        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getSpecifiction(), container.getName())
+                newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.dataDict[k], self.specifications[k], k)
+        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getPointstoValuesMap(), container.getSpecifiction(), container.getName())
     
     
     ## Merges several data containers to one.
@@ -289,9 +289,10 @@ class DataContainer(object):
     # @param name: String category name under which points and values should be stored
     # @param specification specification
     # @return: DataContainer itself
-    def __setSubContainer(self, points, values, specification, name):
+    def __setSubContainer(self, points, values, dataDict, specification, name):
         self.points[name] = points
         self.values[name] = values
+        self.dataDict[name] = dataDict
         self.specifications[name] = specification
         return self
     
@@ -315,7 +316,6 @@ class DataContainer(object):
             category = self.name
         return self.points[category]
     
-    
     ## Returns values stored in the data set with default name
     # @param category String category name of the requested data ("train" or "test")
     # @return: DataVector of values
@@ -328,6 +328,10 @@ class DataContainer(object):
     # @return: the DataSpecification object
     def getSpecifiction(self):
         return self.specifications[self.name]
+
+
+    def getPointstoValuesMap(self):
+        return self.dataDict[self.name]
     
     
     ## Return the default name of data set

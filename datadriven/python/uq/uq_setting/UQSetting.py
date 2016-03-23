@@ -59,9 +59,9 @@ class UQSetting(object):
         self.__stats_simulation = {}
         self.__stats_postprocessor = {}
 
-        self._verbose = True
+        self._verbose = False
 
-        # parallel stuff (taken from mcm/mc_berechnung)
+        # parallel stuff (taken from mc_berechnung)
         self.parallelprocesses = sum([props['cores'] for props in remote.hosts.values()])
         self.expectedsamplecount = 0  # set to expected number of samples, for parallellisation
         self.__filesuffix = 0  # incremented for each process
@@ -88,7 +88,8 @@ class UQSetting(object):
             x = tuple(sample.getExpandedProbabilistic())
             # DAMN IT => this is shit!!!!
             keys = stats.keys()
-            print "search for equivalent for %s" % (p,)
+            if self._verbose:
+                print "search for equivalent for %s" % (p,)
             j = 0
             while not found and j < len(keys):
                 g = keys[j]
@@ -100,7 +101,8 @@ class UQSetting(object):
                 if diff < 1e-6:
                     found = True
                     old_q = self.__stats_preprocessor[g]
-                    print g, old_q
+                    if self._verbose:
+                        print g, old_q
 
                     # save old items
                     q = self.getPreprocessor().unitToProbabilistic(x)
@@ -127,16 +129,17 @@ class UQSetting(object):
                     self.__stats_simulation[q] = simulation
                     self.__stats_postprocessor[q] = post
 
-            if found:
-                print "found equivalent",
-                print min_diff
-                print len(self.__stats_samples), \
-                    len(self.__stats_preprocessor), \
-                    len(self.__stats_preprocessor_reverse), \
-                    len(self.__stats_simulation), \
-                    len(self.__stats_postprocessor)
-            else:
-                print "no equivalent found"
+            if self._verbose:
+                if found:
+                    print "found equivalent",
+                    print min_diff
+                    print len(self.__stats_samples), \
+                        len(self.__stats_preprocessor), \
+                        len(self.__stats_preprocessor_reverse), \
+                        len(self.__stats_simulation), \
+                        len(self.__stats_postprocessor)
+                else:
+                    print "no equivalent found"
         return found
 
     def __preprocessing(self, sample, *args, **kws):
@@ -802,7 +805,7 @@ class UQSetting(object):
         # run over all parameters
         for k, p in enumerate(ps):
             if self._verbose:
-                print " %i/%i\r" % (k + 1, len(ps)),
+                print " %i/%i \r" % (k + 1, len(ps)),
 
             res = self.getResult(p, ts, qoi)
             
