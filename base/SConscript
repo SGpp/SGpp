@@ -18,8 +18,8 @@ module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 module.scanSource()
 module.buildLibrary()
 module.generatePythonDocstrings()
-if env["ARCH"] != "mic":
-  module.buildExamples()
+#if env["ARCH"] != "mic":
+#  module.buildExamples()
 module.buildBoostTests()
 module.runBoostTests()
 module.runCpplint()
