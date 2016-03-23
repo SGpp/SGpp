@@ -105,8 +105,8 @@ config = {"grid_level": 6,
           "crossValidation_silent": False}
 distSGDE = analysis.estimateDensity(dtype="sgde", config=config)
 
-print "mean(u) = %g ~ %g ~ %g" % (analysis.mean()[0], distKDE.mean(), distSGDE.mean())
-print "var(u) = %g ~ %g ~ %g" % (analysis.var()[0], distKDE.var(), distSGDE.var())
+print "mean(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.mean()[0], distKDE.mean(), distSGDE.mean())
+print "var(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.var()[0], distKDE.var(), distSGDE.var())
 # ---------------------------------------------------------------------------
 y = analysis.eval(analysis.generateUnitSamples())
 

@@ -17,17 +17,19 @@ import numpy as np
 
 class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
-    def __init__(self, grid=None, U=None, T=None):
+    def __init__(self):
         super(self.__class__, self).__init__()
-        self.grid = grid
-        self.U = U
-        self.T = T
-
         # system matrices for mean and mean^2
-        self.A_mean = None
-        self.A_var = None
+        self.A_mean = {}
+        self.A_var = {}
 
-#         self.vol, self.W = self._extractPDFforMomentEstimation(U, T)
+    def getSystemMatrixForMean(self, grid, W, D):
+        hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
+        if hash_value not in self.A_var:
+            self.A_mean[hash_value] = self.computeSystemMatrixForMean(grid, W, D)
+
+        return self.A_mean[hash_value]
+
 
     def computeSystemMatrixForMean(self, grid, W, D):
         # compute the integral of the product
@@ -54,7 +56,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 A, erri = bf.computeBilinearFormByList(gpsi, basisi,
                                                        gpsj, basisj)
                 # weight it with the coefficient of the density function
-                tmp = A.array().dot(dist.alpha.array())
+                tmp = A.dot(dist.alpha.array())
             else:
                 # the distribution is given analytically, handle them
                 # analytically in the integration of the basis functions
@@ -66,7 +68,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
                 lf = LinearGaussQuadratureStrategy(dist, trans)
                 tmp, erri = lf.computeLinearFormByList(gpsi, basisi)
-                tmp = tmp.array()
 
             # print error stats
             # print "%s: %g -> %g" % (str(dims), err, err + D[i].vol() * erri)
@@ -81,10 +82,18 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         return A_mean, err
 
 
-    def computeSystemMatrixForVariance(self, grid, alpha, W, D):
+    def getSystemMatrixForVariance(self, grid, W, D):
+        hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
+        if hash_value not in self.A_var:
+            self.A_var[hash_value] = self.computeSystemMatrixForVariance(grid, W, D)
+
+        return self.A_var[hash_value]
+
+
+    def computeSystemMatrixForVariance(self, grid, W, D):
         # compute the integral of the product times the pdf
         ngs = grid.getStorage()
-        ngrid, nalpha = grid, alpha
+        ngrid = grid
 
         A_var = np.ones((ngs.getSize(), ngs.getSize()))
         err = 0
@@ -102,9 +111,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 gpsk, basisk = project(dist.grid, range(len(dims)))
                 # compute the bilinear form
                 tf = TrilinearGaussQuadratureStrategy([dist], trans)
-                A, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
-                                                        gpsi, basisi,
-                                                        gpsi, basisi)
+                A_idim, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
+                                                             psi, basisi,
+                                                             psi, basisi)
             else:
                 # we compute the bilinear form of the grids
                 # compute the bilinear form
@@ -113,10 +122,10 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     trans = [trans]
 
                 bf = BilinearGaussQuadratureStrategy(dist, trans)
-                A, erri = bf.computeBilinearFormByList(gpsi, basisi,
-                                                       gpsi, basisi)
+                A_idim, erri = bf.computeBilinearFormByList(gpsi, basisi,
+                                                            gpsi, basisi)
             # accumulate the results
-            A_var *= A.array()
+            A_var *= A_idim
 
             # accumulate the error
             err += np.mean(A_var) * erri
@@ -135,7 +144,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         vol, W = self._extractPDFforMomentEstimation(U, T)
         D = T.getTransformations()
 
-        A_mean, err = self.computeSystemMatrixForMean(grid, W, D)
+        A_mean, err = self.getSystemMatrixForMean(grid, W, D)
 
         moment = alpha.array().dot(A_mean)
         return vol * moment, err
@@ -151,10 +160,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         vol, W = self._extractPDFforMomentEstimation(U, T)
         D = T.getTransformations()
 
-        A_var, err = self.computeSystemMatrixForVariance(grid, alpha, W, D)
+        A_var, err = self.getSystemMatrixForVariance(grid, W, D)
 
-        tmp = A_var.dot(alpha.array())
-        moment = vol * alpha.array().dot(tmp)
+        moment = vol * alpha.array().dot(A_var.dot(alpha.array()))
 
         moment = moment - mean ** 2
 

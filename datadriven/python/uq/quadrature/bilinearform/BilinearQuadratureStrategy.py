@@ -3,8 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from pysgpp import DataMatrix, DataVector
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
+import numpy as np
 
 
 class BilinearQuadratureStrategy(HashQuadrature):
@@ -25,14 +25,14 @@ class BilinearQuadratureStrategy(HashQuadrature):
         @param basisi: SG++ basis for grid indices gpsi
         @param gpsj: list of HashGridIndex
         @param basisj: SG++ basis for grid indices gpsj
-        @return: DataMatrix
+        @return: numpy array
         """
-        A = DataMatrix(len(gpsi), len(gpsj))
+        A = np.ndarray((len(gpsi), len(gpsj)))
         err = 0.
         # run over all rows
         for i, gpi in enumerate(gpsi):
             b, erri = self.computeBilinearFormByRow(gpi, basisi, gpsj, basisj)
-            A.setRow(i, b)
+            A[i, :] = b
             err += erri
         return A, err
 
@@ -46,8 +46,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
         @param basisj: SG++ Basis for grid indices j
         @return DataVector
         """
-        b = DataVector(len(gpsj))
-        b.setAll(1.0)
+        b = np.ones(len(gpsj))
         err = 0.
         # run over all entries
         for j, gpj in enumerate(gpsj):
