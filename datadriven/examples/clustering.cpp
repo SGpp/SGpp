@@ -23,7 +23,7 @@
 int main() {
   size_t dimension, tiefe = 10, k = 12;
   double lambda = 0.001, treshold = 0.7;
-  std::string filename = "dataset2_dim2.arff";
+  std::string filename = "dataset3_dim10.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
