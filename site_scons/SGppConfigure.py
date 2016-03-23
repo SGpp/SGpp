@@ -431,6 +431,7 @@ def configureIntelCompiler(config):
   elif config.env["ARCH"] == "mic":
     config.env.AppendUnique(CPPFLAGS=["-mmic"])
     config.env.AppendUnique(LINKFLAGS=["-mmic"])
+    env["CPPDEFINES"]["USEMIC"] = 1
   else:
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
