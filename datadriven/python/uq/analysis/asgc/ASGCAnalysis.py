@@ -441,7 +441,7 @@ class ASGCAnalysis(Analysis):
         v1.abs()
         s = v1.sum()
 
-        if iteration > 0:
+        if iteration > 1:
             v2 = self.__knowledge.getAlpha(qoi, t, dtype, iteration - 1)
             v2.abs()
             s -= v2.sum()
@@ -459,27 +459,28 @@ class ASGCAnalysis(Analysis):
                  'L2ErrorSurpluses']
 
         ts = self.__uqManager.getTimeStepsOfInterest()
-        iterations = self.__uqManager.iteration + 1
-        nrows = len(ts) * iterations
+        iterations = self.__uqManager.sampler.getCurrentIterationNumber() + 1
+        knowledge = self.__uqManager.getKnowledge()
+        ts = knowledge.getAvailableTimeSteps()
+        iterations = knowledge.getAvailableIterations()
+        nrows = len(ts) * len(iterations)
         ncols = len(names)
         data = DataMatrix(nrows, ncols)
         v = DataVector(ncols)
         v.setAll(0.)
         row = 0
         for t in ts:
-            for iteration in xrange(iterations):
+            for iteration in iterations:
                 v[0] = t
                 v[1] = iteration
-                v[2] = self.__uqManager.level[dtype][iteration]
-                v[3] = self.__uqManager.numberPoints[dtype][iteration]
-                v[4] = self.__uqManager.trainAccuracy[dtype][t][iteration]
-                n = self.__uqManager.trainCount[dtype][t][iteration]
-                v[5] = float(np.sqrt(v[4] * n))  # == L2 error
-                if len(self.__uqManager.testAccuracy[dtype][t]) == \
-                        len(self.__uqManager.trainAccuracy[dtype][t]):
-                    v[6] = self.__uqManager.testAccuracy[dtype][t][iteration]
-                    n = self.__uqManager.testCount[dtype][t][iteration]
-                    v[7] = float(np.sqrt(v[6] * n))  # == L2 error
+                v[2] = self.__uqManager.stats.level[dtype][iteration]
+                v[3] = self.__uqManager.stats.numberPoints[dtype][iteration]
+                v[4] = self.__uqManager.stats.trainMSE[dtype][t][iteration]
+                v[5] = self.__uqManager.stats.trainL2Norm[dtype][t][iteration]
+                if len(self.__uqManager.stats.testMSE[dtype][t]) == \
+                        len(self.__uqManager.stats.trainMSE[dtype][t]):
+                    v[6] = self.__uqManager.stats.testMSE[dtype][t][iteration]
+                    v[7] = self.__uqManager.stats.testL2Norm[dtype][t][iteration]
                 v[8] = self.computeL2ErrorSurpluses(self._qoi, t,
                                                     dtype, iteration)
                 # write results to matrix
@@ -538,7 +539,7 @@ class ASGCAnalysis(Analysis):
     def writeSensitivityValues(self, filename):
 
         def keymap(key):
-            names = self.getLearner().getParameters().activeParams().getNames()
+            names = self.__uqManager.getParameters().activeParams().getNames()
             ans = [names[i] for i in key]
             return ",".join(ans)
 
@@ -632,30 +633,25 @@ class ASGCAnalysis(Analysis):
             data = eval_fullGrid(4, dim)
             res = evalSGFunctionMulti(grid, surplus, data)
 
-            data.transpose()
-            data.appendRow()
-            data.setRow(data.getNrows() - 1, res)
-            data.transpose()
+            data = np.vstack((data.T, res)).T
 
             # write results
             writeDataARFF({'filename': "%s.t%f.samples.arff" % (filename, t),
-                           'data': data,
+                           'data': DataMatrix(data),
                            'names': names})
 
             # -----------------------------------------
             # write sparse grid points to file
             # -----------------------------------------
-            data = DataMatrix(gs.size(), dim)
-            data.setAll(0.0)
+            data = np.ndarray((gs.getSize(), dim))
 
-            for i in xrange(gs.size()):
+            for i in xrange(gs.getSize()):
                 gp = gs.get(i)
-                v = np.array([gp.getCoord(j) for j in xrange(dim)])
-                data.setRow(i, DataVector(v))
+                data[i, :] = np.array([gp.getCoord(j) for j in xrange(dim)])
 
             # write results
             writeDataARFF({'filename': "%s.t%f.gridpoints.arff" % (filename, t),
-                           'data': data,
+                           'data': DataMatrix(data),
                            'names': names})
 
             # -----------------------------------------
@@ -708,7 +704,7 @@ class ASGCAnalysis(Analysis):
         alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
 
         res = {}
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             s = gs.get(i).getLevelSum()
             if s not in res:
                 res[s] = [alpha[i]]

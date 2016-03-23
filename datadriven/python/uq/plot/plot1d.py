@@ -63,6 +63,7 @@ def plotSurplusLevelWise(data, maxLevel):
     fig = plt.figure()
     for level, surpluses in data.items():
         plt.plot([level] * len(surpluses), surpluses, ' ', marker='o')
+    plt.xlim(np.min(data.keys()) - 1, maxLevel + 1)
     return fig
 
 

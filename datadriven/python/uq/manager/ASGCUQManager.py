@@ -115,20 +115,18 @@ class ASGCUQManager(object):
 
         # if there is a test setting given, combine the train and the
         # test dataContainerDict container
-        if self.testSet is not None:
+        if self.sampler.getCurrentIterationNumber() == 1:
             dataContainerDict = self.testSet.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi)
             dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
             for dtype, values in dataContainerDict.items():
                 for t, newDataContainer in values.items():
                     if newDataContainer.getSize() > 0:
                         self.dataContainer[dtype][t] = \
-                            DataContainer.merge([self.dataContainer[dtype][t],
-                                                 newDataContainer])
+                            self.dataContainer[dtype][t].combine(newDataContainer)
 
     def learnData(self):
         """
         Learn the available data
-        @param dataset: UQSetting storing the simulation results
         """
         # learn the data
         self.updateDataContainer()
@@ -140,10 +138,10 @@ class ASGCUQManager(object):
     # ----------------------------------------------------------------
     def learnDataWithoutTest(self, *args, **kws):
         # learn data
-        self.learner.grid = self.sampler.getGrid()
         if self.verbose:
             print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
                                               self.sampler.getGrid().getSize())
+        self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             if self.verbose:
@@ -163,10 +161,10 @@ class ASGCUQManager(object):
                                           self._qoi,
                                           t,
                                           dtype,
-                                          self.sampler.getCurrentIterationNumber())
+                                          self.sampler.getCurrentIterationNumber() - 1)
 
                     # update results
-                    self.stats.updateResults(t, dtype, self.learner)
+                    self.stats.updateResults(dtype, t, self.learner)
             print
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
@@ -174,6 +172,7 @@ class ASGCUQManager(object):
             print "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
                                                         self.sampler.getGrid().getSize())
         # learn data
+        self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             # do the learning
@@ -192,10 +191,10 @@ class ASGCUQManager(object):
                                           self._qoi,
                                           t,
                                           dtype,
-                                          self.sampler.getCurrentIterationNumber())
+                                          self.sampler.getCurrentIterationNumber() - 1)
 
                     # update results
-                    self.stats.updateResults(t, dtype, self.learner)
+                    self.stats.updateResults(dtype, t, self.learner)
 
             print
 
@@ -209,7 +208,7 @@ class ASGCUQManager(object):
         return self._refinement
 
     def getTestSet(self):
-        return testSet
+        return self.testSet
 
     def setTestSet(self, value):
         self.testSet = value

@@ -154,6 +154,9 @@ class ASGCSampler(Sampler):
             return self.__stopPolicy is not None and \
                 not self.__stopPolicy.isTrainingComplete(self)
 
+    def getSize(self):
+        return self.__grid.getStorage().getSize()
+
     # ----------------------------------------------------------------
     # ASGCSampler File Formatter
     # ----------------------------------------------------------------
