@@ -437,7 +437,7 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
 # Boost tests
 #########################################################################
 
-if env["COMPILE_BOOST_TESTS"] and env["RUN_BOOST_TESTS"]:
+if env["COMPILE_BOOST_TESTS"]:# and env["RUN_BOOST_TESTS"]:
   env.Depends(boostTestTargetList, finalStepDependencies)
   finalStepDependencies.append(boostTestTargetList)
   env.SideEffect("sideEffectFinalSteps", boostTestTargetList)
