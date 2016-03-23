@@ -410,8 +410,8 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  config.env.AppendUnique(CPPFLAGS=["-openmp"])
-  config.env.AppendUnique(LINKFLAGS=["-openmp"])
+  config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
+  config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.AppendUnique(CPPFLAGS=["-D_BUILD_STATICLIB"])
