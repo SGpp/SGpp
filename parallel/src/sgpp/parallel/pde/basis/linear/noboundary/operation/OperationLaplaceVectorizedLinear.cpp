@@ -454,7 +454,7 @@ double OperationLaplaceVectorizedLinear::l2dot(size_t i, size_t j, size_t dim) {
 }
 
 #if defined(__MIC__)
-void mic_mult(size_t process_i_start, size_t process_i_end, sgpp::base::DataVector& result) {
+void OperationLaplaceVectorizedLinear::mic_mult(size_t process_i_start, size_t process_i_end, sgpp::base::DataVector& result) {
   {
     std::size_t padded_size = this->level_->getNcols();
     double* constants = this->constants_->getPointer();  // {0, 0.5, 2.0 / 3.0, 1, 2};
