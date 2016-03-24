@@ -90,11 +90,19 @@ class KernelCreateGraph {
     }
     size_t datasize = data.size() / dims;
 
+    size_t globalworkrange[1];
+    if (chunksize == 0) {
+      globalworkrange[0] = data.size()/dims;
+    } else {
+      globalworkrange[0] = chunksize;
+    }
+
     // Build kernel if not already done
     if (this->kernel == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims, k, datasize);
+      std::string program_src = kernelSourceBuilder.generateSource(dims, k, datasize,
+                                                                   globalworkrange[0]);
       if (verbose)
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
@@ -116,14 +124,6 @@ class KernelCreateGraph {
     }
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
-
-    // enqueue kernel
-    size_t globalworkrange[1];
-    if (chunksize == 0) {
-      globalworkrange[0] = data.size()/dims;
-    } else {
-      globalworkrange[0] = chunksize;
-    }
 
     // Set kernel arguments
     err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceData.getBuffer());
