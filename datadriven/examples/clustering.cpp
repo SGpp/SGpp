@@ -21,7 +21,7 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe = 10, k = 12;
+  size_t dimension, tiefe = 6, k = 12;
   double lambda = 0.001, treshold = 0.7;
   std::string filename = "dataset3_dim10.arff";
 
@@ -45,7 +45,7 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
             std::cin >> treshold;*/
   // Create Grid
-  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
@@ -53,13 +53,19 @@ int main() {
 
   sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
+  alpha.setAll(1.0);
 
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
+  operation_mult->mult(alpha, result);
+  for (auto i = 0; i < 100; ++i) {
+    std::cout << result[i] << " ";
+  }
 
-  std::cout << "Creating rhs" << std::endl;
+
+  /*std::cout << "Creating rhs" << std::endl;
   sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
   for (size_t i = 0; i < 300; i++)

@@ -101,11 +101,17 @@ class KernelDensityMult {
                 << device->deviceId << ")" << std::endl;
     }
 
+    size_t globalworkrange[1];
+    if (chunksize == 0) {
+      globalworkrange[0] = gridSize;
+    } else {
+      globalworkrange[0] = chunksize;
+    }
     // Build kernel if not already done
     if (this->kernelMult == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize);
+      std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize, globalworkrange[0]);
       if (verbose)
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
@@ -169,20 +175,21 @@ class KernelDensityMult {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
+    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), globalworkrange);
+    if (err != CL_SUCCESS) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      throw base::operation_exception(errorString.str());
+    }
 
     cl_event clTiming = nullptr;
 
     // enqueue kernel
+    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
     if (verbose)
       std::cout << "Starting the kernel" << std::endl;
-    size_t globalworkrange[1];
-    if (chunksize == 0) {
-      globalworkrange[0] = gridSize;
-    } else {
-      globalworkrange[0] = chunksize;
-    }
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0, globalworkrange,
-                                 NULL, 0, nullptr, &clTiming);
+                                 &localSize, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err

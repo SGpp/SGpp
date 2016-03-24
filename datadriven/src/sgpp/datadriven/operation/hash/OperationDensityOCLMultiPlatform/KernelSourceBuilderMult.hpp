@@ -46,13 +46,31 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     return output.str();
   }
 
+  std::string save_from_global_to_private(size_t dimensions) {
+    std::stringstream output;
+    output << this->indent[0] << "__private int point_indices["
+           << dimensions << "];" << std::endl;
+    output << this->indent[0] << "__private int point_level["
+           << dimensions << "];" << std::endl;
+    for (size_t i = 0; i < dimensions; i++) {
+      output << this->indent[1] << "point_indices[" << i << "] = starting_points[gridindex * "
+             << dimensions << " * 2 + 2 * " << i << "];" << std::endl;
+      output << this->indent[1] << "point_level[" << i << "] = starting_points[gridindex * "
+             << dimensions << " * 2 + 2 * " << i << " + 1];" << std::endl;
+    }
+    return output.str();
+  }
  public:
   SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
                     size_t dims) :
       device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+    if (kernelConfiguration.contains("LOCAL_SIZE"))
+      localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+    if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
+      useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
   }
 
-  std::string generateSource(size_t dimensions, size_t gridsize) {
+  std::string generateSource(size_t dimensions, size_t gridsize, size_t problemsize) {
     std::stringstream sourceStream;
 
     if (this->floatType().compare("double") == 0) {
@@ -60,27 +78,115 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << std::endl;
     }
 
-    sourceStream << "void kernel multdensity(global const int *starting_points,global const "
-                 << this->floatType() << " *alpha, global " << this->floatType()
-                 << " *result,const " << this->floatType() << " lambda, int startid)"
+    sourceStream << "__kernel" << std::endl;
+    sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))"
+                 << std::endl;
+    sourceStream << "void multdensity(__global const int *starting_points,__global const "
+                 << this->floatType() << " *alpha, __global " << this->floatType()
+                 << " *result,const " << this->floatType()
+                 << " lambda, const int startid, const int chunksize)"
                  << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[0] << "int gridindex = startid + get_global_id(0);"
-                 << std::endl;
+                 << std::endl
+                 << this->indent[0] << "__private int local_id = get_local_id(0);"
+                 << std::endl
+                 << this->indent[0] << "__private int chunk_index = get_global_id(0);" << std::endl
+                 << this->indent[0] << "if (chunk_index < chunksize) {" << std::endl;
+    sourceStream << save_from_global_to_private(dimensions);
+    sourceStream << this->indent[0] << "__private int index = 0;" << std::endl;
+    sourceStream << this->indent[0] << "__private int level = 0;" << std::endl;
+    sourceStream << this->indent[0] << "__private int index2 = 0;" << std::endl;
+    sourceStream << this->indent[0] << "__private int level2 = 0;" << std::endl;
     sourceStream << this->indent[0] << this->floatType() << " gesamtint = 0.0;" << std::endl;
-    sourceStream << this->indent[0] << "for(private int i = 0;i< " << gridsize
-                 << ";i++) {" << std::endl;
+    if (useLocalMemory) {
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " indices_local["
+                   << localWorkgroupSize * dimensions << "];" << std::endl
+                   << this->indent[0] << "__local " << this->floatType() << " level_local["
+                   << localWorkgroupSize * dimensions << "];" << std::endl
+                   << this->indent[0] << "__local " << this->floatType() << " alpha_local["
+                   << localWorkgroupSize << "];" << std::endl
+                   <<  this->indent[0] << "for (int group = 0; group < "
+                   << problemsize / localWorkgroupSize << "; group++) {" << std::endl
+                   << this->indent[1] << "for (int j = 0; j <     " << dimensions
+                   << " ; j++) {" << std::endl
+                   << this->indent[2] << "indices_local[local_id * " << dimensions
+                   << " + j] = starting_points[group * " << localWorkgroupSize * dimensions * 2
+                   << "  + local_id * " <<  dimensions * 2 << " + 2 * j];" << std::endl
+                   << this->indent[2] << "level_local[local_id * " << dimensions
+                   << " + j] = starting_points[group * " << localWorkgroupSize * dimensions * 2
+                   << "  + local_id * " <<  dimensions * 2 << " + 2 * j + 1];" << std::endl
+                   << this->indent[1] << "}" << std::endl
+                   << this->indent[2] << "alpha_local[local_id] = alpha[group * "
+                   << localWorkgroupSize << "  + local_id ];" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
+                   << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
+                   << "; i++) {" << std::endl;
+
     sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
                  << std::endl;
     sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
                  << ";dim++) {" << std::endl;
-    sourceStream << this->indent[2] << "int index = starting_points[gridindex* "
-                 << dimensions << "*2+2*dim];" << std::endl;
-    sourceStream << this->indent[2] << "int level = starting_points[gridindex* "
-                 << dimensions << "*2+2*dim+1];" << std::endl;
-    sourceStream << this->indent[2] << "int index2 = starting_points[i* " << dimensions
+    sourceStream << this->indent[2] << "index = point_indices[dim];" << std::endl;
+    sourceStream << this->indent[2] << "level = point_level[dim];" << std::endl;
+    sourceStream << this->indent[2] << "index2 = indices_local[i* " << dimensions
+                 << "+dim];" << std::endl;
+    sourceStream << this->indent[2] << "level2 = level_local[i* " << dimensions
+                 << "+dim];" << std::endl;
+    sourceStream << this->indent[2] << "if(point_level[dim]>level_local[i* " << dimensions
+                 << " + dim]) {" << std::endl;
+    sourceStream << this->indent[3] << "index = indices_local[i* "
+                 << dimensions << "+dim];" << std::endl;
+    sourceStream << this->indent[3] << "level = level_local[i* "
+                 << dimensions << "+dim];" << std::endl;
+    sourceStream << this->indent[3] << "index2 = point_indices[dim];" << std::endl;
+    sourceStream << this->indent[3] << "level2 = point_level[dim];" << std::endl;
+    sourceStream << this->indent[2] << "}" << std::endl;
+    sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
+    sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
+    sourceStream << this->indent[2] << this->floatType() << " grenze1 = h*(index2-1);"
+                 << std::endl;
+    sourceStream << this->indent[2] << this->floatType() << " grenze2 = h*(index2+1);"
+                 << std::endl;
+    sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
+    sourceStream << this->indent[2] << this->floatType() << " uright = u*grenze2-index;"
+                 << std::endl;
+    sourceStream << this->indent[2] << this->floatType() << " uleft = u*grenze1-index;"
+                 << std::endl;
+    sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
+    sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
+    //sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
+    //sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
+    sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
+    sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
+    // sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
+    //sourceStream << this->indent[3] << "uright = 0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " integral = h/2.0*(uleft+uright);" << std::endl;
+    sourceStream << this->indent[2] << "if(level_local[i* " << dimensions
+                 << "+dim] == point_level[dim]) {" << std::endl;
+    sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
+    sourceStream << this->indent[3] << "if(indices_local[i* " << dimensions
+                 << "+dim] != point_indices[dim])" << std::endl;
+    sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "}" << std::endl;
+    sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
+    sourceStream << this->indent[1] << "}" << std::endl;
+    sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha_local[i];" << std::endl;
+    sourceStream << this->indent[0] << "}" << std::endl;
+    sourceStream << this->indent[0] << "}" << std::endl;
+    } else {
+    sourceStream << this->indent[0] << "for(__private int i = 0; i < " << gridsize
+                 << "; i++) {" << std::endl;
+    sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
+                 << std::endl;
+    sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
+                 << ";dim++) {" << std::endl;
+    sourceStream << this->indent[2] << "index = point_indices[dim];" << std::endl;
+    sourceStream << this->indent[2] << "level = point_level[dim];" << std::endl;
+    sourceStream << this->indent[2] << "index2 = starting_points[i* " << dimensions
                  << "*2+2*dim];" << std::endl;
-    sourceStream << this->indent[2] << "int level2 = starting_points[i* " << dimensions
+    sourceStream << this->indent[2] << "level2 = starting_points[i* " << dimensions
                  << "*2+2*dim+1];" << std::endl;
     sourceStream << this->indent[2] << "if(starting_points[gridindex* " << dimensions
                  << "*2+2*dim+1]>starting_points[i* " << dimensions
@@ -89,10 +195,8 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                  << dimensions << "*2+2*dim];" << std::endl;
     sourceStream << this->indent[3] << "level = starting_points[i* "
                  << dimensions << "*2+2*dim+1];" << std::endl;
-    sourceStream << this->indent[3] << "index2 = starting_points[gridindex* "
-                 << dimensions << "*2+2*dim];" << std::endl;
-    sourceStream << this->indent[3] << "level2 = starting_points[gridindex* "
-                 << dimensions << "*2+2*dim+1];" << std::endl;
+    sourceStream << this->indent[3] << "index2 = point_indices[dim];" << std::endl;
+    sourceStream << this->indent[3] << "level2 = point_level[dim];" << std::endl;
     sourceStream << this->indent[2] << "}" << std::endl;
     sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
     sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
@@ -129,9 +233,11 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha[i];" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
+    }
     sourceStream << this->indent[0] << "result[get_global_id(0)] = gesamtint;" << std::endl;
     sourceStream << this->indent[0] << "result[get_global_id(0)] += alpha[gridindex]*"
                  << "lambda;" << std::endl;
+    sourceStream << "}" << std::endl;
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration.contains("WRITE_SOURCE")) {
