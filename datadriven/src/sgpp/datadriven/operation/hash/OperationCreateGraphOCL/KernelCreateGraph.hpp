@@ -70,6 +70,8 @@ class KernelCreateGraph {
     dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = dataBlockingSize * localSize;
+    for (auto i = 0; i < (localSize - data.size() % localSize) * dims; i++)
+      data.push_back(2.0);
     deviceData.intializeTo(data, 1, 0, data.size());
   }
 
@@ -96,6 +98,8 @@ class KernelCreateGraph {
     } else {
       globalworkrange[0] = chunksize;
     }
+    size_t real_count = globalworkrange[0];
+    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
 
     // Build kernel if not already done
     if (this->kernel == nullptr) {
@@ -111,17 +115,7 @@ class KernelCreateGraph {
                                           "connectNeighbors");
     }
 
-    if (chunksize == 0) {
-      std::vector<int> zeros(data.size()*k/dims);
-      for (size_t i = 0; i < data.size()*k/dims; i++)
-        zeros[i] = 0.0;
-      deviceResultData.intializeTo(zeros, 1, 0, data.size()*k/dims);
-    } else {
-      std::vector<int> zeros(chunksize * k);
-      for (size_t i = 0; i < chunksize * k; i++)
-        zeros[i] = 0.0;
-      deviceResultData.intializeTo(zeros, 1, 0, chunksize * k);
-    }
+    deviceResultData.initializeBuffer(globalworkrange[0] * k);
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
@@ -144,16 +138,9 @@ class KernelCreateGraph {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernel, 3, sizeof(cl_uint), globalworkrange);
-    if (err != CL_SUCCESS) {
-      std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-      throw base::operation_exception(errorString.str());
-    }
 
     cl_event clTiming = nullptr;
 
-    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
     if (verbose)
       std::cout << "Starting the kernel for " << globalworkrange[0] << " items" << std::endl;
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
@@ -174,10 +161,10 @@ class KernelCreateGraph {
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
 
     if (chunksize == 0) {
-      for (size_t i = 0; i < data.size()*k/dims; i++)
+      for (size_t i = 0; i < real_count * k/dims; i++)
         result[i] = hostTemp[i];
     } else {
-      for (size_t i = 0; i < chunksize * k; i++)
+      for (size_t i = 0; i < real_count * k; i++)
         result[i] = hostTemp[i];
     }
     if (verbose)

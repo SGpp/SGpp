@@ -169,12 +169,6 @@ class KernelDensityMult {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), &real_count);
-    if (err != CL_SUCCESS) {
-      std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-      throw base::operation_exception(errorString.str());
-    }
 
     cl_event clTiming = nullptr;
 
