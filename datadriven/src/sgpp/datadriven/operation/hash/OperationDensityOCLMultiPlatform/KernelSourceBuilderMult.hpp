@@ -91,8 +91,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                  << std::endl
                  << this->indent[0] << "__private int local_id = get_local_id(0);"
                  << std::endl
-                 << this->indent[0] << "__private int chunk_index = get_global_id(0);" << std::endl
-                 << this->indent[0] << "if (chunk_index < chunksize) {" << std::endl;
+                 << this->indent[0] << "__private int chunk_index = get_global_id(0);" << std::endl;
     sourceStream << save_from_global_to_private(dimensions);
     sourceStream << this->indent[0] << "__private int index = 0;" << std::endl;
     sourceStream << this->indent[0] << "__private int level = 0;" << std::endl;
@@ -100,14 +99,15 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[0] << "__private int level2 = 0;" << std::endl;
     sourceStream << this->indent[0] << this->floatType() << " gesamtint = 0.0;" << std::endl;
     if (useLocalMemory) {
-      sourceStream << this->indent[0] << "__local " << this->floatType() << " indices_local["
+      sourceStream << this->indent[0] << "__local " << "int indices_local["
                    << localWorkgroupSize * dimensions << "];" << std::endl
-                   << this->indent[0] << "__local " << this->floatType() << " level_local["
+                   << this->indent[0] << "__local " << "int level_local["
                    << localWorkgroupSize * dimensions << "];" << std::endl
                    << this->indent[0] << "__local " << this->floatType() << " alpha_local["
                    << localWorkgroupSize << "];" << std::endl
                    <<  this->indent[0] << "for (int group = 0; group < "
                    << problemsize / localWorkgroupSize << "; group++) {" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int j = 0; j <     " << dimensions
                    << " ; j++) {" << std::endl
                    << this->indent[2] << "indices_local[local_id * " << dimensions
@@ -143,16 +143,18 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[3] << "level2 = point_level[dim];" << std::endl;
     sourceStream << this->indent[2] << "}" << std::endl;
     sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " grenze1 = h*(index2-1);"
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " h = 1.0 / teiler;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " grenze1 = h*(index2-1);"
                  << std::endl;
     sourceStream << this->indent[2] << this->floatType() << " grenze2 = h*(index2+1);"
                  << std::endl;
     sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " uright = u*grenze2-index;"
-                 << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " uleft = u*grenze1-index;"
-                 << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uright = u*grenze2-index;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uleft = u*grenze1-index;" << std::endl;
     sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
     sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
     //sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
@@ -176,7 +178,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[0] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
     } else {
-    sourceStream << this->indent[0] << "for(__private int i = 0; i < " << gridsize
+    sourceStream << this->indent[0] << "for(__private int i = 0; i < " << problemsize
                  << "; i++) {" << std::endl;
     sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
                  << std::endl;
@@ -200,36 +202,35 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[2] << "}" << std::endl;
     sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
     sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " grenze1 = h*(index2-1);"
-                 << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " grenze2 = h*(index2+1);"
-                 << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " grenze1 = h*(index2-1);" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " grenze2 = h*(index2+1);" << std::endl;
     sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " uright = u*grenze2-index;"
-                 << std::endl;
-    sourceStream << this->indent[2] << this->floatType() << " uleft = u*grenze1-index;"
-                 << std::endl;
-    sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-    sourceStream << this->indent[3] << "uleft *= -1;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uright = u*grenze2-index;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uleft = u*grenze1-index;" << std::endl;
+    sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
     sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
-    sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-    sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
-    sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-    sourceStream << this->indent[3] << "uright *= -1;" << std::endl;
+    //sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
+    //sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
+    sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
     sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
-    sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-    sourceStream << this->indent[3] << "uright = 0;" << std::endl;
+    //sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
+    //sourceStream << this->indent[3] << "uright = 0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " integral = h/2.0*(uleft+uright);" << std::endl;
     sourceStream << this->indent[2] << "if(starting_points[i* " << dimensions
                  << "*2+2*dim+1] == starting_points[gridindex* "
                  << dimensions << "*2+2*dim+1]) {" << std::endl;
-    sourceStream <<  this->indent[3] <<"zellenintegral *= 2.0/3.0*h;" << std::endl;
+    sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
     sourceStream << this->indent[3] << "if(starting_points[i* " << dimensions
                  << "*2+2*dim] != starting_points[gridindex* "
                  << dimensions << "*2+2*dim])" << std::endl;
-    sourceStream << this->indent[4] << "zellenintegral = 0.0;" << std::endl;
+    sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
     sourceStream << this->indent[2] << "}" << std::endl;
-    sourceStream << this->indent[2] << "else" << std::endl;
-    sourceStream << this->indent[3] << "zellenintegral *= h/2.0*(uleft+uright);" << std::endl;
+    sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
     sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha[i];" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
@@ -237,7 +238,6 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[0] << "result[get_global_id(0)] = gesamtint;" << std::endl;
     sourceStream << this->indent[0] << "result[get_global_id(0)] += alpha[gridindex]*"
                  << "lambda;" << std::endl;
-    sourceStream << "}" << std::endl;
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration.contains("WRITE_SOURCE")) {

@@ -21,7 +21,7 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe = 6, k = 12;
+  size_t dimension, tiefe = 5, k = 12;
   double lambda = 0.001, treshold = 0.7;
   std::string filename = "dataset3_dim10.arff";
 
@@ -60,12 +60,16 @@ int main() {
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
   operation_mult->mult(alpha, result);
-  for (auto i = 0; i < 100; ++i) {
+  for (auto i = 0; i < 200; ++i) {
+    std::cout << result[i] << " ";
+  }
+  std::cout << "\n";
+  for (auto i = gridsize - 200; i < gridsize; ++i) {
     std::cout << result[i] << " ";
   }
 
 
-  /*std::cout << "Creating rhs" << std::endl;
+  std::cout << "Creating rhs" << std::endl;
   sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
   for (size_t i = 0; i < 300; i++)
@@ -77,7 +81,7 @@ int main() {
   double max = alpha.max();
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
-  alpha[i] = alpha[i]*1.0/(max-min);*/
+  alpha[i] = alpha[i]*1.0/(max-min);
 
   std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
