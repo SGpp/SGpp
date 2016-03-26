@@ -156,12 +156,12 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << " uleft = u*grenze1-index;" << std::endl;
       sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
       sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
-      //sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-      //sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
+      sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
+      sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
       sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
       sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
-      // sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-      //sourceStream << this->indent[3] << "uright = 0;" << std::endl;
+       sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
+      sourceStream << this->indent[3] << "uright = 0;" << std::endl;
       sourceStream << this->indent[2] << "__private " << this->floatType()
                    << " integral = h/2.0*(uleft+uright);" << std::endl;
       sourceStream << this->indent[2] << "if(level_local[i* " << dimensions

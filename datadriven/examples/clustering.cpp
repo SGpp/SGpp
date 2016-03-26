@@ -21,9 +21,9 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe = 5, k = 12;
+  size_t dimension, tiefe = 10, k = 12;
   double lambda = 0.001, treshold = 0.7;
-  std::string filename = "dataset3_dim10.arff";
+  std::string filename = "dataset2_dim2.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
@@ -59,10 +59,10 @@ int main() {
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
-  operation_mult->mult(alpha, result);
+  /*operation_mult->mult(alpha, result);
   for (auto i = 0; i < 200; ++i) {
     std::cout << result[i] << " ";
-  }
+    }*/
 
 
   std::cout << "Creating rhs" << std::endl;
@@ -86,23 +86,31 @@ int main() {
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
-  for (auto i = 0; i < 100; ++i) {
+  std::ofstream out1("graph_modern1.txt");
+  for (auto i = 0; i < 100000; ++i) {
     for (auto j = 0; j < 12; ++j) {
-      std::cout << graph[i * 12 + j] << " ";
+      out1 << graph[i * 12 + j] << " ";
     }
-    std::cout << std::endl;
+    out1 << std::endl;
   }
 
 
-  /*std::cout << "Starting graph pruning" << std::endl;
+  std::cout << "Starting graph pruning" << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
       sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
                                                             treshold, k, "MyOCLConf.cfg");
   operation_prune->prune_graph(graph);
 
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
+  std::ofstream out("graph_modern2.txt");
+  for (auto i = 0; i < 100000; ++i) {
+    for (auto j = 0; j < 12; ++j) {
+      out << graph[i * 12 + j] << " ";
+    }
+    out << std::endl;
+  }
   // cleanup
   delete operation_mult;
-  delete solver;*/
+  delete solver;
   delete operation_graph;
 }
