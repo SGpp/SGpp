@@ -63,10 +63,6 @@ int main() {
   for (auto i = 0; i < 200; ++i) {
     std::cout << result[i] << " ";
   }
-  std::cout << "\n";
-  for (auto i = gridsize - 200; i < gridsize; ++i) {
-    std::cout << result[i] << " ";
-  }
 
 
   std::cout << "Creating rhs" << std::endl;
@@ -108,4 +104,5 @@ int main() {
   // cleanup
   delete operation_mult;
   delete solver;*/
+  delete operation_graph;
 }

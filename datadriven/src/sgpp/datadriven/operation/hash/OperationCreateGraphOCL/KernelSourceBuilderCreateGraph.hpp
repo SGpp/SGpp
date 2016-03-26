@@ -152,15 +152,14 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))"
                  << std::endl
                  << "void connectNeighbors(__global const " << this->floatType()
-                 << " *data, __global int *neighbors, const int startid, const int chunksize)"
+                 << " *data, __global int *neighbors, const int startid)"
                  << std::endl
                  << "{" << std::endl
                  << this->indent[0] << "__private int global_index = startid + get_global_id(0);"
                  << this->indent[0] << "__private int local_id = get_local_id(0);"
                  << std::endl
                  << this->indent[0] << "__private int chunk_index = get_global_id(0);" << std::endl
-                 << this->indent[0] << "__private int maxindex = 0;" << std::endl
-                 << this->indent[0] << "if (chunk_index < chunksize) {" << std::endl;
+                 << this->indent[0] << "__private int maxindex = 0;" << std::endl;
     if (!use_approx)
       sourceStream << init_k_registers(k) << std::endl;
     sourceStream << save_from_global_to_private(dimensions)
@@ -178,6 +177,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[1] << "dist_reg[i] = 4.0;" << std::endl
                    <<  this->indent[0] << "for (int group = 0; group < "
                    << problemsize / localWorkgroupSize << "; group++) {" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int j = 0; j <     " << dimensions
                    << " ; j++) " << std::endl
                    << this->indent[2] << "data_local[local_id * " << dimensions
@@ -271,8 +271,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[0] << "}" << std::endl
                    << copy_k_registers_into_global(k);
     }
-     sourceStream << "}" << std::endl
-                 << "}" << std::endl;
+    sourceStream << "}" << std::endl;
     if (kernelConfiguration.contains("WRITE_SOURCE")) {
       if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
         this->writeSource("DensityOCLMultiPlatform_create_graph.cl", sourceStream.str());
