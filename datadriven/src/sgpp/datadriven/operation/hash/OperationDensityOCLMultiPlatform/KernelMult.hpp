@@ -81,7 +81,9 @@ class KernelDensityMult {
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = dataBlockingSize * localSize;
 
-    devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
+    for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++)
+      points.push_back(0);
+    devicePoints.intializeTo(points, 1, 0, points.size());
     clFinish(device->commandQueue);
   }
 
@@ -107,6 +109,8 @@ class KernelDensityMult {
     } else {
       globalworkrange[0] = chunksize;
     }
+    size_t real_count = globalworkrange[0];
+    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
     // Build kernel if not already done
     if (this->kernelMult == nullptr) {
       if (verbose)
@@ -121,22 +125,12 @@ class KernelDensityMult {
     }
 
     // Load data into buffers if not already done
-    deviceAlpha.intializeTo(alpha, 1, 0, gridSize);
-    if (chunksize == 0) {
-      std::vector<T> zeros(gridSize);
-      for (size_t i = 0; i < gridSize; i++) {
-        zeros[i] = 0.0;
-      }
-      deviceResultData.intializeTo(zeros, 1, 0, gridSize);
-    } else {
-      std::vector<T> zeros(chunksize);
-      for (size_t i = 0; i < chunksize; i++) {
-        zeros[i] = 0.0;
-      }
-      deviceResultData.intializeTo(zeros, 1, 0, chunksize);
-    }
+    for (size_t i = 0; i < localSize - gridSize % localSize; i++)
+      alpha.push_back(0.0);
+    deviceAlpha.intializeTo(alpha, 1, 0, alpha.size());
+    deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
     this->deviceTimingMult = 0.0;
-
+    clFinish(device->commandQueue);
     // Set kernel arguments
     err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem),
                          this->devicePoints.getBuffer());
@@ -175,7 +169,7 @@ class KernelDensityMult {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), globalworkrange);
+    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), &real_count);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -185,9 +179,8 @@ class KernelDensityMult {
     cl_event clTiming = nullptr;
 
     // enqueue kernel
-    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
     if (verbose)
-      std::cout << "Starting the kernel" << std::endl;
+      std::cout << "Starting the kernel with " << globalworkrange[0] << "items" << std::endl;
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0, globalworkrange,
                                  &localSize, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
@@ -199,7 +192,7 @@ class KernelDensityMult {
     clFinish(device->commandQueue);
 
     if (verbose)
-      std::cout << "Finished kernel execution" << std::endl;
+      std::cerr << "Finished kernel execution" << std::endl;
     deviceResultData.readFromBuffer();
     clFinish(device->commandQueue);
 

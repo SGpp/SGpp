@@ -66,10 +66,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     if (verbose)
       std::cout << "Grid stored into integer array! Number of gridpoints: "
                 << pointscount << std::endl;
-    multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
-                                          points, lambda);
     bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
                                     points);
+    multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+                                          points, lambda);
   }
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
