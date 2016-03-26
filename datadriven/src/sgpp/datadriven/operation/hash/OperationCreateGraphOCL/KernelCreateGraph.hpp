@@ -161,7 +161,7 @@ class KernelCreateGraph {
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
 
     if (chunksize == 0) {
-      for (size_t i = 0; i < real_count * k/dims; i++)
+      for (size_t i = 0; i < real_count * k; i++)
         result[i] = hostTemp[i];
     } else {
       for (size_t i = 0; i < real_count * k; i++)
