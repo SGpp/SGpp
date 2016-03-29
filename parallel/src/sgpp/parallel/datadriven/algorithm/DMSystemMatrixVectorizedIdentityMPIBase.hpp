@@ -94,6 +94,8 @@ class DMSystemMatrixVectorizedIdentityMPIBase : public sgpp::datadriven::DMSyste
     delete this->dataset_;
   }
 
+  virtual void prepareGrid() { rebuildLevelAndIndex(); }
+
   virtual void rebuildLevelAndIndex() {
     LevelIndexMaskOffsetHelper::rebuild<
         KernelImplementation::kernelType,

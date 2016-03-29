@@ -67,6 +67,8 @@ class DMSystemMatrixVectorizedIdentityMPI : public sgpp::datadriven::DMSystemMat
 
   virtual void rebuildLevelAndIndex();
 
+  virtual void prepareGrid() { rebuildLevelAndIndex(); }
+
  private:
   /// how to distribute storage array
   int* _mpi_grid_sizes;
