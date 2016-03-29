@@ -29,11 +29,11 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
     }
 
     if ((*parameters).contains("LOCAL_SIZE") == false) {
-      (*parameters).addIDAttr("LOCAL_SIZE", 128ul);
+      (*parameters).addIDAttr("LOCAL_SIZE", 128ull);
     }
 
     if ((*parameters).contains("KERNEL_DATA_BLOCK_SIZE") == false) {
-      (*parameters).addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+      (*parameters).addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ull);
     }
 
     if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
@@ -41,15 +41,15 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
     }
 
     if ((*parameters).contains("KERNEL_TRANS_DATA_BLOCK_SIZE") == false) {
-      (*parameters).addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
+      (*parameters).addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ull);
     }
 
     if ((*parameters).contains("ADAPTIVE_STREAMING_HARD_LIMIT") == false) {
-      (*parameters).addIDAttr("ADAPTIVE_STREAMING_HARD_LIMIT", 10ul);  // absolute value
+      (*parameters).addIDAttr("ADAPTIVE_STREAMING_HARD_LIMIT", 10ull);  // absolute value
     }
 
     if ((*parameters).contains("ADAPTIVE_STREAMING_DENSITY") == false) {
-      (*parameters).addIDAttr("ADAPTIVE_STREAMING_DENSITY", 5ul);  // In percent
+      (*parameters).addIDAttr("ADAPTIVE_STREAMING_DENSITY", 5ull);  // In percent
     }
   }
 
