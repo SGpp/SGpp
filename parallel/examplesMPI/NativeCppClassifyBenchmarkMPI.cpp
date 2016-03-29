@@ -95,9 +95,13 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
   if (vecType == sgpp::parallel::X86SIMD) {
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
-#endif
-#if defined(__SSE3__) && defined(__AVX__)
+#elif defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
+#else
+    std::cout << "Vectorized: ERROR: X86SIMD not found. neither SSE3, nor AVX are present."
+              << std::endl
+              << std::endl;
+    exit(-1);
 #endif
   } else if (vecType == sgpp::parallel::OpenCL) {
     std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
@@ -105,10 +109,15 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl
               << std::endl;
-#endif
-#if defined(__SSE3__) && defined(__AVX__)
+#elif defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl
               << std::endl;
+#else
+    std::cout << "Vectorized: ERROR: Hybrid_X86SIMD_OpenCL not possible. neither SSE3, nor AVX are "
+                 "present."
+              << std::endl
+              << std::endl;
+    exit(-1);
 #endif
   } else if (vecType == sgpp::parallel::ArBB) {
     std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;

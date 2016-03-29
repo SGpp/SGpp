@@ -124,8 +124,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
                                  const sgpp::base::AdpativityConfiguration& AdaptConfig,
-                                 const bool testAccDuringAdapt,
-                                 const double lambdaRegularization) {
+                                 const bool testAccDuringAdapt, const double lambdaRegularization) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
@@ -190,9 +189,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   sgpp::base::SGppStopwatch* myStopwatch2 = new sgpp::base::SGppStopwatch();
 
   for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
-    if (isVerbose_)
-      std::cout << std::endl
-                << "Doing refinement: " << i << std::endl;
+    if (isVerbose_) std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
     this->currentRefinementStep = i;
 
@@ -207,7 +204,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
                                                         AdaptConfig.threshold_);
       grid_->getGenerator().refine(myRefineFunc);
 
-      // tell the SLE manager that the grid changed (for interal data
+      // tell the SLE manager that the grid changed (for internal data
       // structures)
       DMSystem->prepareGrid();
 
@@ -289,10 +286,8 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   }
 
   if (isVerbose_) {
-    std::cout << "Finished Training!" << std::endl
-              << std::endl;
-    std::cout << "Training took: " << execTime_ << " seconds" << std::endl
-              << std::endl;
+    std::cout << "Finished Training!" << std::endl << std::endl;
+    std::cout << "Training took: " << execTime_ << " seconds" << std::endl << std::endl;
   }
 
   isTrained_ = true;
@@ -337,8 +332,8 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
 }
 
 double LearnerBase::getAccuracy(sgpp::base::DataMatrix& testDataset,
-                                 const sgpp::base::DataVector& classesReference,
-                                 const double threshold) {
+                                const sgpp::base::DataVector& classesReference,
+                                const double threshold) {
   // evaluate test dataset
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
@@ -348,8 +343,8 @@ double LearnerBase::getAccuracy(sgpp::base::DataMatrix& testDataset,
 }
 
 double LearnerBase::getAccuracy(const sgpp::base::DataVector& classesComputed,
-                                 const sgpp::base::DataVector& classesReference,
-                                 const double threshold) {
+                                const sgpp::base::DataVector& classesReference,
+                                const double threshold) {
   double result = -1.0;
 
   if (classesComputed.getSize() != classesReference.getSize()) {

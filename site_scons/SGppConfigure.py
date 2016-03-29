@@ -271,11 +271,13 @@ def configureGNUCompiler(config):
     config.env["CC"] = ("mpicc.openmpi")
     config.env["LINK"] = ("mpic++.openmpi")
     config.env["CXX"] = ("mpic++.openmpi")
+    config.env["CPPDEFINES"]["USE_MPI"] = 1
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     config.env["CC"] = ("mpicc.mpich")
     config.env["LINK"] = ("mpic++.mpich")
     config.env["CXX"] = ("mpic++.mpich")
+    config.env["CPPDEFINES"]["USE_MPI"] = 1
     Helper.printInfo("Using mpich.")
   else:  # gnu
     gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
@@ -399,6 +401,7 @@ def configureIntelCompiler(config):
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
+    config.env["CPPDEFINES"]["USE_MPI"] = 1
     Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
