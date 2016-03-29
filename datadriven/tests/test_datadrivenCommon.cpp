@@ -342,7 +342,7 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice(
 
       // make sure there is only a single device of the selected device
       json::Node& deviceNode = platformNode["DEVICES"][deviceName];
-      deviceNode.addIDAttr("COUNT", 1ul);
+      deviceNode.addIDAttr("COUNT", 1ull);
     }
   }
 

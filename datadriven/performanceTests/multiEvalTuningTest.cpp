@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Double) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Float) {
     staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
     try {
       if (boost::filesystem::create_directory(statisticsFolderName)) {
-        BOOST_MESSAGE("created output directory: " << statisticsFolderName);
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
       }
     } catch (boost::filesystem::filesystem_error &e) {
       BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
