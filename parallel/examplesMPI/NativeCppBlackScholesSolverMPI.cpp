@@ -3,7 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <mpi.h>
+#pragma GCC diagnostic pop
+
 #include <sgpp_base.hpp>
 #include <sgpp_pde.hpp>
 #include <sgpp_finance.hpp>
