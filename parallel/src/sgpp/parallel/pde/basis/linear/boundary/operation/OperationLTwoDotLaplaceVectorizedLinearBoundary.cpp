@@ -4,7 +4,10 @@
 // sgpp.sparsegrids.org
 
 #ifdef USE_MPI
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 #endif
 
 #include <omp.h>
