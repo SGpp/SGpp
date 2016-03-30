@@ -1,17 +1,19 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * SampleProvider.hpp
  *
  *  Created on: Feb 8, 2016
- *      Author: perun
+ *      Author: perun, Michael Lettrich
  */
 
-#ifndef SAMPLEPROVIDER_HPP_
-#define SAMPLEPROVIDER_HPP_
+#pragma once
 
 #include <memory>
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,32 +22,27 @@ namespace datadriven {
 
 class SampleProvider {
  public:
-  SampleProvider(datadriven::DataMiningConfigJsonParser& config){};
+  SampleProvider(){};
   virtual ~SampleProvider(){};
 
   /**
    * Selects a certain number of samples
-   * @param how_many number of samples to return
-   * @return dataset
+   * @param howMany number of samples to return
+   * @return std::unique_ptr<Dataset> A smart pointer to a Dataset containing all samples.
    */
-  virtual Dataset nextSamples(int how_many) = 0;
+  virtual std::unique_ptr<Dataset> getNextSamples(int howMany) = 0;
 
   /**
    * Returns all samples
-   * @return dataset
+   * @return std::unique_ptr<Dataset> A smart pointer to a Dataset.
    */
-  virtual Dataset allSamples() = 0;
+  virtual std::unique_ptr<Dataset> getAllSamples() = 0;
 
   /**
    * Returns the dimensionality of the data source
-   * @return dimensionality
+   * @return dimensionality of the dataset.
    */
-  size_t getDim() { return dim; }
-
- protected:
-  size_t dim;
+  virtual size_t getDim() = 0;
 };
 }
 }
-
-#endif /* SAMPLEPROVIDER_HPP_ */
