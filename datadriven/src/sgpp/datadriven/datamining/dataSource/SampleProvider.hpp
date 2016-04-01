@@ -11,11 +11,9 @@
 
 #pragma once
 
-#include <memory>
-
 #include <sgpp/datadriven/tools/Dataset.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
