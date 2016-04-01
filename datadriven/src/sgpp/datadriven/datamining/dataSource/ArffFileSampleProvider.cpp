@@ -13,6 +13,8 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <memory>
 #include <string>
@@ -47,8 +49,7 @@ void ArffFileSampleProvider::readFile(const std::string& fileName) {
 
 std::unique_ptr<Dataset> ArffFileSampleProvider::getNextSamples(size_t howMany) {
   if ((dataset.getDimension() != 0) && (counter + howMany) < dataset.getNumberInstances()) {
-    // private method to create a new dataset.
-    return std::make_unique<Dataset>();
+    return splitDataset(howMany);
   } else {
     throw base::data_exception("Demanded more samples then available.");
   }
@@ -66,6 +67,27 @@ std::unique_ptr<Dataset> ArffFileSampleProvider::getAllSamples() {
 
 void ArffFileSampleProvider::readString(const std::string& input) {
   dataset = ARFFTools::readARFFFromString(input);
+}
+
+std::unique_ptr<Dataset> ArffFileSampleProvider::splitDataset(size_t howMany) {
+  auto tmpDataset = std::make_unique<Dataset>(howMany, dataset.getDimension());
+
+  base::DataMatrix srcSamples = dataset.getData();
+  base::DataVector srcTargets = dataset.getTargets();
+
+  base::DataMatrix destSamples = tmpDataset->getData();
+  base::DataVector destTargets = tmpDataset->getTargets();
+
+  base::DataVector tmpRow;
+  for (size_t i = counter; i < counter + howMany; ++i) {
+    srcSamples.getRow(i, tmpRow);
+    destSamples.setRow(i - counter, tmpRow);
+
+    destTargets[i - counter] = srcTargets[i];
+  }
+  counter = counter + howMany;
+
+  return tmpDataset;
 }
 
 } /* namespace datadriven */
