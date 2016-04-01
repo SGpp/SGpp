@@ -25,7 +25,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   virtual ~ArffFileSampleProvider();
 
-  std::unique_ptr<Dataset> getNextSamples(int howMany);
+  std::unique_ptr<Dataset> getNextSamples(size_t howMany);
 
   std::unique_ptr<Dataset> getAllSamples();
 
@@ -35,12 +35,13 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   size_t getNumClasses();
 
-  void readFile(std::string fileName);
+  void readFile(const std::string& fileName);
 
-  void readString(std::string& input);
+  void readString(const std::string& input);
 
  private:
-  std::unique_ptr<Dataset> dataset;
+  Dataset dataset;
+  size_t counter;
 };
 
 } /* namespace datadriven */
