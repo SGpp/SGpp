@@ -33,7 +33,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   size_t getDatasetSize();
 
-  size_t getNumClasses();
+  // size_t getNumClasses();
 
   void readFile(const std::string& fileName);
 
@@ -42,6 +42,8 @@ class ArffFileSampleProvider : public FileSampleProvider {
  private:
   Dataset dataset;
   size_t counter;
+
+  std::unique_ptr<Dataset> splitDataset(size_t howMany);
 };
 
 } /* namespace datadriven */
