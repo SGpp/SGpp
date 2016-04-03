@@ -69,6 +69,21 @@ class KernelCreateGraph {
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+
+    if (kernelConfiguration.contains("APPROX_REG_COUNT")) {
+      int approxRegCount = kernelConfiguration["APPROX_REG_COUNT"].getUInt();
+      // Check range and whether x is a power of 2 or not
+      if (approxRegCount < k || approxRegCount > localSize ||
+          (approxRegCount & (approxRegCount - 1))) {
+      std::stringstream errorString;
+      errorString
+          << "OCL Error: APPROX_REG_COUNT: " << approxRegCount << " is not a valid size!\n"
+          << "Needs to be a power of 2, greater than k and smaller than (or equal to) the"
+          << " parameter LOCAL_SIZE: " << localSize;
+      throw base::operation_exception(errorString.str());
+      }
+    }
+
     totalBlockSize = dataBlockingSize * localSize;
     for (auto i = 0; i < (localSize - data.size() % localSize) * dims; i++)
       data.push_back(2.0);
