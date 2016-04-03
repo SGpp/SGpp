@@ -41,6 +41,7 @@ class KernelCreateGraph {
   size_t scheduleSize;
   size_t totalBlockSize;
   std::vector<T> &data;
+  size_t unpadded_datasize;
 
  public:
   KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims,
@@ -75,16 +76,17 @@ class KernelCreateGraph {
       // Check range and whether x is a power of 2 or not
       if (approxRegCount < k || approxRegCount > localSize ||
           (approxRegCount & (approxRegCount - 1))) {
-      std::stringstream errorString;
-      errorString
-          << "OCL Error: APPROX_REG_COUNT: " << approxRegCount << " is not a valid size!\n"
-          << "Needs to be a power of 2, greater than k and smaller than (or equal to) the"
-          << " parameter LOCAL_SIZE: " << localSize;
-      throw base::operation_exception(errorString.str());
+        std::stringstream errorString;
+        errorString
+            << "OCL Error: APPROX_REG_COUNT: " << approxRegCount << " is not a valid size!\n"
+            << "Needs to be a power of 2, greater than k and smaller than (or equal to) the"
+            << " parameter LOCAL_SIZE: " << localSize;
+        throw base::operation_exception(errorString.str());
       }
     }
 
     totalBlockSize = dataBlockingSize * localSize;
+    unpadded_datasize = data.size();
     for (auto i = 0; i < (localSize - data.size() % localSize) * dims; i++)
       data.push_back(2.0);
     deviceData.intializeTo(data, 1, 0, data.size());
@@ -105,11 +107,11 @@ class KernelCreateGraph {
       std::cout << "k: " << k << " Dims:" << dims
                 << std::endl;
     }
-    size_t datasize = data.size() / dims;
+    size_t datasize = unpadded_datasize / dims;
 
     size_t globalworkrange[1];
     if (chunksize == 0) {
-      globalworkrange[0] = data.size()/dims;
+      globalworkrange[0] = unpadded_datasize / dims;
     } else {
       globalworkrange[0] = chunksize;
     }
@@ -175,13 +177,8 @@ class KernelCreateGraph {
 
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
 
-    if (chunksize == 0) {
-      for (size_t i = 0; i < real_count * k; i++)
-        result[i] = hostTemp[i];
-    } else {
-      for (size_t i = 0; i < real_count * k; i++)
-        result[i] = hostTemp[i];
-    }
+    for (size_t i = 0; i < real_count * k; i++)
+      result[i] = hostTemp[i];
     if (verbose)
       std::cout << "Read data from opencl device" << std::endl;
     // determine kernel execution time
