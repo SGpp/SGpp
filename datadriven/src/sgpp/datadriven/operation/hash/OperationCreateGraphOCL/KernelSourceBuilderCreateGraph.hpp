@@ -203,15 +203,15 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[2] << "for (int j = 0; j <     " << dimensions
                    << " ; j++) {" << std::endl;
       if (localWorkgroupSize != approxRegCount) {
-       sourceStream << this->indent[3] << "dist += (datapoint[j] - data_local[j + (chunkindex) * "
-                   << dimensions << " ])" << std::endl
-                   << this->indent[3] << "* (datapoint[j] - data_local[j + (chunkindex)* "
-                   << dimensions << " ]);" << std::endl;
+        sourceStream << this->indent[3] << "dist += (datapoint[j] - data_local[j + (chunkindex) * "
+                     << dimensions << " ])" << std::endl
+                     << this->indent[3] << "* (datapoint[j] - data_local[j + (chunkindex)* "
+                     << dimensions << " ]);" << std::endl;
       } else {
-       sourceStream << this->indent[3] << "dist += (datapoint[j] - data_local[j + i * "
-                   << dimensions << " ])" << std::endl
-                   << this->indent[3] << "* (datapoint[j] - data_local[j + i* "
-                   << dimensions << " ]);" << std::endl;
+        sourceStream << this->indent[3] << "dist += (datapoint[j] - data_local[j + i * "
+                     << dimensions << " ])" << std::endl
+                     << this->indent[3] << "* (datapoint[j] - data_local[j + i* "
+                     << dimensions << " ]);" << std::endl;
       }
       sourceStream << this->indent[2] << "}" << std::endl
                    << this->indent[2] << "if (dist < dist_reg[i] && i + group * "
@@ -221,9 +221,8 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[2] << "}" << std::endl
                    << this->indent[1] << "}" << std::endl;
       if (localWorkgroupSize != approxRegCount)
-                   sourceStream << this->indent[0] << "}" << std::endl;
-      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
-                   << this->indent[0] << "}" << std::endl
+        sourceStream << this->indent[1] << "}" << std::endl;
+      sourceStream << this->indent[0] << "}" << std::endl
                    << this->indent[0] << "for (int neighbor = 0 ; neighbor < " << k
                    << "; neighbor++) {" << std::endl
                    << this->indent[1] << "maxindex = 0;" << std::endl
@@ -232,7 +231,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
                    << this->indent[2] << "if (dist_reg[i] < dist_reg[maxindex])" << std::endl
                    << this->indent[3] << "maxindex = i;" << std::endl
                    << this->indent[1] << "}" << std::endl
-                   << this->indent[0] << "neighbors[chunk_index * "<< k
+                   << this->indent[1] << "neighbors[chunk_index * "<< k
                    << " + neighbor] = maxindex + index_reg[maxindex] * "
                    << localWorkgroupSize << ";" << std::endl
                    << this->indent[1] << "dist_reg[maxindex] = 4.0;" << std::endl;
