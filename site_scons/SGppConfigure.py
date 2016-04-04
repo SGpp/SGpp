@@ -142,7 +142,7 @@ def checkOpenCL(config):
     elif "OCL_INCLUDE_PATH" in config.env:
       config.env.AppendUnique(CPPPATH=[config.env["OCL_INCLUDE_PATH"]])
     else:
-      Helper.printInfo("Trying to find the OpenCL without the OCL_INCLUDE_PATH variable.")
+      Helper.printInfo("Trying to find the OpenCL header without the OCL_INCLUDE_PATH variable.")
 
     if not config.CheckCXXHeader("CL/cl.h"):
       Helper.printErrorAndExit("CL/cl.h not found, but required for OpenCL")
@@ -152,7 +152,7 @@ def checkOpenCL(config):
     elif "OCL_LIBRARY_PATH" in config.env:
       config.env.AppendUnique(LIBPATH=[config.env["OCL_LIBRARY_PATH"]])
     else:
-      printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
+      Helper.printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
 
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
@@ -161,9 +161,9 @@ def checkOpenCL(config):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
-      config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    else:
-      printInfo("OpenCL is not enabled")
+    config.env["CPPDEFINES"]["USE_OCL"] = "1"
+  else:
+    Helper.printInfo("OpenCL is not enabled")
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies

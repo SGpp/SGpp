@@ -7,7 +7,7 @@
 #include "sgpp/base/exception/factory_exception.hpp"
 #include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
 #include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "Configuration.hpp"
 

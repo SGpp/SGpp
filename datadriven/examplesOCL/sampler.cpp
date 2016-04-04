@@ -7,7 +7,7 @@
 #include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char** argv) {
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
   // streaming ocl - 13
 
   //    sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-  sgpp::base::OCLOperationConfiguration parameters("reproduce.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("detectedPlatform.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,

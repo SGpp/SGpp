@@ -18,12 +18,26 @@ JSON::JSON(): fileName("") {
 
 JSON::JSON(const std::string& fileName) :
   fileName(fileName) {
-  std::ifstream file(fileName);
+  std::ifstream file;
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
+  try {
+	  file.open(fileName);
+  } catch (std::ifstream::failure &e) {
+	  std::stringstream stream;
+	  stream << "json error: could not open file: " << fileName << std::endl;
+	  throw json_exception(stream.str());
+  }
+
   std::string content;
-  content.assign(std::istreambuf_iterator<char>(file),
-                 std::istreambuf_iterator<char>());
+  try {
+	  content.assign(std::istreambuf_iterator<char>(file),
+			  std::istreambuf_iterator<char>());
+  } catch (std::ifstream::failure &e) {
+	  std::stringstream stream;
+	  stream << "json error: could not successfully read file: " << fileName << std::endl;
+	  throw json_exception(stream.str());
+  }
 
   file.close();
 

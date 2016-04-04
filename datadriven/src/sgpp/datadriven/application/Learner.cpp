@@ -17,45 +17,43 @@
 namespace sgpp {
 namespace datadriven {
 
-Learner::Learner(sgpp::datadriven::RegularizationType& regularization,
-                 const bool isRegression, const bool verbose)
-  : LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL) {
-}
+Learner::Learner(sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
+                 const bool verbose)
+    : LearnerBase(isRegression, verbose),
+      CMode(regularization)
+//, C_(NULL)
+{}
 
-Learner::Learner(const std::string tGridFilename,
-                 const std::string tAlphaFilename,
-                 sgpp::datadriven::RegularizationType& regularization,
-                 const bool isRegression, const bool verbose)
-  : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
-    CMode_(regularization), C_(NULL) {
-}
+// Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename,
+//                 sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
+//                 const bool verbose)
+//    : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
+//      CMode_(regularization)
+//// ,C_(NULL)
+//{}
 
 Learner::~Learner() {
-  if (C_ != NULL)
-    delete C_;
+  //  if (C_ != NULL) delete C_;
 }
 
-sgpp::datadriven::DMSystemMatrixBase* Learner::createDMSystem(
-  sgpp::base::DataMatrix& trainDataset, double lambda) {
-  if (this->grid_ == NULL)
-    return NULL;
+std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
+    sgpp::base::DataMatrix& trainDataset, double lambda) {
+  if (this->grid == NULL) return NULL;
 
   // Clean up, if needed
-  if (C_ != NULL)
-    delete C_;
+  //  if (C_ != NULL) delete C_;
 
-  if (this->CMode_ == datadriven::RegularizationType::Laplace) {
-    C_ = sgpp::op_factory::createOperationLaplace(*this->grid_).release();
-  } else if (this->CMode_ == datadriven::RegularizationType::Identity) {
-    C_ = sgpp::op_factory::createOperationIdentity(*this->grid_).release();
+  if (this->CMode == datadriven::RegularizationType::Laplace) {
+    C = sgpp::op_factory::createOperationLaplace(*this->grid);
+  } else if (this->CMode == datadriven::RegularizationType::Identity) {
+    C = sgpp::op_factory::createOperationIdentity(*this->grid);
   } else {
     // should not happen
   }
 
-  return new sgpp::datadriven::DMSystemMatrix(*(this->grid_), trainDataset, *C_,
-         lambda);
+  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset, *C,
+                                                            lambda);
 }
 
 }  // namespace datadriven
 }  // namespace sgpp
-

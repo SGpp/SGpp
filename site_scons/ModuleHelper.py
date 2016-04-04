@@ -105,12 +105,12 @@ class Module(object):
     if env["BUILD_STATICLIB"]:
       # build static library
       libsuffix = env["LIBSUFFIX"]
-      self.lib = env.StaticLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
+      self.lib = env.StaticLibrary(target=self.libname, source=self.objs, 
                                    LIBS=self.moduleDependencies + self.additionalDependencies)
     else:
       # build shared library
       libsuffix = env["SHLIBSUFFIX"]
-      self.lib = env.SharedLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
+      self.lib = env.SharedLibrary(target=self.libname, source=self.objs, 
                                    LIBS=self.moduleDependencies + self.additionalDependencies)
 
     # set module dependencies
@@ -203,6 +203,7 @@ class Module(object):
 
       # only build Boost test executable if there are any tests
       if len(testObjs) > 0:
+
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
             (".exe" if env["PLATFORM"] == "win32" else "")

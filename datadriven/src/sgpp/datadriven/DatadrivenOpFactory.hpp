@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_OP_FACTORY_HPP
-#define DATADRIVEN_OP_FACTORY_HPP
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -20,7 +19,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
@@ -52,8 +51,8 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
-    base::Grid& grid, int mode, double k);
+std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(base::Grid& grid,
+                                                                             int mode, double k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -194,5 +193,3 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 
 }  // namespace op_factory
 }  // namespace sgpp
-
-#endif /*DATADRIVEN_OP_FACTORY_HPP*/

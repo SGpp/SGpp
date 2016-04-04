@@ -36,16 +36,24 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
   std::vector<T> kernelDataset;
 
-  // includes padding
-  size_t datasetSize;
+  size_t datasetSizeUnpadded;
+  size_t datasetSizePadded;
+  size_t datasetSizeBuffers;
+
+  //  // includes padding
+  //  size_t datasetSize;
 
   // Member to store the sparse grid's levels for better vectorization
   std::vector<T> level;
   // Member to store the sparse grid's indices for better vectorization
   std::vector<T> index;
 
-  // includes padding
-  size_t gridSize;
+  size_t gridSizeUnpadded;
+  size_t gridSizePadded;
+  size_t gridSizeBuffers;
+
+  //  // includes padding
+  //  size_t gridSize;
 
   // Timer object to handle time measurements
   base::SGppStopwatch myTimer;
@@ -90,11 +98,18 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
     queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancer>();
 
-    this->padDataset(this->preparedDataset, datasetSize);
-    this->preparedDataset.transpose();
+    // initialized in padDataset
+    datasetSizeUnpadded = 0;
+    datasetSizePadded = 0;
+    datasetSizeBuffers = 0;
 
-    //    std::cout << "dims: " << this->dims << std::endl;
-    //    std::cout << "padded instances: " << this->datasetSize << std::endl;
+    // initialized in prepare
+    gridSizeUnpadded = 0;
+    gridSizePadded = 0;
+    gridSizeBuffers = 0;
+
+    this->padDataset(this->preparedDataset);
+    this->preparedDataset.transpose();
 
     this->kernelDataset =
         std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
@@ -127,28 +142,26 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     this->myTimer.start();
 
     size_t gridFrom = 0;
-    size_t gridTo = this->gridSize;
+    size_t gridTo = this->gridSizePadded;
     size_t datasetFrom = 0;
-    size_t datasetTo = this->datasetSize;
+    size_t datasetTo = this->datasetSizePadded;
 
     queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
 
-    std::vector<T> alphaArray(this->gridSize);
+    std::vector<T> alphaArray(this->gridSizePadded);
 
     for (size_t i = 0; i < alpha.getSize(); i++) {
       alphaArray[i] = (T)alpha[i];
     }
 
-    for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
+    for (size_t i = alpha.getSize(); i < this->gridSizePadded; i++) {
       alphaArray[i] = 0.0;
     }
 
     // additional padding to allow for devices with different block sizes
-    std::vector<T> resultArray(this->datasetSize);
+    std::vector<T> resultArray(this->datasetSizeBuffers);
 
-    for (size_t i = 0; i < this->datasetSize; i++) {
-      resultArray[i] = 0.0;
-    }
+    std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
@@ -162,8 +175,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->gridSize,
-                                       this->kernelDataset, this->datasetSize, alphaArray,
+      this->multKernels[threadId].mult(this->level, this->index, this->kernelDataset, alphaArray,
                                        resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
     }
     end = std::chrono::system_clock::now();
@@ -186,23 +198,23 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     this->myTimer.start();
 
     size_t gridFrom = 0;
-    size_t gridTo = this->gridSize;
+    size_t gridTo = this->gridSizePadded;
     size_t datasetFrom = 0;
-    size_t datasetTo = this->datasetSize;
+    size_t datasetTo = this->datasetSizePadded;
 
     queueLoadBalancerMultTranspose->initialize(gridFrom, gridTo);
 
-    std::vector<T> sourceArray(this->datasetSize);
+    std::vector<T> sourceArray(this->datasetSizePadded);
 
     for (size_t i = 0; i < source.getSize(); i++) {
       sourceArray[i] = (T)source[i];
     }
 
-    for (size_t i = source.getSize(); i < this->datasetSize; i++) {
+    for (size_t i = source.getSize(); i < this->datasetSizePadded; i++) {
       sourceArray[i] = 0.0;
     }
 
-    std::vector<T> resultArray(this->gridSize);
+    std::vector<T> resultArray(this->gridSizeBuffers);
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
@@ -235,7 +247,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   double getDuration() override { return this->duration; }
 
   void prepare() override {
-    this->recalculateLevelAndIndex(gridSize);
+    this->recalculateLevelAndIndex();
 
     for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
       this->multKernels[deviceIndex].resetKernel();
@@ -244,27 +256,26 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   }
 
  private:
-  void padDataset(base::DataMatrix &dataset, size_t &datasetSize) {
+  void padDataset(base::DataMatrix &dataset) {
     // Assure that data has a even number of instances -> padding might be
     // needed
     size_t remainder = dataset.getNrows() % commonDatasetPadding;
     size_t padding = commonDatasetPadding - remainder;
+    datasetSizeUnpadded = dataset.getNrows();
+    datasetSizePadded = dataset.getNrows() + padding;
+    datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
-    datasetSize = dataset.getNrows() + padding;
+    // replicate last row for padding
+    base::DataVector lastRow(dims);
+    dataset.getRow(datasetSizeUnpadded - 1, lastRow);
+    dataset.resize(datasetSizeBuffers);
 
-    if (padding != commonDatasetPadding) {
-      base::DataVector lastRow(dataset.getNcols());
-      size_t oldSize = dataset.getNrows();
-      dataset.getRow(dataset.getNrows() - 1, lastRow);
-      dataset.resize(dataset.getNrows() + padding);
-
-      for (size_t i = 0; i < padding; i++) {
-        dataset.setRow(oldSize + i, lastRow);
-      }
+    for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+      dataset.setRow(i, lastRow);
     }
   }
 
-  void recalculateLevelAndIndex(size_t &gridSize) {
+  void recalculateLevelAndIndex() {
     base::GridStorage &storage = grid.getStorage();
 
     size_t remainder = storage.getSize() % commonGridPadding;
@@ -274,10 +285,12 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       padding = commonGridPadding - remainder;
     }
 
-    gridSize = storage.getSize() + padding;
+    gridSizeUnpadded = storage.getSize();
+    gridSizePadded = storage.getSize() + padding;
+    gridSizeBuffers = storage.getSize() + commonGridPadding;
 
-    level = std::vector<T>(gridSize * dims);
-    index = std::vector<T>(gridSize * dims);
+    level = std::vector<T>(gridSizeBuffers * dims);
+    index = std::vector<T>(gridSizeBuffers * dims);
 
     base::HashGridIndex::level_type curLevel;
     base::HashGridIndex::index_type curIndex;
@@ -294,7 +307,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       }
     }
 
-    for (size_t i = storage.getSize(); i < this->gridSize; i++) {
+    for (size_t i = storage.getSize(); i < gridSizeBuffers; i++) {
       for (size_t dim = 0; dim < storage.getDimension(); dim++) {
         level[i * dims + dim] = 1.0;
         index[i * dims + dim] = 1.0;
