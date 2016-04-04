@@ -62,6 +62,8 @@ class DMSystemMatrixVectorizedIdentity : public sgpp::datadriven::DMSystemMatrix
 
   virtual void generateb(sgpp::base::DataVector& classes, sgpp::base::DataVector& b);
 
+  virtual void prepareGrid() { rebuildLevelAndIndex(); }
+
   virtual void rebuildLevelAndIndex();
 };
 
