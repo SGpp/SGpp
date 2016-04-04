@@ -71,6 +71,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
+vars.Add(BoolVariable("DOC", "Build the doxygen documentation", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
@@ -106,6 +107,8 @@ vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
+vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -474,9 +477,10 @@ def printInstructions(target, source, env):
     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
 
-printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
-env.Depends(printInstructionsTarget, finalStepDependencies)
-finalStepDependencies.append(printInstructionsTarget)
+if env["PRINT_INSTRUCTIONS"]:
+    printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
+    env.Depends(printInstructionsTarget, finalStepDependencies)
+    finalStepDependencies.append(printInstructionsTarget)
 
 # System-wide installation
 #########################################################################
@@ -497,8 +501,9 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 # Doxygen
 #########################################################################
 
-doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
-env.Alias("doxygen", doxygen)
+if env["DOC"]:
+    doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
+    env.Alias("doxygen", doxygen)
 
 # Things to be cleaned
 #########################################################################
@@ -517,7 +522,8 @@ for module in moduleFolders:
 # Default targets
 #########################################################################
 
-if not GetOption("clean"):
-  env.Default(finalStepDependencies)
-else:
-  env.Default(finalStepDependencies + ["clean"])
+# TODO(pfandedd): default target break targets that are not on the finalStepDependencies list, why do we even need this?
+# if not GetOption("clean"):
+#   env.Default(finalStepDependencies)
+# else:
+#   env.Default(finalStepDependencies + ["clean"])

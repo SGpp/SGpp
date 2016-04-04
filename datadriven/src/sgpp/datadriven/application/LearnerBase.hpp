@@ -32,32 +32,36 @@ namespace datadriven {
 class LearnerBase {
  protected:
   /// the grid's coefficients
-  sgpp::base::DataVector* alpha_;
+  std::unique_ptr<sgpp::base::DataVector> alpha;
   /// sparse grid object
-  sgpp::base::Grid* grid_;
+  std::unique_ptr<sgpp::base::Grid> grid;
   /// is verbose output enabled
-  bool isVerbose_;
+  bool isVerbose;
   /// is regression selected
-  bool isRegression_;
+  bool isRegression;
+  /// shall the coefficients be reused between refinement steps
+  bool reuseCoefficients;
+  /// sets the verbose option for the solver
+  bool solverVerbose;
   /// is the grid trained
-  bool isTrained_;
+  bool isTrained;
   /// execution time
-  double execTime_;
+  double execTime;
   /// execution time for current refinement
   /// to calculate the GFlops at the current timestep only
   /// otherwise accumulated GFlops (all refinement steps)
   /// are calculated
-  double stepExecTime_;
+  double stepExecTime;
   /// number of executed Floating Point operations
-  double GFlop_;
+  double GFlop;
   /// number of executed Floating Point operations
   /// in the current refinement step
-  double stepGFlop_;
+  double stepGFlop;
   /// number of transferred Gbytes
-  double GByte_;
+  double GByte;
   /// number of transferred Gbytes
   /// in the current refinement step
-  double stepGByte_;
+  double stepGByte;
   /// the current refinment step during training
   size_t currentRefinementStep;
 
@@ -100,8 +104,8 @@ class LearnerBase {
    * @param trainDataset training dataset
    * @param lambda lambda regularization parameter
    */
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(sgpp::base::DataMatrix& trainDataset,
-                                                               double lambda) = 0;
+  virtual std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) = 0;
 
  public:
   /**
@@ -112,16 +116,16 @@ class LearnerBase {
    */
   explicit LearnerBase(const bool isRegression, const bool isVerbose = true);
 
-  /**
-   * Constructor
-   *
-   * @param tGridFilename path to file that contains a serialized grid
-   * @param tAlphaFilename path to file that contains the grid's coefficients
-   * @param isRegression set to true if a regression task should be executed
-   * @param isVerbose set to true in order to allow console output
-   */
-  LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression,
-              const bool isVerbose = true);
+  //  /**
+  //   * Constructor
+  //   *
+  //   * @param tGridFilename path to file that contains a serialized grid
+  //   * @param tAlphaFilename path to file that contains the grid's coefficients
+  //   * @param isRegression set to true if a regression task should be executed
+  //   * @param isVerbose set to true in order to allow console output
+  //   */
+  //  LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression,
+  //              const bool isVerbose = true);
 
   /**
    * Copy-Constructor
@@ -199,8 +203,8 @@ class LearnerBase {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(sgpp::base::DataMatrix& testDataset,
-                              const sgpp::base::DataVector& classesReference,
-                              const double threshold = 0.0);
+                             const sgpp::base::DataVector& classesReference,
+                             const double threshold = 0.0);
 
   /**
    * compute the accuracy for given testDataset.
@@ -218,8 +222,8 @@ class LearnerBase {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(const sgpp::base::DataVector& classesComputed,
-                              const sgpp::base::DataVector& classesReference,
-                              const double threshold = 0.0);
+                             const sgpp::base::DataVector& classesReference,
+                             const double threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
@@ -307,6 +311,10 @@ class LearnerBase {
   sgpp::base::Grid& getGrid();
 
   sgpp::base::DataVector& getAlpha();
+
+  void setReuseCoefficients(bool reuseCoefficients);
+
+  void setSolverVerbose(bool solverVerbose);
 };
 }  // namespace datadriven
 }  // namespace sgpp

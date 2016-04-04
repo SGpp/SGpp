@@ -9,7 +9,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
@@ -31,23 +31,28 @@ int main(int argc, char** argv) {
   //  std::string kernelName = "StreamingOCLMultiPlatform";
   std::string datasetFileName = "friedman2_4d_300000.arff";
 
-  OperationMultipleEvalType operationType = OperationMultipleEvalType::STREAMING;
-  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::OCLMASKMP;
+  // use the implementation of base!
+  OperationMultipleEvalType operationType = OperationMultipleEvalType::DEFAULT;
+  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::DEFAULT;
 
-  std::string kernelName;
-  if (operationType == OperationMultipleEvalType::STREAMING) {
-    if (operationSubType == OperationMultipleEvalSubType::OCLMASKMP) {
-      kernelName = "StreamingModOCLMaskMultiPlatform";
-    } else if (operationSubType == OperationMultipleEvalSubType::OCLFASTMP) {
-      kernelName = "StreamingModOCLFastMultiPlatform";
-    } else {
-      throw;
-    }
-  } else {
-    throw;
-  }
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
+  //  std::string kernelName = "StreamingOCLMultiPlatform";
+  //  std::string kernelName = "StreamingModOCLFastMultiPlatform";
 
-  std::string parameterFileName("allDevices.cfg");
+  //  std::string kernelName;
+  //  if (operationType == OperationMultipleEvalType::STREAMING) {
+  //    if (operationSubType == OperationMultipleEvalSubType::OCLMASKMP) {
+  //      kernelName = "StreamingModOCLMaskMultiPlatform";
+  //    } else if (operationSubType == OperationMultipleEvalSubType::OCLFASTMP) {
+  //      kernelName = "StreamingModOCLFastMultiPlatform";
+  //    } else {
+  //      throw;
+  //    }
+  //  } else {
+  //    throw;
+  //  }
+
+  std::string parameterFileName("reproduce.cfg");
   double lambda = 0.0000001;
 
   sgpp::base::RegularGridConfiguration gridConfig;
@@ -79,7 +84,7 @@ int main(int argc, char** argv) {
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
-  SLESolverConfigFinal.maxIterations_ = 1;
+  SLESolverConfigFinal.maxIterations_ = 2;
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
@@ -124,6 +129,7 @@ int main(int argc, char** argv) {
                                                                      operationSubType, parameters);
 
   std::string datasetFileNameFetched = scenario.getDatasetFileName();
+  //  metaLearner.learn(configuration, datasetFileNameFetched, true);
   metaLearner.learn(configuration, datasetFileNameFetched, true);
 
   sgpp::base::DataVector& alpha = metaLearner.getLearnedAlpha();

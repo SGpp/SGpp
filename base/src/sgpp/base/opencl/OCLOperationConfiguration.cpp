@@ -13,7 +13,7 @@ namespace base {
 
 OCLOperationConfiguration::OCLOperationConfiguration() : OperationConfiguration() {
   // augment default values to configuration
-  //        this->addIDAttr("LOCAL_SIZE", 64ul);
+  //        this->addIDAttr("LOCAL_SIZE", 64ull);
   //        this->addIDAttr("ENABLE_OPTIMIZATIONS", true);
   //        this->addTextAttr("OPTIMIZATION_FLAGS", "");
   //        this->addTextAttr("INTERNAL_PRECISION", "double");
@@ -33,7 +33,7 @@ OCLOperationConfiguration::OCLOperationConfiguration(const std::string &fileName
     : OperationConfiguration(fileName) {
   // augment default values to configuration
   //    if (this->contains("LOCAL_SIZE") == false) {
-  //        this->addIDAttr("LOCAL_SIZE", 64ul);
+  //        this->addIDAttr("LOCAL_SIZE", 64ull);
   //    }
   //
   //    if (this->contains("ENABLE_OPTIMIZATIONS") == false) {

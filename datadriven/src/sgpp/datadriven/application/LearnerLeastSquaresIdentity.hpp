@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERLEASTSQUARESIDENTITY_HPP
-#define LEARNERLEASTSQUARESIDENTITY_HPP
+#pragma once
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -26,18 +25,17 @@ namespace datadriven {
  * Furthermore this Learner provides support for several
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
-class LearnerLeastSquaresIdentity: public sgpp::datadriven::LearnerBase {
+class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
  private:
   std::vector<std::pair<size_t, double> > ExecTimeOnStep;
 
   sgpp::base::OperationMultipleEval* kernel = nullptr;
 
-  sgpp::datadriven::OperationMultipleEvalConfiguration
-  implementationConfiguration;
+  sgpp::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 
  protected:
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(
-    sgpp::base::DataMatrix& trainDataset, double lambda);
+  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) override;
 
   virtual void postProcessing(const sgpp::base::DataMatrix& trainDataset,
                               const sgpp::solver::SLESolverType& solver,
@@ -50,20 +48,18 @@ class LearnerLeastSquaresIdentity: public sgpp::datadriven::LearnerBase {
    * @param isRegression set to true if a regression task should be executed
    * @param isVerbose set to true in order to allow console output
    */
-  LearnerLeastSquaresIdentity(const bool isRegression,
-                              const bool isVerbose = true);
+  explicit LearnerLeastSquaresIdentity(const bool isRegression, const bool isVerbose = true);
 
-  /**
-   * Constructor
-   *
-   * @param tGridFilename path to file that contains a serialized grid
-   * @param tAlphaFilename path to file that contains the grid's coefficients
-   * @param isRegression set to true if a regression task should be executed
-   * @param isVerbose set to true in order to allow console output
-   */
-  LearnerLeastSquaresIdentity(const std::string tGridFilename,
-                              const std::string tAlphaFilename,
-                              const bool isRegression, const bool isVerbose = true);
+  //  /**
+  //   * Constructor
+  //   *
+  //   * @param tGridFilename path to file that contains a serialized grid
+  //   * @param tAlphaFilename path to file that contains the grid's coefficients
+  //   * @param isRegression set to true if a regression task should be executed
+  //   * @param isVerbose set to true in order to allow console output
+  //   */
+  //  LearnerLeastSquaresIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
+  //                              const bool isRegression, const bool isVerbose = true);
 
   /**
    * Destructor
@@ -73,17 +69,15 @@ class LearnerLeastSquaresIdentity: public sgpp::datadriven::LearnerBase {
   virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix& testDataset);
 
   double testRegular(const sgpp::base::RegularGridConfiguration& GridConfig,
-                      sgpp::base::DataMatrix& testDataset);
+                     sgpp::base::DataMatrix& testDataset);
 
   std::vector<std::pair<size_t, double> > getRefinementExecTimes();
 
-  void setImplementation(sgpp::datadriven::OperationMultipleEvalConfiguration
-                         operationConfiguration) {
+  void setImplementation(
+      sgpp::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
     this->implementationConfiguration = operationConfiguration;
   }
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERLEASTSQUARESIDENTITY_HPP */

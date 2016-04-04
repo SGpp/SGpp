@@ -32,6 +32,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
   bool useLocalMemory;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
+  size_t transPrefetchSize;
 
   std::string getLevel(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
@@ -117,7 +118,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
   std::string getData(std::string dim) {
     std::stringstream output;
     if (kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool()) {
-      output << "locData[(" << dim << " * " << localWorkgroupSize << ") + k]";
+      output << "locData[(" << dim << " * " << transPrefetchSize << ") + k]";
     } else {
       output << "ptrData[(" << dim << " * rangeData) + k]";
     }
@@ -176,6 +177,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
     transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    transPrefetchSize = kernelConfiguration["KERNEL_TRANS_PREFETCH_SIZE"].getUInt();
   }
 
   std::string generateSource() {
@@ -210,15 +212,15 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
                  << std::endl;
     sourceStream << "           __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "           uint dataBlockStart," << std::endl;
-    sourceStream << "           uint dataBlockEnd)" << std::endl;
+    sourceStream << "           int dataBlockStart," << std::endl;
+    sourceStream << "           int dataBlockEnd)" << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[indentLevel] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int localIdx = get_local_id(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int groupSize = get_local_size(0);" << std::endl;
     sourceStream << this->indent[indentLevel] << "int globalSize = get_global_size(0);"
                  << std::endl;
-    sourceStream << this->indent[indentLevel] << "uint rangeData = dataBlockEnd - dataBlockStart;"
+    sourceStream << this->indent[indentLevel] << "int rangeData = dataBlockEnd - dataBlockStart;"
                  << std::endl;
 
     sourceStream << std::endl;
@@ -234,24 +236,11 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
     if (useLocalMemory) {
       sourceStream << this->indent[indentLevel] << "__local " << this->floatType() << " locData["
-                   << dims * localWorkgroupSize << "];" << std::endl;
+                   << dims * transPrefetchSize << "];" << std::endl;
       sourceStream << this->indent[indentLevel] << "__local " << this->floatType() << " locSource["
-                   << localWorkgroupSize << "];" << std::endl
+                   << transPrefetchSize << "];" << std::endl
                    << std::endl;
     }
-
-    //    for (size_t d = 0; d < dims; d++) {
-    //      sourceStream << " " << this->floatType() << " level_" << d << " = ptrLevel[(globalIdx*"
-    //                   << dims << ")+" << d << "];" << std::endl;
-    //      sourceStream << " " << this->floatType() << " index_" << d << " = ptrIndex[(globalIdx*"
-    //                   << dims << ")+" << d << "];" << std::endl;
-    //      sourceStream << " " << this->floatType() << " mask_" << d << " = ptrMask[(globalIdx*" <<
-    //      dims
-    //                   << ")+" << d << "];" << std::endl;
-    //      sourceStream << " " << this->floatType() << " offset_" << d << " =
-    //      ptrOffset[(globalIdx*"
-    //                   << dims << ")+" << d << "];" << std::endl;
-    //    }
 
     // create a register storage for the level and index of the grid points of
     // the work item
@@ -329,22 +318,28 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     sourceStream << this->indent[indentLevel] << "// Iterate over all grid points" << std::endl;
     if (useLocalMemory) {
       sourceStream << this->indent[indentLevel]
-                   << "for(int i = dataBlockStart; i < dataBlockEnd; i+=" << localWorkgroupSize
+                   << "for(int i = dataBlockStart; i < dataBlockEnd; i+=" << transPrefetchSize
                    << ") {" << std::endl;
 
       indentLevel += 1;
 
+      sourceStream << this->indent[indentLevel] << "if (localIdx < " << transPrefetchSize << ") {"
+                   << std::endl;
+      indentLevel += 1;
+
       for (size_t d = 0; d < dims; d++) {
-        sourceStream << this->indent[indentLevel] << "locData[(" << d << "*" << localWorkgroupSize
+        sourceStream << this->indent[indentLevel] << "locData[(" << d << "*" << transPrefetchSize
                      << ")+(localIdx)] = ptrData[(" << d << "*rangeData)+(localIdx+i)];"
                      << std::endl;
       }
 
       sourceStream << this->indent[indentLevel] << "locSource[localIdx] = ptrSource[i+localIdx];"
                    << std::endl;
+      indentLevel -= 1;
+      sourceStream << this->indent[indentLevel] << "}" << std::endl;
       sourceStream << this->indent[indentLevel] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << std::endl;
-      sourceStream << this->indent[indentLevel] << "for(int k = 0; k < " << localWorkgroupSize
+      sourceStream << this->indent[indentLevel] << "for(int k = 0; k < " << transPrefetchSize
                    << "; k++) {" << std::endl;
 
       indentLevel += 1;
@@ -368,7 +363,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     sourceStream << std::endl;
 
     if (dims > maxDimUnroll) {
-      sourceStream << this->indent[indentLevel] << "for (size_t unrollDim = 0; unrollDim < "
+      sourceStream << this->indent[indentLevel] << "for (int unrollDim = 0; unrollDim < "
                    << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                    << ") {" << std::endl;
 

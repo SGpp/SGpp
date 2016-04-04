@@ -23,7 +23,7 @@ namespace datadriven {
 class DMSystemMatrixBase : public base::OperationMatrix {
  protected:
   /// the dataset
-  base::DataMatrix* dataset_;
+  base::DataMatrix& dataset_;
   /// the lambda, the regularisation parameter
   double lambda_;
   /// time needed for Mult
@@ -58,7 +58,7 @@ class DMSystemMatrixBase : public base::OperationMatrix {
    *
    * @param classes the class information of the training data
    * @param b reference to the vector that will contain the result of the matrix vector
-   * multiplication on the rhs
+   *multiplication on the rhs
    */
   virtual void generateb(base::DataVector& classes, base::DataVector& b) = 0;
 
@@ -66,7 +66,7 @@ class DMSystemMatrixBase : public base::OperationMatrix {
    * forward declaration
    *
    * rebuilds the base::DataMatrix for Level and Index
-   * this routine is needed for supporting adaptive grids
+   * this routine is needed for supporting adaptiva grids
    * with vectorized high performance kernels
    */
   virtual void prepareGrid();
