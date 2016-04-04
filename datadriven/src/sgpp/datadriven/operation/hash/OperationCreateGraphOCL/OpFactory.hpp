@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPFACTORY_H
-#define OPFACTORY_H
+#ifndef CREATE_GRAPH_OPFACTOR_H
+#define CREATE_GRAPH_OPFACTOR_H
+
 
 #include <sgpp/globaldef.hpp>
 #include <string>
@@ -23,4 +24,4 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif /* OPFACTORY_H */
+#endif /* CREATE_GRAPH_OPFACTOR_H */
