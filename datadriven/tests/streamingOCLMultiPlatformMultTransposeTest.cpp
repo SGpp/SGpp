@@ -40,10 +40,10 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -70,10 +70,10 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -101,10 +101,10 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -132,10 +132,10 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -165,10 +165,10 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -198,10 +198,10 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -231,10 +231,10 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -264,10 +264,10 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
     deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(

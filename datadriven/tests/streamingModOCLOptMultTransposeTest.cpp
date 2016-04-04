@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(Local) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -104,8 +104,8 @@ BOOST_AUTO_TEST_CASE(Blocking) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -134,8 +134,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -252,8 +252,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -282,8 +282,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
@@ -312,8 +312,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ull);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ull);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
     deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
