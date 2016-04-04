@@ -2,7 +2,9 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-#pragma once
+#ifndef DENSITY_OPFACTORY_H
+#define DENSITY_OPFACTORY_H
+
 
 #include <sgpp/globaldef.hpp>
 #include <string>
@@ -14,7 +16,9 @@ sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf);
 sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
-createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension, double lambda,
-                                        std::string opencl_conf);
+createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
+                                        double lambda, std::string opencl_conf);
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif /* DENSITY_OPFACTORY_H */
