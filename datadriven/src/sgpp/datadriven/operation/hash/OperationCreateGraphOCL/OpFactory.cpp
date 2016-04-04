@@ -15,7 +15,8 @@ namespace datadriven {
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t dimensions,
-                                     std::string opencl_conf) {
+                                     std::string opencl_conf, size_t platformid,
+                                     size_t deviceid) {
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
     std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -41,9 +42,9 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
     parameters->serialize("MyOCLConf.cfg");
 
     std::string &firstPlatformName =
-        (*parameters)["PLATFORMS"].keys()[0];
+        (*parameters)["PLATFORMS"].keys()[platformid];
     std::string &firstDeviceName =
-        (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
+        (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[deviceid];
     json::Node &deviceNode =
         (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
     json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
@@ -67,7 +68,8 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions, std::string opencl_conf) {
+                                     size_t dimensions, std::string opencl_conf,
+                                     size_t platformid, size_t deviceid) {
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
     std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -93,9 +95,9 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
     parameters->serialize("MyOCLConf.cfg");
 
     std::string &firstPlatformName =
-        (*parameters)["PLATFORMS"].keys()[0];
+        (*parameters)["PLATFORMS"].keys()[platformid];
     std::string &firstDeviceName =
-        (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
+        (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[deviceid];
     json::Node &deviceNode =
         (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
     json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
