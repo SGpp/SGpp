@@ -115,7 +115,7 @@ class ASGCUQManager(object):
 
         # if there is a test setting given, combine the train and the
         # test dataContainerDict container
-        if self.sampler.getCurrentIterationNumber() == 1:
+        if self.sampler.getCurrentIterationNumber() == 1 and self.testSet is not None:
             dataContainerDict = self.testSet.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi)
             dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
             for dtype, values in dataContainerDict.items():

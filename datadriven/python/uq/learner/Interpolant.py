@@ -96,7 +96,6 @@ class Interpolant(Learner):
         # learning step
         self.alpha = self.doLearningIteration(trainSubset)
         self.updateResults(self.alpha, trainSubset, *args, **kws)
-
         self.iteration += 1
         self.notifyEventControllers(LearnerEvents.LEARNING_COMPLETE)
         return self.alpha
@@ -138,10 +137,9 @@ class Interpolant(Learner):
         @return: mean squared error
         """
         points = data.getPoints().array()
-        values_model = data.getValues()
+        values_model = data.getValues().array()
         if points.shape[1] == 0:
             return np.array([])
-
         values_surrogate = evalSGFunctionMulti(self.grid, alpha, points)
         # compute L2 error
         return np.sqrt((values_surrogate - values_model) ** 2)
