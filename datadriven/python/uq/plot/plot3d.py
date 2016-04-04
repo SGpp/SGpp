@@ -77,7 +77,7 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
 
     for i in xrange(len(X)):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f([x, y])
+            Z[i, j] = f(np.array([x, y]))
 
     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
                            linewidth=0, antialiased=False)

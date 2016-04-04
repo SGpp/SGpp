@@ -88,7 +88,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
             plt.ylim(0, 1)
             plt.xlim(-0.2, 2)
             plt.legend(plots,
-                       [r"$S_{%s}$ = %g" % (name, value)
+                       [r"$S_{%s}$ = %.3f" % (name, value)
                         for (name, value) in zip(names[::-1],
                                                  sobolIndices[::-1])])
 

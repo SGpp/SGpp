@@ -14,6 +14,14 @@ from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 import numpy as np
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+import matplotlib
+from matplotlib import rc
+
+font = {'family' : 'sans-serif',
+        'sans-serif':['Helvetica'],
+        'size'   : 22}
+matplotlib.rc('font', **font)
+rc('text', usetex=True)
 
 # define random variables
 builder = ParameterBuilder()
@@ -24,11 +32,6 @@ up.new().isCalled('x_1').withTNormalDistribution(0.5, 0.2, 0, 1)
 
 params = builder.andGetResult()
 
-# -------------------------------------------------------------------------
-fig, _ = plotDensity3d(params.getIndependentJointDistribution())
-fig.show()
-# -------------------------------------------------------------------------
-
 # define UQ setting
 builder = ASGCUQManagerBuilder()
 builder.withParameters(params)\
@@ -38,7 +41,7 @@ builder.withParameters(params)\
 
 # define model function
 def g(x, **kws):
-    return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+    return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + 10 * np.exp(x[0] * x[1] - 1)
 
 builder.defineUQSetting().withSimulation(g)
 
@@ -111,13 +114,18 @@ print "var(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.var()[0], distKDE.var(), 
 y = analysis.eval(analysis.generateUnitSamples())
 
 fig = plt.figure()
-plotDensity1d(distSGDE, label="SGDE")
-plt.vlines(distSGDE.mean(), 0, distSGDE.pdf(distSGDE.mean()))
-plotDensity1d(distKDE, label="KDE")
-plt.vlines(distKDE.mean(), 0, distKDE.pdf(distKDE.mean()))
-samples = distKDE.getSamples()
-plt.scatter(samples, np.zeros(samples.shape[0]))
-plt.hist(y, normed=True, cumulative=False, label="hist")
+plotDensity1d(distSGDE, label="SGDE", linewidth=3)
+plt.vlines(distSGDE.mean(), 0, distSGDE.pdf(distSGDE.mean()),
+           linewidth=3, color="red")
+plt.vlines(distSGDE.mean() - distSGDE.std(), 0, distSGDE.pdf(distSGDE.mean() - distSGDE.std()),
+           linewidth=3, color="red")
+plt.vlines(distSGDE.mean() + distSGDE.std(), 0, distSGDE.pdf(distSGDE.mean() + distSGDE.std()),
+           linewidth=3, color="red")
+# plotDensity1d(distKDE, label="KDE")
+# plt.vlines(distKDE.mean(), 0, distKDE.pdf(distKDE.mean()))
+# samples = distKDE.getSamples()
+# plt.scatter(samples, np.zeros(samples.shape[0]))
+plt.hist(y, normed=True, cumulative=False, label="histogram")
 plt.legend()
 fig.show()
 
@@ -126,11 +134,17 @@ x = np.linspace(distSGDE.getBounds()[0, 0],
                 200)
 
 fig = plt.figure()
-plt.plot(x, [distSGDE.cdf(xi) for xi in x], label="SGDE")
-plt.plot(x, [distKDE.cdf(xi) for xi in x], label="KDE")
-plt.hist(y, normed=True, cumulative=True, label="hist")
+plt.plot(x, [distSGDE.cdf(xi) for xi in x], label="SGDE",
+         linewidth=3)
+# plt.plot(x, [distKDE.cdf(xi) for xi in x], label="KDE")
+plt.vlines(distSGDE.mean(), 0, distSGDE.cdf(distSGDE.mean()),
+           linewidth=3, color="red")
+plt.vlines(distSGDE.mean() - distSGDE.std(), 0, distSGDE.cdf(distSGDE.mean() - distSGDE.std()),
+           linewidth=3, color="red")
+plt.vlines(distSGDE.mean() + distSGDE.std(), 0, distSGDE.cdf(distSGDE.mean() + distSGDE.std()),
+           linewidth=3, color="red")
+plt.hist(y, normed=True, cumulative=True, label="histogram")
 plt.legend()
 fig.show()
 
 plt.show()
-

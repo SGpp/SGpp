@@ -79,27 +79,22 @@ def plotFunction2d(f, addContour=True, n=101,
                    xlim=[0, 1], ylim=[0, 1]):
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
-#     X, Y = np.meshgrid(x, y)
-    Z = np.ones(n * n).reshape(n, n)
+    Z = np.ones((n, n))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
         for j in xrange(len(y)):
-            Z[j, i] = f(xv[j, i], yv[j, i])
+            Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
-#     for i in xrange(len(X)):
-#         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-#             Z[i, j] = f(xi, 1 - yi)
-
-    plt.imshow(Z[::-1, :], interpolation='bilinear',
-               extent=(xlim[0], xlim[1], xlim[0], xlim[1]))
-
+    # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
+    plt.imshow(Z[::-1, :], interpolation='bicubic', aspect='auto',
+               extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
     plt.jet()
-    plt.colorbar()
+    cbar = plt.colorbar()
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='black')
-#         cs = plt.contour(X, 1 - Y, Z, colors='black')
+        cs = plt.contour(xv, yv, Z, colors='white',
+                         levels=[2, 6, 20])
         plt.clabel(cs, inline=1, fontsize=18)
 
     return
