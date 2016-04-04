@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
+#ifndef OPERATIONCREATEGRAPHOCL_H
+#define OPERATIONCREATEGRAPHOCL_H
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -95,3 +96,6 @@ class OperationCreateGraphOCL {
 }  // namespace DensityOCLMultiPlatform
 }  // namespace datadriven
 }  // namespace sgpp
+
+
+#endif /* OPERATIONCREATEGRAPHOCL_H */

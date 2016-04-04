@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
+#ifndef OPFACTORY_H
+#define OPFACTORY_H
 
 #include <sgpp/globaldef.hpp>
 #include <string>
@@ -13,9 +14,13 @@ namespace datadriven {
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
-                                     size_t dimensions, std::string opencl_conf);
+                                     size_t dimensions, std::string opencl_conf,
+                                     size_t platformid, size_t devicdeid);
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions, std::string opencl_conf);
-}
-}
+                                     size_t dimensions, std::string opencl_conf,
+                                     size_t platformid, size_t devicdeid);
+}  // namespace datadriven
+}  // namespace sgpp
+
+#endif /* OPFACTORY_H */

@@ -21,9 +21,9 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe = 10, k = 12;
+  size_t dimension, tiefe = 6, k = 12;
   double lambda = 0.001, treshold = 0.7;
-  std::string filename = "dataset2_dim2.arff";
+  std::string filename = "dataset3_dim10.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
@@ -45,7 +45,7 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
             std::cin >> treshold;*/
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
@@ -58,14 +58,14 @@ int main() {
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
-                                                                "MyOCLConf.cfg");
+      "MyOCLConf.cfg");*/
   /*operation_mult->mult(alpha, result);
   for (auto i = 0; i < 200; ++i) {
     std::cout << result[i] << " ";
     }*/
 
 
-  std::cout << "Creating rhs" << std::endl;
+  /*std::cout << "Creating rhs" << std::endl;
   sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
   for (size_t i = 0; i < 300; i++)
@@ -77,25 +77,27 @@ int main() {
   double max = alpha.max();
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
-  alpha[i] = alpha[i]*1.0/(max-min);
+  alpha[i] = alpha[i]*1.0/(max-min);*/
 
   std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
       sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
-                                                             "MyOCLConf.cfg");
+                                                             "MyOCLConf.cfg", 0, 0);
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
   std::ofstream out1("graph_modern1.txt");
-  for (auto i = 0; i < 100000; ++i) {
+  for (size_t i = 0; i < dataset.getNrows(); ++i) {
     for (auto j = 0; j < 12; ++j) {
       out1 << graph[i * 12 + j] << " ";
     }
     out1 << std::endl;
   }
+  out1.close();
 
 
-  std::cout << "Starting graph pruning" << std::endl;
+
+  /*std::cout << "Starting graph pruning" << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
       sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
                                                             treshold, k, "MyOCLConf.cfg");
@@ -103,7 +105,7 @@ int main() {
 
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
   std::ofstream out("graph_modern2.txt");
-  for (auto i = 0; i < 100000; ++i) {
+  for (size_t i = 0; i < dataset.getNrows(); ++i) {
     for (auto j = 0; j < 12; ++j) {
       out << graph[i * 12 + j] << " ";
     }
@@ -111,6 +113,6 @@ int main() {
   }
   // cleanup
   delete operation_mult;
-  delete solver;
+  delete solver;*/
   delete operation_graph;
 }

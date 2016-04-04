@@ -61,7 +61,8 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
       // Create opencl operation
       sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* op =
           sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, dataset_size,
-                                                                 k, dimensions, "MyOCLConf.cfg");
+                                                                 k, dimensions, "MyOCLConf.cfg",
+                                                                 0, 0);
       if (verbose) {
         std::cout << "Node " << MPIEnviroment::get_node_rank()
                   << ": Created opencl graph operation"<< std::endl;
