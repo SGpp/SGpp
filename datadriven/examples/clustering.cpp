@@ -82,7 +82,7 @@ int main() {
   std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
       sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
-                                                             "MyOCLConf.cfg", 0, 0);
+                                                             "MyOCLConf.cfg");
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
