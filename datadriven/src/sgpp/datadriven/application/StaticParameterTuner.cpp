@@ -302,7 +302,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
         shortestDuration = duration;
         highestGFlops = GFlops;
         bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
-        std::cout << *bestParameters << std::endl;
+        //        std::cout << *bestParameters << std::endl;
       }
       if (collectStatistics) {
         this->statistics.emplace_back(fixedParameters, duration, GFlops);
@@ -444,8 +444,12 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
 
 void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfiguration,
                                          base::DataVector &alpha) {
-  base::DataVector alphaReference =
-      base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  base::DataVector alphaReference;
+  try {
+    alphaReference = base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  } catch (std::exception &e) {
+    throw base::application_exception("error: coult not open alpha verification file");
+  }
 
   if (alphaReference.getSize() != alpha.getSize()) {
     throw base::application_exception("error: size of reference vector doesn't match");
