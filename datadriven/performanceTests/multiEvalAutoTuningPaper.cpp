@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Float) {
   staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Double) {
   staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
@@ -505,7 +505,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Float) {
   staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
