@@ -114,7 +114,7 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       size_t oldCountLimit = 0;
       if (!deviceNode.contains("SELECT")) {
         if (!deviceNode.contains("COUNT")) {
-          deviceNode.addIDAttr("COUNT", 1ull);
+          deviceNode.addIDAttr("COUNT", UINT64_C(1));
           addedCountLimit = true;
         } else {
           oldCountLimit = deviceNode["COUNT"].getUInt();
@@ -141,7 +141,7 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
         addedScheduleSize = true;
         // TODO(pfandedd): improve, for now multiples of 1024 should run with any kernel
-        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ull);
+        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(1024000));
       }
 
       this->tuneParameters(scenario, platformName, deviceName, kernelName);
@@ -302,7 +302,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
         shortestDuration = duration;
         highestGFlops = GFlops;
         bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
-        std::cout << *bestParameters << std::endl;
+        //        std::cout << *bestParameters << std::endl;
       }
       if (collectStatistics) {
         this->statistics.emplace_back(fixedParameters, duration, GFlops);
@@ -444,8 +444,12 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
 
 void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfiguration,
                                          base::DataVector &alpha) {
-  base::DataVector alphaReference =
-      base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  base::DataVector alphaReference;
+  try {
+    alphaReference = base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  } catch (std::exception &e) {
+    throw base::application_exception("error: coult not open alpha verification file");
+  }
 
   if (alphaReference.getSize() != alpha.getSize()) {
     throw base::application_exception("error: size of reference vector doesn't match");

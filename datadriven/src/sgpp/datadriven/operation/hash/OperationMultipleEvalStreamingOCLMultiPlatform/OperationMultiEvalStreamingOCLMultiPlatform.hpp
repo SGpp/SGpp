@@ -125,15 +125,17 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
       json::Node &kernelConfiguration =
           deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
-
       multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                                queueLoadBalancerMult);
       multTransposeKernels.emplace_back(devices[deviceIndex], dims, this->manager,
                                         kernelConfiguration, queueLoadBalancerMultTranspose);
     }
 
+
+
     // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
+
   }
 
   ~OperationMultiEvalStreamingOCLMultiPlatform() {}
