@@ -51,12 +51,14 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
 
     if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
         return new DensityOCLMultiPlatform::
-            OperationCreateGraphOCLMultiPlatform<float>(dataset, dimensions, manager,
-                                                        firstDeviceConfig, k);
+            OperationCreateGraphOCLSingleDevice<float>(dataset, dimensions, manager,
+                                                        firstDeviceConfig, k, platformid,
+                                                        deviceid);
     } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
         return new DensityOCLMultiPlatform::
-            OperationCreateGraphOCLMultiPlatform<double>(dataset, dimensions, manager,
-                                                         firstDeviceConfig, k);
+            OperationCreateGraphOCLSingleDevice<double>(dataset, dimensions, manager,
+                                                         firstDeviceConfig, k, platformid,
+                                                         deviceid);
     } else {
         std::stringstream errorString;
         errorString << "Error creating operation\"CreateGraphOCL\": "
@@ -104,12 +106,13 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
 
     if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
         return new DensityOCLMultiPlatform::
-            OperationCreateGraphOCLMultiPlatform<float>(dataset, dataset_size, dimensions, manager,
-                                                        firstDeviceConfig, k);
+            OperationCreateGraphOCLSingleDevice<float>(dataset, dataset_size, dimensions, manager,
+                                                        firstDeviceConfig, k, platformid, deviceid);
     } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
         return new DensityOCLMultiPlatform::
-            OperationCreateGraphOCLMultiPlatform<double>(dataset, dataset_size, dimensions, manager,
-                                                         firstDeviceConfig, k);
+            OperationCreateGraphOCLSingleDevice<double>(dataset, dataset_size, dimensions, manager,
+                                                         firstDeviceConfig, k, platformid,
+                                                         deviceid);
     } else {
         std::stringstream errorString;
         errorString << "Error creating operation\"CreateGraphOCL\": "

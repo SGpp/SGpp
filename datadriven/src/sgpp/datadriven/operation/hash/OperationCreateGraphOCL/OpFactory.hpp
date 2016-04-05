@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OperationCreateGraphOCLMultiPlatform.hpp"
+#include "OperationCreateGraphOCLSingleDevice.hpp"
 namespace sgpp {
 namespace datadriven {
 
