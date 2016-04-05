@@ -21,6 +21,9 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
                                      size_t dimensions, std::string opencl_conf,
                                      size_t platformid, size_t devicdeid);
+DensityOCLMultiPlatform::OperationCreateGraphOCL*
+createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
+                                     size_t dimensions, std::string opencl_conf);
 }  // namespace datadriven
 }  // namespace sgpp
 
