@@ -20,6 +20,12 @@ using sgpp::datadriven::OperationMultipleEvalSubType;
 using sgpp::base::OCLOperationConfiguration;
 
 int main(int argc, char** argv) {
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
+  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::datadriven::TestsetConfiguration testsetConfig;
+
   ///////////////////////////////// Configuration start ////////////////////////////////////
 
   // to be set manually in the generated scenario file:
@@ -28,42 +34,13 @@ int main(int argc, char** argv) {
 
   sgpp::datadriven::InternalPrecision internalPrecision =
       sgpp::datadriven::InternalPrecision::Float;
-  //  std::string kernelName = "StreamingOCLMultiPlatform";
-  std::string datasetFileName = "friedman2_4d_300000.arff";
+  std::string datasetFileName = "friedman1_10d_150000.arff";
 
-  // use the implementation of base!
-  OperationMultipleEvalType operationType = OperationMultipleEvalType::DEFAULT;
-  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::DEFAULT;
-
-  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
-  //  std::string kernelName = "StreamingOCLMultiPlatform";
-  //  std::string kernelName = "StreamingModOCLFastMultiPlatform";
-
-  //  std::string kernelName;
-  //  if (operationType == OperationMultipleEvalType::STREAMING) {
-  //    if (operationSubType == OperationMultipleEvalSubType::OCLMASKMP) {
-  //      kernelName = "StreamingModOCLMaskMultiPlatform";
-  //    } else if (operationSubType == OperationMultipleEvalSubType::OCLFASTMP) {
-  //      kernelName = "StreamingModOCLFastMultiPlatform";
-  //    } else {
-  //      throw;
-  //    }
-  //  } else {
-  //    throw;
-  //  }
-
-  std::string parameterFileName("reproduce.cfg");
   double lambda = 0.0000001;
-
-  sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdpativityConfiguration adaptConfig;
-  sgpp::datadriven::TestsetConfiguration testsetConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
-  gridConfig.level_ = 10;
+  gridConfig.level_ = 6;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
   // dummy values
   gridConfig.boundaryLevel_ = 0;
@@ -90,6 +67,43 @@ int main(int argc, char** argv) {
 
   ///////////////////////////////// Configuration end ////////////////////////////////////
 
+  std::string parameterFileName;
+  if (internalPrecision == sgpp::datadriven::InternalPrecision::Double) {
+    parameterFileName = "platformDouble.cfg";
+  } else {
+    parameterFileName = "platformFloat.cfg";
+  }
+
+  std::string basisFunctionName;
+  if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    basisFunctionName = "Linear";
+  } else if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    basisFunctionName = "ModLinear";
+  } else {
+    throw;
+  }
+
+  // use the implementation of base for double!
+  // use the default streaming implementation for float
+  OperationMultipleEvalType operationType;
+  OperationMultipleEvalSubType operationSubType;
+
+  if (internalPrecision == sgpp::datadriven::InternalPrecision::Double) {
+    operationType = OperationMultipleEvalType::DEFAULT;
+    operationSubType = OperationMultipleEvalSubType::DEFAULT;
+
+  } else {
+    if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+      operationType = OperationMultipleEvalType::STREAMING;
+      operationSubType = OperationMultipleEvalSubType::OCLMP;
+    } else if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+      operationType = OperationMultipleEvalType::STREAMING;
+      operationSubType = OperationMultipleEvalSubType::OCLMASKMP;
+    } else {
+      throw;
+    }
+  }
+
   size_t dotPosition = datasetFileName.find('.');
   std::string datasetName = datasetFileName.substr(0, dotPosition);
 
@@ -99,11 +113,11 @@ int main(int argc, char** argv) {
   } else {
     precisionString = "double";
   }
-  std::string scenarioFileName(datasetName + "_" + kernelName + "_" + precisionString +
+  std::string scenarioFileName(datasetName + "_" + basisFunctionName + "_" + precisionString +
                                ".scenario");
 
   std::string alphaReferenceFileName =
-      datasetName + "_" + kernelName + "_" + precisionString + "_AlphaReference.vec";
+      datasetName + "_" + basisFunctionName + "_" + precisionString + "_AlphaReference.vec";
 
   // create scenario to learn without testset configuration to get mse and largestDifference for
   // final scenario configuration
