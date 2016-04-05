@@ -68,26 +68,26 @@ int main(int argc, char **argv) {
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
-  //  std::string scenarioFileName =
-  //      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
+  std::string scenarioFileName =
+      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_double.scenario";
 
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float.scenario";
-  std::string scenarioFileName =
-      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_float.scenario";
+  //  std::string scenarioFileName =
+  //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_float.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_float.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_float.scenario";
 
-  std::string parameterFile("tahiti_float_tuned.cfg");
+  std::string parameterFile("friedman2_4d_300000_StreamingOCLMultiPlatform_double_tuned.cfg");
 
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
