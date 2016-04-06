@@ -96,7 +96,7 @@ class DataMatrix {
    * @param ncols New number of columns of the DataMatrix
    */
   void resize(size_t nrows, size_t ncols);
-  
+
   /**
    * Resizes the quadratic DataMatrix to size rows and size columns.
    * All new additional entries are uninitialized.
@@ -127,7 +127,7 @@ class DataMatrix {
    * @param ncols New number of columns of the DataMatrix
    */
   void resizeZero(size_t nrows, size_t ncols);
-  
+
   /**
    * Resize current matrix to the submatrix Mat[row_1:row_2, col_1:col_2].
    * 
@@ -165,7 +165,7 @@ class DataMatrix {
    * @return Index of new row
    */
   size_t appendRow(const DataVector& vec);
-  
+
   /**
    * Appends a new Col with data contained in DataVector vec
    * and returns index of new col.
