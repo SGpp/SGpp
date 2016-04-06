@@ -103,7 +103,7 @@ class DataMatrix {
    * If size is smaller than the current size of the quadratic DataMatrix,
    * all superfluous entries are removed.
    * 
-   * @param ncols New dimension of quadratic data DataMatrix
+   * @param size New dimension of quadratic data DataMatrix
    */
   void resizeQuadratic(size_t size);
 
