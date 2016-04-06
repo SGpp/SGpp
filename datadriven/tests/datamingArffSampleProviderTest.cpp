@@ -3,6 +3,28 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
+ * testARFFTools.cpp
+ *
+ *  Created on: Apr 6, 2016
+ *      Author: Michael Lettrich
+ */
+
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * datamingGzipSampleDecoratorTest.cpp
+ *
+ *  Created on: 01.04.2016
+ *      Author: Michael Lettrich
+ */
+
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * datamingArffSampleProviderTest.cpp
  *
  *  Created on: 01.04.2016
@@ -14,13 +36,13 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/datamining/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
-BOOST_AUTO_TEST_SUITE(testArffSampleProvider)
+BOOST_AUTO_TEST_SUITE(ARFFTools)
 
-BOOST_AUTO_TEST_CASE(testLoadData) {
+BOOST_AUTO_TEST_CASE(testReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
                               {0.365584, 0.105479, 0.050000},
                               {0.178571, 0.201027, 0.050000},
@@ -34,10 +56,13 @@ BOOST_AUTO_TEST_CASE(testLoadData) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-  sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
-      "datadriven/tests/datasets/liver-disorders_normalized.arff");
-  sgpp::base::DataVector& classes = dataSet.getTargets();
-  sgpp::base::DataMatrix& data = dataSet.getData();
+  sgpp::datadriven::ArffFileSampleProvider sampleProvider =
+      sgpp::datadriven::ArffFileSampleProvider();
+  sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff");
+  auto dataset = sampleProvider.getAllSamples();
+
+  sgpp::base::DataVector& classes = dataset->getTargets();
+  sgpp::base::DataMatrix& data = dataset->getData();
   size_t nrows = data.getNrows();
   size_t ncols = data.getNcols();
 
@@ -52,7 +77,7 @@ BOOST_AUTO_TEST_CASE(testLoadData) {
   for (size_t rowIdx = 0; rowIdx < nrows; rowIdx++) {
     data.getRow(rowIdx, testVector);
     for (size_t colIdx = 0; colIdx < ncols; colIdx++) {
-      // this only works because dataset does not contain any zeros. if the dataset to test with is
+      // this only works because dataset does not contain any zeros. if the dataset to test with
       // changed, we need a else if here and a boost check small.
       BOOST_CHECK_CLOSE(data.get(rowIdx, colIdx), testPoints[rowIdx][colIdx], tolerance);
     }

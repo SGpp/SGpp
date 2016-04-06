@@ -15,6 +15,7 @@ Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
 Import('exampleTargetList')
+Import("config")
 Import('headerSourceList')
 Import('headerDestList')
 Import('lintAction')
@@ -47,6 +48,12 @@ Export('libname')
 additionalDependencies = []
 if env['USE_OCL']:
     additionalDependencies += ['OpenCL']
+    
+if config.CheckHeader("zlib.h") and config.CheckLib("libz"):
+    additionalDependencies.append("libz")
+else:
+    print "cannot find zlib. aborting";
+    exit(-1);
 
 moduleDependencies = moduleDependencies + additionalDependencies
 
