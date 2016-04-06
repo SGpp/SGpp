@@ -189,12 +189,21 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
     }
   }
 
-  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
-  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+//  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
+//  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+//  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+//  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
+//  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
+//  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+//  staticParameterTuner.addParameter("VERBOSE", {"true"});
+
+  staticParameterTuner.addParameter("WRITE_SOURCE", {"true"});
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"4"}); // 1 fixes stuff
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
-  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10"}); // 10 fixes stuff
+  staticParameterTuner.addParameter("LOCAL_SIZE", {"128"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
