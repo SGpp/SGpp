@@ -31,7 +31,7 @@
 
 BOOST_AUTO_TEST_SUITE(dataminingGzipSampleDecoratorTest)
 
-BOOST_AUTO_TEST_CASE(testLoadData) {
+BOOST_AUTO_TEST_CASE(testReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
                               {0.365584, 0.105479, 0.050000},
                               {0.178571, 0.201027, 0.050000},
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(testLoadData) {
   for (size_t rowIdx = 0; rowIdx < nrows; rowIdx++) {
     data.getRow(rowIdx, testVector);
     for (size_t colIdx = 0; colIdx < ncols; colIdx++) {
-      // this only works because dataset does not contain any zeros. if the dataset to test with is
+      // this only works because dataset does not contain any zeros. if the dataset to test with
       // changed, we need a else if here and a boost check small.
       BOOST_CHECK_CLOSE(data.get(rowIdx, colIdx), testPoints[rowIdx][colIdx], tolerance);
     }
