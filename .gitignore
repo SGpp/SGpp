@@ -56,3 +56,4 @@ doc/xml
 #ignoring code coverage files
 coverage.info
 coverage
+/Debug/

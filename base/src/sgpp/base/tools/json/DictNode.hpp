@@ -43,7 +43,7 @@ class DictNode : public Node {
 
   void addAttribute(const std::string& name, std::unique_ptr<Node> node) override;
 
-  std::unique_ptr<Node> removeAttribute(const std::string& name) override;
+  std::unique_ptr<Node> removeAttribute(const std::string name) override;
 
   // returns the node to which the attribute was added
   Node& addTextAttr(const std::string& name, const std::string& value) override;

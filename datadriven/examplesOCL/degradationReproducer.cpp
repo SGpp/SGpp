@@ -86,10 +86,13 @@ int main(int argc, char **argv) {
 
   std::string parameterFile("hawaii_double_tuned.cfg");
 
+
+
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 

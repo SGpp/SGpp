@@ -39,8 +39,7 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
   //    (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
   //    json::Node &firstDeviceConfig =
   //    deviceNode["[StreamingOCLMultiPlatform::Configuration::getKernelName()];
-
-  std::cout << "INTERNAL_PRECISION: " << (*parameters)["INTERNAL_PRECISION"].get() << std::endl;
+  //  std::cout << "INTERNAL_PRECISION: " << (*parameters)["INTERNAL_PRECISION"].get() << std::endl;
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::StreamingOCLMultiPlatform::OperationMultiEvalStreamingOCLMultiPlatform<
         float>(grid, dataset, manager, parameters, (*parameters));
