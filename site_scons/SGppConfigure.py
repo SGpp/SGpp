@@ -31,12 +31,14 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
 
-  # TODO check
-  if env["PLATFORM"] not in ["cygwin", "win32"]:
-    if env["OPT"] == True:
-      env.Append(CPPFLAGS=["-O3", "-g"])
-    else:
-      env.Append(CPPFLAGS=["-g", "-O0"])
+  # TODO(pfandedd): discuss with julian
+#   if env["PLATFORM"] not in ["cygwin", "win32"]:
+  if env["OPT"] == True:
+    env.Append(CPPFLAGS=["-O3", "-g"])
+  else:
+    env.Append(CPPFLAGS=["-g", "-O0"])
+#   else:
+#       env.Append(CPPFLAGS=["-O3", "-g"])
 
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
@@ -156,6 +158,9 @@ def checkOpenCL(config):
 
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
+
+    # TODO: continue - add boost include path!
+    config.env.AppendUnique(LIBPATH="C:\\boost_1_60_0\stage\lib")    
 
     if not config.CheckLib("boost_program_options", language="c++", autoadd=0):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",

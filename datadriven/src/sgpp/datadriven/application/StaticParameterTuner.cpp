@@ -114,7 +114,7 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       size_t oldCountLimit = 0;
       if (!deviceNode.contains("SELECT")) {
         if (!deviceNode.contains("COUNT")) {
-          deviceNode.addIDAttr("COUNT", 1ull);
+          deviceNode.addIDAttr("COUNT", UINT64_C(1));
           addedCountLimit = true;
         } else {
           oldCountLimit = deviceNode["COUNT"].getUInt();
@@ -141,7 +141,7 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
         addedScheduleSize = true;
         // TODO(pfandedd): improve, for now multiples of 1024 should run with any kernel
-        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ull);
+        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(1024000));
       }
 
       this->tuneParameters(scenario, platformName, deviceName, kernelName);
@@ -207,6 +207,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
   for (size_t i = 0; i < tunableParameters.size(); i++) {
     TunableParameter &tunableParameter = tunableParameters[i];
+    std::cout << tunableParameter.getName() << " values: " << tunableParameter.getValues().size() << std::endl;
     if (i == 0) {
       configuredExperiments = tunableParameter.getValues().size();
     }
@@ -243,12 +244,12 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
     kernelNode.replaceIDAttr(parameter.getName(), parameter.getValues()[0]);
   }
 
-  std::cout << "-----------------------------------" << std::endl;
-  for (std::string &key : kernelNode.keys()) {
-    std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
-  }
-
   if (verbose) {
+	std::cout << "-----------------------------------" << std::endl;
+	for (std::string &key : kernelNode.keys()) {
+	  std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
+	}
+	std::cout << "-----------------------------------" << std::endl;
     std::cout << "evaluating combination (" << currentExperiment << "/" << configuredExperiments
               << ") for current device" << std::endl;
   }
@@ -302,7 +303,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
         shortestDuration = duration;
         highestGFlops = GFlops;
         bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
-        std::cout << *bestParameters << std::endl;
+        //        std::cout << *bestParameters << std::endl;
       }
       if (collectStatistics) {
         this->statistics.emplace_back(fixedParameters, duration, GFlops);
@@ -444,8 +445,12 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
 
 void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfiguration,
                                          base::DataVector &alpha) {
-  base::DataVector alphaReference =
-      base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  base::DataVector alphaReference;
+  try {
+    alphaReference = base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+  } catch (std::exception &e) {
+    throw base::application_exception("error: coult not open alpha verification file");
+  }
 
   if (alphaReference.getSize() != alpha.getSize()) {
     throw base::application_exception("error: size of reference vector doesn't match");
