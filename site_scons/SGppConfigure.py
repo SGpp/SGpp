@@ -157,7 +157,7 @@ def checkOpenCL(config):
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
 
-    if not config.CheckLib("boost_program_options", language="C++", autoadd=1):
+    if not config.CheckLib("boost_program_options", language="c++", autoadd=0):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
