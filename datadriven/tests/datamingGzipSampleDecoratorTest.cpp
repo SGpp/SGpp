@@ -22,14 +22,19 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/globaldef.hpp>
 
 BOOST_AUTO_TEST_SUITE(dataminingGzipSampleDecoratorTest)
+
+using sgpp::datadriven::GzipFileSampleDecorator;
+using sgpp::datadriven::ArffFileSampleProvider;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 BOOST_AUTO_TEST_CASE(testReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
@@ -45,10 +50,13 @@ BOOST_AUTO_TEST_CASE(testReadFile) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-  sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
-      "datadriven/tests/datasets/liver-disorders_normalized.arff");
-  sgpp::base::DataVector& classes = dataSet.getTargets();
-  sgpp::base::DataMatrix& data = dataSet.getData();
+  GzipFileSampleDecorator sampleProvider =
+      GzipFileSampleDecorator(std::make_unique<ArffFileSampleProvider>());
+  sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
+  auto dataset = sampleProvider.getAllSamples();
+
+  DataVector& classes = dataset->getTargets();
+  DataMatrix& data = dataset->getData();
   size_t nrows = data.getNrows();
   size_t ncols = data.getNcols();
 
@@ -59,7 +67,7 @@ BOOST_AUTO_TEST_CASE(testReadFile) {
   BOOST_CHECK_EQUAL(10, data.getNrows());
   BOOST_CHECK_EQUAL(3, data.getNcols());
 
-  sgpp::base::DataVector testVector = sgpp::base::DataVector(ncols);
+  DataVector testVector = DataVector(ncols);
   for (size_t rowIdx = 0; rowIdx < nrows; rowIdx++) {
     data.getRow(rowIdx, testVector);
     for (size_t colIdx = 0; colIdx < ncols; colIdx++) {
