@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(testReadFile) {
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
   GzipFileSampleDecorator sampleProvider =
-      GzipFileSampleDecorator(std::make_unique<ArffFileSampleProvider>());
+      GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>()));
   sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
   auto dataset = sampleProvider.getAllSamples();
 
