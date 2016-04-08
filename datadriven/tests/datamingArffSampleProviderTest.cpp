@@ -40,7 +40,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
-BOOST_AUTO_TEST_SUITE(ARFFTools)
+BOOST_AUTO_TEST_SUITE(datamingArffSampleProviderTest)
 
 BOOST_AUTO_TEST_CASE(testReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
