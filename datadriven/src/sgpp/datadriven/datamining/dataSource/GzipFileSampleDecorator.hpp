@@ -21,6 +21,8 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
  public:
   explicit GzipFileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider);
 
+  GzipFileSampleDecorator(GzipFileSampleDecorator&& d);
+
   virtual ~GzipFileSampleDecorator();
 
   std::unique_ptr<Dataset> getNextSamples(size_t howMany);

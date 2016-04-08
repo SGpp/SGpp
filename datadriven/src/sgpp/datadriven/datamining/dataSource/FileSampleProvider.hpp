@@ -11,17 +11,17 @@
 
 #pragma once
 
-#include <string>
-
 #include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 class FileSampleProvider : public SampleProvider {
  public:
-  FileSampleProvider(){};
-  virtual ~FileSampleProvider(){};
+  FileSampleProvider() {}
+  virtual ~FileSampleProvider() {}
   virtual size_t getDatasetSize() = 0;
   // virtual size_t getNumClasses() = 0;
 

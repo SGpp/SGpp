@@ -24,6 +24,9 @@ GzipFileSampleDecorator::GzipFileSampleDecorator(
     std::unique_ptr<FileSampleProvider> fileSampleProvider)
     : FileSampleDecorator(std::move(fileSampleProvider)) {}
 
+GzipFileSampleDecorator::GzipFileSampleDecorator(GzipFileSampleDecorator&& d)
+    : FileSampleDecorator(std::move(d)) {}
+
 GzipFileSampleDecorator::~GzipFileSampleDecorator() {}
 
 std::unique_ptr<Dataset> GzipFileSampleDecorator::getNextSamples(size_t howMany) {
