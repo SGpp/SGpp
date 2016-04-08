@@ -20,7 +20,6 @@ namespace datadriven {
 
 class FileSampleProvider : public SampleProvider {
  public:
-  FileSampleProvider() {}
   virtual ~FileSampleProvider() {}
   virtual size_t getDatasetSize() = 0;
   // virtual size_t getNumClasses() = 0;
