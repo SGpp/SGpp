@@ -19,9 +19,8 @@ namespace datadriven {
 
 class FileSampleDecorator : public FileSampleProvider {
  public:
-  explicit FileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider) {
-    fileSampleProvider = std::move(fileSampleProvider);
-  }
+  explicit FileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider)
+      : fileSampleProvider(std::move(fileSampleProvider)) {}
   FileSampleDecorator(FileSampleDecorator&& f)
       : fileSampleProvider(std::move(f.fileSampleProvider)) {}
   virtual ~FileSampleDecorator() {}
