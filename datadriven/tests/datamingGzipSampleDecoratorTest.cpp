@@ -36,7 +36,7 @@ using sgpp::datadriven::ArffFileSampleProvider;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
-BOOST_AUTO_TEST_CASE(testReadFile) {
+BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
                               {0.365584, 0.105479, 0.050000},
                               {0.178571, 0.201027, 0.050000},
