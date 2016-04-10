@@ -72,13 +72,13 @@ void ArffFileSampleProvider::readString(const std::string& input) {
 std::unique_ptr<Dataset> ArffFileSampleProvider::splitDataset(size_t howMany) {
   auto tmpDataset = std::make_unique<Dataset>(howMany, dataset.getDimension());
 
-  base::DataMatrix srcSamples = dataset.getData();
-  base::DataVector srcTargets = dataset.getTargets();
+  base::DataMatrix& srcSamples = dataset.getData();
+  base::DataVector& srcTargets = dataset.getTargets();
 
-  base::DataMatrix destSamples = tmpDataset->getData();
-  base::DataVector destTargets = tmpDataset->getTargets();
+  base::DataMatrix& destSamples = tmpDataset->getData();
+  base::DataVector& destTargets = tmpDataset->getTargets();
 
-  base::DataVector tmpRow;
+  base::DataVector tmpRow(srcSamples.getNcols());
   for (size_t i = counter; i < counter + howMany; ++i) {
     srcSamples.getRow(i, tmpRow);
     destSamples.setRow(i - counter, tmpRow);
