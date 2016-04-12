@@ -3,25 +3,21 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * SparseGridMiner.hpp
+ * Module.hpp
  *
- *  Created on: Feb 9, 2016
- *      Author: franzefn, Michael Lettrich
+ *  Created on: Apr 12, 2016
+ *      Author: Michael Lettrich
  */
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/datamining/base/DmModule.hpp>
-
 namespace sgpp {
 namespace datadriven {
 
-class SparseGridMiner : public DmModule {
+class DmModule {
  public:
-  virtual ~SparseGridMiner();
-  void run();
+  virtual ~DmModule() {}
+  virtual void run() = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
