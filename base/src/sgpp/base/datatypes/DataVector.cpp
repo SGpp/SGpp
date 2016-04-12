@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 namespace sgpp {
 namespace base {
@@ -485,11 +486,18 @@ void DataVector::normalize(double border) {
 void DataVector::toString(std::string& text) const {
   std::stringstream str;
 
+  str << std::scientific;
+  str.precision(20);
+
   str << "[";
 
   for (size_t i = 0; i < size; i++) {
     if (i != 0) {
       str << ", ";
+      // add linebreaks for readability
+      if (i % 20 == 0) {
+        str << std::endl;
+      }
     }
 
     str << data[i];

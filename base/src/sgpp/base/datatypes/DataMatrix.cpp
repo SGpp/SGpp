@@ -644,6 +644,10 @@ void DataMatrix::normalizeDimension(size_t d, double border) {
 
 void DataMatrix::toString(std::string& text) const {
   std::stringstream str;
+
+  str << std::scientific;
+  str.precision(20);
+
   str << "[";
 
   for (size_t i = 0; i < nrows; i++) {
@@ -652,6 +656,10 @@ void DataMatrix::toString(std::string& text) const {
     for (size_t j = 0; j < ncols; j++) {
       if (j != 0) {
         str << ", ";
+        // add linebreak for readability
+        if (j % 20 == 0) {
+          str << std::endl;
+        }
       }
 
       str << data[i * ncols + j];
