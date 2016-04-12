@@ -562,6 +562,186 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Double) {
   bestParameters.serialize(outputFileName);
 }
 
+BOOST_AUTO_TEST_CASE(DR5_Linear_Float) {
+  // internal precision is specified by the scenario, the parameter configuration is overwritten
+  std::string scenarioFileName = "DR5_train_Linear_float.scenario";
+  std::string parameterConfigurationFileName = "platformFloat.cfg";
+  std::string kernelName = "StreamingOCLMultiPlatform";
+  bool collectStatistics = true;
+
+  size_t dotPosition = scenarioFileName.find('.');
+  std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
+
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
+
+  std::string statisticsFolderName = "statistics";
+
+  if (collectStatistics) {
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
+    try {
+      if (boost::filesystem::create_directory(statisticsFolderName)) {
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
+      }
+    } catch (boost::filesystem::filesystem_error &e) {
+      BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
+                                                               << e.what());
+    }
+  }
+
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
+  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+
+  sgpp::base::OCLOperationConfiguration bestParameters =
+      staticParameterTuner.tuneEverything(scenario, kernelName);
+
+  bestParameters.serialize(outputFileName);
+}
+
+BOOST_AUTO_TEST_CASE(DR5_Linear_Double) {
+  // internal precision is specified by the scenario, the parameter configuration is overwritten
+  std::string scenarioFileName = "DR5_train_Linear_double.scenario";
+  std::string parameterConfigurationFileName = "platformDouble.cfg";
+  std::string kernelName = "StreamingOCLMultiPlatform";
+  bool collectStatistics = true;
+
+  size_t dotPosition = scenarioFileName.find('.');
+  std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
+
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
+
+  std::string statisticsFolderName = "statistics";
+
+  if (collectStatistics) {
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
+    try {
+      if (boost::filesystem::create_directory(statisticsFolderName)) {
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
+      }
+    } catch (boost::filesystem::filesystem_error &e) {
+      BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
+                                                               << e.what());
+    }
+  }
+
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
+  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+
+  sgpp::base::OCLOperationConfiguration bestParameters =
+      staticParameterTuner.tuneEverything(scenario, kernelName);
+
+  bestParameters.serialize(outputFileName);
+}
+
+BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Float) {
+  // internal precision is specified by the scenario, the parameter configuration is overwritten
+  std::string scenarioFileName = "DR5_train_ModLinear_float.scenario";
+  std::string parameterConfigurationFileName = "platformFloat.cfg";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
+  bool collectStatistics = true;
+
+  size_t dotPosition = scenarioFileName.find('.');
+  std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
+
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
+
+  std::string statisticsFolderName = "statistics";
+
+  if (collectStatistics) {
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
+    try {
+      if (boost::filesystem::create_directory(statisticsFolderName)) {
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
+      }
+    } catch (boost::filesystem::filesystem_error &e) {
+      BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
+                                                               << e.what());
+    }
+  }
+
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
+  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+
+  sgpp::base::OCLOperationConfiguration bestParameters =
+      staticParameterTuner.tuneEverything(scenario, kernelName);
+
+  bestParameters.serialize(outputFileName);
+}
+
+BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Double) {
+  // internal precision is specified by the scenario, the parameter configuration is overwritten
+  std::string scenarioFileName = "DR5_train_ModLinear_double.scenario";
+  std::string parameterConfigurationFileName = "platformDouble.cfg";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
+  bool collectStatistics = true;
+
+  size_t dotPosition = scenarioFileName.find('.');
+  std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
+
+  sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true);
+
+  std::string statisticsFolderName = "statistics";
+
+  if (collectStatistics) {
+    staticParameterTuner.enableStatistics(statisticsFolderName, scenarioFileNamePrefix);
+    try {
+      if (boost::filesystem::create_directory(statisticsFolderName)) {
+        BOOST_TEST_MESSAGE("created output directory: " << statisticsFolderName);
+      }
+    } catch (boost::filesystem::filesystem_error &e) {
+      BOOST_FAIL("could not create statistics output folder: " << statisticsFolderName << ": "
+                                                               << e.what());
+    }
+  }
+
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"array"});
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "4", "1"});
+  staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+
+  sgpp::base::OCLOperationConfiguration bestParameters =
+      staticParameterTuner.tuneEverything(scenario, kernelName);
+
+  bestParameters.serialize(outputFileName);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 #endif
