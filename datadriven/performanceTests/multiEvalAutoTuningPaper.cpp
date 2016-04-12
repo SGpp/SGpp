@@ -197,6 +197,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
 
+
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 

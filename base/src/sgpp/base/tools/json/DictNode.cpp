@@ -181,8 +181,7 @@ void DictNode::serialize(std::ostream& outFile, size_t indentWidth) {
     this->attributes[key]->serialize(outFile, indentWidth + Node::SERIALIZE_INDENT);
   }
 
-  outFile << std::endl
-          << indentation << "}";
+  outFile << std::endl << indentation << "}";
 }
 
 size_t DictNode::size() { return this->keyOrder.size(); }
@@ -205,7 +204,7 @@ void DictNode::addAttribute(const std::string& name, std::unique_ptr<Node> node)
   this->keyOrder.push_back(name);
 }
 
-std::unique_ptr<Node> DictNode::removeAttribute(const std::string& name) {
+std::unique_ptr<Node> DictNode::removeAttribute(const std::string name) {
   if (this->attributes.count(name) == 0) {
     throw json_exception("removeAttribute(): attribute not found");
   }
@@ -214,8 +213,18 @@ std::unique_ptr<Node> DictNode::removeAttribute(const std::string& name) {
   auto attribute = std::move(this->attributes[name]);
   attribute->orderedKeyIndex = 0;
   attribute->parent = nullptr;
-  this->attributes.erase(name);
+  size_t erased = this->attributes.erase(name);
+  if (erased != 1) {
+    throw json_exception("removeAttribute(): attribute was not erased");
+  }
   this->keyOrder.erase(this->keyOrder.begin() + orderedIndex);
+  // fix the ordered indices of the remaining attributes
+  for (auto it = this->attributes.begin(); it != this->attributes.end(); it++) {
+    Node& node = *it->second;
+    if (node.orderedKeyIndex > orderedIndex) {
+      node.orderedKeyIndex -= 1;
+    }
+  }
   return attribute;
 }
 
