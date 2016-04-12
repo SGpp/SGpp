@@ -12,7 +12,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <sgpp/datadriven/datamining/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 
 namespace sgpp {
 namespace datadriven {

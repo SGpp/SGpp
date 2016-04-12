@@ -10,11 +10,11 @@
 #include <memory>
 #include <vector>
 
-#include <sgpp/datadriven/datamining/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/datamining/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 

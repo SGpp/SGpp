@@ -5,7 +5,7 @@
  *
  */
 
-#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
