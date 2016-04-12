@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 

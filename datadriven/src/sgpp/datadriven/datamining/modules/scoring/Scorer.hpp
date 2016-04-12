@@ -9,8 +9,8 @@
 #define SCORER_HPP_
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 #include <memory>
 

@@ -9,20 +9,19 @@
  *      Author: perun
  */
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
+
 #include <random>
 #include <ctime>
 #include <iostream>
-
 #include <vector>
-
-#include <sgpp/globaldef.hpp>  //NOLINT (is no systemheader)
-#include <sgpp/datadriven/datamining/scoring/SimpleSplittingScorer.hpp>  //NOLINT (is no systemheader)
-#include <sgpp/base/tools/json/json_exception.hpp>  //NOLINT (is no systemheader)
-
-using namespace sgpp::base;  // NOLINT
 
 namespace sgpp {
 namespace datadriven {
+
+using base::DataVector;
 
 SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
                                              std::shared_ptr<ModelFittingBase> fitter,

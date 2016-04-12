@@ -6,7 +6,7 @@
 // * SparseGridMiner.cpp
 // *
 // *  Created on: Feb 9, 2016
-// *      Author: franzefn
+// *      Author: franzefn, lettrich
 // */
 //
 //#include <sgpp/datadriven/datamining/SparseGridMiner.hpp>
@@ -28,7 +28,7 @@
 //
 // SparseGridMiner::~SparseGridMiner() {}
 //
-// void SparseGridMiner::run() {
+////void SparseGridMiner::run() {
 //  // 1. find lambda
 //  double threshold = config["scorer_threshold"].getDouble();
 //  uint64_t maxRefinenum = config["maxRefinenum"].getUInt();

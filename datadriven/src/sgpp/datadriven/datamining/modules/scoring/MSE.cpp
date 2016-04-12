@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 
 #include <sgpp/globaldef.hpp>
 
