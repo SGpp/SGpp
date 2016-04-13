@@ -9,50 +9,33 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-BsplineGrid::BsplineGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage),
-  degree(1 << 16) {
+BsplineGrid::BsplineGrid(std::istream& istr) : Grid(istr), generator(storage), degree(1 << 16) {
   istr >> degree;
   basis_.reset(new SBsplineBase(degree));
 }
 
+BsplineGrid::BsplineGrid(size_t dim, size_t degree)
+    : Grid(dim), generator(storage), degree(degree), basis_(new SBsplineBase(degree)) {}
 
-BsplineGrid::BsplineGrid(size_t dim, size_t degree) :
-  Grid(dim),
-  generator(storage),
-  degree(degree),
-  basis_(new SBsplineBase(degree)) {
-}
+BsplineGrid::~BsplineGrid() {}
 
-BsplineGrid::~BsplineGrid() {
-}
+sgpp::base::GridType BsplineGrid::getType() { return sgpp::base::GridType::Bspline; }
 
-sgpp::base::GridType BsplineGrid::getType() {
-  return sgpp::base::GridType::Bspline;
-}
+const SBasis& BsplineGrid::getBasis() { return *basis_; }
 
-const SBasis& BsplineGrid::getBasis() {
-  return *basis_;
-}
-
-size_t BsplineGrid::getDegree() {
-  return this->degree;
-}
+size_t BsplineGrid::getDegree() { return this->degree; }
 
 std::unique_ptr<Grid> BsplineGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new BsplineGrid(istr));
 }
 
-void BsplineGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void BsplineGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << degree << std::endl;
 }
 
@@ -60,9 +43,7 @@ void BsplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& BsplineGrid::getGenerator() {
-  return generator;
-}
+GridGenerator& BsplineGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp
