@@ -31,13 +31,14 @@ BOOST_AUTO_TEST_SUITE(AutoTuningPaper)
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_StreamingOCLMultiPlatform_float.scenario";
+  std::string scenarioFileName = "friedman2_4d_300000_Linear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -74,13 +75,14 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
+  std::string scenarioFileName = "friedman2_4d_300000_Linear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -117,14 +119,14 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName =
-      "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float.scenario";
+  std::string scenarioFileName = "friedman2_4d_300000_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -161,14 +163,14 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName =
-      "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
+  std::string scenarioFileName = "friedman2_4d_300000_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -196,7 +198,6 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
-
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -392,6 +393,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Float) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -437,6 +439,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Double) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -482,6 +485,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Float) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -527,6 +531,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Double) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -572,6 +577,7 @@ BOOST_AUTO_TEST_CASE(DR5_Linear_Float) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -617,6 +623,7 @@ BOOST_AUTO_TEST_CASE(DR5_Linear_Double) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -662,6 +669,7 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Float) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
@@ -707,6 +715,7 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Double) {
 
   size_t dotPosition = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
+  scenarioFileNamePrefix = scenarioFileNamePrefix.append("_" + kernelName);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
   sgpp::datadriven::LearnerScenario scenario(scenarioBaseDir + scenarioFileName);
