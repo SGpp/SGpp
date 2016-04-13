@@ -6,6 +6,10 @@ from pysgpp.extensions.datadriven.uq.learner.builder import RegressorSpecificati
 from pysgpp.extensions.datadriven.uq.learner.builder.LearnerBuilder import LearnerBuilder
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
 from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerBuilder import ASGCSamplerBuilder
+import os
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+
 
 class ASGCUQManagerBuilder(object):
     
@@ -14,6 +18,10 @@ class ASGCUQManagerBuilder(object):
         self.uqSettingBuilder = UQBuilder()
         self.learnerBuilder = LearnerBuilder()
         self.samplerBuilder = ASGCSamplerBuilder(self.asgcUQManager)
+
+    def useUQSetting(self, uqSetting):
+        self.asgcUQManager.uqSetting = uqSetting
+        return self
 
     def defineUQSetting(self):
         return self.uqSettingBuilder
@@ -96,7 +104,8 @@ class ASGCUQManagerBuilder(object):
 
     # -------------------------------------------------------------------------
     def __initUQSetting(self):
-        self.asgcUQManager.uqSetting = self.uqSettingBuilder.andGetResult()
+        if self.asgcUQManager.uqSetting is None:
+            self.asgcUQManager.uqSetting = self.uqSettingBuilder.andGetResult()
 
     def __collectLearner(self):
         # check for parameter specification

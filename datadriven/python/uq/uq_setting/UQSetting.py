@@ -59,7 +59,7 @@ class UQSetting(object):
         self.__stats_simulation = {}
         self.__stats_postprocessor = {}
 
-        self._verbose = False
+        self._verbose = True
 
         # parallel stuff (taken from mc_berechnung)
         self.parallelprocesses = sum([props['cores'] for props in remote.hosts.values()])

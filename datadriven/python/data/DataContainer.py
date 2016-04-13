@@ -358,6 +358,17 @@ class DataContainer(object):
             self.size = self.points[self.name].getNrows()
         return self.size
     
+    def getSizeTrain(self):
+        if self.TRAIN_CATEGORY in self.dataDict:
+            return len(self.dataDict[self.TRAIN_CATEGORY])
+        else:
+            return 0
+
+    def getSizeTest(self):
+        if self.TEST_CATEGORY in self.dataDict:
+            return len(self.dataDict[self.TEST_CATEGORY])
+        else:
+            return 0
     
     ## Return tuple of points and values
     #

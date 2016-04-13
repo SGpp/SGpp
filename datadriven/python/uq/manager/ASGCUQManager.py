@@ -7,6 +7,9 @@ from ASGCStatistics import ASGCStatistics
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 
+import numpy as np
+import sys
+
 
 class ASGCUQManager(object):
     
@@ -62,19 +65,18 @@ class ASGCUQManager(object):
             tmp = KnowledgeTypes.transformData(data, U, dtype)
 
             # load data for all time steps
-            for t, values in tmp.items():
+            for i, (t, values) in enumerate(tmp.items()):
                 size = len(values)
-                mydata = DataMatrix(size, dim)
-                sol = DataVector(size)
+                mydata = np.ndarray((size, dim))
+                sol = np.ndarray(size)
                 for i, (sample, res) in enumerate(values.items()):
-                    p = DataVector(sample.getActiveUnit())
-                    mydata.setRow(i, p)
+                    mydata[i, :] = np.array(sample.getActiveUnit())
                     sol[i] = float(res)
                 ans[dtype][t] = DataContainer(points=mydata, values=sol, name=name)
         return ans
 
     # @profile
-    def updateDataContainer(self):
+    def updateDataContainer(self, updateTestData=False):
         """
         Sets the training dataContainerDict container given a UQSetting
 
@@ -114,8 +116,9 @@ class ASGCUQManager(object):
                                                 newDataContainer])
 
         # if there is a test setting given, combine the train and the
-        # test dataContainerDict container
-        if self.sampler.getCurrentIterationNumber() == 1 and self.testSet is not None:
+        # test dataContainerDict container.
+        # the test set does not change over time so update it just at the beginning
+        if updateTestData and self.testSet is not None:
             dataContainerDict = self.testSet.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi)
             dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
             for dtype, values in dataContainerDict.items():
@@ -129,7 +132,7 @@ class ASGCUQManager(object):
         Learn the available data
         """
         # learn the data
-        self.updateDataContainer()
+        self.updateDataContainer(updateTestData=self.sampler.getCurrentIterationNumber() == 1)
         if self.learnWithTest:
             self.learnDataWithTest()
         else:
@@ -197,6 +200,32 @@ class ASGCUQManager(object):
                     self.stats.updateResults(dtype, t, self.learner)
 
             print
+
+
+    def recomputeStats(self):
+        if len(self.dataContainer) == 0:
+            self.updateDataContainer(True)
+
+        for dtype, values in self.dataContainer.items():
+            knowledge = {}
+            # do the learning
+            for t, dataContainer in values.items():
+                if dataContainer is not None:
+                    for iteration in self.knowledge.getAvailableIterations():
+                        # update the results for each sparse grid function
+                        grid, alpha = self.knowledge.getSparseGridFunction(self._qoi, t, dtype, iteration)
+                        trainSubset = dataContainer.getTrainDataset()
+                        testSubset = None
+                        if dataContainer.getSizeTest() > 0:
+                            testSubset = dataContainer.getTestDataset()
+
+                        self.learner.grid = grid
+                        self.learner.updateResults(alpha, trainSubset, testSubset, dtype)
+
+                        # update stats -> copy
+                        self.stats.updateResults(dtype, t, self.learner)
+            print
+        
 
     def getParameters(self):
         return self.__params
