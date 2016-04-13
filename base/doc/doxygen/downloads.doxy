@@ -12,6 +12,10 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+Announcement: there will be a new major release within the next
+weeks. As we have refactored and improved parts of the API, this will
+lead to a new major revision 2.0.
+
 @subsection downloads_history_110 Version 1.1.0, 2016/02/24 
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_1.1.0.tar.gz">
