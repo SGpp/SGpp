@@ -14,7 +14,11 @@
 
 #define NUMEVALPOINTS 11
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <mpi.h>
+#pragma GCC diagnostic pop
+
 #include <sgpp_base.hpp>
 #include <sgpp_pde.hpp>
 #include <sgpp_finance.hpp>

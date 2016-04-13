@@ -271,11 +271,13 @@ def configureGNUCompiler(config):
     config.env["CC"] = ("mpicc.openmpi")
     config.env["LINK"] = ("mpic++.openmpi")
     config.env["CXX"] = ("mpic++.openmpi")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     config.env["CC"] = ("mpicc.mpich")
     config.env["LINK"] = ("mpic++.mpich")
     config.env["CXX"] = ("mpic++.mpich")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
   else:  # gnu
     gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
@@ -399,6 +401,7 @@ def configureIntelCompiler(config):
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
@@ -410,8 +413,8 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  config.env.AppendUnique(CPPFLAGS=["-openmp"])
-  config.env.AppendUnique(LINKFLAGS=["-openmp"])
+  config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
+  config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.AppendUnique(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -431,6 +434,7 @@ def configureIntelCompiler(config):
   elif config.env["ARCH"] == "mic":
     config.env.AppendUnique(CPPFLAGS=["-mmic"])
     config.env.AppendUnique(LINKFLAGS=["-mmic"])
+    config.env["CPPDEFINES"]["USEMIC"] = "1"
   else:
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")

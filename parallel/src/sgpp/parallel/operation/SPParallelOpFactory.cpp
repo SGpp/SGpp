@@ -243,7 +243,7 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP
                < parallel::SPMICKernel < parallel::SPMICModLinearMask > >
-               (&grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+               (&grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
