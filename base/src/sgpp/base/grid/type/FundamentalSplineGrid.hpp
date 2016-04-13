@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -70,7 +69,7 @@ class FundamentalSplineGrid : public Grid {
    *
    * @param ostr stream to which the grid is written
    */
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   /**
    * @return B-spline degree

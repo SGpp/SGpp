@@ -11,7 +11,6 @@
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -38,7 +37,7 @@ class PolyGrid : public Grid {
 
   sgpp::base::GridType getType() override;
   const SBasis& getBasis() override;
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   GridGenerator& getGenerator() override;
 

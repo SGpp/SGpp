@@ -93,8 +93,8 @@ def plotFunction2d(f, addContour=True, n=101,
     cbar = plt.colorbar()
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white',
-                         levels=[2, 6, 20])
+        cs = plt.contour(xv, yv, Z, colors='white')
+#                          levels=[2, 6, 20])
         plt.clabel(cs, inline=1, fontsize=18)
 
     return

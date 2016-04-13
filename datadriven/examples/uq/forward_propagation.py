@@ -28,7 +28,8 @@ builder = ParameterBuilder()
 up = builder.defineUncertainParameters()
 
 up.new().isCalled('x_0').withTNormalDistribution(0.0, 0.5, -2, 1)
-up.new().isCalled('x_1').withTNormalDistribution(0.5, 0.2, 0, 1)
+up.new().isCalled('x_1').withTNormalDistribution(0.5, 0.2, 0, 1).withInverseCDFTransformation()
+up.new().isCalled('x_2,x_3,x_4,...').withSGDEDistribution(dist).withInverseCDFTransformation()
 
 params = builder.andGetResult()
 
