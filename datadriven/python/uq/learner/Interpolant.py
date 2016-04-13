@@ -87,14 +87,20 @@ class Interpolant(Learner):
 
         return alpha
 
-    def learnData(self, *args, **kws):
+    def learnData(self, dataset=None, *args, **kws):
         # learning step
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
+
+        if dataset is None:
+            dataset = self.dataContainer
+
         # load data sets
-        trainSubset = self.dataContainer.getTrainDataset()
+        trainSubset = dataset.getTrainDataset()
 
         # learning step
         self.alpha = self.doLearningIteration(trainSubset)
+
+        # update internal statistics
         self.updateResults(self.alpha, trainSubset, *args, **kws)
         self.iteration += 1
         self.notifyEventControllers(LearnerEvents.LEARNING_COMPLETE)

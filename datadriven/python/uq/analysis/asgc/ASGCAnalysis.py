@@ -145,7 +145,7 @@ class ASGCAnalysis(Analysis):
         moment, err = self.__estimationStrategy.mean(grid, alpha,
                                                      self.__U, self.__T)
         if self._verbose:
-            print "E(f) = %.14f, L2 err = %g, size = %i" % \
+            print "E(f) = %g, L2 err = %g, size = %i" % \
                 (moment, err, grid.getSize())
 
         return moment, err
@@ -458,8 +458,6 @@ class ASGCAnalysis(Analysis):
                  'testL2Error',
                  'L2ErrorSurpluses']
 
-        ts = self.__uqManager.getTimeStepsOfInterest()
-        iterations = self.__uqManager.sampler.getCurrentIterationNumber() + 1
         knowledge = self.__uqManager.getKnowledge()
         ts = knowledge.getAvailableTimeSteps()
         iterations = knowledge.getAvailableIterations()
@@ -469,10 +467,12 @@ class ASGCAnalysis(Analysis):
         v = DataVector(ncols)
         v.setAll(0.)
         row = 0
+
         for t in ts:
             for iteration in iterations:
                 v[0] = t
                 v[1] = iteration
+                blub = self.__uqManager
                 v[2] = self.__uqManager.stats.level[dtype][iteration]
                 v[3] = self.__uqManager.stats.numberPoints[dtype][iteration]
                 v[4] = self.__uqManager.stats.trainMSE[dtype][t][iteration]

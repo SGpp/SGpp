@@ -361,6 +361,9 @@ def isRefineable(grid, gp):
 def evalSGFunctionMulti(grid, alpha, samples):
     if len(samples.shape) == 1:
         raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
+    if samples.shape[1] != grid.getStorage().getDimension():
+        raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
+
     samples_matrix = DataMatrix(samples)
     opEval = createOperationMultipleEval(grid, samples_matrix)
     res_vec = DataVector(samples.shape[0])
