@@ -26,20 +26,19 @@ class MCAnalysis(Analysis):
     The MCAnalysis class
     """
 
-    def __init__(self, params, samples, estimator=None):
+    def __init__(self, params, samples, estimator=None,
+                 npaths=20, nsamples=5000):
         """
         Constructor
         @param params: ParameterSet
         @param samples: dictionary {<time step>: {<Sample>: value}}
         """
-        Analysis.__init__(self)
+        Analysis.__init__(self, ts=samples.keys())
         self.__params = params
         self.__samples = samples
         if estimator is None:
-            # take 90% of all data and do bootstrapping
-            n = int(np.ceil(0.9 * len(samples.itervalues().next())))
-            npaths = 10
-            self.__estimator = MCEstimator(n, npaths)
+            nsamples = int(np.ceil(0.9 * len(samples.itervalues().next())))
+            self.__estimator = MCEstimator(nsamples, npaths)
         else:
             self.__estimator = estimator
 
@@ -59,9 +58,9 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
-                 'meanDiscretizationError',
+                 'meanBootstrapping',
                  'var',
-                 'varDiscretizationError']
+                 'varBootstrapping']
         # parameters
         ts = self.__samples.keys()
         nrows = len(ts)
@@ -70,13 +69,13 @@ class MCAnalysis(Analysis):
         v = DataVector(ncols)
 
         row = 0
-        for t in ts:
+        for t in np.sort(ts):
             v.setAll(0.0)
             v[0] = t
             v[1] = 0
             v[2] = len(self.__samples[t].values())
-            v[3], v[4] = self.mean(ts=[t])
-            v[5], v[6] = self.var(ts=[t])
+            v[3], v[4] = self.mean(ts=[t], iterations=[0])
+            v[5], v[6] = self.var(ts=[t], iterations=[0])
 
             # write results to matrix
             data.setRow(row, v)

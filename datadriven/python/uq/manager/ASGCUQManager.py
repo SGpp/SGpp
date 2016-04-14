@@ -54,9 +54,7 @@ class ASGCUQManager(object):
         @return dictionary {dtype: {t: <DataContainer>}}
         """
         ans = {}
-        U = self.getParameters()\
-                .activeParams()\
-                .getIndependentJointDistribution()
+        U = self.__params.activeParams().getIndependentJointDistribution()
         for dtype in self.getKnowledgeTypes():
             ans[dtype] = {}
             dim = self.sampler.getGrid().getStorage().getDimension()
