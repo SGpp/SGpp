@@ -26,7 +26,7 @@ class RegressionLearner {
                     sgpp::base::AdpativityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::datadriven::RegularizationConfiguration regularizationConfig);
-  void train();
+  void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
@@ -38,7 +38,7 @@ class RegressionLearner {
   std::unique_ptr<sgpp::base::Grid> grid;
   /// the grid's coefficients
   sgpp::base::DataVector weights;
-  sgpp::base::DataMatrix samples;
+  std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
 
   void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(

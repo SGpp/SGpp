@@ -13,6 +13,10 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -30,8 +34,46 @@ RegressionLearner::RegressionLearner(
   initializeGrid(gridConfig);  // do I need to store this?
 }
 
-void RegressionLearner::train() {
-  // do something ;)
+void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
+                              sgpp::base::DataVector& classes) {
+  if (trainDataset.getNrows() != classes.getSize()) {
+    throw base::application_exception(
+        "RegressionLearner::train: length of classes vector does not match to "
+        "dataset!");
+  }
+  const auto lambda = 0.001;  // TODO(krenzls): pass regularization param.
+  const auto DMSystem = createDMSystem(trainDataset, lambda);
+  std::unique_ptr<sgpp::solver::SLESolver> solver;
+  // TODO(krenzls): support multiple solver types!
+  solver = std::make_unique<sgpp::solver::ConjugateGradients>(solverConfig.maxIterations_,
+                                                              solverConfig.eps_);
+
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_ + 1; ++i) {
+    // We don't need to refine the grid during the first iteration!
+    if (i > 0) {
+      auto refineFunctor = sgpp::base::SurplusRefinementFunctor(weights, adaptivityConfig.noPoints_,
+                                                                adaptivityConfig.threshold_);
+      grid->getGenerator().refine(refineFunctor);
+
+      // tell the SLE manager that the grid changed (for internal
+      // data structures)
+      DMSystem->prepareGrid();
+      weights.resizeZero(grid->getSize());
+    } else {
+      // no refinement needed!
+    }
+
+    auto b = sgpp::base::DataVector(weights.getSize());
+    DMSystem->generateb(classes, b);
+
+    if (i == adaptivityConfig.numRefinements_) {
+      // change the configuration of the solver for this last step
+      solver->setMaxIterations(solverConfig.maxIterations_);
+      solver->setEpsilon(solverConfig.eps_);
+    }
+
+    solver->solve(*DMSystem, weights, b, true, false, 0.0);
+  }
 }
 
 void RegressionLearner::initializeGrid(const sgpp::base::RegularGridConfiguration gridConfig) {
@@ -57,7 +99,6 @@ void RegressionLearner::initializeGrid(const sgpp::base::RegularGridConfiguratio
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
   using datadriven::RegularizationType;
-  std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);

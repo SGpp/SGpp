@@ -11,6 +11,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
+#include <exception>
 
 int main(int argc, char** argv) {
   const auto filename = std::string("../tests/data/friedman_4d_2000.arff");
@@ -43,7 +44,13 @@ int main(int argc, char** argv) {
                                                      regularizationConfig);
 
   std::cout << "Training the learner." << std::endl;
-  learner.train();
+  try {
+    learner.train(data, classes);
+  } catch (const std::exception& e) {
+    std::cout << "std exception " << e.what() << std::endl;
+  } catch (...) {
+    std::cout << "unknown exception" << std::endl;
+  }
 
   std::cout << "Finished training." << std::endl;
 }
