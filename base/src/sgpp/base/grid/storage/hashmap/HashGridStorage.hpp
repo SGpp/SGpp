@@ -135,7 +135,6 @@ class HashGridStorage {
    * unserializes the grid from a string, algorithmic dimensions are not reseted
    *
    * @param istr the string that contains the data
-   * @param version the serialization version of the file
    */
   void unserialize_noAlgoDims(std::string& istr);
 

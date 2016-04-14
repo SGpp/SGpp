@@ -286,6 +286,7 @@ class DataContainer(object):
     #
     # @param points: DataVector new points
     # @param values: DataVector new values
+    # @param dataDict: dictionary {(x_1, x_2, ..., x_d): value}
     # @param name: String category name under which points and values should be stored
     # @param specification specification
     # @return: DataContainer itself
