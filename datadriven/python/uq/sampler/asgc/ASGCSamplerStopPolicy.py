@@ -40,7 +40,7 @@ class ASGCSamplerStopPolicy(object):
     
     
     ## Checks if learning process have to be stopped
-    # @param learner: Learner object 
+    # @param sampler: Learner object
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, sampler):
         ans = self.hasLimitReached(sampler) or not self.hasGridSizeChanged(sampler)
