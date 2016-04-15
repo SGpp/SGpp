@@ -48,22 +48,28 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
 
   std::string save_from_global_to_private(size_t dimensions) {
     std::stringstream output;
-    output << this->indent[0] << "__private int point_indices["
+    for (auto block = 0; block < dataBlockSize; block++) {
+      output << this->indent[0] << "__private int point_indices_block" << block << "["
            << dimensions << "];" << std::endl;
-    output << this->indent[0] << "__private int point_level["
+      output << this->indent[0] << "__private int point_level_block" << block << "["
            << dimensions << "];" << std::endl;
     for (size_t i = 0; i < dimensions; i++) {
-      output << this->indent[1] << "point_indices[" << i << "] = starting_points[gridindex * "
+      output << this->indent[1] << "point_indices_block" << block << "[" << i
+             << "] = starting_points[gridindex * "
              << dimensions << " * 2 + 2 * " << i << "];" << std::endl;
-      output << this->indent[1] << "point_level[" << i << "] = starting_points[gridindex * "
+      output << this->indent[1] << "point_level_block" << block << "[" << i
+             << "] = starting_points[gridindex * "
              << dimensions << " * 2 + 2 * " << i << " + 1];" << std::endl;
+    }
     }
     return output.str();
   }
+
+
  public:
   SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
                     size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1){
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
@@ -97,7 +103,21 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[0] << "__private int level = 0;" << std::endl;
     sourceStream << this->indent[0] << "__private int index2 = 0;" << std::endl;
     sourceStream << this->indent[0] << "__private int level2 = 0;" << std::endl;
-    sourceStream << this->indent[0] << this->floatType() << " gesamtint = 0.0;" << std::endl;
+    sourceStream << this->indent[0] << "__private int teiler = 0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " h = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " grenze1 = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " grenze2 = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uright = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " uleft = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private int u= 0;" << std::endl;
+    for (size_t block; block < dataBlockSize; block++)
+      sourceStream << this->indent[0] << this->floatType() << " gesamtint_block" << block
+                   <<" = 0.0;" << std::endl;
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "__local " << "int indices_local["
                    << localWorkgroupSize * dimensions << "];" << std::endl
@@ -121,38 +141,39 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << localWorkgroupSize << "  + local_id ];" << std::endl
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
-                   << "; i++) {" << std::endl;
-
-      sourceStream << this->indent[1] << "__private " << this->floatType()
+                   << "; i++) {" << std::endl
+                   << this->indent[1] << "__private " << this->floatType()
                    << " zellenintegral = 1.0;" << std::endl;
+      // Generate body for each element in the block
+      for (size_t block; block < dataBlockSize; block++) {
       sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
                    << ";dim++) {" << std::endl;
-      sourceStream << this->indent[2] << "index = point_indices[dim];" << std::endl;
-      sourceStream << this->indent[2] << "level = point_level[dim];" << std::endl;
+      sourceStream << this->indent[2] << "index = point_indices_block" << block
+                   << "[dim];" << std::endl;
+      sourceStream << this->indent[2] << "level = point_level_block" << block
+                   << "[dim];" << std::endl;
       sourceStream << this->indent[2] << "index2 = indices_local[i* " << dimensions
                    << "+dim];" << std::endl;
       sourceStream << this->indent[2] << "level2 = level_local[i* " << dimensions
                    << "+dim];" << std::endl;
-      sourceStream << this->indent[2] << "if(point_level[dim]>level_local[i* " << dimensions
+      sourceStream << this->indent[2] << "if(point_level_block" << block
+                   << "[dim]>level_local[i* " << dimensions
                    << " + dim]) {" << std::endl;
       sourceStream << this->indent[3] << "index = indices_local[i* "
                    << dimensions << "+dim];" << std::endl;
       sourceStream << this->indent[3] << "level = level_local[i* "
                    << dimensions << "+dim];" << std::endl;
-      sourceStream << this->indent[3] << "index2 = point_indices[dim];" << std::endl;
-      sourceStream << this->indent[3] << "level2 = point_level[dim];" << std::endl;
+      sourceStream << this->indent[3] << "index2 = point_indices_block"
+                   << block << "[dim];" << std::endl;
+      sourceStream << this->indent[3] << "level2 = point_level_block"
+                   << block << "[dim];" << std::endl;
       sourceStream << this->indent[2] << "}" << std::endl;
-      sourceStream << this->indent[2] << "__private int teiler = (1 << level2);" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " h = 1.0 / teiler;" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " grenze1 = h*(index2-1);" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
+      sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl
+                   << " h = 1.0 / teiler;" << std::endl
+                   << " grenze1 = h*(index2-1);" << std::endl
                    << " grenze2 = h*(index2+1);" << std::endl;
-      sourceStream << this->indent[2] << "__private int u= (1 << level);" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " uright = u*grenze2-index;" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
+      sourceStream << this->indent[2] << "u = (1 << level);" << std::endl
+                   << " uright = u*grenze2-index;" << std::endl
                    << " uleft = u*grenze1-index;" << std::endl;
       sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
       sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
@@ -165,15 +186,17 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[2] << "__private " << this->floatType()
                    << " integral = h/2.0*(uleft+uright);" << std::endl;
       sourceStream << this->indent[2] << "if(level_local[i* " << dimensions
-                   << "+dim] == point_level[dim]) {" << std::endl;
+                   << "+dim] == point_level_block" << block << "[dim]) {" << std::endl;
       sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
       sourceStream << this->indent[3] << "if(indices_local[i* " << dimensions
-                   << "+dim] != point_indices[dim])" << std::endl;
+                   << "+dim] != point_indices_block" << block << "[dim])" << std::endl;
       sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
       sourceStream << this->indent[2] << "}" << std::endl;
       sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
       sourceStream << this->indent[1] << "}" << std::endl;
-      sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha_local[i];" << std::endl;
+      sourceStream << this->indent[1] << "gesamtint_block" << block
+                   <<" += zellenintegral*alpha_local[i];" << std::endl;
+      }
       sourceStream << this->indent[0] << "}" << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     } else {
@@ -234,9 +257,14 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha[i];" << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     }
-    sourceStream << this->indent[0] << "result[get_global_id(0)] = gesamtint;" << std::endl;
-    sourceStream << this->indent[0] << "result[get_global_id(0)] += alpha[gridindex]*"
-                 << "lambda;" << std::endl;
+    for (auto block = 0; block < dataBlockSize; ++block) {
+    sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
+                 <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
+    sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
+                 <<" + " << block << "] += alpha[get_global_id(0) * "<< dataBlockSize
+                 <<" + " << block << "]*" << "lambda;" << std::endl;
+    }
+
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration.contains("WRITE_SOURCE")) {

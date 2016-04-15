@@ -45,7 +45,7 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
             std::cin >> treshold;*/
   // Create Grid
-  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
@@ -58,11 +58,11 @@ int main() {
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
-      "MyOCLConf.cfg");*/
-  /*operation_mult->mult(alpha, result);
+      "MyOCLConf.cfg");
+  operation_mult->mult(alpha, result);
   for (auto i = 0; i < 200; ++i) {
     std::cout << result[i] << " ";
-    }*/
+  }
 
 
   /*std::cout << "Creating rhs" << std::endl;
@@ -79,7 +79,7 @@ int main() {
   for (size_t i = 0; i < gridsize; i++)
   alpha[i] = alpha[i]*1.0/(max-min);*/
 
-  std::cout << "Starting graph creation..." << std::endl;
+  /*std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
       sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
                                                              "MyOCLConf.cfg");
@@ -93,7 +93,7 @@ int main() {
     }
     out1 << std::endl;
   }
-  out1.close();
+  out1.close();*/
 
 
 
@@ -114,5 +114,5 @@ int main() {
   // cleanup
   delete operation_mult;
   delete solver;*/
-  delete operation_graph;
+  //delete operation_graph;
 }
