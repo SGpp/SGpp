@@ -11,14 +11,17 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/datamining/base/DmModule.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 class SparseGridMiner : public DmModule {
  public:
+  SparseGridMiner();
+  explicit SparseGridMiner(std::shared_ptr<DmModule> firstModule,
+                           std::shared_ptr<DmStateStorage> sharedState);
   virtual ~SparseGridMiner();
   void run();
 };
