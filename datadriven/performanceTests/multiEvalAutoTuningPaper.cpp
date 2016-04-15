@@ -66,6 +66,8 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -110,6 +112,8 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -154,6 +158,8 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -198,6 +204,8 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   staticParameterTuner.addParameter("VERBOSE", {"true"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -423,6 +431,8 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Float) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"32", "64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -469,6 +479,8 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Double) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"32", "64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -515,6 +527,8 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Float) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"32", "64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -561,6 +575,8 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"32", "64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"32", "64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -607,6 +623,8 @@ BOOST_AUTO_TEST_CASE(DR5_Linear_Float) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -653,6 +671,8 @@ BOOST_AUTO_TEST_CASE(DR5_Linear_Double) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -699,6 +719,8 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Float) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -745,6 +767,8 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinearMask_Double) {
   staticParameterTuner.addParameter("VERBOSE", {"true"});
   staticParameterTuner.addParameter("KERNEL_PREFETCH_SIZE", {"64"});
   staticParameterTuner.addParameter("KERNEL_TRANS_PREFETCH_SIZE", {"64"});
+  staticParameterTuner.addParameter("OPTIMIZATION_FLAGS",
+                                    {"-cl-strict-aliasing -cl-fast-relaxed-math"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
