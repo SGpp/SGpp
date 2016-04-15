@@ -25,6 +25,7 @@ namespace datadriven {
 SparseGridMiner::~SparseGridMiner() {}
 
 void SparseGridMiner::run() {
+  nextModule->run();
   // void SparseGridMiner::run() {
   // 1. find lambda
   //  double threshold = config["scorer_threshold"].getDouble();
