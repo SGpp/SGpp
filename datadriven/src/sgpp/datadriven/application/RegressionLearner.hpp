@@ -13,6 +13,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <memory>
@@ -27,6 +28,8 @@ class RegressionLearner {
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::datadriven::RegularizationConfiguration regularizationConfig);
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
+  sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
+  double getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
@@ -43,6 +46,11 @@ class RegressionLearner {
   void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset, double lambda);
+  std::unique_ptr<sgpp::solver::SLESolver> createSolver();
+
+  void trainStep(size_t curStep, sgpp::datadriven::DMSystemMatrixBase& DMSystem,
+                 sgpp::solver::SLESolver& solver, sgpp::base::DataVector& classes);
+  double getMSE(const sgpp::base::DataVector& y, sgpp::base::DataVector yPrediction);
 };
 
 }  // namespace datadriven
