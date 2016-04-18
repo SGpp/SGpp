@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
-
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
@@ -40,10 +40,8 @@ void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
         "RegressionLearner::train: length of classes vector does not match to "
         "dataset!");
   }
-  const auto lambda = 0.0001;  // TODO(krenzls): pass regularization param.
-  const auto DMSystem = createDMSystem(trainDataset, lambda);
+  const auto DMSystem = createDMSystem(trainDataset);
   std::unique_ptr<sgpp::solver::SLESolver> solver;
-  // TODO(krenzls): support multiple solver types!
   solver = createSolver();
 
   for (size_t i = 0; i < adaptivityConfig.numRefinements_ + 1; ++i) {
@@ -121,7 +119,7 @@ void RegressionLearner::initializeGrid(const sgpp::base::RegularGridConfiguratio
 
 // maybe pass regularizationConfig instead of state.
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
-    sgpp::base::DataMatrix& trainDataset, double lambda) {
+    sgpp::base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
@@ -130,11 +128,19 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
     case RegularizationType::Laplace:
       opMatrix = sgpp::op_factory::createOperationLaplace(*grid);
       break;
+    case RegularizationType::Diagonal:
+      if (regularizationConfig.diag_ == nullptr) {
+        throw base::application_exception(
+            "RegressionLearner::createDMSystem: regularizationConfig.diag_ == nullptr");
+      }
+      opMatrix = std::make_unique<sgpp::base::OperationDiagonal>(*regularizationConfig.diag_);
+      break;
     default:
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
-  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*grid, trainDataset, *opMatrix, lambda);
+  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*grid, trainDataset, *opMatrix,
+                                                            regularizationConfig.lambda);
 }
 
 std::unique_ptr<sgpp::solver::SLESolver> RegressionLearner::createSolver() {

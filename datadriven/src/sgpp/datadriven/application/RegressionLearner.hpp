@@ -45,7 +45,7 @@ class RegressionLearner {
 
   void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
-      sgpp::base::DataMatrix& trainDataset, double lambda);
+      sgpp::base::DataMatrix& trainDataset);
   std::unique_ptr<sgpp::solver::SLESolver> createSolver();
 
   void trainStep(size_t curStep, sgpp::datadriven::DMSystemMatrixBase& DMSystem,

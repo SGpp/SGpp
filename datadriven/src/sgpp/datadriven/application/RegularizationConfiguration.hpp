@@ -7,17 +7,21 @@
 #define REGULARIZATIONCONFIGURATION_HPP_
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 enum class RegularizationType {
   Identity,
-  Laplace
+  Laplace,
+  Diagonal
 };
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
+  double lambda;
+  sgpp::base::DataVector *diag_; // only used for Diagonal
 };
 
 }  // namespace datadriven
