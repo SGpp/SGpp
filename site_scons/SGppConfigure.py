@@ -289,23 +289,19 @@ def configureGNUCompiler(config):
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -pedantic-errors -Wextra \
-      -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
-      -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
-      -Winvalid-pch -Wmissing-field-initializers -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wpointer-arith -Wredundant-decls -Wstack-protector \
-      -Wstrict-aliasing=2 -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
-      -Wunused-parameter -Wvariadic-macros -Wwrite-strings -Wuninitialized".split(" ")
-  # rather uninteresting: -Wlong-long -Wpadded -Wshadow -Wfloat-equal -Waggregate-return
-  #                       -Wimplicit -Wmissing-noreturn -Weffc++
-  # cannot really use:
+      "-Wall -pedantic -Wextra \
+      -Wcast-qual -Wconversion -Wformat=2 \
+      -Wformat-nonliteral -Wformat-security -Winit-self  \
+      -Wmissing-format-attribute \
+      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
+      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #     "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
+  #     "If you are going to use optimizations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
-      "-Wno-unused-parameter",
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse",
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
