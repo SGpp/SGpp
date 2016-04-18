@@ -21,18 +21,18 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 int main() {
-  size_t dimension, tiefe = 6, k = 12;
+  size_t dimension = 2, tiefe = 13, k = 12;
   double lambda = 0.001, treshold = 0.7;
   std::string filename = "dataset3_dim10.arff";
 
-  std::cout << "Loading file: " << filename << std::endl;
+  /*std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& dataset = data.getData();
   dimension = dataset.getNcols();
   std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
             << dataset.getNrows() << " datapoints." << std::endl;
-
+  */
   /*std::cout << "Size of Grid (3-18): ";
   std::cin >> tiefe;
   std::cout << "Lambda (controlls smoothness of the density function."

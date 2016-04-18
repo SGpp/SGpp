@@ -105,9 +105,9 @@ class KernelDensityMult {
 
     size_t globalworkrange[1];
     if (chunksize == 0) {
-      globalworkrange[0] = gridSize;
+      globalworkrange[0] = gridSize / dataBlockingSize;
     } else {
-      globalworkrange[0] = chunksize;
+      globalworkrange[0] = chunksize / dataBlockingSize;
     }
     size_t real_count = globalworkrange[0];
     globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
@@ -115,7 +115,9 @@ class KernelDensityMult {
     if (this->kernelMult == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize, globalworkrange[0]);
+      std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize,
+                                                                   globalworkrange[0] *
+                                                                   dataBlockingSize);
       if (verbose)
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
