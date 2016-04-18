@@ -18,15 +18,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag})
 
-  checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
-  checkOpenCL(config)
-  checkBoostTests(config)
-  checkSWIG(config)
-  checkPython(config)
-  checkJava(config)
-
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
@@ -96,6 +87,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   # detour compiler output
   env["PRINT_CMD_LINE_FUNC"] = Helper.print_cmd_line
+
+  checkCpp11(config)
+  checkDoxygen(config)
+  checkDot(config)
+  checkOpenCL(config)
+  checkBoostTests(config)
+  checkSWIG(config)
+  checkPython(config)
+  checkJava(config)
 
   env = config.Finish()
 
