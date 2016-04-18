@@ -206,7 +206,6 @@ class Module(object):
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
             (".exe" if env["PLATFORM"] == "win32" else "")
-        print "boost test exe:", self.boostTestExecutable
         test = testEnv.Program(self.boostTestExecutable, testObjs)
         testEnv.Depends(test, self.libInstall)
         boostTestTargetList.append(test)
