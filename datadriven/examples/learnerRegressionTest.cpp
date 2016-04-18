@@ -26,6 +26,8 @@ sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) 
   auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
   regularizationConfig.regType_ = regularizationType;
+  regularizationConfig.lambda = 0.0001;
+  regularizationConfig.diag_ = nullptr;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
