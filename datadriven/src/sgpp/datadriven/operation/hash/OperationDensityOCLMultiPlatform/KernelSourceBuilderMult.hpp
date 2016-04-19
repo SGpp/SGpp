@@ -105,7 +105,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " sum = 0.0;" << std::endl;
     sourceStream << this->indent[0] << "__private int u= 0;" << std::endl;
-    for (size_t block=0; block < dataBlockSize; block++)
+    for (size_t block = 0; block < dataBlockSize; block++)
       sourceStream << this->indent[0] << this->floatType() << " gesamtint_block" << block
                    <<" = 0.0;" << std::endl;
     if (useLocalMemory) {
@@ -134,7 +134,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << "; i++) {" << std::endl
                    << this->indent[2] << "__private " << this->floatType();
       // Generate body for each element in the block
-      for (size_t block; block < dataBlockSize; block++) {
+      for (size_t block = 0; block < dataBlockSize; block++) {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
         sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
                      << ";dim++) {" << std::endl
@@ -173,7 +173,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[0] << "for(__private int i = 0; i < " << problemsize
                    << "; i++) {" << std::endl;
 
-      for (size_t block; block < dataBlockSize; block++) {
+      for (size_t block = 0; block < dataBlockSize; block++) {
         sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
                      << std::endl;
         sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
