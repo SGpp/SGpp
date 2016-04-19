@@ -19,11 +19,8 @@ template<typename real_type>
 class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
  private:
   std::shared_ptr<base::OCLDevice> device;
-
   json::Node &kernelConfiguration;
-
   size_t dims;
-
   size_t localWorkgroupSize;
   bool useLocalMemory;
   size_t dataBlockSize;
@@ -69,7 +66,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
  public:
   SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
                     size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1){
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
@@ -100,21 +97,17 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                  << this->indent[0] << "__private int local_id = get_local_id(0);"
                  << std::endl;
     sourceStream << save_from_global_to_private(dimensions);
-    sourceStream << this->indent[0] << "__private int index = 0;" << std::endl;
-    sourceStream << this->indent[0] << "__private int level = 0;" << std::endl;
-    sourceStream << this->indent[0] << "__private int index2 = 0;" << std::endl;
-    sourceStream << this->indent[0] << "__private int level2 = 0;" << std::endl;
     sourceStream << this->indent[0] << "__private int teiler = 0;" << std::endl;
     sourceStream << this->indent[2] << "__private " << this->floatType()
                  << " h = 0.0;" << std::endl;
     sourceStream << this->indent[2] << "__private " << this->floatType()
-                 << " grenze1 = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
-                 << " grenze2 = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
                  << " uright = 0.0;" << std::endl;
     sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " umid = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
                  << " uleft = 0.0;" << std::endl;
+    sourceStream << this->indent[2] << "__private " << this->floatType()
+                 << " sum = 0.0;" << std::endl;
     sourceStream << this->indent[2] << "__private int u= 0;" << std::endl;
     for (size_t block; block < dataBlockSize; block++)
       sourceStream << this->indent[0] << this->floatType() << " gesamtint_block" << block
@@ -149,51 +142,37 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
         sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
                      << ";dim++) {" << std::endl;
-        sourceStream << this->indent[2] << "index = point_indices_block" << block
-                     << "[dim];" << std::endl;
-        sourceStream << this->indent[2] << "level = point_level_block" << block
-                     << "[dim];" << std::endl;
-        sourceStream << this->indent[2] << "index2 = indices_local[i* " << dimensions
-                     << "+dim];" << std::endl;
-        sourceStream << this->indent[2] << "level2 = level_local[i* " << dimensions
-                     << "+dim];" << std::endl;
-        sourceStream << this->indent[2] << "if(point_level_block" << block
-                     << "[dim]>level_local[i* " << dimensions
-                     << " + dim]) {" << std::endl;
-        sourceStream << this->indent[3] << "index = indices_local[i* "
-                     << dimensions << "+dim];" << std::endl;
-        sourceStream << this->indent[3] << "level = level_local[i* "
-                     << dimensions << "+dim];" << std::endl;
-        sourceStream << this->indent[3] << "index2 = point_indices_block"
-                     << block << "[dim];" << std::endl;
-        sourceStream << this->indent[3] << "level2 = point_level_block"
-                     << block << "[dim];" << std::endl;
-        sourceStream << this->indent[2] << "}" << std::endl;
-        sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl
-                     << " h = 1.0 / teiler;" << std::endl
-                     << " grenze1 = h*(index2-1);" << std::endl
-                     << " grenze2 = h*(index2+1);" << std::endl;
-        sourceStream << this->indent[2] << "u = (1 << level);" << std::endl
-                     << " uright = u*grenze2-index;" << std::endl
-                     << " uleft = u*grenze1-index;" << std::endl;
-        sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
-        sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
-        sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-        sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
-        sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
-        sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
-        sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-        sourceStream << this->indent[3] << "uright = 0;" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " integral = h/2.0*(uleft+uright);" << std::endl;
+        sourceStream << this->indent[3] << "int teiler = (1 << level_local[i*" << dimensions
+                     << "+dim]);" << std::endl
+                     << " h = 1.0 / teiler;" << std::endl;
+        sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
+                     << "[dim]);" << std::endl
+            //<< this->indent[3] << " uright = u*h*(indices_local[i*" << dimensions
+            //       << " + dim]+1)-point_indices_block" << block << "[dim];" << std::endl
+                     << this->indent[3] << " umid = u*h*(indices_local[i*" << dimensions
+                     << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
+        sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+        sourceStream << this->indent[2] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[2] << "umid = fmax(umid,0.0);" << std::endl;
+        sourceStream << this->indent[2] << "sum = h*(umid);" << std::endl;
+        sourceStream << this->indent[2] << "teiler = (1 << point_level_block" << block
+                     << "[dim]);" << std::endl
+                     << this->indent[2] << " h = 1.0 / teiler;" << std::endl;
+        sourceStream << this->indent[2] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
+                     << std::endl
+            //<< this->indent[2] << " uright = u*h*(point_indices_block" << block
+            //       << "[dim] +1 )-indices_local[i*"
+            //       << dimensions << " + dim];" << std::endl
+                     << this->indent[2] << " umid = u*h*(point_indices_block" << block << "[dim])-indices_local[i*"
+                     << dimensions << " + dim];" << std::endl;
+        sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+        sourceStream << this->indent[2] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[2] << "umid = fmax(umid,0.0);" << std::endl;
+        sourceStream << this->indent[2] << "sum += h*(umid);" << std::endl;
         sourceStream << this->indent[2] << "if(level_local[i* " << dimensions
-                     << "+dim] == point_level_block" << block << "[dim]) {" << std::endl;
-        sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
-        sourceStream << this->indent[3] << "if(indices_local[i* " << dimensions
-                     << "+dim] != point_indices_block" << block << "[dim])" << std::endl;
-        sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
-        sourceStream << this->indent[2] << "}" << std::endl;
-        sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
+                     << "+dim] == point_level_block" << block << "[dim])" << std::endl;
+        sourceStream <<  this->indent[3] <<"sum *= 1.0/3.0;" << std::endl;
+        sourceStream << this->indent[2] << "zellenintegral*=sum;" << std::endl;
         sourceStream << this->indent[1] << "}" << std::endl;
         sourceStream << this->indent[1] << "gesamtint_block" << block
                      <<" += zellenintegral*alpha_local[i];" << std::endl;
