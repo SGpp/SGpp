@@ -51,10 +51,10 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       output << this->indent[0] << "__private int point_level_block" << block << "["
              << dimensions << "];" << std::endl;
       for (size_t i = 0; i < dimensions; i++) {
-        output << this->indent[1] << "point_indices_block" << block << "[" << i
+        output << this->indent[0] << "point_indices_block" << block << "[" << i
                << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block << ") * "
                << dimensions << " * 2 + 2 * " << i << "];" << std::endl;
-        output << this->indent[1] << "point_level_block" << block << "[" << i
+        output << this->indent[0] << "point_level_block" << block << "[" << i
                << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block << ") * "
                << dimensions << " * 2 + 2 * " << i << " + 1];" << std::endl;
       }
@@ -98,18 +98,14 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                  << std::endl;
     sourceStream << save_from_global_to_private(dimensions);
     sourceStream << this->indent[0] << "__private int teiler = 0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
+    sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " h = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
-                 << " uright = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
+    sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " umid = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
-                 << " uleft = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private " << this->floatType()
+    sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " sum = 0.0;" << std::endl;
-    sourceStream << this->indent[2] << "__private int u= 0;" << std::endl;
-    for (size_t block; block < dataBlockSize; block++)
+    sourceStream << this->indent[0] << "__private int u= 0;" << std::endl;
+    for (size_t block=0; block < dataBlockSize; block++)
       sourceStream << this->indent[0] << this->floatType() << " gesamtint_block" << block
                    <<" = 0.0;" << std::endl;
     if (useLocalMemory) {
@@ -131,110 +127,112 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << " + j] = starting_points[group * " << localWorkgroupSize * dimensions * 2
                    << "  + local_id * " <<  dimensions * 2 << " + 2 * j + 1];" << std::endl
                    << this->indent[1] << "}" << std::endl
-                   << this->indent[2] << "alpha_local[local_id] = alpha[group * "
+                   << this->indent[1] << "alpha_local[local_id] = alpha[group * "
                    << localWorkgroupSize << "  + local_id ];" << std::endl
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
                    << "; i++) {" << std::endl
-                   << this->indent[1] << "__private " << this->floatType();
+                   << this->indent[2] << "__private " << this->floatType();
       // Generate body for each element in the block
       for (size_t block; block < dataBlockSize; block++) {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
-        sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
-                     << ";dim++) {" << std::endl;
-        sourceStream << this->indent[3] << "int teiler = (1 << level_local[i*" << dimensions
-                     << "+dim]);" << std::endl
-                     << " h = 1.0 / teiler;" << std::endl;
+        sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
+                     << ";dim++) {" << std::endl
+                     << this->indent[3] <<"h = 1.0 / (1 << level_local[i*" << dimensions
+                     << "+dim]);" << std::endl;
         sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
                      << "[dim]);" << std::endl
-            //<< this->indent[3] << " uright = u*h*(indices_local[i*" << dimensions
-            //       << " + dim]+1)-point_indices_block" << block << "[dim];" << std::endl
-                     << this->indent[3] << " umid = u*h*(indices_local[i*" << dimensions
+                     << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
                      << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
         sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[2] << "umid = 1-umid;" << std::endl;
-        sourceStream << this->indent[2] << "umid = fmax(umid,0.0);" << std::endl;
-        sourceStream << this->indent[2] << "sum = h*(umid);" << std::endl;
-        sourceStream << this->indent[2] << "teiler = (1 << point_level_block" << block
-                     << "[dim]);" << std::endl
-                     << this->indent[2] << " h = 1.0 / teiler;" << std::endl;
-        sourceStream << this->indent[2] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
+        sourceStream << this->indent[3] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        sourceStream << this->indent[3] << "sum = h*(umid);" << std::endl
+                     << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
+                     << "[dim]);" << std::endl;
+        sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
                      << std::endl
-            //<< this->indent[2] << " uright = u*h*(point_indices_block" << block
-            //       << "[dim] +1 )-indices_local[i*"
-            //       << dimensions << " + dim];" << std::endl
-                     << this->indent[2] << " umid = u*h*(point_indices_block" << block << "[dim])-indices_local[i*"
+                     << this->indent[3] << " umid = u*h*(point_indices_block" << block <<
+            "[dim])-indices_local[i*"
                      << dimensions << " + dim];" << std::endl;
         sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[2] << "umid = 1-umid;" << std::endl;
-        sourceStream << this->indent[2] << "umid = fmax(umid,0.0);" << std::endl;
-        sourceStream << this->indent[2] << "sum += h*(umid);" << std::endl;
-        sourceStream << this->indent[2] << "if(level_local[i* " << dimensions
-                     << "+dim] == point_level_block" << block << "[dim])" << std::endl;
-        sourceStream <<  this->indent[3] <<"sum *= 1.0/3.0;" << std::endl;
-        sourceStream << this->indent[2] << "zellenintegral*=sum;" << std::endl;
-        sourceStream << this->indent[1] << "}" << std::endl;
-        sourceStream << this->indent[1] << "gesamtint_block" << block
+        sourceStream << this->indent[3] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        sourceStream << this->indent[3] << "sum += h*(umid);" << std::endl;
+        sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
+                     << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
+                     << std::endl;
+        sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
+        sourceStream << this->indent[2] << "}" << std::endl;
+        sourceStream << this->indent[2] << "gesamtint_block" << block
                      <<" += zellenintegral*alpha_local[i];" << std::endl;
       }
-      sourceStream << this->indent[0] << "}" << std::endl;
+      sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     } else {
       sourceStream << this->indent[0] << "for(__private int i = 0; i < " << problemsize
                    << "; i++) {" << std::endl;
-      sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
-                   << std::endl;
-      sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
-                   << ";dim++) {" << std::endl;
-      sourceStream << this->indent[2] << "index = point_indices[dim];" << std::endl;
-      sourceStream << this->indent[2] << "level = point_level[dim];" << std::endl;
-      sourceStream << this->indent[2] << "index2 = starting_points[i* " << dimensions
-                   << "*2+2*dim];" << std::endl;
-      sourceStream << this->indent[2] << "level2 = starting_points[i* " << dimensions
-                   << "*2+2*dim+1];" << std::endl;
-      sourceStream << this->indent[2] << "if(starting_points[gridindex* " << dimensions
-                   << "*2+2*dim+1]>starting_points[i* " << dimensions
-                   << "*2+2*dim+1]) {" << std::endl;
-      sourceStream << this->indent[3] << "index = starting_points[i* "
-                   << dimensions << "*2+2*dim];" << std::endl;
-      sourceStream << this->indent[3] << "level = starting_points[i* "
-                   << dimensions << "*2+2*dim+1];" << std::endl;
-      sourceStream << this->indent[3] << "index2 = point_indices[dim];" << std::endl;
-      sourceStream << this->indent[3] << "level2 = point_level[dim];" << std::endl;
-      sourceStream << this->indent[2] << "}" << std::endl;
-      sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
-      sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " grenze1 = h*(index2-1);" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " grenze2 = h*(index2+1);" << std::endl;
-      sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " uright = u*grenze2-index;" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " uleft = u*grenze1-index;" << std::endl;
-      sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
-      sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
-      //sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-      //sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
-      sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
-      sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
-      //sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-      //sourceStream << this->indent[3] << "uright = 0;" << std::endl;
-      sourceStream << this->indent[2] << "__private " << this->floatType()
-                   << " integral = h/2.0*(uleft+uright);" << std::endl;
-      sourceStream << this->indent[2] << "if(starting_points[i* " << dimensions
-                   << "*2+2*dim+1] == starting_points[gridindex* "
-                   << dimensions << "*2+2*dim+1]) {" << std::endl;
-      sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
-      sourceStream << this->indent[3] << "if(starting_points[i* " << dimensions
-                   << "*2+2*dim] != starting_points[gridindex* "
-                   << dimensions << "*2+2*dim])" << std::endl;
-      sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
-      sourceStream << this->indent[2] << "}" << std::endl;
-      sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
-      sourceStream << this->indent[1] << "}" << std::endl;
-      sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha[i];" << std::endl;
+
+      for (size_t block; block < dataBlockSize; block++) {
+        sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
+                     << std::endl;
+        sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
+                     << ";dim++) {" << std::endl;
+        sourceStream << this->indent[2] << "int index = point_indices_block" << block << "[dim];"
+                     << std::endl;
+        sourceStream << this->indent[2] << "int level = point_level_block" << block << "[dim];"
+                     << std::endl;
+        sourceStream << this->indent[2] << "int index2 = starting_points[i* " << dimensions
+                     << "*2+2*dim];" << std::endl;
+        sourceStream << this->indent[2] << "int level2 = starting_points[i* " << dimensions
+                     << "*2+2*dim+1];" << std::endl;
+        sourceStream << this->indent[2] << "if(starting_points[gridindex* " << dimensions
+                     << "*2+2*dim+1]>starting_points[i* " << dimensions
+                     << "*2+2*dim+1]) {" << std::endl;
+        sourceStream << this->indent[3] << "index = starting_points[i* "
+                     << dimensions << "*2+2*dim];" << std::endl;
+        sourceStream << this->indent[3] << "level = starting_points[i* "
+                     << dimensions << "*2+2*dim+1];" << std::endl;
+        sourceStream << this->indent[3] << "index2 = point_indices_block" << block << "[dim];"
+                     << std::endl;
+        sourceStream << this->indent[3] << "level2 = point_level_block" << block << "[dim];"
+                     << std::endl;
+        sourceStream << this->indent[2] << "}" << std::endl;
+        sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
+        sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
+        sourceStream << this->indent[2] << "__private " << this->floatType()
+                     << " grenze1 = h*(index2-1);" << std::endl;
+        sourceStream << this->indent[2] << "__private " << this->floatType()
+                     << " grenze2 = h*(index2+1);" << std::endl;
+        sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
+        sourceStream << this->indent[2] << "__private " << this->floatType()
+                     << " uright = u*grenze2-index;" << std::endl;
+        sourceStream << this->indent[2] << "__private " << this->floatType()
+                     << " uleft = u*grenze1-index;" << std::endl;
+        sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
+        sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
+        sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
+        sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
+        sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
+        sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
+        sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
+        sourceStream << this->indent[3] << "uright = 0;" << std::endl;
+        sourceStream << this->indent[2] << "__private " << this->floatType()
+                     << " integral = h/2.0*(uleft+uright);" << std::endl;
+        sourceStream << this->indent[2] << "if(starting_points[i* " << dimensions
+                     << "*2+2*dim+1] == starting_points[gridindex* "
+                     << dimensions << "*2+2*dim+1]) {" << std::endl;
+        sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
+        sourceStream << this->indent[3] << "if(starting_points[i* " << dimensions
+                     << "*2+2*dim] != starting_points[gridindex* "
+                     << dimensions << "*2+2*dim])" << std::endl;
+        sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
+        sourceStream << this->indent[2] << "}" << std::endl;
+        sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
+        sourceStream << this->indent[1] << "}" << std::endl;
+        sourceStream << this->indent[1] << "gesamtint_block" << block
+                     <<" += zellenintegral*alpha[i];" << std::endl;
+      }
       sourceStream << this->indent[0] << "}" << std::endl;
     }
     for (auto block = 0; block < dataBlockSize; ++block) {
