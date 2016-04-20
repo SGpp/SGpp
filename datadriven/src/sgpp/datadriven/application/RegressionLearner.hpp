@@ -41,7 +41,6 @@ class RegressionLearner {
   std::unique_ptr<sgpp::base::Grid> grid;
   /// the grid's coefficients
   sgpp::base::DataVector weights;
-  std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
 
   void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(

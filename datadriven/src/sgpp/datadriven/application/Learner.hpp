@@ -23,8 +23,6 @@ class Learner : public LearnerBase {
  protected:
   /// regularization mode
   sgpp::datadriven::RegularizationType CMode;
-  /// regularization operator
-  std::unique_ptr<sgpp::base::OperationMatrix> C;
 
   /// construct system matrix
   virtual std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
