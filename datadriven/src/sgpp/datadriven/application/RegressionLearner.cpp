@@ -122,6 +122,7 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
     sgpp::base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
   std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
+  sgpp::base::GridStorage* gridStorage = &(grid->getStorage());
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
@@ -130,11 +131,7 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
       opMatrix = sgpp::op_factory::createOperationLaplace(*grid);
       break;
     case RegularizationType::Diagonal:
-      if (regularizationConfig.diag_ == nullptr) {
-        throw base::application_exception(
-            "RegressionLearner::createDMSystem: regularizationConfig.diag_ == nullptr");
-      }
-      opMatrix = std::make_unique<sgpp::base::OperationDiagonal>(*regularizationConfig.diag_);
+      opMatrix = std::make_unique<sgpp::base::OperationDiagonal>(gridStorage);
       break;
     default:
       throw base::application_exception(
