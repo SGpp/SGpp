@@ -16,6 +16,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <memory>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -25,13 +27,11 @@ namespace datadriven {
  */
 class DMSystemMatrix : public DMSystemMatrixBase {
  private:
-  /// base::OperationMatrix, the regularisation mehtod
-  base::OperationMatrix& C;
-  /// OperationB for calculating the data matrix
-  // OperationMultiEval* B;
-  std::unique_ptr<base::OperationMultipleEval> B;
-
   base::Grid& grid;
+  /// base::OperationMatrix, the regularisation method
+  std::unique_ptr<base::OperationMatrix> C;
+  /// OperationB for calculating the data matrix
+  std::unique_ptr<base::OperationMultipleEval> B;
 
  public:
   /**
@@ -42,8 +42,8 @@ class DMSystemMatrix : public DMSystemMatrixBase {
    * @param C the regression functional
    * @param lambdaRegression the lambda, the regression parameter
    */
-  DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix& C,
-                 double lambdaRegression);
+  DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
+                 std::unique_ptr<base::OperationMatrix> C, double lambdaRegression);
 
   /**
    * Std-Destructor

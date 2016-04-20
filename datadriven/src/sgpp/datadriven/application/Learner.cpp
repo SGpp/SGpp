@@ -38,6 +38,7 @@ Learner::~Learner() {
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
+  std::unique_ptr<sgpp::base::OperationMatrix> C;
   if (this->grid == NULL) return NULL;
 
   // Clean up, if needed
@@ -51,7 +52,8 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     // should not happen
   }
 
-  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset, *C,
+  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset,
+                                                            std::move(C),
                                                             lambda);
 }
 
