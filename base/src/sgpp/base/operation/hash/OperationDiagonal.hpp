@@ -9,33 +9,61 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Implementation of identity Operation for all kinds of grids
+ * Implementation of diagonal Operation for all kinds of grids
  */
 class OperationDiagonal : public OperationMatrix {
- private:
-  DataVector diag;
-
  public:
   /**
    * Constructor of OperationDiagonal
    */
-  explicit OperationDiagonal(DataVector v) : diag(v) {}
+  OperationDiagonal(sgpp::base::GridStorage* gridStorage, double multiplicationFactor)
+      : gridStorage(gridStorage), multiplicationFactor(multiplicationFactor) {}
 
+  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage)
+      : gridStorage(gridStorage), multiplicationFactor(0.25) {}
   /**
    * Destructor
    */
   ~OperationDiagonal() override {}
 
   void mult(DataVector& alpha, DataVector& result) override {
-    result = DataVector(alpha);  // componentwise_mult isn't a pure func.
-    result.componentwise_mult(diag);
+    const auto size = alpha.getSize();
+    // Reuse multiplicators if grid size hasn't changed!
+    if (size != multiplicators.getSize()) {
+      calculateMultiplicators(alpha);
+    }
+    result = DataVector(size);
+    for (size_t i = 0; i < size; ++i) {
+      result[i] = multiplicators[i] * alpha[i];
+    }
+  }
+
+ private:
+  GridStorage* gridStorage;
+  const double multiplicationFactor;
+  DataVector multiplicators;
+
+  void calculateMultiplicators(DataVector& alpha) {
+    const auto size = alpha.getSize();
+    multiplicators = DataVector(size);
+    size_t dimensions = gridStorage->getDimension();
+    for (size_t i = 0; i < size; ++i) {
+      sgpp::base::GridStorage::index_pointer gridIndex = gridStorage->get(i);
+      sgpp::base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
+      const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
+      const double multiplicator = std::pow(multiplicationFactor, exponent);
+      multiplicators[i] = multiplicator;
+    }
   }
 };
 

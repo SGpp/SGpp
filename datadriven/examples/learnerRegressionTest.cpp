@@ -16,22 +16,21 @@
 sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
   gridConfig.dim_ = data.getDimension();
-  gridConfig.level_ = 5;
+  gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
-  auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
+  auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
   regularizationConfig.regType_ = regularizationType;
-  regularizationConfig.lambda = 0.0001;
-  regularizationConfig.diag_ = nullptr;
+  regularizationConfig.lambda = 0.1;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 500;
+  solverConfig.maxIterations_ = 5000;
   solverConfig.eps_ = 1e-6;
 
   std::cout << "Initializing the learner." << std::endl;
@@ -58,7 +57,7 @@ int main(int argc, char** argv) {
   std::cout << "Training MSE = " << MSETrain << std::endl;
 
   auto dataValidation = sgpp::datadriven::ARFFTools::readARFF(filenameValidation);
-  std::cout << "Read file " << filenameTrain << "." << std::endl;
+  std::cout << "Read file " << filenameValidation << "." << std::endl;
   auto xValidation = dataValidation.getData();
   auto yValidation = dataValidation.getTargets();
 
