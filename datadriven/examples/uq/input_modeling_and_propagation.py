@@ -42,4 +42,10 @@ print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
 print "cross entropy = %g" % dist.crossEntropy(testSamples)
 print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
 
+# sampling
+samples = dist.rvs(200)
+
+fig = plt.figure()
+plt.scatter(samples[:, 0], samples[:, 1])
+
 plt.show()

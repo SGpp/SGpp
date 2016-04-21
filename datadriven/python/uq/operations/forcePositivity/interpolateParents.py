@@ -16,7 +16,7 @@ class InterpolateParents(InterpolationAlgorithm):
     def computeMean(self, grid, alpha, newGridPoints):
         gs = grid.getStorage()
         opEval = createOperationEval(grid)
-
+        alphaVec = DataVector(alpha)
         newGs = grid.getStorage()
         newNodalValues = dehierarchize(grid, alpha)
         p = DataVector(gs.getDimension())
@@ -35,9 +35,9 @@ class InterpolateParents(InterpolationAlgorithm):
                 xlow, xhigh = getBoundsOfSupport(level, index)
                 # compute function values at bounds
                 pp[d] = xlow
-                fxlow = opEval.eval(alpha, pp)
+                fxlow = opEval.eval(alphaVec, pp)
                 pp[d] = xhigh
-                fxhigh = opEval.eval(alpha, pp)
+                fxhigh = opEval.eval(alphaVec, pp)
                 # interpolate linearly
                 a = (fxhigh - fxlow) / (xlow - xhigh)
                 newNodalValues[i] += a * (p[d] - xlow) + fxhigh
