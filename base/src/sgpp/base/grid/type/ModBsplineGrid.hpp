@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -69,8 +68,9 @@ class ModBsplineGrid : public Grid {
    * Serializes the grid.
    *
    * @param ostr stream to which the grid is written
+   * @param version the serialization version of the file
    */
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   /**
    * @return B-spline degree

@@ -24,32 +24,32 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                       //  0
-  LinearStretched,              //  1
-  LinearL0Boundary,             //  2
-  LinearBoundary,               //  3
-  LinearStretchedBoundary,      //  4
-  LinearTruncatedBoundary,      //  5
-  ModLinear,                    //  6
-  Poly,                         //  7
-  PolyBoundary,                 //  8
-  ModPoly,                      //  9
-  ModWavelet,                   // 10
-  ModBspline,                   // 11
-  Prewavelet,                   // 12
-  SquareRoot,                   // 13
-  Periodic,                     // 14
-  LinearClenshawCurtis,         // 15
-  Bspline,                      // 16
-  BsplineBoundary,              // 17
-  BsplineClenshawCurtis,        // 18
-  Wavelet,                      // 19
-  WaveletBoundary,              // 20
-  FundamentalSpline,            // 21
-  ModFundamentalSpline,         // 22
-  ModBsplineClenshawCurtis,     // 23
-  LinearStencil,                // 24
-  ModLinearStencil              // 25
+  Linear,                    //  0
+  LinearStretched,           //  1
+  LinearL0Boundary,          //  2
+  LinearBoundary,            //  3
+  LinearStretchedBoundary,   //  4
+  LinearTruncatedBoundary,   //  5
+  ModLinear,                 //  6
+  Poly,                      //  7
+  PolyBoundary,              //  8
+  ModPoly,                   //  9
+  ModWavelet,                // 10
+  ModBspline,                // 11
+  Prewavelet,                // 12
+  SquareRoot,                // 13
+  Periodic,                  // 14
+  LinearClenshawCurtis,      // 15
+  Bspline,                   // 16
+  BsplineBoundary,           // 17
+  BsplineClenshawCurtis,     // 18
+  Wavelet,                   // 19
+  WaveletBoundary,           // 20
+  FundamentalSpline,         // 21
+  ModFundamentalSpline,      // 22
+  ModBsplineClenshawCurtis,  // 23
+  LinearStencil,             // 24
+  ModLinearStencil           // 25
 };
 
 /**
@@ -134,8 +134,7 @@ class Grid {
    *                      main axis
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearBoundaryGrid(size_t dim,
-                                        level_t boundaryLevel = 1);
+  static std::unique_ptr<Grid> createLinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a linearstretched truncated boundary grid
@@ -290,7 +289,8 @@ class Grid {
   static std::unique_ptr<Grid> createSquareRootGrid(size_t dim);
 
   /**
-   * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
+   * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have
+   * \f$|l|<level and li>=l_user\f$
    *
    * @param dim the grid's dimension
    * @return grid
@@ -419,8 +419,9 @@ class Grid {
    * Needed for Python compatibility. Calls serialize(std::ostream&).
    *
    * @param ostr string into which the grid is written
+   * @param version the serialization version of the file
    */
-  void serialize(std::string& ostr);
+  void serialize(std::string& ostr, int version = SERIALIZATION_VERSION);
 
   /**
    * Serializes the grid.
@@ -428,16 +429,18 @@ class Grid {
    * Call base function before writing anything!
    *
    * @param ostr stream to which the grid is written
+   * @param version the serialization version of the file
    */
-  virtual void serialize(std::ostream& ostr);
+  virtual void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION);
 
   /**
    * Serializes grid to a string.
    * Needed for Java compatibility.
    *
+   * @param version the serialization version of the file
    * @returns string into which the grid is written
    */
-  std::string serialize();
+  std::string serialize(int version = SERIALIZATION_VERSION);
 
   /**
    * Refine grid
@@ -456,8 +459,7 @@ class Grid {
    * @param indices array with indices of the point
    * @param isLeaf indicator whether the point is a leaf
    */
-  void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[],
-                   bool isLeaf);
+  void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
 
   /**
    * Returns the number of dimensions

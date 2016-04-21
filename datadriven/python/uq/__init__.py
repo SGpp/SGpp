@@ -17,6 +17,7 @@ __all__ = ["analysis",
            "sampler",
            "transformation",
            "uq_setting",
+           "manager",
            "jsonLib",
            "tools",
            "toolsKbhitCountdown"]

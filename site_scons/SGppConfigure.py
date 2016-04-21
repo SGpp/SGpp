@@ -18,15 +18,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag})
 
-  checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
-  checkOpenCL(config)
-  checkBoostTests(config)
-  checkSWIG(config)
-  checkPython(config)
-  checkJava(config)
-
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
@@ -96,6 +87,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   # detour compiler output
   env["PRINT_CMD_LINE_FUNC"] = Helper.print_cmd_line
+
+  checkCpp11(config)
+  checkDoxygen(config)
+  checkDot(config)
+  checkOpenCL(config)
+  checkBoostTests(config)
+  checkSWIG(config)
+  checkPython(config)
+  checkJava(config)
 
   env = config.Finish()
 
@@ -271,11 +271,13 @@ def configureGNUCompiler(config):
     config.env["CC"] = ("mpicc.openmpi")
     config.env["LINK"] = ("mpic++.openmpi")
     config.env["CXX"] = ("mpic++.openmpi")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     config.env["CC"] = ("mpicc.mpich")
     config.env["LINK"] = ("mpic++.mpich")
     config.env["CXX"] = ("mpic++.mpich")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
   else:  # gnu
     gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
@@ -287,23 +289,19 @@ def configureGNUCompiler(config):
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -pedantic-errors -Wextra \
-      -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
-      -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
-      -Winvalid-pch -Wmissing-field-initializers -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wpointer-arith -Wredundant-decls -Wstack-protector \
-      -Wstrict-aliasing=2 -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
-      -Wunused-parameter -Wvariadic-macros -Wwrite-strings -Wuninitialized".split(" ")
-  # rather uninteresting: -Wlong-long -Wpadded -Wshadow -Wfloat-equal -Waggregate-return
-  #                       -Wimplicit -Wmissing-noreturn -Weffc++
-  # cannot really use:
+      "-Wall -pedantic -Wextra \
+      -Wcast-qual -Wconversion -Wformat=2 \
+      -Wformat-nonliteral -Wformat-security -Winit-self  \
+      -Wmissing-format-attribute \
+      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
+      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #     "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
+  #     "If you are going to use optimizations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
-      "-Wno-unused-parameter",
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse",
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
@@ -399,6 +397,7 @@ def configureIntelCompiler(config):
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
@@ -410,8 +409,8 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  config.env.AppendUnique(CPPFLAGS=["-openmp"])
-  config.env.AppendUnique(LINKFLAGS=["-openmp"])
+  config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
+  config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.AppendUnique(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -431,6 +430,7 @@ def configureIntelCompiler(config):
   elif config.env["ARCH"] == "mic":
     config.env.AppendUnique(CPPFLAGS=["-mmic"])
     config.env.AppendUnique(LINKFLAGS=["-mmic"])
+    config.env["CPPDEFINES"]["USEMIC"] = "1"
   else:
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")

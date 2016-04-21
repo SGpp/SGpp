@@ -20,8 +20,8 @@ namespace datadriven {
 
 class OperationDensityMarginalizeKDE {
  public:
-  explicit OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde) : kde(&kde) {}
-  virtual ~OperationDensityMarginalizeKDE() {}
+  explicit OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde);
+  virtual ~OperationDensityMarginalizeKDE();
 
   /**
    * Marginalizes (Density) functions in dimension mdim

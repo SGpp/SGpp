@@ -146,7 +146,7 @@ unknownVariables = [var for var in vars.UnknownVariables()
                     if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
-                           unknownVariables.keys(),
+                           unknownVariables,
                            "Type \"scons -h\" to list all available variables.")
 
 # set "dynamic" defaults of variables
@@ -263,7 +263,7 @@ if env["PLATFORM"] == "win32":
 
   # also add the Boost library path to the PATH
   # so that the Boost test *.dll can be found when running the tests
-  if env["RUN_BOOST_TESTS"]:
+  if env["COMPILE_BOOST_TESTS"]:
     env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
                                           env["BOOST_LIBRARY_PATH"]])
 # Mac OS X doesn't use LD_LIBRARY_PATH
