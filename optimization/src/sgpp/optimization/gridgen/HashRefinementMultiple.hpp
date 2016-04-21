@@ -115,13 +115,9 @@ class HashRefinementMultiple : public base::HashRefinement {
    * base::HashRefinement insofar every grid point could potentially
    * be refined.
    *
-   * @param storage         grid storage
-   * @param functor         refinement criteria
-   * @param refinementsNum  maximal number of points to refine
-   * @param maxIndices      the array where the point indices
-   *                        should be stored
-   * @param maxValues       the array where the corresponding indicator
-   *                        values should be stored
+   * @param storage hashmap that stores the grid points
+   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+   * @param collection container that contains elements to refine (empty initially)
    */
   void collectRefinablePoints(
       base::GridStorage& storage,
