@@ -18,17 +18,8 @@ class Interpolant(Learner):
     def __init__(self):
         super(Interpolant, self).__init__()
         # Error per basis function
-        self.errors = None
-        # Error vector
-        self.error = None
-
-        # init stats
-        self.trainAccuracy = []
-        self.trainCount = []
-        self.trainingOverall = []
-        self.testAccuracy = []
-        self.testCount = []
-        self.testingOverall = []
+        self.trainErrors = np.array([])
+        self.testErrors = np.array([])
 
     def doLearningIteration(self, points):
         """
@@ -42,13 +33,12 @@ class Interpolant(Learner):
         # as the grids
         assert gs.getDimension() == points.getDim()
 
-        nodalValues = DataVector(gs.size())
-        nodalValues.setAll(0.0)
+        nodalValues = np.ndarray(gs.getSize())
 
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
         cnt = 0
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             gp.getCoords(p)
             x = tuple(p.array())
@@ -56,12 +46,12 @@ class Interpolant(Learner):
                 # # search for 2*d closest grid points
                 # q = DataVector(gs.getDimension())
                 # l = np.array([])
-                # for j in xrange(gs.size()):
+                # for j in xrange(gs.getSize()):
                 #     gs.get(j).getCoords(q)
                 #     q.sub(p)
                 #     l = np.append(l, q.l2Norm())
 
-                # n = min(gs.size(), gs.getDimension())
+                # n = min(gs.getSize(), gs.getDimension())
 
                 # ixs = np.argsort(l)
                 # # nodalValues[i] = np.mean(l[ixs[:n]])
@@ -73,7 +63,7 @@ class Interpolant(Learner):
 
         if cnt > 0:
             print '%i/%i of the grid points have \
-                   been set to 0' % (cnt, gs.size())
+                   been set to 0' % (cnt, gs.getSize())
             pdb.set_trace()
 
         # hierarchization
@@ -97,19 +87,25 @@ class Interpolant(Learner):
 
         return alpha
 
-    def learnData(self, *args, **kws):
+    def learnData(self, dataset=None, *args, **kws):
         # learning step
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
+
+        if dataset is None:
+            dataset = self.dataContainer
+
         # load data sets
-        trainSubset = self.dataContainer.getTrainDataset()
+        trainSubset = dataset.getTrainDataset()
 
         # learning step
         self.alpha = self.doLearningIteration(trainSubset)
-        self.updateResults(self.alpha, trainSubset, *args, **kws)
 
+        # update internal statistics
+        self.updateResults(self.alpha, trainSubset, *args, **kws)
         self.iteration += 1
         self.notifyEventControllers(LearnerEvents.LEARNING_COMPLETE)
         return self.alpha
+
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
@@ -132,40 +128,11 @@ class Interpolant(Learner):
     def updateResults(self, alpha, trainSubset, testSubset=None,
                       dtype=KnowledgeTypes.SIMPLE):
         # evaluate MSE of training data set -> should be zero
-        mse = self.evalError(trainSubset, alpha)
-        self.trainAccuracy.append(mse)
-        self.trainCount.append(len(self.error))
-        self.trainingOverall.append(float(np.mean(self.trainAccuracy)))
+        self.trainErrors = self.evalError(trainSubset, alpha)
 
         # store interpolation quality
         if testSubset:
-            # L2 error and MSE
-            mse = self.evalError(testSubset, alpha)
-            self.testAccuracy.append(mse)
-            self.testCount.append(len(self.error))
-            # testing overall
-            self.testingOverall.append(float(np.mean(self.testAccuracy)))
-
-    def getL2NormError(self):
-        """
-        calculate L2-norm of error
-        @return: last L2-norm of error
-        """
-        return np.sqrt(self.error.sum())
-
-    def getMaxError(self):
-        """
-        calculate max error
-        @return: max error
-        """
-        return np.sqrt(self.error.max())
-
-    def getMinError(self):
-        """
-        calculate min error
-        @return: min error
-        """
-        return np.sqrt(self.error.min())
+            self.testErrors = self.evalError(testSubset, alpha)
 
     def evalError(self, data, alpha):
         """
@@ -175,15 +142,65 @@ class Interpolant(Learner):
         @param alpha: DataVector hierarchical coefficients
         @return: mean squared error
         """
-        points = data.getPoints()
-        values = data.getValues()
-        size = points.getNrows()
-        if size == 0:
-            return 0
-
-        self.error = evalSGFunctionMulti(self.grid, alpha, points)
+        points = data.getPoints().array()
+        values_model = data.getValues().array()
+        if points.shape[1] == 0:
+            return np.array([])
+        values_surrogate = evalSGFunctionMulti(self.grid, alpha, points)
         # compute L2 error
-        self.error.sub(values)
-        self.error.sqr()
+        return np.sqrt((values_surrogate - values_model) ** 2)
 
-        return self.error.sum() / len(self.error)
+    def getSize(self, dtype="train"):
+        if dtype == "train":
+            return self.trainErrors.shape[0]
+        else:
+            return self.testErrors.shape[0]
+
+    def getL2NormError(self, dtype="train"):
+        """
+        calculate L2-norm of error
+        @return: last L2-norm of error
+        """
+        if dtype == "train":
+            value = self.trainErrors.sum()
+        else:
+            value = self.testErrors.sum()
+            
+        return np.sqrt(value)
+
+    def getMaxError(self, dtype="train"):
+        """
+        calculate max error
+        @return: max error
+        """
+        if dtype == "train":
+            value = self.trainErrors.max()
+        else:
+            value = self.testErrors.max()
+
+        return np.sqrt(value)
+
+    def getMinError(self, dtype="train"):
+        """
+        calculate min error
+        @return: min error
+        """
+        if dtype == "train":
+            value = self.trainErrors.min()
+        else:
+            value = self.testErrors.min()
+
+        return np.sqrt(value)
+
+
+    def getErrorPerSample(self, dtype="train"):
+        if dtype == "sample":
+            return self.trainErrors
+        else:
+            return self.testErrors
+
+    def getMSE(self, dtype="train"):
+        if dtype == "train":
+            return self.trainErrors.sum() / self.getSize("train")
+        else:
+            return self.testErrors.sum() / self.getSize("test")

@@ -37,6 +37,7 @@ from pysgpp import createOperationMultipleEval
 from GridDescriptor import GridDescriptor
 from RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
 import pysgpp.extensions.datadriven.utils.json as json
+from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecificationDescriptor
 
 
 ## Implement mechanisms to create customized learning system
@@ -96,14 +97,13 @@ class LearnerBuilder(object):
         """
         # created @link bin.learner.Learner.Learner Learner @endlink object
         self._learner = None
-        self._gridDescriptor = None
         self._specificationDescriptor = None
         self._stopPolicyDescriptor = None
+        self._gridDescriptor = None
 
         # @link bin.controller.CheckpointController.CheckpointController
         # CheckpointController @endlink if any used
         self._checkpointController = None
-        self._gridDescriptor = None
 
     def getLearner(self):
         """
@@ -128,90 +128,7 @@ class LearnerBuilder(object):
 
     def buildInterpolant(self):
         self._learner = Interpolant()
-        return self
-
-    def withGrid(self):
-        """
-        Start description of the grid
-        """
-        self._gridDescriptor = GridDescriptor(self)
-        return self._gridDescriptor
-
-    def withStartingIterationNumber(self, iteration):
-        """
-        Set the starting iteration number
-        @param iteration: integer starting iteration number
-        """
-        self._learner.setCurrentIterationNumber(iteration)
-        return self
-
-    def withTrainingDataFromARFFFile(self, filename, name="train"):
-        """
-        Signals to use data from ARFF file for training dataset
-        @param filename: Filename where to read the data from
-        @param name: Category name, default: "train"
-        """
-        dataContainer = ARFFAdapter(filename).loadData(name)
-        if self._learner.dataContainer is not None:
-            dataContainer = self._learner.dataContainer.combine(dataContainer)
-            self._learner.setDataContainer(dataContainer)
-        else:
-            self._learner.setDataContainer(dataContainer)
-        return self
-
-    def withTestingDataFromARFFFile(self, filename):
-        """
-        Signals to use data from ARFF file for testing dataset
-        @param filename: Filename where to read the data from
-        @return: LearnerBuilder object itself
-        """
-        adapter = ARFFAdapter(filename)
-        dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
-        if self._learner.dataContainer is not None:
-            dataContainer = self._learner.dataContainer.combine(dataContainer)
-            self._learner.setDataContainer(dataContainer)
-        else:
-            self._learner.setDataContainer(dataContainer)
-        return self
-
-    def withTrainingDataFromCSVFile(self, filename, name="train"):
-        """
-        Signals to use data from CSV file for training dataset
-        @param filename: Filename where to read the data from
-        @param name: Category name, default: "train"
-        """
-        dataContainer = CSVAdapter(filename).loadData(name)
-        if self._learner.dataContainer is not None:
-            dataContainer = self._learner.dataContainer.combine(dataContainer)
-            self._learner.setDataContainer(dataContainer)
-        else:
-            self._learner.setDataContainer(dataContainer)
-        return self
-
-    def withTestingDataFromCSVFile(self, filename):
-        """
-        Signals to use data from CSV file for testing dataset
-        @param filename: Filename where to read the data from
-        @return: LearnerBuilder object itself
-        """
-        adapter = CSVAdapter(filename)
-        dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
-        if self._learner.dataContainer is not None:
-            dataContainer = self._learner.dataContainer.combine(dataContainer)
-            self._learner.setDataContainer(dataContainer)
-        else:
-            self._learner.setDataContainer(dataContainer)
-        return self
-
-    def withInitialAlphaFromARFFFile(self, filename):
-        """
-        Signals to use initial data for alpha vector from ARFF file
-        @param filename: Filename where to read the data from
-        """
-        alpha = LearnedKnowledgeFormatter().deserializeFromFile(filename)
-        self._learner.alpha = alpha
-        self._learner.knowledge.setMemento(alpha)
-        return self
+        return self._specificationDescriptor
 
     def withCheckpointController(self, controller):
         """
@@ -226,25 +143,13 @@ class LearnerBuilder(object):
         self._checkpointController.setLearner(self._learner)
         return self
 
-    def withProgressPresenter(self, presentor):
-        """
-        Attaches progress presentor to the learner
-        @param presentor: progress presentor which implements
-        LearnerEventController
-        """
-        self._learner.attachEventController(presentor)
-        if self._learner.solver is not None:
-            self._learner.solver.attachEventController(presentor)
-        return self
-
     def andGetResult(self):
         """
         Returns the builded learner (regressor or interpolant),
         should be called in the and of construction
         """
-        # here
-        if self._gridDescriptor is None:
-            raise AttributeError('No grid is specified')
-        if self._specificationDescriptor is None:
-            raise AttributeError('Learner is not specified')
+        if self._learner is None:
+            raise AttributeError('Learner is not specified -> use buildInterpolant')
+        if isinstance(self._learner, Regressor) and self._gridDescriptor is None:
+            raise AttributeError('No grid is specified for regression')
         return self._learner

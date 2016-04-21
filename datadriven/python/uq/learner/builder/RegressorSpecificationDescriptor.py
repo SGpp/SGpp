@@ -41,6 +41,13 @@ class RegressorSpecificationDescriptor(object):
         """
         return getattr(self._builder, attr)
 
+    def withGrid(self):
+        """
+        Start description of the grid
+        """
+        self._gridDescriptor = GridDescriptor(self)
+        return self._gridDescriptor
+
     def withCGSolver(self):
         """
         Start description of parameters of CG-Solver for learner

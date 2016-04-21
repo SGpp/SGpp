@@ -4,6 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
+
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -29,6 +30,9 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.tools import writeAlphaARFF, writeGrid
 from pysgpp.extensions.datadriven.uq.analysis import Analysis
+from pysgpp.extensions.datadriven.uq.dists.GaussianKDEDist import GaussianKDEDist
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 
 class ASGCAnalysis(Analysis):
@@ -36,14 +40,14 @@ class ASGCAnalysis(Analysis):
     The ASGC class
     """
 
-    def __init__(self, learner, strategy=None):
-        Analysis.__init__(self, learner.getQoI(),
-                          learner.getKnowledge().getAvailableTimeSteps(),
-                          learner.getKnowledge().getAvailableIterations())
+    def __init__(self, uqManager, strategy=None):
+        Analysis.__init__(self, uqManager.getQoI(),
+                          uqManager.getKnowledge().getAvailableTimeSteps(),
+                          uqManager.getKnowledge().getAvailableIterations())
 
-        self.__learner = learner
-        self.__params = learner.getParameters().activeParams()
-        self.__knowledge = learner.getKnowledge()
+        self.__uqManager = uqManager
+        self.__params = uqManager.getParameters().activeParams()
+        self.__knowledge = uqManager.getKnowledge()
         self.__estimationStrategy = strategy
 
         # initialize pdf and transformation
@@ -59,8 +63,17 @@ class ASGCAnalysis(Analysis):
         # store anova components
         self.__anova = {}
 
-    def getLearner(self):
-        return self.__learner
+    def getUQManager(self):
+        return self.__uqManager
+
+    def getGrid(self):
+        qoi = self.__uqManager.getQoI()
+        return self.__knowledge.getGrid(qoi)
+
+    def getSurpluses(self):
+        qoi = self.__uqManager.getQoI()
+        return self.__knowledge.getAlpha(qoi=qoi)
+
 
     def setVerbose(self, verbose):
         self.__verbose = verbose
@@ -68,13 +81,13 @@ class ASGCAnalysis(Analysis):
     def eval(self, samples, ts=None, dtype=KnowledgeTypes.SIMPLE):
         ans = {}
         if ts is None:
-            ts = self.__knowledge.getAvailableTimeSteps()
+            ts = self.__uqManager.getTimeStepsOfInterest()
 
-        grid = self.__knowledge.getGrid(self._qoi)
+        qoi = self.__uqManager.getQoI()
+        grid = self.__knowledge.getGrid(qoi)
         for t in ts:
-            alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
-            res = evalSGFunction(grid, alpha, samples)
-            ans[t] = res
+            alpha = self.__knowledge.getAlpha(qoi, t, dtype)
+            ans[t] = evalSGFunction(grid, alpha, samples)
 
         if len(ts) == 1:
             ans = ans[ts[0]]
@@ -84,36 +97,40 @@ class ASGCAnalysis(Analysis):
     # -----------------------------------------------------------------
     # SG probabilistc analysis
     # -----------------------------------------------------------------
+    def generateUnitSamples(self, n=10000):
+        samples = self.__params.getIndependentJointDistribution().rvs(n)
+        trans = self.__params.getJointTransformation()
+        return trans.probabilisticToUnitMatrix(samples)
 
-#     def doSampling(self, n=10000):
-#         samples = self.getParameters().getIndependentJointDistribution().rvs(n)
-#         transformed_samples = DataMatrix(samples.shape[0], samples.shape[1])
-#         tr = self.getParameters().getTransformation()
-#         for i, sample in enumerate(samples):
-#             q = tr.inv_trans(sample)
-#
-#             if not all([0 <= qi <= 1 for qi in q]):
-#                 print "WARNING: Tuple has been transformed wrong '%s'" % q
-#
-#             transformed_samples.setRow(i, DataVector(list(q)))
-#
-#         return transformed_samples
-#
-#     def pdf(self, t=0, *args, **kws):
-#         samples = self.doSampling(*args, **kws)
-#         values = self.eval(samples, ts=[t])[t]
-#         return np.histogram(values, normed=True)
-#
-#     def cdf(self, t=0, *args, **kws):
-#         count, buckets = self.pdf(t, *args, **kws)
-#
-#         def f(l, acc=0):
-#             if len(l) > 0:
-#                 return [acc + l[0]] + f(l[1:], acc + l[0])
-#             else:
-#                 return []
-#
-#         return np.array([0] + f(count)), buckets
+    def __estimateDensityByConfig(self, dtype, samples, config={}):
+        if dtype == "gaussianKDE":
+            # compute bounds of samples
+            bounds = np.ndarray((1, 2))
+            bounds[:, 0] = samples.min()
+            bounds[:, 1] = samples.max()
+            return GaussianKDEDist(samples, bounds)
+        elif dtype == "sgde":
+            # compute bounds of samples
+            bounds = np.ndarray((1, 2))
+            bounds[:, 0] = samples.min()
+            bounds[:, 1] = samples.max()
+            return SGDEdist.byLearnerSGDEConfig(samples, bounds, config=config)
+        else:
+            raise AttributeError("density estimation type %s is not known. Select one in [gaussianKDE, sgde]")
+
+    def estimateDensity(self, ts=[0], n=10000, dtype="gaussianKDE", config={}):
+        samples = self.generateUnitSamples(n)
+        time_dependent_values = self.eval(samples, ts=ts)
+
+        if len(ts) == 1:
+            return self.__estimateDensityByConfig(dtype, time_dependent_values, config)
+
+        ans = {}
+        for t, values in time_dependent_values.items():
+            ans[t] = self.__estimateDensityByConfig(dtype, values, config)
+        
+        return ans
+
 
     def setEstimationStrategy(self, strategy):
         self.__estimationStrategy.getEstimator().setStrategy(strategy)
@@ -128,7 +145,7 @@ class ASGCAnalysis(Analysis):
         moment, err = self.__estimationStrategy.mean(grid, alpha,
                                                      self.__U, self.__T)
         if self._verbose:
-            print "E(f) = %.14f, L2 err = %g, size = %i" % \
+            print "E(f) = %g, L2 err = %g, size = %i" % \
                 (moment, err, grid.getSize())
 
         return moment, err
@@ -424,7 +441,7 @@ class ASGCAnalysis(Analysis):
         v1.abs()
         s = v1.sum()
 
-        if iteration > 0:
+        if iteration > 1:
             v2 = self.__knowledge.getAlpha(qoi, t, dtype, iteration - 1)
             v2.abs()
             s -= v2.sum()
@@ -441,28 +458,29 @@ class ASGCAnalysis(Analysis):
                  'testL2Error',
                  'L2ErrorSurpluses']
 
-        ts = self.__learner.getTimeStepsOfInterest()
-        iterations = self.__learner.iteration + 1
-        nrows = len(ts) * iterations
+        knowledge = self.__uqManager.getKnowledge()
+        ts = knowledge.getAvailableTimeSteps()
+        iterations = knowledge.getAvailableIterations()
+        nrows = len(ts) * len(iterations)
         ncols = len(names)
         data = DataMatrix(nrows, ncols)
         v = DataVector(ncols)
         v.setAll(0.)
         row = 0
+
         for t in ts:
-            for iteration in xrange(iterations):
+            for iteration in iterations:
                 v[0] = t
                 v[1] = iteration
-                v[2] = self.__learner.level[dtype][iteration]
-                v[3] = self.__learner.numberPoints[dtype][iteration]
-                v[4] = self.__learner.trainAccuracy[dtype][t][iteration]
-                n = self.__learner.trainCount[dtype][t][iteration]
-                v[5] = float(np.sqrt(v[4] * n))  # == L2 error
-                if len(self.__learner.testAccuracy[dtype][t]) == \
-                        len(self.__learner.trainAccuracy[dtype][t]):
-                    v[6] = self.__learner.testAccuracy[dtype][t][iteration]
-                    n = self.__learner.testCount[dtype][t][iteration]
-                    v[7] = float(np.sqrt(v[6] * n))  # == L2 error
+                blub = self.__uqManager
+                v[2] = self.__uqManager.stats.level[dtype][iteration]
+                v[3] = self.__uqManager.stats.numberPoints[dtype][iteration]
+                v[4] = self.__uqManager.stats.trainMSE[dtype][t][iteration]
+                v[5] = self.__uqManager.stats.trainL2Norm[dtype][t][iteration]
+                if len(self.__uqManager.stats.testMSE[dtype][t]) == \
+                        len(self.__uqManager.stats.trainMSE[dtype][t]):
+                    v[6] = self.__uqManager.stats.testMSE[dtype][t][iteration]
+                    v[7] = self.__uqManager.stats.testL2Norm[dtype][t][iteration]
                 v[8] = self.computeL2ErrorSurpluses(self._qoi, t,
                                                     dtype, iteration)
                 # write results to matrix
@@ -471,7 +489,7 @@ class ASGCAnalysis(Analysis):
         return {'data': data, 'names': names}
 
     def writeStats(self, filename):
-        for dtype in self.__learner.getKnowledgeTypes():
+        for dtype in self.__uqManager.getKnowledgeTypes():
             stats = self.computeStats(dtype)
             suffix = KnowledgeTypes.toString(dtype)
             stats['filename'] = "%s.%s.stats.arff" % (filename, suffix)
@@ -521,7 +539,7 @@ class ASGCAnalysis(Analysis):
     def writeSensitivityValues(self, filename):
 
         def keymap(key):
-            names = self.getLearner().getParameters().activeParams().getNames()
+            names = self.__uqManager.getParameters().activeParams().getNames()
             ans = [names[i] for i in key]
             return ",".join(ans)
 
@@ -597,7 +615,7 @@ class ASGCAnalysis(Analysis):
 #                            'names': names})
 
     def sampleGrids(self, filename):
-        ts = self.__learner.getTimeStepsOfInterest()
+        ts = self.__uqManager.getTimeStepsOfInterest()
 
         names = self.__params.getNames()
         names.append('f_\\mathcal{I}(x)')
@@ -615,30 +633,25 @@ class ASGCAnalysis(Analysis):
             data = eval_fullGrid(4, dim)
             res = evalSGFunctionMulti(grid, surplus, data)
 
-            data.transpose()
-            data.appendRow()
-            data.setRow(data.getNrows() - 1, res)
-            data.transpose()
+            data = np.vstack((data.T, res)).T
 
             # write results
             writeDataARFF({'filename': "%s.t%f.samples.arff" % (filename, t),
-                           'data': data,
+                           'data': DataMatrix(data),
                            'names': names})
 
             # -----------------------------------------
             # write sparse grid points to file
             # -----------------------------------------
-            data = DataMatrix(gs.size(), dim)
-            data.setAll(0.0)
+            data = np.ndarray((gs.getSize(), dim))
 
-            for i in xrange(gs.size()):
+            for i in xrange(gs.getSize()):
                 gp = gs.get(i)
-                v = np.array([gp.getCoord(j) for j in xrange(dim)])
-                data.setRow(i, DataVector(v))
+                data[i, :] = np.array([gp.getCoord(j) for j in xrange(dim)])
 
             # write results
             writeDataARFF({'filename': "%s.t%f.gridpoints.arff" % (filename, t),
-                           'data': data,
+                           'data': DataMatrix(data),
                            'names': names})
 
             # -----------------------------------------
@@ -648,7 +661,7 @@ class ASGCAnalysis(Analysis):
                            surplus)
 
     def writeCheckpoints(self, filename):
-        ts = self.__learner.getTimeStepsOfInterest()
+        ts = self.__uqManager.getTimeStepsOfInterest()
 
         names = self.__params.getNames()
         names.append('f_\\mathcal{I}(x)')
@@ -691,7 +704,7 @@ class ASGCAnalysis(Analysis):
         alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
 
         res = {}
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             s = gs.get(i).getLevelSum()
             if s not in res:
                 res[s] = [alpha[i]]
@@ -702,7 +715,7 @@ class ASGCAnalysis(Analysis):
 
     def writeSurplusesLevelWise(self, filename):
         # locate all knowledge types available
-        dtypes = self.__learner.getKnowledgeTypes()
+        dtypes = self.__uqManager.getKnowledgeTypes()
         names = ['level']
         for dtype in dtypes:
             names.append("surplus_%s" % KnowledgeTypes.toString(dtype))
@@ -732,8 +745,8 @@ class ASGCAnalysis(Analysis):
 #     def writeRefinementEvaluation(self, filename):
 #         gs = self.__grid.getStorage()
 #         dim = gs.getDimension()
-#         stats = self.__learner.newPoints
-#         numberPoints = self.__learner.numberPoints
+#         stats = self.__uqManager.newPoints
+#         numberPoints = self.__uqManager.numberPoints
 #         # init
 #         names = ['time', 'iteration', 'grid_size'] + \
 #                 [x for d in xrange(dim) for x in ['l_%i' % d, 'i_%i' % d]] + \

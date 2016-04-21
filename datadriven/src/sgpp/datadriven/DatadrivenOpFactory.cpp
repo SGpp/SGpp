@@ -67,20 +67,17 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
     return std::unique_ptr<datadriven::OperationTest>(
         new datadriven::OperationTestLinearBoundary(&grid.getStorage()));
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<datadriven::OperationTest>(
-        new datadriven::OperationTestModBspline(&grid.getStorage(),
-                                                   ((base::ModBsplineGrid*)&grid)->getDegree()));
+    return std::unique_ptr<datadriven::OperationTest>(new datadriven::OperationTestModBspline(
+        &grid.getStorage(), ((base::ModBsplineGrid*)&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return std::unique_ptr<datadriven::OperationTest>(
         new datadriven::OperationTestModLinear(&grid.getStorage()));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<datadriven::OperationTest>(
-        new datadriven::OperationTestPoly(&grid.getStorage(),
-                                             ((base::PolyGrid*)&grid)->getDegree()));
+    return std::unique_ptr<datadriven::OperationTest>(new datadriven::OperationTestPoly(
+        &grid.getStorage(), ((base::PolyGrid*)&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModPoly) {
-    return std::unique_ptr<datadriven::OperationTest>(
-        new datadriven::OperationTestModPoly(&grid.getStorage(),
-                                                ((base::ModPolyGrid*)&grid)->getDegree()));
+    return std::unique_ptr<datadriven::OperationTest>(new datadriven::OperationTestModPoly(
+        &grid.getStorage(), ((base::ModPolyGrid*)&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return std::unique_ptr<datadriven::OperationTest>(
         new datadriven::OperationTestModWavelet(&grid.getStorage()));
@@ -98,15 +95,14 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
-    base::Grid& grid, int mode, double k) {
+std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(base::Grid& grid,
+                                                                             int mode, double k) {
   if (grid.getType() == base::GridType::Linear ||
       grid.getType() == base::GridType::LinearL0Boundary ||
       grid.getType() == base::GridType::LinearBoundary ||
       grid.getType() == base::GridType::ModLinear) {
     return std::unique_ptr<base::OperationMatrix>(
-        new datadriven::OperationRegularizationDiagonalLinearBoundary(
-        &grid.getStorage(), mode, k));
+        new datadriven::OperationRegularizationDiagonalLinearBoundary(&grid.getStorage(), mode, k));
   } else {
     throw base::factory_exception(
         "OperationRegularizationDiagonal is not implemented for this grid type.");
@@ -300,8 +296,8 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
       if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
-            datadriven::createStreamingModOCLFastMultiPlatformConfigured(
-                grid, dataset, configuration));
+            datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset,
+                                                                         configuration));
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with OpenCL support");
@@ -311,7 +307,7 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingModOCLMaskMultiPlatformConfigured(grid, dataset,
-                                                                            configuration));
+                                                                         configuration));
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with OpenCL support");

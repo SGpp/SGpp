@@ -10,6 +10,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -32,6 +34,21 @@ class OperationDensityMargTo1D {
    */
   virtual void margToDimX(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x,
                           size_t dim_x) = 0;
+
+  /**
+   * Keep applying marginalizes to (Density) Functions, until it's reduced to d dimensions (dim_x)
+   *
+   * @param alpha Coefficient vector for current grid
+   * @param grid_x output 1D grid pointer
+   * @param alpha_x Coefficient vector for new grid (grid_x). Will be initialized.
+   * @param dim_x Target dimension, all other dimensions will be marginalized
+   */
+  virtual void margToDimXs(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x,
+                           std::vector<size_t>& dim_x) = 0;
+
+ protected:
+  void computeMarginalizationIndices(std::vector<size_t>& dim_x, size_t numDims,
+                                     std::vector<size_t>& margDims);
 };
 }  // namespace datadriven
 }  // namespace sgpp

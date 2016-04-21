@@ -1,43 +1,75 @@
 from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
+from pysgpp.extensions.datadriven.uq.learner.builder import GridDescriptor
 
 from ASGCSampler import ASGCSampler
 from ASGCSamplerSpecification import ASGCSamplerSpecification
+from ASGCSamplerStopPolicyDescriptor import ASGCSamplerStopPolicyDescriptor
+
+from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
+from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerStopPolicy import ASGCSamplerStopPolicy
+
 
 
 class ASGCSamplerBuilder(object):
 
-    def __init__(self):
+    def __init__(self, asgcUQManager):
         """
         Default constructor
         """
-        self.__sampler = ASGCSampler()
-        self.__samplerDescriptor = None
-        self._stopPolicyDescriptor = None
+        self.__asgcUQManager = asgcUQManager
+        self.__stopPolicyDescriptor = None
+        self.__gridDescriptor = None
+        self.__refinementManagerBuilder = None
 
-    def withLearner(self, learner):
-        self.__sampler.setLearner(learner)
-        return self
+    def withGrid(self):
+        if not self.__gridDescriptor:
+            self.__gridDescriptor = GridDescriptor()
+        return self.__gridDescriptor
 
-    def withSpecification(self):
-        if not self.__samplerDescriptor:
-            self.__samplerDescriptor = ASGCSamplerDescriptor(self)
-        return self.__samplerDescriptor
+    def withRefinement(self):
+        """
+        Define if spatially adaptive refinement should be done and how...
+        """
+        self.__refinementManagerBuilder = RefinementManagerDescriptor()
+        return self.__refinementManagerBuilder
 
     def withStopPolicy(self):
-        if not self._stopPolicyDescriptor:
-            self._stopPolicyDescriptor = StopPolicyDescriptor(self)
-        return self._stopPolicyDescriptor
+        self.__stopPolicyDescriptor = ASGCSamplerStopPolicyDescriptor()
+        return self.__stopPolicyDescriptor
 
-    def getLearner(self):
-        return self.__sampler
+    def __collectGrid(self):
+        """
+        Collect the grid
+        """
+        if self.__gridDescriptor is None:
+            raise AttributeError('The grid is not specified')
 
-    def __collectSampler(self):
-        # load AGC specification
-        if self.__sampler.getLearner() is not None and \
-                self.__sampler.getLearner().getRefinement() is not None and  \
-                self._stopPolicyDescriptor is None:
+        dim = self.__asgcUQManager.getParameters().getStochasticDim()
+        self.__gridDescriptor.withDimension(dim)
+        return self.__gridDescriptor.createGrid()
+
+    def __initRefinement(self, grid):
+        if self.__refinementManagerBuilder is not None:
+            refinementManager = self.__refinementManagerBuilder.create(grid)
+            # check sanity
+            if refinementManager.getAdmissibleSet() is None:
+                raise AttributeError('You need to specify an admissible set \
+                                    for refinement.')
+            if refinementManager.getRefinementCriterion() is None:
+                raise AttributeError('You need to specify the refinement \
+                                    criterion.')
+            return refinementManager
+        else:
+            return None
+
+    def __collectStopPolicy(self):
+        if self.__refinementManagerBuilder is not None and self.__stopPolicyDescriptor is None:
             raise AttributeError('Refinement is enabled but stop policy\
                                  is missing')
+        if self.__stopPolicyDescriptor is not None:
+            return self.__stopPolicyDescriptor.create()
+        else:
+            return None
 
     def andGetResult(self):
         """
@@ -45,47 +77,53 @@ class ASGCSamplerBuilder(object):
         currently being constructed
         """
         # load ASGC Specification
-        self.__collectSampler()
+        grid = self.__collectGrid()
+        refinementManager = self.__initRefinement(grid)
+        stopPolicy = self.__collectStopPolicy()
 
-        return self.__sampler
+        sampler = ASGCSampler(self.__asgcUQManager.getParameters(),
+                              grid, refinementManager, stopPolicy)
 
 
-class ASGCSamplerDescriptor(object):
+        return sampler
+
+
+class ASGCSamplerStopPolicyDescriptor(object):
     """
-    Specification descriptor for ASGCSampler
+    TrainingStopPolicy Descriptor helps to implement fluid interface patter on
+    python it encapsulates functionality concerning creation of the training
+    stop policy
     """
 
-    def __init__(self, builder):
-        self._builder = builder
-        self.__specification = ASGCSamplerSpecification()
-        self._builder.getLearner().setSpecification(self.__specification)
+    def __init__(self):
+        """
+        Constructor
+        """
+        self.policy = ASGCSamplerStopPolicy()
 
-    def withParameters(self, params):
+    def withAdaptiveIterationLimit(self, limit):
         """
-        Set the parameter setting
-        @param params: ParameterSet
+        Defines the maximal number of refinement steps
+        @param limit: integer for maximal number of refinement steps
         """
-        self.__specification.setParameters(params)
+        self.policy.setAdaptiveIterationLimit(limit)
         return self
 
-    def withTestSet(self, testset):
+    def withGridSizeLimit(self, limit):
         """
-        Set the test set
-        @param testset: UQSetting
+        Defines the maximal number of points on grid
+        @param limit: integer for maximal number of points on grid
         """
-        self.__specification.setTestSet(testset)
+        self.policy.setGridSizeLimit(limit)
         return self
 
-    def learnWithTest(self):
+    def withAccuracyLimit(self, limit):
         """
-        Set if the learner should use test data points for learning
+        Defines the accuracy for test data, which have to be arrived
+        @param limit: float for accuracy
         """
-        if self.__specification.getTestSet() is None:
-            raise AttributeError('you need to specify a test set before you\
-                                  can use it in the learning process')
-        self.__specification.setLearnWithTest(True)
+        self.policy.setAccuracyLimit(limit)
         return self
 
-    def learnWithFolding(self):
-        self.__specification.setLearnWithFolding(True)
-        return self
+    def create(self):
+        return self.policy

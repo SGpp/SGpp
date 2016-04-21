@@ -48,6 +48,16 @@ GaussianKDE::GaussianKDE(base::DataMatrix& samples)
   initialize(samples);
 }
 
+GaussianKDE::GaussianKDE(const GaussianKDE& kde) {
+  samplesVec = kde.samplesVec;
+  nsamples = kde.nsamples;
+  ndim = kde.ndim;
+  bandwidths = base::DataVector(kde.bandwidths);
+  norm = base::DataVector(kde.norm);
+  cond = base::DataVector(kde.cond);
+  sumCond = kde.sumCond;
+}
+
 GaussianKDE::~GaussianKDE() {}
 // ----------------------------------------------------------------------
 
@@ -219,8 +229,8 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
   std::vector<double> means(ndim);
   std::vector<double> variances(ndim);
 
-  std::unique_ptr<OperationDensityMarginalizeKDE> opMarg(
-      op_factory::createOperationDensityMarginalizeKDE(*this));
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg =
+      op_factory::createOperationDensityMarginalizeKDE(*this);
   GaussianKDE kdeMarginalized;
 
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -294,8 +304,6 @@ double GaussianKDE::variance() {
   return var;
 }
 
-double GaussianKDE::std_deviation() { return std::sqrt(variance()); }
-
 void GaussianKDE::computeOptKDEbdwth() {
   if (ndim != bandwidths.getSize()) {
     throw base::data_exception("GaussianKDE::computeOptKDEbdwth : KDEBdwth dimension error");
@@ -368,8 +376,7 @@ double GaussianKDE::getSampleVariance(base::DataVector& data) {
     diff2 += (data[i] - mean);
   }
 
-  return 1. / (static_cast<double>(n) - 1.) *
-         (diff1 - 1. / static_cast<double>(n) * diff2 * diff2);
+  return 1. / (static_cast<double>(n) - 1.) * (diff1 - 1. / static_cast<double>(n) * diff2 * diff2);
 }
 
 double GaussianKDE::getSampleStd(base::DataVector& data) {

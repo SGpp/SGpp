@@ -34,8 +34,8 @@ double f(DataVector x) {
   return res;
 }
 
-void testSampler(SampleGenerator& sampler, size_t dim, size_t numSamples,
-                 double analyticResult, double tol) {
+void testSampler(SampleGenerator& sampler, size_t dim, size_t numSamples, double analyticResult,
+                 double tol) {
   DataVector sample = DataVector(dim);
   double sum = 0.0f;
 
@@ -73,11 +73,10 @@ BOOST_AUTO_TEST_CASE(testSamplers) {
 
 void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
                                        sgpp::quadrature::SamplerTypes samplerType, size_t dim,
-                                       size_t numSamples,
-                                       std::vector<size_t>& blockSize, double analyticResult,
-                                       double tol, uint64_t seed = 1234567) {
+                                       size_t numSamples, std::vector<size_t>& blockSize,
+                                       double analyticResult, double tol, uint64_t seed = 1234567) {
   std::unique_ptr<sgpp::quadrature::OperationQuadratureMCAdvanced> opQuad(
-    sgpp::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed));
+      sgpp::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed));
 
   switch (samplerType) {
     case sgpp::quadrature::SamplerTypes::Naive:
@@ -97,9 +96,8 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
       break;
 
     default:
-      std::cout
-          << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
-          << std::endl;
+      std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
+                << std::endl;
   }
 
   double resMC = opQuad->doQuadrature(alpha);
@@ -120,7 +118,7 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   alpha[0] = 1.0f;
 
   std::unique_ptr<sgpp::base::OperationQuadrature> opQuad(
-    sgpp::op_factory::createOperationQuadrature(*grid));
+      sgpp::op_factory::createOperationQuadrature(*grid));
   double analyticIntegral = opQuad->doQuadrature(alpha);
 
   BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, 1e-12);
@@ -131,20 +129,12 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
     blockSize[i] = 10;
   }
 
-  testOperationQuadratureMCAdvanced(*grid, alpha,
-                                    sgpp::quadrature::SamplerTypes::Naive, dim, numSamples,
-                                    blockSize,
-                                    analyticResult, 5e-2, seed);
-  testOperationQuadratureMCAdvanced(*grid, alpha,
-                                    sgpp::quadrature::SamplerTypes::Stratified, dim, numSamples,
-                                    blockSize,
-                                    analyticResult, 1e-3, seed);
-  testOperationQuadratureMCAdvanced(*grid, alpha,
-                                    sgpp::quadrature::SamplerTypes::LatinHypercube, dim, numSamples,
-                                    blockSize,
-                                    analyticResult, 1e-3, seed);
-  testOperationQuadratureMCAdvanced(*grid, alpha,
-                                    sgpp::quadrature::SamplerTypes::Halton, dim, numSamples,
-                                    blockSize,
-                                    analyticResult, 1e-3, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Naive, dim,
+                                    numSamples, blockSize, analyticResult, 5e-2, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Stratified, dim,
+                                    numSamples, blockSize, analyticResult, 1e-3, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::LatinHypercube,
+                                    dim, numSamples, blockSize, analyticResult, 1e-3, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Halton, dim,
+                                    numSamples, blockSize, analyticResult, 1e-3, seed);
 }

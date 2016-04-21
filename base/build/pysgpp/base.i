@@ -5,11 +5,20 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
+// -------------------------------------------------------
+// shared pointer declarations
+// this needs to be done before the declarations of the types themselves
+%include <std_shared_ptr.i>
+%shared_ptr(sgpp::base::Grid)
+%shared_ptr(sgpp::base::DataVector)
+%shared_ptr(sgpp::base::DataMatrix)
+// -------------------------------------------------------
+
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
 namespace std {
     %template(IntVector) vector<int>;
-    %template(IntIntVector) vector< vector<int> >; 
+    %template(IntIntVector) vector< vector<int> >;
     %template(BoolVector) vector<bool>;
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
@@ -33,7 +42,6 @@ namespace std {
 %include "DataMatrix.i"
 %include "GridFactory.i"
 %include "OpFactory.i"
-
 
 %ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
 %ignore sgpp::base::DataVectorSP::operator=;
@@ -137,6 +145,9 @@ namespace std {
 %include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
 %include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
+%include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
+
 
 // and the rest
 %apply std::string *INPUT { std::string& istr };
@@ -163,7 +174,7 @@ namespace std {
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+%apply std::vector<double> *INPUT { std::vector<double>& point };
 
 %template(SGetAffectedBasisFunctions) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBase>;
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
@@ -172,3 +183,17 @@ namespace std {
 %template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
 
+
+%extend sgpp::base::Grid {
+  %pythoncode
+     %{
+    def hash_hexdigest(self):
+      import hashlib
+
+      gs = self.getStorage()
+      gps = [None] * gs.getSize()
+      for i in xrange(gs.getSize()):
+        gps[i] = gs.get(i).hash()
+      return hashlib.sha512(str(gps)).hexdigest()
+    %}
+}

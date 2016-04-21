@@ -111,7 +111,7 @@ class GridDescriptor(object):
                     if self.__deg > 1:
                         grid = Grid.createPolyBoundaryGrid(self.__dim, self.__deg)
                     else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim)
+                        grid = Grid.createLinearBoundaryGrid(self.__dim, 1)
                 elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                     if self.__deg > 1:
                         raise NotImplementedError()

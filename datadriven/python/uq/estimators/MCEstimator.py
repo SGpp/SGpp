@@ -47,7 +47,7 @@ class MCEstimator(Estimator):
         for i in xrange(self._npaths):
             moments[i] = np.var(self.getSubset(samples), ddof=1)
 
-        # error statistics -> not available
-        err_clt = np.Inf
+        # error statistics
+        err = np.var(moments, ddof=1)
 
-        return np.mean(moments), err_clt
+        return np.mean(moments), err

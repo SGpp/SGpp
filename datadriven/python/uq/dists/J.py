@@ -57,24 +57,6 @@ class J(Dist):
         else:
             return np.prod(ans, dtype='float')
 
-#     def pdf(self, p, marginal=False):
-#         if len(p.shape) == 1:
-#             ans = np.ndarray(self.__n, dtype='float')
-#             for i, ix in enumerate(self.__ixs):
-#                 x = np.array([p[j] for j in ix], dtype='float')
-#                 ans[i] = self.__dists[i].pdf(x)[0]
-#             if not marginal:
-#                 ans = np.prod(ans, dtype='float')
-#         else:
-#             ans = np.ndarray([p.shape[0], self.__n], dtype='float')
-#             for i, ix in enumerate(self.__ixs):
-#                 ans[:, ix] = self.__dists[i].pdf(p[:, ix])
-#
-#             if not marginal:
-#                 ans = np.prod(ans, axis=1)
-#
-#         return ans
-
     def cdf(self, p):
         ans = np.ndarray(self.__n, dtype='float')
         for i, ix in enumerate(self.__ixs):

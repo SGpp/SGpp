@@ -121,12 +121,12 @@ class HashCoarsening {
     std::vector<size_t> remainingIndex;
 
     // vector to stored the points that match all condition for deleting
-    std::list<size_t> deletePoints;
+    this->deletePoints.clear();
 
     for (size_t i = 0; i < remove_num; i++) {
       if (removePoints[i].second < initValue &&
           removePoints[i].second <= threshold) {
-        deletePoints.push_back(removePoints[i].first);
+        this->deletePoints.push_back(removePoints[i].first);
       }
     }
 
@@ -137,7 +137,7 @@ class HashCoarsening {
     //   std::cout << "Index: " << *iter << std::endl;
     // }
 
-    remainingIndex = storage.deletePoints(deletePoints);
+    remainingIndex = storage.deletePoints(this->deletePoints);
 
     // DEBUG
     // std::cout << "List of remaining GridPoints (indices)" << std::endl;
@@ -199,6 +199,13 @@ class HashCoarsening {
 
     return counter;
   }
+
+  std::list<size_t> getDeletedPoints() {
+    return this->deletePoints;
+  }
+
+ private:
+  std::list<size_t> deletePoints;
 };
 
 }  // namespace base

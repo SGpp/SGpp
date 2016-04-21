@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -39,9 +38,7 @@ class BsplineBoundaryGrid : public Grid {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  BsplineBoundaryGrid(size_t dim,
-                      size_t degree,
-                      level_t boundaryLevel = 1);
+  BsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * Destructor.
@@ -75,8 +72,10 @@ class BsplineBoundaryGrid : public Grid {
    * Serializes the grid.
    *
    * @param ostr stream to which the grid is written
+   * @param version the serialization version of the file
+   *
    */
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   /**
    * @return B-spline degree
