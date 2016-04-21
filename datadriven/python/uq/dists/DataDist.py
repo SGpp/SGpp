@@ -25,42 +25,42 @@ class DataDist(Dist):
     Models a discrete distribution given by data
     """
 
-    def __init__(self, samplePath):
+    def __init__(self, samples):
         """
         Constructor. There are some restrictions to the samples:
-        As they represent the underlying probability, they have to be stored
-        in the probabilistic space and within each other they are uniformly
-        distributed.
-        @param samplePath: path to the file where the samples are stored.
+        As they represent the underlying probability, they have to be drawn
+        iid.
+        @param samples: numpy array (num_samples x num_dims)
         """
-        # check if the data exists
-        if samplePath is None or not os.path.exists(samplePath):
-            raise AttributeError('the file "%s" does not exist' % samplePath)
-
         # read data and store it in a set of samples
-        self.samples = readDataTrivial(samplePath, ' ', False)['data'].array()
+        self.samples = samples
         self.__sampleToIndex = {}
         for sample in self.samples:
-            self.__sampleToIndex[tuple(sample)] = len(self.samples)
+            x = tuple(sample)
+            if x in self.__sampleToIndex:
+                self.__sampleToIndex[x] += 1
+            else:
+                self.__sampleToIndex[x] = 1
 
         # store number of samples and their dimensionality
         self.__n, self.__dim = self.samples.shape
 
         # find the bounds of the data
-        mins = np.apply_along_axis(np.min, 1, self.samples)
-        maxs = np.apply_along_axis(np.max, 1, self.samples)
+        mins = np.min(self.samples, axis=0)
+        maxs = np.max(self.samples, axis=0)
         self.__bounds = np.vstack((mins, maxs)).T
 
     def pdf(self, p, *args, **kws):
-        if tuple(p) in self.__sampleToIndex:
-            return 1. / len(self.samples)
+        x = tuple(p)
+        if x in self.__sampleToIndex:
+            return float(self.__sampleToIndex[x]) / self.__n
         else:
             return 0.
 
     def cdf(self, p, *args, **kws):
         ans = np.ndarray(self.__dim, dtype='int')
         for i, pi in enumerate(p):
-            ans[i] = np.sum([1 for qi in self.samples[:, i] if pi <= qi])
+            ans[i] = np.sum([1. for qi in self.samples[:, i] if pi <= qi])
         return ans
 
     def ppf(self, p, *args, **kws):
@@ -71,19 +71,22 @@ class DataDist(Dist):
         return self.samples[ixs, :]
 
     def mean(self):
-        return np.mean(self.samples, axis=0, dtype='float32')
+        return np.mean(self.samples, axis=0)
 
     def var(self):
-        return np.var(self.samples, ddof=1, axis=0, dtype='float32')
+        return np.var(self.samples, ddof=1, axis=0)
 
     def std(self):
-        return np.std(self.samples, ddof=1, axis=0, dtype='float32')
+        return np.sqrt(self.var())
 
     def getBounds(self):
         return self.__bounds
 
     def getDim(self):
         return self.__dim
+
+    def __str__(self):
+        return "Data((%i x %i), %s)" % (self.__n, self.__dim, self.__bounds)
 
     @classmethod
     def fromJson(cls, jsonObject):

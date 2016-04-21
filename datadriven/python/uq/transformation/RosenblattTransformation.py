@@ -18,7 +18,7 @@ inverse of a given distrubution function
 from Transformation import Transformation
 
 
-class InverseCDFTransformation(Transformation):
+class RosenblattTransformation(Transformation):
     """
     The inverse CDF transformation class
     """
@@ -27,7 +27,7 @@ class InverseCDFTransformation(Transformation):
         """
         Constructor
         """
-        super(InverseCDFTransformation, self).__init__()
+        super(RosenblattTransformation, self).__init__()
         self._dist = dist
 
     def unitToProbabilistic(self, p):
@@ -51,14 +51,14 @@ class InverseCDFTransformation(Transformation):
         return 1.
 
     def __str__(self):
-        return "inverseCDFTransforamtion: %s -> U(0, 1)" % str(dist)
+        return "rosenblattTransformation: %s -> U(0, 1)" % str(dist)
 
     @classmethod
     def fromJson(cls, jsonObject):
         from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
-        key = '_InverseCDFTransformation__dist'
+        key = '_RosenblattTransformation__dist'
         if key in jsonObject:
             dist = Dist.fromJson(jsonObject[key])
 
-        return InverseCDFTransformation(dist)
+        return RosenblattTransformation(dist)

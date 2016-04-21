@@ -2,6 +2,7 @@ from pysgpp import (createOperationQuadrature,
                     Linear, LinearL0Boundary, LinearBoundary,
                     Poly, PolyBoundary)
 from pysgpp.extensions.datadriven.uq.operations import getBasis
+from pysgpp import DataVector
 import numpy as np
 
 
@@ -31,14 +32,15 @@ def getIntegralOfBasisFunction(grid, gp):
 
 def doQuadrature(grid, alpha):
     try:
-        return createOperationQuadrature(grid).doQuadrature(alpha)
+        alphaVec = DataVector(alpha)
+        return createOperationQuadrature(grid).doQuadrature(alphaVec)
     except Exception:
         # import ipdb; ipdb.set_trace()
         s = 0.0
         gs = grid.getStorage()
 
         # set function values for n_alpha
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
 
             q = 1.0

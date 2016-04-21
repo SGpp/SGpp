@@ -29,7 +29,8 @@ from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import J
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 from pysgpp import createOperationFirstMoment, \
     createOperationSecondMoment
-from pysgpp._pysgpp_swig import createOperationDensityMargTo1D
+from pysgpp._pysgpp_swig import createOperationDensityMargTo1D, \
+    createOperationEval
 
 
 class SGDEdist(EstimatedDist):
@@ -37,17 +38,23 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, learner, trainData, bounds=None):
+    def __init__(self, grid, alpha, trainData=None, bounds=None):
         super(SGDEdist, self).__init__(trainData, bounds)
 
-        self.dist = learner
-        self.grid = learner.getGrid()
-        self.alpha = learner.getSurpluses()
+        self.grid = grid
+        self.alpha = DataVector(alpha)
 
+        if trainData is None:
+            self.dim = grid.getStorage().getDimension()
+            if bounds is None:
+                self.bounds = [[0, 1]] * self.dim
+        elif self.dim != grid.getStorage().getDimension():
+            raise AttributeError("the dimensionality of the data differs from the one of the grid")
+
+        assert self.grid.getSize() == len(self.alpha)
         self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
-
-        if self.dim != learner.getDim():
-            raise AttributeError("the dimensionality of the domain differs from the one of the grid")
+#         if abs(self.vol) > 1e-13:
+#             self.alpha.mult(1. / self.vol)
 
     @classmethod
     def byLearnerSGDEConfig(cls, samples, bounds=None, config={}):
@@ -60,11 +67,9 @@ class SGDEdist(EstimatedDist):
         # --------------------------------------------------------------------
         # write config to file
         # get temp directory
-        sgdeTempFolder = os.path.join(tempfile.gettempdir(),
-                                      "sgde-config-%s" % str(uuid.uuid4()))
+        filename_config = os.path.join(tempfile.gettempdir(),
+                                       "sgde-config-%s.json" % str(uuid.uuid4()))
         # create temp folder
-        os.makedirs(sgdeTempFolder)
-        filename_config = os.path.join(sgdeTempFolder, "learnerSGDEConfig.json") 
         fd = open(filename_config, "w")
         json.dump(config, fd, ensure_ascii=True)
         fd.close()
@@ -79,13 +84,13 @@ class SGDEdist(EstimatedDist):
         else:
             unit_samples = samples
 
-        unit_samples = DataMatrix(unit_samples)
+        unit_samples_vec = DataMatrix(unit_samples)
         # --------------------------------------------------------------------
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
-        learner.initialize(unit_samples)
+        learner.initialize(unit_samples_vec)
 
-        return cls(learner, samples, bounds)
+        return cls(learner.getGrid(), learner.getSurpluses(), samples, bounds)
 
     def pdf(self, x):
         # convert the parameter to the right format
@@ -93,14 +98,15 @@ class SGDEdist(EstimatedDist):
 
         # transform the samples to the unit hypercube
         if self.trans is not None:
-            x = self.trans.probabilisticToUnitMatrix(x)
-        x_unit = DataMatrix(x)
-        fx_vec = DataVector(x.shape[0])
+            x_unit = self.trans.probabilisticToUnitMatrix(x)
+        else:
+            x_unit = x
 
         # evaluate the sparse grid density
-        self.dist.pdf(x_unit, fx_vec)
-        
-        fx = 1. / self.trans.vol() * fx_vec.array()
+        fx = evalSGFunction(self.grid, self.alpha, x_unit)
+
+        if self.trans is not None:
+            fx *= 1. / self.trans.vol()
 
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
@@ -224,7 +230,7 @@ class SGDEdist(EstimatedDist):
 
     def rvs(self, n=1):
         # use inverse Rosenblatt transformation to get samples
-        uniform_samples = np.random.rand((n, self.dim))
+        uniform_samples = np.random.random((n, self.dim))
         return self.ppf(uniform_samples)
 
     def __str__(self):

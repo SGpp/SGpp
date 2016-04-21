@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
@@ -39,8 +40,8 @@ int main(int argc, char** argv) {
   sgpp::solver::SLESolverConfiguration solverConfig;
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
-  solverConfig.eps_ = 1e-10;
-  solverConfig.threshold_ = 1e-10;
+  solverConfig.eps_ = 1e-14;
+  solverConfig.threshold_ = 1e-14;
 
   // configure regularization
   std::cout << "# create regularization config" << std::endl;
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
-  crossvalidationConfig.enable_ = false;
+  crossvalidationConfig.enable_ = true;
   crossvalidationConfig.kfold_ = 3;
   crossvalidationConfig.lambda_ = 3.16228e-06;
   crossvalidationConfig.lambdaStart_ = 1e-1;

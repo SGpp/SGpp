@@ -46,11 +46,11 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
     gsResult = gridResult.getStorage()
-    ps = DataMatrix(gsResult.getSize(), gsResult.getDimension())
+    ps = np.ndarray((gsResult.getSize(), gsResult.getDimension()))
     p = DataVector(gsResult.getDimension())
     for i in xrange(gsResult.getSize()):
         gsResult.get(i).getCoords(p)
-        ps.setRow(i, p)
+        ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
     return nodalValues
 
@@ -487,7 +487,8 @@ def dehierarchize(grid, alpha):
         gs.get(i).getCoords(p)
         A.setRow(i, p)
     opEval = createOperationMultipleEval(grid, A)
-    opEval.mult(alpha, nodalValues)
+    alphaVec = DataVector(alpha)
+    opEval.mult(alphaVec, nodalValues)
     return nodalValues.array()
 
 
@@ -756,21 +757,20 @@ def checkPositivity(grid, alpha):
     fullGrid = Grid.createLinearGrid(gs.getDimension())
     fullGrid.getGenerator().full(gs.getMaxLevel())
     fullHashGridStorage = fullGrid.getStorage()
-    A = DataMatrix(fullHashGridStorage.getSize(), fullHashGridStorage.getDimension())
+    A = np.ndarray((fullHashGridStorage.getSize(), fullHashGridStorage.getDimension()))
     p = DataVector(gs.getDimension())
     for i in xrange(fullHashGridStorage.getSize()):
         fullHashGridStorage.get(i).getCoords(p)
-        A.setRow(i, p)
+        A[i, :] = p.array()
 
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
-    for i, yi in enumerate(res.array()):
+    for i, yi in enumerate(res):
         if yi < 0. and abs(yi) > 1e-13:
             cnt += 1
             ymin = min(ymin, yi)
             ymax = max(ymax, yi)
-            A.getRow(i, p)
-            print "  %s = %g" % (p, yi)
+            print "  %s = %g" % (A[i, :], yi)
     if cnt > 0:
         print "warning: function is not positive"
         print "%i/%i: [%g, %g]" % (cnt, fullHashGridStorage.getSize(), ymin, ymax)
