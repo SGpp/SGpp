@@ -7,6 +7,7 @@
 #define OPERATIONNAIVEEVALPARTIALDERIVATIVE_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <vector>
 
@@ -34,24 +35,6 @@ class OperationNaiveEvalPartialDerivative {
   }
 
   /**
-   * Pure virtual method for evaluating a partial derivative of a linear combination of
-   * basis functions.
-   *
-   * @param alpha     coefficient vector
-   * @param point     evaluation point
-   * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
-   * @return          value of the partial derivative of the linear combination
-   */
-  double evalPartialDerivative(const DataVector& alpha,
-                                const std::vector<double>& point,
-                                size_t derivDim) {
-    DataVector p(point);
-    return evalPartialDerivative(alpha, p, derivDim);
-  }
-
-  /**
-   * Convenience function for using DataVector as points.
-   *
    * @param alpha     coefficient vector
    * @param point     evaluation point
    * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
@@ -60,6 +43,29 @@ class OperationNaiveEvalPartialDerivative {
   virtual double evalPartialDerivative(const DataVector& alpha,
                                         const DataVector& point,
                                         size_t derivDim) = 0;
+
+  /**
+   * @param       alpha               coefficient matrix (each column is a coefficient vector)
+   * @param       point               evaluation point
+   * @param       derivDim            dimension in which the partial derivative should be taken
+   *                                  (0, ..., d-1)
+   * @param[out]  partialDerivative   values of the partial derivatives of the linear combination
+   *                                  (the j-th entry corresponds to the j-th column of alpha)
+   */
+  virtual void evalPartialDerivative(const DataMatrix& alpha,
+                                     const DataVector& point,
+                                     size_t derivDim,
+                                     DataVector& partialDerivative) {
+    const size_t m = alpha.getNcols();
+    DataVector curAlpha(alpha.getNrows());
+
+    partialDerivative.resize(m);
+
+    for (size_t j = 0; j < m; j++) {
+      alpha.getColumn(j, curAlpha);
+      partialDerivative[j] = evalPartialDerivative(curAlpha, point, derivDim);
+    }
+  }
 };
 
 }  // namespace base
