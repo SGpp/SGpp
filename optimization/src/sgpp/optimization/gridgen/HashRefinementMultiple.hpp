@@ -115,37 +115,26 @@ class HashRefinementMultiple : public base::HashRefinement {
    * base::HashRefinement insofar every grid point could potentially
    * be refined.
    *
-   * @param storage         grid storage
-   * @param functor         refinement criteria
-   * @param refinementsNum  maximal number of points to refine
-   * @param maxIndices      the array where the point indices
-   *                        should be stored
-   * @param maxValues       the array where the corresponding indicator
-   *                        values should be stored
+   * @param storage hashmap that stores the grid points
+   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+   * @param collection container that contains elements to refine (empty initially)
    */
-  void collectRefinablePoints(base::GridStorage& storage, base::RefinementFunctor* functor,
-                              size_t refinementsNum, size_t* maxIndices,
-                              base::RefinementFunctor::value_type* maxValues) {
-    size_t min_idx = 0;
+  void collectRefinablePoints(
+      base::GridStorage& storage,
+      base::RefinementFunctor& functor,
+      base::AbstractRefinement::refinement_container_type& collection) override {
+    size_t refinements_num = functor.getRefinementsNum();
 
     // max value equals min value
-    base::RefinementFunctor::value_type max_value = maxValues[min_idx];
 
     index_type index;
     base::GridStorage::grid_map_iterator end_iter = storage.end();
 
     // start iterating over whole grid
     for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
-      base::RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-
-      if (current_value > max_value) {
-        // replace the minimal point in result array,
-        // find the new minimal point
-        maxValues[min_idx] = current_value;
-        maxIndices[min_idx] = iter->second;
-        min_idx = getIndexOfMin(maxValues, refinementsNum);
-        max_value = maxValues[min_idx];
-      }
+      AbstractRefinement::refinement_list_type current_value_list =
+          getIndicator(storage, iter, functor);
+      addElementToCollection(iter, current_value_list, refinements_num, collection);
     }
   }
 };

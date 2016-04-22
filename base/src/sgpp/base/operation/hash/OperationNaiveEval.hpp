@@ -7,6 +7,7 @@
 #define OPERATIONNAIVEEVAL_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -36,25 +37,31 @@ class OperationNaiveEval {
   virtual ~OperationNaiveEval() {}
 
   /**
-   * Evaluates the sparse grid function at a given point.
-   *
-   * @param alpha The coefficients of the sparse grid's basis functions
-   * @param point The coordinates of the evaluation point
-   */
-  double eval(const DataVector& alpha,
-               const std::vector<double>& point) {
-    DataVector p(point);
-    return eval(alpha, p);
-  }
-
-  /**
-   * Evaluates the sparse grid function at a given point.
-   *
-   * @param alpha The coefficients of the sparse grid's basis functions
-   * @param point The coordinates of the evaluation point
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of the linear combination
    */
   virtual double eval(const DataVector& alpha,
-                       const DataVector& point) = 0;
+                      const DataVector& point) = 0;
+
+  /**
+   * @param      alpha  coefficient matrix (each column is a coefficient vector)
+   * @param      point  evaluation point
+   * @param[out] value  values of the linear combination
+   */
+  virtual void eval(const DataMatrix& alpha,
+                    const DataVector& point,
+                    DataVector& value) {
+    const size_t m = alpha.getNcols();
+    DataVector curAlpha(alpha.getNrows());
+
+    value.resize(m);
+
+    for (size_t j = 0; j < m; j++) {
+      alpha.getColumn(j, curAlpha);
+      value[j] = eval(curAlpha, point);
+    }
+  }
 };
 
 }  // namespace base
