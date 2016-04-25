@@ -39,26 +39,25 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         self.__epsilon = epsilon
         self.__isPositive = isPositive
 
+        self.verbose = True
+
+        # set seed
+        np.random.seed(1234567)
+
+
     def __getSamples(self, W, T, n):
         if self.samples is None:
             # draw n ans
             ans = W.rvs(n)
 
             # transform them to the unit hypercube
-            ans = DataMatrix(n, W.getDim())
-            for i, sample in enumerate(ans):
-                p = T.probabilisticToUnit(sample)
-                ans.setRow(i, DataVector(p))
-
-            return ans
+            return T.probabilisticToUnitMatrix(ans)
         else:
-            if self.samples.shape[0] == n:
-                dataSamples = self.samples
-            else:
-                ixs = np.random.randint(0, len(self.samples), n)
-                dataSamples = self.samples[ixs, :]
+            # bootstrapping on the available samples
+            ixs = np.random.randint(0, self.samples.shape[0], n)
+            dataSamples = self.samples[ixs, :]
 
-            # check if there are just samples for a subset of the random
+            # check if there are samples for just a subset of the random
             # variables. If so, add the missing ones
             if self.__ixs is not None:
                 ans = W.rvs(n)
@@ -70,7 +69,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             else:
                 ans = dataSamples
 
-            return DataMatrix(ans)
+            return ans
 
     def __estimate(self, vol, grid, alpha, U, T, f, npaths):
         n = npaths * self.__n
@@ -160,7 +159,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 #                 res[j] *= W.pdf(sample)
 
             # compute the moment
-            moments[i] = res.sum() / len(res)
+            moments[i] = res.mean()
 
         # error statistics
         if self.__npaths > 1:
@@ -182,19 +181,15 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # init
         _, W = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
-        vecMean = DataVector(self.__n)
-        vecMean.setAll(mean)
         for i in xrange(self.__npaths):
             samples = self.__getSamples(W, T, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
-            res.sub(vecMean)
-            res.sqr()
 
             # compute the moment
-            moments[i] = res.sum() / (len(res) - 1.)
+            moments[i] = np.sum((res - mean) ** 2) / (len(res) - 1.)
 
         # error statistics
-        err = np.Inf
+        err = np.var(moments, ddof=1)
 
         # calculate moment
         return np.sum(moments) / self.__npaths, err

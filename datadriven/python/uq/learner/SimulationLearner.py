@@ -80,7 +80,7 @@ class SimulationLearner(Learner):
                 .getIndependentJointDistribution()
         for dtype in self.getKnowledgeTypes():
             ans[dtype] = {}
-            dim = self.grid.getDimension()
+            dim = self.grid.getStorage().getDimension()
 
             # prepare data container depending on the given knowledge type
             tmp = KnowledgeTypes.transformData(data, U, dtype)
@@ -238,7 +238,7 @@ class SimulationLearner(Learner):
         # update other stats
         gs = grid.getStorage()
         self.level[dtype].append(gs.getMaxLevel())
-        self.numberPoints[dtype].append(gs.size())
+        self.numberPoints[dtype].append(gs.getSize())
 
     def getL2NormError(self):
         """
@@ -270,9 +270,9 @@ class SimulationLearner(Learner):
         Create a set of all collocation nodes
         """
         gs = self.grid.getStorage()
-        ps = np.ndarray([gs.size(), gs.getDimension()], dtype='float32')
+        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gs.get(i).getCoords(p)
             ps[i, :] = p.array()
 

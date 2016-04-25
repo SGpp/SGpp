@@ -45,12 +45,7 @@ class MarginalAnalyticEstimationStrategy(SparseGridEstimationStrategy):
         # flatten dd
         dd = [d for di in dd for d in di]
 
-        # get the volume
-        vol = np.prod([D[i].vol() for i in xrange(len(dd))])
-
         # do the marginalization
         ngrid, nalpha, err = doMarginalize(grid, alpha, dd, (W, D))
-        # multiply with the volume
-        nalpha.mult(vol)
 
         return ngrid, nalpha, err

@@ -36,7 +36,7 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
         if gridType == Linear:
             return Grid.createLinearGrid(dim)
         elif gridType == LinearBoundary:
-            return Grid.createLinearBoundaryGrid(dim)
+            return Grid.createLinearBoundaryGrid(dim, 1)
         elif gridType == LinearL0Boundary:
             return Grid.createLinearBoundaryGrid(dim, 0)
         else:
@@ -46,9 +46,9 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
     gsResult = gridResult.getStorage()
-    ps = DataMatrix(gsResult.size(), gsResult.getDimension())
+    ps = DataMatrix(gsResult.getSize(), gsResult.getDimension())
     p = DataVector(gsResult.getDimension())
-    for i in xrange(gsResult.size()):
+    for i in xrange(gsResult.getSize()):
         gsResult.get(i).getCoords(p)
         ps.setRow(i, p)
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
@@ -64,7 +64,7 @@ def copyGrid(grid, level=0, deg=1):
         newGrid.getGenerator().regular(level)
     newGs = newGrid.getStorage()
     # insert grid points
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
 
         # insert grid point
@@ -114,6 +114,7 @@ def isValid1d(grid, level, index):
 def isValid(grid, gp):
     valid = True
     d = 0
+
     while valid and d < gp.getDimension():
         valid = isValid1d(grid, gp.getLevel(d), gp.getIndex(d))
         d += 1
@@ -122,13 +123,12 @@ def isValid(grid, gp):
     if valid:
         minLevel = 0 if hasBorder(grid) else 1
         for d in xrange(gp.getDimension()):
-            if gp.getCoord(d) > 1 or gp.getCoord(d) < 0:
-                x = [gp.getCoord(d) for d in xrange(gp.getDimension())]
-                level = [gp.getLevel(d) for d in xrange(gp.getDimension())]
-                index = [gp.getIndex(d) for d in xrange(gp.getDimension())]
-                raise AttributeError('grid point out of range %s, (%s, %s), \
-                                    minLevel = %i' % (x, level, index,
-                                                      minLevel))
+            x = gp.getCoord(d)
+            if x > 1 or x < 0:
+                raise AttributeError('grid point out of range %s, (l=%s, i=%s), minLevel = %i' % (x,
+                                                                                                  gp.getLevel(d),
+                                                                                                  gp.getIndex(d),
+                                                                                                  minLevel))
     return valid
 
 
@@ -285,22 +285,28 @@ def insertTruncatedBorder(grid, gp):
     ans = []
     while len(gps) > 0:
         gp = gps.pop()
+        p = DataVector(gp.getDimension())
+        gp.getCoords(p)
         for d in xrange(gs.getDimension()):
             # right border in d
             rgp = HashGridIndex(gp)
             gs.right_levelzero(rgp, d)
             # insert the point
             if not gs.has_key(rgp):
-                ans += insertPoint(grid, rgp)
-                gps.append(rgp)
+                added_grid_points = insertPoint(grid, rgp)
+                if len(added_grid_points) > 0:
+                    ans += added_grid_points
+                    gps.append(rgp)
 
             # left border in d
             lgp = HashGridIndex(gp)
             gs.left_levelzero(lgp, d)
             # insert the point
-            if not gs.has_key(rgp):
-                ans += insertPoint(grid, lgp)
-                gps.append(lgp)
+            if not gs.has_key(lgp):
+                added_grid_points = insertPoint(grid, lgp)
+                if len(added_grid_points) > 0:
+                    ans += added_grid_points
+                    gps.append(lgp)
     return ans
 
 
@@ -323,7 +329,6 @@ def insertPoint(grid, gp):
 
 def isRefineable(grid, gp):
     gs = grid.getStorage()
-
     for d in xrange(gs.getDimension()):
         # left child in dimension dim
         gpl = HashGridIndex(gp)
@@ -353,36 +358,26 @@ def isRefineable(grid, gp):
 #     return tmp
 
 
-def evalSGFunctionMulti(grid, alpha, A):
-    if not isinstance(A, DataMatrix):
-        raise AttributeError('A has to be a DataMatrix')
-    size = A.getNrows()
-    opEval = createOperationMultipleEval(grid, A)
-    res = DataVector(size)
-    opEval.mult(alpha, res)
-    return res
+def evalSGFunctionMulti(grid, alpha, samples):
+    if len(samples.shape) == 1:
+        raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
+    if samples.shape[1] != grid.getStorage().getDimension():
+        raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
+
+    samples_matrix = DataMatrix(samples)
+    opEval = createOperationMultipleEval(grid, samples_matrix)
+    res_vec = DataVector(samples.shape[0])
+    alpha_vec = DataVector(alpha)
+    opEval.mult(alpha_vec, res_vec)
+    return res_vec.array()
 
 
 def evalSGFunction(grid, alpha, p):
-    try:
-        # raise Exception()
-        return createOperationEval(grid).eval(alpha, p)
-    except Exception:
-        # import ipdb; ipdb.set_trace()
-        # alternative
-        basis = getBasis(grid)
-        gs = grid.getStorage()
-
-        res = 0.0
-        for i in xrange(gs.size()):
-            gp = gs.get(i)
-            val = 1.0
-            for d in xrange(gs.getDimension()):
-                x = max(0.0, basis.eval(gp.getLevel(d), gp.getIndex(d), p[d]))
-                val *= x
-            res += alpha[i] * val
-        return res
-
+    if len(p.shape) == 1:
+        p_vec = DataVector(p)
+        return createOperationEval(grid).eval(alpha, p_vec)
+    else:
+        return evalSGFunctionMulti(grid, alpha, p)
 
 def evalHierToTop(basis, grid, coeffs, gp, d):
     gs = grid.getStorage()
@@ -415,7 +410,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
     for d in xrange(gs.getDimension()):
         # compute starting points by level sum
         ixs = {}
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             accLevel = gs.get(i).getLevel(d)
             if accLevel in ixs:
                 ixs[accLevel].append(i)
@@ -472,7 +467,7 @@ def hierarchize(grid, nodalValues, ignore=None):
         # if ignore is None or len(ignore) > 0:
         alpha = DataVector(nodalValues)
         createOperationHierarchisation(grid).doHierarchisation(alpha)
-        return alpha
+        return alpha.array()
 #         print "using brute force hierarchization"
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)
     except Exception, e:
@@ -486,14 +481,14 @@ def dehierarchize(grid, alpha):
     # dehierarchization
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
-    nodalValues = DataVector(gs.size())
-    A = DataMatrix(gs.size(), gs.getDimension())
-    for i in xrange(gs.size()):
+    nodalValues = DataVector(gs.getSize())
+    A = DataMatrix(gs.getSize(), gs.getDimension())
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         A.setRow(i, p)
     opEval = createOperationMultipleEval(grid, A)
     opEval.mult(alpha, nodalValues)
-    return nodalValues
+    return nodalValues.array()
 
 
 def dehierarchizeList(grid, alpha, gps):
@@ -517,7 +512,7 @@ def dehierarchizeList(grid, alpha, gps):
 def balance(grid):
     gs = grid.getStorage()
     newgps = []
-    gps = [gs.get(i) for i in xrange(gs.size())]
+    gps = [gs.get(i) for i in xrange(gs.getSize())]
 
     while len(gps) > 0:
         gp = gps.pop()
@@ -712,15 +707,14 @@ def estimateConvergence(grid, gp, v):
 
 def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     # check if interpolation property is given
-    evalValues = dehierarchize(grid, alpha)
+    evalValues = dehierarchize(grid, DataVector(alpha))
 
-    error = []
-    nodes = []
+    error = np.array([])
+    nodes = np.array([])
     head = True
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
-    for i, (nodal, value) in enumerate(zip(nodalValues.array(),
-                                           evalValues.array())):
+    for i, (nodal, value) in enumerate(zip(nodalValues, evalValues)):
         # compute the relative error
         if abs(nodal) > 1e-14:
             rel_error = min(abs(nodal - value) / nodal,
@@ -750,8 +744,8 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                     ("%g" % value).rjust(spacing),
                     ("%g" % rel_error).rjust(spacing),
                     ("%g" % abs(nodal - value)).rjust(spacing))
-            nodes.append(i)
-            error.append(rel_error)
+            nodes = np.append(nodes, [i])
+            error = np.append(rel_error, [rel_error])
 
     return error, nodes
 

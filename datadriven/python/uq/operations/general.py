@@ -58,7 +58,7 @@ def extend_grid_1d(grid, *args, **kws):
     ref_gs = ref_grid.getStorage()
 
     # create cross product between the 1d and the dimd-grid
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
         new_gp = HashGridIndex(dim + 1)
 
@@ -67,7 +67,7 @@ def extend_grid_1d(grid, *args, **kws):
             new_gp.set(d, gp.getLevel(d), gp.getIndex(d))
 
         # get the indices in the missing dimension
-        for j in xrange(ref_gs.size()):
+        for j in xrange(ref_gs.getSize()):
             ref_gp = ref_gs.get(j)
             new_gp.set(dim, ref_gp.getLevel(0), ref_gp.getIndex(0))
             insertPoint(new_grid, new_gp)
@@ -105,11 +105,11 @@ def project(grid, dims):
 
     # create a new empty grid
     dim = len(dims)
-    gps = [None] * gs.size()
+    gps = [None] * gs.getSize()
 
     # run over all grid points in grid and
     # project them to the dimensions dims
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gp = gs.get(i)
         ngp = HashGridIndex(dim)
         # copy level index to new grid point

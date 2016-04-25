@@ -27,8 +27,8 @@ class SparseGridEstimator(Estimator):
         @return: tuple(moment, error)
         """
         return self.__estimationStrategy.mean(self.__vol, grid, alpha,
-                                    self.__U, self.__T,
-                                    *args, **kws)
+                                              self.__U, self.__T,
+                                              *args, **kws)
 
     def var(self, grid, alpha, *args, **kws):
         """
@@ -38,8 +38,8 @@ class SparseGridEstimator(Estimator):
         @return: tuple(moment, error)
         """
         return self.__estimationStrategy.mean(self.__vol, grid, alpha,
-                                    self.__U, self.__T,
-                                    *args, **kws)
+                                              self.__U, self.__T,
+                                              *args, **kws)
 
     def setStrategy(self, strategy):
         self.__estimationStrategy = strategy

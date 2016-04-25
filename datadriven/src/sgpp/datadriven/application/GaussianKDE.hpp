@@ -26,6 +26,8 @@ class GaussianKDE : public DensityEstimator {
   GaussianKDE();
   explicit GaussianKDE(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);
   explicit GaussianKDE(base::DataMatrix& samples);
+  GaussianKDE(const GaussianKDE& kde);
+
   virtual ~GaussianKDE();
 
   virtual void initialize(base::DataMatrix& samples);
@@ -33,7 +35,6 @@ class GaussianKDE : public DensityEstimator {
 
   double mean();
   double variance();
-  double std_deviation();
 
   void cov(base::DataMatrix& cov);
 

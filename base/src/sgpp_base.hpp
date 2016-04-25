@@ -29,6 +29,10 @@
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
+
+#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
+
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/GridDataBase.hpp>
 #include <sgpp/base/tools/OperationQuadratureMC.hpp>
@@ -67,7 +71,8 @@
 // #include <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
 /*#include <sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>*/
+#include
+<sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>*/
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 // #include <sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp>

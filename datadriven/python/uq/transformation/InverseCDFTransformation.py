@@ -50,6 +50,9 @@ class InverseCDFTransformation(Transformation):
     def vol(self):
         return 1.
 
+    def __str__(self):
+        return "inverseCDFTransforamtion: %s -> U(0, 1)" % str(dist)
+
     @classmethod
     def fromJson(cls, jsonObject):
         from pysgpp.extensions.datadriven.uq.dists.Dist import Dist

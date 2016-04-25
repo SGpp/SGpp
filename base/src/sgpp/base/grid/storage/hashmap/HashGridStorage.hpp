@@ -48,10 +48,8 @@ class HashGridStorage {
   /// pointer to constant index_type
   typedef const HashGridIndex* index_const_pointer;
   /// unordered_map of index_pointers
-  typedef std::unordered_map<index_pointer, size_t,
-          HashGridIndexPointerHashFunctor,
-          HashGridIndexPointerEqualityFunctor >
-          grid_map;
+  typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor,
+                             HashGridIndexPointerEqualityFunctor> grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
@@ -88,7 +86,8 @@ class HashGridStorage {
    *
    * initializes the stretching with a reference to another stretching
    *
-   * @param creationStretching reference to stretching object that describes the grid boundaries and the stretching
+   * @param creationStretching reference to stretching object that describes the grid boundaries and
+   * the stretching
    */
   explicit HashGridStorage(Stretching& creationStretching);
 
@@ -142,16 +141,18 @@ class HashGridStorage {
   /**
    * serialize the gridstorage into a string
    *
+   * @param version the serialization version of the file
    * @return a string that contains all gridstorage information
    */
-  std::string serialize();
+  std::string serialize(int version = SERIALIZATION_VERSION);
 
   /**
    * serialize the gridstorage into a stream
    *
    * @param ostream reference to a stream into that all gridstorage information is written
+   * @param version the serialization version of the file
    */
-  void serialize(std::ostream& ostream);
+  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION);
 
   /**
    * serialize the gridstorage's gridpoints into a stream
@@ -195,9 +196,7 @@ class HashGridStorage {
    *
    * @return gridindex object (pointer)
    */
-  inline index_pointer operator[](size_t seq) {
-    return list[seq];
-  }
+  inline index_pointer operator[](size_t seq) { return list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
@@ -205,9 +204,7 @@ class HashGridStorage {
    * @param seq the sequence number of the index
    * @return gridindex object (constant pointer)
    */
-  inline index_const_pointer operator[](size_t seq) const {
-    return list[seq];
-  }
+  inline index_const_pointer operator[](size_t seq) const { return list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
@@ -216,9 +213,7 @@ class HashGridStorage {
    *
    * @return gridindex object (pointer)
    */
-  inline index_pointer get(size_t seq) const {
-    return list[seq];
-  }
+  inline index_pointer get(size_t seq) const { return list[seq]; }
 
   /**
    * insert a new index into map
@@ -437,7 +432,6 @@ class HashGridStorage {
    */
   void getLevelForIntegral(DataMatrix& level);
 
-
   /**
    * returns the max. depth in all dimension of the grid
    */
@@ -455,8 +449,8 @@ class HashGridStorage {
    * @param mask DataMatrix to store masks of operations
    * @param offset DataMatrix to store offset for operations
    */
-  void getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index,
-                                         DataMatrix& mask, DataMatrix& offset);
+  void getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index, DataMatrix& mask,
+                                         DataMatrix& offset);
 
   /**
    * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -470,10 +464,8 @@ class HashGridStorage {
    * @param mask DataMatrixSP to store masks of operations
    * @param offset DataMatrixSP to store offset for operations
    */
-  void getLevelIndexMaskArraysForModEval(DataMatrixSP& level,
-                                         DataMatrixSP& index,
-                                         DataMatrixSP& mask,
-                                         DataMatrixSP& offset);
+  void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
+                                         DataMatrixSP& mask, DataMatrixSP& offset);
 
  protected:
   /**
@@ -502,8 +494,6 @@ class HashGridStorage {
   /// Flag to check if stretching or bb used
   bool bUseStretching;
 
-
-
   /**
    * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
    *
@@ -512,86 +502,59 @@ class HashGridStorage {
   void parseGridDescription(std::istream& istream);
 };
 
-
-
-
-HashGridStorage::index_pointer
-inline HashGridStorage::create(index_type& index) {
+HashGridStorage::index_pointer inline HashGridStorage::create(index_type& index) {
   index_pointer insert = new HashGridIndex(index);
   return insert;
 }
 
-void
-inline HashGridStorage::destroy(index_pointer index) {
-  delete index;
-}
+void inline HashGridStorage::destroy(index_pointer index) { delete index; }
 
-unsigned int
-inline HashGridStorage::store(index_pointer index) {
+unsigned int inline HashGridStorage::store(index_pointer index) {
   list.push_back(index);
-  return static_cast<unsigned int>(
-           map[index] = static_cast<unsigned int>(this->seq() - 1));
+  return static_cast<unsigned int>(map[index] = static_cast<unsigned int>(this->seq() - 1));
 }
 
-HashGridStorage::grid_map_iterator
-inline HashGridStorage::find(index_pointer index) {
+HashGridStorage::grid_map_iterator inline HashGridStorage::find(index_pointer index) {
   return map.find(index);
 }
 
-HashGridStorage::grid_map_iterator
-inline HashGridStorage::begin() {
-  return map.begin();
-}
+HashGridStorage::grid_map_iterator inline HashGridStorage::begin() { return map.begin(); }
 
-HashGridStorage::grid_map_iterator
-inline HashGridStorage::end() {
-  return map.end();
-}
+HashGridStorage::grid_map_iterator inline HashGridStorage::end() { return map.end(); }
 
-bool
-inline HashGridStorage::has_key(HashGridIndex* index) {
-  return map.find(index) != map.end();
-}
+bool inline HashGridStorage::has_key(HashGridIndex* index) { return map.find(index) != map.end(); }
 
-void
-inline HashGridStorage::left_levelzero(HashGridIndex* index, size_t dim) {
+void inline HashGridStorage::left_levelzero(HashGridIndex* index, size_t dim) {
   index_type::level_type l;
   index_type::index_type i;
   index->get(dim, l, i);
   index->set(dim, 0, 0);
 }
 
-void
-inline HashGridStorage::right_levelzero(HashGridIndex* index, size_t dim) {
+void inline HashGridStorage::right_levelzero(HashGridIndex* index, size_t dim) {
   index_type::level_type l;
   index_type::index_type i;
   index->get(dim, l, i);
   index->set(dim, 0, 1);
 }
 
-void
-inline HashGridStorage::left_child(HashGridIndex* index, size_t dim) {
+void inline HashGridStorage::left_child(HashGridIndex* index, size_t dim) {
   index_type::level_type l;
   index_type::index_type i;
   index->get(dim, l, i);
   index->set(dim, l + 1, 2 * i - 1);
 }
 
-void
-inline HashGridStorage::right_child(HashGridIndex* index, size_t dim) {
+void inline HashGridStorage::right_child(HashGridIndex* index, size_t dim) {
   index_type::level_type l;
   index_type::index_type i;
   index->get(dim, l, i);
   index->set(dim, l + 1, 2 * i + 1);
 }
 
-void
-inline HashGridStorage::top(HashGridIndex* index, size_t d) {
-  index->set(d, 1, 1);
-}
+void inline HashGridStorage::top(HashGridIndex* index, size_t d) { index->set(d, 1, 1); }
 
-size_t
-inline HashGridStorage::seq(HashGridIndex* index) {
+size_t inline HashGridStorage::seq(HashGridIndex* index) {
   grid_map_iterator iter = map.find(index);
 
   if (iter != map.end()) {
@@ -601,22 +564,11 @@ inline HashGridStorage::seq(HashGridIndex* index) {
   }
 }
 
-bool
-inline HashGridStorage::end(size_t s) {
-  return s > map.size();
-}
+bool inline HashGridStorage::end(size_t s) { return s > map.size(); }
 
-std::vector<size_t>
-inline HashGridStorage::getAlgorithmicDimensions() {
-  return algoDims;
-}
+std::vector<size_t> inline HashGridStorage::getAlgorithmicDimensions() { return algoDims; }
 
-
-
-size_t
-inline HashGridStorage::seq() const {
-  return list.size();
-}
+size_t inline HashGridStorage::seq() const { return list.size(); }
 
 }  // namespace base
 }  // namespace sgpp

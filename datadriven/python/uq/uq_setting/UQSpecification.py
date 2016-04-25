@@ -28,7 +28,7 @@ class UQSpecification(object):
         """
         Constructor
         """
-        self.__filename = 'uq_setting.gz'
+        self.__filename = None
 
         self.__preprocessor = None
         self.__simulation = None

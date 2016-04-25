@@ -35,36 +35,50 @@ class OperationNaiveEvalHessian {
   }
 
   /**
-   * Pure virtual method for evaluating a linear combination of basis functions, its gradient
-   * and its Hessian.
-   *
-   * @param       alpha       coefficient vector
-   * @param       point       evaluation point
-   * @param[out]  gradient    gradient vector of the linear combination
-   * @param[out]  hessian     Hessian matrix of the linear combination
-   * @return                  value of the linear combination
-   */
-  double evalHessian(const DataVector& alpha,
-                      const std::vector<double>& point,
-                      DataVector& gradient,
-                      DataMatrix& hessian) {
-    DataVector p(point);
-    return evalHessian(alpha, p, gradient, hessian);
-  }
-
-  /**
-   * Convenience function for using DataVector as points.
-   *
-   * @param       alpha       coefficient vector
-   * @param       point       evaluation point
-   * @param[out]  gradient    gradient vector of the linear combination
-   * @param[out]  hessian     Hessian matrix of the linear combination
-   * @return                  value of the linear combination
+   * @param       alpha     coefficient vector
+   * @param       point     evaluation point
+   * @param[out]  gradient  gradient vector of the linear combination
+   * @param[out]  hessian   Hessian matrix of the linear combination
+   * @return                value of the linear combination
    */
   virtual double evalHessian(const DataVector& alpha,
                               const DataVector& point,
                               DataVector& gradient,
                               DataMatrix& hessian) = 0;
+
+  /**
+   * @param       alpha     coefficient matrix (each column is a coefficient vector)
+   * @param       point     evaluation point
+   * @param[out]  value     values of the linear combination
+   * @param[out]  gradient  Jacobian of the linear combination (each row is a gradient vector)
+   * @param[out]  hessian   vector of Hessians of the linear combination
+   */
+  virtual void evalHessian(const DataMatrix& alpha,
+                           const DataVector& point,
+                           DataVector& value,
+                           DataMatrix& gradient,
+                           std::vector<DataMatrix>& hessian) {
+    const size_t d = point.getSize();
+    const size_t m = alpha.getNcols();
+    DataVector curAlpha(alpha.getNrows());
+    DataVector curGradient(d);
+    DataMatrix curHessian(d, d);
+
+    value.resize(m);
+    gradient.resize(d, d);
+
+    if (hessian.size() != m) {
+      hessian.resize(m);
+    }
+
+    for (size_t j = 0; j < m; j++) {
+      DataMatrix& curHessian = hessian[j];
+      curHessian.resize(d, d);
+      alpha.getColumn(j, curAlpha);
+      value[j] = evalHessian(curAlpha, point, curGradient, curHessian);
+      gradient.setRow(j, curGradient);
+    }
+  }
 };
 
 }  // namespace base

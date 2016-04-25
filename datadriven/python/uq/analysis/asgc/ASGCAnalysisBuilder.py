@@ -11,11 +11,11 @@ class ASGCAnalysisBuilder(object):
         """
         Default constructor
         """
-        self.__learner = None
+        self.__uqManager = None
         self.__estimationStrategy = None
 
-    def withLearner(self, learner):
-        self.__learner = learner
+    def withUQManager(self, uqManager):
+        self.__uqManager = uqManager
         return self
 
     def withMonteCarloEstimationStrategy(self, *args, **kws):
@@ -35,7 +35,7 @@ class ASGCAnalysisBuilder(object):
         Returns the adaptive sparse grid collocation object that is
         currently being constructed
         """
-        if self.__learner is None:
+        if self.__uqManager is None:
             raise AttributeError('no learner specified')
 
-        return ASGCAnalysis(self.__learner, strategy=self.__estimationStrategy)
+        return ASGCAnalysis(self.__uqManager, strategy=self.__estimationStrategy)

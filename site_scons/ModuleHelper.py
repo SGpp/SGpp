@@ -209,6 +209,7 @@ class Module(object):
             (".exe" if env["PLATFORM"] == "win32" else "")
         test = testEnv.Program(self.boostTestExecutable, testObjs)
         testEnv.Depends(test, self.libInstall)
+        boostTestTargetList.append(test)
 
   def runBoostTests(self, boostTestFolder="tests",
                     compileFlag="COMPILE_BOOST_TESTS", runFlag="RUN_BOOST_TESTS"):
@@ -217,7 +218,7 @@ class Module(object):
     if env[compileFlag] and env[runFlag]:
       # run Boost tests
       testRun = env.BoostTest(self.boostTestExecutable + "_run", source=self.boostTestExecutable)
-      boostTestTargetList.append(testRun)
+      boostTestRunTargetList.append(testRun)
 
   def runCpplint(self):
     """Run the style checker.
