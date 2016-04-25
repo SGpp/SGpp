@@ -93,7 +93,7 @@ vars.Add("LIBDIR", "Set path where the built libraries are installed " +
                    "(default: EPREFIX/lib)")
 vars.Add("INCLUDEDIR", "Set path where the header files are installed " +
                        "(default: PREFIX/include)")
-vars.Add(BoolVariable("VERBOSE", "Enable verbose output", False))
+vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add("CMD_LOGFILE", "Set path to a file to capture the build log", "build.log")
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
