@@ -7,7 +7,7 @@
       "dim": 0,
       "level": 10,
       "maxDegree": 30,
-      "type": "ModLinear"
+      "type": "Linear"
    },
    "solverRefine": {
       "eps": 0,
@@ -30,8 +30,8 @@
    },
    "testset": {
       "hasTestDataset": true,
-      "testFileName": "datadriven/performanceTests/scenarios/friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float_AlphaReference.vec",
+      "testFileName": "datadriven/performanceTests/scenarios/friedman2_4d_300000_Linear_float_AlphaReference.vec",
       "expectedMSE": 0.000001,
-      "expectedLargestDifference": 0.001
+      "expectedLargestDifference": 0.1
    }
 }
