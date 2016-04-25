@@ -12,11 +12,11 @@
 
 int main(int argc, char** argv) {
   //  int maxLevel = 9;
-  int maxLevel = 11;
+  int maxLevel = 12;
 
   // std::string fileName = "debugging.arff";
   //  std::string fileName = "DR5_train_larger.arff";
-  std::string fileName = "friedman_4d.arff";
+  std::string fileName = "friedman2_4d_1000000.arff";
   //  std::string fileName = "friedman_4d_large.arff";
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "bigger.arff";
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
-  SLESolverConfigFinal.maxIterations_ = 1;
+  SLESolverConfigFinal.maxIterations_ = 3;
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
   // streaming ocl - 13
 
   //    sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-  sgpp::base::OCLOperationConfiguration parameters("detectedPlatform.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("vgpu2_whole.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
