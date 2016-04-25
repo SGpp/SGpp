@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONELLIPTICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
-#define OPERATIONELLITPICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
+#define OPERATIONELLIPTICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 
 #include <sgpp/pde/operation/hash/OperationEllipticPDESolverSystem.hpp>
 
@@ -57,4 +57,4 @@ class OperationEllipticPDESolverSystemFreeBoundaries : public OperationEllipticP
 }  // namespace pde
 }  // namespace sgpp
 
-#endif /* OPERATIONELLITPTICPDESOLVERMATRIXFREEBOUNDARIES_HPP */
+#endif /* OPERATIONELLIPTICPDESOLVERSYSTEMFREEBOUNDARIES_HPP */
