@@ -122,8 +122,6 @@ To obtain help on parameters for compilation, type
 @verbatim
 scons --help
 @endverbatim
-For example, add <tt>VERBOSE=1</tt> to the SCons command line to
-see the compilation and linking commands.
 
 @subsection msvc_compilation_configuration Configuration
 
