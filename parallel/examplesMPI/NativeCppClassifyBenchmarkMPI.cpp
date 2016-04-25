@@ -3,7 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 
 #include <omp.h>
 
@@ -95,9 +98,13 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
   if (vecType == sgpp::parallel::X86SIMD) {
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
-#endif
-#if defined(__SSE3__) && defined(__AVX__)
+#elif defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
+#else
+    std::cout << "Vectorized: ERROR: X86SIMD not found. neither SSE3, nor AVX are present."
+              << std::endl
+              << std::endl;
+    exit(-1);
 #endif
   } else if (vecType == sgpp::parallel::OpenCL) {
     std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
@@ -105,10 +112,15 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl
               << std::endl;
-#endif
-#if defined(__SSE3__) && defined(__AVX__)
+#elif defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl
               << std::endl;
+#else
+    std::cout << "Vectorized: ERROR: Hybrid_X86SIMD_OpenCL not possible. neither SSE3, nor AVX are "
+                 "present."
+              << std::endl
+              << std::endl;
+    exit(-1);
 #endif
   } else if (vecType == sgpp::parallel::ArBB) {
     std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
@@ -627,7 +639,7 @@ int main(int argc, char* argv[]) {
     nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    sgpp::base::DataMatrix data(0, 0);
+    sgpp::base::DataMatrix data(0, nDim);
     sgpp::base::DataVector classes(0);
     sgpp::base::DataMatrix& testdata = testdataset.getData();
     sgpp::base::DataVector& testclasses = testdataset.getTargets();

@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <string>
 #include <vector>
 

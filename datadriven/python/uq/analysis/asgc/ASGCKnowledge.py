@@ -44,6 +44,16 @@ class ASGCKnowledge(object):
         ts = self.__alphas[self.__iteration][qoi][dtype].keys()
         return sorted(ts)
 
+    def getAvailableKnowledgeTypes(self):
+        """
+        @return list of available KnowledgeTypes
+        """
+        if len(self.__alphas) == 0:
+            raise Exception('No knowledge available')
+        iteration = self.__alphas.iterkeys().next()
+        qoi = self.__alphas[iteration].iterkeys().next()
+        return self.__alphas[iteration][qoi].keys()
+
     def getAvailableIterations(self):
         """
         get available iterations
@@ -116,9 +126,8 @@ class ASGCKnowledge(object):
         if self.hasAlpha(iteration, qoi, t, dtype):
             return DataVector(self.__alphas[iteration][qoi][dtype][t])
         else:
-            raise AttributeError('no knowledge for (i=%i, t=%g, qoi=%s, \
-                                  dtype=%i)' % (iteration, t, qoi,
-                                                dtype))
+            raise AttributeError('no knowledge for (i=%i, t=%g, qoi=%s, dtype=%i)' % (iteration, t, qoi,
+                                                                                      dtype))
 
     def getAlphasByQoI(self, qoi='_', dtype=KnowledgeTypes.SIMPLE,
                        iteration=None):
@@ -134,9 +143,8 @@ class ASGCKnowledge(object):
                 dtype in self.__alphas[iteration][qoi]:
             return self.__alphas[iteration][qoi][dtype]
         else:
-            raise AttributeError('no knowledge for (i=%i, qoi=%s, \
-                                  dtype=%i)' % (iteration, qoi,
-                                                KnowledgeTypes.toString(dtype)))
+            raise AttributeError('no knowledge for (i=%i, qoi=%s, dtype=%i)' % (iteration, qoi,
+                                                                                KnowledgeTypes.toString(dtype)))
 
     def getSparseGridFunction(self, qoi='_', t=0, dtype=KnowledgeTypes.SIMPLE,
                               iteration=None):
@@ -154,15 +162,13 @@ class ASGCKnowledge(object):
         if self.hasGrid(iteration, qoi):
             grid = self.getGrid(qoi, iteration=iteration)
         else:
-            raise AttributeError('the grid for (i=%i, qoi=%s) does not \
-                                 exist' % (iteration, qoi))
+            raise AttributeError('the grid for (i=%i, qoi=%s) does not exist' % (iteration, qoi))
 
         # check if there is the desired surplus vector
         if self.hasAlpha(iteration, qoi, t, dtype):
             alpha = self.getAlpha(qoi, t, dtype, iteration=iteration)
         else:
-            raise AttributeError('the surplus vector for (i=%i, \
-                                 qoi=%s, t=%g, dtype=%i) does not exist'
+            raise AttributeError('the surplus vector for (i=%i, qoi=%s, t=%g, dtype=%i) does not exist'
                                  % (iteration, qoi, t, dtype))
         return grid, alpha
 
@@ -251,8 +257,6 @@ class ASGCKnowledge(object):
                     # undo the hack that made it json compatible
                     gridString = gridString.replace('__', '\n')\
                                            .encode('utf8')
-                    # compatibility with older poly basis type
-                    gridString = gridString.replace('myPoly', 'poly')
                     # deserialize ...
                     grid = Grid.unserialize(gridString)
                     # ... and store it

@@ -120,7 +120,7 @@ class Samples(object):
         self._samples
 
     def ndarray(self):
-        samples = np.ndarray([len(self._samples), self._dim], dtype='float32')
+        samples = np.ndarray([len(self._samples), self._dim], dtype='float')
         if self._isUnit:
             if self._isActive:
                 # return just active tuples from the unit hypercube

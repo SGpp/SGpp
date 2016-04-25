@@ -56,4 +56,9 @@ doc/xml
 #ignoring code coverage files
 coverage.info
 coverage
-/Debug/
+
+# ignoring orig files
+*.orig
+
+# ignoring uq tests
+datadriven/tests/uq/

@@ -266,7 +266,7 @@ if env["PLATFORM"] == "win32":
 
   # also add the Boost library path to the PATH
   # so that the Boost test *.dll can be found when running the tests
-  if env["RUN_BOOST_TESTS"]:
+  if env["COMPILE_BOOST_TESTS"]:
     env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
                                           env["BOOST_LIBRARY_PATH"]])
 # Mac OS X doesn't use LD_LIBRARY_PATH
@@ -361,6 +361,7 @@ if env["COMPILE_BOOST_TESTS"]:
 libraryTargetList = []
 pythonTestTargetList = []
 boostTestTargetList = []
+boostTestRunTargetList = []
 exampleTargetList = []
 pydocTargetList = []
 headerSourceList = []
@@ -368,6 +369,7 @@ headerDestList = []
 env.Export("libraryTargetList")
 env.Export("pythonTestTargetList")
 env.Export("boostTestTargetList")
+env.Export("boostTestRunTargetList")
 env.Export("exampleTargetList")
 env.Export("pydocTargetList")
 env.Export("headerSourceList")
@@ -440,10 +442,15 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
 # Boost tests
 #########################################################################
 
-if env["COMPILE_BOOST_TESTS"] and env["RUN_BOOST_TESTS"]:
+if env["COMPILE_BOOST_TESTS"]:
   env.Depends(boostTestTargetList, finalStepDependencies)
   finalStepDependencies.append(boostTestTargetList)
   env.SideEffect("sideEffectFinalSteps", boostTestTargetList)
+
+  if env["RUN_BOOST_TESTS"]:
+    env.Depends(boostTestRunTargetList, finalStepDependencies)
+    finalStepDependencies.append(boostTestRunTargetList)
+    env.SideEffect("sideEffectFinalSteps", boostTestRunTargetList)
 
 # Examples
 #########################################################################

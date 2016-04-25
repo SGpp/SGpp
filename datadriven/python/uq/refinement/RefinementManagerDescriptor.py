@@ -3,7 +3,7 @@ from AdmissibleSet import (AdmissibleSparseGridNodeSet,
 from LocalRefinementStrategy import (CreateAllChildrenRefinement,
                                      ANOVARefinement,
                                      AddNode)
-from Refinement import Refinement
+from RefinementManager import RefinementManager
 from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 ExpectationValueOptRanking,
@@ -17,22 +17,35 @@ from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaus
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
 
-class RefinementDescriptor(object):
+class RefinementManagerDescriptor(object):
 
-    def __init__(self, builder):
-        self._builder = builder
-        self._refinement = Refinement()
-        self._builder.getSimulationLearner().setRefinement(self._refinement)
+    def __init__(self):
+        self._refinement = RefinementManager()
 
-    def addMostPromisingChildren(self):
-        admissibleSet = AdmissibleSparseGridNodeSet()
-        self._refinement.setAdmissibleSetCreator(admissibleSet)
-        return MostPromisingChildrenDescriptor(self._refinement)
+    def withAdaptThreshold(self, value):
+        """
+        Specifies refinement threshold
+        @param value: float for refinement threshold
+        """
+        self._refinement.setAdaptThreshold(value)
+        return self
 
-    def refineMostPromisingNodes(self):
-        admissibleSet = RefinableNodesSet()
-        self._refinement.setAdmissibleSetCreator(admissibleSet)
-        return RefineCurrentNodesDescriptor(self._refinement)
+    def withAdaptPoints(self, value):
+        """
+        Specifies number of points, which have to be refined in refinement step
+        @param value: integer for number of points to refine
+        """
+        self._refinement.setAdaptPoints(value)
+        return self
+
+    def withAdaptRate(self, value):
+        """
+        Specifies rate from total number of points on grid, which should be
+        refined.
+        @param value: float for rate
+        """
+        self._refinement.setAdaptRate(value)
+        return self
 
     def withBalancing(self):
         self._refinement.setBalancing(True)
@@ -49,6 +62,21 @@ class RefinementDescriptor(object):
     def withAdaptMaxLevel(self, level):
         self._refinement.setAdaptMaxLevel(level)
         return self
+
+    def addMostPromisingChildren(self):
+        admissibleSet = AdmissibleSparseGridNodeSet()
+        self._refinement.setAdmissibleSetCreator(admissibleSet)
+        return MostPromisingChildrenDescriptor(self._refinement)
+
+    def refineMostPromisingNodes(self):
+        admissibleSet = RefinableNodesSet()
+        self._refinement.setAdmissibleSetCreator(admissibleSet)
+        return RefineCurrentNodesDescriptor(self._refinement)
+
+    def create(self, grid):
+        # create initial admissible set
+        self._refinement.getAdmissibleSet().create(grid)
+        return self._refinement
 
 
 class AdmissibleSetDescriptor(object):
@@ -67,7 +95,7 @@ class AdmissibleSetDescriptor(object):
         return self
 
     def refineInnerNodes(self):
-        admissibleSet = self._refinement.getAdmissibleSetCreator()
+        admissibleSet = self._refinement.getAdmissibleSet()
         admissibleSet.refineInnerNodes = True
         return self
 

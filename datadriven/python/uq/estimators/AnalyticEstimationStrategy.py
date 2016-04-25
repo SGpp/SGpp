@@ -12,39 +12,30 @@ from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaus
 from pysgpp.extensions.datadriven.uq.quadrature.trilinearform import TrilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
+import numpy as np
+
 
 class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        # system matrices for mean and mean^2
+        self.A_mean = {}
+        self.A_var = {}
 
-    def mult(self, A, v, av):
-        """
-        Matrix vector multiplication
-        @param A: DataMatrix mass matrix
-        @param v: DataVector vector
-        @param av: DataVector result
-        """
-        av.setAll(0.0)
-        for i in xrange(A.getNrows()):
-            for j in xrange(A.getNcols()):
-                av[i] += A.get(i, j) * v[j]
+    def getSystemMatrixForMean(self, grid, W, D):
+        hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
+        if hash_value not in self.A_var:
+            self.A_mean[hash_value] = self.computeSystemMatrixForMean(grid, W, D)
 
-    def mean(self, grid, alpha, U, T):
-        r"""
-        Extraction of the expectation the given sparse grid function
-        interpolating the product of function value and pdf.
+        return self.A_mean[hash_value]
 
-        \int\limits_{[0, 1]^d} f_N(x) * pdf(x) dx
-        """
-        # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
-        D = T.getTransformations()
+
+    def computeSystemMatrixForMean(self, grid, W, D):
         # compute the integral of the product
         gs = grid.getStorage()
-        acc = DataVector(gs.size())
-        acc.setAll(1.)
-        tmp = DataVector(gs.size())
+        A_mean = np.ones(gs.getSize())
+        tmp = DataVector(gs.getSize())
         err = 0
         # run over all dimensions
         for i, dims in enumerate(W.getTupleIndices()):
@@ -65,7 +56,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 A, erri = bf.computeBilinearFormByList(gpsi, basisi,
                                                        gpsj, basisj)
                 # weight it with the coefficient of the density function
-                self.mult(A, dist.alpha, tmp)
+                tmp = A.dot(dist.alpha.array())
             else:
                 # the distribution is given analytically, handle them
                 # analytically in the integration of the basis functions
@@ -86,43 +77,25 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
             err += D[i].vol() * erri
 
             # accumulate the result
-            acc.componentwise_mult(tmp)
+            A_mean *= tmp
 
-        moment = alpha.dotProduct(acc)
-        return vol * moment, err
+        return A_mean, err
 
-    def var(self, grid, alpha, U, T, mean):
-        r"""
-        Extraction of the expectation the given sparse grid function
-        interpolating the product of function value and pdf.
 
-        \int\limits_{[0, 1]^d} (f(x) - E(f))^2 * pdf(x) dx
-        """
-        # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
-        D = T.getTransformations()
+    def getSystemMatrixForVariance(self, grid, W, D):
+        hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
+        if hash_value not in self.A_var:
+            self.A_var[hash_value] = self.computeSystemMatrixForVariance(grid, W, D)
 
-        # copy the grid, and add a trapezoidal boundary
-#         ngrid = GridDescriptor().fromGrid(grid)\
-#                                 .withBorder(BorderTypes.TRAPEZOIDBOUNDARY)\
-#                                 .createGrid()
-        # compute nodalValues
-#         ngs = ngrid.getStorage()
-#         nodalValues = DataVector(ngs.size())
-#         p = DataVector(ngs.getDimension())
-#         for i in xrange(ngs.size()):
-#             ngs.get(i).getCoords(p)
-#             nodalValues[i] = evalSGFunction(grid, alpha, p) - mean
-#
-#         # hierarchize the new function
-#         nalpha = hierarchize(ngrid, nodalValues)
+        return self.A_var[hash_value]
 
-        ngs = grid.getStorage()
-        ngrid, nalpha = grid, alpha
 
+    def computeSystemMatrixForVariance(self, grid, W, D):
         # compute the integral of the product times the pdf
-        acc = DataMatrix(ngs.size(), ngs.size())
-        acc.setAll(1.)
+        ngs = grid.getStorage()
+        ngrid = grid
+
+        A_var = np.ones((ngs.getSize(), ngs.getSize()))
         err = 0
         for i, dims in enumerate(W.getTupleIndices()):
             dist = W[i]
@@ -138,9 +111,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 gpsk, basisk = project(dist.grid, range(len(dims)))
                 # compute the bilinear form
                 tf = TrilinearGaussQuadratureStrategy([dist], trans)
-                A, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
-                                                        gpsi, basisi,
-                                                        gpsi, basisi)
+                A_idim, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
+                                                             psi, basisi,
+                                                             psi, basisi)
             else:
                 # we compute the bilinear form of the grids
                 # compute the bilinear form
@@ -149,18 +122,47 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     trans = [trans]
 
                 bf = BilinearGaussQuadratureStrategy(dist, trans)
-                A, erri = bf.computeBilinearFormByList(gpsi, basisi,
-                                                       gpsi, basisi)
+                A_idim, erri = bf.computeBilinearFormByList(gpsi, basisi,
+                                                            gpsi, basisi)
             # accumulate the results
-            acc.componentwise_mult(A)
+            A_var *= A_idim
 
             # accumulate the error
-            err += acc.sum() / (acc.getNrows() * acc.getNcols()) * erri
+            err += np.mean(A_var) * erri
 
-        # compute the variance
-        tmp = DataVector(acc.getNrows())
-        self.mult(acc, nalpha, tmp)
-        moment = vol * nalpha.dotProduct(tmp)
+        return A_var, err
+
+
+    def mean(self, grid, alpha, U, T):
+        r"""
+        Extraction of the expectation the given sparse grid function
+        interpolating the product of function value and pdf.
+
+        \int\limits_{[0, 1]^d} f_N(x) * pdf(x) dx
+        """
+        # extract correct pdf for moment estimation
+        vol, W = self._extractPDFforMomentEstimation(U, T)
+        D = T.getTransformations()
+
+        A_mean, err = self.getSystemMatrixForMean(grid, W, D)
+
+        moment = alpha.array().dot(A_mean)
+        return vol * moment, err
+
+    def var(self, grid, alpha, U, T, mean):
+        r"""
+        Extraction of the expectation the given sparse grid function
+        interpolating the product of function value and pdf.
+
+        \int\limits_{[0, 1]^d} (f(x) - E(f))^2 * pdf(x) dx
+        """
+        # extract correct pdf for moment estimation
+        vol, W = self._extractPDFforMomentEstimation(U, T)
+        D = T.getTransformations()
+
+        A_var, err = self.getSystemMatrixForVariance(grid, W, D)
+
+        moment = vol * alpha.array().dot(A_var.dot(alpha.array()))
 
         moment = moment - mean ** 2
 

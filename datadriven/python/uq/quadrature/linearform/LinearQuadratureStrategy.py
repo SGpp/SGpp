@@ -3,9 +3,9 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from pysgpp import DataVector
 from pysgpp.extensions.datadriven.uq.operations import getBasis
 from pysgpp.extensions.datadriven.uq.quadrature import HashQuadrature
+import numpy as np
 
 
 class LinearQuadratureStrategy(HashQuadrature):
@@ -23,11 +23,11 @@ class LinearQuadratureStrategy(HashQuadrature):
         """
         Compute bilinear form for the current grid
         @param grid: Grid
-        @return DataVector
+        @return numpy array
         """
         gs = grid.getStorage()
         basis = getBasis(grid)
-        v = DataVector(gs.size())
+        v = np.ndarray(gs.size())
         err = 0.
         # run over all rows
         for i in xrange(gs.size()):
@@ -42,10 +42,9 @@ class LinearQuadratureStrategy(HashQuadrature):
         Compute bilinear form for two lists of grid points
         @param gps: list of HashGridIndex
         @param basis: SG++ basis for grid indices gpsi
-        @return: DataMatrix
+        @return: numpy array
         """
-        b = DataVector(len(gps))
-        b.setAll(1.0)
+        b = np.ones(len(gps))
         err = 0.
         # run over all items
         for i, gpi in enumerate(gps):

@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -38,7 +37,7 @@ class ModPolyGrid : public Grid {
   ~ModPolyGrid() override;
 
   sgpp::base::GridType getType() override;
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   const SBasis& getBasis() override;
 

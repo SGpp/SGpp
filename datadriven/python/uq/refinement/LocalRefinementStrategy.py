@@ -4,6 +4,7 @@ from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
                                insertHierarchicalAncestors,
                                insertTruncatedBorder,
                                hasBorder)
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import isValid
 
 
 class LocalRefinementStrategy(object):
@@ -31,17 +32,19 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
         for d in xrange(gs.getDimension()):
             gpl = HashGridIndex(gp)
             gs.left_child(gpl, d)
-            ans += insertPoint(grid, gpl)
-            ans += insertHierarchicalAncestors(grid, gpl)
-            if hasBorder(grid):
-                ans += insertTruncatedBorder(grid, gpl)
+            if isValid(grid, gpl):
+                ans += insertPoint(grid, gpl)
+                ans += insertHierarchicalAncestors(grid, gpl)
+                if hasBorder(grid):
+                    ans += insertTruncatedBorder(grid, gpl)
 
             gpr = HashGridIndex(gp)
             gs.right_child(gpr, d)
-            ans += insertPoint(grid, gpr)
-            ans += insertHierarchicalAncestors(grid, gpr)
-            if hasBorder(grid):
-                ans += insertTruncatedBorder(grid, gpr)
+            if isValid(grid, gpr):
+                ans += insertPoint(grid, gpr)
+                ans += insertHierarchicalAncestors(grid, gpr)
+                if hasBorder(grid):
+                    ans += insertTruncatedBorder(grid, gpr)
 
         gs.recalcLeafProperty()
         return ans

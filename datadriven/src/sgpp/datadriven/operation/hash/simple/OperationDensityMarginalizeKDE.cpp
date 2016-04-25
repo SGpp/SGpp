@@ -14,6 +14,12 @@
 namespace sgpp {
 namespace datadriven {
 
+OperationDensityMarginalizeKDE::OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde) {
+  this->kde = std::make_shared<datadriven::GaussianKDE>(kde);
+}
+
+OperationDensityMarginalizeKDE::~OperationDensityMarginalizeKDE() {}
+
 void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim,
                                                    datadriven::GaussianKDE& marginalizedKDE) {
   // dimensionality of new set

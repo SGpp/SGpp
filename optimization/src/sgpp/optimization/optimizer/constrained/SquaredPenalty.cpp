@@ -160,7 +160,8 @@ SquaredPenalty::SquaredPenalty(ScalarFunction& f, ScalarFunctionGradient& fGradi
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
-      kHist() {}
+      xHistInner(0, 0),
+      kHistInner() {}
 
 SquaredPenalty::~SquaredPenalty() {}
 
@@ -173,7 +174,8 @@ void SquaredPenalty::optimize() {
   fOpt = NAN;
   xHist.resize(0, d);
   fHist.resize(0);
-  kHist.clear();
+  xHistInner.resize(0, d);
+  kHistInner.clear();
 
   const size_t mG = g.getNumberOfComponents();
   const size_t mH = h.getNumberOfComponents();
@@ -210,9 +212,9 @@ void SquaredPenalty::optimize() {
     unconstrainedOptimizer.optimize();
     xNew = unconstrainedOptimizer.getOptimalPoint();
 
-    const size_t numberInnerEvaluations =
-        unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
-    k += numberInnerEvaluations;
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    const size_t numberInnerIterations = innerPoints.getNrows();
+    k += numberInnerIterations;
 
     x = xNew;
     fx = f.eval(x);
@@ -222,7 +224,15 @@ void SquaredPenalty::optimize() {
 
     xHist.appendRow(x);
     fHist.append(fx);
-    kHist.push_back(numberInnerEvaluations);
+    xHistInner.resize(xHistInner.getNrows() + numberInnerIterations, d);
+
+    for (size_t i = 0; i < numberInnerIterations; i++) {
+      for (size_t t = 0; t < d; t++) {
+        xHistInner(xHistInner.getNrows() - numberInnerIterations + i, t) = innerPoints(i, t);
+      }
+    }
+
+    kHistInner.push_back(numberInnerIterations);
 
     // status printing
     Printer::getInstance().printStatusUpdate(
@@ -278,7 +288,13 @@ void SquaredPenalty::setPenaltyIncreaseFactor(double penaltyIncreaseFactor) {
   rhoMuPlus = penaltyIncreaseFactor;
 }
 
-const std::vector<size_t>& SquaredPenalty::getHistoryOfInnerIterations() const { return kHist; }
+const base::DataMatrix& SquaredPenalty::getHistoryOfInnerIterationPoints() const {
+  return xHistInner;
+}
+
+const std::vector<size_t>& SquaredPenalty::getHistoryOfInnerIterationNumbers() const {
+  return kHistInner;
+}
 
 void SquaredPenalty::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new SquaredPenalty(*this));

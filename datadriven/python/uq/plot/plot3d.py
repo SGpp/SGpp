@@ -12,8 +12,8 @@ import numpy as np
 def plotDensity3d(U, n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    xlim = [0, 1]  # U.getBounds()[0]
-    ylim = [0, 1]  # U.getBounds()[1]
+    xlim = U.getBounds()[0]
+    ylim = U.getBounds()[1]
     X = np.linspace(xlim[0], xlim[1], n)
     Y = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(X, Y)
@@ -23,14 +23,15 @@ def plotDensity3d(U, n=50):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
             Z[i, j] = U.pdf([x, y])
 
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
+    ax.plot_wireframe(X, Y, Z)
+#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+#                            cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
     # ax.set_zlim(0, 2)
 
-    fig.colorbar(surf, shrink=0.5, aspect=5)
+#     fig.colorbar(surf, shrink=0.5, aspect=5)
 
     return fig, ax
 
@@ -44,24 +45,25 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     Z = np.zeros(n * n).reshape(n, n)
     for i in xrange(len(X)):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f(evalSGFunction(grid, alpha, DataVector([x, y])))
+            Z[i, j] = f(evalSGFunction(grid, alpha, np.array([x, y])))
 
     # get grid points
     gs = grid.getStorage()
-    gps = np.zeros([gs.size(), 2])
+    gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         gps[i, :] = p.array()
 
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.size()))
+    ax.plot_wireframe(X, Y, Z)
+#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+#                            linewidth=0, antialiased=False)
+    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.getSize()), color="red")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
 
-    fig.colorbar(surf, shrink=0.5, aspect=5)
+#     fig.colorbar(surf, shrink=0.5, aspect=5)
     return fig, ax, Z
 
 
@@ -75,7 +77,7 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
 
     for i in xrange(len(X)):
         for j, (x, y) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f([x, y])
+            Z[i, j] = f(np.array([x, y]))
 
     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
                            linewidth=0, antialiased=False)
@@ -91,10 +93,10 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
 def plotSGNodal3d(grid, alpha):
     gs = grid.getStorage()
 
-    A = np.ndarray([gs.size(), 3])
+    A = np.ndarray([gs.getSize(), 3])
 
     p = DataVector(2)
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         A[i, 0] = p[0]
         A[i, 1] = p[1]
@@ -106,6 +108,7 @@ def plotSGNodal3d(grid, alpha):
 def plotNodal3d(A):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+
     ax.scatter(A[:, 0], A[:, 1], A[:, 2])
 
     return fig, ax

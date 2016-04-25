@@ -4,7 +4,10 @@
 // sgpp.sparsegrids.org
 
 #ifdef USE_MPI
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 #endif
 
 #include <omp.h>
@@ -679,6 +682,7 @@ void OperationLTwoDotLaplaceVectorizedLinearBoundary::mult_dirichlet_mic(size_t 
           temp_index_ptr += BLOCK_LENGTH;
           ++i_idx;
         }
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
         gradient_temp_ptr1 = gradient_temp_ptr;
         __m512d mm_element = _mm512_setzero_pd();
         __m512d mm_element2 = _mm512_setzero_pd();
@@ -732,6 +736,7 @@ void OperationLTwoDotLaplaceVectorizedLinearBoundary::mult_dirichlet_mic(size_t 
             (ii - process_i_start) * operation_result_matrix_->getNcols();
         _mm512_store_pd(operation_result_dest_ptr + j, mm_result);
         _mm512_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+#endif
       }
     }
   }
