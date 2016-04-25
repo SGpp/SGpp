@@ -3,6 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import Helper
 import ModuleHelper
 
 def checkForLibrary(name, flag, headers, libraries):
@@ -10,18 +11,18 @@ def checkForLibrary(name, flag, headers, libraries):
   if type(libraries) is str: libraries = [libraries]
   if libraries is None: libraries = []
   
-  if (flag in config.env) and config.env[flag]:
-    if config.CheckHeader(headers, language="C++") and \
-        config.CheckLib(libraries, language="C++"):
-      additionalDependencies.extend(libraries)
-      env["CPPDEFINES"][flag] = "1"
-      print "sgpp::optimization will be compiled with {}.".format(name)
-    else:
-      print "sgpp::optimization will be compiled " + \
-            "without {} (library not found).".format(name)
+  if (flag not in config.env) or (not config.env[flag]):
+    Helper.printInfo("sgpp::optimization will be compiled without {} (flag not set).".format(name))
+  elif not config.CheckHeader(headers, language="C++"):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary headers {} were not found.".format(headers))
+  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary libraries {} were not found.".format(libraries))
   else:
-    print "sgpp::optimization will be compiled " + \
-          "without {} (flag not set).".format(name)
+    Helper.printInfo("sgpp::optimization will be compiled with {}.".format(name))
+    additionalDependencies.extend(libraries)
+    env["CPPDEFINES"][flag] = "1"
 
 Import("*")
 

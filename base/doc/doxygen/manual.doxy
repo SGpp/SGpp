@@ -8,7 +8,6 @@
 - @subpage installation
   - @ref linux
   - @ref mingw
-  - @ref msvc
 - @subpage modules
 - @subpage examples
 **/

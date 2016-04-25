@@ -86,7 +86,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env.AppendUnique(CPPPATH=["#/" + moduleFolder + "/src/"])
 
   # detour compiler output
-  env["PRINT_CMD_LINE_FUNC"] = Helper.print_cmd_line
+  env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCpp11(config)
   checkDoxygen(config)
@@ -101,11 +101,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   print "Configuration done."
   print
-
-  # clear build_log file
-  with open(env["CMD_LOGFILE"], "a") as logFile:
-    logFile.seek(0)
-    logFile.truncate()
 
 def checkCpp11(config):
   # check C++11 support
@@ -279,10 +274,9 @@ def configureGNUCompiler(config):
     config.env["CXX"] = ("mpic++.mpich")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
-  else:  # gnu
-    gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
-    gcc_ver = config.env._get_major_minor_revision(gcc_ver_str)
-    Helper.printInfo("Using default gcc " + gcc_ver_str.strip() + ".")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
@@ -342,11 +336,16 @@ def configureGNUCompiler(config):
     config.env["SHLIBPREFIX"] = "lib"
 
 def configureClangCompiler(config):
-  Helper.printInfo("Using clang.")
-
   config.env["CC"] = ("clang")
   config.env["LINK"] = ("clang++")
   config.env["CXX"] = ("clang++")
+
+  versionString = subprocess.check_output([config.env["CXX"], "--version"])
+  try:
+    versionString = re.match(r"^.*version ([^ ]+)", versionString).group(1)
+  except AttributeError:
+    versionString = "(unknown version)"
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
@@ -360,8 +359,8 @@ def configureClangCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
-  config.env.Append(CPPFLAGS=["-fopenmp=libomp"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libomp"])
+  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -398,12 +397,13 @@ def configureIntelCompiler(config):
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
     config.env["LINK"] = ("icpc")
     config.env["CXX"] = ("icpc")
-    Helper.printInfo("Using icc.")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
