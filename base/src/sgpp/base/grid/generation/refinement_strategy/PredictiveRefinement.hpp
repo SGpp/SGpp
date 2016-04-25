@@ -120,7 +120,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   virtual void refineGridpointsCollection(
     GridStorage& storage,
     RefinementFunctor& functor,
-    AbstractRefinement::refinement_container_type& collection);
+    AbstractRefinement::refinement_container_type& collection) override;
 
 
   /**
@@ -134,7 +134,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   AbstractRefinement::refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor& functor) const;
+    const RefinementFunctor& functor) const override;
 
 
   /**
