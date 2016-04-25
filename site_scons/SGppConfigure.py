@@ -359,8 +359,8 @@ def configureClangCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
-  config.env.Append(CPPFLAGS=["-fopenmp=libomp"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libomp"])
+  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
