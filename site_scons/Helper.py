@@ -8,7 +8,11 @@ from __future__ import print_function
 import glob
 import os
 import re
+import string
 import sys
+
+import SCons.Script
+import SCons.Script.Main
 
 def printInfo(*s):
   print("Info:", "\n      ".join([str(x) for x in s]))
@@ -54,16 +58,83 @@ def getModules(ignoreFolders):
 def multiParamConverter(s):
   return s.split(",")
 
-# detour compiler output
-def print_cmd_line(s, target, src, env):
+# this class is used with "sys.stdout = Logger()" at the very beginning
+# => print lines to the terminal and to the log file simultaneously
+class Logger(object):
+  def __init__(self):
+    self.terminal = sys.stdout
+
+    # clear file
+    with open("build.log", "a") as logFile:
+      logFile.seek(0)
+      logFile.truncate()
+
+  def write(self, message):
+    self.terminal.write(message)
+    with open("build.log", "a") as logFile:
+      logFile.write(message)
+
+  def flush(self):
+    self.terminal.flush()
+
+class FinalMessagePrinter(object):
+  def __init__(self):
+    self.enabled = True
+    self.env = None
+    self.sgppBuildPath = None
+    self.pysgppPackagePath = None
+    self.exitCode = None
+    self.exitFunction = sys.exit
+    sys.exit = self.exit
+
+  def enable(self):
+    self.enabled = True
+
+  def disable(self):
+    self.enabled = False
+
+  def exit(self, exitCode=0):
+    self.exitCode = exitCode
+    self.exitFunction(exitCode)
+
+  def printMessage(self):
+    if not self.enabled:
+      return
+
+    failures = SCons.Script.GetBuildFailures()
+    build_was_successful = (len(failures) == 0) and (SCons.Script.Main.exit_status == 0)
+    build_interrupted = build_was_successful and (self.exitCode != 0)
+
+    if build_interrupted:
+      return
+
+    if build_was_successful:
+      if self.env["PLATFORM"] in ["cygwin", "win32"]:
+        filename = "INSTRUCTIONS_WINDOWS"
+      elif self.env["PLATFORM"] == "darwin":
+        filename = "INSTRUCTIONS_MAC"
+      else:
+        filename = "INSTRUCTIONS"
+
+      with open(filename) as f:
+        instructionsTemplate = string.Template(f.read())
+        print()
+        print(instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=self.sgppBuildPath,
+                                                   PYSGPP_PACKAGE_PATH=self.pysgppPackagePath))
+    else:
+      print("""# ------------------------------------------------------------------------
+# An error occurred while compiling SG++.
+# If you believe this is a bug in SG++, please attach the build.log and
+# the config.log file when contacting the SG++ developers.
+# ------------------------------------------------------------------------""")
+
+# detour compiler output to print dots if VERBOSE=0
+def printCommand(s, target, src, env):
   if env["VERBOSE"]:
     sys.stdout.write(u"%s\n" % s)
   else:
     sys.stdout.write(u".")
     sys.stdout.flush()
-  if env["CMD_LOGFILE"]:
-    with open(env["CMD_LOGFILE"], "a") as logFile:
-      logFile.write("%s\n" % s)
 
 #creates a Doxyfile containing proper module paths based on Doxyfile_template
 def prepareDoxyfile(modules):

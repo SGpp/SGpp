@@ -3,9 +3,13 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import atexit
 import glob
 import os
+import pipes
+import platform
 import subprocess
+import sys
 import textwrap
 import SCons
 from SCons.Script.SConscript import SConsEnvironment
@@ -13,11 +17,17 @@ from SCons.Script.SConscript import SConsEnvironment
 import Helper
 import SGppConfigure
 
+sys.stdout = Helper.Logger()
+finalMessagePrinter = Helper.FinalMessagePrinter()
+atexit.register(finalMessagePrinter.printMessage)
+
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
 # check scons
 EnsureSConsVersion(2, 1)
-print "Using SCons", SCons.__version__
+Helper.printInfo("Platform: {}".format(", ".join(platform.uname())))
+Helper.printInfo("Using SCons {} on Python {}".format(SCons.__version__, platform.python_version()))
+Helper.printInfo("SCons command line: {}".format(" ".join([pipes.quote(arg) for arg in sys.argv])))
 
 sconsVersion = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
 if sconsVersion < (2, 3, 0):
@@ -45,8 +55,8 @@ for wrapper in languageSupport:
   elif wrapper == "jsgpp":
     languageSupportNames.append("SG_JAVA")
 
-print "Available modules:", ", ".join(moduleNames)
-print "Available language support:", ", ".join(languageSupportNames)
+Helper.printInfo("Available modules: {}".format(", ".join(moduleNames)))
+Helper.printInfo("Available language support: {}".format(", ".join(languageSupportNames)))
 
 # Define and read variables
 #########################################################################
@@ -94,7 +104,6 @@ vars.Add("LIBDIR", "Set path where the built libraries are installed " +
 vars.Add("INCLUDEDIR", "Set path where the header files are installed " +
                        "(default: PREFIX/include)")
 vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
-vars.Add("CMD_LOGFILE", "Set path to a file to capture the build log", "build.log")
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
@@ -140,6 +149,7 @@ else:
 #########################################################################
 
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
+finalMessagePrinter.env = env
 
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
@@ -168,10 +178,10 @@ if not env.GetOption("clean"):
   Helper.prepareDoxyfile(moduleFolders)
 
 if "CXX" in ARGUMENTS:
-  print "CXX: ", ARGUMENTS["CXX"]
+  Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
   env["CXX"] = ARGUMENTS["CXX"]
 if "CC" in ARGUMENTS:
-  print "CC: ", ARGUMENTS["CC"]
+  Helper.printInfo("CC: {}".format(ARGUMENTS["CC"]))
   env["CC"] = ARGUMENTS["CC"]
 if "CPPFLAGS" in ARGUMENTS:
   env["CPPFLAGS"] = ARGUMENTS["CPPFLAGS"].split(",")
@@ -379,7 +389,7 @@ for moduleFolder in moduleFolders:
   if not env["SG_" + moduleFolder.upper()]:
     continue
 
-  print "Preparing to build module:", moduleFolder
+  Helper.printInfo("Preparing to build module: {}".format(moduleFolder))
   # SConscript("src/sgpp/SConscript" + moduleFolder, variant_dir="#/tmp/build/", duplicate=0)
   env.SConscript("#/" + moduleFolder + "/SConscript", {"env": env, "moduleName": moduleFolder})
 
@@ -456,28 +466,6 @@ env.Depends(exampleTargetList, finalStepDependencies)
 finalStepDependencies.append(exampleTargetList)
 env.SideEffect("sideEffectFinalSteps", exampleTargetList)
 
-# Final output
-#########################################################################
-
-def printInstructions(target, source, env):
-  import string
-  if env["PLATFORM"] in ["cygwin", "win32"]:
-    filename = "INSTRUCTIONS_WINDOWS"
-  elif env["PLATFORM"] == "darwin" :
-    filename = "INSTRUCTIONS_MAC"
-  else:
-    filename = "INSTRUCTIONS"
-
-  with open(filename) as f:
-    instructionsTemplate = string.Template(f.read())
-    print
-    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-
-printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
-env.Depends(printInstructionsTarget, finalStepDependencies)
-finalStepDependencies.append(printInstructionsTarget)
-
 # System-wide installation
 #########################################################################
 
@@ -517,7 +505,13 @@ for module in moduleFolders:
 # Default targets
 #########################################################################
 
+finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
+finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+
 if not GetOption("clean"):
   env.Default(finalStepDependencies)
+  if "doxygen" in BUILD_TARGETS:
+    finalMessagePrinter.disable()
 else:
   env.Default(finalStepDependencies + ["clean"])
+  finalMessagePrinter.disable()
