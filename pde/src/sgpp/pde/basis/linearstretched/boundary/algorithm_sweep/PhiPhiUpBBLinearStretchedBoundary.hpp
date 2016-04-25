@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #ifndef PHIPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP
-#define PHIPHIUPBBLINEARSTRECHEDBOUNDARY_HPP
+#define PHIPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
