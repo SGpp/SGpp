@@ -89,5 +89,3 @@ class DMSystemMatrixBase : public base::OperationMatrix {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DMSYSTEMMATRIXBASE_HPP */
