@@ -515,8 +515,7 @@ for module in moduleFolders:
 # Default targets
 #########################################################################
 
-# TODO(pfandedd): default target break targets that are not on the finalStepDependencies list, why do we even need this?
-# if not GetOption("clean"):
-#   env.Default(finalStepDependencies)
-# else:
-#   env.Default(finalStepDependencies + ["clean"])
+if not GetOption("clean"):
+  env.Default(finalStepDependencies)
+else:
+  env.Default(finalStepDependencies + ["clean"])
