@@ -48,7 +48,7 @@ void Euler::solve(SLESolver& LinearSystemSolver,
   }
 
   // Create pictures of the animation, if specified
-  if ((this->bAnimation == true)) {
+  if (this->bAnimation == true) {
     // Build filename
     std::string tFilename = "00000000000000000000000000000000";
     std::stringstream number;
