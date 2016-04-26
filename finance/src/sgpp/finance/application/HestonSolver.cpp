@@ -296,7 +296,7 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize,
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN =
         new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
@@ -385,15 +385,15 @@ double HestonSolver::get1DEuroCallPayoffValue(double assetValue, double strike) 
 
 void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                       size_t maxCGIterations, double epsilonCG,
-                                      base::DataVector& alpha, bool verbose, bool generateAnimation,
-                                      size_t numEvalsAnimation) {
+                                      base::DataVector& alpha, bool verbose,
+                                      bool generateAnimation) {
   throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                       size_t maxCGIterations, double epsilonCG,
-                                      base::DataVector& alpha, bool verbose, bool generateAnimation,
-                                      size_t numEvalsAnimation) {
+                                      base::DataVector& alpha, bool verbose,
+                                      bool generateAnimation) {
   throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 

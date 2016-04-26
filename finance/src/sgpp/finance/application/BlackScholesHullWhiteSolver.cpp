@@ -115,8 +115,7 @@ void BlackScholesHullWhiteSolver::setProcessDimensions(int dim_BS, int dim_HW) {
 void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                                      size_t maxCGIterations, double epsilonCG,
                                                      base::DataVector& alpha, bool verbose,
-                                                     bool generateAnimation,
-                                                     size_t numEvalsAnimation) {
+                                                     bool generateAnimation) {
   throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for "
       "BlackScholesHullWhiteSolver!");
@@ -125,11 +124,10 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double
 void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                                      size_t maxCGIterations, double epsilonCG,
                                                      base::DataVector& alpha, bool verbose,
-                                                     bool generateAnimation,
-                                                     size_t numEvalsAnimation) {
+                                                     bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::BiCGStab* myCG = new solver::BiCGStab(maxCGIterations, epsilonCG);
 
     base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();

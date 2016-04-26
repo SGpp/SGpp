@@ -53,12 +53,12 @@ void HeatEquationSolver::setHeatCoefficient(double a) { this->a = a; }
 void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                             size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
-                                            bool generateAnimation, size_t numEvalsAnimation) {
+                                            bool generateAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
     double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
-        "ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        "ExEul", numTimesteps, timestepsize, generateAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
     HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver =
@@ -91,12 +91,12 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                             size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
-                                            bool generateAnimation, size_t numEvalsAnimation) {
+                                            bool generateAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
     double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
-        "ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        "ImEul", numTimesteps, timestepsize, generateAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
     HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver =
@@ -156,7 +156,7 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN = new solver::CrankNicolson(numCNSteps, timestepsize);
 
     myStopwatch->start();
@@ -262,7 +262,7 @@ void HeatEquationSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
                                             double epsilonCG, std::string tFilename) {
   if (this->bGridConstructed) {
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numTimesteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numTimesteps, timestepsize, false, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
     HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(
         *this->myGrid, alpha, this->a, timestepsize, "ImEul");
