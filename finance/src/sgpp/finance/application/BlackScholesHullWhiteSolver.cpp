@@ -224,7 +224,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
     delete myCG;
     delete myEuler;
     delete myStopwatch;
-    delete myBoundaries;
+    delete[] myBoundaries;
   } else {
     throw base::application_exception(
         "BlackScholesHullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or "
