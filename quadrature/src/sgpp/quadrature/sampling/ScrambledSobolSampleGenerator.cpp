@@ -24,7 +24,7 @@ ScrambledSobolSampleGenerator::ScrambledSobolSampleGenerator(size_t dimensions, 
 ScrambledSobolSampleGenerator::~ScrambledSobolSampleGenerator() {}
 
 size_t ScrambledSobolSampleGenerator::i4_bit_hi1(std::uint64_t n) {
-  double i = floor(n);
+  double i = floor(static_cast<double>(n));
   size_t bit = 0;
 
   while (true) {
@@ -39,7 +39,7 @@ size_t ScrambledSobolSampleGenerator::i4_bit_hi1(std::uint64_t n) {
 
 size_t ScrambledSobolSampleGenerator::i4_bit_lo0(std::uint64_t n) {
   size_t bit = 0;
-  double i = floor(n);
+  double i = static_cast<double>(n);
   double i2;
 
   while (true) {
@@ -180,7 +180,7 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
       size_t m = 0;
 
       while (true) {
-        j = (size_t)floor(j / (size_t)2);
+        j = static_cast<size_t>(floor(static_cast<double>(j) / 2.));
 
         if (j <= 0) break;
 
@@ -195,7 +195,7 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
       size_t j2;
 
       for (size_t k = m; k > 0; k--) {  // k um +1 geshifted
-        j2 = (size_t)floor(j / (size_t)2);
+        j2 = static_cast<size_t>(floor(static_cast<double>(j) / 2.));
         includ[k - 1] = (j != 2 * j2);
         j = j2;
       }
@@ -247,7 +247,6 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
     for (size_t i = 0; i < dim_num; i++) lastq_scrambled[i] = 0;
   }
 
-  seed = (size_t)floor(seed);
   size_t l = 0;
 
   if (seed == 0) {

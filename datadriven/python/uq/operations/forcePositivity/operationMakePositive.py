@@ -7,7 +7,7 @@ from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
 from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
-    createOperationQuadrature, LinearBoundary, PolyBoundary
+    createOperationQuadrature, GridType_LinearBoundary, GridType_PolyBoundary
 import warnings
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
@@ -156,7 +156,7 @@ class OperationMakePositive(object):
         opEval = createOperationEval(grid)
         # TODO: find local max level for adaptively refined grids
         maxLevel = gs.getMaxLevel()
-        if grid.getType() in [LinearBoundary, PolyBoundary]:
+        if grid.getType() in [GridType_LinearBoundary, GridType_PolyBoundary]:
             maxLevel += 1
 
         alphaVec = DataVector(alpha)
@@ -185,7 +185,7 @@ class OperationMakePositive(object):
         for gp in gridPoinsToBeAdded:
             newGridPoints += insertPoint(grid, gp)
             newGridPoints += insertHierarchicalAncestors(grid, gp)
-            if grid.getType() in [LinearBoundary, PolyBoundary]:
+            if grid.getType() in [GridType_LinearBoundary, GridType_PolyBoundary]:
                 newGridPoints += insertTruncatedBorder(grid, gp)
 
         # recompute the leaf property and return the result

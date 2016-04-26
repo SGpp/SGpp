@@ -1,11 +1,11 @@
 import numpy as np
-from pysgpp import Poly, PolyBoundary
+from pysgpp import GridType_Poly, GridType_PolyBoundary
 
 
 def getL2EpsilonComplexity(grid):
     gridType = grid.getType()
 
-    if gridType in [Poly, PolyBoundary]:
+    if gridType in [GridType_Poly, GridType_PolyBoundary]:
         p = grid.getDegree()
     else:
         p = 1.

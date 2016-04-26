@@ -7,7 +7,7 @@ from pysgpp import (createOperationHierarchisation,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
-                    Poly, PolyBoundary, Linear, LinearBoundary, LinearL0Boundary)
+                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary)
 
 from scipy.interpolate import interp1d
 
@@ -19,25 +19,25 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
 
-    if gridType in [Poly, PolyBoundary]:
+    if gridType in [GridType_Poly, GridType_PolyBoundary]:
         deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
-        if gridType in [LinearBoundary, PolyBoundary]:
+        if gridType in [GridType_LinearBoundary, GridType_PolyBoundary]:
             return Grid.createPolyBoundaryGrid(dim, deg)
-        elif gridType == LinearL0Boundary:
+        elif gridType == GridType_LinearL0Boundary:
             raise NotImplementedError("there is no full boundary polynomial grid")
-        elif gridType in [Linear, Poly]:
+        elif gridType in [GridType_Linear, GridType_Poly]:
             return Grid.createPolyGrid(dim, deg)
         else:
             raise Exception('unknown grid type %s' % gridType)
     else:
-        if gridType == Linear:
+        if gridType == GridType_Linear:
             return Grid.createLinearGrid(dim)
-        elif gridType == LinearBoundary:
+        elif gridType == GridType_LinearBoundary:
             return Grid.createLinearBoundaryGrid(dim, 1)
-        elif gridType == LinearL0Boundary:
+        elif gridType == GridType_LinearL0Boundary:
             return Grid.createLinearBoundaryGrid(dim, 0)
         else:
             raise Exception('unknown grid type %s' % gridType)
@@ -76,20 +76,20 @@ def copyGrid(grid, level=0, deg=1):
 
 
 def getBasis(grid):
-    if grid.getType() == Linear:
+    if grid.getType() == GridType_Linear:
         return SLinearBase()
-    elif grid.getType() == LinearBoundary:
+    elif grid.getType() == GridType_LinearBoundary:
         return SLinearBoundaryBase()
-    elif grid.getType() == Poly:
+    elif grid.getType() == GridType_Poly:
         return SPolyBase(grid.getDegree())
-    elif grid.getType() == PolyBoundary:
+    elif grid.getType() == GridType_PolyBoundary:
         return SPolyBoundaryBase(grid.getDegree())
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())
 
 
 def getDegree(grid):
-    if grid.getType() in [Poly, PolyBoundary]:
+    if grid.getType() in [GridType_Poly, GridType_PolyBoundary]:
         return grid.getDegree()
     else:
         return 1
@@ -98,7 +98,7 @@ def getDegree(grid):
 
 
 def hasBorder(grid):
-    return grid.getType() in [PolyBoundary, LinearBoundary, LinearL0Boundary]
+    return grid.getType() in [GridType_PolyBoundary, GridType_LinearBoundary, GridType_LinearL0Boundary]
 
 
 def isValid1d(grid, level, index):
@@ -252,13 +252,13 @@ def hasAllChildren(grid, gp):
     gs = grid.getStorage()
     dim = 0
     cnt = 0
-    while dim < gs.getDimension() and cnt % 2 == 0:
+    while dim < gs.getDimension():
         # load level index
         level, index = gp.getLevel(dim), gp.getIndex(dim)
 
         # check left child in dimension dim
         gs.left_child(gp, dim)
-        cnt += gs.has_key(gp)
+        cnt = gs.has_key(gp)
 
         # check right child in dimension dim
         gp.set(dim, level, index)
@@ -269,7 +269,10 @@ def hasAllChildren(grid, gp):
         gp.set(dim, level, index)
         dim += 1
 
-    return cnt % 2 == 0
+        if cnt != 2:
+            return False
+
+    return True
 
 
 def insertTruncatedBorder(grid, gp):
@@ -375,7 +378,8 @@ def evalSGFunctionMulti(grid, alpha, samples):
 def evalSGFunction(grid, alpha, p):
     if len(p.shape) == 1:
         p_vec = DataVector(p)
-        return createOperationEval(grid).eval(alpha, p_vec)
+        alpha_vec = DataVector(alpha)
+        return createOperationEval(grid).eval(alpha_vec, p_vec)
     else:
         return evalSGFunctionMulti(grid, alpha, p)
 
@@ -763,15 +767,18 @@ def checkPositivity(grid, alpha):
         fullHashGridStorage.get(i).getCoords(p)
         A[i, :] = p.array()
 
+    negativeGridPoints = {}
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
     for i, yi in enumerate(res):
-        if yi < 0. and abs(yi) > 1e-13:
+        if yi < -1e-11:
             cnt += 1
+            negativeGridPoints[i] = yi, HashGridIndex(fullHashGridStorage.get(i))
             ymin = min(ymin, yi)
             ymax = max(ymax, yi)
-            print "  %s = %g" % (A[i, :], yi)
+#             print "  %s = %g" % (A[i, :], yi)
     if cnt > 0:
         print "warning: function is not positive"
         print "%i/%i: [%g, %g]" % (cnt, fullHashGridStorage.getSize(), ymin, ymax)
-    return cnt == 0
+
+    return negativeGridPoints

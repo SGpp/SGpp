@@ -30,7 +30,7 @@ class LogDensitySystemMatrix : public base::OperationMatrix {
   /// Training data
   base::DataMatrix& data;
   /// the lambda, the regularisation parameter
-  float_t lambda;
+  double lambda;
   /// OperationMatrix, the regularisation method
   base::OperationMatrix& C;
   /// Operation A for calculating the data matrix

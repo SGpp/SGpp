@@ -101,7 +101,7 @@ def plotFunction2d(f, addContour=True, n=101,
     return
 
 
-def plotSG2d(grid, alpha, addContour=True, n=100,
+def plotSG2d(grid, alpha, addContour=True, n=50,
              show_negative=False, show_grid_points=False):
     gs = grid.getStorage()
 

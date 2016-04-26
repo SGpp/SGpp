@@ -6,9 +6,7 @@ Created on Apr 19, 2016
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
-    createOperationQuadrature, LinearBoundary, PolyBoundary
-import warnings
+from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
@@ -17,17 +15,25 @@ import numpy as np
 from matplotlib.patches import Rectangle
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation, \
     JointTransformation
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.fullGridSearch import FullGridCandidates
 
 
 class OperationMakePositiveFast(object):
 
-    def __init__(self, grid, algorithm=None):
+    def __init__(self, grid,
+                 candidateSetAlgorithm=None,
+                 interpolationAlgorithm=None,
+                 candidateSearchAlgorithm=None):
         self.grid = grid
+        self.numDims = grid.getStorage().getDimension()
         self.verbose = True
-        self.algorithm = algorithm
+        self.interpolationAlgorithm = interpolationAlgorithm
+        self.candidateSearchAlgorithm = candidateSearchAlgorithm
+        if self.candidateSearchAlgorithm is None:
+            self.candidateSearchAlgorithm = FullGridCandidates(grid)
 
 
-    def plotDebug(self, newGrid, overlappingGridPoints):
+    def plotDebugIntersections(self, newGrid, overlappingGridPoints):
         # -----------------------------------------------------------------
         # plot result
         gs = newGrid.getStorage()
@@ -72,8 +78,30 @@ class OperationMakePositiveFast(object):
             plt.close(fig)
 
 
+    def plotDebug(self, grid, alpha, addedGridPoints, candidates):
+        # -----------------------------------------------------------------
+        # plot result
+        fig = plt.figure()
+        plotSG2d(grid, alpha, show_negative=True, show_grid_points=True)
+        plt.title("iteration = %i" % self.candidateSearchAlgorithm.iteration)
+        
+        p = DataVector(grid.getStorage().getDimension())
+        for gp in candidates:
+            gp.getCoords(p)
+            plt.plot(p[0], p[1], "o ", color="green")
+
+        for gp in addedGridPoints:
+            gp.getCoords(p)
+            plt.plot(p[0], p[1], "o ", color="yellow")
+
+        fig.show()
+
     def setInterpolationAlgorithm(self, algorithm):
-        self.algorithm = algorithm
+        self.interpolationAlgorithm = algorithm
+
+
+    def setCandidateSetSearchAlgorithm(self, algorithm):
+        self.candidateSearchAlgorithm = algorithm
 
 
     def makeCurrentNodalValuesPositive(self, grid, alpha):
@@ -111,64 +139,65 @@ class OperationMakePositiveFast(object):
         return negativeGridPoints, positiveGridPoints
 
 
-    def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, grid):
+    def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, overlap, already_checked, grid):
         numDims = gpi.getDimension()
         gs = grid.getStorage()
-        overlap = {}
-        already_checked = {}
         # find all possible intersections of grid points
         for j, gpj in gpsj.items():
-            if i != j:
-                level, index = self.findIntersection(gpi, gpj)
-                key = tuple(level + index)
-                if key not in overlap and key not in already_checked:
-                    intersection = HashGridIndex(numDims)
-                    for idim in xrange(numDims):
-                        intersection.set(idim, level[idim], index[idim])
+            level, index = self.findIntersection(gpi, gpj)
+            key = tuple(level + index)
+            if key not in overlap and key not in already_checked:
+                intersection = HashGridIndex(numDims)
+                for idim in xrange(numDims):
+                    intersection.set(idim, level[idim], index[idim])
 
-                    # check if the current grid point already exists
-                    if not gs.has_key(intersection):
-                        idim = 0
-                        while idim < numDims:
-                            # get level index
-                            lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
-                            ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
+                # check if the current grid point already exists
+                if not gs.has_key(intersection):
+                    idim = 0
+                    while idim < numDims:
+                        # get level index
+                        lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
+                        ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
 
-                            # same level and different index
-                            if lid == ljd and iid != ijd:
-                                break
+                        # same level and different index
+                        if lid == ljd and iid != ijd:
+                            break
 
-                            # check if they have overlapping support
-                            xlowi, xhighi = getBoundsOfSupport(lid, iid)
-                            xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
+                        # check if they have overlapping support
+                        xlowi, xhighi = getBoundsOfSupport(lid, iid)
+                        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
 
-                            xlow = max(xlowi, xlowj)
-                            xhigh = min(xhighi, xhighj)
+                        xlow = max(xlowi, xlowj)
+                        xhigh = min(xhighi, xhighj)
 
-                            # different level but not ancestors
-                            if xlow >= xhigh:
-                                break
+                        # different level but not ancestors
+                        if xlow >= xhigh:
+                            break
 
-                            idim += 1
+                        idim += 1
 
-                        # check whether the supports are overlapping
-                        # in all dimensions
-                        if idim == numDims:
-                            overlap[key] = intersection
+                    # check whether the supports are overlapping
+                    # in all dimensions
+                    if idim == numDims:
+                        overlap[key] = intersection
+            else:
+                if key in already_checked:
+                    already_checked[key] += 1
                 else:
-                    already_checked[key] = False
+                    already_checked[key] = 1
                 
-        return overlap
+        return overlap, already_checked
 
 
     def findIntersectionsOfOverlappingSuppports(self, gpsi, gpsj, grid):
         overlappingGridPoints = {}
-        
+        already_checked = {}
         for i, gpi in gpsi.items():
-            overlap = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj, grid)
+            overlap, checked = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj, overlappingGridPoints, already_checked, grid)
             overlappingGridPoints.update(overlap)
+            already_checked.update(checked)
 
-        return overlappingGridPoints.values()
+        return overlappingGridPoints.values(), np.sum(already_checked.values()) + len(overlappingGridPoints)
 
 
     def computeBoundsOfOverlappingPatch(self, gpi, gpj):
@@ -211,34 +240,56 @@ class OperationMakePositiveFast(object):
         gs = grid.getStorage()
         return [gp for gp in intersections if not gs.has_key(gp)]
     
-    def addFullGridPoints(self, grid, alpha, intersections):
+
+    def addFullGridPoints(self, grid, alpha, candidates):
         """
         Add all those full grid points with |accLevel|_1 <= n, where n is the
         maximun level of the sparse grid
         @param grid: Grid sparse grid to be discretized
-        @param intersections:
+        @param candidates:
         """
+        # sort the grid points by level
+        gps = {}
+        for gp in candidates:
+            levelSum = gp.getLevelSum()
+            if levelSum not in gps:
+                gps[levelSum] = [gp]
+            else:
+                gps[levelSum].append(gp)
 
-        # make grid isotropic by adding all missing hierarchical ancestors
-        addedGridPoints = []
-        # 3. insert them in a new grid if the function is negative
-        p = DataVector(grid.getStorage().getDimension())
         opEval = createOperationEval(grid)
         alphaVec = DataVector(alpha)
-        for gp in intersections:
-            gp.getCoords(p)
-            if opEval.eval(alphaVec, p) < 0.0:
-                addedGridPoints += insertPoint(grid, gp)
-                addedGridPoints += insertHierarchicalAncestors(grid, gp)
+        p = DataVector(self.numDims)
+        levelSums = sorted(gps.keys())
+        candidates = []
+        done = False
+        gs = grid.getStorage()
+        i = 0
+        addedGridPoints = []
+
+        while not done and i < len(levelSums):
+            minLevelSum = levelSums[i]
+            for gp in gps[minLevelSum]:
+                gp.getCoords(p)
+                if not gs.has_key(gp) and opEval.eval(alphaVec, p) < 0.0:
+                    addedGridPoints += insertPoint(grid, gp)
+                    addedGridPoints += insertHierarchicalAncestors(grid, gp)
+                    if len(addedGridPoints) > 0:
+                        done = True
+
+            i += 1
+
         # recompute the leaf property and return the result
         grid.getStorage().recalcLeafProperty()
 
-        newGridPoints = {}
-        gs = grid.getStorage()
-        for gp in addedGridPoints:
-            newGridPoints[gs.seq(gp)] = gp
-
-        return newGridPoints
+        return addedGridPoints, minLevelSum
+#
+#         newGridPoints = {}
+#         gs = grid.getStorage()
+#         for gp in addedGridPoints:
+#             newGridPoints[gs.seq(gp)] = gp
+#
+#         return newGridPoints
 
 
     def coarsening(self, grid, alpha):
@@ -300,63 +351,61 @@ class OperationMakePositiveFast(object):
 
         iteration = 0
         newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
-
         newGs = newGrid.getStorage()
-        addedGridPoints = dict([(i, newGs.get(i)) for i in xrange(newGs.getSize())])
-        N0 = self.findGridPointsWithNegativeCoefficient(addedGridPoints, newAlpha)
-        N1 = {}
+        numDims = newGs.getDimension()
+        addedGridPoints = {}
 
-        while True:
-            cntChecks = len(N0) * len(addedGridPoints)
-            if self.verbose:
-                print "-" * 80
-                print "# search intersections: %i = %i x %i" % (len(N0) * len(addedGridPoints),
-                                                                len(N0), len(addedGridPoints))
+        numFullGridPoints = (2 ** newGs.getMaxLevel() - 1) ** numDims
 
-            intersections = self.findIntersectionsOfOverlappingSuppports(N0, addedGridPoints, newGrid)
+        while self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
+            candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
 
             if self.verbose:
-                print "# found intersections : %i/%i" % (len(intersections),
-                                                         cntChecks)
+                print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints - newGs.getSize(), costs)
 
-            addedGridPoints = []
-            if len(intersections) > 0:
-                addedGridPoints = self.addFullGridPoints(newGrid, newAlpha, intersections)
+            addedGridPoints = {}
+            if len(candidates) > 0:
+                addedGridPoints, minLevelSum = self.addFullGridPoints(newGrid, newAlpha, candidates)
 
                 if self.verbose:
-                    print "# new grid points     : %i -> %i" % (len(addedGridPoints), newGrid.getSize())
+                    print "# new grid points     : %i -> %i < %i at |l|_1 = %i" % (len(addedGridPoints), newGrid.getSize(), numFullGridPoints, minLevelSum)
+                    print "-" * 80
 
                 if len(addedGridPoints) == 0:
                     break
 
                 newAlpha = np.append(newAlpha, np.zeros(len(addedGridPoints)))
 
-                if self.algorithm is not None:
+                if self.interpolationAlgorithm is not None:
                     # compute now the hierarchical coefficients for the newly added points
-                    newAlpha = self.algorithm.computeHierarchicalCoefficients(newGrid,
-                                                                              newAlpha,
-                                                                              addedGridPoints.values())
+                    newAlpha = self.interpolationAlgorithm.computeHierarchicalCoefficients(newGrid,
+                                                                                           newAlpha,
+                                                                                           addedGridPoints)
                 else:
                     newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
+
+#                 if newGs.getDimension() == 2:
+#                     self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
             else:
                 break
 
-            N0.update(N1)  # all the negative ones from last iteration
-            N1 = self.findGridPointsWithNegativeCoefficient(addedGridPoints, newAlpha)
-
-            iteration += 1
-
         # coarsening: remove all new grid points with zero surplus
         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha)
-#         coarsedGrid, coarsedAlpha = newGrid, newAlpha
         if self.verbose:
-            print "-" * 80
             print "# coarsed grid        : %i -> %i" % (newGrid.getSize(),
-                                                     coarsedGrid.getSize())
+                                                        coarsedGrid.getSize())
             print "# full grid           :       %i" % (2 ** self.grid.getStorage().getMaxLevel() - 1) ** self.grid.getStorage().getDimension()
 
         # security check for positiveness
-        checkPositivity(coarsedGrid, coarsedAlpha)
+        neg = checkPositivity(coarsedGrid, coarsedAlpha)
+        
+#         if len(neg) > 0:
+#             # check at which grid points the function is negative
+#             for i, (yi, gp) in neg.items():
+#                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
+#                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
+#                                                      [gp.getIndex(d) for d in xrange(numDims)],
+#                                                      yi)
 
         return coarsedGrid, coarsedAlpha
 

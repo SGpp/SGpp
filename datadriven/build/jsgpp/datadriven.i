@@ -7,6 +7,8 @@
 #include <sgpp/solver/TypesSolver.hpp>
 %}
 
+%warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
