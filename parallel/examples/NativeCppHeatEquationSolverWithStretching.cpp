@@ -236,11 +236,9 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
 
   // Start solving the Heat Equation
   if (ODESolver == "ExEul") {
-    myHESolver->solveExplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false,
-                                   std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    myHESolver->solveExplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false);
   } else if (ODESolver == "ImEul") {
-    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false,
-                                   std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false);
   } else if (ODESolver == "CrNic") {
     myHESolver->solveCrankNicolson(timesteps, dt, cg_its, cg_eps, *alpha, CRNIC_IMEUL_STEPS);
   } else {

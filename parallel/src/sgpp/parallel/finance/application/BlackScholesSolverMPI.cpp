@@ -457,7 +457,7 @@ void BlackScholesSolverMPI::setStochasticData(sgpp::base::DataVector& mus,
 void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   throw base::application_exception(
       "BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this "
       "setting!");
@@ -466,10 +466,10 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::SLESolver* myCG;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 

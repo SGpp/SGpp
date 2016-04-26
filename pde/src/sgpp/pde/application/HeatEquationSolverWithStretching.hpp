@@ -66,11 +66,11 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
 
   void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                           double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
-                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
+                          bool generateAnimation = false);
 
   void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                           double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
-                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
+                          bool generateAnimation = false);
 
   void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                           double epsilonCG, sgpp::base::DataVector& alpha, size_t NumImEul = 0);

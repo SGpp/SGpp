@@ -50,7 +50,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param index point to refine
    * @param d direction
    * @param maxLevel no points on higher levels than maxLevel will be created
-         */
+   */
   void refineGridpoint1D(GridStorage& storage,
                          AbstractRefinement::index_type& index,
                          size_t d, unsigned int maxLevel);
