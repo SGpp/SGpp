@@ -58,56 +58,40 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
   // Test All The Grids!
   std::vector<std::unique_ptr<Grid>> grids;
-  grids.push_back(std::move(Grid::createBsplineGrid(d, p)));
-  grids.push_back(std::move(Grid::createBsplineBoundaryGrid(d, p)));
-  grids.push_back(std::move(Grid::createBsplineClenshawCurtisGrid(d, p)));
-  grids.push_back(std::move(Grid::createModBsplineGrid(d, p)));
-  grids.push_back(std::move(Grid::createModBsplineClenshawCurtisGrid(d, p)));
-  grids.push_back(std::move(Grid::createFundamentalSplineGrid(d, p)));
-  grids.push_back(std::move(Grid::createModFundamentalSplineGrid(d, p)));
-  grids.push_back(std::move(Grid::createLinearGrid(d)));
-  grids.push_back(std::move(Grid::createLinearBoundaryGrid(d)));
-  grids.push_back(std::move(Grid::createLinearClenshawCurtisGrid(d)));
-  grids.push_back(std::move(Grid::createModLinearGrid(d)));
-  grids.push_back(std::move(Grid::createWaveletGrid(d)));
-  grids.push_back(std::move(Grid::createWaveletBoundaryGrid(d)));
-  grids.push_back(std::move(Grid::createModWaveletGrid(d)));
-  grids.push_back(std::move(Grid::createPolyGrid(d, p)));
-  grids.push_back(std::move(Grid::createPolyBoundaryGrid(d, p)));
+  grids.push_back(Grid::createBsplineGrid(d, p));
+  grids.push_back(Grid::createBsplineBoundaryGrid(d, p));
+  grids.push_back(Grid::createBsplineClenshawCurtisGrid(d, p));
+  grids.push_back(Grid::createModBsplineGrid(d, p));
+  grids.push_back(Grid::createModBsplineClenshawCurtisGrid(d, p));
+  grids.push_back(Grid::createFundamentalSplineGrid(d, p));
+  grids.push_back(Grid::createModFundamentalSplineGrid(d, p));
+  grids.push_back(Grid::createLinearGrid(d));
+  grids.push_back(Grid::createLinearBoundaryGrid(d));
+  grids.push_back(Grid::createLinearClenshawCurtisGrid(d));
+  grids.push_back(Grid::createModLinearGrid(d));
+  grids.push_back(Grid::createWaveletGrid(d));
+  grids.push_back(Grid::createWaveletBoundaryGrid(d));
+  grids.push_back(Grid::createModWaveletGrid(d));
+  grids.push_back(Grid::createPolyGrid(d, p));
+  grids.push_back(Grid::createPolyBoundaryGrid(d, p));
 
   std::vector<std::unique_ptr<SBasis>> bases;
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SBsplineBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SBsplineBoundaryBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SBsplineClenshawCurtisBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SBsplineModifiedBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SBsplineModifiedClenshawCurtisBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SFundamentalSplineBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SFundamentalSplineModifiedBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SLinearBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SLinearBoundaryBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SLinearClenshawCurtisBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SLinearModifiedBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SWaveletBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SWaveletBoundaryBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SWaveletModifiedBase())));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SPolyBase(p))));
-  bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new sgpp::base::SPolyBoundaryBase(p))));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBoundaryBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineClenshawCurtisBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletModifiedBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBoundaryBase(p)));
 
   for (size_t k = 0; k < grids.size(); k++) {
     Grid& grid = *grids[k];
