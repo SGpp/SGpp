@@ -142,7 +142,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
 
 void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<size_t>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
