@@ -34,7 +34,7 @@ PoissonEquationSolver::~PoissonEquationSolver() {
 
 void PoissonEquationSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = static_cast<size_t>(level);
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
