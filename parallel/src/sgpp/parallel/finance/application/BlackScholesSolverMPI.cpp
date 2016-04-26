@@ -637,7 +637,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN =
         new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
