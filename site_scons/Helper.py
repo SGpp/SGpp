@@ -5,7 +5,6 @@
 
 from __future__ import print_function
 
-import io
 import glob
 import os
 import re
@@ -73,11 +72,10 @@ class Logger(object):
 
   def write(self, message):
     self.terminal.write(message)
-    # use io.open instead of open because Python replaces all "\n" with os.linesep by default,
-    # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n";
-    # newline="" prevents this conversion
-    with io.open("build.log", "a", newline="") as logFile:
-      logFile.write(unicode(message))
+    # Python replaces all "\n" with os.linesep by default,
+    # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n"
+    with open("build.log", "a") as logFile:
+      logFile.write(message.replace(os.linesep, "\n"))
 
   def flush(self):
     self.terminal.flush()
