@@ -920,7 +920,7 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, double ma
     alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], dblFuncValues[1], this->volvols->get(0),
                                         this->thetas->get(0), this->kappas->get(0),
                                         this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
@@ -955,7 +955,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, double
     alpha[i] = EvaluateHestonPriceExactPut(
         dblFuncValues[0], dblFuncValues[1], this->volvols->get(0), this->thetas->get(0),
         this->kappas->get(0), this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
@@ -1003,7 +1003,7 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v) {
 
   this->myGrid = gridTemp;
 
-  delete boundaries1d;
+  delete[] boundaries1d;
   delete grid1d;
   delete alphaHeston;
   delete alphaBS;
@@ -1024,7 +1024,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
     alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], v, this->volvols->get(0),
                                         this->thetas->get(0), this->kappas->get(0),
                                         this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
@@ -1046,7 +1046,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
 
     alpha[i] = myBSSolver->getAnalyticSolution1D(dblFuncValues[0], true, maturity, sigma, this->r,
                                                  this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
