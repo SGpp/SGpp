@@ -277,12 +277,15 @@ def setSpawn(env):
 # It has to be enabled with "env["SPAWN"] = win32Spawn".
 # (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 def setWin32Spawn(env):
-  import msvcrt
+  # the lines commented out were to write the results of the child processes to build.log
+  # (not only the commands which were executed)
+  # this seems, however, to cause sometimes deadlocks when compiling with -j
+  #import msvcrt
   import win32api
-  import win32con
+  #import win32con
   import win32event
-  import win32file
-  import win32pipe
+  #import win32file
+  #import win32pipe
   import win32process
   import win32security
 
@@ -290,29 +293,29 @@ def setWin32Spawn(env):
     for var in spawnEnv:
       spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
 
-    sAttrs = win32security.SECURITY_ATTRIBUTES()
-    sAttrs.bInheritHandle = 1
-    hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)
-    hStdoutR, hStdoutW = win32pipe.CreatePipe(sAttrs, 0)
-    hStderrR, hStderrW = win32pipe.CreatePipe(sAttrs, 0)
-
-    pid = win32api.GetCurrentProcess()
-
-    def replaceHandle(handle) :
-      tmp = win32api.DuplicateHandle(pid, handle, pid, 0, 0, win32con.DUPLICATE_SAME_ACCESS)
-      win32file.CloseHandle(handle)
-      return tmp
-
-    hStdinW = replaceHandle(hStdinW)
-    hStdoutR = replaceHandle(hStdoutR)
-    hStderrR = replaceHandle(hStderrR)
+    #sAttrs = win32security.SECURITY_ATTRIBUTES()
+    #sAttrs.bInheritHandle = 1
+    #hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)
+    #hStdoutR, hStdoutW = win32pipe.CreatePipe(sAttrs, 0)
+    #hStderrR, hStderrW = win32pipe.CreatePipe(sAttrs, 0)
+    #
+    #pid = win32api.GetCurrentProcess()
+    #
+    #def replaceHandle(handle) :
+    #  tmp = win32api.DuplicateHandle(pid, handle, pid, 0, 0, win32con.DUPLICATE_SAME_ACCESS)
+    #  win32file.CloseHandle(handle)
+    #  return tmp
+    #
+    #hStdinW = replaceHandle(hStdinW)
+    #hStdoutR = replaceHandle(hStdoutR)
+    #hStderrR = replaceHandle(hStderrR)
 
     sAttrs = win32security.SECURITY_ATTRIBUTES()
     startupInfo = win32process.STARTUPINFO()
-    startupInfo.hStdInput = hStdinR
-    startupInfo.hStdOutput = hStdoutW
-    startupInfo.hStdError = hStderrW
-    startupInfo.dwFlags = win32process.STARTF_USESTDHANDLES
+    #startupInfo.hStdInput = hStdinR
+    #startupInfo.hStdOutput = hStdoutW
+    #startupInfo.hStdError = hStderrW
+    #startupInfo.dwFlags = win32process.STARTF_USESTDHANDLES
     newArgs = " ".join(map(escape, args[1:]))
     cmdLine = cmd + " " + newArgs
 
@@ -333,13 +336,13 @@ def setWin32Spawn(env):
       win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
       exitCode = win32process.GetExitCodeProcess(hProcess)
 
-      win32file.CloseHandle(hStdinR)
-      win32file.CloseHandle(hStdoutW)
-      win32file.CloseHandle(hStderrW)
-      with os.fdopen(msvcrt.open_osfhandle(hStdoutR, 0), "rb") as f: stdout = f.read()
-      with os.fdopen(msvcrt.open_osfhandle(hStderrR, 0), "rb") as f: stderr = f.read()
-      sys.stdout.write(stdout)
-      sys.stderr.write(stderr)
+      #win32file.CloseHandle(hStdinR)
+      #win32file.CloseHandle(hStdoutW)
+      #win32file.CloseHandle(hStderrW)
+      #with os.fdopen(msvcrt.open_osfhandle(hStdoutR, 0), "rb") as f: stdout = f.read()
+      #with os.fdopen(msvcrt.open_osfhandle(hStderrR, 0), "rb") as f: stderr = f.read()
+      #sys.stdout.write(stdout)
+      #sys.stderr.write(stderr)
 
       win32file.CloseHandle(hProcess)
       win32file.CloseHandle(hThread)
