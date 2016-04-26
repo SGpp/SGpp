@@ -94,7 +94,7 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
         "grid must be divisible by two.");
 
   this->numAssets = this->dim / 2;
-  this->levels = level;
+  this->levels = static_cast<size_t>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
