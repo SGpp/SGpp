@@ -284,7 +284,7 @@ def setWin32Spawn(env):
   import win32api
   #import win32con
   import win32event
-  #import win32file
+  import win32file
   #import win32pipe
   import win32process
   import win32security
