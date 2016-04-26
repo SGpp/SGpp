@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import io
 import glob
 import os
 import re
@@ -72,8 +73,11 @@ class Logger(object):
 
   def write(self, message):
     self.terminal.write(message)
-    with open("build.log", "a") as logFile:
-      logFile.write(message)
+    # use io.open instead of open because Python replaces all "\n" with os.linesep by default,
+    # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n";
+    # newline="" prevents this conversion
+    with io.open("build.log", "a", newline="") as logFile:
+      logFile.write(unicode(message))
 
   def flush(self):
     self.terminal.flush()
@@ -275,8 +279,12 @@ def setSpawn(env):
 # It has to be enabled with "env["SPAWN"] = win32Spawn".
 # (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 def setWin32Spawn(env):
-  import win32file
+  import msvcrt
+  import win32api
+  import win32con
   import win32event
+  import win32file
+  import win32pipe
   import win32process
   import win32security
 
@@ -285,7 +293,28 @@ def setWin32Spawn(env):
       spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
 
     sAttrs = win32security.SECURITY_ATTRIBUTES()
+    sAttrs.bInheritHandle = 1
+    hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)
+    hStdoutR, hStdoutW = win32pipe.CreatePipe(sAttrs, 0)
+    hStderrR, hStderrW = win32pipe.CreatePipe(sAttrs, 0)
+
+    pid = win32api.GetCurrentProcess()
+
+    def replaceHandle(handle) :
+      tmp = win32api.DuplicateHandle(pid, handle, pid, 0, 0, win32con.DUPLICATE_SAME_ACCESS)
+      win32file.CloseHandle(handle)
+      return tmp
+
+    hStdinW = replaceHandle(hStdinW)
+    hStdoutR = replaceHandle(hStdoutR)
+    hStderrR = replaceHandle(hStderrR)
+
+    sAttrs = win32security.SECURITY_ATTRIBUTES()
     startupInfo = win32process.STARTUPINFO()
+    startupInfo.hStdInput = hStdinR
+    startupInfo.hStdOutput = hStdoutW
+    startupInfo.hStdError = hStderrW
+    startupInfo.dwFlags = win32process.STARTF_USESTDHANDLES
     newArgs = " ".join(map(escape, args[1:]))
     cmdLine = cmd + " " + newArgs
 
@@ -300,12 +329,20 @@ def setWin32Spawn(env):
         hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
             None, cmdLine, None, None, 1, 0, spawnEnv, None, startupInfo)
       except:
-        import win32api
         errorCode = win32api.GetLastError()
         raise RuntimeError("Could not execute the following " +
           "command line (error code {}): {}".format(errorCode, cmdLine))
       win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
       exitCode = win32process.GetExitCodeProcess(hProcess)
+
+      win32file.CloseHandle(hStdinR)
+      win32file.CloseHandle(hStdoutW)
+      win32file.CloseHandle(hStderrW)
+      with os.fdopen(msvcrt.open_osfhandle(hStdoutR, 0), "rb") as f: stdout = f.read()
+      with os.fdopen(msvcrt.open_osfhandle(hStderrR, 0), "rb") as f: stderr = f.read()
+      sys.stdout.write(stdout)
+      sys.stderr.write(stderr)
+
       win32file.CloseHandle(hProcess)
       win32file.CloseHandle(hThread)
     return exitCode
