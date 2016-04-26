@@ -44,6 +44,8 @@ class LearnerLeastSquaresIdentity: public sgpp::datadriven::LearnerBase {
                               const size_t numNeededIterations);
 
  public:
+  using LearnerBase::predict;
+
   /**
    * Constructor
    *

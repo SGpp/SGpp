@@ -65,6 +65,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   friend class LearnerOnlineSGD;
  public:
   typedef PredictiveRefinement_refinement_key refinement_key_type;
+  using RefinementDecorator::free_refine;
 
   explicit PredictiveRefinement(AbstractRefinement* refinement):
     RefinementDecorator(refinement),
@@ -96,6 +97,8 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   }
 
  protected:
+  using RefinementDecorator::refineGridpointsCollection;
+
   /**
   * Examines the grid points and stores the indices those that can be refined
   * and have maximal indicator values.

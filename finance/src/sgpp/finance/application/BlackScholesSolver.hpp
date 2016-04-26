@@ -179,7 +179,7 @@ class BlackScholesSolver : public sgpp::pde::ParabolicPDESolver {
    */
   virtual ~BlackScholesSolver();
 
-  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   /**
    * This function tries to refine the grid such that

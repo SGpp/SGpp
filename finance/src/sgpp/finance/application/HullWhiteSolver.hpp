@@ -75,7 +75,7 @@ class HullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
    */
   virtual ~HullWhiteSolver();
 
-  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   void setStochasticData(double theta, double sigma, double a);
 

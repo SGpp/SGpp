@@ -60,9 +60,9 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    */
   virtual ~HeatEquationSolverWithStretching();
 
-  void constructGrid(sgpp::base::Stretching& myStretching, int level);
+  void constructGrid(sgpp::base::Stretching& myStretching, size_t level);
 
-  void constructGrid(sgpp::base::BoundingBox& myStretching, int level);
+  void constructGrid(sgpp::base::BoundingBox& myStretching, size_t level);
 
   void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                           double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
@@ -125,13 +125,13 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param PointesPerDimension the distance between evaluation points
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  void printGrid(sgpp::base::DataVector& alpha, double PointesPerDimension,
+  void printGrid(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                  std::string tfilename) const;
 
   /**
    This function is a placeholder, is not used.
    */
-  void printGridDomain(sgpp::base::DataVector& alpha, double PointesPerDimension,
+  void printGridDomain(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                        sgpp::base::BoundingBox& GridArea, std::string tfilename) const;
 
   /**
@@ -145,7 +145,7 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param GridArea the area in which the function should be plotted
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  void printGridDomainStretching(sgpp::base::DataVector& alpha, double PointesPerDimension,
+  void printGridDomainStretching(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                                  sgpp::base::Stretching& GridArea, std::string tfilename) const;
 
   /**
