@@ -56,7 +56,7 @@ class HeatEquationSolverMPI : public sgpp::pde::ParabolicPDESolver {
    */
   virtual ~HeatEquationSolverMPI();
 
-  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                           double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,

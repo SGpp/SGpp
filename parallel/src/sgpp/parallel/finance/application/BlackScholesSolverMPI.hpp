@@ -183,7 +183,7 @@ class BlackScholesSolverMPI : public sgpp::pde::ParabolicPDESolver {
    */
   virtual ~BlackScholesSolverMPI();
 
-  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   /**
    * In order to solve the multi dimensional Black Scholes Equation you have to provided
