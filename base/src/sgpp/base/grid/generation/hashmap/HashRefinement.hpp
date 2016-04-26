@@ -30,7 +30,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage& storage, RefinementFunctor& functor) override;
+  void free_refine(GridStorage& storage, RefinementFunctor& functor) override;
 
   /**
    * Computes and returns the number of grid points, which can be refined.
