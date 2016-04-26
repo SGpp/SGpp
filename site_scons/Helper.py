@@ -9,6 +9,7 @@ import glob
 import os
 import re
 import string
+import subprocess
 import sys
 
 import SCons.Script
@@ -58,11 +59,11 @@ def getModules(ignoreFolders):
 def multiParamConverter(s):
   return s.split(",")
 
-# this class is used with "sys.stdout = Logger()" at the very beginning
+# this class is used with "sys.stdout = Logger(sys.stdout)" at the very beginning
 # => print lines to the terminal and to the log file simultaneously
 class Logger(object):
-  def __init__(self):
-    self.terminal = sys.stdout
+  def __init__(self, terminal):
+    self.terminal = terminal
 
     # clear file
     with open("build.log", "a") as logFile:
@@ -240,6 +241,34 @@ def flatDependencyGraph(dependencies, acc):
       acc = [dependency] + acc
   return acc
 
+# Override env["SPAWN"] to log output (stdout/stderr) of child processes.
+# (see https://bitbucket.org/scons/scons/wiki/BuildLog)
+def setSpawn(env):
+  def echoSpawn(sh, escape, cmd, args, spawnEnv):
+      """Spawn which echos stdout/stderr from the child."""
+      # convert spawnEnv from unicode strings
+      for var in spawnEnv:
+        spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
+
+      newArgs = " ".join(args[1:])
+      cmdLine = cmd + " " + newArgs
+
+      p = subprocess.Popen(
+          cmdLine,
+          env=spawnEnv,
+          stderr=subprocess.PIPE,
+          stdout=subprocess.PIPE,
+          shell=True,
+          universal_newlines=True)
+      (stdout, stderr) = p.communicate()
+
+      # Does this screw up the relative order of the two?
+      sys.stdout.write(stdout)
+      sys.stderr.write(stderr)
+      return p.returncode
+
+  env["SPAWN"] = echoSpawn
+
 # On win32, the command lines are limited to a ridiculously short length
 # (1000 chars). However, compiler/linker command lines easily exceed that
 # length. The following is a fix for that.
@@ -257,8 +286,8 @@ def setWin32Spawn(env):
 
     sAttrs = win32security.SECURITY_ATTRIBUTES()
     startupInfo = win32process.STARTUPINFO()
-    newargs = " ".join(map(escape, args[1:]))
-    cmdLine = cmd + " " + newargs
+    newArgs = " ".join(map(escape, args[1:]))
+    cmdLine = cmd + " " + newArgs
 
     # check for any special operating system commands
     if cmd == "del":
