@@ -15,8 +15,9 @@ namespace sgpp {
 namespace base {
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr)
-    : Grid(istr), generator(storage, boundaryLevel), boundaryLevel(0) {
+    : Grid(istr), generator(storage), boundaryLevel(0) {
   istr >> boundaryLevel;
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel)
