@@ -117,7 +117,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void refineGridpointsCollection(
+  void refineGridpointsCollection(
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
