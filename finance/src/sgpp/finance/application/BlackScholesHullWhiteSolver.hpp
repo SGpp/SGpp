@@ -101,7 +101,7 @@ class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
    */
   virtual ~BlackScholesHullWhiteSolver();
 
-  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   /**
    * In order to combine the Black Scholes Equation with the Hull White Equation you have to

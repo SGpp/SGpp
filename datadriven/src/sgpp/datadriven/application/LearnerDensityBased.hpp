@@ -42,6 +42,8 @@ class LearnerDensityBased: public sgpp::datadriven::LearnerBase {
   std::vector<sgpp::base::OperationMatrix*> CVec_;
 
  public:
+  using LearnerBase::predict;
+
   LearnerDensityBased(sgpp::datadriven::RegularizationType&,
                       const bool isRegression,
                       const bool isVerbose = true);

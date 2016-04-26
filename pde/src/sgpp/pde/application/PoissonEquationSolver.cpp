@@ -32,7 +32,7 @@ PoissonEquationSolver::~PoissonEquationSolver() {
   }
 }
 
-void PoissonEquationSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
+void PoissonEquationSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
   this->levels = level;
 

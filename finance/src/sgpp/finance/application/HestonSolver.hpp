@@ -167,7 +167,7 @@ class HestonSolver : public sgpp::pde::ParabolicPDESolver {
    * @param myBoundingBox bounding box for the sparse grid
    * @param level sparse grid level
    */
-  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   /**
    * This function tries to refine the grid such that

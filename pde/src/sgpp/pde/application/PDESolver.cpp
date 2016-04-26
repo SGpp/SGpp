@@ -222,16 +222,16 @@ void PDESolver::printLevelIndexGrid(std::string tfilename) const {
   myPrinter.printLevelIndexGrid(tfilename);
 }
 
-void PDESolver::printGrid(sgpp::base::DataVector& alpha, double PointesPerDimension,
+void PDESolver::printGrid(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                           std::string tfilename) const {
   sgpp::base::GridPrinter myPrinter(*this->myGrid);
-  myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
+  myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void PDESolver::printGridDomain(sgpp::base::DataVector& alpha, double PointesPerDimension,
+void PDESolver::printGridDomain(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                                 sgpp::base::BoundingBox& GridArea, std::string tfilename) const {
   sgpp::base::GridPrinter myPrinter(*this->myGrid);
-  myPrinter.printGridDomain(alpha, tfilename, GridArea, static_cast<size_t>(PointesPerDimension));
+  myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
 void PDESolver::printSparseGrid(sgpp::base::DataVector& alpha, std::string tfilename,
