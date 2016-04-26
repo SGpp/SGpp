@@ -52,7 +52,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   LearnerSGDEConfiguration();
   explicit LearnerSGDEConfiguration(const std::string& fileName);
 
-  virtual LearnerSGDEConfiguration* clone();
+  LearnerSGDEConfiguration* clone() override;
 
   void initConfig();
   sgpp::base::GridType stringToGridType(std::string& gridType);

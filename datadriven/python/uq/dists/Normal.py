@@ -3,6 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
+from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 """
 @file    tnormal.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>

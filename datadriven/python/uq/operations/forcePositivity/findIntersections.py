@@ -129,22 +129,19 @@ class IntersectionCandidates(CandidateSet):
             print "# intersections       :",
 
         if self.iteration == 0:
-            self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
+            self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # and alpha[i] < 0.0]
             self.N0 = self.A0  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
 
             if self.verbose:
                 print "%i = %i x %i" % (len(self.N0) * len(self.A0),
                                         len(self.N0), len(self.A0))
             
-            self.candidates0, self.costs = self.findIntersections(self.N0, self.A0, grid)
-            self.candidates = self.candidates0
+            self.candidates1, self.costs = self.findIntersections(self.N0, self.A0, grid)
+            self.candidates = self.candidates1
         else:
 #             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
-            self.N0 = self.candidates0  # self.candidates_history[self.iteration - 1]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
-#             self.N0 = []
-#             for gp in self.candidates_history[self.iteration - 1]:
-#                 if not gs.has_key(gp):
-#                     self.N0.append(gp)
+#             self.N0 = self.candidates0  # self.candidates_history[self.iteration - 1]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
+            self.N0 = self.candidates1
             
             if self.verbose:
                 print "%i = %i x %i" % (len(self.N0) * len(self.A0),
@@ -153,7 +150,13 @@ class IntersectionCandidates(CandidateSet):
             self.candidates0, costs0 = self.findIntersections(self.N0, self.A0, grid)
 #             candidates1, costs1 = self.findIntersections(self.N0, self.N0, grid)
 
-            self.candidates = self.candidates0  # + candidates1
+            self.candidates1 = []
+            self.candidates = self.candidates_history[self.iteration - 1]
+            for gp in self.candidates0:
+                if gp not in self.candidates_history[self.iteration - 1]:
+                    self.candidates1.append(gp)
+
+            self.candidates += self.candidates1  # + candidates1
 #             self.candidates += candidates1
             self.costs += costs0  # + costs1
 

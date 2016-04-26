@@ -1,6 +1,6 @@
 from pysgpp import (createOperationQuadrature,
-                    Linear, LinearL0Boundary, LinearBoundary,
-                    Poly, PolyBoundary)
+                    GridType_Linear, GridType_LinearL0Boundary, GridType_LinearBoundary,
+                    GridType_Poly, GridType_PolyBoundary)
 from pysgpp.extensions.datadriven.uq.operations import getBasis
 from pysgpp import DataVector
 import numpy as np
@@ -8,16 +8,16 @@ import numpy as np
 
 def getIntegral(grid, level, index):
     # create new grid
-    if grid.getType() in [LinearBoundary, LinearL0Boundary]:
+    if grid.getType() in [GridType_LinearBoundary, GridType_LinearL0Boundary]:
         return np.power(2., -max(1, level))
-    elif grid.getType() == Linear:
+    elif grid.getType() == GridType_Linear:
         # # employ 4/3 rule
         # if gp.isLeaf():
         #     q *= 4. / 3.
         return np.power(2., -level)
-    elif grid.getType() == Poly:
+    elif grid.getType() == GridType_Poly:
         return getBasis(grid).getIntegral(level, index)
-    elif grid.getType() == PolyBoundary:
+    elif grid.getType() == GridType_PolyBoundary:
         return getBasis(grid).getIntegral(level, index)
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())

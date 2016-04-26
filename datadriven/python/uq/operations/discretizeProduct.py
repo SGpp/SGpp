@@ -1,6 +1,6 @@
 from pysgpp import (DataVector, DataMatrix,
                     SurplusRefinementFunctor, Grid,
-                    Linear, Poly)
+                    GridType_Linear, GridType_Poly)
 
 # from epsilonComplexity import getL2EpsilonComplexity
 from sparse_grid import (hierarchize,
@@ -117,9 +117,9 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
     """
     # make sure that the grids are either piece wise linear
     # or piecewise polynomial
-    if grid1.getType() not in [Linear, Poly]:
+    if grid1.getType() not in [GridType_Linear, GridType_Poly]:
         raise AttributeError("grid type '%s' not supported" % grid1.getType())
-    if grid2.getType() not in [Linear, Poly]:
+    if grid2.getType() not in [GridType_Linear, GridType_Poly]:
         raise AttributeError("grid type '%s' not supported" % grid2.getType())
 
     # get the degrees of the grid
