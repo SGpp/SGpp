@@ -490,6 +490,9 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 
 doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
 env.Alias("doxygen", doxygen)
+# SCons doesn't know the *.doxy dependencies of the doxygen target
+# ==> always consider out-of-date with AlwaysBuild
+env.AlwaysBuild(doxygen)
 
 # Things to be cleaned
 #########################################################################
