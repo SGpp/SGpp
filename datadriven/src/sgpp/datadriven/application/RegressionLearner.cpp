@@ -17,6 +17,8 @@
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -43,8 +45,30 @@ void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
   std::unique_ptr<sgpp::solver::SLESolver> solver;
   solver = createSolver();
 
-  for (size_t i = 0; i < adaptivityConfig.numRefinements_ + 1; ++i) {
-    trainStep(i, *DMSystem, *solver, classes);
+  double bestMSE = std::numeric_limits<double>::max();
+
+  for (size_t curStep = 0; curStep < adaptivityConfig.numRefinements_ + 1; ++curStep) {
+    if (curStep > 0) {
+      refine(*DMSystem);
+    }
+    if (curStep == adaptivityConfig.numRefinements_) {
+      // change the configuration of the solver for this last step
+      solver->setMaxIterations(solverConfig.maxIterations_);
+      solver->setEpsilon(solverConfig.eps_);
+    }
+
+    fit(*DMSystem, *solver, classes);
+
+    // if we don't do any refinements we can safely skip this   step
+    if (adaptivityConfig.numRefinements_ > 0) {
+      const double curMSE = getMSE(trainDataset, classes);
+      if (curMSE < bestMSE) {
+        bestMSE = curMSE;
+      } else {
+        // The grid got worse, we need to stop now.
+        break;
+      }
+    }
   }
 }
 
@@ -60,33 +84,22 @@ double RegressionLearner::getMSE(sgpp::base::DataMatrix& data, const sgpp::base:
   return getMSE(y, yPrediction);
 }
 
-void RegressionLearner::trainStep(size_t curStep, sgpp::datadriven::DMSystemMatrixBase& DMSystem,
-                                  sgpp::solver::SLESolver& solver,
-                                  sgpp::base::DataVector& classes) {
-  // We don't need to refine the grid during the first iteration!
-  if (curStep > 0) {
-    auto refineFunctor = sgpp::base::SurplusRefinementFunctor(weights, adaptivityConfig.noPoints_,
-                                                              adaptivityConfig.threshold_);
-    grid->getGenerator().refine(refineFunctor);
-
-    // tell the SLE manager that the grid changed (for internal
-    // data structures)
-    DMSystem.prepareGrid();
-    weights.resizeZero(grid->getSize());
-  } else {
-    // no refinement needed!
-  }
-
+void RegressionLearner::fit(sgpp::datadriven::DMSystemMatrixBase& DMSystem,
+                            sgpp::solver::SLESolver& solver, sgpp::base::DataVector& classes) {
   auto b = sgpp::base::DataVector(weights.getSize());
   DMSystem.generateb(classes, b);
-
-  if (curStep == adaptivityConfig.numRefinements_) {
-    // change the configuration of the solver for this last step
-    solver.setMaxIterations(solverConfig.maxIterations_);
-    solver.setEpsilon(solverConfig.eps_);
-  }
-
   solver.solve(DMSystem, weights, b, true, false, 0.0);
+}
+
+void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem) {
+  auto refineFunctor = sgpp::base::SurplusRefinementFunctor(weights, adaptivityConfig.noPoints_,
+                                                            adaptivityConfig.threshold_);
+  grid->getGenerator().refine(refineFunctor);
+
+  // tell the SLE manager that the grid changed (for internal
+  // data structures)
+  DMSystem.prepareGrid();
+  weights.resizeZero(grid->getSize());
 }
 
 double RegressionLearner::getMSE(const sgpp::base::DataVector& y,
