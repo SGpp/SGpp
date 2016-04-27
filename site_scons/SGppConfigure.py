@@ -351,7 +351,7 @@ def configureClangCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  allWarnings = "-Wall -Wextra".split(" ")
+  allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006

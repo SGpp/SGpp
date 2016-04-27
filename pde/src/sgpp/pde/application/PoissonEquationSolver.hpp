@@ -51,7 +51,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    */
   virtual ~PoissonEquationSolver();
 
-  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   void solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs, size_t maxCGIterations,
                 double epsilonCG, bool verbose = false);

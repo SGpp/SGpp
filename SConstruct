@@ -17,7 +17,8 @@ from SCons.Script.SConscript import SConsEnvironment
 import Helper
 import SGppConfigure
 
-sys.stdout = Helper.Logger()
+sys.stdout = Helper.Logger(sys.stdout)
+sys.stderr = Helper.Logger(sys.stderr)
 finalMessagePrinter = Helper.FinalMessagePrinter()
 atexit.register(finalMessagePrinter.printMessage)
 
@@ -248,6 +249,8 @@ if not env.GetOption("clean"):
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 if env["PLATFORM"] == "win32":
   Helper.setWin32Spawn(env)
+else:
+  Helper.setSpawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
