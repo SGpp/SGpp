@@ -26,6 +26,14 @@ BoundaryGridGenerator::BoundaryGridGenerator(GridStorage& storage,
 BoundaryGridGenerator::~BoundaryGridGenerator() {
 }
 
+level_t BoundaryGridGenerator::getBoundaryLevel() const {
+  return boundaryLevel;
+}
+
+void BoundaryGridGenerator::setBoundaryLevel(level_t boundaryLevel) {
+  this->boundaryLevel = boundaryLevel;
+}
+
 void BoundaryGridGenerator::regular(size_t level) {
   HashGenerator gen;
   gen.regularWithBoundaries(this->storage,

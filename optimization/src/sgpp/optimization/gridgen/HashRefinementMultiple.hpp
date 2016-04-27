@@ -52,7 +52,9 @@ class HashRefinementMultiple : public base::HashRefinement {
    * @param storage   grid storage
    * @return          number of refinable points
    */
-  size_t getNumberOfRefinablePoints(base::GridStorage& storage) { return storage.getSize(); }
+  size_t getNumberOfRefinablePoints(base::GridStorage& storage) override {
+    return storage.getSize();
+  }
 
   /**
    * Refines a grid point in one dimension.
@@ -62,7 +64,7 @@ class HashRefinementMultiple : public base::HashRefinement {
    * @param index     index of the grid point
    * @param t         dimension in which the refinement should take place
    */
-  void refineGridpoint1D(base::GridStorage& storage, index_type& index, size_t t) {
+  void refineGridpoint1D(base::GridStorage& storage, index_type& index, size_t t) override {
     index_t sourceIndex, childIndex;
     level_t sourceLevel, childLevel;
 

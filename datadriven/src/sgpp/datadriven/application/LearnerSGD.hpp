@@ -20,6 +20,8 @@ namespace datadriven {
 
 class LearnerSGD: public sgpp::datadriven::Learner {
  public:
+  using LearnerBase::train;
+
   LearnerSGD(sgpp::datadriven::RegularizationType& regularization,
              const bool isRegression, const bool isVerbose = true);
 

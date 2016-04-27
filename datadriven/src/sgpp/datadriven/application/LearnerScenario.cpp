@@ -12,10 +12,10 @@
 namespace sgpp {
 namespace datadriven {
 
-LearnerScenario::LearnerScenario() : isInitialized(false) {}
+LearnerScenario::LearnerScenario() : initialized(false) {}
 
 LearnerScenario::LearnerScenario(std::string scenarioFileName)
-    : json::JSON(scenarioFileName), isInitialized(true) {
+    : json::JSON(scenarioFileName), initialized(true) {
   //  this->readFromFile(scenarioFileName);
 }
 
@@ -25,7 +25,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
                                  base::AdpativityConfiguration adaptConfig)
-    : isInitialized(true) {
+    : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
   this->setInternalPrecision(internalPrecision);
@@ -43,7 +43,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
                                  base::AdpativityConfiguration adaptConfig,
                                  datadriven::TestsetConfiguration testsetConfig)
-    : isInitialized(true) {
+    : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
   this->setInternalPrecision(internalPrecision);
@@ -52,6 +52,10 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setSolverConfigurationFinal(SLESolverConfigFinal);
   this->setAdaptivityConfiguration(adaptConfig);
   this->setTestsetConfiguration(testsetConfig);
+}
+
+bool LearnerScenario::isInitialized() const {
+  return initialized;
 }
 
 void LearnerScenario::setDatasetFileName(std::string datasetFileName) {

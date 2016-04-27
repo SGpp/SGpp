@@ -371,7 +371,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
       theta = calculatetheta(a, sigma, T, t_local);
       myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0, theta, sigma, a);
       myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations,
-                                       CGepsilon, *alpha, false, false, 20);
+                                       CGepsilon, *alpha, false, false);
       count = count + 1;
       t_local += dt_outerCall;
 
@@ -705,7 +705,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
       theta = calculatetheta(a, sigma, T, t_local);
       myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0, theta, sigma, a);
       myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations,
-                                       CGepsilon, *alpha, false, false, 20);
+                                       CGepsilon, *alpha, false, false);
       count = count + 1;
       t_local += dt_outerCall;
       std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;

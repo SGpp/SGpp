@@ -221,8 +221,8 @@ class HashGridIterator {
   HashGridStorage& storage;
   /// GridIndex object used to operate on the current position in the hashmap
   HashGridIndex index;
-  /// true if the current point is a leaf, otherwise false
-  bool Leaf;
+  // true if the current point is a leaf, otherwise false
+  // bool Leaf;
   /// the current gridpoint's index
   size_t seq_;
 };
