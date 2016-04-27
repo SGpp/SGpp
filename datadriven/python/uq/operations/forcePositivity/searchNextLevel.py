@@ -24,19 +24,17 @@ class ChildrenNodesAsCandidates(CandidateSet):
         numDims, numGridPoints = gs.getDimension(), gs.getSize()
 
         self.costs = 0
-        for i in xrange(numGridPoints):
-            self.costs += 1
-
-            gp = gs.get(i)
-
-            if not hasAllChildren(grid, gp):
-                if alpha[i] < 0.0:
+        if self.iteration == 0:
+            for i in xrange(numGridPoints):
+                self.costs += 1
+                gp = gs.get(i)
+                if not hasAllChildren(grid, gp):
                     refinementCandidates[i] = gp
-                else:
-                    for ix, _ in getHierarchicalAncestors(grid, gp):
-                        if alpha[ix] < 0.0:
-                            refinementCandidates[i] = gp
-                            break
+        else:
+            for gp in self.candidates:
+                self.costs += 1
+                if not hasAllChildren(grid, gp):
+                    refinementCandidates[i] = gp
 
         # add all children to the list of candidates
         maxLevel = gs.getMaxLevel()
