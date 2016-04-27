@@ -11,11 +11,15 @@
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
+#include <vector>
 #include <exception>
+#include <limits>
+#include <ostream>
 
-sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) {
+sgpp::datadriven::RegressionLearner getLearner(
+    size_t dimension, sgpp::datadriven::RegularizationConfiguration regularizationConfig) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
-  gridConfig.dim_ = data.getDimension();
+  gridConfig.dim_ = dimension;
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -23,45 +27,119 @@ sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) 
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
-  auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
-  auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
-  regularizationConfig.regType_ = regularizationType;
-  regularizationConfig.lambda = 0.001;
-  regularizationConfig.multiplicationFactor = 0.25;
-
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 5000;
-  solverConfig.eps_ = 1e-6;
+  solverConfig.eps_ = 1e-7;
 
-  std::cout << "Initializing the learner." << std::endl;
   return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
                                              regularizationConfig);
+}
+
+std::string showRegularizationConfiguration(
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig) {
+  std::ostringstream ss;
+  switch (regularizationConfig.regType_) {
+    case sgpp::datadriven::RegularizationType::Diagonal:
+      ss << "type: DiagonalMatrix\t";
+      break;
+    case sgpp::datadriven::RegularizationType::Identity:
+      ss << "type: IdentityMatrix\t";
+      break;
+    case sgpp::datadriven::RegularizationType::Laplace:
+      ss << "type: Laplace\t";
+      break;
+    default:
+      ss << "type: unknown\t";
+  }
+
+  ss << "lambda: " << regularizationConfig.lambda
+     << "\tmultiplicationFactor: " << regularizationConfig.multiplicationFactor;
+  return ss.str();
+}
+
+sgpp::datadriven::RegularizationConfiguration gridSearch(
+    std::vector<sgpp::datadriven::RegularizationConfiguration> configs, size_t dimension,
+    sgpp::base::DataMatrix& xTrain, sgpp::base::DataVector& yTrain,
+    sgpp::base::DataMatrix& xValidation, sgpp::base::DataVector& yValidation) {
+  double bestMSE = std::numeric_limits<double>::max();
+  sgpp::datadriven::RegularizationConfiguration bestConfig;
+  for (const auto& config : configs) {
+    // Step 1: Create a learner
+    auto learner = getLearner(dimension, config);
+    // Step 2: Train it with the hyperparameter
+    learner.train(xTrain, yTrain);
+    // Step 3: Evaluate accuracy
+    const double curMSE = learner.getMSE(xValidation, yValidation);
+    std::cout << "Tested parameters are\n" << showRegularizationConfiguration(config) << ".\n";
+    if (curMSE < bestMSE) {
+      std::cout << "Better! MSE is now " << curMSE << std::endl;
+      bestConfig = config;
+      bestMSE = curMSE;
+    } else {
+      std::cout << "Worse!  MSE is now " << curMSE << std::endl;
+    }
+  }
+  std::cout << "gridSearch finished with parameters "
+            << showRegularizationConfiguration(bestConfig);
+  return bestConfig;
+}
+
+std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
+  decltype(getConfigs()) result;
+  std::vector<double> lamdas = {0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125};
+
+  // Identity
+  for (const auto lambda : lamdas) {
+    const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
+    auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
+    regularizationConfig.regType_ = regularizationType;
+    regularizationConfig.lambda = lambda;
+    regularizationConfig.multiplicationFactor = 0.25;
+    result.push_back(regularizationConfig);
+  }
+
+  // Diagonal
+  std::vector<double> multiplicationFactors = {0.5, 0.25, 0.125};
+  for (const auto lambda : lamdas) {
+    for (const auto multiplicationFactor : multiplicationFactors) {
+      const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
+      auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
+      regularizationConfig.regType_ = regularizationType;
+      regularizationConfig.lambda = lambda;
+      regularizationConfig.multiplicationFactor = multiplicationFactor;
+      result.push_back(regularizationConfig);
+    }
+  }
+  return result;
 }
 
 int main(int argc, char** argv) {
   const auto filenameTrain = std::string("../tests/data/friedman3_10k_train.arff");
   const auto filenameValidation = std::string("../tests/data/friedman3_10k_validation.arff");
+  const auto filenameTest = std::string("../tests/data/friedman3_10k_testing.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
   auto xTrain = dataTrain.getData();
   auto yTrain = dataTrain.getTargets();
-
-  auto learner = getLearner(dataTrain);
-
-  std::cout << "Training the learner." << std::endl;
-  learner.train(xTrain, yTrain);
-  std::cout << "Finished training." << std::endl;
-
-  const double MSETrain = learner.getMSE(xTrain, yTrain);
-  std::cout << "Training MSE = " << MSETrain << std::endl;
+  const auto dimensions = dataTrain.getDimension();
 
   auto dataValidation = sgpp::datadriven::ARFFTools::readARFF(filenameValidation);
   std::cout << "Read file " << filenameValidation << "." << std::endl;
   auto xValidation = dataValidation.getData();
   auto yValidation = dataValidation.getTargets();
 
-  const double MSEValidation = learner.getMSE(xValidation, yValidation);
-  std::cout << "Validation MSE = " << MSEValidation << std::endl;
+  const auto configs = getConfigs();
+  const auto bestConfig = gridSearch(configs, dimensions, xTrain, yTrain, xValidation, yValidation);
+
+  auto dataTest = sgpp::datadriven::ARFFTools::readARFF(filenameTest);
+  std::cout << "Read file " << filenameTest << "." << std::endl;
+  auto xTest = dataTest.getData();
+  auto yTest = dataTest.getTargets();
+
+  auto learner = getLearner(dimensions, bestConfig);
+  learner.train(xTrain, yTrain);
+  const auto MSETest = learner.getMSE(xTest, yTest);
+  std::cout << "Best config got a testing MSE of " << MSETest << "!" << std::endl;
 }
