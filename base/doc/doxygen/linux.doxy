@@ -1,8 +1,10 @@
 /**
-@page linux Linux (GCC)
+@page linux Linux (GCC/Clang/ICC)
 
 This page contains instructions for compiling and using SG++ with
-GCC under Linux.
+GCC, Clang or ICC under Linux.
+For brevity, we assume you want to compile with GCC;
+the compiler can be changed easily, however.
 
 
 
@@ -20,7 +22,8 @@ GCC under Linux.
 
 The following software is required in order to build SG++:
 
-- <a href="https://gcc.gnu.org/" target="_blank">GCC (&ge; 4.8)</a>
+- <a href="https://gcc.gnu.org/" target="_blank">GCC (&ge; 4.8)</a> or
+  <a href="http://clang.llvm.org/" target="_blank">Clang (&ge; 3.8)</a>
 - <a href="http://www.scons.org/" target="_blank">SCons (&ge; 2.3)</a>
   is required for building (build system).
   SCons is written in Python 2.7, which is therefore needed by SG++ as well.
@@ -61,19 +64,22 @@ The following software can be installed for full functionality:
 
 @subsection linux_dependencies_installation Installation
 
-On a recent Ubuntu system,
+On a recent Ubuntu system (&ge; 14.04 LTS),
 you can install most dependencies by installing the following packages:
 - GCC: <tt>g++</tt>
+- Clang: <tt>clang</tt> on Ubuntu &ge; 16.04.
+  On the <a href="http://llvm.org/releases/download.html" target="_blank">
+  LLVM download page</a>, there are binaries for many other systems,
+  including older Ubuntu versions.
 - SCons: <tt>scons</tt>
 - Boost.Test: <tt>libboost-test-dev</tt>
-- SWIG: <tt>swig3.0</tt> for Ubuntu 14.10 or newer.
-  For Ubuntu 14.04 LTS or older versions, download the
+- SWIG: <tt>swig3.0</tt> on Ubuntu &ge; 14.10.
+  For Ubuntu 14.04 LTS, download the
   <a href="https://launchpad.net/ubuntu/utopic/amd64/swig3.0/3.0.2-1ubuntu1"
-  target="_blank">
-  SWIG 3.0 .deb file</a> here and install it via <tt>sudo dpkg -i debfile</tt>.
+  target="_blank">SWIG 3.0 .deb file</a> here.
 - Python development headers: <tt>libpython-dev</tt>
 - NumPy: <tt>python-numpy</tt>
-- Java: <tt>openjdk-6-jdk</tt>
+- Java: <tt>openjdk-7-jdk</tt> or <tt>openjdk-8-jdk</tt> on Ubuntu &ge; 15.10
 - Doxygen: <tt>doxygen</tt>
 - Dot: <tt>graphviz</tt>
 
@@ -85,7 +91,9 @@ Compilation of the C++ libraries is done with SCons. Execute
 @verbatim
 scons -j <number of cores>
 @endverbatim
-in the main folder. For configuration and optimization, see below.
+in the main folder to compile SG++ with GCC.
+For configuration (including other compilers) and
+optimization, see below.
 
 If SCons does not seem to find external dependencies
 even if they are installed,
@@ -116,13 +124,11 @@ Instructions are also displayed at the end of the build.
 
 SCons uses the file <tt>SConstruct</tt>. This file contains all information for
 compiling SGpp.
-Currently all processors with the SSE3 instruction set are supported
-but the compilation standard is AVX 1.
-
 If you just execute <tt>scons</tt>,
-the default compilation with gcc for AVX instruction set is selected.
-For all other cases,
-please use, e.g., <tt>COMPILER=intel</tt>, <tt>ARCH=sse3</tt>, etc.
+the default compilation with GCC for SSE3 instruction set is selected.
+The compiler can be changed using <tt>COMPILER=clang</tt> or
+<tt>COMPILER=intel</tt>, e.g.
+To use other instruction sets, use <tt>ARCH=avx</tt>, etc.
 
 You are able to compile different SG++ modules independently.
 However, you should take into account the dependencies between
