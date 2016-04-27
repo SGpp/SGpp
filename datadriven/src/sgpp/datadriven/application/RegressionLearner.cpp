@@ -129,8 +129,8 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
       opMatrix = sgpp::op_factory::createOperationLaplace(*grid);
       break;
     case RegularizationType::Diagonal:
-      opMatrix = sgpp::op_factory::createOperationDiagonal(*grid,
-        regularizationConfig.multiplicationFactor);
+      opMatrix = sgpp::op_factory::createOperationDiagonal(
+          *grid, regularizationConfig.multiplicationFactor);
       break;
     default:
       throw base::application_exception(
