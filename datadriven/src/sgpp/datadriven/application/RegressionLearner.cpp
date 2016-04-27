@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
-#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
@@ -122,7 +121,6 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
     sgpp::base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
   std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
-  sgpp::base::GridStorage* gridStorage = &(grid->getStorage());
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
@@ -131,7 +129,8 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
       opMatrix = sgpp::op_factory::createOperationLaplace(*grid);
       break;
     case RegularizationType::Diagonal:
-      opMatrix = std::make_unique<sgpp::base::OperationDiagonal>(gridStorage);
+      opMatrix = sgpp::op_factory::createOperationDiagonal(*grid,
+        regularizationConfig.multiplicationFactor);
       break;
     default:
       throw base::application_exception(

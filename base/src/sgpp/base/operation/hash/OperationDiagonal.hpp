@@ -26,11 +26,10 @@ class OperationDiagonal : public OperationMatrix {
   /**
    * Constructor of OperationDiagonal
    */
-  OperationDiagonal(sgpp::base::GridStorage* gridStorage, double multiplicationFactor)
+  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage,
+                             double multiplicationFactor = 0.25)
       : gridStorage(gridStorage), multiplicationFactor(multiplicationFactor) {}
 
-  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage)
-      : gridStorage(gridStorage), multiplicationFactor(0.25) {}
   /**
    * Destructor
    */

@@ -22,6 +22,7 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -29,11 +30,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 
 namespace op_factory {
-
+/**
+ * Factory method, returning an OperationDiagonal (OperationMatrix) for the grid at hand.
+ *
+ * @param grid Grid which is to be used
+ * @param multiplicationFactor MultiplicationFactor which is to be used
+ * @return Pointer to the new OperationMatrix object for the Grid grid
+ */
+std::unique_ptr<base::OperationMatrix> createOperationDiagonal(base::Grid& grid,
+                                                               double multiplicationFactor = 0.25);
 /**
  * Factory method, returning an OperationHierarchisation for the grid at hand.
  * Note: object has to be freed after use.
@@ -41,8 +49,7 @@ namespace op_factory {
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
-std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(
-  base::Grid& grid);
+std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(base::Grid& grid);
 /**
  * Factory method, returning an OperationQuadrature for the grid at hand.
  * Note: object has to be freed after use.
@@ -102,7 +109,7 @@ std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid);
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::Grid& grid,
-    base::DataMatrix& dataset);
+                                                                         base::DataMatrix& dataset);
 /**
  * Factory method, returning an OperationNaiveEval for the grid at hand.
  * Note: object has to be freed after use.
@@ -119,7 +126,7 @@ std::unique_ptr<base::OperationNaiveEval> createOperationNaiveEval(base::Grid& g
  * @return Pointer to the new OperationNaiveEvalGradient object for the Grid grid
  */
 std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradient(
-  base::Grid& grid);
+    base::Grid& grid);
 /**
  * Factory method, returning an OperationNaiveEvalHessian for the grid at hand.
  * Note: object has to be freed after use.
@@ -127,8 +134,7 @@ std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradie
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationNaiveEvalHessian object for the Grid grid
  */
-std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian(
-  base::Grid& grid);
+std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian(base::Grid& grid);
 /**
  * Factory method, returning an OperationNaiveEvalPartialDerivative for the grid at hand.
  * Note: object has to be freed after use.
