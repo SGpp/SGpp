@@ -32,6 +32,9 @@ class OperationMakePositiveFast(object):
         if self.candidateSearchAlgorithm is None:
             self.candidateSearchAlgorithm = FullGridCandidates(grid)
 
+        self.maxNewGridPoints = 10
+        self.addAllGridPointsOnNextLevel = True
+
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
         # -----------------------------------------------------------------
@@ -274,8 +277,12 @@ class OperationMakePositiveFast(object):
                 if not gs.has_key(gp) and opEval.eval(alphaVec, p) < 0.0:
                     addedGridPoints += insertPoint(grid, gp)
                     addedGridPoints += insertHierarchicalAncestors(grid, gp)
-                    if len(addedGridPoints) > 0:
+                    if self.addAllGridPointsOnNextLevel:
+                        if len(addedGridPoints) > 0:
+                            done = True
+                    elif len(addedGridPoints) > self.addAllGridPointsOnNextLevel:
                         done = True
+                        break
 
             i += 1
 

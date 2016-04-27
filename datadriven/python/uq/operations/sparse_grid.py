@@ -247,6 +247,33 @@ def hasChildren(grid, gp):
 
     return False
 
+def getLevel(gp):
+    numDims = gp.getDimension()
+    level = np.ndarray(numDims)
+    for i in xrange(numDims):
+        level[i] = gp.getLevel(d)
+
+    return level
+
+def getIndex(gp):
+    numDims = gp.getDimension()
+    index = np.ndarray(numDims)
+    for i in xrange(numDims):
+        index[i] = gp.getIndex(d)
+
+    return index
+
+
+def getLevelIndex(gp):
+    numDims = gp.getDimension()
+    level = np.ndarray(numDims)
+    index = np.ndarray(numDims)
+    for i in xrange(numDims):
+        level[i] = gp.getLevel(d)
+        index[i] = gp.getIndex(d)
+
+    return level, index
+
 
 def hasAllChildren(grid, gp):
     gs = grid.getStorage()

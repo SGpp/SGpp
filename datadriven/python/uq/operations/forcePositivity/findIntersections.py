@@ -2,7 +2,7 @@ from findCandidateSet import CandidateSet
 from pysgpp import HashGridIndex, DataVector, createOperationEval
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
-    hasAllChildren, getHierarchicalAncestors
+    hasAllChildren, getHierarchicalAncestors, getLevel, getIndex
 
 
 class IntersectionCandidates(CandidateSet):
@@ -34,7 +34,30 @@ class IntersectionCandidates(CandidateSet):
 
         return level, index
 
+
+    def findGridPointsOnLevel1(self, grid):
+        gs = grid.getStorage()
+        gps = []
+        for i in xrange(1, gs.getSize()):
+            gp = gs.get(i)
+            if gp.getLevelMin() == 1:
+                gps.append(HashGridIndex(gp))
+        return gps
+
     
+    def groupGridPoints(self, gps, grid):
+        gs = grid.getStorage()
+        gpsByLevel = {}
+        for gp in gps:
+            level = tuple(getLevel(gp))
+            if level not in gpsByLevel:
+                gpsByLevel[level] = [gp]
+            else:
+                gpsByLevel[level].append(gp)
+
+        return gpsByLevel
+
+
     def findLeafNodesWithNegativeAncestors(self, gps, grid, alpha):
         refinementCandidates = []
         gs = grid.getStorage()
@@ -47,11 +70,11 @@ class IntersectionCandidates(CandidateSet):
 #                         refinementCandidates.append(gp)
 #                 else:
                 refinementCandidates.append(gp)
-#             else:
-#                 for ix, _ in getHierarchicalAncestors(grid, gp):
-#                     if alpha[ix] < 0.0:
-#                         refinementCandidates[i] = gp
-#                         break
+            else:
+                for ix, _ in getHierarchicalAncestors(grid, gp):
+                    if alpha[ix] < 0.0:
+                        refinementCandidates.append(gp)
+                        break
 
         return refinementCandidates
     
@@ -110,8 +133,8 @@ class IntersectionCandidates(CandidateSet):
         costs = 0
         for gpi in gpsi:
             overlap, cost = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(gpi, gpsj,
-                                                                                  overlappingGridPoints,
-                                                                                  grid)
+                                                                                        overlappingGridPoints,
+                                                                                        grid)
             overlappingGridPoints.update(overlap)
             costs += cost
 
@@ -130,37 +153,39 @@ class IntersectionCandidates(CandidateSet):
 
         if self.iteration == 0:
             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # and alpha[i] < 0.0]
-            self.N0 = self.A0  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
+            self.N0 = self.A0  # [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
+
+#             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
+#             gpsByLevel = self.groupGridPoints(gps, grid)  # [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # and alpha[i] < 0.0]
+#             self.N0 = self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
 
             if self.verbose:
                 print "%i = %i x %i" % (len(self.N0) * len(self.A0),
-                                        len(self.N0), len(self.A0))
+                                        len(self.N0), len(self.A0)),
+                print ";%i <= %i" % (len(self.A0), len([gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]))
             
-            self.candidates1, self.costs = self.findIntersections(self.N0, self.A0, grid)
-            self.candidates = self.candidates1
+            self.newCandidates, self.costs = self.findIntersections(self.N0, self.A0, grid)
+            self.candidates = self.newCandidates
         else:
 #             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
 #             self.N0 = self.candidates0  # self.candidates_history[self.iteration - 1]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
-            self.N0 = self.candidates1
+            self.N0 = self.newCandidates
             
             if self.verbose:
                 print "%i = %i x %i" % (len(self.N0) * len(self.A0),
                                         len(self.N0), len(self.A0))
 
-            self.candidates0, costs0 = self.findIntersections(self.N0, self.A0, grid)
-#             candidates1, costs1 = self.findIntersections(self.N0, self.N0, grid)
+            candidates, costs = self.findIntersections(self.N0, self.A0, grid)
 
-            self.candidates1 = []
-            self.candidates = self.candidates_history[self.iteration - 1]
-            for gp in self.candidates0:
+            self.newCandidates = []
+            for gp in candidates:
                 if gp not in self.candidates_history[self.iteration - 1]:
-                    self.candidates1.append(gp)
+                    self.newCandidates.append(gp)
 
-            self.candidates += self.candidates1  # + candidates1
-#             self.candidates += candidates1
-            self.costs += costs0  # + costs1
+            self.candidates = self.candidates_history[self.iteration - 1] + self.newCandidates
+            self.costs += costs
 
-        if self.iteration > 0:
-            for gp in self.candidates_history[self.iteration - 1]:
-                if not gs.has_key(gp) and gp not in self.candidates:
-                    self.candidates.append(gp)
+#         if self.iteration > 0:
+#             for gp in self.candidates_history[self.iteration - 1]:
+#                 if not gs.has_key(gp) and gp not in self.candidates:
+#                     self.candidates.append(gp)
