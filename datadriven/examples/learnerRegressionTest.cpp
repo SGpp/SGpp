@@ -16,8 +16,8 @@
 sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
   gridConfig.dim_ = data.getDimension();
-  gridConfig.level_ = 2;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.level_ = 3;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
   adaptivityConfig.noPoints_ = 0;
@@ -26,7 +26,8 @@ sgpp::datadriven::RegressionLearner getLearner(sgpp::datadriven::Dataset& data) 
   auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
   regularizationConfig.regType_ = regularizationType;
-  regularizationConfig.lambda = 0.1;
+  regularizationConfig.lambda = 0.001;
+  regularizationConfig.multiplicationFactor = 0.25;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;

@@ -130,6 +130,11 @@ namespace sgpp {
 
 namespace op_factory {
 
+std::unique_ptr<base::OperationMatrix> createOperationDiagonal(base::Grid& grid,
+                                                               double multiplicationFactor) {
+  return std::make_unique<base::OperationDiagonal>(&(grid.getStorage()), multiplicationFactor);
+}
+
 std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationHierarchisation>(
