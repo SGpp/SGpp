@@ -29,8 +29,8 @@ sgpp::datadriven::RegressionLearner getLearner(
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 5000;
-  solverConfig.eps_ = 1e-7;
+  solverConfig.maxIterations_ = 500;
+  solverConfig.eps_ = 1e-8;
 
   return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
                                              regularizationConfig);
@@ -80,28 +80,26 @@ sgpp::datadriven::RegularizationConfiguration gridSearch(
       std::cout << "Worse!  MSE is now " << curMSE << std::endl;
     }
   }
-  std::cout << "gridSearch finished with parameters "
-            << showRegularizationConfiguration(bestConfig);
+  std::cout << "gridSearch finished with parameters " << showRegularizationConfiguration(bestConfig)
+            << std::endl;
   return bestConfig;
 }
 
 std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
   decltype(getConfigs()) result;
-  std::vector<double> lamdas = {0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125};
+  std::vector<double> lambdas = {0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125};
 
-  // Identity
-  for (const auto lambda : lamdas) {
+  std::vector<double> multiplicationFactors = {0.5, 0.25, 0.125};
+  for (const auto lambda : lambdas) {
+    // Identity
     const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
     auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
     regularizationConfig.regType_ = regularizationType;
     regularizationConfig.lambda = lambda;
     regularizationConfig.multiplicationFactor = 0.25;
     result.push_back(regularizationConfig);
-  }
 
-  // Diagonal
-  std::vector<double> multiplicationFactors = {0.5, 0.25, 0.125};
-  for (const auto lambda : lamdas) {
+    // Diagonal
     for (const auto multiplicationFactor : multiplicationFactors) {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
       auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
@@ -111,6 +109,7 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
       result.push_back(regularizationConfig);
     }
   }
+
   return result;
 }
 

@@ -47,8 +47,10 @@ class RegressionLearner {
       sgpp::base::DataMatrix& trainDataset);
   std::unique_ptr<sgpp::solver::SLESolver> createSolver();
 
-  void trainStep(size_t curStep, sgpp::datadriven::DMSystemMatrixBase& DMSystem,
-                 sgpp::solver::SLESolver& solver, sgpp::base::DataVector& classes);
+  void fit(sgpp::datadriven::DMSystemMatrixBase& DMSystem, sgpp::solver::SLESolver& solver,
+           sgpp::base::DataVector& classes);
+  void refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem);
+
   double getMSE(const sgpp::base::DataVector& y, sgpp::base::DataVector yPrediction);
 };
 
