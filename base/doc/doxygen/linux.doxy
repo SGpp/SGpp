@@ -369,6 +369,23 @@ On 64-bit Ubuntu systems, it can be located in
 <tt>/usr/lib/x86_64-linux-gnu/libstdc++.so.6</tt>,
 but it can differ on other systems.
 
+When starting MATLAB, make sure that the Java version of
+MATLAB's internal Java Runtime Environment
+(check with <tt>version -java</tt> in MATLAB)
+is newer than that of the Java you built jsgpp with
+(check with <tt>java -version</tt> in a terminal).
+Sometimes, you have to force MATLAB to use your installed JDK
+by using the <tt>MATLAB_JAVA</tt> environment variable:
+@verbatim
+export MATLAB_JAVA="/PATH_TO_JDK/jre"
+@endverbatim
+(e.g., <tt>MATLAB_JAVA="/usr/lib/jvm/java-7-openjdk-amd64/jre"</tt>).
+You can get errors like this otherwise:
+@verbatim
+Undefined variable "sgpp" or class "sgpp.LoadJSGPPLib.loadJSGPPLib".
+@endverbatim
+Keep in mind that, however, MATLAB seems not to be compatible with Java 8 yet.
+
 After starting MATLAB,
 we have to add the @c jsgpp.jar file to MATLAB's class path with the command
 @verbatim

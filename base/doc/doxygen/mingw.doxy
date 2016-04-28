@@ -323,6 +323,11 @@ is newer than that of the Java you built jsgpp with
 (check with <tt>java -version</tt> in <tt>cmd.exe</tt>).
 In general, you will have to force MATLAB to use your installed JDK
 by using the <tt>MATLAB_JAVA</tt> environment variable.
+You can get errors like this otherwise:
+@verbatim
+Undefined variable "sgpp" or class "sgpp.LoadJSGPPLib.loadJSGPPLib".
+@endverbatim
+Keep in mind that, however, MATLAB seems not to be compatible with Java 8 yet.
 Also, set the <tt>PATH</tt> environment variable appropriately as before.
 Therefore, start MATLAB by typing the following:
 @verbatim
