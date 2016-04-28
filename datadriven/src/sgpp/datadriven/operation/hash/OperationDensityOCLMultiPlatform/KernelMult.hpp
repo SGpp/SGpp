@@ -35,6 +35,7 @@ class KernelDensityMult {
   base::OCLBufferWrapperSD<int> devicePoints;
   base::OCLBufferWrapperSD<T> deviceAlpha;
   base::OCLBufferWrapperSD<T> deviceResultData;
+  base::OCLBufferWrapperSD<T> deviceDivisors;
 
   cl_kernel kernelMult;
 
@@ -59,7 +60,7 @@ class KernelDensityMult {
                     std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                     json::Node &kernelConfiguration, std::vector<int> &points, T lambda) :
       device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
-      deviceAlpha(device), deviceResultData(device), kernelMult(nullptr),
+      deviceAlpha(device), deviceResultData(device), deviceDivisors(device), kernelMult(nullptr),
       kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
       deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration) {
     this->verbose = true;
@@ -84,6 +85,15 @@ class KernelDensityMult {
     for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++)
       points.push_back(0);
     devicePoints.intializeTo(points, 1, 0, points.size());
+
+    std::vector<T> divisors;
+    T divisor = 1.0;
+    for (auto i = 0; i < dims + 1; ++i) {
+      divisors.push_back(divisor);
+      divisor /= 3.0;
+    }
+    deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
+
     clFinish(device->commandQueue);
   }
 
@@ -115,7 +125,7 @@ class KernelDensityMult {
     if (this->kernelMult == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize,
+      std::string program_src = kernelSourceBuilder.generateSource(dims,
                                                                    globalworkrange[0] *
                                                                    dataBlockingSize);
       if (verbose)
@@ -166,6 +176,13 @@ class KernelDensityMult {
       throw base::operation_exception(errorString.str());
     }
     err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_uint), &startid);
+    if (err != CL_SUCCESS) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      throw base::operation_exception(errorString.str());
+    }
+    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_mem),
+                         this->deviceDivisors.getBuffer());
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;

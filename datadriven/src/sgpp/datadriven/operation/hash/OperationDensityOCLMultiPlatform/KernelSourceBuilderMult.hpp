@@ -75,7 +75,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
   }
 
-  std::string generateSource(size_t dimensions, size_t gridsize, size_t problemsize) {
+  std::string generateSource(size_t dimensions, size_t problemsize) {
     std::stringstream sourceStream;
 
     if (this->floatType().compare("double") == 0) {
@@ -89,7 +89,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << "void multdensity(__global const int *starting_points,__global const "
                  << this->floatType() << " *alpha, __global " << this->floatType()
                  << " *result,const " << this->floatType()
-                 << " lambda, const int startid)"
+                 << " lambda, const int startid, __global " << this->floatType() << " *divisors)"
                  << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[0] << "int gridindex = startid + get_global_id(0);"
@@ -136,6 +136,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       // Generate body for each element in the block
       for (size_t block = 0; block < dataBlockSize; block++) {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
+        sourceStream << this->indent[2] << "int same_levels = " << dimensions << ";" << std::endl;
         sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
                      << ";dim++) {" << std::endl
                      << this->indent[3] <<"h = 1.0 / (1 << level_local[i*" << dimensions
@@ -145,25 +146,29 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                      << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
                      << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
         sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[3] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
         sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
         sourceStream << this->indent[3] << "sum = h*(umid);" << std::endl
                      << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
                      << "[dim]);" << std::endl;
         sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
                      << std::endl
-                     << this->indent[3] << " umid = u*h*(point_indices_block" << block <<
+                     << this->indent[3] << "umid = u*h*(point_indices_block" << block <<
             "[dim])-indices_local[i*"
                      << dimensions << " + dim];" << std::endl;
         sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[3] << "umid = 1-umid;" << std::endl;
+        sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
         sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
         sourceStream << this->indent[3] << "sum += h*(umid);" << std::endl;
-        sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
-                     << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
-                     << std::endl;
+        //sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
+        //             << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
+        //             << std::endl;
         sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
+        sourceStream << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*" << dimensions
+                     << "+dim] - point_level_block" << block
+                     << "[dim])),(int)(1));" << std::endl;
         sourceStream << this->indent[2] << "}" << std::endl;
+        sourceStream << this->indent[2] << "zellenintegral *= divisors[same_levels];" << std::endl;
         sourceStream << this->indent[2] << "gesamtint_block" << block
                      <<" += zellenintegral*alpha_local[i];" << std::endl;
       }
