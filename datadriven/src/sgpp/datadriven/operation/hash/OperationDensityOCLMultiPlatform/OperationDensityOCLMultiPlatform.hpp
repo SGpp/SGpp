@@ -88,9 +88,9 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
-        bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
+        bKernel = new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig,
                                         points);
-        multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+        multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
         success = true;
         break;
