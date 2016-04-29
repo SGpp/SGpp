@@ -66,7 +66,7 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
       DensityOCLMultiPlatform::OperationDensityOCL *op =
           createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                   (2 * grid_dimensions), dimensions,
-                                                  0.0, "MyOCLConf.cfg");
+                                                  0.0, "MyOCLConf.cfg", 0, 0);
 
       base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);
       int datainfo[2];

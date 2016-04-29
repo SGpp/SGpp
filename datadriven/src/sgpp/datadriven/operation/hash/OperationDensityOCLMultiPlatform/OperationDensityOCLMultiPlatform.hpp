@@ -17,6 +17,7 @@
 #include <omp.h>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "OperationDensityOCL.hpp"
 #include "KernelMult.hpp"
@@ -45,12 +46,13 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
   OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    json::Node &firstKernelConfig, json::Node &secondKernelConfig,
-                                   T lambda) : OperationDensityOCL(), dims(dimensions),
-                                               gridSize(grid.getStorage().getSize()),
-                                               firstKernelConfig(firstKernelConfig),
-                                               secondKernelConfig(secondKernelConfig),
-                                               devices(manager->getDevices()),
-                                               manager(manager), lambda(lambda) {
+                                   T lambda, size_t platform_id, size_t device_id)
+      : OperationDensityOCL(), dims(dimensions),
+        gridSize(grid.getStorage().getSize()),
+        firstKernelConfig(firstKernelConfig),
+        secondKernelConfig(secondKernelConfig),
+        devices(manager->getDevices()),
+        manager(manager), lambda(lambda) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -66,20 +68,46 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     if (verbose)
       std::cout << "Grid stored into integer array! Number of gridpoints: "
                 << pointscount << std::endl;
-    bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
-                                    points);
-    multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
-                                          points, lambda);
+
+    // look for the chosen platform and device and create kernel with it
+    size_t platformcounter = 0;
+    size_t devicecounter = 0;
+    std::string currentplatformName = devices[0]->platformName;
+    std::string currentdeviceName = devices[0]->deviceName;
+    size_t counter = 0;
+    bool success = false;
+    for (auto device : devices) {
+      if (devices[counter]->platformName != currentplatformName) {
+        platformcounter++;
+        currentplatformName = devices[counter]->platformName;
+        devicecounter = 0;
+        currentdeviceName = devices[counter]->deviceName;
+      } else if (devices[counter]->deviceName != currentdeviceName) {
+        devicecounter++;
+        currentdeviceName = devices[counter]->deviceName;
+      }
+      if (platformcounter == platform_id &&
+          devicecounter == device_id) {
+        bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
+                                        points);
+        multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+                                              points, lambda);
+        success = true;
+        break;
+      }
+      counter++;
+    }
   }
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    json::Node &firstKernelConfig, json::Node &secondKernelConfig,
-                                   T lambda) : OperationDensityOCL(), dims(dimensions),
-                                               gridSize(gridsize),
-                                               firstKernelConfig(firstKernelConfig),
-                                               secondKernelConfig(secondKernelConfig),
-                                               devices(manager->getDevices()),
-                                               manager(manager), lambda(lambda) {
+                                   T lambda, size_t platform_id, size_t device_id) :
+      OperationDensityOCL(), dims(dimensions),
+      gridSize(gridsize),
+      firstKernelConfig(firstKernelConfig),
+      secondKernelConfig(secondKernelConfig),
+      devices(manager->getDevices()),
+      manager(manager), lambda(lambda) {
     verbose = true;
     for (int i = 0; i < gridSize; i++) {
       for (int d = 0; d < dims; d++) {
@@ -87,10 +115,34 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d + 1]);
       }
     }
-    multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
-                                          points, lambda);
-    bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
-                                    points);
+    // look for the chosen platform and device and create kernel with it
+    size_t platformcounter = 0;
+    size_t devicecounter = 0;
+    std::string currentplatformName = devices[0]->platformName;
+    std::string currentdeviceName = devices[0]->deviceName;
+    size_t counter = 0;
+    bool success = false;
+    for (auto device : devices) {
+      if (devices[counter]->platformName != currentplatformName) {
+        platformcounter++;
+        currentplatformName = devices[counter]->platformName;
+        devicecounter = 0;
+        currentdeviceName = devices[counter]->deviceName;
+      } else if (devices[counter]->deviceName != currentdeviceName) {
+        devicecounter++;
+        currentdeviceName = devices[counter]->deviceName;
+      }
+      if (platformcounter == platform_id &&
+          devicecounter == device_id) {
+        bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
+                                        points);
+        multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+                                              points, lambda);
+        success = true;
+        break;
+      }
+      counter++;
+    }
   }
 
   ~OperationDensityOCLMultiPlatform() {
