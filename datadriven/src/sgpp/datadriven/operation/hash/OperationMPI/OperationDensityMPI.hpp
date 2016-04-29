@@ -71,7 +71,7 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
       // Create opencl operation
       op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                   (2 * grid_dimensions), grid_dimensions,
-                                                  lambda, "MyOCLConf.cfg");
+                                                   lambda, "MyOCLConf.cfg", 0, 0);
     }
     virtual ~OperationDensitySlave() {
       delete op;
