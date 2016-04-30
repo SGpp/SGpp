@@ -26,9 +26,10 @@ class OperationDiagonal : public OperationMatrix {
   /**
    * Constructor of OperationDiagonal
    */
-  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage,
-                             double multiplicationFactor = 0.25)
-      : gridStorage(gridStorage), multiplicationFactor(multiplicationFactor) {}
+  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage, double exponentBase = 0.25)
+      : gridStorage(gridStorage), exponentBase(exponentBase) {
+    multiplicators = DataVector(0);
+  }
 
   /**
    * Destructor
@@ -42,6 +43,7 @@ class OperationDiagonal : public OperationMatrix {
       calculateMultiplicators(alpha);
     }
     result = DataVector(size);
+#pragma omp parallel for
     for (size_t i = 0; i < size; ++i) {
       result[i] = multiplicators[i] * alpha[i];
     }
@@ -49,18 +51,18 @@ class OperationDiagonal : public OperationMatrix {
 
  private:
   GridStorage* gridStorage;
-  const double multiplicationFactor;
+  const double exponentBase;
   DataVector multiplicators;
 
   void calculateMultiplicators(DataVector& alpha) {
     const auto size = alpha.getSize();
-    multiplicators = DataVector(size);
+    multiplicators.resize(size);
     size_t dimensions = gridStorage->getDimension();
     for (size_t i = 0; i < size; ++i) {
       sgpp::base::GridStorage::index_pointer gridIndex = gridStorage->get(i);
       sgpp::base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
       const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
-      const double multiplicator = std::pow(multiplicationFactor, exponent);
+      const double multiplicator = std::pow(exponentBase, exponent);
       multiplicators[i] = multiplicator;
     }
   }

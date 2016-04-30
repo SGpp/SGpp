@@ -59,7 +59,7 @@ void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
 
     fit(*DMSystem, *solver, classes);
 
-    // if we don't do any refinements we can safely skip this   step
+    // if we don't do any refinements we can safely skip this step
     if (adaptivityConfig.numRefinements_ > 0) {
       const double curMSE = getMSE(trainDataset, classes);
       if (curMSE < bestMSE) {
@@ -142,8 +142,8 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
       opMatrix = sgpp::op_factory::createOperationLaplace(*grid);
       break;
     case RegularizationType::Diagonal:
-      opMatrix = sgpp::op_factory::createOperationDiagonal(
-          *grid, regularizationConfig.multiplicationFactor);
+      opMatrix =
+          sgpp::op_factory::createOperationDiagonal(*grid, regularizationConfig.exponentBase);
       break;
     default:
       throw base::application_exception(

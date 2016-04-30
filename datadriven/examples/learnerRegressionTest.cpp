@@ -54,7 +54,7 @@ std::string showRegularizationConfiguration(
   }
 
   ss << "lambda: " << regularizationConfig.lambda
-     << "\tmultiplicationFactor: " << regularizationConfig.multiplicationFactor;
+     << "\tmultiplicationFactor: " << regularizationConfig.exponentBase;
   return ss.str();
 }
 
@@ -89,23 +89,23 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
   decltype(getConfigs()) result;
   std::vector<double> lambdas = {0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125};
 
-  std::vector<double> multiplicationFactors = {0.5, 0.25, 0.125};
+  std::vector<double> exponentBases = {0.5, 0.25, 0.125};
   for (const auto lambda : lambdas) {
     // Identity
     const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
     auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
     regularizationConfig.regType_ = regularizationType;
     regularizationConfig.lambda = lambda;
-    regularizationConfig.multiplicationFactor = 0.25;
+    regularizationConfig.exponentBase = 0.25;
     result.push_back(regularizationConfig);
 
     // Diagonal
-    for (const auto multiplicationFactor : multiplicationFactors) {
+    for (const auto exponentBase : exponentBases) {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
       auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
       regularizationConfig.regType_ = regularizationType;
       regularizationConfig.lambda = lambda;
-      regularizationConfig.multiplicationFactor = multiplicationFactor;
+      regularizationConfig.exponentBase = exponentBase;
       result.push_back(regularizationConfig);
     }
   }
