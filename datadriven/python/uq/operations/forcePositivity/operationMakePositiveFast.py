@@ -26,6 +26,7 @@ class OperationMakePositiveFast(object):
                  candidateSearchAlgorithm=None):
         self.grid = grid
         self.numDims = grid.getStorage().getDimension()
+        self.maxLevel = grid.getStorage().getMaxLevel()
         self.verbose = True
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
@@ -109,16 +110,18 @@ class OperationMakePositiveFast(object):
 
     def makeCurrentNodalValuesPositive(self, grid, alpha):
         nodalValues = dehierarchize(grid, alpha)
-        cnt = 0
+        neg = []
         for i, yi in enumerate(nodalValues):
             if yi < 0:
                 nodalValues[i] = 0
-                cnt += 1
-        if cnt > 0:
+                neg.append(i)
+        if len(neg) > 0:
             alpha = hierarchize(grid, nodalValues)
 #             if self.verbose:
 #                 warnings.warn("negative function values at grid points encountered, this should not happen")
 
+            # check if the coefficients of the new grid points are positive
+            assert len([True for i in neg if alpha[i] < -1e-10]) == 0
         return alpha
 
     
@@ -253,36 +256,45 @@ class OperationMakePositiveFast(object):
         """
         # sort the grid points by level
         gps = {}
-        for gp in candidates:
-            levelSum = gp.getLevelSum()
-            if levelSum not in gps:
-                gps[levelSum] = [gp]
-            else:
-                gps[levelSum].append(gp)
-
-        opEval = createOperationEval(grid)
-        alphaVec = DataVector(alpha)
-        p = DataVector(self.numDims)
-        levelSums = sorted(gps.keys())
-        candidates = []
-        done = False
         gs = grid.getStorage()
+        opEval = createOperationEval(grid)
+        p = DataVector(self.numDims)
+        alphaVec = DataVector(alpha)
+        cnt = 0
+
+        for gp in candidates:
+            gp.getCoords(p)
+            if not gs.has_key(gp) and opEval.eval(alphaVec, p) < 0.0:
+                levelSum = gp.getLevelSum()
+                if levelSum not in gps:
+                    gps[levelSum] = [gp]
+                else:
+                    gps[levelSum].append(gp)
+                cnt += 1
+
+        levelSums = sorted(gps.keys())
+        done = False
         i = 0
         addedGridPoints = []
+        minLevelSum = -1
+
+#         for levelSum, gridPoints in gps.items():
+#             print "# candidates at |l_i|_1 = %i: %i/%i" % (levelSum,
+#                                                            len(gps[levelSum]),
+#                                                            cnt)
 
         while not done and i < len(levelSums):
             minLevelSum = levelSums[i]
             for gp in gps[minLevelSum]:
-                gp.getCoords(p)
-                if not gs.has_key(gp) and opEval.eval(alphaVec, p) < 0.0:
-                    addedGridPoints += insertPoint(grid, gp)
-                    addedGridPoints += insertHierarchicalAncestors(grid, gp)
-                    if self.addAllGridPointsOnNextLevel:
-                        if len(addedGridPoints) > 0:
-                            done = True
-                    elif len(addedGridPoints) > self.addAllGridPointsOnNextLevel:
-                        done = True
-                        break
+                addedGridPoints += insertPoint(grid, gp)
+                addedGridPoints += insertHierarchicalAncestors(grid, gp)
+
+                if not self.addAllGridPointsOnNextLevel and len(addedGridPoints) > self.maxNewGridPoints:
+                    done = True
+                    break
+
+            if self.addAllGridPointsOnNextLevel and len(addedGridPoints) > 0:
+                done = True
 
             i += 1
 
@@ -362,10 +374,13 @@ class OperationMakePositiveFast(object):
         numDims = newGs.getDimension()
         addedGridPoints = {}
 
-        numFullGridPoints = (2 ** newGs.getMaxLevel() - 1) ** numDims
-
-        while self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
+        numFullGridPoints = (2 ** self.maxLevel - 1) ** numDims
+        minLevelSum = self.maxLevel + self.numDims - 1
+        maxLevelSum = self.numDims * self.maxLevel
+        totalCosts = 0
+        while minLevelSum < maxLevelSum and self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
             candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
+            totalCosts += costs
 
             if self.verbose:
                 print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints - newGs.getSize(), costs)
@@ -375,11 +390,15 @@ class OperationMakePositiveFast(object):
                 addedGridPoints, minLevelSum = self.addFullGridPoints(newGrid, newAlpha, candidates)
 
                 if self.verbose:
-                    print "# new grid points     : %i -> %i < %i at |l|_1 = %i" % (len(addedGridPoints), newGrid.getSize(), numFullGridPoints, minLevelSum)
+                    print "# new grid points     : %i -> %i at |l|_1 = %i <= %i" % (len(addedGridPoints),
+                                                                                    newGrid.getSize(),
+                                                                                    minLevelSum,
+                                                                                    maxLevelSum)
+                    print "  current total costs : %i < %i" % (totalCosts, numFullGridPoints)
                     print "-" * 80
 
-                if len(addedGridPoints) == 0:
-                    break
+#                 if len(addedGridPoints) == 0:
+#                     break
 
                 newAlpha = np.append(newAlpha, np.zeros(len(addedGridPoints)))
 
@@ -391,8 +410,8 @@ class OperationMakePositiveFast(object):
                 else:
                     newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
 
-#                 if newGs.getDimension() == 2:
-#                     self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
+                if newGs.getDimension() == 2:
+                    self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
             else:
                 break
 
@@ -401,7 +420,7 @@ class OperationMakePositiveFast(object):
         if self.verbose:
             print "# coarsed grid        : %i -> %i" % (newGrid.getSize(),
                                                         coarsedGrid.getSize())
-            print "# full grid           :       %i" % (2 ** self.grid.getStorage().getMaxLevel() - 1) ** self.grid.getStorage().getDimension()
+            print "# full grid           :       %i" % (2 ** self.maxLevel - 1) ** self.numDims
 
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)

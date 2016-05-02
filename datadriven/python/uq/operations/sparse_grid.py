@@ -251,7 +251,7 @@ def getLevel(gp):
     numDims = gp.getDimension()
     level = np.ndarray(numDims)
     for i in xrange(numDims):
-        level[i] = gp.getLevel(d)
+        level[i] = gp.getLevel(i)
 
     return level
 
@@ -259,7 +259,7 @@ def getIndex(gp):
     numDims = gp.getDimension()
     index = np.ndarray(numDims)
     for i in xrange(numDims):
-        index[i] = gp.getIndex(d)
+        index[i] = gp.getIndex(i)
 
     return index
 
@@ -269,8 +269,8 @@ def getLevelIndex(gp):
     level = np.ndarray(numDims)
     index = np.ndarray(numDims)
     for i in xrange(numDims):
-        level[i] = gp.getLevel(d)
-        index[i] = gp.getIndex(d)
+        level[i] = gp.getLevel(i)
+        index[i] = gp.getIndex(i)
 
     return level, index
 
