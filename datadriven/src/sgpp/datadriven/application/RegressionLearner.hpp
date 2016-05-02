@@ -9,7 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include "sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
