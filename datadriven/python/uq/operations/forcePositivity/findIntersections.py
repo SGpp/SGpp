@@ -43,7 +43,19 @@ class IntersectionCandidates(CandidateSet):
             if gp.getLevelMin() == 1:
                 gps.append(HashGridIndex(gp))
         return gps
+    
+    def findAnchorPoints(self, gps):
+        ans = {}
+        for gp in gps:
+            level = getLevel(gp)
+            for idim in xrange(gp.getDimension()):
+                level[idim] = 1
+                if tuple(level) not in ans:
+                    anchorgp = HashGridIndex(gp)
+                    gp.set(idim, 1, gp.getIndex(idim))
+                    ans[tuple(level)] = anchorgp
 
+        return ans.values()
     
     def groupGridPoints(self, gps, grid):
         gs = grid.getStorage()
@@ -88,13 +100,14 @@ class IntersectionCandidates(CandidateSet):
             level, index = self.findIntersection(gpi, gpj)
             key = tuple(level + index)
             if key not in overlap and key not in self.already_checked:
-                costs += 1
                 intersection = HashGridIndex(numDims)
                 for idim in xrange(numDims):
                     intersection.set(idim, level[idim], index[idim])
 
                 # check if the current grid point already exists
                 if not gs.has_key(intersection):
+                    costs += 1
+
                     idim = 0
                     while idim < numDims:
                         # get level index
@@ -152,8 +165,8 @@ class IntersectionCandidates(CandidateSet):
             print "# intersections       :",
 
         if self.iteration == 0:
-            self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # and alpha[i] < 0.0]
-            self.N0 = self.A0  # [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
+            self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if alpha[i] < 0.0]
+            self.N0 = [gp for gp in self.A0 if not hasAllChildren(grid, gp)]  # [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
 
 #             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
 #             gpsByLevel = self.groupGridPoints(gps, grid)  # [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]  # and alpha[i] < 0.0]
@@ -169,7 +182,8 @@ class IntersectionCandidates(CandidateSet):
         else:
 #             self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if not hasAllChildren(grid, gs.get(i))]
 #             self.N0 = self.candidates0  # self.candidates_history[self.iteration - 1]  # self.findLeafNodesWithNegativeAncestors(self.A0, grid, alpha)
-            self.N0 = self.newCandidates
+            self.A0 = self.newCandidates
+            self.N0 = self.newCandidates  # findAnchorPoints([gs.get(i) for i in xrange(gs.getSize())])
             
             if self.verbose:
                 print "%i = %i x %i" % (len(self.N0) * len(self.A0),
