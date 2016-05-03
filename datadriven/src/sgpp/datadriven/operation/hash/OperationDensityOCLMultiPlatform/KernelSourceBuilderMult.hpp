@@ -27,6 +27,10 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
 
+  bool use_level_cache;
+  bool use_less;
+  bool do_not_use_ternary;
+
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
@@ -66,13 +70,20 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
  public:
   SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
                     size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1) {
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1),
+      use_level_cache(false), use_less(false), do_not_use_ternary(false) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
       useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
     if (kernelConfiguration.contains("KERNEL_DATA_BLOCKING_SIZE"))
       dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    if (kernelConfiguration.contains("USE_LEVEL_CACHE"))
+      use_level_cache = kernelConfiguration["USE_LEVEL_CACHE"].getBool();
+    if (kernelConfiguration.contains("USE_LESS_OPERATIONS"))
+      use_less = kernelConfiguration["USE_LESS_OPERATIONS"].getBool();
+    if (kernelConfiguration.contains("DO_NOT_USE_TERNARY"))
+      do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
   }
 
   std::string generateSource(size_t dimensions, size_t problemsize) {
@@ -89,8 +100,12 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     sourceStream << "void multdensity(__global const int *starting_points,__global const "
                  << this->floatType() << " *alpha, __global " << this->floatType()
                  << " *result,const " << this->floatType()
-                 << " lambda, const int startid, __global " << this->floatType() << " *divisors)"
-                 << std::endl;
+                 << " lambda, const int startid";
+    if (use_level_cache)
+      sourceStream << ", __global " << this->floatType() << " *hs";
+    if (do_not_use_ternary)
+      sourceStream << ", __global " << this->floatType() << " *divisors";
+    sourceStream << ")" << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << this->indent[0] << "int gridindex = startid + get_global_id(0);"
                  << std::endl
@@ -102,6 +117,12 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                  << " h = 0.0;" << std::endl;
     sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " umid = 0.0;" << std::endl;
+    if (!use_less) {
+      sourceStream << this->indent[0] << "__private " << this->floatType()
+                   << " uright = 0.0;" << std::endl;
+      sourceStream << this->indent[0] << "__private " << this->floatType()
+                   << " uleft = 0.0;" << std::endl;
+    }
     sourceStream << this->indent[0] << "__private " << this->floatType()
                  << " sum = 0.0;" << std::endl;
     sourceStream << this->indent[0] << "__private int u= 0;" << std::endl;
@@ -136,42 +157,116 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       // Generate body for each element in the block
       for (size_t block = 0; block < dataBlockSize; block++) {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
-        sourceStream << this->indent[2] << "int same_levels = " << dimensions << ";" << std::endl;
+        if (use_less && do_not_use_ternary)
+          sourceStream << this->indent[2] << "int same_levels = " << dimensions << ";" << std::endl;
         sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
-                     << ";dim++) {" << std::endl
-                     << this->indent[3] <<"h = 1.0 / (1 << level_local[i*" << dimensions
-                     << "+dim]);" << std::endl;
-        sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
-                     << "[dim]);" << std::endl
-                     << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
-                     << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
-        sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-        sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-        sourceStream << this->indent[3] << "sum = h*(umid);" << std::endl
-                     << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
-                     << "[dim]);" << std::endl;
-        sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
-                     << std::endl
-                     << this->indent[3] << "umid = u*h*(point_indices_block" << block <<
-            "[dim])-indices_local[i*"
-                     << dimensions << " + dim];" << std::endl;
-        sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-        sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-        sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-        sourceStream << this->indent[3] << "sum += h*(umid);" << std::endl;
-        //sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
-        //             << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
-        //             << std::endl;
-        sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
-        sourceStream << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*" << dimensions
-                     << "+dim] - point_level_block" << block
-                     << "[dim])),(int)(1));" << std::endl;
+                     << ";dim++) {" << std::endl;
+        if (use_less) {
+          if (use_level_cache) {
+            sourceStream << this->indent[3] << "h = hs[level_local[i*" << dimensions
+                         << "+dim]];" << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "h = 1.0 / (1 << level_local[i*" << dimensions
+                         << "+dim]);" << std::endl;
+          }
+          sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
+                       << "[dim]);" << std::endl
+                       << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
+                       << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
+          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "sum = h*(umid);" << std::endl;
+          if (use_level_cache) {
+            sourceStream << this->indent[3] << "h = hs[point_level_block" << block
+                         << "[dim]];" << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
+                         << "[dim]);" << std::endl;
+          }
+          sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
+                       << std::endl
+                       << this->indent[3] << "umid = u*h*(point_indices_block" << block
+                       << "[dim])-indices_local[i*" << dimensions << " + dim];"
+                       << std::endl;
+          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "sum += h*(umid);" << std::endl;
+          if (!do_not_use_ternary) {
+            sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
+                         << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
+                         << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*"
+                         << dimensions << "+dim] - point_level_block" << block
+                         << "[dim])),(int)(1));" << std::endl;
+          }
+          sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
+        } else {
+          if (use_level_cache) {
+            sourceStream << this->indent[3] << "h = hs[level_local[i*" << dimensions
+                         << "+dim]];" << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "h = 1.0 / (1 << level_local[i*" << dimensions
+                         << "+dim]);" << std::endl;
+          }
+          sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
+                       << "[dim]);" << std::endl
+                       << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
+                       << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
+          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "uright = u*h*(indices_local[i*" << dimensions
+                       << " + dim] + 1)-point_indices_block" << block << "[dim];" << std::endl;
+          sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
+          sourceStream << this->indent[3] << "uright = 1.0-uright;" << std::endl;
+          sourceStream << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "uleft = u*h*(indices_local[i*" << dimensions
+                       << " + dim] - 1)-point_indices_block" << block << "[dim];" << std::endl;
+          sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
+          sourceStream << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
+          sourceStream << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "sum = h/3.0*(umid + uleft + uright);" << std::endl;
+          if (use_level_cache) {
+            sourceStream << this->indent[3] << "h = hs[point_level_block" << block
+                         << "[dim]];" << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
+                         << "[dim]);" << std::endl;
+          }
+          sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
+                       << std::endl;
+          sourceStream << this->indent[3] << "umid = u*h*(point_indices_block" << block
+                       << "[dim])-indices_local[i*" << dimensions << " + dim];"
+                       << std::endl;
+          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
+          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "uright = u*h*(point_indices_block" << block
+                       << "[dim] + 1)-indices_local[i*" << dimensions << " + dim];"
+                       << std::endl;
+          sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
+          sourceStream << this->indent[3] << "uright = 1.0-uright;" << std::endl;
+          sourceStream << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "uleft = u*h*(point_indices_block" << block
+                       << "[dim] - 1)-indices_local[i*" << dimensions << " + dim];"
+                       << std::endl;
+          sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
+          sourceStream << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
+          sourceStream << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
+          sourceStream << this->indent[3] << "sum += h/3.0*(umid + uleft + uright);" << std::endl;
+          sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
+        }  // end use more operations
         sourceStream << this->indent[2] << "}" << std::endl;
-        sourceStream << this->indent[2] << "zellenintegral *= divisors[same_levels];" << std::endl;
+        if (do_not_use_ternary) {
+          sourceStream << this->indent[2] << "zellenintegral *= divisors[same_levels];"
+                       << std::endl;
+        }
         sourceStream << this->indent[2] << "gesamtint_block" << block
                      <<" += zellenintegral*alpha_local[i];" << std::endl;
-      }
+      }  // end blocking loop
       sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     } else {

@@ -6,7 +6,6 @@
 
 #include <CL/cl.h>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
@@ -35,19 +34,14 @@ class KernelDensityMult {
   base::OCLBufferWrapperSD<int> devicePoints;
   base::OCLBufferWrapperSD<T> deviceAlpha;
   base::OCLBufferWrapperSD<T> deviceResultData;
+  base::OCLBufferWrapperSD<T> deviceLevels;
   base::OCLBufferWrapperSD<T> deviceDivisors;
 
   cl_kernel kernelMult;
-
   SourceBuilderMult<T> kernelSourceBuilder;
-
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-
   double deviceTimingMult;
-
   json::Node &kernelConfiguration;
-
-
   bool verbose;
 
   size_t localSize;
@@ -55,14 +49,20 @@ class KernelDensityMult {
   size_t scheduleSize;
   size_t totalBlockSize;
 
+  bool use_level_cache;
+  bool use_less;
+  bool do_not_use_ternary;
+
  public:
   KernelDensityMult(std::shared_ptr<base::OCLDevice> dev, size_t dims,
                     std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                     json::Node &kernelConfiguration, std::vector<int> &points, T lambda) :
       device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
-      deviceAlpha(device), deviceResultData(device), deviceDivisors(device), kernelMult(nullptr),
+      deviceAlpha(device), deviceResultData(device), deviceLevels(device),
+      deviceDivisors(device), kernelMult(nullptr),
       kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
-      deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration) {
+      deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), use_level_cache(false),
+      use_less(false), do_not_use_ternary(false) {
     this->verbose = true;
     gridSize = points.size()/(2*dims);
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
@@ -77,27 +77,64 @@ class KernelDensityMult {
       throw base::operation_exception(errorString.str());
     }
 
+    // Get local size and push grid points into opencl buffer
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = dataBlockingSize * localSize;
-
     for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++)
       points.push_back(0);
     devicePoints.intializeTo(points, 1, 0, points.size());
 
-    std::vector<T> divisors;
-    T divisor = 1.0;
-    for (auto i = 0; i < dims + 1; ++i) {
-      divisors.push_back(divisor);
-      divisor /= 3.0;
+    // Check whether to calculate h_n on the host side (true) or in the opencl kernel (false)
+    if (kernelConfiguration.contains("USE_LEVEL_CACHE"))
+      use_level_cache = kernelConfiguration["USE_LEVEL_CACHE"].getBool();
+    if (use_level_cache) {
+      // Find biggest level
+      int maxlevel = 1;
+      for (size_t gridpoint = 0; gridpoint < gridSize; gridpoint++) {
+        for (size_t d = 0; d < dims; ++d) {
+          if (points[gridpoint * dims + d * 2 + 1] > maxlevel) {
+            maxlevel = points[gridpoint * dims + d * 2 + 1];
+          }
+        }
+      }
+      // Store h
+      std::vector<T> hs;
+      hs.push_back(0.0);
+      for (int l = 1; l <= maxlevel; ++l) {
+        hs.push_back(1.0 / (1 << l));
+      }
+      deviceLevels.intializeTo(hs, 1, 0, maxlevel + 1);
     }
-    deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
 
+
+    // Check whether to use more operations to avoid branching on integrating base functions
+    // with same level
+    if (kernelConfiguration.contains("USE_LESS_OPERATIONS"))
+      use_less = kernelConfiguration["USE_LESS_OPERATIONS"].getBool();
+    // Checking whether to use ternary operator for integrating base functions with
+    // the same level
+    if (use_less) {
+      if (kernelConfiguration.contains("DO_NOT_USE_TERNARY"))
+        do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
+      if (do_not_use_ternary) {
+        std::vector<T> divisors;
+        T divisor = 1.0;
+        for (size_t i = 0; i < dims + 1; ++i) {
+          divisors.push_back(divisor);
+          divisor /= 3.0;
+        }
+        deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
+      }
+    }
+
+    // Finish writing all buffers
     clFinish(device->commandQueue);
   }
 
   ~KernelDensityMult() {
+    // Release kernel
     if (kernelMult != nullptr) {
       clReleaseKernel(kernelMult);
       this->kernelMult = nullptr;
@@ -113,6 +150,7 @@ class KernelDensityMult {
                 << device->deviceId << ")" << std::endl;
     }
 
+    // Calculate workrange for current multiplication
     size_t globalworkrange[1];
     if (chunksize == 0) {
       globalworkrange[0] = gridSize / dataBlockingSize;
@@ -121,7 +159,8 @@ class KernelDensityMult {
     }
     size_t real_count = globalworkrange[0];
     globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
-    // Build kernel if not already done
+
+    // Generate OpenCL source and build kernel if not already done
     if (this->kernelMult == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
@@ -143,7 +182,8 @@ class KernelDensityMult {
     deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
     this->deviceTimingMult = 0.0;
     clFinish(device->commandQueue);
-    // Set kernel arguments
+
+    // Set mandatory kernel arguments
     err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem),
                          this->devicePoints.getBuffer());
     if (err != CL_SUCCESS) {
@@ -181,12 +221,27 @@ class KernelDensityMult {
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_mem),
-                         this->deviceDivisors.getBuffer());
-    if (err != CL_SUCCESS) {
-      std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-      throw base::operation_exception(errorString.str());
+
+    // Set optional kernel arguments
+    int argument_counter = 5;
+    if (use_level_cache) {
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           this->deviceLevels.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
+      argument_counter++;
+    }
+    if (use_less && do_not_use_ternary) {
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           this->deviceDivisors.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
     }
 
     cl_event clTiming = nullptr;
