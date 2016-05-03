@@ -28,8 +28,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env.Append(CPPFLAGS=["-O3", "-g"])
   else:
     env.Append(CPPFLAGS=["-g", "-O0"])
-#   else:
-#       env.Append(CPPFLAGS=["-O3", "-g"])
 
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
@@ -98,6 +96,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkSWIG(config)
   checkPython(config)
   checkJava(config)
+
+  if env["USE_CUDA"] == True:
+    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    config.env['CUDA_SDK_PATH'] = ''
+    config.env.Tool('cuda')
+    # clean up the flags to forward
+    # flagsToForward = [flag for flag in config.env["CPPFLAGS"] if flag not in ['-Wmissing-format-attribute', '']]
+    # flagsToForward = " -Xcompiler " + (" -Xcompiler ".join(flagsToForward))
+    # ensure same flags for host code
+    config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
+    # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
   env = config.Finish()
 
