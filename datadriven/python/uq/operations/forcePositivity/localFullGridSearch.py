@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
-    getLevel, getIndex, getLevelIndex
+    getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent, \
+    getAllChildrenNodesUpToMaxLevel
 from itertools import product
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotGrid2d
 
 
 class LocalFullGridCandidates(CandidateSet):
@@ -14,10 +16,13 @@ class LocalFullGridCandidates(CandidateSet):
     def __init__(self, grid):
         super(LocalFullGridCandidates, self).__init__()
         # genreate new full grid
-        gs = grid.getStorage()
-        maxLevel = gs.getMaxLevel()
-        self.numDims = gs.getDimension()
+        self.grid = grid
+        self.gs = grid.getStorage()
+        self.maxLevel = self.gs.getMaxLevel()
+        self.numDims = self.gs.getDimension()
         self.newCandidates = []
+
+        self.globalGrids = {}
 
 
     def findIntersection(self, gpi, gpj):
@@ -34,15 +39,17 @@ class LocalFullGridCandidates(CandidateSet):
                 level[d] = gpj.getLevel(d)
                 index[d] = gpj.getIndex(d)
 
-        return level, index
+        return tuple(level), tuple(index)
 
 
-    def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, gpi, gpsj, overlap, grid):
+    def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, overlap, grid):
         numDims = gpi.getDimension()
         gs = grid.getStorage()
         costs = 0
+        gpintersection = HashGridIndex(self.numDims)
+
         # find all possible intersections of grid points
-        for gpj in gpsj:
+        for j, gpj in gpsj.items():
             costs += 1
 
             idim = 0
@@ -71,147 +78,216 @@ class LocalFullGridCandidates(CandidateSet):
             # in all dimensions
             if idim == numDims:
                 level, index = self.findIntersection(gpi, gpj)
-                overlap[(gs.seq(gpi), gs.seq(gpj))] = ranges, level, index, gpi, gpj
+                for idim in xrange(self.numDims):
+                    gpintersection.set(idim, level[idim], index[idim])
+                if not gs.has_key(gpintersection):
+                    overlap[level, index] = ranges, gpi, gpj
 
-        return overlap, costs
+        return costs
 
 
     def findIntersections(self, gpsi, gpsj, grid):
         overlappingGridPoints = {}
         costs = 0
-        for gpi in gpsi:
-            gpsj.remove(gpi)
-            overlap, cost = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(gpi, gpsj,
-                                                                                        overlappingGridPoints,
-                                                                                        grid)
-            overlappingGridPoints.update(overlap)
+        for i, gpi in gpsi.items():
+            del gpsj[i]
+            cost = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj,
+                                                                               overlappingGridPoints,
+                                                                               grid)
             costs += cost
+
         return overlappingGridPoints, costs
 
 
-    def plotDebug(self, candidates, gpi, gpj, ans):
+    def findNodesWithNegativeCoefficients(self, grid, alpha):
+        gs = grid.getStorage()
+        numDims, numGridPoints = gs.getDimension(), gs.getSize()
+
+        ans = {}
+        for i in xrange(gs.getSize()):
+            if alpha[i] < 0.0:
+                gp = gs.get(i)
+                ancestors = getHierarchicalAncestors(grid, gp)
+                insert = True
+#                 while len(ancestors) > 0:
+#                     _, gpa = ancestors.pop()
+#                     ix = gs.seq(gpa)
+#                     if alpha[ix] < 0.0:
+#                         insert = False
+#                         break
+                if insert:
+                    ans[i] = gp
+
+        return ans
+
+
+
+    def plotDebug(self, grid, alpha, candidates, gpi, gpj, ans):
         # -----------------------------------------------------------------
         # plot result
         fig = plt.figure()
 
+        plotGrid2d(grid, alpha)
+
         for gp in candidates.values():
+            p = DataVector(gp.getDimension())
+            gp.getCoords(p)
+            plt.plot(p[0], p[1], "x ", color="green")
+
+        for gp in ans.values():
             p = DataVector(gp.getDimension())
             gp.getCoords(p)
             plt.plot(p[0], p[1], "o ", color="green")
 
-        for gp in [gpi, gpj]:
-            p = DataVector(gp.getDimension())
-            gp.getCoords(p)
-            plt.plot(p[0], p[1], "v ", color="red")
 
+        p = DataVector(grid.getStorage().getDimension())
+        gpi.getCoords(p)
+        plt.plot(p[0], p[1], "^ ", color="orange")
+        gpj.getCoords(p)
+        plt.plot(p[0], p[1], "^ ", color="orange")
 
         plt.xlim(0, 1)
         plt.ylim(0, 1)
-        plt.title("grid points so far = %i" % len(ans))
+        plt.title("# new = %i, overall = %i" % (len(candidates), len(ans)))
 
         fig.show()
         plt.show()
 
-    
-    def computeCandidates(self, overlap, grid):
-        # create full grid locally
-        gs = grid.getStorage()
-        maxLevel = gs.getMaxLevel()
-        ans = {}
-        for (i, j), (ranges, levels, indices, gpi, gpj) in overlap.items():
 
+    def getLocalMaxLevel(self, dup, levels, indices):
+        gp = HashGridIndex(self.numDims)
+        for idim, (level, index) in enumerate(zip(levels, indices)):
+            gp.set(idim, level, index)
+
+        # up in direction d to the root node
+        gp.set(dup, 1, 1)
+        # down as far as possible in direction d + 1 mod D
+        ddown = (dup + 1) % self.numDims
+
+        # search for children
+        # as long as the corresponding grid point exist in the grid
+        children = getAllChildrenNodesUpToMaxLevel(gp, self.maxLevel, self.grid, dimensions=[ddown])
+        maxLevel = 0
+        for childLevel, _ in children.keys():
+            maxLevel = max(maxLevel, np.max(childLevel))
+
+        return int(maxLevel), ddown
+
+
+    def getLocalFullGridLevel(self, levels, indices):
+        ans = [None] * self.numDims
+        for dup in xrange(self.numDims):
+            maxLevel, ddown = self.getLocalMaxLevel(dup, levels, indices)
+            ans[ddown] = maxLevel - levels[ddown] + 1
+        return tuple(ans)
+
+
+    def computeAnisotropicFullGrid(self, levels, indices):
+        localFullGridLevels = self.getLocalFullGridLevel(levels, indices)
+
+        if localFullGridLevels in self.globalGrids:
+            return self.globalGrids[localFullGridLevels]
+        else:
             # list 1d grid points
             candidates = {}
             for idim in xrange(self.numDims):
                 candidates[idim] = []
 
-            # init root node in 1d
-            gp1d = HashGridIndex(1)
-            gp1d.push(0, 1, 1, False)
-
             # Generate 1D grids
-#             print i, j, ranges, levels, indices
             for idim in xrange(self.numDims):
-                locaFullGridLevel = maxLevel - levels[idim] + 1
-                for level in xrange(1, locaFullGridLevel + 1):
+                for level in xrange(1, localFullGridLevels[idim] + 1):
                     for index in xrange(1, 2 ** level + 1, 2):
-                        gp1d.push(0, level, index, level == maxLevel)
-                        candidates[idim].append(HashGridIndex(gp1d))
-#                     print "%i: l=%i -> #candidates = %i" % (idim, level, len(xrange(1, 2 ** (level - 1) + 2, 2)))
-#                 print "%i: # candidates = %i" % (idim, len(candidates[idim]))
+                        candidates[idim].append((level, index))
+
             # iterate over cross product
             globalGrid = {}
+            levels = np.ndarray(self.numDims)
+            indices = np.ndarray(self.numDims)
             for values in product(*candidates.values()):
-                gpdd = HashGridIndex(self.numDims)
-                for idim, gpidim in enumerate(values):
-#                     print "%i: l=%i, i=%i" % (idim,
-#                                               gpidim.getLevel(0),
-#                                               gpidim.getIndex(0))
-                    gpdd.push(idim, gpidim.getLevel(0), gpidim.getIndex(0))
+                for idim, (level, index) in enumerate(values):
+                    levels[idim] = level
+                    indices[idim] = index
+                gp = tuple(levels), tuple(indices)
+                if gp not in globalGrid:
+                    globalGrid[gp] = True
 
-                li = tuple(getLevel(gpdd)), tuple(getIndex(gpdd))
-#                 print "-> %s" % (li,)
-                if li not in globalGrid:
-                    globalGrid[li] = gpdd
+            # update internal hashmap
+            self.globalGrids[localFullGridLevels] = globalGrid
 
-            self.costs += len(globalGrid)
-#             print "# of cross product: %i" % len(globalGrid)
-            # shift and scale the global full grid to the corresponding
-            # local one
+            return globalGrid
 
-            # 1. find the root node of the global grid
-            globalRoot = {'level': np.ones(len(levels)),
-                          'index': np.ones(len(indices))}
-            # 2. find the root node of the local grid
-            localRoot = {'level': levels,
-                         'index': indices}
-            # 3. shift and scale the global grid to the local one
-            localGrid = {}
-            for gpdd in globalGrid.values():
-#                 print "%s, %s ->" % (tuple(getLevel(gpdd)), tuple(getIndex(gpdd))),
-                for idim in xrange(self.numDims):                
-                    lg, ig = gpdd.getLevel(idim), gpdd.getIndex(idim)
-                    lgroot, igroot = globalRoot['level'][idim], globalRoot['index'][idim]
-                    llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
-                    
-                    # compute level and index of local grid
-                    level = lg + (llroot - lgroot)
-                    index = ig + (ilroot - igroot) * 2 ** (lg - lgroot)
-                    gpdd.set(idim, int(level), int(index))
+    
+    def computeCandidates(self, overlap, grid, alpha):
+        # sort the overlapping grid points by products of levels
+        sortedOverlapHashMap = {}
+        for (levels, indices), values in overlap.items():
+            localFullGridLevels = self.getLocalFullGridLevel(levels, indices)
+            numLocalGridPoints = np.prod(localFullGridLevels)
+            if numLocalGridPoints not in sortedOverlapHashMap:
+                sortedOverlapHashMap[numLocalGridPoints] = [(levels, indices, values)]
+            else:
+                sortedOverlapHashMap[numLocalGridPoints].append((levels, indices, values))
+        sortedOverlap = []
+        for levelProd in sorted(sortedOverlapHashMap.keys()):
+            for level, index, values in sortedOverlapHashMap[levelProd]:
+                sortedOverlap.append((level, index, values))
+        
+        # create full grid locally
+        gs = grid.getStorage()
+        maxLevel = gs.getMaxLevel()
+        ans = {}
+        while len(sortedOverlap) > 0:
+            levels, indices, (ranges, gpi, gpj) = sortedOverlap.pop()
 
-#                 print "%s, %s" % (tuple(getLevel(gpdd)), tuple(getIndex(gpdd)))
-                li = tuple(getLevel(gpdd)), tuple(getIndex(gpdd))
-                if not gs.has_key(gpdd) and li not in localGrid:
-                    localGrid[li] = gpdd
+            # do not consider intersection if it is already part of the local grid
+            if (levels, indices) not in ans:
+                globalGrid = self.computeAnisotropicFullGrid(levels, indices)
+                self.costs += len(globalGrid)
 
-#             print "# local grid = %i" % len(localGrid)
-#             self.plotDebug(localGrid, gpi, gpj, ans)
-            ans.update(localGrid)
+                # shift and scale the global full grid to the corresponding
+                # local one
+
+                # 2. set the root node of the local grid
+                localRoot = {'level': levels,
+                             'index': indices}
+
+                # 3. shift and scale the global grid to the local one
+                localGrid = {}
+                levels = [None] * self.numDims
+                indices = [None] * self.numDims
+                for levelsGlobal, indicesGlobal in globalGrid.keys():
+                    gpdd = HashGridIndex(self.numDims)
+                    for idim in xrange(self.numDims):
+                        lg, ig = levelsGlobal[idim], indicesGlobal[idim]
+                        llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
+
+                        # compute level and index of local grid
+                        # 1 -> level index of global root node, always the same
+                        levels[idim] = int(lg + (llroot - 1))
+                        indices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
+                        gpdd.set(idim, levels[idim], indices[idim])
+
+                    if not gs.has_key(gpdd):
+                        localGrid[(tuple(levels), tuple(indices))] = gpdd
+
+#                 if self.numDims == 2:
+#                     self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans)
+                ans.update(localGrid)
 
         return ans.values()
 
 
     def findCandidates(self, grid, alpha, addedGridPoints):
-        gs = grid.getStorage()
-        
         if self.iteration == 0:
-            self.A0 = [gs.get(i) for i in xrange(gs.getSize()) if alpha[i] < 0.0]
-            overlappingGridPoints, self.costs = self.findIntersections(self.A0, list(self.A0), grid)
-            print "# of intersections    : %i/%i" % (len(overlappingGridPoints), len(self.A0) ** 2)
-            self.newCandidates = self.computeCandidates(overlappingGridPoints, grid)
+            self.A0 = self.findNodesWithNegativeCoefficients(grid, alpha)
+            gs = grid.getStorage()
+            print "# negative candidates : %i/%i" % (len(self.A0), len([True for i in xrange(gs.getSize()) if alpha[i] < 0.0]))
+            overlappingGridPoints, self.costs = self.findIntersections(self.A0, self.A0.copy(), grid)
+            predictedCosts = self.costs + len(overlappingGridPoints) * (2 ** self.maxLevel - 1) ** self.numDims
+            print "# intersections       : %i/%i -> predicted costs <= %i" % (len(overlappingGridPoints), len(self.A0) ** 2, predictedCosts)
+            print "-" * 60
+            self.newCandidates = self.computeCandidates(overlappingGridPoints, grid, alpha)
             self.candidates = self.newCandidates
         else:
             if len(addedGridPoints) > 0:
-                # remove added points from candidate set
-#                 for gp in addedGridPoints:
-#                     if gp in self.newCandidates:
-#                         self.newCandidates.remove(gp)
                 self.candidates = self.newCandidates
-#         # just add candidates with negative function evaluation
-#         opEval = createOperationEval(grid)
-#         p = DataVector(self.numDims)
-#         alphaVec = DataVector(alpha)
-#         for gp in self.newCandidates:
-#             gp.getCoords(p)
-#             if opEval.eval(alphaVec, p) < 0.0:
-#                 self.candidates.add(gp)

@@ -182,7 +182,7 @@ def plotGrid2d(grid, alpha=None):
     gps = {'p': np.zeros([0, 2]),
            'n': np.zeros([0, 2])}
     p = DataVector(2)
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         if alpha is None or alpha[i] >= 0:
             gps['p'] = np.vstack((gps['p'], p.array()))
@@ -190,7 +190,7 @@ def plotGrid2d(grid, alpha=None):
             gps['n'] = np.vstack((gps['n'], p.array()))
 
     # plot the grid points
-    plt.plot(gps['p'][:, 0], gps['p'][:, 1], "^ ", color='red')
+    plt.plot(gps['p'][:, 0], gps['p'][:, 1], "^ ", color='blue')
     plt.plot(gps['n'][:, 0], gps['n'][:, 1], "v ", color='red')
     plt.xlim(0, 1)
     plt.ylim(0, 1)

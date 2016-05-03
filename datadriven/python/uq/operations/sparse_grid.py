@@ -169,46 +169,46 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
+# def insertHierarchicalAncestors(grid, gp):
+#     """
+#     insert all hierarchical ancestors recursively to the grid
+#     @param grid: Grid
+#     @param gp: HashGridIndex
+#     @return: list of HashGridIndex, contains all the newly added grid points
+#     """
+#     newGridPoints = []
+#     gs = grid.getStorage()
+#     gps = [gp]
+#     while len(gps) > 0:
+#         gp = gps.pop()
+#         gpc = HashGridIndex(gp)
+#         for dim in xrange(gp.getDimension()):
+#             oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
+#             # run up to the root node until you find one existing node
+#             level, index = oldlevel, oldindex
+#             while level > 1:
+#                 level -= 1
+#                 index = index / 2 + ((index + 1) / 2) % 2
+#
+#                 gpc.set(dim, level, index)
+#
+#                 if not gs.has_key(gpc):
+#                     newGridPoints.append(HashGridIndex(gpc))
+#                 else:
+#                     break
+#
+#             # reset the point
+#             gpc.set(dim, oldlevel, oldindex)
+#
+#         # insert the grid points in a list and add the hierarchical ancestors
+#         # of them
+#         for gp in newGridPoints:
+#             gps += insertPoint(grid, gp)
+#
+#     return newGridPoints
+
+
 def insertHierarchicalAncestors(grid, gp):
-    """
-    insert all hierarchical ancestors recursively to the grid
-    @param grid: Grid
-    @param gp: HashGridIndex
-    @return: list of HashGridIndex, contains all the newly added grid points
-    """
-    newGridPoints = []
-    gs = grid.getStorage()
-    gps = [gp]
-    while len(gps) > 0:
-        gp = gps.pop()
-        gpc = HashGridIndex(gp)
-        for dim in xrange(gp.getDimension()):
-            oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
-            # run up to the root node until you find one existing node
-            level, index = oldlevel, oldindex
-            while level > 1:
-                level -= 1
-                index = index / 2 + ((index + 1) / 2) % 2
-
-                gpc.set(dim, level, index)
-
-                if not gs.has_key(gpc):
-                    newGridPoints.append(HashGridIndex(gpc))
-                else:
-                    break
-
-            # reset the point
-            gpc.set(dim, oldlevel, oldindex)
-
-        # insert the grid points in a list and add the hierarchical ancestors
-        # of them
-        for gp in newGridPoints:
-            gps += insertPoint(grid, gp)
-
-    return newGridPoints
-
-
-def insertHierarchicalAncestorsS(grid, gp):
     ans = []
     gps = [gp]
 
@@ -300,6 +300,37 @@ def hasAllChildren(grid, gp):
             return False
 
     return True
+
+
+def getAllChildrenNodesUpToMaxLevel(gp, maxLevel, grid, dimensions=None):
+    children = {}
+    gs = grid.getStorage()
+    if dimensions is None:
+        dimensions = xrange(gs.getDimension())
+
+    gps =[gp]
+    while len(gps) > 0:
+        currentgp = gps.pop()
+        level, index = tuple(getLevel(currentgp)), tuple(getIndex(currentgp))
+        children[level, index] = HashGridIndex(currentgp)
+        for idim in dimensions:
+            if currentgp.getLevel(idim) < maxLevel:
+                gpl = HashGridIndex(currentgp)
+                gs.left_child(gpl, idim)
+                if gs.has_key(gpl):
+                    level, index = tuple(getLevel(gpl)), tuple(getIndex(gpl))
+                    children[level, index] = gpl
+                    gps.append(gpl)
+
+                # get right child
+                gpr = HashGridIndex(currentgp)
+                gs.right_child(gpr, idim)
+                if gs.has_key(gpr):
+                    level, index = tuple(getLevel(gpr)), tuple(getIndex(gpr))
+                    children[level, index] = gpr
+                    gps.append(gpr)
+
+    return children
 
 
 def insertTruncatedBorder(grid, gp):

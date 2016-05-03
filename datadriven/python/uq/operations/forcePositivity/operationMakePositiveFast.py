@@ -108,7 +108,7 @@ class OperationMakePositiveFast(object):
         self.candidateSearchAlgorithm = algorithm
 
 
-    def makeCurrentNodalValuesPositive(self, grid, alpha):
+    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None):
         nodalValues = dehierarchize(grid, alpha)
         neg = []
         for i, yi in enumerate(nodalValues):
@@ -121,90 +121,12 @@ class OperationMakePositiveFast(object):
 #                 warnings.warn("negative function values at grid points encountered, this should not happen")
 
             # check if the coefficients of the new grid points are positive
-            assert len([True for i in neg if alpha[i] < -1e-10]) == 0
+            if addedGridPoints is not None:
+                gs = grid.getStorage()
+                assert all([alpha[gs.seq(gp)] >= -1e-13 for gp in addedGridPoints])
         return alpha
 
     
-    def findGridPointsWithNegativeCoefficient(self, gps, alpha):
-        negativeGridPoints = {}
-        for i, gp in gps.items():
-            if alpha[i] < 0.0:
-                negativeGridPoints[i] = gp
-        return negativeGridPoints
-
-
-    def separateGridPoints(self, gps, alpha):
-        negativeGridPoints = {}
-        positiveGridPoints = {}
-        for i, gp in gps.items():
-            if alpha[i] < 0.0:
-                negativeGridPoints[i] = gp
-            else:
-                positiveGridPoints[i] = gp
-
-        return negativeGridPoints, positiveGridPoints
-
-
-    def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, overlap, already_checked, grid):
-        numDims = gpi.getDimension()
-        gs = grid.getStorage()
-        # find all possible intersections of grid points
-        for j, gpj in gpsj.items():
-            level, index = self.findIntersection(gpi, gpj)
-            key = tuple(level + index)
-            if key not in overlap and key not in already_checked:
-                intersection = HashGridIndex(numDims)
-                for idim in xrange(numDims):
-                    intersection.set(idim, level[idim], index[idim])
-
-                # check if the current grid point already exists
-                if not gs.has_key(intersection):
-                    idim = 0
-                    while idim < numDims:
-                        # get level index
-                        lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
-                        ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
-
-                        # same level and different index
-                        if lid == ljd and iid != ijd:
-                            break
-
-                        # check if they have overlapping support
-                        xlowi, xhighi = getBoundsOfSupport(lid, iid)
-                        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-                        xlow = max(xlowi, xlowj)
-                        xhigh = min(xhighi, xhighj)
-
-                        # different level but not ancestors
-                        if xlow >= xhigh:
-                            break
-
-                        idim += 1
-
-                    # check whether the supports are overlapping
-                    # in all dimensions
-                    if idim == numDims:
-                        overlap[key] = intersection
-            else:
-                if key in already_checked:
-                    already_checked[key] += 1
-                else:
-                    already_checked[key] = 1
-                
-        return overlap, already_checked
-
-
-    def findIntersectionsOfOverlappingSuppports(self, gpsi, gpsj, grid):
-        overlappingGridPoints = {}
-        already_checked = {}
-        for i, gpi in gpsi.items():
-            overlap, checked = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj, overlappingGridPoints, already_checked, grid)
-            overlappingGridPoints.update(overlap)
-            already_checked.update(checked)
-
-        return overlappingGridPoints.values(), np.sum(already_checked.values()) + len(overlappingGridPoints)
-
 
     def computeBoundsOfOverlappingPatch(self, gpi, gpj):
         # compute bounds of the overlapping patch
@@ -224,28 +146,6 @@ class OperationMakePositiveFast(object):
 
         return xlim
 
-
-    def findIntersection(self, gpi, gpj):
-        # find maximum level
-        numDims = gpi.getDimension()
-        level = [0] * numDims
-        index = [0] * numDims
-        
-        for d in xrange(numDims):
-            if gpi.getLevel(d) > gpj.getLevel(d):
-                level[d] = gpi.getLevel(d)
-                index[d] = gpi.getIndex(d)
-            else:
-                level[d] = gpj.getLevel(d)
-                index[d] = gpj.getIndex(d)
-
-        return level, index
-
-    
-    def removeAlreadyExistingGridPoints(self, grid, intersections):
-        gs = grid.getStorage()
-        return [gp for gp in intersections if not gs.has_key(gp)]
-    
 
     def addFullGridPoints(self, grid, alpha, candidates):
         """
@@ -302,13 +202,6 @@ class OperationMakePositiveFast(object):
         grid.getStorage().recalcLeafProperty()
 
         return addedGridPoints, minLevelSum
-#
-#         newGridPoints = {}
-#         gs = grid.getStorage()
-#         for gp in addedGridPoints:
-#             newGridPoints[gs.seq(gp)] = gp
-#
-#         return newGridPoints
 
 
     def coarsening(self, grid, alpha):
@@ -381,24 +274,24 @@ class OperationMakePositiveFast(object):
         while minLevelSum < maxLevelSum and self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
             candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
             totalCosts += costs
+            oldGridSize = newGs.getSize()
 
             if self.verbose:
-                print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints - newGs.getSize(), costs)
+                print "iteration             : %i" % self.candidateSearchAlgorithm.iteration
+                print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints, costs)
 
             addedGridPoints = {}
             if len(candidates) > 0:
                 addedGridPoints, minLevelSum = self.addFullGridPoints(newGrid, newAlpha, candidates)
-
+                assert oldGridSize + len(addedGridPoints) == newGs.getSize()
                 if self.verbose:
-                    print "# new grid points     : %i -> %i at |l|_1 = %i <= %i" % (len(addedGridPoints),
-                                                                                    newGrid.getSize(),
-                                                                                    minLevelSum,
-                                                                                    maxLevelSum)
-                    print "  current total costs : %i < %i" % (totalCosts, numFullGridPoints)
+                    print "# new grid points     : %i -> %i -> %i at |l|_1 = %i <= %i" % (oldGridSize,
+                                                                                          len(addedGridPoints),
+                                                                                          newGrid.getSize(),
+                                                                                          minLevelSum,
+                                                                                          maxLevelSum)
+                    print "  current total costs : %i <= %i" % (totalCosts, numFullGridPoints)
                     print "-" * 80
-
-#                 if len(addedGridPoints) == 0:
-#                     break
 
                 newAlpha = np.append(newAlpha, np.zeros(len(addedGridPoints)))
 
@@ -408,10 +301,10 @@ class OperationMakePositiveFast(object):
                                                                                            newAlpha,
                                                                                            addedGridPoints)
                 else:
-                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
+                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
 
-                if newGs.getDimension() == 2:
-                    self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
+#                 if newGs.getDimension() == 2:
+#                     self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
             else:
                 break
 
