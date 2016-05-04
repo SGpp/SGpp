@@ -23,6 +23,8 @@ namespace base {
  */
 class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
  public:
+  using HashRefinementBoundaries::refineGridpoint1D;
+
   /**
    * Performs the refinement on grid
    *
@@ -50,13 +52,15 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param index point to refine
    * @param d direction
    * @param maxLevel no points on higher levels than maxLevel will be created
-         */
+   */
   void refineGridpoint1D(GridStorage& storage,
                          AbstractRefinement::index_type& index,
                          size_t d, unsigned int maxLevel);
 
 
  protected:
+  using HashRefinementBoundaries::refineGridpoint;
+
   /**
    * This method refines a grid point be generating the children in every dimension
    * of the grid.

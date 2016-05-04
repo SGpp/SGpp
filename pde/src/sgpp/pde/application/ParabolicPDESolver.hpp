@@ -47,12 +47,10 @@ class ParabolicPDESolver : public PDESolver {
    * @param verbose enables verbose output during solving
    * @param generateAnimation set this to true, if you want to generate a grid output in every
    * timestep
-   * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    */
   virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                                   double epsilonCG, sgpp::base::DataVector& alpha,
-                                  bool verbose = false, bool generateAnimation = false,
-                                  size_t numEvalsAnimation = 20) = 0;
+                                  bool verbose = false, bool generateAnimation = false) = 0;
 
   /**
    * Call this routine to use an explicit Euler algorithm to solve the parabolic PDE
@@ -65,12 +63,10 @@ class ParabolicPDESolver : public PDESolver {
    * @param verbose enables verbose output during solving
    * @param generateAnimation set this to true, if you want to generate a grid output in every
    * timestep
-   * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    */
   virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                                   double epsilonCG, sgpp::base::DataVector& alpha,
-                                  bool verbose = false, bool generateAnimation = false,
-                                  size_t numEvalsAnimation = 20) = 0;
+                                  bool verbose = false, bool generateAnimation = false) = 0;
 
   /**
    * Call this routine to use the Crank Nicolson algorithm to solve the parabolic PDE

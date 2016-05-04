@@ -127,7 +127,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
       theta = calculatetheta(a, sigma, T, count, stepsize);
       myHWSolver->setStochasticData(theta, sigma, a);
       myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
       count = count + 1;
     }
   } else if (Solver == "ImEul") {
@@ -138,7 +138,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
       theta = calculatetheta(a, sigma, T, count, stepsize);
       myHWSolver->setStochasticData(theta, sigma, a);
       myHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
       count = count + 1;
     }
   } else if (Solver == "CrNic") {

@@ -60,22 +60,12 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
                    base::DataMatrix& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        for (size_t j = 0; j < m; j++) {
-          value[j] = INFINITY;
-        }
-
+        value.setAll(INFINITY);
         return;
       }
     }
 
-    base::DataVector curAlpha(alpha.getNrows());
-    base::DataVector curGradient(d);
-
-    for (size_t j = 0; j < m; j++) {
-      alpha.getColumn(j, curAlpha);
-      value[j] = opEvalGradient->evalGradient(curAlpha, x, curGradient);
-      gradient.setRow(j, curGradient);
-    }
+    opEvalGradient->evalGradient(alpha, x, value, gradient);
   }
 
   /**

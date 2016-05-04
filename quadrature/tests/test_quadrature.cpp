@@ -7,6 +7,24 @@
 #define BOOST_TEST_MODULE SGppQuadratureModule
 #include <boost/test/unit_test.hpp>
 
+// fix for clang (from https://stackoverflow.com/a/33755176)
+#ifdef __clang__
+#include <string>
+
+namespace boost {
+namespace unit_test {
+namespace ut_detail {
+
+std::string normalize_test_case_name(const_string name) {
+    return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1) :
+                               std::string(name.begin(), name.size()));
+}
+
+}  // namespace ut_detail
+}  // namespace unit_test
+}  // namespace boost
+#endif
+
 #include <sgpp_base.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -94,12 +112,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
     case sgpp::quadrature::SamplerTypes::Halton:
       opQuad->useQuasiMonteCarloWithHaltonSequences();
       break;
-
-    case sgpp::quadrature::SamplerTypes::Sobol:
-      opQuad->useQuasiMonteCarloWithSobolSequences();
-
-    case sgpp::quadrature::SamplerTypes::ScrambledSobol:
-      opQuad->useQuasiMonteCarloWithScrambledSobolSequences();
 
     default:
       std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"

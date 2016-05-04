@@ -19,10 +19,9 @@ namespace sgpp {
 namespace solver {
 
 Euler::Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation,
-             size_t numEvalsAnimation, sgpp::base::ScreenOutput* screen)
+             sgpp::base::ScreenOutput* screen)
     : ODESolver(imax, timestepSize),
       bAnimation(generateAnimation),
-      evalsAnimation(numEvalsAnimation),
       ExMode(Mode),
       myScreen(screen) {
   this->residuum = 0.0;
@@ -48,7 +47,7 @@ void Euler::solve(SLESolver& LinearSystemSolver,
   }
 
   // Create pictures of the animation, if specified
-  if ((this->bAnimation == true)) {
+  if (this->bAnimation == true) {
     // Build filename
     std::string tFilename = "00000000000000000000000000000000";
     std::stringstream number;

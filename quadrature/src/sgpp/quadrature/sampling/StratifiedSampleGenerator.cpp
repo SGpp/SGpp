@@ -18,8 +18,6 @@ StratifiedSampleGenerator::StratifiedSampleGenerator(std::vector<size_t>& strata
     : SampleGenerator(strataPerDimension.size(), seed),
       numberOfStrata(strataPerDimension),
       currentStrata(strataPerDimension.size()),
-      numberOfSamples(0),
-      numberOfCurrentSample(0),
       sizeOfStrata(strataPerDimension.size()),
       uniformRealDist(0, 1) {
   // set counter to the first strata for each dimension

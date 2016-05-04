@@ -38,9 +38,9 @@ HeatEquationSolverMPI::~HeatEquationSolverMPI() {
   }
 }
 
-void HeatEquationSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, int level) {
+void HeatEquationSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new sgpp::base::LinearBoundaryGrid(BoundingBox);
 
@@ -57,7 +57,7 @@ void HeatEquationSolverMPI::setHeatCoefficient(double a) { this->a = a; }
 void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   throw sgpp::base::application_exception(
       "HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
 }
@@ -65,7 +65,7 @@ void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   if (this->bGridConstructed) {
     if (this->myScreen != NULL) {
       this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
@@ -76,7 +76,7 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 
     double dNeededTime;
     sgpp::solver::Euler* myEuler = new sgpp::solver::Euler(
-        "ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        "ImEul", numTimesteps, timestepsize, generateAnimation, this->myScreen);
 
     // read env variable, which solver type should be selected
     char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -172,7 +172,7 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
     numIESteps = NumImEul;
 
     sgpp::solver::Euler* myEuler =
-        new sgpp::solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new sgpp::solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     sgpp::solver::CrankNicolson* myCN = new sgpp::solver::CrankNicolson(numCNSteps, timestepsize);
 
     MPI_Barrier(MPI_COMM_WORLD);
