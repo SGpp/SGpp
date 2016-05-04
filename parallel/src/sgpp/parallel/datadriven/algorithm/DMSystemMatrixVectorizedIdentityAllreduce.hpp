@@ -40,6 +40,8 @@ class DMSystemMatrixVectorizedIdentityAllreduce
     rebuildLevelAndIndex();
   }
 
+  virtual ~DMSystemMatrixVectorizedIdentityAllreduce() {}
+
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {
 #ifdef X86_MIC_SYMMETRIC
     myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
@@ -51,7 +53,7 @@ class DMSystemMatrixVectorizedIdentityAllreduce
     this->myTimer_->start();
 #pragma omp parallel
     {
-      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, &this->dataset_,
                          alpha, *(this->tempData), 0, this->storage_.getSize(), data_offset,
                          data_offset + data_size);
 
@@ -80,7 +82,7 @@ class DMSystemMatrixVectorizedIdentityAllreduce
       // process, so threads might work on unfinished results of mult
 
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  &this->dataset_, *(this->tempData), *(this->result_tmp), 0,
                                   this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     // myGlobalMPIComm->Barrier();
@@ -100,7 +102,7 @@ class DMSystemMatrixVectorizedIdentityAllreduce
 #pragma omp parallel
     {
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  &this->dataset_, *(this->tempData), *(this->result_tmp), 0,
                                   this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
@@ -108,7 +110,7 @@ class DMSystemMatrixVectorizedIdentityAllreduce
     this->completeTimeMultTrans_ += this->myTimer_->stop();
   }
 
-  virtual void rebuildLevelAndIndex() {
+  void rebuildLevelAndIndex() override {
     DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
   }
 };
