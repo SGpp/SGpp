@@ -122,9 +122,9 @@ void BlackScholesSolverMPI::getGridNormalDistribution(sgpp::base::DataVector& al
   }
 }
 
-void BlackScholesSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, int level) {
+void BlackScholesSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
@@ -457,7 +457,7 @@ void BlackScholesSolverMPI::setStochasticData(sgpp::base::DataVector& mus,
 void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   throw base::application_exception(
       "BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this "
       "setting!");
@@ -466,10 +466,10 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                                size_t maxCGIterations, double epsilonCG,
                                                sgpp::base::DataVector& alpha, bool verbose,
-                                               bool generateAnimation, size_t numEvalsAnimation) {
+                                               bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::SLESolver* myCG;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
@@ -637,7 +637,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN =
         new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 

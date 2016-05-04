@@ -741,10 +741,10 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
   // Start solving the Black Scholes Equation
   if (Solver == "ExEul") {
     myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                   false, 20);
+                                   false);
   } else if (Solver == "ImEul") {
     myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                   false, 20);
+                                   false);
   } else if (Solver == "CrNic") {
     myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
                                    CRNIC_IMEUL_STEPS);
@@ -936,10 +936,10 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     // Start solving the Black Scholes Equation
     if (Solver == "ExEul") {
       myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "ImEul") {
       myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "CrNic") {
       myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
                                      CRNIC_IMEUL_STEPS);
@@ -1225,10 +1225,10 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     // Start solving the Black Scholes Equation
     if (Solver == "ExEul") {
       myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "ImEul") {
       myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "CrNic") {
       myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
                                      CRNIC_IMEUL_STEPS);
@@ -1547,10 +1547,10 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     // Start solving the Black Scholes Equation
     if (Solver == "ExEul") {
       myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "ImEul") {
       myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                     false, 20);
+                                     false);
     } else if (Solver == "CrNic") {
       myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
                                      CRNIC_IMEUL_STEPS);
@@ -2008,10 +2008,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   // Start solving the Black Scholes Equation
   if (Solver == "ExEul") {
     myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                   false, 20);
+                                   false);
   } else if (Solver == "ImEul") {
     myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
-                                   false, 20);
+                                   false);
   } else if (Solver == "CrNic") {
     myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
                                    CRNIC_IMEUL_STEPS);

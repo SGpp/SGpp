@@ -52,7 +52,7 @@ class OperationStencilHierarchisation : public OperationHierarchisation {
    *
    * @param node_values dummy array
    */
-  virtual void doHierarchisation(DataVector& node_values) = 0;
+  void doHierarchisation(DataVector& node_values) override = 0;
 
   /**
    * Implements the dehierarchisation on a sparse grid
@@ -60,7 +60,7 @@ class OperationStencilHierarchisation : public OperationHierarchisation {
    *
    * @param alpha dummy array
    */
-  virtual void doDehierarchisation(DataVector& alpha) = 0;
+  void doDehierarchisation(DataVector& alpha) override = 0;
 
   /**
    * Access to the results of the hierarchisation operation.

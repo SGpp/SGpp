@@ -410,10 +410,10 @@ class HashGridIndex {
   static pointDistributionMap& typeMap();
   static pointDistributionVerboseMap& typeVerboseMap();
 
-  friend class HashGridIndexPointerHashFunctor;
-  friend class HashGridIndexPointerEqualityFunctor;
-  friend class HashGridIndexHashFunctor;
-  friend class HashGridIndexEqualityFunctor;
+  friend struct HashGridIndexPointerHashFunctor;
+  friend struct HashGridIndexPointerEqualityFunctor;
+  friend struct HashGridIndexHashFunctor;
+  friend struct HashGridIndexEqualityFunctor;
 };
 
 struct HashGridIndexPointerHashFunctor {

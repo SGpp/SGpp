@@ -144,7 +144,7 @@ void OperationNaiveEvalHessianModFundamentalSpline::evalHessian(const DataMatrix
       for (size_t t = 0; t < d; t++) {
         gradient(j, t) += alpha(i, j) * curGradient[t];
 
-        for (size_t t2 = 0; t2 < d; t++) {
+        for (size_t t2 = 0; t2 < d; t2++) {
           hessian[j](t, t2) += alpha(i, j) * curHessian(t, t2);
         }
       }

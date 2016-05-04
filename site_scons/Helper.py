@@ -8,7 +8,12 @@ from __future__ import print_function
 import glob
 import os
 import re
+import string
+import subprocess
 import sys
+
+import SCons.Script
+import SCons.Script.Main
 
 def printInfo(*s):
   print("Info:", "\n      ".join([str(x) for x in s]))
@@ -54,16 +59,85 @@ def getModules(ignoreFolders):
 def multiParamConverter(s):
   return s.split(",")
 
-# detour compiler output
-def print_cmd_line(s, target, src, env):
+# this class is used with "sys.stdout = Logger(sys.stdout)" at the very beginning
+# => print lines to the terminal and to the log file simultaneously
+class Logger(object):
+  def __init__(self, terminal):
+    self.terminal = terminal
+
+    # clear file
+    with open("build.log", "a") as logFile:
+      logFile.seek(0)
+      logFile.truncate()
+
+  def write(self, message):
+    self.terminal.write(message)
+    # Python replaces all "\n" with os.linesep by default,
+    # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n"
+    with open("build.log", "a") as logFile:
+      logFile.write(message.replace(os.linesep, "\n"))
+
+  def flush(self):
+    self.terminal.flush()
+
+class FinalMessagePrinter(object):
+  def __init__(self):
+    self.enabled = True
+    self.env = None
+    self.sgppBuildPath = None
+    self.pysgppPackagePath = None
+    self.exitCode = None
+    self.exitFunction = sys.exit
+    sys.exit = self.exit
+
+  def enable(self):
+    self.enabled = True
+
+  def disable(self):
+    self.enabled = False
+
+  def exit(self, exitCode=0):
+    self.exitCode = exitCode
+    self.exitFunction(exitCode)
+
+  def printMessage(self):
+    if not self.enabled:
+      return
+
+    failures = SCons.Script.GetBuildFailures()
+    build_was_successful = (len(failures) == 0) and (SCons.Script.Main.exit_status == 0)
+    build_interrupted = build_was_successful and (self.exitCode != 0)
+
+    if build_interrupted:
+      return
+
+    if build_was_successful:
+      if self.env["PLATFORM"] in ["cygwin", "win32"]:
+        filename = "INSTRUCTIONS_WINDOWS"
+      elif self.env["PLATFORM"] == "darwin":
+        filename = "INSTRUCTIONS_MAC"
+      else:
+        filename = "INSTRUCTIONS"
+
+      with open(filename) as f:
+        instructionsTemplate = string.Template(f.read())
+        print()
+        print(instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=self.sgppBuildPath,
+                                                   PYSGPP_PACKAGE_PATH=self.pysgppPackagePath))
+    else:
+      print("""# ------------------------------------------------------------------------
+# An error occurred while compiling SG++.
+# If you believe this is a bug in SG++, please attach the build.log and
+# the config.log file when contacting the SG++ developers.
+# ------------------------------------------------------------------------""")
+
+# detour compiler output to print dots if VERBOSE=0
+def printCommand(s, target, src, env):
   if env["VERBOSE"]:
     sys.stdout.write(u"%s\n" % s)
   else:
     sys.stdout.write(u".")
     sys.stdout.flush()
-  if env["CMD_LOGFILE"]:
-    with open(env["CMD_LOGFILE"], "a") as logFile:
-      logFile.write("%s\n" % s)
 
 #creates a Doxyfile containing proper module paths based on Doxyfile_template
 def prepareDoxyfile(modules):
@@ -169,14 +243,49 @@ def flatDependencyGraph(dependencies, acc):
       acc = [dependency] + acc
   return acc
 
+# Override env["SPAWN"] to log output (stdout/stderr) of child processes.
+# (see https://bitbucket.org/scons/scons/wiki/BuildLog)
+def setSpawn(env):
+  def echoSpawn(sh, escape, cmd, args, spawnEnv):
+      """Spawn which echos stdout/stderr from the child."""
+      # convert spawnEnv from unicode strings
+      for var in spawnEnv:
+        spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
+
+      newArgs = " ".join(args[1:])
+      cmdLine = cmd + " " + newArgs
+
+      p = subprocess.Popen(
+          cmdLine,
+          env=spawnEnv,
+          stderr=subprocess.PIPE,
+          stdout=subprocess.PIPE,
+          shell=True,
+          universal_newlines=True)
+      (stdout, stderr) = p.communicate()
+
+      # Does this screw up the relative order of the two?
+      sys.stdout.write(stdout)
+      sys.stderr.write(stderr)
+      return p.returncode
+
+  env["SPAWN"] = echoSpawn
+
 # On win32, the command lines are limited to a ridiculously short length
 # (1000 chars). However, compiler/linker command lines easily exceed that
 # length. The following is a fix for that.
 # It has to be enabled with "env["SPAWN"] = win32Spawn".
 # (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 def setWin32Spawn(env):
-  import win32file
+  # the lines commented out were to write the results of the child processes to build.log
+  # (not only the commands which were executed)
+  # this seems, however, to cause sometimes deadlocks when compiling with -j
+  #import msvcrt
+  import win32api
+  #import win32con
   import win32event
+  import win32file
+  #import win32pipe
   import win32process
   import win32security
 
@@ -184,10 +293,31 @@ def setWin32Spawn(env):
     for var in spawnEnv:
       spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
 
+    #sAttrs = win32security.SECURITY_ATTRIBUTES()
+    #sAttrs.bInheritHandle = 1
+    #hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)
+    #hStdoutR, hStdoutW = win32pipe.CreatePipe(sAttrs, 0)
+    #hStderrR, hStderrW = win32pipe.CreatePipe(sAttrs, 0)
+    #
+    #pid = win32api.GetCurrentProcess()
+    #
+    #def replaceHandle(handle) :
+    #  tmp = win32api.DuplicateHandle(pid, handle, pid, 0, 0, win32con.DUPLICATE_SAME_ACCESS)
+    #  win32file.CloseHandle(handle)
+    #  return tmp
+    #
+    #hStdinW = replaceHandle(hStdinW)
+    #hStdoutR = replaceHandle(hStdoutR)
+    #hStderrR = replaceHandle(hStderrR)
+
     sAttrs = win32security.SECURITY_ATTRIBUTES()
     startupInfo = win32process.STARTUPINFO()
-    newargs = " ".join(map(escape, args[1:]))
-    cmdLine = cmd + " " + newargs
+    #startupInfo.hStdInput = hStdinR
+    #startupInfo.hStdOutput = hStdoutW
+    #startupInfo.hStdError = hStderrW
+    #startupInfo.dwFlags = win32process.STARTF_USESTDHANDLES
+    newArgs = " ".join(map(escape, args[1:]))
+    cmdLine = cmd + " " + newArgs
 
     # check for any special operating system commands
     if cmd == "del":
@@ -200,12 +330,20 @@ def setWin32Spawn(env):
         hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
             None, cmdLine, None, None, 1, 0, spawnEnv, None, startupInfo)
       except:
-        import win32api
         errorCode = win32api.GetLastError()
         raise RuntimeError("Could not execute the following " +
           "command line (error code {}): {}".format(errorCode, cmdLine))
       win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
       exitCode = win32process.GetExitCodeProcess(hProcess)
+
+      #win32file.CloseHandle(hStdinR)
+      #win32file.CloseHandle(hStdoutW)
+      #win32file.CloseHandle(hStderrW)
+      #with os.fdopen(msvcrt.open_osfhandle(hStdoutR, 0), "rb") as f: stdout = f.read()
+      #with os.fdopen(msvcrt.open_osfhandle(hStderrR, 0), "rb") as f: stderr = f.read()
+      #sys.stdout.write(stdout)
+      #sys.stderr.write(stderr)
+
       win32file.CloseHandle(hProcess)
       win32file.CloseHandle(hThread)
     return exitCode

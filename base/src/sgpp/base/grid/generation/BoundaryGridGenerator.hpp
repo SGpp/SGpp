@@ -38,6 +38,9 @@ class BoundaryGridGenerator : public GridGenerator {
    */
   ~BoundaryGridGenerator() override;
 
+  level_t getBoundaryLevel() const;
+  void setBoundaryLevel(level_t boundaryLevel);
+
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;

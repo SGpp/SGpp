@@ -140,9 +140,9 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
   }
 }
 
-void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
+void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
@@ -639,10 +639,10 @@ void BlackScholesSolver::setStochasticData(base::DataVector& mus, base::DataVect
 void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                             size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
-                                            bool generateAnimation, size_t numEvalsAnimation) {
+                                            bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ExEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::SLESolver* myCG = NULL;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
@@ -748,10 +748,10 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                             size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
-                                            bool generateAnimation, size_t numEvalsAnimation) {
+                                            bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::SLESolver* myCG = NULL;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
@@ -926,7 +926,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN =
         new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
@@ -1728,7 +1728,7 @@ void BlackScholesSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
                                             double epsilonCG, std::string tFilename) {
   if (this->bGridConstructed) {
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numTimesteps, timestepsize, false, 0, myScreen);
+        new solver::Euler("ImEul", numTimesteps, timestepsize, false, myScreen);
     solver::BiCGStab* myCG = new solver::BiCGStab(maxCGIterations, epsilonCG);
     pde::OperationParabolicPDESolverSystemDirichlet* myBSSystem =
         new BlackScholesParabolicPDESolverSystemEuroAmer(
