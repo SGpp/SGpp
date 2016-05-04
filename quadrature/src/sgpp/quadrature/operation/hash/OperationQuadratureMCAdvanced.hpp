@@ -107,6 +107,16 @@ class OperationQuadratureMCAdvanced : public sgpp::base::OperationQuadrature {
    */
   void useQuasiMonteCarloWithHaltonSequences();
 
+        /**
+         * @brief Initialize SampleGenerator for SobolSequenceGenerator
+         */
+        void useQuasiMonteCarloWithSobolSequences();
+
+        /**
+         * @brief Initialize SampleGenerator for ScrambledSobolSequenceGenerator
+         */
+        void useQuasiMonteCarloWithScrambledSobolSequences();
+
   /**
    * @brief Method returns the total number of samples which can be generated
    * according to the sample generator settings (dimensions and subdivision into strata)
