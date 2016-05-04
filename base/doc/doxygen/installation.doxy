@@ -2,8 +2,11 @@
 @page installation Installation and Usage
 
 Select your operating system and compiler to get instructions.
+SG++ can also be used with other OS/compiler combinations that
+are not listed here.
+SG++ should at least work with GCC, Clang, or ICC on Linux,
+GCC on OSX, and MinGW on Windows.
 
 - @subpage linux
 - @subpage mingw
-- @subpage msvc
 **/

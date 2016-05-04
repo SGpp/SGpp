@@ -126,7 +126,7 @@ double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clien
         func(*reinterpret_cast<int*>(&dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
-  delete p;
+  delete[] p;
   return sqrt(res / static_cast<double>(numberOfSamples));
 }
 

@@ -40,9 +40,9 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
 
   double start() const override;
 
-  size_t getRemovementsNum() const;
+  size_t getRemovementsNum() const override;
 
-  double getCoarseningThreshold() const;
+  double getCoarseningThreshold() const override;
 
  protected:
   /// pointer to the vector that stores the alpha values

@@ -29,7 +29,7 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
  private:
   std::vector<std::pair<size_t, double> > ExecTimeOnStep;
 
-  sgpp::base::OperationMultipleEval* kernel = nullptr;
+  // sgpp::base::OperationMultipleEval* kernel = nullptr;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 
@@ -42,6 +42,8 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
                               const size_t numNeededIterations);
 
  public:
+  using LearnerBase::predict;
+
   /**
    * Constructor
    *
