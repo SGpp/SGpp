@@ -97,11 +97,17 @@ class LogBarrier : public ConstrainedOptimizer {
   void setBarrierDecreaseFactor(double barrierDecreaseFactor);
 
   /**
+   * @return tall matrix (d columns) in which the history of
+   *         optimal points of the iterations are concatenated
+   */
+  const base::DataMatrix& getHistoryOfInnerIterationPoints() const;
+
+  /**
    * @return vector in which the k-th entry indicates the number of
    *         inner iterations in the k-th (outer) iteration,
    *         empty vector on error
    */
-  const std::vector<size_t>& getHistoryOfInnerIterations() const;
+  const std::vector<size_t>& getHistoryOfInnerIterationNumbers() const;
 
   /**
    * @param[out] clone pointer to cloned object
@@ -120,7 +126,9 @@ class LogBarrier : public ConstrainedOptimizer {
   /// barrier decrease factor
   double rhoMuMinus;
   /// search history (inner iterations)
-  std::vector<size_t> kHist;
+  base::DataMatrix xHistInner;
+  /// search history (number of inner iterations)
+  std::vector<size_t> kHistInner;
 };
 }  // namespace optimizer
 }  // namespace optimization

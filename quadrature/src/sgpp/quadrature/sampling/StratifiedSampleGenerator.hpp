@@ -56,9 +56,9 @@ class StratifiedSampleGenerator : public SampleGenerator {
   std::vector<size_t> currentStrata;
 
   // total number of samples which can be generated for given strata configuration
-  size_t numberOfSamples;
+  // size_t numberOfSamples;
   // index number of current sample [0..numberOfSamples-1]
-  size_t numberOfCurrentSample;
+  // size_t numberOfCurrentSample;
 
   // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]
   std::vector<double> sizeOfStrata;

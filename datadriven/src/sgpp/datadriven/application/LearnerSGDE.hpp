@@ -76,7 +76,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param adaptivityConfig adaptive refinement configuration
    * @param solverConfig solver configuration (CG)
    * @param regularizationConfig config for regularization operator
-   * @param learnerSGDEConfig configuration for the learner
+   * @param crossvalidationConfig configuration for the cross validation
    */
   LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
               sgpp::base::AdpativityConfiguration& adaptivityConfig,
@@ -168,7 +168,6 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   /**
    * generates a regular grid
-   * @param ndim number of dimensions
    * @return grid
    */
   std::shared_ptr<base::Grid> createRegularGrid();

@@ -54,17 +54,15 @@ class HeatEquationSolver : public ParabolicPDESolver {
    */
   virtual ~HeatEquationSolver();
 
-  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level);
 
   virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                                   double epsilonCG, sgpp::base::DataVector& alpha,
-                                  bool verbose = false, bool generateAnimation = false,
-                                  size_t numEvalsAnimation = 20);
+                                  bool verbose = false, bool generateAnimation = false);
 
   virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                                   double epsilonCG, sgpp::base::DataVector& alpha,
-                                  bool verbose = false, bool generateAnimation = false,
-                                  size_t numEvalsAnimation = 20);
+                                  bool verbose = false, bool generateAnimation = false);
 
   virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
                                   double epsilonCG, sgpp::base::DataVector& alpha,

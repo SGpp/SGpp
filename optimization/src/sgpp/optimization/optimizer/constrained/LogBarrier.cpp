@@ -131,7 +131,8 @@ LogBarrier::LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, Vec
       theta(tolerance),
       mu0(barrierStartValue),
       rhoMuMinus(barrierDecreaseFactor),
-      kHist() {}
+      xHistInner(0, 0),
+      kHistInner() {}
 
 LogBarrier::~LogBarrier() {}
 
@@ -144,7 +145,8 @@ void LogBarrier::optimize() {
   fOpt = NAN;
   xHist.resize(0, d);
   fHist.resize(0);
-  kHist.clear();
+  xHistInner.resize(0, d);
+  kHistInner.clear();
 
   base::DataVector x(x0);
   double fx = f.eval(x);
@@ -177,9 +179,9 @@ void LogBarrier::optimize() {
     unconstrainedOptimizer.optimize();
     xNew = unconstrainedOptimizer.getOptimalPoint();
 
-    const size_t numberInnerEvaluations =
-        unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
-    k += numberInnerEvaluations;
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    const size_t numberInnerIterations = innerPoints.getNrows();
+    k += numberInnerIterations;
 
     x = xNew;
     fx = f.eval(x);
@@ -188,7 +190,15 @@ void LogBarrier::optimize() {
 
     xHist.appendRow(x);
     fHist.append(fx);
-    kHist.push_back(numberInnerEvaluations);
+    xHistInner.resize(xHistInner.getNrows() + numberInnerIterations, d);
+
+    for (size_t i = 0; i < numberInnerIterations; i++) {
+      for (size_t t = 0; t < d; t++) {
+        xHistInner(xHistInner.getNrows() - numberInnerIterations + i, t) = innerPoints(i, t);
+      }
+    }
+
+    kHistInner.push_back(numberInnerIterations);
 
     // status printing
     Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
@@ -234,7 +244,13 @@ void LogBarrier::setBarrierDecreaseFactor(double barrierDecreaseFactor) {
   rhoMuMinus = barrierDecreaseFactor;
 }
 
-const std::vector<size_t>& LogBarrier::getHistoryOfInnerIterations() const { return kHist; }
+const base::DataMatrix& LogBarrier::getHistoryOfInnerIterationPoints() const {
+  return xHistInner;
+}
+
+const std::vector<size_t>& LogBarrier::getHistoryOfInnerIterationNumbers() const {
+  return kHistInner;
+}
 
 void LogBarrier::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new LogBarrier(*this));

@@ -14,9 +14,6 @@
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
 
-#include <sgpp/quadrature/sampling/SobolSampleGenerator.hpp>
-#include <sgpp/quadrature/sampling/ScrambledSobolSampleGenerator.hpp>
-
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -79,20 +76,6 @@ void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
   myGenerator = new sgpp::quadrature::HaltonSampleGenerator(dimensions);
 }
 
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithSobolSequences() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-      myGenerator = new sgpp::quadrature::SobolSampleGenerator(dimensions, seed);
-    }
-
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithScrambledSobolSequences() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-      myGenerator = new sgpp::quadrature::ScrambledSobolSampleGenerator(dimensions, seed);
-    }
-
 double OperationQuadratureMCAdvanced::doQuadrature(sgpp::base::DataVector& alpha) {
   sgpp::base::DataMatrix dm(numberOfSamples, dimensions);
 
@@ -123,13 +106,12 @@ double OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientda
 }
 
 double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clientdata,
-                                                           sgpp::base::DataVector& alpha) {
+                                                          sgpp::base::DataVector& alpha) {
   double x;
   double* p = new double[dimensions];
 
   sgpp::base::DataVector point(dimensions);
-  std::unique_ptr<sgpp::base::OperationEval> opEval(
-      sgpp::op_factory::createOperationEval(*grid));
+  std::unique_ptr<sgpp::base::OperationEval> opEval(sgpp::op_factory::createOperationEval(*grid));
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
 
@@ -144,7 +126,7 @@ double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clien
         func(*reinterpret_cast<int*>(&dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
-  delete p;
+  delete[] p;
   return sqrt(res / static_cast<double>(numberOfSamples));
 }
 

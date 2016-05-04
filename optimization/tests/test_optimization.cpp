@@ -27,3 +27,21 @@ BOOST_GLOBAL_FIXTURE(GlobalFixture);
 #else
 BOOST_GLOBAL_FIXTURE(GlobalFixture)
 #endif /* BOOST_VERSION >= 105900 */
+
+// fix for clang (from https://stackoverflow.com/a/33755176)
+#ifdef __clang__
+#include <string>
+
+namespace boost {
+namespace unit_test {
+namespace ut_detail {
+
+std::string normalize_test_case_name(const_string name) {
+    return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1) :
+                               std::string(name.begin(), name.size()));
+}
+
+}  // namespace ut_detail
+}  // namespace unit_test
+}  // namespace boost
+#endif

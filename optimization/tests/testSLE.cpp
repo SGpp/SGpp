@@ -95,29 +95,29 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 
   // default solvers
   std::vector<std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>> solvers;
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::BiCGStab())));
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::GaussianElimination())));
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::Auto())));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::BiCGStab()));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::GaussianElimination()));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::Auto()));
 
   // additional solvers if sgpp::opt was compiled with them
 #ifdef USE_ARMADILLO
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::Armadillo())));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::Armadillo()));
 #endif /* USE_ARMADILLO */
 #ifdef USE_EIGEN
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::Eigen())));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::Eigen()));
 #endif /* USE_EIGEN */
 #ifdef USE_GMMPP
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::Gmmpp())));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::Gmmpp()));
 #endif /* USE_GMMPP */
 #ifdef USE_UMFPACK
-  solvers.push_back(std::move(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-                                new sgpp::optimization::sle_solver::UMFPACK())));
+  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
+                                new sgpp::optimization::sle_solver::UMFPACK()));
 #endif /* USE_UMFPACK */
 
   // test getters/setters

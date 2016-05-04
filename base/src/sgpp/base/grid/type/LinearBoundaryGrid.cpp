@@ -12,8 +12,9 @@ namespace sgpp {
 namespace base {
 
 LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr)
-    : Grid(istr), generator(storage, boundaryLevel), boundaryLevel(0) {
+    : Grid(istr), generator(storage), boundaryLevel(0) {
   istr >> boundaryLevel;
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
 LinearBoundaryGrid::LinearBoundaryGrid(size_t dim, level_t boundaryLevel)

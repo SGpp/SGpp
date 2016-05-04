@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #ifndef ALGORITHMMULTIPLEEVALUATION_HPP
-#define ALGORTIHMMULTIPLEEVALUATION_HPP
+#define ALGORITHMMULTIPLEEVALUATION_HPP
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -134,4 +134,4 @@ class AlgorithmMultipleEvaluation {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* ALGORTIHMMULTIPLEEVALUATION_HPP */
+#endif /* ALGORITHMMULTIPLEEVALUATION_HPP */

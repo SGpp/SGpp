@@ -18,9 +18,10 @@ namespace base {
 
 WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
   Grid(istr),
-  generator(storage, boundaryLevel),
+  generator(storage),
   boundaryLevel(0) {
   istr >> boundaryLevel;
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
 WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim,

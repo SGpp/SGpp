@@ -18,15 +18,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag})
 
-  checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
-  checkOpenCL(config)
-  checkBoostTests(config)
-  checkSWIG(config)
-  checkPython(config)
-  checkJava(config)
-
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
@@ -95,17 +86,21 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env.AppendUnique(CPPPATH=["#/" + moduleFolder + "/src/"])
 
   # detour compiler output
-  env["PRINT_CMD_LINE_FUNC"] = Helper.print_cmd_line
+  env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
+
+  checkCpp11(config)
+  checkDoxygen(config)
+  checkDot(config)
+  checkOpenCL(config)
+  checkBoostTests(config)
+  checkSWIG(config)
+  checkPython(config)
+  checkJava(config)
 
   env = config.Finish()
 
   print "Configuration done."
   print
-
-  # clear build_log file
-  with open(env["CMD_LOGFILE"], "a") as logFile:
-    logFile.seek(0)
-    logFile.truncate()
 
 def checkCpp11(config):
   # check C++11 support
@@ -279,33 +274,28 @@ def configureGNUCompiler(config):
     config.env["CXX"] = ("mpic++.mpich")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
-  else:  # gnu
-    gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
-    gcc_ver = config.env._get_major_minor_revision(gcc_ver_str)
-    Helper.printInfo("Using default gcc " + gcc_ver_str.strip() + ".")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -pedantic-errors -Wextra \
-      -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
-      -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
-      -Winvalid-pch -Wmissing-field-initializers -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wpointer-arith -Wredundant-decls -Wstack-protector \
-      -Wstrict-aliasing=2 -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
-      -Wunused-parameter -Wvariadic-macros -Wwrite-strings -Wuninitialized".split(" ")
-  # rather uninteresting: -Wlong-long -Wpadded -Wshadow -Wfloat-equal -Waggregate-return
-  #                       -Wimplicit -Wmissing-noreturn -Weffc++
-  # cannot really use:
+      "-Wall -pedantic -Wextra \
+      -Wcast-qual -Wconversion -Wformat=2 \
+      -Wformat-nonliteral -Wformat-security -Winit-self  \
+      -Wmissing-format-attribute \
+      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
+      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #     "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
+  #     "If you are going to use optimizations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
-      "-Wno-unused-parameter",
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse",
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
@@ -346,17 +336,22 @@ def configureGNUCompiler(config):
     config.env["SHLIBPREFIX"] = "lib"
 
 def configureClangCompiler(config):
-  Helper.printInfo("Using clang.")
-
   config.env["CC"] = ("clang")
   config.env["LINK"] = ("clang++")
   config.env["CXX"] = ("clang++")
+
+  versionString = subprocess.check_output([config.env["CXX"], "--version"])
+  try:
+    versionString = re.match(r"^.*version ([^ ]+)", versionString).group(1)
+  except AttributeError:
+    versionString = "(unknown version)"
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  allWarnings = "-Wall -Wextra".split(" ")
+  allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
@@ -364,8 +359,8 @@ def configureClangCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
-  config.env.Append(CPPFLAGS=["-fopenmp=libomp"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libomp"])
+  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -402,12 +397,13 @@ def configureIntelCompiler(config):
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
     config.env["LINK"] = ("icpc")
     config.env["CXX"] = ("icpc")
-    Helper.printInfo("Using icc.")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :

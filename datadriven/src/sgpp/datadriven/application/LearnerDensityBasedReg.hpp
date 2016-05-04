@@ -24,6 +24,8 @@ namespace datadriven {
  */
 class LearnerDensityBasedReg: public LearnerBase {
  public:
+  using LearnerBase::predict;
+
   /**
    * Constructor
    *

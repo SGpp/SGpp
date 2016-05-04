@@ -12,10 +12,11 @@ namespace sgpp {
 namespace base {
 
 PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr)
-    : Grid(istr), generator(storage, boundaryLevel), degree(1 << 16), boundaryLevel(0) {
+    : Grid(istr), generator(storage), degree(1 << 16), boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
   basis_.reset(new SPolyBoundaryBase(degree));
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
 PolyBoundaryGrid::PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel)
