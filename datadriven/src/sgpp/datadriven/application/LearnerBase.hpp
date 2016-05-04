@@ -116,17 +116,6 @@ class LearnerBase {
    */
   explicit LearnerBase(const bool isRegression, const bool isVerbose = true);
 
-  //  /**
-  //   * Constructor
-  //   *
-  //   * @param tGridFilename path to file that contains a serialized grid
-  //   * @param tAlphaFilename path to file that contains the grid's coefficients
-  //   * @param isRegression set to true if a regression task should be executed
-  //   * @param isVerbose set to true in order to allow console output
-  //   */
-  //  LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression,
-  //              const bool isVerbose = true);
-
   /**
    * Copy-Constructor
    *

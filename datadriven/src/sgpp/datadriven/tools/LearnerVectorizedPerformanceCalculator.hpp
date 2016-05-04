@@ -42,6 +42,8 @@ class LearnerVectorizedPerformanceCalculator {
    * @param numIterations number of iterations the solver executed
    * @param solver the selected solver
    * @param sizeDatatype the size of the employed datatype in bytes
+   * @param reuseAlpha set to true if the CG solver has reuseAlpha set to true
+   * @param verbose prints some details to stdout
    *
    * @return a LearnerVectorizedPerformance struct containing the results
    */

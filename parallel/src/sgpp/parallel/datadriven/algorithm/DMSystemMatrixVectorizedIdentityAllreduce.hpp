@@ -40,6 +40,9 @@ class DMSystemMatrixVectorizedIdentityAllreduce
     rebuildLevelAndIndex();
   }
 
+  /**
+   * Destructor
+   */
   virtual ~DMSystemMatrixVectorizedIdentityAllreduce() {}
 
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {
