@@ -169,6 +169,21 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
+def getNonExistingHierarchicalAncestors(grid, gp):
+    ans = []
+    gps = parents(grid, gp)
+    gs = grid.getStorage()
+
+    while len(gps) > 0:
+        d, p = gps.pop()
+        if isValid(grid, p) and not gs.has_key(p):
+            ans.append((d, p))
+            gps += parents(grid, p)
+
+    return ans
+
+
+
 # def insertHierarchicalAncestors(grid, gp):
 #     """
 #     insert all hierarchical ancestors recursively to the grid
@@ -214,7 +229,7 @@ def insertHierarchicalAncestors(grid, gp):
 
     while len(gps) > 0:
         gp = gps.pop()
-        ngps = getHierarchicalAncestors(grid, gp)
+        ngps = getNonExistingHierarchicalAncestors(grid, gp)
         while len(ngps) > 0:
             _, gp = ngps.pop()
             res = insertPoint(grid, gp)
@@ -300,37 +315,6 @@ def hasAllChildren(grid, gp):
             return False
 
     return True
-
-
-def getAllChildrenNodesUpToMaxLevel(gp, maxLevel, grid, dimensions=None):
-    children = {}
-    gs = grid.getStorage()
-    if dimensions is None:
-        dimensions = xrange(gs.getDimension())
-
-    gps =[gp]
-    while len(gps) > 0:
-        currentgp = gps.pop()
-        level, index = tuple(getLevel(currentgp)), tuple(getIndex(currentgp))
-        children[level, index] = HashGridIndex(currentgp)
-        for idim in dimensions:
-            if currentgp.getLevel(idim) < maxLevel:
-                gpl = HashGridIndex(currentgp)
-                gs.left_child(gpl, idim)
-                if gs.has_key(gpl):
-                    level, index = tuple(getLevel(gpl)), tuple(getIndex(gpl))
-                    children[level, index] = gpl
-                    gps.append(gpl)
-
-                # get right child
-                gpr = HashGridIndex(currentgp)
-                gs.right_child(gpr, idim)
-                if gs.has_key(gpr):
-                    level, index = tuple(getLevel(gpr)), tuple(getIndex(gpr))
-                    children[level, index] = gpr
-                    gps.append(gpr)
-
-    return children
 
 
 def insertTruncatedBorder(grid, gp):

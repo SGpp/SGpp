@@ -10,7 +10,7 @@ from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
-    insertTruncatedBorder, getBoundsOfSupport
+    insertTruncatedBorder, getBoundsOfSupport, evalSGFunctionMulti
 import numpy as np
 from matplotlib.patches import Rectangle
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation, \
@@ -147,6 +147,17 @@ class OperationMakePositiveFast(object):
         return xlim
 
 
+    def sortCandidatesByLevelSum(self, candidates):
+        gps = {}
+        for gp in candidates:
+            levelSum = gp.getLevelSum()
+            if levelSum not in gps:
+                gps[levelSum] = [gp]
+            else:
+                gps[levelSum].append(gp)
+        return gps
+
+
     def addFullGridPoints(self, grid, alpha, candidates):
         """
         Add all those full grid points with |accLevel|_1 <= n, where n is the
@@ -154,25 +165,24 @@ class OperationMakePositiveFast(object):
         @param grid: Grid sparse grid to be discretized
         @param candidates:
         """
-        # sort the grid points by level
-        gps = {}
+        # remove all the already existing candidates
         gs = grid.getStorage()
-        opEval = createOperationEval(grid)
+        nonExistingCandidates = [gp for gp in candidates if not gs.has_key(gp)]
+
+        # evaluate the remaining candidates
+        samples = np.ndarray((len(nonExistingCandidates), self.numDims))
         p = DataVector(self.numDims)
-        alphaVec = DataVector(alpha)
-        cnt = 0
-
-        for gp in candidates:
+        for i, gp in enumerate(nonExistingCandidates):
             gp.getCoords(p)
-            if not gs.has_key(gp) and opEval.eval(alphaVec, p) < 0.0:
-                levelSum = gp.getLevelSum()
-                if levelSum not in gps:
-                    gps[levelSum] = [gp]
-                else:
-                    gps[levelSum].append(gp)
-                cnt += 1
+            samples[i, :] = p.array()
+        eval = evalSGFunctionMulti(grid, alpha, samples)
 
-        levelSums = sorted(gps.keys())
+        negativeNonExistingCandidates = [gp for i, gp in enumerate(nonExistingCandidates) if eval[i] < 0.0]
+
+        # sort the non existing grid points by level
+        finalCandidates = self.sortCandidatesByLevelSum(negativeNonExistingCandidates)
+
+        levelSums = sorted(finalCandidates.keys())
         done = False
         i = 0
         addedGridPoints = []
@@ -185,7 +195,7 @@ class OperationMakePositiveFast(object):
 
         while not done and i < len(levelSums):
             minLevelSum = levelSums[i]
-            for gp in gps[minLevelSum]:
+            for gp in finalCandidates[minLevelSum]:
                 addedGridPoints += insertPoint(grid, gp)
                 addedGridPoints += insertHierarchicalAncestors(grid, gp)
 

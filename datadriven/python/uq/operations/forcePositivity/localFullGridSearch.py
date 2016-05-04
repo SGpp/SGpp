@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
-    getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent, \
-    getAllChildrenNodesUpToMaxLevel
+    getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent
 from itertools import product
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotGrid2d
 
@@ -154,7 +153,31 @@ class LocalFullGridCandidates(CandidateSet):
         plt.show()
 
 
-    def getLocalMaxLevel(self, dup, levels, indices):
+    def getMaxLevelOfChildrenUpToMaxLevel(self, gp, grid, idim):
+        gs = grid.getStorage()
+        children = []
+        gps = [gp]
+        while len(gps) > 0:
+            currentgp = gps.pop()
+            children.append(getLevel(currentgp))
+            if currentgp.getLevel(idim) < self.maxLevel:
+                gpl = HashGridIndex(currentgp)
+                gs.left_child(gpl, idim)
+                if gs.has_key(gpl):
+                    children.append(tuple(getLevel(gpl)))
+                    gps.append(gpl)
+
+                # get right child
+                gpr = HashGridIndex(currentgp)
+                gs.right_child(gpr, idim)
+                if gs.has_key(gpr):
+                    children.append(tuple(getLevel(gpr)))
+                    gps.append(gpr)
+
+        return children
+
+
+    def getLocalMaxLevel(self, dup, levels, indices, grid):
         gp = HashGridIndex(self.numDims)
         for idim, (level, index) in enumerate(zip(levels, indices)):
             gp.set(idim, level, index)
@@ -166,25 +189,22 @@ class LocalFullGridCandidates(CandidateSet):
 
         # search for children
         # as long as the corresponding grid point exist in the grid
-        children = getAllChildrenNodesUpToMaxLevel(gp, self.maxLevel, self.grid, dimensions=[ddown])
-        maxLevel = 0
-        for childLevel, _ in children.keys():
+        children = self.getMaxLevelOfChildrenUpToMaxLevel(gp, grid, ddown)
+        maxLevel = 1
+        for childLevel in children:
             maxLevel = max(maxLevel, np.max(childLevel))
 
         return int(maxLevel), ddown
 
 
-    def getLocalFullGridLevel(self, levels, indices):
+    def getLocalFullGridLevel(self, levels, indices, grid):
         ans = [None] * self.numDims
         for dup in xrange(self.numDims):
-            maxLevel, ddown = self.getLocalMaxLevel(dup, levels, indices)
+            maxLevel, ddown = self.getLocalMaxLevel(dup, levels, indices, grid)
             ans[ddown] = maxLevel - levels[ddown] + 1
         return tuple(ans)
 
-
-    def computeAnisotropicFullGrid(self, levels, indices):
-        localFullGridLevels = self.getLocalFullGridLevel(levels, indices)
-
+    def computeAnisotropicFullGrid(self, levels, indices, localFullGridLevels):
         if localFullGridLevels in self.globalGrids:
             return self.globalGrids[localFullGridLevels]
         else:
@@ -216,13 +236,14 @@ class LocalFullGridCandidates(CandidateSet):
 
             return globalGrid
 
-    
+
     def computeCandidates(self, overlap, grid, alpha):
         # sort the overlapping grid points by products of levels
         sortedOverlapHashMap = {}
+        localFullGridLevels = {}
         for (levels, indices), values in overlap.items():
-            localFullGridLevels = self.getLocalFullGridLevel(levels, indices)
-            numLocalGridPoints = np.prod(localFullGridLevels)
+            localFullGridLevels[levels, indices] = self.getLocalFullGridLevel(levels, indices, grid)
+            numLocalGridPoints = np.prod(localFullGridLevels[levels, indices])
             if numLocalGridPoints not in sortedOverlapHashMap:
                 sortedOverlapHashMap[numLocalGridPoints] = [(levels, indices, values)]
             else:
@@ -241,7 +262,7 @@ class LocalFullGridCandidates(CandidateSet):
 
             # do not consider intersection if it is already part of the local grid
             if (levels, indices) not in ans:
-                globalGrid = self.computeAnisotropicFullGrid(levels, indices)
+                globalGrid = self.computeAnisotropicFullGrid(levels, indices, localFullGridLevels[levels, indices])
                 self.costs += len(globalGrid)
 
                 # shift and scale the global full grid to the corresponding
@@ -270,8 +291,8 @@ class LocalFullGridCandidates(CandidateSet):
                     if not gs.has_key(gpdd):
                         localGrid[(tuple(levels), tuple(indices))] = gpdd
 
-#                 if self.numDims == 2:
-#                     self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans)
+                if self.numDims == 2:
+                    self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans)
                 ans.update(localGrid)
 
         return ans.values()
