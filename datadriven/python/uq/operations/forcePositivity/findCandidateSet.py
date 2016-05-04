@@ -34,7 +34,7 @@ class CandidateSet(object):
         return [gp for gp in intersections if not gs.has_key(gp)]
 
     
-    def findCandidates(self):
+    def findCandidates(self, grid, alpha, addedGridPoints):
         raise NotImplementedError
 
 
