@@ -41,19 +41,6 @@ class Learner : public LearnerBase {
   Learner(sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
           const bool isVerbose = true);
 
-  //  /**
-  //   * Constructor
-  //   *
-  //   * @param tGridFilename path to file that contains a serialized grid
-  //   * @param tAlphaFilename path to file that contains the grid's coefficients
-  //   * @param regularization enum that gives the regurlarization method
-  //   * @param isRegression set to true if a regression task should be executed
-  //   * @param isVerbose set to true in order to allow console output
-  //   */
-  //  Learner(const std::string tGridFilename, const std::string tAlphaFilename,
-  //          sgpp::datadriven::RegularizationType& regularization, const bool isRegression,
-  //          const bool isVerbose = true);
-
   /**
    * Destructor
    */

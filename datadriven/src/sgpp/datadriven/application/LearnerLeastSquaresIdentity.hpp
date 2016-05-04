@@ -37,9 +37,9 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset, double lambda) override;
 
-  virtual void postProcessing(const sgpp::base::DataMatrix& trainDataset,
-                              const sgpp::solver::SLESolverType& solver,
-                              const size_t numNeededIterations);
+  void postProcessing(const sgpp::base::DataMatrix& trainDataset,
+                      const sgpp::solver::SLESolverType& solver,
+                      const size_t numNeededIterations) override;
 
  public:
   using LearnerBase::predict;
@@ -51,17 +51,6 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
    * @param isVerbose set to true in order to allow console output
    */
   explicit LearnerLeastSquaresIdentity(const bool isRegression, const bool isVerbose = true);
-
-  //  /**
-  //   * Constructor
-  //   *
-  //   * @param tGridFilename path to file that contains a serialized grid
-  //   * @param tAlphaFilename path to file that contains the grid's coefficients
-  //   * @param isRegression set to true if a regression task should be executed
-  //   * @param isVerbose set to true in order to allow console output
-  //   */
-  //  LearnerLeastSquaresIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
-  //                              const bool isRegression, const bool isVerbose = true);
 
   /**
    * Destructor
