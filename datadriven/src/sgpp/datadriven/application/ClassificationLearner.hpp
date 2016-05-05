@@ -35,8 +35,8 @@ class ClassificationLearner {
   double getAccuracy(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
 
  private:
-  using class_t = double;
-  using learner_t = std::pair<class_t, RegressionLearner>;
+  typedef double class_t;
+  typedef std::pair<class_t, RegressionLearner> learner_t;
 
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;

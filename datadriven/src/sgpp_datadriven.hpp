@@ -17,6 +17,8 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/ClassificationLearner.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
