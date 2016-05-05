@@ -37,11 +37,11 @@ javaEnv.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",
 
 #javaEnv["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
-libJava = javaEnv.SharedLibrary(target="jsgpp",
-                                source=["jsgpp.i"],
-                                LIBPATH=BUILD_DIR,
-                                LIBS=flattenedDependencyGraph)
-#TODO libs are set hacky!
+javaEnv.AppendUnique(LIBPATH=BUILD_DIR)
+javaEnv.AppendUnique(LIBS=flattenedDependencyGraph)
+
+libJava = javaEnv.SharedLibrary(target="jsgpp", source=["jsgpp.i"])
+
 installLibJava = javaEnv.Install(JSGPP_BUILD_PATH, libJava)
 libraryTargetList.append(installLibJava)
 
