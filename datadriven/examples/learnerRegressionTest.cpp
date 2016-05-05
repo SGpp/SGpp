@@ -29,7 +29,7 @@ sgpp::datadriven::RegressionLearner getLearner(
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 500;
+  solverConfig.maxIterations_ = 5000;
   solverConfig.eps_ = 1e-8;
 
   return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
@@ -73,11 +73,11 @@ sgpp::datadriven::RegularizationConfiguration gridSearch(
     const double curMSE = learner.getMSE(xValidation, yValidation);
     std::cout << "Tested parameters are\n" << showRegularizationConfiguration(config) << ".\n";
     if (curMSE < bestMSE) {
-      std::cout << "Better! MSE is now " << curMSE << std::endl;
+      std::cout << "Better! RMSE is now " << std::sqrt(curMSE) << std::endl;
       bestConfig = config;
       bestMSE = curMSE;
     } else {
-      std::cout << "Worse!  MSE is now " << curMSE << std::endl;
+      std::cout << "Worse!  RMSE is now " << std::sqrt(curMSE) << std::endl;
     }
   }
   std::cout << "gridSearch finished with parameters " << showRegularizationConfiguration(bestConfig)
@@ -87,7 +87,7 @@ sgpp::datadriven::RegularizationConfiguration gridSearch(
 
 std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
   decltype(getConfigs()) result;
-  std::vector<double> lambdas = {0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125};
+  std::vector<double> lambdas = {1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
 
   std::vector<double> exponentBases = {0.5, 0.25, 0.125};
   for (const auto lambda : lambdas) {
