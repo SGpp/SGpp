@@ -63,7 +63,10 @@ def multiParamConverter(s):
 # => print lines to the terminal and to the log file simultaneously
 class Logger(object):
   def __init__(self, terminal):
+    # save original terminal
     self.terminal = terminal
+    # regex for ANSI color codes
+    self.ansiCode = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]")
 
     # clear file
     with open("build.log", "a") as logFile:
@@ -71,11 +74,19 @@ class Logger(object):
       logFile.truncate()
 
   def write(self, message):
+    # write on terminal
     self.terminal.write(message)
+
+    # remove ANSI color codes (e.g., for GCC >= 4.9)
+    # (from https://stackoverflow.com/a/33925425)
+    message = self.ansiCode.sub("", message)
+
     # Python replaces all "\n" with os.linesep by default,
     # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n"
+    message = message.replace(os.linesep, "\n")
+
     with open("build.log", "a") as logFile:
-      logFile.write(message.replace(os.linesep, "\n"))
+      logFile.write(message)
 
   def flush(self):
     self.terminal.flush()
