@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import glob
 import os
+import platform
 import re
 import string
 import subprocess
@@ -91,6 +92,11 @@ class Logger(object):
   def flush(self):
     self.terminal.flush()
 
+  def isatty(self):
+    return (self.terminal.isatty() if hasattr(self.terminal, "isatty") else None)
+
+# class for printing a final success/error message,
+# depending on whether there were compilation errors or not
 class FinalMessagePrinter(object):
   def __init__(self):
     self.enabled = True
@@ -141,6 +147,12 @@ class FinalMessagePrinter(object):
 # If you believe this is a bug in SG++, please attach the build.log and
 # the config.log file when contacting the SG++ developers.
 # ------------------------------------------------------------------------""")
+
+# returns whether the terminal supports ANSI color codes
+# (actually, we only check if it's a tty and we're not on Windows,
+# since there doesn't seem to be a portable way to check that)
+def terminalSupportsColors():
+  return hasattr(sys.stderr, "isatty") and sys.stderr.isatty() and (platform.system() != "Windows")
 
 # detour compiler output to print dots if VERBOSE=0
 def printCommand(s, target, src, env):

@@ -306,7 +306,7 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
 
   # GCC has support for colored output since 4.9
-  if version >= (4, 9, 0):
+  if (version >= (4, 9, 0)) and Helper.terminalSupportsColors():
     config.env.Append(CPPFLAGS=["-fdiagnostics-color=always"])
 
   if config.env["BUILD_STATICLIB"]:
