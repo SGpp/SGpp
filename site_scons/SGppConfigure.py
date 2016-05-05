@@ -298,8 +298,7 @@ def configureGNUCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
-      "-funroll-loops", "-mfpmath=sse",
-      "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
+      "-funroll-loops", "-mfpmath=sse"])
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
 
@@ -362,8 +361,6 @@ def configureClangCompiler(config):
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
   #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
-  config.env.Append(CPPFLAGS=allWarnings + [
-      "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
   config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
   config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
@@ -395,7 +392,6 @@ def configureIntelCompiler(config):
                                     "-fno-strict-aliasing",
                                     "-ip", "-ipo", "-funroll-loops",
                                     "-ansi-alias", "-fp-speculation=safe",
-                                    "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4",
                                     "-no-offload"])
   if config.env["COMPILER"] == "intel.mpi":
     config.env["CC"] = ("mpiicc")
