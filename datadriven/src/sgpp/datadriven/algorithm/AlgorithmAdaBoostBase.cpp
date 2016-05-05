@@ -115,7 +115,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     base::DataVector alpha_learn(this->gridPoint);
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
-    if (this->maxGridPoint->get(count) < this->gridPoint)
+    if (this->maxGridPoint->get(count) < static_cast<double>(this->gridPoint))
       this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
@@ -362,7 +362,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     base::DataVector alpha_learn(this->gridPoint);
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
-    if (this->maxGridPoint->get(count) < this->gridPoint)
+    if (this->maxGridPoint->get(count) < static_cast<double>(this->gridPoint))
       this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
@@ -514,7 +514,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     base::DataVector alpha_learn(this->gridPoint);
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
-    if (this->maxGridPoint->get(count) < this->gridPoint)
+    if (this->maxGridPoint->get(count) < static_cast<double>(this->gridPoint))
       this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
@@ -713,7 +713,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     base::DataVector alpha_learn(this->gridPoint);
     std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
-    if (this->maxGridPoint->get(count) < this->gridPoint)
+    if (this->maxGridPoint->get(count) < static_cast<double>(this->gridPoint))
       this->maxGridPoint->set(count, static_cast<double>(this->gridPoint));
 
     if (!this->refinement) {
@@ -1040,7 +1040,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
         this->maxGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
         this->sumGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
       } else {
-        if (gridPts > this->maxGridPoint->get(curBaseLearner - 2))
+        if (static_cast<double>(gridPts) > this->maxGridPoint->get(curBaseLearner - 2))
           this->maxGridPoint->set(curBaseLearner - 1, static_cast<double>(gridPts));
         else
           this->maxGridPoint->set(curBaseLearner - 1,

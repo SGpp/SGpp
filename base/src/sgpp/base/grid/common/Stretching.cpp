@@ -758,7 +758,7 @@ void Stretching::parseVectorToLookupTable(std::vector<double> vec,
   int level = static_cast<int>(log(static_cast<double>(vec.size() - 1)) / log(
                                  2.0));  // log2(vec.size()-1);
 
-  if (pow(2.0, level) + 1 != vec.size()) {
+  if ((static_cast<size_t>(1) << level) + 1 != vec.size()) {
     std::cout << "parseVectorToLookupTable: "
               "Vector Size does not match, should be 2^l+1\n";
     return;
