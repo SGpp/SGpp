@@ -276,6 +276,7 @@ def configureGNUCompiler(config):
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  version = config.env._get_major_minor_revision(versionString)
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
@@ -304,6 +305,10 @@ def configureGNUCompiler(config):
 
   # required for profiling
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
+
+  # GCC has support for colored output since 4.9
+  if version >= (4, 9, 0):
+    config.env.Append(CPPFLAGS=["-fdiagnostics-color=always"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
