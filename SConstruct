@@ -256,11 +256,6 @@ else:
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
 
-# add C++ defines for all modules
-for module in moduleNames:
-  if env[module]:
-    env["CPPDEFINES"][module] = "1"
-
 # environement setup finished, export environment
 Export("env")
 

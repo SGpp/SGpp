@@ -23,6 +23,11 @@ else:
 
 javaEnv = env.Clone()
 
+# add C++ defines for all modules
+for module in moduleNames:
+  if javaEnv[module]:
+    javaEnv["CPPDEFINES"][module] = "1"
+
 # remove compiler warnings caused by swig
 # (as we cannot do anything against them and as they confuse jenkins)
 javaEnv.AppendUnique(CPPFLAGS=["-w"])
