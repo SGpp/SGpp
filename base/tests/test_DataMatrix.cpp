@@ -10,6 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <algorithm>
+#include <cmath>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.abs();
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
-      BOOST_CHECK_EQUAL(d.get(i, j), fabs(d_rand.get(i, j)));
+      BOOST_CHECK_EQUAL(d.get(i, j), std::abs(d_rand.get(i, j)));
     }
   }
 
