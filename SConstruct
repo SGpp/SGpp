@@ -174,8 +174,8 @@ env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
 
-# don't create the Doxyfile if we're cleaning:
-if not env.GetOption("clean"):
+# don't create the Doxyfile if building Doxygen:
+if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
   Helper.prepareDoxyfile(moduleFolders)
 
 if "CXX" in ARGUMENTS:

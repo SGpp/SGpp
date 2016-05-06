@@ -84,7 +84,7 @@ It is advisable to install the requirements in this order:
    contain any space (no <tt>Program Files</tt> or similar)
    or you might get trouble, i.e.,
    the paths <tt>C:\\PATH_TO_MINGW</tt> etc.,
-   where you install the software, should be free of spaces. 
+   where you install the software, should be free of spaces.
 
 2. MinGW:
    1. Download <tt>mingw-w64-install.exe</tt> from the
@@ -204,9 +204,14 @@ For C++, this includes compilation, linking, and execution of the program
 using SG++.
 We also show how to use SG++ from the other supported languages
 (Python, Java, and MATLAB).
-As an example application, we consider the @ref code_examples_tutorial
+As an example application, we consider the @ref example_tutorial_cpp example
 from the directory <tt>base\\examples</tt>;
 however, the instructions can be analogously applied to other programs.
+
+Note that all examples, including @ref example_tutorial_cpp, are automatically built
+after each SCons run.
+Therefore, the following steps are not necessary to compile the examples;
+rather, the intent is to show the steps to build an application using SG++.
 
 In the following, the current directory is always <tt>base\\examples</tt> and
 <tt>C:\\PATH_TO_SGPP</tt> refers to the absolute path of the SG++ directory.
@@ -381,5 +386,5 @@ OperationMultipleEvalSubspaceCombined.hpp:82:121: fatal error: ../../OperationMu
   @verbatim
 ARCH=SSE3
   @endverbatim
-  to your build command, which replaces AVX by SSE3. SSE3 is supported by processors, which have been released after 2006. 
+  to your build command, which replaces AVX by SSE3. SSE3 is supported by processors, which have been released after 2006.
 */
