@@ -16,7 +16,7 @@
 
 namespace json {
 
-class JSON: public DictNode {
+class JSON : public DictNode {
  private:
   std::string fileName;
 
