@@ -13,30 +13,27 @@
 
 namespace json {
 
-JSON::JSON(): fileName("") {
-}
+JSON::JSON() : fileName("") {}
 
-JSON::JSON(const std::string& fileName) :
-  fileName(fileName) {
+JSON::JSON(const std::string& fileName) : fileName(fileName) {
   std::ifstream file;
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
   try {
-	  file.open(fileName);
-  } catch (std::ifstream::failure &e) {
-	  std::stringstream stream;
-	  stream << "json error: could not open file: " << fileName << std::endl;
-	  throw json_exception(stream.str());
+    file.open(fileName);
+  } catch (std::ifstream::failure& e) {
+    std::stringstream stream;
+    stream << "json error: could not open file: " << fileName << std::endl;
+    throw json_exception(stream.str());
   }
 
   std::string content;
   try {
-	  content.assign(std::istreambuf_iterator<char>(file),
-			  std::istreambuf_iterator<char>());
-  } catch (std::ifstream::failure &e) {
-	  std::stringstream stream;
-	  stream << "json error: could not successfully read file: " << fileName << std::endl;
-	  throw json_exception(stream.str());
+    content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+  } catch (std::ifstream::failure& e) {
+    std::stringstream stream;
+    stream << "json error: could not successfully read file: " << fileName << std::endl;
+    throw json_exception(stream.str());
   }
 
   file.close();
@@ -50,9 +47,7 @@ JSON::JSON(const std::string& fileName) :
   }
 }
 
-JSON::JSON(const JSON& original) : DictNode(original) {
-  this->fileName = original.fileName;
-}
+JSON::JSON(const JSON& original) : DictNode(original) { this->fileName = original.fileName; }
 
 std::vector<Token> JSON::tokenize(std::string& input) {
   std::vector<Token> stream;
@@ -73,8 +68,7 @@ std::vector<Token> JSON::tokenize(std::string& input) {
 
     // skip whitespace while not tokenizing anything
     if (state == TokenType::NONE) {
-      if (input[i] == ' ' || input[i] == '\r' || input[i] == '\n'
-          || input[i] == '\t') {
+      if (input[i] == ' ' || input[i] == '\r' || input[i] == '\n' || input[i] == '\t') {
         continue;
       }
     }
@@ -139,10 +133,9 @@ std::vector<Token> JSON::tokenize(std::string& input) {
         token.value.push_back(input[i]);
       }
     } else if (state == TokenType::ID) {
-      if (input[i] == '{' || input[i] == '}' || input[i] == '[' || input[i] == ']'
-          || input[i] == ':' || input[i] == ','
-          || input[i] == ' ' || input[i] == '\t' || input[i] == '\r'
-          || input[i] == '\n') {
+      if (input[i] == '{' || input[i] == '}' || input[i] == '[' || input[i] == ']' ||
+          input[i] == ':' || input[i] == ',' || input[i] == ' ' || input[i] == '\t' ||
+          input[i] == '\r' || input[i] == '\n') {
         stream.push_back(token);
         state = TokenType::NONE;
 
@@ -162,8 +155,8 @@ std::vector<Token> JSON::tokenize(std::string& input) {
         state = TokenType::MULTILINECOMMENT;
       } else {
         std::stringstream messageStream;
-        messageStream << "error: (line: " << lineNumber << ", char: " <<
-                      (charNumber - 1) << "): expected a single- or multiline comment after \"/\"";
+        messageStream << "error: (line: " << lineNumber << ", char: " << (charNumber - 1)
+                      << "): expected a single- or multiline comment after \"/\"";
         throw json_exception(messageStream.str());
       }
     } else if (state == TokenType::SINGLELINE) {
@@ -180,8 +173,8 @@ std::vector<Token> JSON::tokenize(std::string& input) {
       }
     } else {
       std::stringstream messageStream;
-      messageStream << "error: (line: " << lineNumber << ", char: " <<
-                    (charNumber - 1) << "): illegal parser state, this might be a bug";
+      messageStream << "error: (line: " << lineNumber << ", char: " << (charNumber - 1)
+                    << "): illegal parser state, this might be a bug";
       throw json_exception(messageStream.str());
     }
   }
@@ -198,9 +191,7 @@ void JSON::serialize(const std::string& outFileName) {
   outFile.close();
 }
 
-JSON* JSON::clone() {
-  return new JSON(*this);
-}
+JSON* JSON::clone() { return new JSON(*this); }
 
 void JSON::clear() {
   this->fileName = "";
