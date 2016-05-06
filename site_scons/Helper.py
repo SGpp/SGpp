@@ -99,36 +99,52 @@ class Logger(object):
 # depending on whether there were compilation errors or not
 class FinalMessagePrinter(object):
   def __init__(self):
+    # whether the final message will be printed or not
     self.enabled = True
+    # global SCons environment (has to be set from outside)
     self.env = None
+    # path of the SG++ libraries (has to be set from outside)
     self.sgppBuildPath = None
+    # path of the pysgpp package (has to be set from outside)
     self.pysgppPackagePath = None
+    # exit code if exited with sys.exit
     self.exitCode = None
+    # override sys.exit (called by SCons) to save the exit code,
+    # since atexit.register doesn't give access to the exit code
     self.exitFunction = sys.exit
     sys.exit = self.exit
 
   def enable(self):
+    # enable printing of final message
     self.enabled = True
 
   def disable(self):
+    # disable printing of final message
     self.enabled = False
 
   def exit(self, exitCode=0):
+    # save exit code, call original sys.exit
     self.exitCode = exitCode
     self.exitFunction(exitCode)
 
   def printMessage(self):
+    # check if we should print
     if not self.enabled:
       return
 
+    # list of SCons build failures
     failures = SCons.Script.GetBuildFailures()
+    # the build was successful, if there were no failures and the exit_status is zero
     build_was_successful = (len(failures) == 0) and (SCons.Script.Main.exit_status == 0)
+    # the build was interrupted, if there were not errors, but the exit code is non-zero
     build_interrupted = build_was_successful and (self.exitCode != 0)
 
+    # don't print if Ctrl+C was hit
     if build_interrupted:
       return
 
     if build_was_successful:
+      # print success message (instructions)
       if self.env["PLATFORM"] in ["cygwin", "win32"]:
         filename = "INSTRUCTIONS_WINDOWS"
       elif self.env["PLATFORM"] == "darwin":
@@ -142,6 +158,7 @@ class FinalMessagePrinter(object):
         print(instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=self.sgppBuildPath,
                                                    PYSGPP_PACKAGE_PATH=self.pysgppPackagePath))
     else:
+      # print error message
       print("""# ------------------------------------------------------------------------
 # An error occurred while compiling SG++.
 # If you believe this is a bug in SG++, please attach the build.log and
@@ -162,7 +179,9 @@ def printCommand(s, target, src, env):
     sys.stdout.write(u".")
     sys.stdout.flush()
 
+# convert an example source to a *.doxy documentation
 def convertExampleSourceToDoxy(sourcePath):
+  # read source
   with open(sourcePath, "r") as f: source = f.read()
 
   sourcePath = os.path.normpath(sourcePath)
@@ -171,6 +190,7 @@ def convertExampleSourceToDoxy(sourcePath):
   sourceFileType = os.path.splitext(sourceFileName)[1][1:]
   moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
 
+  # feasible languages
   if sourceFileType == "cpp":
     doxygenBlockCommentBegin = "/**"
     doxygenBlockCommentEnd = "*/"
@@ -185,16 +205,19 @@ def convertExampleSourceToDoxy(sourcePath):
       doxygenBlockCommentEnd = "*/"
       doxygenLineCommentBegin = "///"
     else:
+      # skip file if there is no main method
       return None
   elif sourceFileType == "m":
     doxygenBlockCommentBegin = None
     doxygenBlockCommentEnd = None
     doxygenLineCommentBegin = "%%"
 
+  # look if there is a \page command
   pageMatch = re.search(r"[@\\]page +([^ ]+) +(.*)$", source, flags=re.MULTILINE)
   doxy = "/**\n"
 
   if pageMatch is not None:
+    # page command found ==> assume this is a documented example
     pageName = pageMatch.group(1)
     doxy += "\\dontinclude {}\n".format(sourceFileName)
     inDoxygenComment = False
@@ -203,10 +226,12 @@ def convertExampleSourceToDoxy(sourcePath):
     sawFirstDoxygenComment = False
 
     for sourceLine in source.splitlines():
+      # skip empty lines
       if sourceLine.strip() == "":
         continue
 
       if sourceLine.strip() == doxygenBlockCommentBegin:
+        # begin of Doxygen block comment
         inDoxygenComment = True
         if sawFirstDoxygenComment:
           if len(previousNonBlankLines) > 0:
@@ -214,15 +239,16 @@ def convertExampleSourceToDoxy(sourcePath):
           else:
             doxy += "\n"
         else:
-          # assume up to now, there was only the copyright notice and no code
-          # ==> don't include now
+          # assume up to now, there was only the copyright notice and no code ==> skip
           sawFirstDoxygenComment = True
         previousNonBlankLines = []
         skipUntilNextNonBlankLine = False
       elif (sourceLine.strip() == doxygenBlockCommentEnd) and inDoxygenComment:
+        # end of Doxygen block comment
         inDoxygenComment = False
         skipUntilNextNonBlankLine = True
       elif sourceLine.strip().startswith(doxygenLineCommentBegin):
+        # Doxygen line comment
         if sawFirstDoxygenComment:
           if len(previousNonBlankLines) > 0:
             doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
@@ -232,18 +258,21 @@ def convertExampleSourceToDoxy(sourcePath):
         doxy += sourceLine[i:] + "\n"
         previousNonBlankLines = []
         skipUntilNextNonBlankLine = True
+      elif inDoxygenComment:
+        # line of Doxygen block comment
+        doxy += "{}\n".format(sourceLine.strip(" *"))
       else:
-        if inDoxygenComment:
-          doxy += "{}\n".format(sourceLine.strip(" *"))
-        else:
-          if skipUntilNextNonBlankLine:
-            doxy += "\\skip {}\n".format(sourceLine)
-            skipUntilNextNonBlankLine = False
-          previousNonBlankLines.append(sourceLine)
+        # source code line
+        if skipUntilNextNonBlankLine:
+          doxy += "\\skip {}\n".format(sourceLine)
+          skipUntilNextNonBlankLine = False
+        previousNonBlankLines.append(sourceLine)
 
+    # write remaining lines if any
     if len(previousNonBlankLines) > 0:
       doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
   else:
+    # no page command ==> include the source verbatim without additional documentation
     pageName = "example_{}".format(sourceFileName.replace(".", "_"))
     doxy += "@page {} {}\n".format(pageName, sourceFileName)
     doxy += "This example can be found under <tt>{}</tt>.\n".format(sourcePath)
@@ -252,6 +281,7 @@ def convertExampleSourceToDoxy(sourcePath):
   doxy += "*/\n"
   doxyPath = "{}/doc/doxygen/{}.doxy".format(moduleName, pageName)
 
+  # write *.doxy file
   with open(doxyPath, "w") as f: f.write(doxy)
   return {"pageName" : pageName, "language" : sourceFileType, "moduleName" : moduleName}
 
@@ -287,6 +317,7 @@ def prepareDoxyfile(modules):
         if os.path.exists(os.path.join(os.getcwd(), imagePath)):
           imagePaths += " " + imagePath
 
+        # search for examples
         for exampleFileName in os.listdir(examplePath):
           if any([exampleFileName.endswith(ext) for ext in [".cpp", ".py", ".java", ".m"]]):
             example = convertExampleSourceToDoxy("{}/{}".format(examplePath, exampleFileName))
@@ -305,6 +336,7 @@ def prepareDoxyfile(modules):
         else:
           doxyFile.write(line)
 
+  # write language example file
   for language in ["cpp", "py", "java", "m"]:
     examplesInLanguage = [example for example in examples if example["language"] == language]
 
@@ -327,6 +359,7 @@ def prepareDoxyfile(modules):
       examplesFile.write("\nFor more instructions on how to run the examples, " +
                          "please see @ref installation.\n\n")
 
+      # split examples of current language into the different modules
       moduleNames = sorted(list(set([example["moduleName"] for example in examplesInLanguage])))
       for moduleName in moduleNames:
         examplesInLanguageAndModule = [example for example in examplesInLanguage

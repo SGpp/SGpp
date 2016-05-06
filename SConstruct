@@ -17,8 +17,12 @@ from SCons.Script.SConscript import SConsEnvironment
 import Helper
 import SGppConfigure
 
+# detour stdout and stderr to file
 sys.stdout = Helper.Logger(sys.stdout)
 sys.stderr = Helper.Logger(sys.stderr)
+
+# object responsible for printing a final message depending on success or error
+# with additional instructions
 finalMessagePrinter = Helper.FinalMessagePrinter()
 atexit.register(finalMessagePrinter.printMessage)
 
