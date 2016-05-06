@@ -500,7 +500,7 @@ env.AlwaysBuild(doxygen)
 env.Clean("clean", ["lib/", "jsgpp/java/", "config.log", "build.log"])
 # Doxygen stuff
 env.Clean("clean", ["Doxyfile", "doxygen_warnings.log", "doc/html/", "doc/xml/",
-                    "base/doc/doxygen/examples.doxy", "base/doc/doxygen/modules.doxy"])
+                    "base/doc/doxygen/modules.doxy"])
 
 for module in moduleFolders:
   # PYDOC stuff
