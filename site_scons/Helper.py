@@ -162,10 +162,105 @@ def printCommand(s, target, src, env):
     sys.stdout.write(u".")
     sys.stdout.flush()
 
+def convertExampleSourceToDoxy(sourcePath):
+  with open(sourcePath, "r") as f: source = f.read()
+
+  sourcePath = os.path.normpath(sourcePath)
+  sourcePathComponents = sourcePath.split(os.sep)
+  sourceFileName = sourcePathComponents[-1]
+  sourceFileType = os.path.splitext(sourceFileName)[1][1:]
+  moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
+
+  if sourceFileType == "cpp":
+    doxygenBlockCommentBegin = "/**"
+    doxygenBlockCommentEnd = "*/"
+    doxygenLineCommentBegin = "///"
+  elif sourceFileType == "py":
+    doxygenBlockCommentBegin = None
+    doxygenBlockCommentEnd = None
+    doxygenLineCommentBegin = "##"
+  elif sourceFileType == "java":
+    if " main(" in source:
+      doxygenBlockCommentBegin = "/**"
+      doxygenBlockCommentEnd = "*/"
+      doxygenLineCommentBegin = "///"
+    else:
+      return None
+  elif sourceFileType == "m":
+    doxygenBlockCommentBegin = None
+    doxygenBlockCommentEnd = None
+    doxygenLineCommentBegin = "%%"
+
+  pageMatch = re.search(r"[@\\]page +([^ ]+) +(.*)$", source, flags=re.MULTILINE)
+  doxy = "/**\n"
+
+  if pageMatch is not None:
+    pageName = pageMatch.group(1)
+    doxy += "\\dontinclude {}\n".format(sourceFileName)
+    inDoxygenComment = False
+    previousNonBlankLines = []
+    skipUntilNextNonBlankLine = False
+    sawFirstDoxygenComment = False
+
+    for sourceLine in source.splitlines():
+      if sourceLine.strip() == "":
+        continue
+
+      if sourceLine.strip() == doxygenBlockCommentBegin:
+        inDoxygenComment = True
+        if sawFirstDoxygenComment:
+          if len(previousNonBlankLines) > 0:
+            doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+          else:
+            doxy += "\n"
+        else:
+          # assume up to now, there was only the copyright notice and no code
+          # ==> don't include now
+          sawFirstDoxygenComment = True
+        previousNonBlankLines = []
+        skipUntilNextNonBlankLine = False
+      elif (sourceLine.strip() == doxygenBlockCommentEnd) and inDoxygenComment:
+        inDoxygenComment = False
+        skipUntilNextNonBlankLine = True
+      elif sourceLine.strip().startswith(doxygenLineCommentBegin):
+        if sawFirstDoxygenComment:
+          if len(previousNonBlankLines) > 0:
+            doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+        else:
+          sawFirstDoxygenComment = True
+        i = sourceLine.index(doxygenLineCommentBegin) + len(doxygenLineCommentBegin)
+        doxy += sourceLine[i:] + "\n"
+        previousNonBlankLines = []
+        skipUntilNextNonBlankLine = True
+      else:
+        if inDoxygenComment:
+          doxy += "{}\n".format(sourceLine.strip(" *"))
+        else:
+          if skipUntilNextNonBlankLine:
+            doxy += "\\skip {}\n".format(sourceLine)
+            skipUntilNextNonBlankLine = False
+          previousNonBlankLines.append(sourceLine)
+
+    if len(previousNonBlankLines) > 0:
+      doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+  else:
+    pageName = "example_{}".format(sourceFileName.replace(".", "_"))
+    doxy += "@page {} {}\n".format(pageName, sourceFileName)
+    doxy += "This example can be found under <tt>{}</tt>.\n".format(sourcePath)
+    doxy += "\\include {}\n".format(sourceFileName)
+
+  doxy += "*/\n"
+  doxyPath = "{}/doc/doxygen/{}.doxy".format(moduleName, pageName)
+
+  with open(doxyPath, "w") as f: f.write(doxy)
+  return {"pageName" : pageName, "language" : sourceFileType, "moduleName" : moduleName}
+
 #creates a Doxyfile containing proper module paths based on Doxyfile_template
 def prepareDoxyfile(modules):
   '''Create Doxyfile(s) and overview-pages
   @param modules list of modules'''
+
+  examples = []
 
   # create Doxyfile
   with open("Doxyfile_template", "r") as doxyFileTemplate:
@@ -192,6 +287,12 @@ def prepareDoxyfile(modules):
         if os.path.exists(os.path.join(os.getcwd(), imagePath)):
           imagePaths += " " + imagePath
 
+        for exampleFileName in os.listdir(examplePath):
+          if any([exampleFileName.endswith(ext) for ext in [".cpp", ".py", ".java", ".m"]]):
+            example = convertExampleSourceToDoxy("{}/{}".format(examplePath, exampleFileName))
+            if example is not None:
+              examples.append(example)
+
       for line in doxyFileTemplate.readlines():
         if re.match(r"INPUT  .*", line):
           doxyFile.write(inputPaths + "\n")
@@ -204,48 +305,38 @@ def prepareDoxyfile(modules):
         else:
           doxyFile.write(line)
 
-  # create example menu page
-  with open("base/doc/doxygen/examples.doxy", "w") as examplesFile:
-    examplesFile.write('''/**
-@page examples Examples
+  for language in ["cpp", "py", "java", "m"]:
+    examplesInLanguage = [example for example in examples if example["language"] == language]
 
-This is a collection of examples from all modules.
+    # create examples menu page
+    with open("base/doc/doxygen/examples_{}.doxy".format(language), "w") as examplesFile:
+      examplesFile.write("/**\n")
+      languageName = {"cpp" : "C++", "py" : "Python", "java" : "Java", "m" : "MATLAB"}[language]
+      examplesFile.write("@page examples_{} {} Examples\n".format(language, languageName))
+      examplesFile.write("This is a list of all {} examples.\n".format(languageName))
+      examplesFile.write("If you don't know where to start, look at the @ref " +
+                         "example_tutorial_{} example first.\n".format(language))
+      examplesFile.write("All examples can be found in the <tt>MODULE_NAME/example/</tt> " +
+                         "directories.\n")
+      if language == "cpp":
+        examplesFile.write("Note that SCons automatically compiles (but not runs) " +
+                           "all C++ examples on each run. The executables can be found in the " +
+                           "same directory in which the examples reside and can be run " +
+                           "directly, if <tt>LD_LIBRARY_PATH</tt> (on Linux/Mac) or " +
+                           "<tt>PATH</tt> (on Windows) is set correctly.\n")
+      examplesFile.write("\nFor more instructions on how to run the examples, " +
+                         "please see @ref installation.\n\n")
 
-If you're new to SG++ or want to try out quickly,
-read the @ref code_examples_tutorial first.
+      moduleNames = sorted(list(set([example["moduleName"] for example in examplesInLanguage])))
+      for moduleName in moduleNames:
+        examplesInLanguageAndModule = [example for example in examplesInLanguage
+                                       if example["moduleName"] == moduleName]
+        examplesInLanguageAndModule.sort(key=lambda example: example["pageName"].lower())
+        examplesFile.write("\n<b>Module sgpp::{}</b>\n\n".format(moduleName))
+        for example in examplesInLanguageAndModule:
+          examplesFile.write("- @subpage {}\n".format(example["pageName"]))
 
-To add new examples to the documentation,
-go to the respective folder MODULE_NAME/doc/doxygen/ and
-add a new example file code_examples_NAME.doxy with doxygen-internal
-name code_examples_NAME.
-
-Note that SCons automatically compiles (but not runs)
-all C++ examples on each run.
-For this to work, the examples must lie in the directories of the form
-\c /path/to/SGpp/trunk/MODULE_NAME/examples.
-
-''')
-
-    modules.sort()
-    tutorial = "code_examples_tutorial"
-
-    for moduleName in modules:
-      examplesFile.write("<h2>Module {}</h2>\n".format(moduleName))
-      subpages = glob.glob(os.path.join(
-        moduleName, "doc", "doxygen", "code_examples_*.doxy"))
-      subpages = [os.path.split(path)[-1][:-5]
-            for path in glob.glob(os.path.join(
-              moduleName, "doc", "doxygen",
-              "code_examples_*.doxy"))]
-      subpages.sort()
-      if tutorial in subpages:
-        del subpages[subpages.index(tutorial)]
-        subpages = [tutorial] + subpages
-
-      for subpage in subpages:
-        examplesFile.write("- @subpage {}\n".format(subpage))
-
-    examplesFile.write("**/\n")
+      examplesFile.write("**/\n")
 
   # create module page
   with open("base/doc/doxygen/modules.doxy", "w") as modulesFile:
