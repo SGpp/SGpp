@@ -68,6 +68,8 @@ struct RegularGridConfiguration {
   size_t boundaryLevel_;
   /// string to serialized grid
   std::string filename_;
+  /// subgrid selection value t
+  double t_ = 0.0;
 };
 
 /**
@@ -495,7 +497,7 @@ class Grid {
   /// GridStorage object of the grid
   GridStorage storage;
 
-  typedef std::unique_ptr<Grid> (*Factory)(std::istream&);
+  typedef std::unique_ptr<Grid>(*Factory)(std::istream&);
   typedef std::map<std::string, Grid::Factory> factoryMap;
   typedef std::map<sgpp::base::GridType, std::string> gridTypeVerboseMap;
 
