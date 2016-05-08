@@ -16,8 +16,8 @@ enum class RegularizationType { Identity, Laplace, Diagonal };
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
-  double lambda;
-  double exponentBase;
+  double lambda_;
+  double exponentBase_;
 };
 
 }  // namespace datadriven

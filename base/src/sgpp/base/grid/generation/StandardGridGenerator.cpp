@@ -14,26 +14,26 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
-StandardGridGenerator::StandardGridGenerator(GridStorage& storage) : storage(
-    storage) {
-}
+StandardGridGenerator::StandardGridGenerator(GridStorage& storage) : storage(storage) {}
 
-StandardGridGenerator::~StandardGridGenerator() {
-}
+StandardGridGenerator::~StandardGridGenerator() {}
 
 void StandardGridGenerator::regular(size_t level) {
   HashGenerator gen;
   gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
+void StandardGridGenerator::regular(size_t level, double t) {
+  HashGenerator gen;
+  gen.regular(this->storage, static_cast<HashGenerator::level_t>(level), t);
+}
+
 void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
-  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level),
-              clique_size);
+  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
 }
 
 void StandardGridGenerator::full(size_t level) {
@@ -51,14 +51,13 @@ size_t StandardGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void StandardGridGenerator::coarsen(CoarseningFunctor& func,
-                                    DataVector& alpha) {
+void StandardGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha) {
   HashCoarsening coarsen;
   coarsen.free_coarsen(this->storage, func, alpha);
 }
 
-void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
-    DataVector& alpha, size_t numFirstOnly) {
+void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
+                                              size_t numFirstOnly) {
   HashCoarsening coarsen;
   coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
@@ -68,17 +67,14 @@ size_t StandardGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void StandardGridGenerator::refineMaxLevel(RefinementFunctor& func,
-    size_t maxLevel) {
-  throw generation_exception(
-    "StandardGridGenerator::refineMaxLevel is not implemented");
+void StandardGridGenerator::refineMaxLevel(RefinementFunctor& func, size_t maxLevel) {
+  throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
 }
 
-size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(
-  size_t maxLevel) {
+size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
   throw generation_exception(
-    "StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel "
-    "is not implemented");
+      "StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel "
+      "is not implemented");
   return 0;
 }
 

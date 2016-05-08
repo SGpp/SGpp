@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -33,12 +32,22 @@ class GridGenerator {
   virtual ~GridGenerator() {}
 
   /**
-   * Creates a regular sparse grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
+   * Creates a regular sparse grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} =
+   *\bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
    *
    * @param level Grid level
    */
   virtual void regular(size_t level) = 0;
 
+  /**
+   * Creates a regular sparse grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} =
+   *\bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
+   * If the used grid doesn't support the parameter t, t = 0 is used instead.
+   *
+   * @param level Grid level
+   * @param t modifier for subgrid selection, t = 0 implies standard reg. grid
+   */
+  virtual void regular(size_t level, double t) { regular(level); }
 
   /**
    * Creates a sparse grid with fully connected cliques
@@ -49,7 +58,8 @@ class GridGenerator {
   virtual void cliques(size_t level, size_t clique_size) = 0;
 
   /**
-   * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty \leq n} W_{\vec{l}}@f$.
+   * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty
+   *\leq n} W_{\vec{l}}@f$.
    *
    * @param level Grid level
    */
