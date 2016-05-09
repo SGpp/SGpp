@@ -20,6 +20,7 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -34,8 +35,9 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t bucket_size = pointscdf->getNrows() / num_dims + 1;
-  base::DataVector* cdfs1d = new base::DataVector(pointscdf->getNcols());
-  base::DataVector* coords1d = new base::DataVector(points->getNcols());
+
+  base::DataVector cdfs1d(pointscdf->getNcols());
+  base::DataVector coords1d(points->getNcols());
 
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
@@ -57,10 +59,10 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
     points->set(i, dim_start, y);
 
     // prepare the next dimensions -> read samples
-    pointscdf->getRow(i, *cdfs1d);
-    points->getRow(i, *coords1d);
-    doTransformation_start_dimX(this->grid, alpha, dim_start, cdfs1d, coords1d);
-    points->setRow(i, *coords1d);
+    pointscdf->getRow(i, cdfs1d);
+    points->getRow(i, coords1d);
+    doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
+    points->setRow(i, coords1d);
 
     // change the starting dimension when the bucket_size is arrived
     // this distributes the error in the projection uniformly to all
@@ -76,7 +78,6 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
 
   delete g1d;
   delete a1d;
-  delete coords1d;
   return;
 }
 
@@ -189,7 +190,7 @@ double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::
 
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
-  std::multimap<double, double>::iterator it1, it2;
+  std::multimap<double, double>::iterator it1, it2, it3;
 
   base::GridStorage* gs = &grid1d->getStorage();
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(grid1d));
@@ -206,6 +207,25 @@ double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::
   coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
+
+  // make sure that all the pdf values are positive
+  // if not, interpolate between the closest positive neighbors
+  it1 = coord_pdf.begin();
+  it2 = coord_pdf.begin();
+
+  it1->second = std::max(it1->second, 0.0);
+  for (++it2; it2 != coord_pdf.end(); ++it2) {
+    if (it2->second < 0.0) {
+      // search for next right neighbor that has a positive function value
+      it3 = it2;
+      while (it3->second <= 0.0 && it3 != coord_pdf.end()) {
+        it3++;
+      }
+      it2->second = (it1->second + it3->second) / 2.0;
+    }
+
+    it1 = it2;
+  }
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
   it1 = coord_pdf.begin();

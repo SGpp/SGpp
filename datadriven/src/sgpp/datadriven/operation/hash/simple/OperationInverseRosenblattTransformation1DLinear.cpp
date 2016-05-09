@@ -13,6 +13,7 @@
 #include <utility>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -54,7 +55,9 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   // if not, interpolate between the closest positive neighbors
   it1 = coord_pdf.begin();
   it2 = coord_pdf.begin();
-  for (++it2; it2 != coord_pdf.end(); ++it2, ++it1) {
+
+  it1->second = std::max(it1->second, 0.0);
+  for (++it2; it2 != coord_pdf.end(); ++it2) {
     if (it2->second < 0.0) {
       // search for next right neighbor that has a positive function value
       it3 = it2;
@@ -63,6 +66,8 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
       }
       it2->second = (it1->second + it3->second) / 2.0;
     }
+
+    it1 = it2;
   }
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
@@ -75,14 +80,14 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   for (++it2; it2 != coord_pdf.end(); ++it2) {
     // (*it).first : the coordinate
     // (*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
+    area = ((*it2).first - (*it1).first) / 2 * (it1->second + it2->second);
 
     // make sure that the cdf is monotonically increasing
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
     // OF NON POSITIVE DENSITY
     if (area < 0) {
-      std::cerr << "warning: negative area encountered (inverse) " << (*it1).second << ", "
-                << (*it2).second << std::endl;
+      std::cerr << "warning: negative area encountered (inverse) " << it1->second << ", "
+                << it2->second << std::endl;
       area = 0;
     }
 

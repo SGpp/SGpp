@@ -17,6 +17,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -57,7 +58,8 @@ double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataV
   // if not, interpolate between the closest positive neighbors
   it1 = coord_pdf.begin();
   it2 = coord_pdf.begin();
-  for (++it2; it2 != coord_pdf.end(); ++it2, ++it1) {
+  it1->second = std::max(it1->second, 0.0);
+  for (++it2; it2 != coord_pdf.end(); ++it2) {
     if (it2->second < 0.0) {
       // search for next right neighbor that has a positive function value
       it3 = it2;
@@ -66,6 +68,8 @@ double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataV
       }
       it2->second = (it1->second + it3->second) / 2.0;
     }
+
+    it1 = it2;
   }
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
