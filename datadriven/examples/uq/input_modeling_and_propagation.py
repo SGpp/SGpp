@@ -43,9 +43,17 @@ print "cross entropy = %g" % dist.crossEntropy(testSamples)
 print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
 
 # sampling
-samples = dist.rvs(200)
+uniform_samples = np.random.random((2000, 2))
+samples = dist.ppf(uniform_samples)
 
 fig = plt.figure()
 plt.scatter(samples[:, 0], samples[:, 1])
+plt.title("x in [%g, %g]" % (np.min(samples), np.max(samples)))
+fig.show()
+
+# sample it back
+transformed_uniform_samples = dist.cdf(samples)
+
+print np.sum(np.abs(uniform_samples - transformed_uniform_samples))
 
 plt.show()
