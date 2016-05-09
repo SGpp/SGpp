@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
-  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
+  //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
@@ -100,4 +100,25 @@ int main(int argc, char** argv) {
   std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
   kde.cov(C);
   std::cout << C.toString() << std::endl;
+
+  // inverse Rosenblatt transformation
+  auto opInvRos =
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
+  sgpp::base::DataMatrix points(2, gridConfig.dim_);
+  points.setRow(0, x);
+
+  for (size_t i = 0; i < x.getSize(); i++) {
+    x[i] = 0.1;
+  }
+  points.setRow(1, x);
+
+  std::cout << points.toString() << std::endl;
+
+  sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
+  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
+
+  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
+  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
+
+  std::cout << points.toString() << std::endl;
 }

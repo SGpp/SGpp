@@ -169,6 +169,11 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
+def isHierarchicalAncestor(grid, gpi, gpj):
+    return gpi in getHierarchicalAncestors(grid, gpj) or \
+        gpj in getHierarchicalAncestors(grid, gpi)
+
+
 def getNonExistingHierarchicalAncestors(grid, gp):
     ans = []
     gps = parents(grid, gp)
