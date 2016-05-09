@@ -34,51 +34,57 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
                                                                       base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
-  size_t bucket_size = pointscdf->getNrows() / num_dims + 1;
+  size_t num_samples = pointscdf->getNrows();
+  size_t bucket_size = num_samples / num_dims + 1;
 
-  base::DataVector cdfs1d(pointscdf->getNcols());
-  base::DataVector coords1d(points->getNcols());
-
-  // 1. marginalize to dim_start
-  base::Grid* g1d = NULL;
-  base::DataVector* a1d = NULL;
+  // 1. marginalize to all possible start dimensions
+  std::vector<base::Grid*> grids1d(num_dims);
+  std::vector<base::DataVector*> alphas1d(num_dims);
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
-  marg1d->margToDimX(alpha, g1d, a1d, dim_start);
+  for (size_t idim = 0; idim < num_dims; idim++) {
+    marg1d->margToDimX(alpha, grids1d[idim], alphas1d[idim], idim);
+  }
 
-  // 2. 1D transformation on dim_start
-  // 3. for every sample do...
-  // #pragma omp parallel
-  //  {
-  // #pragma omp for schedule(dynamic)
-  //
-  for (size_t i = 0; i < pointscdf->getNrows(); i++) {
-    // transform the point in the current dimension
-    double y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
-    // and write it to the output
-    points->set(i, dim_start, y);
-
-    // prepare the next dimensions -> read samples
-    pointscdf->getRow(i, cdfs1d);
-    points->getRow(i, coords1d);
-    doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
-    points->setRow(i, coords1d);
-
-    // change the starting dimension when the bucket_size is arrived
-    // this distributes the error in the projection uniformly to all
-    // dimensions and make it therefore stable
+  // 2. compute the start dimension for each sample
+  std::vector<size_t> startindices(num_samples);
+  // change the starting dimension when the bucket_size is arrived
+  // this distributes the error in the projection uniformly to all
+  // dimensions and make it therefore stable
+  for (size_t i = 0; i < num_samples; i++) {
     if (((i + 1) % bucket_size) == 0 && (i + 1) < pointscdf->getNrows()) {
-      dim_start++;
-      // 1. marginalize to dim_start
-      marg1d->margToDimX(alpha, g1d, a1d, dim_start);
+      ++dim_start;
+    }
+    startindices[i] = dim_start;
+  }
+
+// 3. for every sample do...
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
+    for (size_t i = 0; i < pointscdf->getNrows(); i++) {
+      // transform the point in the current dimension
+      size_t idim = startindices[i];
+      double y = doTransformation1D(grids1d[idim], alphas1d[idim], pointscdf->get(i, idim));
+      // and write it to the output
+      points->set(i, idim, y);
+
+      // prepare the next dimensions -> read samples
+      base::DataVector cdfs1d(num_dims);
+      base::DataVector coords1d(num_dims);
+
+      pointscdf->getRow(i, cdfs1d);
+      points->getRow(i, coords1d);
+      doTransformation_start_dimX(this->grid, alpha, idim, &cdfs1d, &coords1d);
+      points->setRow(i, coords1d);
     }
   }
 
-  //  }
-
-  delete g1d;
-  delete a1d;
-  return;
+  // cleanup
+  for (size_t idim = 0; idim < num_dims; idim++) {
+    delete grids1d[idim];
+    delete alphas1d[idim];
+  }
 }
 
 void OperationInverseRosenblattTransformationLinear::doTransformation(base::DataVector* alpha,
