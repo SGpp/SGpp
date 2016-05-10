@@ -91,10 +91,6 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
                                                                       base::DataMatrix* pointscdf,
                                                                       base::DataMatrix* points,
                                                                       size_t dim_start) {
-  base::DataVector* cdfs1d = new base::DataVector(pointscdf->getNcols());
-  base::DataVector* coords1d = new base::DataVector(points->getNcols());
-  double y = 0;
-
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -102,27 +98,26 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-  // #pragma omp parallel
-  //  {
-  // #pragma omp for schedule(dynamic)
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
+    for (size_t i = 0; i < pointscdf->getNrows(); i++) {
+      // 2. 1D transformation on dim_start
+      double y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
+      points->set(i, dim_start, y);
+      // 3. for every missing dimension do...
+      base::DataVector cdfs1d(pointscdf->getNcols());
+      base::DataVector coords1d(points->getNcols());
 
-  for (size_t i = 0; i < pointscdf->getNrows(); i++) {
-    // 2. 1D transformation on dim_start
-    y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
-    points->set(i, dim_start, y);
-    // 3. for every missing dimension do...
-    pointscdf->getRow(i, *cdfs1d);
-    points->getRow(i, *coords1d);
-    doTransformation_start_dimX(this->grid, alpha, dim_start, cdfs1d, coords1d);
-    points->setRow(i, *coords1d);
+      pointscdf->getRow(i, cdfs1d);
+      points->getRow(i, coords1d);
+      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
+      points->setRow(i, coords1d);
+    }
   }
-
-  //  }
 
   delete g1d;
   delete a1d;
-  delete cdfs1d;
-  return;
 }
 
 void OperationInverseRosenblattTransformationLinear::doTransformation_start_dimX(

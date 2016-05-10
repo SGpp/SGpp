@@ -119,7 +119,6 @@ void OperationRosenblattTransformationLinear::doTransformation(base::DataVector*
 
   delete g1d;
   delete a1d;
-  return;
 }
 
 void OperationRosenblattTransformationLinear::doTransformation_start_dimX(

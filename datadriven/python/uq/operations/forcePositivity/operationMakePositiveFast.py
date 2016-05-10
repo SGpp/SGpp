@@ -117,8 +117,6 @@ class OperationMakePositiveFast(object):
                 neg.append(i)
         if len(neg) > 0:
             alpha = hierarchize(grid, nodalValues)
-#             if self.verbose:
-#                 warnings.warn("negative function values at grid points encountered, this should not happen")
 
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
@@ -188,13 +186,13 @@ class OperationMakePositiveFast(object):
         addedGridPoints = []
         minLevelSum = -1
 
-#         for levelSum, gridPoints in gps.items():
-#             print "# candidates at |l_i|_1 = %i: %i/%i" % (levelSum,
-#                                                            len(gps[levelSum]),
-#                                                            cnt)
-
         while not done and i < len(levelSums):
             minLevelSum = levelSums[i]
+            if self.verbose:
+                print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[minLevelSum]),
+                                                                             len(candidates),
+                                                                             minLevelSum,
+                                                                             np.max(levelSums))
             for gp in finalCandidates[minLevelSum]:
                 addedGridPoints += insertPoint(grid, gp)
                 addedGridPoints += insertHierarchicalAncestors(grid, gp)
@@ -295,11 +293,9 @@ class OperationMakePositiveFast(object):
                 addedGridPoints, minLevelSum = self.addFullGridPoints(newGrid, newAlpha, candidates)
                 assert oldGridSize + len(addedGridPoints) == newGs.getSize()
                 if self.verbose:
-                    print "# new grid points     : %i -> %i -> %i at |l|_1 = %i <= %i" % (oldGridSize,
-                                                                                          len(addedGridPoints),
-                                                                                          newGrid.getSize(),
-                                                                                          minLevelSum,
-                                                                                          maxLevelSum)
+                    print "# new grid points     : %i -> %i -> %i" % (oldGridSize,
+                                                                      len(addedGridPoints),
+                                                                      newGrid.getSize())
                     print "  current total costs : %i <= %i" % (totalCosts, numFullGridPoints)
                     print "-" * 80
 
