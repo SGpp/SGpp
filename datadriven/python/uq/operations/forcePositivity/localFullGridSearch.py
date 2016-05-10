@@ -145,14 +145,12 @@ class LocalFullGridCandidates(CandidateSet):
                 gpl = HashGridIndex(currentgp)
                 gs.left_child(gpl, idim)
                 if gs.has_key(gpl):
-                    children.append(tuple(getLevel(gpl)))
                     gps.append(gpl)
 
                 # get right child
                 gpr = HashGridIndex(currentgp)
                 gs.right_child(gpr, idim)
                 if gs.has_key(gpr):
-                    children.append(tuple(getLevel(gpr)))
                     gps.append(gpr)
 
         return children
@@ -171,11 +169,9 @@ class LocalFullGridCandidates(CandidateSet):
         # search for children
         # as long as the corresponding grid point exist in the grid
         children = self.getMaxLevelOfChildrenUpToMaxLevel(gp, grid, ddown)
-        maxLevel = 1
-        for childLevel in children:
-            maxLevel = max(maxLevel, np.max(childLevel))
+        maxLevel = int(max(1, np.max(children)))
 
-        return int(maxLevel), ddown
+        return maxLevel, ddown
 
 
     def getLocalFullGridLevel(self, levels, indices, grid):

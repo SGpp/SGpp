@@ -33,7 +33,7 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   /***************** STEP 1. Compute CDF  ********************/
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
-  std::multimap<double, double>::iterator it1, it2, it3;
+  std::multimap<double, double>::iterator it1, it2;
 
   base::GridStorage* gs = &grid->getStorage();
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*grid);
@@ -50,25 +50,6 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
-
-  // make sure that all the pdf values are positive
-  // if not, interpolate between the closest positive neighbors
-  it1 = coord_pdf.begin();
-  it2 = coord_pdf.begin();
-
-  it1->second = std::max(it1->second, 0.0);
-  for (++it2; it2 != coord_pdf.end(); ++it2) {
-    if (it2->second < 0.0) {
-      // search for next right neighbor that has a positive function value
-      it3 = it2;
-      while (it3->second <= 0.0 && it3 != coord_pdf.end()) {
-        it3++;
-      }
-      it2->second = (it1->second + it3->second) / 2.0;
-    }
-
-    it1 = it2;
-  }
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
   it1 = coord_pdf.begin();

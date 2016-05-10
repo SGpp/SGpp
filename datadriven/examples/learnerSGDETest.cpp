@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
   points.setRow(0, x);
 
   for (size_t i = 0; i < x.getSize(); i++) {
-    x[i] = 0.1;
+    x[i] = 0.2;
   }
   points.setRow(1, x);
 
@@ -120,5 +120,6 @@ int main(int argc, char** argv) {
   auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
   opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
 
+  std::cout << pointsCdf.toString() << std::endl;
   std::cout << points.toString() << std::endl;
 }
