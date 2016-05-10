@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DMSYSTEMMATRIXBASE_HPP
-#define DMSYSTEMMATRIXBASE_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -23,7 +22,7 @@ namespace datadriven {
 class DMSystemMatrixBase : public base::OperationMatrix {
  protected:
   /// the dataset
-  base::DataMatrix* dataset_;
+  base::DataMatrix& dataset_;
   /// the lambda, the regularisation parameter
   double lambda_;
   /// time needed for Mult
@@ -90,5 +89,3 @@ class DMSystemMatrixBase : public base::OperationMatrix {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DMSYSTEMMATRIXBASE_HPP */

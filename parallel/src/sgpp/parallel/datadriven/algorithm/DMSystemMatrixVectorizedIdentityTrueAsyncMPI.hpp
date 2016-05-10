@@ -116,7 +116,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
     int idx;
 #pragma omp parallel
     {
-      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, &this->dataset_,
                          alpha, *(this->tempData), 0, alpha.getSize(), dataProcessChunkStart,
                          dataProcessChunkEnd);
 
@@ -145,7 +145,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
       // while the data is transfered we already calculate multTrans with this part of the grid and
       // the temp-values computed by this process
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), result, gridProcessChunkStart,
+                                  &this->dataset_, *(this->tempData), result, gridProcessChunkStart,
                                   gridProcessChunkEnd, dataProcessChunkStart, dataProcessChunkEnd);
 
       // after this, we receive the temp chunks from all the other processes and do the calculations
@@ -174,7 +174,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
 #pragma omp barrier
 
         this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                    this->dataset_, *(this->tempData), result,
+                                    &this->dataset_, *(this->tempData), result,
                                     gridProcessChunkStart, gridProcessChunkEnd, dataChunkStart,
                                     dataChunkEnd);
       }
@@ -204,7 +204,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
 #pragma omp parallel
     {
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), b,
+                                  &this->dataset_, *(this->tempData), b,
                                   _mpi_grid_offsets[mpi_myrank],
                                   _mpi_grid_offsets[mpi_myrank] + _mpi_grid_sizes[mpi_myrank], 0,
                                   this->numPatchedTrainingInstances_);

@@ -111,6 +111,7 @@ vars.Add("INCLUDEDIR", "Set path where the header files are installed " +
 vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
+vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
@@ -120,6 +121,8 @@ vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
+vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -516,6 +519,8 @@ finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 if not GetOption("clean"):
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
+    finalMessagePrinter.disable()
+  elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
 else:
   env.Default(finalStepDependencies + ["clean"])

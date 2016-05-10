@@ -84,13 +84,13 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     this->dims = dataset.getNcols();  // be aware of transpose!
 
-    // padded grid size is set by prepare
-    this->gridSizeUnpadded = storage.getSize();
     // initialized in prepare
+    this->gridSizeUnpadded = 0;
     this->gridSizePadded = 0;
     this->gridSizeBuffers = 0;
-    this->datasetSizeUnpadded = this->dataset.getNrows();
+
     // initialize in pad
+    this->datasetSizeUnpadded = 0;
     this->datasetSizePadded = 0;
     this->datasetSizeBuffers = 0;
     this->padDataset(this->preparedDataset);
@@ -171,7 +171,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      //            std::cout << "threadId: " << threadId << std::endl;
       this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
                                        this->kernelDataset, alphaArray, resultArray, gridFrom,
                                        gridTo, datasetFrom, datasetTo);
@@ -199,13 +198,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     size_t gridTo = this->gridSizePadded;
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
-
-    //        if (omp_get_thread_num() == 0) {
-    //        queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose,
-    //        gridFrom, gridTo, overallGridBlockingSize);
-    //        }
-
-    // #pragma omp barrier
 
     queueLoadBalancerMultTrans->initialize(gridFrom, gridTo);
 
@@ -265,32 +257,29 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
  private:
   void padDataset(sgpp::base::DataMatrix &dataset) {
-    size_t oldSize = dataset.getNrows();
+    datasetSizeUnpadded = dataset.getNrows();
 
     size_t commonDatasetPadding = calculateCommonDatasetPadding();
 
     // Assure that data has a even number of instances -> padding might be
     // needed
-    size_t remainder = oldSize % commonDatasetPadding;
+    size_t remainder = datasetSizeUnpadded % commonDatasetPadding;
     // round up to next number divisible by padding (distributable to threads)
     // then add another padding (for irregular schedules)
-    size_t padding = commonDatasetPadding - remainder + commonDatasetPadding;
-
-    sgpp::base::DataVector lastRow(dataset.getNcols());
-    dataset.getRow(oldSize - 1, lastRow);
-    dataset.resize(oldSize + padding);
-
-    for (size_t i = 0; i < padding; i++) {
-      dataset.setRow(oldSize + i, lastRow);
-    }
+    size_t padding = commonDatasetPadding - remainder;
 
     // excluding the additional padding for irregular schedules
-    this->datasetSizePadded = oldSize + commonDatasetPadding - remainder;
+    datasetSizePadded = dataset.getNrows() + padding;
     // totol size for buffer allocation
-    this->datasetSizeBuffers = oldSize + commonDatasetPadding - remainder + commonDatasetPadding;
-    std::cout << "datasetSizeUnpadded: " << datasetSizeUnpadded << std::endl;
-    std::cout << "datasetSizePadded: " << datasetSizePadded << std::endl;
-    std::cout << "datasetSizeBuffers: " << datasetSizeBuffers << std::endl;
+    datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
+
+    sgpp::base::DataVector lastRow(dataset.getNcols());
+    dataset.getRow(datasetSizeUnpadded - 1, lastRow);
+    dataset.resize(datasetSizeBuffers);
+
+    for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+      dataset.setRow(i, lastRow);
+    }
   }
 
   /**
@@ -312,15 +301,13 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       padding = overallGridBlockingSize - remainder;
     }
 
+    gridSizeUnpadded = storage.getSize();
+
     // size to distribute, not actual padded grid size
     this->gridSizePadded = storage.getSize() + padding;
 
     // size for distributing schedules of different size
-    this->gridSizeBuffers = storage.getSize() + padding + overallGridBlockingSize;
-
-    std::cout << "gridSizeUnpadded: " << storage.getSize() << std::endl;
-    std::cout << "gridSizePadded: " << gridSizePadded << std::endl;
-    std::cout << "gridSizeBuffers: " << gridSizeBuffers << std::endl;
+    this->gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
 
     sgpp::base::HashGridIndex::level_type curLevel;
     sgpp::base::HashGridIndex::index_type curIndex;

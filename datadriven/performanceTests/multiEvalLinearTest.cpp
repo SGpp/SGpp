@@ -211,10 +211,10 @@ void prepareGrid(std::string fileName, sgpp::base::GridType gridType, size_t lev
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
   //    parameters.addIDAttr("PLATFORM", "Intel(R) OpenCL");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
   //    parameters.addIDAttr("WRITE_SOURCE", "true");
   //    parameters.addIDAttr("REUSE_SOURCE", "true");
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration;
 
@@ -232,7 +232,7 @@ void prepareGrid(std::string fileName, sgpp::base::GridType gridType, size_t lev
 
   learner->learnString(configuration, content);
 
-  BOOST_MESSAGE("info: grid preparation by metalearner is complete!");
+  BOOST_TEST_MESSAGE("info: grid preparation by metalearner is complete!");
 
   if (gridType == sgpp::base::GridType::Linear) {
     preparedGrids[fileName] = learner;
@@ -527,13 +527,13 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", UINT64_C(1));
+  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", UINT64_C(1));
   parameters.addTextAttr("KERNEL_STORE_DATA", "array");
-  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(1));
   parameters.addTextAttr("PLATFORM", "first");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -601,13 +601,13 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", UINT64_C(1));
+  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", UINT64_C(1));
   parameters.addTextAttr("KERNEL_STORE_DATA", "register");
-  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -633,13 +633,13 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
+  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", UINT64_C(4));
+  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", UINT64_C(4));
   parameters.addTextAttr("KERNEL_STORE_DATA", "register");
-  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -690,13 +690,13 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", UINT64_C(1));
+  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", UINT64_C(1));
   parameters.addTextAttr("KERNEL_STORE_DATA", "register");
-  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -722,14 +722,14 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-  parameters.addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 8ul);
+  parameters.addIDAttr("KERNEL_DATA_BLOCK_SIZE", UINT64_C(4));
+  parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", UINT64_C(1));
+  parameters.addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", UINT64_C(8));
   parameters.addTextAttr("KERNEL_STORE_DATA", "register");
-  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -757,8 +757,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
   parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
   parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
-  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-  parameters.addIDAttr("MAX_DEVICES", 1ul);
+  parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", UINT64_C(0));
+  parameters.addIDAttr("MAX_DEVICES", UINT64_C(1));
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,

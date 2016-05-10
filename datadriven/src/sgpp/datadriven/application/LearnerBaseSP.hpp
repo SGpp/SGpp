@@ -20,7 +20,6 @@
 
 #include <string>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -81,8 +80,7 @@ class LearnerBaseSP {
    *
    * @param GridConfig structure which describes the regular start grid
    */
-  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration&
-                              GridConfig);
+  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig);
 
   /**
    * abstract method that constructs the corresponding system of linear equations
@@ -92,7 +90,7 @@ class LearnerBaseSP {
    * @param lambdaRegularization lambda regularization parameter
    */
   virtual sgpp::datadriven::DMSystemMatrixBaseSP* createDMSystem(
-    sgpp::base::DataMatrixSP& trainDataset, float lambdaRegularization) = 0;
+      sgpp::base::DataMatrixSP& trainDataset, float lambdaRegularization) = 0;
 
  public:
   /**
@@ -111,8 +109,8 @@ class LearnerBaseSP {
    * @param isRegression set to true if a regression task should be executed
    * @param isVerbose set to true in order to allow console output
    */
-  LearnerBaseSP(std::string tGridFilename, std::string tAlphaFilename,
-                const bool isRegression, const bool isVerbose = true);
+  LearnerBaseSP(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression,
+                const bool isVerbose = true);
 
   /**
    * Copy-Constructor
@@ -136,7 +134,7 @@ class LearnerBaseSP {
    *   the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
    * @param AdaptConfig configuration of the adaptivity strategy
-   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert 
+   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert
    *   refinement step
    * @param lambdaRegularization regularization parameter lambda
    */
@@ -157,8 +155,7 @@ class LearnerBaseSP {
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
-  LearnerTiming train(sgpp::base::DataMatrixSP& testDataset,
-                      sgpp::base::DataVectorSP& classes,
+  LearnerTiming train(sgpp::base::DataMatrixSP& testDataset, sgpp::base::DataVectorSP& classes,
                       const sgpp::base::RegularGridConfiguration& GridConfig,
                       const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                       const float lambdaRegularization);
@@ -215,9 +212,9 @@ class LearnerBaseSP {
    *
    * @return quality structure containing tp, tn, fp, fn counts
    */
-  virtual ClassificatorQuality getCassificatorQuality(sgpp::base::DataMatrixSP&
-      testDataset,
-      const sgpp::base::DataVectorSP& classesReference, const float threshold = 0.0);
+  virtual ClassificatorQuality getCassificatorQuality(
+      sgpp::base::DataMatrixSP& testDataset, const sgpp::base::DataVectorSP& classesReference,
+      const float threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
@@ -228,8 +225,8 @@ class LearnerBaseSP {
    *
    * @return quality structure containing tp, tn, fp, fn counts
    */
-  virtual ClassificatorQuality getCassificatorQuality(const
-      sgpp::base::DataVectorSP& classesComputed,
+  virtual ClassificatorQuality getCassificatorQuality(
+      const sgpp::base::DataVectorSP& classesComputed,
       const sgpp::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
   /**
@@ -288,4 +285,3 @@ class LearnerBaseSP {
 }  // namespace sgpp
 
 #endif /* LEARNERBASESP_HPP */
-
