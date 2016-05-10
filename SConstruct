@@ -516,7 +516,7 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
-if not GetOption("clean"):
+if not env.GetOption("clean"):
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
     finalMessagePrinter.disable()

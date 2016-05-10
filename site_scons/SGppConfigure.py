@@ -8,6 +8,8 @@ import os
 import subprocess
 import re
 
+import SCons.Script
+
 import Helper
 
 def doConfigure(env, moduleFolders, languageWrapperFolders):
@@ -87,7 +89,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCpp11(config)
-  if "doxygen" in BUILD_TARGETS:
+  if "doxygen" in SCons.Script.BUILD_TARGETS:
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
