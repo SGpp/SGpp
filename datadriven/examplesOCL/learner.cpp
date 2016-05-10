@@ -9,7 +9,7 @@
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 namespace sgpp {
 namespace base {

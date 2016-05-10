@@ -7,7 +7,7 @@
 #include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 int main(int argc, char** argv) {
   int baseLevel = 7;

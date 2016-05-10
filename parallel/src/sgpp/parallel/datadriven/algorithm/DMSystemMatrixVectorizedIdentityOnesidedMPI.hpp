@@ -150,7 +150,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
       for (size_t chunkIndex = myDataChunkStart; chunkIndex < myDataChunkEnd; chunkIndex++) {
         size_t start = _mpi_data_offsets[chunkIndex];
         size_t end = start + _mpi_data_sizes[chunkIndex];
-        this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+        this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, &this->dataset_,
                            alpha, temp, 0, alpha.getSize(), start, end);
 #pragma omp barrier
 #pragma omp master  // the non-sending processes can already continue with execution
@@ -192,8 +192,8 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
         size_t start = _mpi_grid_offsets[chunkIndex];
         size_t end = start + _mpi_grid_sizes[chunkIndex];
         this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                    this->dataset_, *_mpi_data_window_buffer, result, start, end, 0,
-                                    this->numPatchedTrainingInstances_);
+                                    &this->dataset_, *_mpi_data_window_buffer, result, start, end,
+                                    0, this->numPatchedTrainingInstances_);
 #pragma omp barrier
 #pragma omp master  // the non-sending processes can already continue with execution
         {
@@ -236,7 +236,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
         size_t start = _mpi_grid_offsets[chunkIndex];
         size_t end = start + _mpi_grid_sizes[chunkIndex];
         this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                    this->dataset_, myClasses, b, start, end, 0,
+                                    &this->dataset_, myClasses, b, start, end, 0,
                                     this->numPatchedTrainingInstances_);
 #pragma omp barrier
 #pragma omp master  // the non-sending processes can already continue with execution
@@ -274,7 +274,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
 
     if (myGlobalMPIComm->getMyRank() == 0) {
       std::cout << "chunksperproc grid: " << _chunkCountPerProcGrid
-                << "; total # chunks: " << _chunkCountPerProcGrid * mpi_size << std::endl;
+                << "; total # chunks: " << _chunkCountPerProcGrid* mpi_size << std::endl;
     }
 
     _mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];

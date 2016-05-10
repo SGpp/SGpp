@@ -108,7 +108,7 @@ void ConjugateGradients::solve(sgpp::base::OperationMatrix& SystemMatrix,
     alpha.axpy(a, d);
 
     // Why ????
-    if ((this->nIterations % 50) == 0) {
+    if ((this->nIterations % 50) == 0 && this->nIterations > 0) {
       // r = b - A*x
       SystemMatrix.mult(alpha, temp);
       r.copyFrom(b);

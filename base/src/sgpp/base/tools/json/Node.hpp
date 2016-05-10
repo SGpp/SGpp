@@ -68,7 +68,7 @@ class Node {
 
   virtual std::unique_ptr<Node> removeValue(size_t index);
 
-  virtual std::unique_ptr<Node> removeAttribute(const std::string& name);
+  virtual std::unique_ptr<Node> removeAttribute(const std::string name);
 
   virtual Node* clone() = 0;
 

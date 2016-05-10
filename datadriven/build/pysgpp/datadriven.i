@@ -7,6 +7,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 %}
 
+// base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 
 

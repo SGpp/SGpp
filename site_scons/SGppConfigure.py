@@ -22,12 +22,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
 
-  # TODO check
-  if env["PLATFORM"] not in ["cygwin", "win32"]:
-    if env["OPT"] == True:
-      env.Append(CPPFLAGS=["-O3", "-g"])
-    else:
-      env.Append(CPPFLAGS=["-g", "-O0"])
+  if env["OPT"] == True:
+    env.Append(CPPFLAGS=["-O3", "-g"])
+  else:
+    env.Append(CPPFLAGS=["-g", "-O0"])
 
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
@@ -89,13 +87,25 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
+  if "doxygen" in BUILD_TARGETS:
+    checkDoxygen(config)
+    checkDot(config)
   checkOpenCL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
   checkJava(config)
+
+  if env["USE_CUDA"] == True:
+    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    config.env['CUDA_SDK_PATH'] = ''
+    config.env.Tool('cuda')
+    # clean up the flags to forward
+    # flagsToForward = [flag for flag in config.env["CPPFLAGS"] if flag not in ['-Wmissing-format-attribute', '']]
+    # flagsToForward = " -Xcompiler " + (" -Xcompiler ".join(flagsToForward))
+    # ensure same flags for host code
+    config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
+    # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
   env = config.Finish()
 
@@ -137,7 +147,7 @@ def checkOpenCL(config):
     elif "OCL_INCLUDE_PATH" in config.env:
       config.env.AppendUnique(CPPPATH=[config.env["OCL_INCLUDE_PATH"]])
     else:
-      Helper.printInfo("Trying to find the OpenCL without the OCL_INCLUDE_PATH variable.")
+      Helper.printInfo("Trying to find the OpenCL header without the OCL_INCLUDE_PATH variable.")
 
     if not config.CheckCXXHeader("CL/cl.h"):
       Helper.printErrorAndExit("CL/cl.h not found, but required for OpenCL")
@@ -147,7 +157,7 @@ def checkOpenCL(config):
     elif "OCL_LIBRARY_PATH" in config.env:
       config.env.AppendUnique(LIBPATH=[config.env["OCL_LIBRARY_PATH"]])
     else:
-      printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
+      Helper.printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
 
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
@@ -158,7 +168,7 @@ def checkOpenCL(config):
                                "can be installed to solve this issue.")
       config.env["CPPDEFINES"]["USE_OCL"] = "1"
     else:
-      printInfo("OpenCL is not enabled")
+      Helper.printInfo("OpenCL is not enabled")
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -221,16 +231,17 @@ def checkPython(config):
       numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
-        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ",",
-                            "skipping Python unit tests.")
-        config.env["RUN_PYTHON_TESTS"] = False
+        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ".")
+        if config.env["RUN_PYTHON_TESTS"]:
+          config.env["RUN_PYTHON_TESTS"] = False
+          Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
     except:
-      Helper.printWarning("Warning: Numpy doesn't seem to be installed,"
-                          "skipping Python unit tests.")
-      config.env["RUN_PYTHON_TESTS"] = False
+      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_TESTS"] = False
   else:
-    Helper.printWarning("Python extension (SG_PYTHON) not enabled,",
-                        "skipping Python unit tests.")
+    Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
@@ -259,7 +270,7 @@ def checkJava(config):
                                  "with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h"
                                  "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h.")
   else:
-    Helper.printWarning("Java support (SG_JAVA) not enabled.")
+    Helper.printInfo("Java support (SG_JAVA) not enabled.")
 
 def configureGNUCompiler(config):
   if config.env["COMPILER"] == "openmpi":

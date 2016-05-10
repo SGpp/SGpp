@@ -10,7 +10,7 @@
 #include "sgpp/base/datatypes/DataMatrix.hpp"
 #include "sgpp/base/operation/BaseOpFactory.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #if USE_OCL == 1
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 using sgpp::base::OCLOperationConfiguration;
