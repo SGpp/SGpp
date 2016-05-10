@@ -46,7 +46,7 @@ double f(int dim, double* x, void* clientdata) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  std::unique_ptr<sgpp::base::Grid> sgpp::base::grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
