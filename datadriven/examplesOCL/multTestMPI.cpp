@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 6;
+  uint32_t level = 10;
 
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -184,4 +184,10 @@ int main(int argc, char** argv) {
   MPI_Finalize();
 }
 
+#else
+#include <iostream>
+int main(int argc, char** argv) {
+  std::cout << "error: build with MPI to enable this example" << std::endl;
+  return 0;
+}
 #endif
