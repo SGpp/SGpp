@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/OperationConfiguration.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -27,10 +27,14 @@ enum class OperationMultipleEvalSubType {
   OCLOPT
 };
 
+enum class OperationMultipleEvalMPIType { NONE, MASTERSLAVE };
+
 class OperationMultipleEvalConfiguration {
  private:
   OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT;
   OperationMultipleEvalSubType subType = OperationMultipleEvalSubType::DEFAULT;
+  OperationMultipleEvalMPIType mpiType = OperationMultipleEvalMPIType::NONE;
+
   std::shared_ptr<base::OperationConfiguration> parameters;
 
   // optional - can be set for easier reporting
@@ -40,9 +44,11 @@ class OperationMultipleEvalConfiguration {
   OperationMultipleEvalConfiguration(
       OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT,
       OperationMultipleEvalSubType subType = OperationMultipleEvalSubType::DEFAULT,
+      OperationMultipleEvalMPIType mpiType = OperationMultipleEvalMPIType::NONE,
       std::string name = "unnamed") {
     this->type = type;
     this->subType = subType;
+    this->mpiType = mpiType;
     this->name = name;
   }
 
@@ -55,6 +61,19 @@ class OperationMultipleEvalConfiguration {
     this->name = name;
     this->parameters = std::shared_ptr<base::OperationConfiguration>(parameters.clone());
   }
+
+  OperationMultipleEvalConfiguration(OperationMultipleEvalType type,
+                                     OperationMultipleEvalSubType subType,
+                                     OperationMultipleEvalMPIType mpiType,
+                                     base::OperationConfiguration& parameters,
+                                     std::string name = "unnamed") {
+    this->type = type;
+    this->subType = subType;
+    this->name = name;
+    this->parameters = std::shared_ptr<base::OperationConfiguration>(parameters.clone());
+  }
+
+  OperationMultipleEvalMPIType getMPIType() { return this->mpiType; }
 
   OperationMultipleEvalType getType() { return this->type; }
 
