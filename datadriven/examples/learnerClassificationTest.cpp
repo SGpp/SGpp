@@ -33,8 +33,8 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
 
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Diagonal;
-  regularizationConfig.lambda = 0.00001;
-  regularizationConfig.exponentBase = 0.25;
+  regularizationConfig.lambda_ = 0.00001;
+  regularizationConfig.exponentBase_ = 0.25;
 
   return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig, solverConfig,
                                                  regularizationConfig);

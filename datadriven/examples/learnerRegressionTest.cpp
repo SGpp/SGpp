@@ -53,8 +53,8 @@ std::string showRegularizationConfiguration(
       ss << "type: unknown\t";
   }
 
-  ss << "lambda: " << regularizationConfig.lambda
-     << "\tmultiplicationFactor: " << regularizationConfig.exponentBase;
+  ss << "lambda: " << regularizationConfig.lambda_
+     << "\tmultiplicationFactor: " << regularizationConfig.exponentBase_;
   return ss.str();
 }
 
@@ -95,8 +95,8 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
     const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
     auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
     regularizationConfig.regType_ = regularizationType;
-    regularizationConfig.lambda = lambda;
-    regularizationConfig.exponentBase = 0.25;
+    regularizationConfig.lambda_ = lambda;
+    regularizationConfig.exponentBase_ = 0.25;
     result.push_back(regularizationConfig);
 
     // Diagonal
@@ -104,8 +104,8 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
       auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
       regularizationConfig.regType_ = regularizationType;
-      regularizationConfig.lambda = lambda;
-      regularizationConfig.exponentBase = exponentBase;
+      regularizationConfig.lambda_ = lambda;
+      regularizationConfig.exponentBase_ = exponentBase;
       result.push_back(regularizationConfig);
     }
   }
