@@ -92,6 +92,12 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
       std::string levelAccess = levelAccessStream.str();
       std::string indexAccess = indexAccessStream.str();
 
+      output << this->indent[2] << "dimLevelIndex = "
+             << "(k * " << dims << ") + " << pointerAccess << ";" << std::endl;
+      output << this->indent[2] << "// nothing to do on l == 1" << std::endl;
+      output << this->indent[2] << "if (" << levelAccess << " == 0) {" << std::endl;
+      output << this->indent[2] << "} else {" << std::endl;
+
       for (size_t i = 0; i < dataBlockSize; i++) {
         // TODO(pfandedd): add blocked 1d eval here
         //        output << this->indent[2] << "dimLevelIndex = "
@@ -113,21 +119,18 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
         //        std::endl
         //               << std::endl;
 
-        output << this->indent[2] << "dimLevelIndex = "
-               << "(k * " << dims << ") + " << pointerAccess << ";" << std::endl;
-        output << this->indent[2] << "// nothing to do on l == 1" << std::endl;
-        output << this->indent[2] << "if (" << levelAccess << " == 1) {" << std::endl;
-        output << this->indent[2] << "} else {" << std::endl;
         output << this->indent[3] << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix()
                << " - fabs((";
         output << levelAccess << " * " << getData(dString, i) << ") - " << indexAccess << "), 0.0"
                << this->constSuffix() << ");" << std::endl;
-        output << this->indent[3] << "if (" << indexAccess << " == 0 || " << indexAccess
-               << " == " << levelAccess << ") {" << std::endl;
-        output << this->indent[4] << "curSupport_" << i << " *= 2;" << std::endl;
-        output << this->indent[3] << "}" << std::endl;
-        output << this->indent[2] << "}" << std::endl;
       }
+      //      output << this->indent[3] << "if (" << indexAccess << " == 0 || " << indexAccess
+      //             << " == " << levelAccess << ") {" << std::endl;
+      //      for (size_t i = 0; i < dataBlockSize; i++) {
+      //        output << this->indent[4] << "curSupport_" << i << " *= 2;" << std::endl;
+      //      }
+      //      output << this->indent[3] << "}" << std::endl;
+      output << this->indent[2] << "}" << std::endl;
     }
     return output.str();
   }
@@ -177,7 +180,8 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
                  << std::endl;
 
     if (std::is_same<T, double>::value) {
-      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
+                   << std::endl;
     }
 
     sourceStream << "__kernel" << std::endl;
