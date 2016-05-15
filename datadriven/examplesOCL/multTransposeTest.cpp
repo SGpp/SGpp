@@ -42,11 +42,11 @@ int main(int argc, char** argv) {
   //  std::string fileName = "debugging.arff";
   //  std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_10d.arff";
-  std::string fileName = "friedman2_4d_300000.arff";
+  std::string fileName = "friedman1_10d_150000.arff";
   //  std::string fileName = "DR5_train.arff";
   // std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 6;
+  uint32_t level = 8;
 
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  sgpp::base::OCLOperationConfiguration parameters("platformDouble.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,

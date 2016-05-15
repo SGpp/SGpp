@@ -36,10 +36,11 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
   size_t datasetSizeUnpadded;
   size_t datasetSizePadded;
   size_t datasetSizeBuffers;
-  /// Member to store the sparse grid's levels for better vectorization
+
   std::vector<T> level;
-  /// Member to store the sparse grid's indices for better vectorization
   std::vector<T> index;
+  std::vector<T> scaling;
+
   size_t gridSizeUnpadded;
   size_t gridSizePadded;
   size_t gridSizeBuffers;
@@ -149,7 +150,7 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
     std::vector<T> alphaArray(this->gridSizePadded);
 
     for (size_t i = 0; i < alpha.getSize(); i++) {
-      alphaArray[i] = (T)alpha[i];
+      alphaArray[i] = (T)alpha[i] * scaling[i];
     }
 
     for (size_t i = alpha.getSize(); i < this->gridSizePadded; i++) {
@@ -230,7 +231,7 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
-      result[i] = resultArray[i];
+      result[i] = resultArray[i] * scaling[i];
     }
 
     this->duration = this->myTimer.stop();
@@ -293,6 +294,7 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
 
     level = std::vector<T>(gridSizeBuffers * dims);
     index = std::vector<T>(gridSizeBuffers * dims);
+    scaling = std::vector<T>(gridSizeBuffers);
 
     base::HashGridIndex::level_type curLevel;
     base::HashGridIndex::index_type curIndex;
@@ -303,6 +305,8 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
     for (size_t i = 0; i < storage.getSize(); i++) {
       gridPoint = storage.get(i);
       //      std::cout << "--------------" << std::endl;
+
+      T scalingFactor = 1.0;
       for (size_t d = 0; d < dims; d++) {
         gridPoint->get(d, curLevel, curIndex);
         //        std::cout << "level: " << curLevel << " index: " << curIndex << std::endl;
@@ -310,27 +314,32 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
         // handle the special cases for the extrapolating grid points first
         if (curLevel == 1 && curIndex == 1) {
           level[i * dims + d] =
-              static_cast<T>(1);  // special value to differentiate between border huts on level 1
-          index[i * dims + d] = static_cast<T>(0);  // don't care
+              static_cast<T>(0);  // special value to differentiate between border huts on level 1
+          index[i * dims + d] = static_cast<T>(0);
           //          std::cout << "mod level: " << level[i * dims + d] << std::endl;
           //          std::cout << "mod index: " << index[i * dims + d] << std::endl;
+          scalingFactor *= static_cast<T>(1.0);
         } else if (curLevel > 1 && curIndex == 1) {
           level[i * dims + d] = static_cast<T>(1 << (curLevel - 1));
           index[i * dims + d] = static_cast<T>(0);
           //          std::cout << "mod level: " << level[i * dims + d] << std::endl;
           //          std::cout << "mod index: " << index[i * dims + d] << std::endl;
+          scalingFactor *= static_cast<T>(2.0);
         } else if (curLevel > 1 && curIndex == static_cast<uint32_t>(1 << curLevel) - 1) {
           level[i * dims + d] = static_cast<T>(1 << (curLevel - 1));
           index[i * dims + d] = static_cast<T>(1 << (curLevel - 1));
           //          std::cout << "mod level: " << level[i * dims + d] << std::endl;
           //          std::cout << "mod index: " << index[i * dims + d] << std::endl;
+          scalingFactor *= static_cast<T>(2.0);
         } else {
           level[i * dims + d] = static_cast<T>(1 << curLevel);
           index[i * dims + d] = static_cast<T>(curIndex);
           //          std::cout << "mod level: " << level[i * dims + d] << std::endl;
           //          std::cout << "mod index: " << index[i * dims + d] << std::endl;
+          scalingFactor *= static_cast<T>(1.0);
         }
       }
+      scaling[i] = scalingFactor;
     }
 
     // grid points are disabled via surplus set to zero
@@ -339,6 +348,7 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
         level[i * dims + dim] = 1.0;  // same treatment as constant basis function
         index[i * dims + dim] = 0.0;
       }
+      scaling[i] = 1.0;  // don't care
     }
   }
 

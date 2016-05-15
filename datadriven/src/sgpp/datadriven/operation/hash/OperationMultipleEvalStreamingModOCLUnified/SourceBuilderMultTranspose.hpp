@@ -112,22 +112,23 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
         // TODO(pfandedd): add 1d blocked basis function evaluation
 
-        output << this->indent[2] << "// nothing to do on l == 1" << std::endl;
-        output << this->indent[2] << "if (" << getLevel(dString, gridIndex) << " == 1) {"
-               << std::endl;
-        output << this->indent[2] << "} else {" << std::endl;
+        //        output << this->indent[2] << "// nothing to do on l == 1" << std::endl;
+        //        output << this->indent[2] << "if (" << getLevel(dString, gridIndex) << " == 0) {"
+        //               << std::endl;
+        //        output << this->indent[2] << "} else {" << std::endl;
         output << this->indent[2] << "curSupport_" << gridIndex << " *= fmax(1.0"
                << this->constSuffix() << " - fabs((";
         output << getLevel(dString, gridIndex) << " * " << getData(dString) << ") - "
                << getIndex(dString, gridIndex) << "), 0.0" << this->constSuffix() << ");"
                << std::endl;
 
-        output << this->indent[3] << "if (" << getIndex(dString, gridIndex) << " == 0 || "
-               << getIndex(dString, gridIndex) << " == " << getLevel(dString, gridIndex) << ") {"
-               << std::endl;
-        output << this->indent[4] << "curSupport_" << gridIndex << " *= 2;" << std::endl;
-        output << this->indent[3] << "}" << std::endl;
-        output << this->indent[2] << "}" << std::endl;
+        //        output << this->indent[3] << "if (" << getIndex(dString, gridIndex) << " == 0 || "
+        //               << getIndex(dString, gridIndex) << " == " << getLevel(dString, gridIndex)
+        //               << ") {"
+        //               << std::endl;
+        //        output << this->indent[4] << "curSupport_" << gridIndex << " *= 2;" << std::endl;
+        //        output << this->indent[3] << "}" << std::endl;
+        //        output << this->indent[2] << "}" << std::endl;
 
         //                output << this->indent[2] << "} else {" << std::endl;
         //                output << this->indent[3] << "curSupport_" << i << " *= fmax(1.0" <<
@@ -173,7 +174,8 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
                  << std::endl;
 
     if (std::is_same<T, double>::value) {
-      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
+                   << std::endl;
     }
 
     sourceStream << "__kernel" << std::endl;
@@ -337,7 +339,8 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
     indentLevel -= 1;
 
-    sourceStream << this->indent[indentLevel] << "}" << std::endl << std::endl;
+    sourceStream << this->indent[indentLevel] << "}" << std::endl
+                 << std::endl;
 
     if (useLocalMemory) {
       sourceStream << this->indent[indentLevel] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
