@@ -14,6 +14,7 @@ import textwrap
 import SCons
 from SCons.Script.SConscript import SConsEnvironment
 
+import DoxygenHelper
 import Helper
 import SGppConfigure
 
@@ -183,7 +184,7 @@ env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include")
 
 # don't create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
-  Helper.prepareDoxyfile(moduleFolders)
+  DoxygenHelper.prepareDoxygen(moduleFolders)
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
@@ -491,6 +492,7 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 #########################################################################
 
 doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
+env.AddPostAction(doxygen, DoxygenHelper.patchNavtree)
 env.Alias("doxygen", doxygen)
 # SCons doesn't know the *.doxy dependencies of the doxygen target
 # ==> always consider out-of-date with AlwaysBuild

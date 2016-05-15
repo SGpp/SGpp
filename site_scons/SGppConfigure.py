@@ -209,7 +209,7 @@ def checkSWIG(config):
     if swigVersionTuple < (3, 0, 0):
       Helper.printErrorAndExit("SWIG version too old! At least 3.0 required.")
 
-    Helper.printInfo("Using SWIG " + swigVersion + ".")
+    Helper.printInfo("Using SWIG {}".format(swigVersion))
 
 def checkPython(config):
   if config.env["SG_PYTHON"]:
