@@ -3,17 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <limits>
 #include <random>
 #include <string>
-#include <limits>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
 
 void doAllRefinements(const sgpp::base::AdpativityConfiguration& adaptConfig,
                       sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen, std::mt19937 mt,
@@ -41,11 +41,12 @@ int main(int argc, char** argv) {
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "debugging.arff";
   //  std::string fileName = "friedman_4d.arff";
-  std::string fileName = "friedman_10d.arff";
+  //  std::string fileName = "friedman_10d.arff";
+  std::string fileName = "friedman2_4d_300000.arff";
   //  std::string fileName = "DR5_train.arff";
   // std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 5;
+  uint32_t level = 6;
 
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -54,11 +55,11 @@ int main(int argc, char** argv) {
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("platformDouble.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLUNIFIED, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
   sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -141,8 +142,8 @@ int main(int argc, char** argv) {
       largestDifferenceReference = alphaResultCompare[i];
     }
 
-    std::cout << "difference: " << difference << " mine: " << alphaResult[i]
-              << " ref: " << alphaResultCompare[i] << std::endl;
+    //    std::cout << "difference: " << difference << " mine: " << alphaResult[i]
+    //              << " ref: " << alphaResultCompare[i] << std::endl;
 
     mse += difference * difference;
   }
