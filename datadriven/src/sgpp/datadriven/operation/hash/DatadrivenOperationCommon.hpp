@@ -24,7 +24,8 @@ enum class OperationMultipleEvalSubType {
   OCLFASTMP,
   OCLMP,
   OCLMASKMP,
-  OCLOPT
+  OCLOPT,
+  OCLUNIFIED
 };
 
 enum class OperationMultipleEvalMPIType { NONE, MASTERSLAVE };

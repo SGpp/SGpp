@@ -48,6 +48,7 @@
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
+#include "operation/hash/OperationMultipleEvalStreamingModOCLUnified/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
 #endif
 
@@ -325,6 +326,15 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 #ifdef USE_OCL
           return std::unique_ptr<base::OperationMultipleEval>(
               datadriven::createStreamingModOCLOptConfigured(grid, dataset, configuration));
+#else
+          throw base::factory_exception(
+              "Error creating function: the library wasn't compiled with OpenCL support");
+#endif
+        } else if (configuration.getSubType() ==
+                   sgpp::datadriven::OperationMultipleEvalSubType::OCLUNIFIED) {
+#ifdef USE_OCL
+          return std::unique_ptr<base::OperationMultipleEval>(
+              datadriven::createStreamingModOCLUnifiedConfigured(grid, dataset, configuration));
 #else
           throw base::factory_exception(
               "Error creating function: the library wasn't compiled with OpenCL support");
