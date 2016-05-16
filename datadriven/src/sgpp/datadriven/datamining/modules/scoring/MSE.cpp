@@ -18,7 +18,7 @@ MSE::~MSE() {
   // TODO(valeriy) Auto-generated destructor stub
 }
 
-double MSE::operator()(DataVector& predictedValues, DataVector& trueValues) {
+double MSE::operator()(const DataVector& predictedValues, const DataVector& trueValues) {
   DataVector tmp(predictedValues);
   tmp.sub(trueValues);
   double error = tmp.l2Norm();
