@@ -32,6 +32,7 @@ class ClassificationLearner {
 
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
   sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
+  size_t getGridSize() const;
   double getAccuracy(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
 
  private:
