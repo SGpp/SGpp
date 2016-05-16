@@ -11,7 +11,8 @@
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+
 #include <memory>
 
 namespace sgpp {

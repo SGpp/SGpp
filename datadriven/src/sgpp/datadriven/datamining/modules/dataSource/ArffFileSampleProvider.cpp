@@ -9,12 +9,12 @@
  *      Author: perun, Michael Lettrich
  */
 
-#include <sgpp/datadriven/datamining/dataSource/ArffFileSampleProvider.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/base/exception/file_exception.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <memory>
 #include <string>

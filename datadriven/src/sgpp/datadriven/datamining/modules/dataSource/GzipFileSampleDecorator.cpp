@@ -9,13 +9,15 @@
  *      Author: Michael Lettrich
  */
 
-#include <sgpp/datadriven/datamining/dataSource/GzipFileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+
 #include <sgpp/base/exception/file_exception.hpp>
+
 #include <zlib.h>
-#include <string>
-#include <sstream>
-#include <vector>
 #include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
