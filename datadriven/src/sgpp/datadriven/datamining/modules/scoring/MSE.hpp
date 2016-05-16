@@ -21,7 +21,7 @@ class MSE : public Metric {
  public:
   MSE();
   virtual ~MSE();
-  virtual double operator()(DataVector& predictedValues, DataVector& trueValues);
+  virtual double operator()(const DataVector& predictedValues, const DataVector& trueValues);
 };
 
 } /* namespace datadriven */

@@ -27,7 +27,7 @@ class Metric {
  public:
   Metric(){};
   virtual ~Metric(){};
-  virtual double operator()(DataVector& predictedValues, DataVector& trueValues) = 0;
+  virtual double operator()(const DataVector& predictedValues, const DataVector& trueValues) = 0;
 };
 
 } /* namespace datadriven */

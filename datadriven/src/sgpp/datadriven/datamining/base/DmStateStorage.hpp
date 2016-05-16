@@ -12,6 +12,7 @@
 #pragma once
 
 #include <memory>
+#include <sgpp/datadriven/datamining/base/DmModel.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 namespace sgpp {
@@ -23,9 +24,11 @@ class DmStateStorage {
   DmStateStorage();
   std::shared_ptr<Dataset> getDataset();
   void setDataset(std::shared_ptr<Dataset> dataset);
+  DmModel& getModel();
 
  private:
   std::shared_ptr<Dataset> dataset;
+  DmModel model;
 };
 
 } /* namespace datadriven */

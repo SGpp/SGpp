@@ -5,15 +5,23 @@
  *
  */
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-using namespace sgpp::base;  // NOLINT
 namespace sgpp {
 namespace datadriven {
+
+using base::DataMatrix;
+using base::DataVector;
+using base::OperationMatrix;
+using base::GridType;
+using base::Grid;
+using base::GridIndex;
+using base::application_exception;
+using base::GridGenerator;
 
 ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {}
 
