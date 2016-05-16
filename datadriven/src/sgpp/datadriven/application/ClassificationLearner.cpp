@@ -46,6 +46,11 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
   }
 }
 
+size_t ClassificationLearner::getGridSize() const {
+    return learners[0].second.getGridSize();
+}
+
+
 sgpp::base::DataVector ClassificationLearner::predict(sgpp::base::DataMatrix& data) {
   const auto nPredictions = learners.size();
   auto predictions = std::vector<std::pair<class_t, sgpp::base::DataVector>>();

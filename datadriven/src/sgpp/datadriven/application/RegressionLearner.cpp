@@ -102,6 +102,10 @@ void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem) {
   weights.resizeZero(grid->getSize());
 }
 
+size_t RegressionLearner::getGridSize() const {
+    return grid->getSize();
+}
+
 double RegressionLearner::getMSE(const sgpp::base::DataVector& y,
                                  sgpp::base::DataVector yPrediction) {
   yPrediction.sub(y);
