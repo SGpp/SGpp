@@ -3,27 +3,27 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * GzipFileSampleDecorator.hpp
+ * ARFFWrapper.hpp
  *
- *  Created on: 01.04.2016
- *      Author: Michael Lettrich
+ *  Created on: Feb 8, 2016
+ *      Author: perun, Michael Lettrich
  */
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/dataSource/FileSampleDecorator.hpp>
-#include <memory>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-class GzipFileSampleDecorator : public FileSampleDecorator {
+class ArffFileSampleProvider : public FileSampleProvider {
  public:
-  explicit GzipFileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider);
+  ArffFileSampleProvider();
 
-  GzipFileSampleDecorator(GzipFileSampleDecorator&& d);
-
-  virtual ~GzipFileSampleDecorator();
+  virtual ~ArffFileSampleProvider();
 
   std::unique_ptr<Dataset> getNextSamples(size_t howMany);
 
@@ -38,6 +38,12 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
   void readFile(const std::string& fileName);
 
   void readString(const std::string& input);
+
+ private:
+  Dataset dataset;
+  size_t counter;
+
+  std::unique_ptr<Dataset> splitDataset(size_t howMany);
 };
 
 } /* namespace datadriven */

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 
 #include <string>
 

@@ -24,9 +24,9 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/dataSource/ArffFileSampleProvider.hpp>
-#include <sgpp/datadriven/datamining/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/globaldef.hpp>
 
 BOOST_AUTO_TEST_SUITE(dataminingGzipSampleDecoratorTest)
@@ -37,16 +37,11 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
-  double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
-                              {0.365584, 0.105479, 0.050000},
-                              {0.178571, 0.201027, 0.050000},
-                              {0.272078, 0.145548, 0.050000},
-                              {0.318831, 0.065411, 0.050000},
-                              {0.190260, 0.086986, 0.050000},
-                              {0.190260, 0.062329, 0.072500},
-                              {0.120130, 0.068493, 0.072500},
-                              {0.225325, 0.056164, 0.072500},
-                              {0.213636, 0.050000, 0.072500}};
+  double testPoints[10][3] = {{0.307143, 0.130137, 0.050000}, {0.365584, 0.105479, 0.050000},
+                              {0.178571, 0.201027, 0.050000}, {0.272078, 0.145548, 0.050000},
+                              {0.318831, 0.065411, 0.050000}, {0.190260, 0.086986, 0.050000},
+                              {0.190260, 0.062329, 0.072500}, {0.120130, 0.068493, 0.072500},
+                              {0.225325, 0.056164, 0.072500}, {0.213636, 0.050000, 0.072500}};
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
