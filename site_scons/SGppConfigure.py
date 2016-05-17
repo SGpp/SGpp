@@ -22,12 +22,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
 
-  # TODO check
-  if env["PLATFORM"] not in ["cygwin", "win32"]:
-    if env["OPT"] == True:
-      env.Append(CPPFLAGS=["-O3", "-g"])
-    else:
-      env.Append(CPPFLAGS=["-g", "-O0"])
+  # TODO(pfandedd): discuss with julian
+#   if env["PLATFORM"] not in ["cygwin", "win32"]:
+  if env["OPT"] == True:
+    env.Append(CPPFLAGS=["-O3", "-g"])
+  else:
+    env.Append(CPPFLAGS=["-g", "-O0"])
 
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
@@ -97,6 +97,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkPython(config)
   checkJava(config)
 
+  if env["USE_CUDA"] == True:
+    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    config.env['CUDA_SDK_PATH'] = ''
+    config.env.Tool('cuda')
+    # clean up the flags to forward
+    # flagsToForward = [flag for flag in config.env["CPPFLAGS"] if flag not in ['-Wmissing-format-attribute', '']]
+    # flagsToForward = " -Xcompiler " + (" -Xcompiler ".join(flagsToForward))
+    # ensure same flags for host code
+    config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
+    # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
+
   env = config.Finish()
 
   print "Configuration done."
@@ -111,6 +122,8 @@ def checkCpp11(config):
   config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
 def checkDoxygen(config):
+  if not config.env["DOC"]:
+    return
   # check whether Doxygen installed
   if not config.CheckExec("doxygen"):
     Helper.printWarning("Doxygen cannot be found.",
@@ -121,6 +134,9 @@ def checkDoxygen(config):
        r"[0-9.]*[0-9]+", subprocess.check_output(["doxygen", "--version"]))[0] + ".")
 
 def checkDot(config):
+  if not config.env["DOC"]:
+    return
+  
   # check whether dot installed
   if not config.CheckExec("dot"):
     Helper.printWarning("dot (Graphviz) cannot be found.",
@@ -137,7 +153,7 @@ def checkOpenCL(config):
     elif "OCL_INCLUDE_PATH" in config.env:
       config.env.AppendUnique(CPPPATH=[config.env["OCL_INCLUDE_PATH"]])
     else:
-      Helper.printInfo("Trying to find the OpenCL without the OCL_INCLUDE_PATH variable.")
+      Helper.printInfo("Trying to find the OpenCL header without the OCL_INCLUDE_PATH variable.")
 
     if not config.CheckCXXHeader("CL/cl.h"):
       Helper.printErrorAndExit("CL/cl.h not found, but required for OpenCL")
@@ -147,18 +163,21 @@ def checkOpenCL(config):
     elif "OCL_LIBRARY_PATH" in config.env:
       config.env.AppendUnique(LIBPATH=[config.env["OCL_LIBRARY_PATH"]])
     else:
-      printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
+      Helper.printInfo("Trying to find the libOpenCL library without the OCL_LIBRARY_PATH variable.")
 
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
+
+    # TODO: continue - add boost include path!
+    config.env.AppendUnique(LIBPATH="C:\\boost_1_60_0\stage\lib")    
 
     if not config.CheckLib("boost_program_options", language="c++", autoadd=0):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
-      config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    else:
-      printInfo("OpenCL is not enabled")
+    config.env["CPPDEFINES"]["USE_OCL"] = "1"
+  else:
+    Helper.printInfo("OpenCL is not enabled")
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -221,16 +240,17 @@ def checkPython(config):
       numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
-        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ",",
-                            "skipping Python unit tests.")
-        config.env["RUN_PYTHON_TESTS"] = False
+        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path))
+        if config.env["RUN_PYTHON_TESTS"]:
+          config.env["RUN_PYTHON_TESTS"] = False
+          Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
     except:
-      Helper.printWarning("Warning: Numpy doesn't seem to be installed,"
-                          "skipping Python unit tests.")
-      config.env["RUN_PYTHON_TESTS"] = False
+      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_TESTS"] = False
   else:
-    Helper.printWarning("Python extension (SG_PYTHON) not enabled,",
-                        "skipping Python unit tests.")
+    Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
@@ -259,7 +279,7 @@ def checkJava(config):
                                  "with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h"
                                  "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h.")
   else:
-    Helper.printWarning("Java support (SG_JAVA) not enabled.")
+    Helper.printInfo("Java support (SG_JAVA) not enabled.")
 
 def configureGNUCompiler(config):
   if config.env["COMPILER"] == "openmpi":
@@ -276,7 +296,7 @@ def configureGNUCompiler(config):
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
-  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
+  Helper.printInfo("Using {} ({})".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :

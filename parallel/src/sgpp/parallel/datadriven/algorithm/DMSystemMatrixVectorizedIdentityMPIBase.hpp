@@ -65,16 +65,16 @@ class DMSystemMatrixVectorizedIdentityMPIBase : public sgpp::datadriven::DMSyste
           "DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
     }
 
-    this->dataset_ = new sgpp::base::DataMatrix(trainData);
-    this->numTrainingInstances_ = this->dataset_->getNrows();
+    //    this->dataset_ = new sgpp::base::DataMatrix(trainData);
+    this->numTrainingInstances_ = this->dataset_.getNrows();
     this->numPatchedTrainingInstances_ =
-        sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+        sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(this->dataset_, vecMode_);
     std::cout << "Padding Dataset to " << numPatchedTrainingInstances_ << " Instances. "
               << std::endl;
     this->tempData = new sgpp::base::DataVector(this->numPatchedTrainingInstances_);
 
     if (this->vecMode_ != ArBB) {
-      this->dataset_->transpose();
+      this->dataset_.transpose();
     }
 
     this->result_tmp = new sgpp::base::DataVector(storage_.getSize());
@@ -91,7 +91,7 @@ class DMSystemMatrixVectorizedIdentityMPIBase : public sgpp::datadriven::DMSyste
 
     delete this->result_tmp;
     delete this->tempData;
-    delete this->dataset_;
+    //    delete this->dataset_;
   }
 
   virtual void prepareGrid() { rebuildLevelAndIndex(); }

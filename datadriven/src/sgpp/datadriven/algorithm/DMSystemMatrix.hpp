@@ -16,7 +16,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -27,10 +26,10 @@ namespace datadriven {
 class DMSystemMatrix : public DMSystemMatrixBase {
  private:
   /// base::OperationMatrix, the regularisation mehtod
-  base::OperationMatrix* C;
+  base::OperationMatrix& C;
   /// OperationB for calculating the data matrix
   // OperationMultiEval* B;
-  base::OperationMultipleEval* B;
+  std::unique_ptr<base::OperationMultipleEval> B;
 
   base::Grid& grid;
 
@@ -43,16 +42,15 @@ class DMSystemMatrix : public DMSystemMatrixBase {
    * @param C the regression functional
    * @param lambdaRegression the lambda, the regression parameter
    */
-  DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
-                 base::OperationMatrix& C, double lambdaRegression);
+  DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix& C,
+                 double lambdaRegression);
 
   /**
    * Std-Destructor
    */
   virtual ~DMSystemMatrix();
 
-  virtual void mult(base::DataVector& alpha,
-                    base::DataVector& result);
+  virtual void mult(base::DataVector& alpha, base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
@@ -61,8 +59,7 @@ class DMSystemMatrix : public DMSystemMatrixBase {
    * @param b reference to the vector that will contain the result of the matrix vector
    *   multiplication on the rhs
    */
-  virtual void generateb(base::DataVector& classes,
-                         base::DataVector& b);
+  virtual void generateb(base::DataVector& classes, base::DataVector& b);
 };
 
 }  // namespace datadriven

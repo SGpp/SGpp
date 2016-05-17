@@ -29,6 +29,8 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
   size_t localWorkgroupSize;
   bool useLocalMemory;
   uint64_t maxDimUnroll;
+  size_t transGridBlockSize;
+  size_t transDataBlockSize;
 
   std::string getDataTrans(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
@@ -149,6 +151,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
       : device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
     localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+    transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
+    transDataBlockSize = kernelConfiguration["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
   }
 
@@ -156,10 +161,6 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
       return this->reuseSource("StreamingModOCLFastMultiPlatform_multTrans.cl");
     }
-
-    size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    size_t transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
-    size_t transDataBlockSize = kernelConfiguration["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
 
     std::stringstream sourceStream;
 
@@ -184,9 +185,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << "                  __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
     //    sourceStream << "                  uint resultOffset," << std::endl;
-    sourceStream << "                  uint sourceSize," << std::endl;
-    sourceStream << "                  uint start_data," << std::endl;
-    sourceStream << "                  uint end_data) {" << std::endl;
+    sourceStream << "                  int sourceSize," << std::endl;
+    sourceStream << "                  int start_data," << std::endl;
+    sourceStream << "                  int end_data) {" << std::endl;
     //    stream_program_src << "   int globalSize = get_global_size(0);" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int groupIdx = get_group_id(0);" << std::endl;
@@ -242,10 +243,11 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
       sourceStream << std::endl;
     }
 
-    sourceStream << this->indent[0] << "size_t dimDataIndex;" << std::endl;
+    sourceStream << this->indent[0] << "int dimDataIndex;" << std::endl;
 
+    // TODO(pfandedd): what is this for?
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
-      sourceStream << this->indent[0] << "size_t dimLevelIndex;" << std::endl;
+      sourceStream << this->indent[0] << "int dimLevelIndex;" << std::endl;
     }
 
     // iterate the data set and evaluate the basis functions
@@ -263,7 +265,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
     for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
       if (dims > maxDimUnroll) {
-        sourceStream << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
+        sourceStream << this->indent[1] << "for (int unrollDim = 0; unrollDim < "
                      << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                      << ") {" << std::endl;
         sourceStream << this->unrolledBasisFunctionEvalulationTrans(
