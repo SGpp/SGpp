@@ -44,6 +44,7 @@ class LogDensitySystemMatrix : public base::OperationMatrix {
    * Std-Constructor
    *
    * @param grid  reference to the sparse grid
+   * @param alphaRef reference to DataVector hierarchical coefficients
    * @param trainData reference to DataVector that contains the training data
    * @param C the regression functional
    * @param lambdaRegression the regression parameter
