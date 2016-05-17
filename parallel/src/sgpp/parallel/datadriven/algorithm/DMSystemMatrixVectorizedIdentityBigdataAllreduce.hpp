@@ -45,7 +45,7 @@ class DMSystemMatrixVectorizedIdentityBigdataAllreduce
     this->myTimer_->start();
 #pragma omp parallel
     {
-      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+      this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, &this->dataset_,
                          alpha, *(this->tempData), 0, this->storage_.getSize(), 0,
                          this->numPatchedTrainingInstances_);
 
@@ -74,7 +74,7 @@ class DMSystemMatrixVectorizedIdentityBigdataAllreduce
       // process, so threads might work on unfinished results of mult
 
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  &this->dataset_, *(this->tempData), *(this->result_tmp), 0,
                                   this->storage_.getSize(), 0, this->numPatchedTrainingInstances_);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
@@ -93,7 +93,7 @@ class DMSystemMatrixVectorizedIdentityBigdataAllreduce
 #pragma omp parallel
     {
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
-                                  this->dataset_, *(this->tempData), *(this->result_tmp), 0,
+                                  &this->dataset_, *(this->tempData), *(this->result_tmp), 0,
                                   this->storage_.getSize(), 0, this->numPatchedTrainingInstances_);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();

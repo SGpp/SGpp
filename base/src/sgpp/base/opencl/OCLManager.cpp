@@ -17,7 +17,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     : parameters(parameters) {
   // augment default values to configuration
   if (parameters->contains("LOCAL_SIZE") == false) {
-    parameters->addIDAttr("LOCAL_SIZE", 64ul);
+    parameters->addIDAttr("LOCAL_SIZE", UINT64_C(64));
   }
 
   if (parameters->contains("ENABLE_OPTIMIZATIONS") == false) {

@@ -15,7 +15,7 @@
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "AdaptiveOCLKernelImpl.hpp"

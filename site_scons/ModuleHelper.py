@@ -73,6 +73,14 @@ class Module(object):
           self.cpps.append(cpp)
           self.objs.append(env.SharedObject(cpp))
 
+          # process cuda source files if cuda is enabled
+        if env['USE_CUDA']:
+          for fileName in fnmatch.filter(fileNames, "*.cu"):
+            if fileName in self.excludeFiles: continue
+            cpp = os.path.join(currentFolder, fileName)
+            self.cpps.append(cpp)
+            self.objs.append(env.SharedObject(cpp))
+
         # process header files
         for fileName in fnmatch.filter(fileNames, "*.hpp"):
           if fileName in self.excludeFiles: continue
@@ -105,13 +113,15 @@ class Module(object):
     if env["BUILD_STATICLIB"]:
       # build static library
       libsuffix = env["LIBSUFFIX"]
-      self.lib = env.StaticLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
-                                   LIBS=self.moduleDependencies + self.additionalDependencies)
+      env_clone = env.Clone()
+      env_clone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
+      self.lib = env_clone.StaticLibrary(target=self.libname, source=self.objs)
     else:
       # build shared library
       libsuffix = env["SHLIBSUFFIX"]
-      self.lib = env.SharedLibrary(target=self.libname, source=self.objs, LIBPATH=BUILD_DIR,
-                                   LIBS=self.moduleDependencies + self.additionalDependencies)
+      env_clone = env.Clone()
+      env_clone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
+      self.lib = env_clone.SharedLibrary(target=self.libname, source=self.objs)
 
     # set module dependencies
     for module in self.moduleDependencies:
@@ -203,6 +213,7 @@ class Module(object):
 
       # only build Boost test executable if there are any tests
       if len(testObjs) > 0:
+
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
             (".exe" if env["PLATFORM"] == "win32" else "")

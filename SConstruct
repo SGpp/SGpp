@@ -82,6 +82,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
+vars.Add(BoolVariable("DOC", "Build the doxygen documentation", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
@@ -107,6 +108,7 @@ vars.Add("INCLUDEDIR", "Set path where the header files are installed " +
 vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
+vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
@@ -116,6 +118,8 @@ vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
+vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -469,6 +473,29 @@ env.Depends(exampleTargetList, finalStepDependencies)
 finalStepDependencies.append(exampleTargetList)
 env.SideEffect("sideEffectFinalSteps", exampleTargetList)
 
+# Final output
+#########################################################################
+
+def printInstructions(target, source, env):
+  import string
+  if env["PLATFORM"] in ["cygwin", "win32"]:
+    filename = "INSTRUCTIONS_WINDOWS"
+  elif env["PLATFORM"] == "darwin" :
+    filename = "INSTRUCTIONS_MAC"
+  else:
+    filename = "INSTRUCTIONS"
+
+  with open(filename) as f:
+    instructionsTemplate = string.Template(f.read())
+    print
+    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
+
+if env["PRINT_INSTRUCTIONS"]:
+    printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
+    env.Depends(printInstructionsTarget, finalStepDependencies)
+    finalStepDependencies.append(printInstructionsTarget)
+
 # System-wide installation
 #########################################################################
 
@@ -488,11 +515,12 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 # Doxygen
 #########################################################################
 
-doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
-env.Alias("doxygen", doxygen)
-# SCons doesn't know the *.doxy dependencies of the doxygen target
-# ==> always consider out-of-date with AlwaysBuild
-env.AlwaysBuild(doxygen)
+if env["DOC"]:
+    doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
+    env.Alias("doxygen", doxygen)
+    # SCons doesn't know the *.doxy dependencies of the doxygen target
+    # ==> always consider out-of-date with AlwaysBuild
+    env.AlwaysBuild(doxygen)
 
 # Things to be cleaned
 #########################################################################
@@ -517,6 +545,8 @@ finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 if not GetOption("clean"):
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
+    finalMessagePrinter.disable()
+  elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
 else:
   env.Default(finalStepDependencies + ["clean"])

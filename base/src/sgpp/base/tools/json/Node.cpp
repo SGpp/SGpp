@@ -73,7 +73,7 @@ std::unique_ptr<Node> Node::removeValue(size_t index) {
   throw json_exception("removeItem() is only implemented for attribute and list nodes");
 }
 
-std::unique_ptr<Node> Node::removeAttribute(const std::string& name) {
+std::unique_ptr<Node> Node::removeAttribute(const std::string name) {
   throw json_exception("removeAttribute() is only implemented for dict nodes");
 }
 

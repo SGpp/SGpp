@@ -23,9 +23,8 @@ class OCLDevice {
   cl_context context;
   cl_command_queue commandQueue;
 
-  OCLDevice(cl_platform_id platformId, cl_device_id deviceId,
-            const std::string &platformName, const std::string &deviceName,
-            cl_context context, cl_command_queue commandQueue)
+  OCLDevice(cl_platform_id platformId, cl_device_id deviceId, const std::string &platformName,
+            const std::string &deviceName, cl_context context, cl_command_queue commandQueue)
       : platformId(platformId),
         deviceId(deviceId),
         platformName(platformName),
