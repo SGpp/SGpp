@@ -151,7 +151,7 @@ def parents(grid, gp):
     ans = []
     for d in xrange(gs.getDimension()):
         ps = parent(grid, gp, d)
-        if ps:
+        if ps is not None:
             ans.append((d, ps))
     return ans
 
@@ -170,8 +170,14 @@ def getHierarchicalAncestors(grid, gp):
 
 
 def isHierarchicalAncestor(grid, gpi, gpj):
-    return gpi in getHierarchicalAncestors(grid, gpj) or \
-        gpj in getHierarchicalAncestors(grid, gpi)
+    ancestors = getHierarchicalAncestors(grid, gpj)
+    gs = grid.getStorage()
+    ix = gs.seq(gpi)
+    if len(ancestors) > 0:
+        jxs = [gs.seq(gpk) for _, gpk in ancestors]
+        return ix in jxs
+    else:
+        return False
 
 
 def getNonExistingHierarchicalAncestors(grid, gp):

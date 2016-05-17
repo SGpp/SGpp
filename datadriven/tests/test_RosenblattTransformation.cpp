@@ -58,9 +58,7 @@ Grid* hierarchize(std::uint32_t dim, std::uint32_t level, DataVector& alpha,
     gs.get(i)->getCoords(coords);
     alpha[i] = func(coords);
   }
-
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
-
   return grid.release();
 }
 
@@ -97,9 +95,9 @@ void testEqualityRosenblattInverseRosenblatt1D(
 
   DataVector inversionErrors(numDims);
   for (size_t isample = 0; isample < numSamples; isample++) {
-    // transform the x-space to u-space
+    // transform the u-space to x-space
     double x_var = opInvRos->doTransformation1D(&alpha, u_vars[isample]);
-    // transform them back to the x-space
+    // transform them back to the u-space
     double u_var_transformed = opRos->doTransformation1D(&alpha, x_var);
 
     // assert that x_vars and x_vars_transformed contain the same samples
@@ -122,9 +120,9 @@ void testEqualityRosenblattInverseRosenblattDD(
   auto opInvRos = sgpp::op_factory::createOperationInverseRosenblattTransformation(grid);
   auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(grid);
 
-  // transform the x-space to u-space
+  // transform the u-space to x-space
   opInvRos->doTransformation(&alpha, &u_vars, &x_vars);
-  // transform them back to the x-space
+  // transform them back to the u-space
   opRos->doTransformation(&alpha, &x_vars, &u_vars_transformed);
 
   DataVector u_sample(numDims);

@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
-    getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent
+    getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
+    isHierarchicalAncestor
 from itertools import product
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotGrid2d
 
@@ -22,6 +23,8 @@ class LocalFullGridCandidates(CandidateSet):
         self.newCandidates = []
 
         self.globalGrids = {}
+        self.verbose = True
+        self.plot = False
 
 
     def findIntersection(self, gpi, gpj):
@@ -47,7 +50,10 @@ class LocalFullGridCandidates(CandidateSet):
         gpintersection = HashGridIndex(self.numDims)
 
         # find all possible intersections of grid points
+        comparisonCosts = 0
         for j, gpj in gpsj.items():
+#             if not (isHierarchicalAncestor(grid, gpi, gpj) or isHierarchicalAncestor(grid, gpj, gpi)):
+            comparisonCosts += 1
             idim = 0
             ranges = []
             while idim < numDims:
@@ -79,16 +85,17 @@ class LocalFullGridCandidates(CandidateSet):
                 if not gs.has_key(gpintersection):
                     overlap[level, index] = ranges, gpi, gpj
 
+        return comparisonCosts
 
     def findIntersections(self, gpsi, gpsj, grid):
         overlappingGridPoints = {}
         costs = 0
         for i, gpi in gpsi.items():
             del gpsj[i]
-            costs += len(gpsj)
-            self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj,
-                                                                        overlappingGridPoints,
-                                                                        grid)
+#             costs += len(gpsj)
+            costs += self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj,
+                                                                                 overlappingGridPoints,
+                                                                                 grid)
         return overlappingGridPoints, costs
 
 
@@ -286,8 +293,8 @@ class LocalFullGridCandidates(CandidateSet):
                     if not gs.has_key(gpdd):
                         localGrid[(tuple(levels), tuple(indices))] = gpdd
 
-#                 if self.numDims == 2:
-#                     self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans)
+                if self.plot and self.numDims == 2:
+                    self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans)
 
                 assert len(localGrid) > 0
                 ans.update(localGrid)
@@ -299,20 +306,30 @@ class LocalFullGridCandidates(CandidateSet):
     def findCandidates(self, grid, alpha, addedGridPoints):
         if self.iteration == 0:
             self.A0 = self.findNodesWithNegativeCoefficients(grid, alpha)
-            gs = grid.getStorage()
-            print "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in xrange(gs.getSize()) if alpha[i] < 0.0]))
+
+            if self.verbose:
+                gs = grid.getStorage()
+                print "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in xrange(gs.getSize()) if alpha[i] < 0.0]))
+
             overlappingGridPoints, costsIntersectionSearch = self.findIntersections(self.A0, self.A0.copy(), grid)
             sortedOverlap, localFullGridLevels, predictedLocalCosts = self.estimateCosts(overlappingGridPoints, grid)
-            print "# intersections       : %i -> predicted costs: %i = %i :costs" % (len(overlappingGridPoints),
-                                                                                     len(self.A0) * (len(self.A0) - 1) / 2.,
-                                                                                     costsIntersectionSearch)
-            fullGridCosts = (2 ** self.maxLevel - 1) ** self.numDims
-            print "# compute local grids: predicted costs: %i <= %i :full grid costs" % (predictedLocalCosts,
-                                                                                         fullGridCosts)
-            print "-" * 60
+
+            if self.verbose:
+                print "# intersections       : %i -> predicted costs: %i = %i :costs" % (len(overlappingGridPoints),
+                                                                                         len(self.A0) * (len(self.A0) - 1) / 2.,
+                                                                                         costsIntersectionSearch)
+            if self.verbose:
+                fullGridCosts = (2 ** self.maxLevel - 1) ** self.numDims
+                print "# compute local grids: predicted costs: %i <= %i :full grid costs" % (predictedLocalCosts,
+                                                                                             fullGridCosts)
+                print "-" * 60
+
             self.newCandidates, realLocalCosts = self.computeCandidates(sortedOverlap, localFullGridLevels, grid, alpha)
-            print "# real costs for local grid: %i <= %i :predicted costs" % (realLocalCosts, predictedLocalCosts)
-            print "-" * 60
+
+            if self.verbose:
+                print "# real costs for local grid: %i <= %i :predicted costs" % (realLocalCosts, predictedLocalCosts)
+                print "-" * 60
+
             self.costs = realLocalCosts
             self.candidates = self.newCandidates
         else:

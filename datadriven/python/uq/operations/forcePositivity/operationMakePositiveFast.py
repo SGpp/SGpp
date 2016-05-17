@@ -181,10 +181,22 @@ class OperationMakePositiveFast(object):
         finalCandidates = self.sortCandidatesByLevelSum(negativeNonExistingCandidates)
 
         levelSums = sorted(finalCandidates.keys())
+        if self.verbose:
+            cntCandidates = 0
+            for levelSum in levelSums:
+                cntCandidates += len(finalCandidates[levelSum])
+                print "# candidates          : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[levelSum]),
+                                                                             len(candidates),
+                                                                             levelSum,
+                                                                             np.max(levelSum))
+            print "                        ----"
+            print "                        %i" % cntCandidates
+
         done = False
         i = 0
         addedGridPoints = []
         minLevelSum = -1
+        nextLevelCosts = 0
 
         while not done and i < len(levelSums):
             minLevelSum = levelSums[i]
@@ -202,6 +214,7 @@ class OperationMakePositiveFast(object):
                     break
 
             if self.addAllGridPointsOnNextLevel and len(addedGridPoints) > 0:
+                nextLevelCosts = len(finalCandidates[minLevelSum])
                 done = True
 
             i += 1
@@ -209,7 +222,7 @@ class OperationMakePositiveFast(object):
         # recompute the leaf property and return the result
         grid.getStorage().recalcLeafProperty()
 
-        return addedGridPoints, minLevelSum
+        return addedGridPoints, minLevelSum, nextLevelCosts
 
 
     def coarsening(self, grid, alpha):
@@ -279,6 +292,7 @@ class OperationMakePositiveFast(object):
         minLevelSum = self.maxLevel + self.numDims - 1
         maxLevelSum = self.numDims * self.maxLevel
         totalCosts = 0
+        currentCosts = 0
         while minLevelSum < maxLevelSum and self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
             candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
             totalCosts += costs
@@ -290,13 +304,14 @@ class OperationMakePositiveFast(object):
 
             addedGridPoints = {}
             if len(candidates) > 0:
-                addedGridPoints, minLevelSum = self.addFullGridPoints(newGrid, newAlpha, candidates)
+                addedGridPoints, minLevelSum, nextLevelCosts = self.addFullGridPoints(newGrid, newAlpha, candidates)
+                currentCosts += nextLevelCosts
                 assert oldGridSize + len(addedGridPoints) == newGs.getSize()
                 if self.verbose:
                     print "# new grid points     : %i -> %i -> %i" % (oldGridSize,
                                                                       len(addedGridPoints),
                                                                       newGrid.getSize())
-                    print "  current total costs : %i <= %i" % (totalCosts, numFullGridPoints)
+                    print "  current total costs : %i <= %i <= %i" % (currentCosts, totalCosts, numFullGridPoints)
                     print "-" * 80
 
                 newAlpha = np.append(newAlpha, np.zeros(len(addedGridPoints)))
@@ -324,8 +339,9 @@ class OperationMakePositiveFast(object):
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
         
-#         if len(neg) > 0:
-#             # check at which grid points the function is negative
+        if len(neg) > 0:
+            raise AttributeError("the sparse grid function is not positive")
+            # check at which grid points the function is negative
 #             for i, (yi, gp) in neg.items():
 #                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
 #                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
