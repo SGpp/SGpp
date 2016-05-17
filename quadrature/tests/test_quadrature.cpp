@@ -16,8 +16,8 @@ namespace unit_test {
 namespace ut_detail {
 
 std::string normalize_test_case_name(const_string name) {
-    return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1) :
-                               std::string(name.begin(), name.size()));
+  return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1)
+                           : std::string(name.begin(), name.size()));
 }
 
 }  // namespace ut_detail
@@ -112,12 +112,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
     case sgpp::quadrature::SamplerTypes::Halton:
       opQuad->useQuasiMonteCarloWithHaltonSequences();
       break;
-
-    case sgpp::quadrature::SamplerTypes::Sobol:
-      opQuad->useQuasiMonteCarloWithSobolSequences();
-
-    case sgpp::quadrature::SamplerTypes::ScrambledSobol:
-      opQuad->useQuasiMonteCarloWithScrambledSobolSequences();
 
     default:
       std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
