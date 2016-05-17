@@ -35,15 +35,19 @@ using sgpp::base::OperationNaiveEvalPartialDerivative;
 using sgpp::base::SBasis;
 using sgpp::base::SPolyBase;
 using sgpp::base::SPolyBoundaryBase;
+using sgpp::base::SPolyModifiedBase;
 
 double basisEval(SBasis& basis, GridIndex::level_type l, GridIndex::index_type i, double x) {
   SPolyBase* polyBasis = dynamic_cast<SPolyBase*>(&basis);
+  SPolyModifiedBase* polyModBasis = dynamic_cast<SPolyModifiedBase*>(&basis);
   SPolyBoundaryBase* polyBoundaryBasis = dynamic_cast<SPolyBoundaryBase*>(&basis);
 
   if (polyBasis != nullptr) {
     return polyBasis->evalSave(l, i, x);
   } else if (polyBoundaryBasis != nullptr) {
     return polyBoundaryBasis->evalSave(l, i, x);
+  } else if (polyModBasis != nullptr) {
+    return polyModBasis->evalSave(l, i, x);
   } else {
     return basis.eval(l, i, x);
   }
