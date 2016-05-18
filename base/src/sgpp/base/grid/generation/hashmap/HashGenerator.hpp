@@ -46,13 +46,15 @@ class HashGenerator {
    *
    * @param storage Hashmap that stores the grid points
    * @param level Grid level (non-negative value)
-   * @param t modifier for subgrid selection, t = 0 implies standard reg. grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  void regular(GridStorage& storage, level_t level, double t = 0) {
+  void regular(GridStorage& storage, level_t level, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
-    this->regular_iter(storage, level, t);
+    this->regular_iter(storage, level, T);
   }
 
   /**
@@ -63,8 +65,11 @@ class HashGenerator {
   * @param storage Hashmap that stores the grid points
   * @param level Grid level (non-negative value)
   * @param clique_size number of dimensions in a clique
+  * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+  *        For further information see Griebel and Knapek's paper
+  *        optimized tensor-product approximation spaces
   */
-  void cliques(GridStorage& storage, level_t level, size_t clique_size) {
+  void cliques(GridStorage& storage, level_t level, size_t clique_size, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
@@ -73,7 +78,7 @@ class HashGenerator {
       throw generation_exception("clique size should be not greater than grid dimension");
     }
 
-    this->cliques_iter(storage, level, clique_size);
+    this->cliques_iter(storage, level, clique_size, T);
   }
 
   /**
@@ -140,8 +145,11 @@ class HashGenerator {
    *
    * @param storage Hashmap, that stores the grid points
    * @param level maximum level of the sparse grid (non-negative value)
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  void regularWithPeriodicBoundaries(GridStorage& storage, level_t level) {
+  void regularWithPeriodicBoundaries(GridStorage& storage, level_t level, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
@@ -151,7 +159,7 @@ class HashGenerator {
     if (level == 0) {
       throw generation_exception("Grid generation with maximum level 0 is not supported");
     } else {
-      this->regular_periodic_boundary_iter(storage, level);
+      this->regular_periodic_boundary_iter(storage, level, T);
     }
   }
 
@@ -215,9 +223,11 @@ class HashGenerator {
    *
    * @param storage pointer to storage object into which the grid points should be stored
    * @param n level of regular sparse grid
-   * @param t modifier for subgrid selection, t = 0 implies standard reg. grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  void regular_iter(GridStorage& storage, level_t n, double t = 0) {
+  void regular_iter(GridStorage& storage, level_t n, double T = 0) {
     if (storage.getDimension() == 0) return;
 
     index_type idx_1d(storage.getDimension());
@@ -253,10 +263,12 @@ class HashGenerator {
 
         // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
+        level_t level_max = idx.getLevelMax();
 
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum - (t * level_sum) <=
-                                static_cast<double>(n + storage.getDimension() - 1) - (t * n);
+        // as mentioned before T adjusts the granularity of the grid
+        for (level_t l = 1; l + level_sum - (T * level_max) <=
+                                static_cast<double>(n + storage.getDimension() - 1) - (T * n);
              l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
@@ -286,7 +298,8 @@ class HashGenerator {
     }
   }
 
-  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size) {
+  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size,
+                    double T = 0) {
     if (storage.getDimension() == 0) return;
 
     index_type idx_1d(storage.getDimension());
@@ -341,8 +354,11 @@ class HashGenerator {
           continue;
         }
 
+        level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum <= n + storage.getDimension() - 1; l++) {
+        // as mentioned before T adjusts the granularity of the grid
+        for (level_t l = 1; l + level_sum - (T * level_max) <=
+             static_cast<double>(n + storage.getDimension() - 1) - (T * n); l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
             if (first == false) {
@@ -406,11 +422,15 @@ class HashGenerator {
    * @param storage       pointer to storage object into which
    *                      the grid points should be stored
    * @param n             level of regular sparse grid
-         * @param boundaryLevel 1 + how much levels the boundary is coarser than
-         *                      the main axes, 1 means same level,
-         *                      2 means one level coarser, etc.; must be >= 1
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 1 means same level,
+   *                      2 means one level coarser, etc.; must be >= 1
+   * @param T             modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *                      For further information see Griebel and Knapek's paper
+   *                      optimized tensor-product approximation spaces
    */
-  void regular_boundary_truncated_iter(GridStorage& storage, level_t n, level_t boundaryLevel = 1) {
+  void regular_boundary_truncated_iter(GridStorage& storage, level_t n, level_t boundaryLevel = 1,
+                                       double T = 0) {
     const size_t dim = storage.getDimension();
 
     if (dim == 0) {
@@ -489,7 +509,7 @@ class HashGenerator {
           firstPoint = false;
         }
 
-        level_t upperBound;
+        double upperBound;
 
         // choose upper bound of level sum according whether
         // the new basis function is an interior or a boundary function
@@ -502,14 +522,16 @@ class HashGenerator {
             continue;
           } else {
             // upper bound for boundary basis functions
-            upperBound = n + curDim - numberOfZeroLevels - boundaryLevel;
+            upperBound = static_cast<double>(n + curDim - numberOfZeroLevels - boundaryLevel);
           }
         } else {
           // upper bound for interior basis functions
-          upperBound = n + curDim - 1;
+          upperBound = static_cast<double>(n + curDim - 1);
         }
+        upperBound -= T * n;
+        level_t levelMax = idx.getLevelMax();
 
-        for (level_t l = 1; l + levelSum <= upperBound; l++) {
+        for (level_t l = 1; l + levelSum - (T * levelMax) <= upperBound; l++) {
           // generate inner basis functions
           for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
             if ((l + levelSum) == n + dim - 1) {
@@ -536,8 +558,11 @@ class HashGenerator {
    *
    * @param storage Pointer to storage object into which the grid points should be stored
    * @param n Level of regular sparse grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *           For further information see Griebel and Knapek's paper
+   *           optimized tensor-product approximation spaces
    */
-  void regular_periodic_boundary_iter(GridStorage& storage, level_t n) {
+  void regular_periodic_boundary_iter(GridStorage& storage, level_t n, double T = 0) {
     if (storage.getDimension() == 0) return;
 
     index_type idx_1d(storage.getDimension());
@@ -584,8 +609,11 @@ class HashGenerator {
           if (idx.getLevel(sd) == 0) level_sum += 1;
         }
 
+        level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum <= n + storage.getDimension() - 1; l++) {
+        // as mentioned before T adjusts the granularity of the grid
+        for (level_t l = 1; l + level_sum - (T * level_max) <=
+             static_cast<double>(n + storage.getDimension() - 1) - (T * n); l++) {
           if (l == 1) {
             idx.push(d, 0, 0, false);
             storage.insert(idx);

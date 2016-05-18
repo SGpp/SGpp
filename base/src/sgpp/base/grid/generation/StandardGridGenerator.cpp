@@ -26,14 +26,19 @@ void StandardGridGenerator::regular(size_t level) {
   gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
-void StandardGridGenerator::regular(size_t level, double t) {
+void StandardGridGenerator::regular(size_t level, double T) {
   HashGenerator gen;
-  gen.regular(this->storage, static_cast<HashGenerator::level_t>(level), t);
+  gen.regular(this->storage, static_cast<HashGenerator::level_t>(level), T);
 }
 
 void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
+}
+
+void StandardGridGenerator::cliques(size_t level, size_t clique_size, double T) {
+  HashGenerator gen;
+  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size, T);
 }
 
 void StandardGridGenerator::full(size_t level) {
