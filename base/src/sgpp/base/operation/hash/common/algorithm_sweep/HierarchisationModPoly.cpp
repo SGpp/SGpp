@@ -12,15 +12,12 @@
 #include <cmath>
 
 namespace sgpp {
-
 namespace base {
 
-HierarchisationModPoly::HierarchisationModPoly(GridStorage& storage,
-    SPolyModifiedBase* base) : storage(storage), base(base) {
-}
+HierarchisationModPoly::HierarchisationModPoly(GridStorage& storage, SPolyModifiedBase* base)
+    : storage(storage), base(base) {}
 
-HierarchisationModPoly::~HierarchisationModPoly() {
-}
+HierarchisationModPoly::~HierarchisationModPoly() {}
 
 void HierarchisationModPoly::operator()(DataVector& source, DataVector& result,
                                         grid_iterator& index, size_t dim) {
@@ -29,9 +26,8 @@ void HierarchisationModPoly::operator()(DataVector& source, DataVector& result,
   rec(source, result, index, dim, coeffs);
 }
 
-void HierarchisationModPoly::rec(DataVector& source, DataVector& result,
-                                 grid_iterator& index, size_t dim,
-                                 DataVector& coeffs) {
+void HierarchisationModPoly::rec(DataVector& source, DataVector& result, grid_iterator& index,
+                                 size_t dim, DataVector& coeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -42,13 +38,13 @@ void HierarchisationModPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // hierarchisation
-  double x = static_cast<double>(cur_ind) /
-              static_cast<double>(1 << cur_lev);
-  result[seq] = source[seq]
-                - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
+  double x = static_cast<double>(cur_ind) / static_cast<double>(1 << cur_lev);
+  // v_i * 1 + sum_{j < i} v_j * \phi(x_i)
+  result[seq] = source[seq] - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
+    // collect the hierarchical surpluses in the coefficient vector
     coeffs[cur_lev] = result[seq];
 
     // descend left

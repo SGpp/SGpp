@@ -155,4 +155,8 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
                                     dim, numSamples, blockSize, analyticResult, 1e-3, seed);
   testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Halton, dim,
                                     numSamples, blockSize, analyticResult, 1e-3, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Sobol, dim,
+                                    numSamples, blockSize, analyticResult, 1e-3, seed);
+  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::ScrambledSobol,
+                                    dim, numSamples, blockSize, analyticResult, 1e-3, seed);
 }
