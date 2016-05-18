@@ -11,12 +11,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
-void OperationHierarchisationModPoly::doHierarchisation(
-  DataVector& node_values) {
+void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values) {
   HierarchisationModPoly func(storage, &base);
   sweep<HierarchisationModPoly> s(func, storage);
 
@@ -32,7 +30,8 @@ void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha) {
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.getDimension(); i++) {
-    s.sweep1D(alpha, alpha, i);
+    DataVector source(alpha);
+    s.sweep1D(source, alpha, i);
   }
 }
 

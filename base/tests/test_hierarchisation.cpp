@@ -25,9 +25,8 @@ using sgpp::base::Stretching;
 using sgpp::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
-                                          double (*func)(DataVector&),
-                                          double tolerance = 0.0, bool naiveOp = false,
-                                          bool doStretch = false) {
+                                          double (*func)(DataVector&), double tolerance = 0.0,
+                                          bool naiveOp = false, bool doStretch = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
   size_t dim = gridStore.getDimension();
@@ -206,6 +205,18 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, degree[i]);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationModPoly) {
+  int level = 5;
+  int degree[4] = {2, 3, 5, 8};
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int i = 0; i < 4; i++) {
+      std::unique_ptr<Grid> grid = Grid::createModPolyGrid(dim, degree[i]);
       testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
     }
   }
