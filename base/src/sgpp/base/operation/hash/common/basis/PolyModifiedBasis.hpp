@@ -13,6 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 #include <cmath>
 #include <vector>
 
