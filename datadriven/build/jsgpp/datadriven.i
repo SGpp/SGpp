@@ -29,7 +29,8 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+// TODO(valentjn): can only include if issue #7 is fixed
+//%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #endif
 
 //%apply std::string *INPUT { std::string& istr };
