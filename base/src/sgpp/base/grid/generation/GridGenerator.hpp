@@ -12,6 +12,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 
 namespace sgpp {
 namespace base {
@@ -45,9 +46,14 @@ class GridGenerator {
    * If the used grid doesn't support the parameter t, t = 0 is used instead.
    *
    * @param level Grid level
-   * @param t modifier for subgrid selection, t = 0 implies standard reg. grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  virtual void regular(size_t level, double t) { regular(level); }
+  virtual void regular(size_t level, double T) {
+    throw sgpp::base::not_implemented_exception(
+          "Parameter T not implemented for this grid type!");
+  }
 
   /**
    * Creates a sparse grid with fully connected cliques
@@ -56,6 +62,20 @@ class GridGenerator {
    * @param clique_size clique size
    */
   virtual void cliques(size_t level, size_t clique_size) = 0;
+
+  /**
+   * Creates a sparse grid with fully connected cliques
+   *
+   * @param level Grid level
+   * @param clique_size clique size
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
+   */
+  virtual void cliques(size_t level, size_t clique_size, double T) {
+    throw sgpp::base::not_implemented_exception(
+          "Parameter T not implemented for this grid type!");
+  }
 
   /**
    * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty

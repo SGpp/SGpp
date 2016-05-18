@@ -32,6 +32,12 @@ void PeriodicGridGenerator::regular(size_t level) {
                                     static_cast<HashGenerator::level_t>(level));
 }
 
+void PeriodicGridGenerator::regular(size_t level, double T = 0) {
+  HashGenerator gen;
+  gen.regularWithPeriodicBoundaries(storage,
+                                    static_cast<HashGenerator::level_t>(level), T);
+}
+
 void PeriodicGridGenerator::full(size_t level) {
   throw generation_exception(
     "PeriodicGridGenerator::full is not implemented");
@@ -52,6 +58,12 @@ void PeriodicGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level),
               clique_size);
+}
+
+void PeriodicGridGenerator::cliques(size_t level, size_t clique_size, double T = 0) {
+  HashGenerator gen;
+  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level),
+              clique_size, T);
 }
 
 void PeriodicGridGenerator::coarsen(CoarseningFunctor& func,
