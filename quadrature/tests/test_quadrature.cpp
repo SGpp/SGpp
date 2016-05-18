@@ -113,17 +113,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
       opQuad->useQuasiMonteCarloWithHaltonSequences();
       break;
 
-<<<<<<< HEAD
-    case sgpp::quadrature::SamplerTypes::Sobol:
-      opQuad->useQuasiMonteCarloWithSobolSequences();
-      break;
-
-    case sgpp::quadrature::SamplerTypes::ScrambledSobol:
-      opQuad->useQuasiMonteCarloWithScrambledSobolSequences();
-      break;
-
-=======
->>>>>>> origin/master
     default:
       std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
                 << std::endl;
@@ -166,8 +155,4 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
                                     dim, numSamples, blockSize, analyticResult, 1e-3, seed);
   testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Halton, dim,
                                     numSamples, blockSize, analyticResult, 1e-3, seed);
-  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::Sobol, dim,
-                                    numSamples, blockSize, analyticResult, 1e-3, seed);
-  testOperationQuadratureMCAdvanced(*grid, alpha, sgpp::quadrature::SamplerTypes::ScrambledSobol,
-                                    dim, numSamples, blockSize, analyticResult, 1e-3, seed);
 }
