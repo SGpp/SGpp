@@ -42,7 +42,7 @@ class OperationDiagonal : public OperationMatrix {
     if (size != multiplicators.getSize()) {
       calculateMultiplicators(alpha);
     }
-    result = DataVector(size);
+    result.resize(size);
 #pragma omp parallel for
     for (size_t i = 0; i < size; ++i) {
       result[i] = multiplicators[i] * alpha[i];

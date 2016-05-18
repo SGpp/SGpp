@@ -10,6 +10,9 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationDiagonal.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <array>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -17,35 +20,47 @@ using sgpp::base::OperationDiagonal;
 
 BOOST_AUTO_TEST_SUITE(TestOperationDiagonal)
 
+BOOST_AUTO_TEST_CASE(testOperationDiagonalIdentity) {
+  size_t dim = 3;
+  auto grid = sgpp::base::Grid::createLinearGrid(dim);
+  auto& gen = grid->getGenerator();
+  auto& gridStorage = grid->getStorage();
+  gen.regular(2);
+
+  double multFactor = 1.0;
+  // OperationDiagonal with multFactor of 1.0 should be identical to an identity matrix!
+  auto opDiag = sgpp::op_factory::createOperationDiagonal(*grid, multFactor);
+
+  const auto size = gridStorage.getSize();
+  auto testVec = sgpp::base::DataVector(size, 42.0);
+  auto resultVec = sgpp::base::DataVector(size);
+
+  opDiag->mult(testVec, resultVec);
+
+  for (size_t i = 0; i < size; ++i) {
+    BOOST_CHECK_CLOSE(testVec[i], resultVec[i], 1e-7);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testOperationDiagonal) {
-  /*
-  double testArr[] = {0.0, 1.0, 2.0};
+  size_t dim = 2;
+  auto grid = sgpp::base::Grid::createLinearGrid(dim);
+  auto& gen = grid->getGenerator();
+  auto& gridStorage = grid->getStorage();
+  gen.regular(2);
 
-  auto identVec = DataVector(3, 1.0);
-  auto testVec = DataVector(testArr, 3);
-  auto zeroVec = DataVector(3, 0.0);
+  auto opDiag = sgpp::op_factory::createOperationDiagonal(*grid);
 
-  auto identOp = OperationDiagonal(identVec);
-  auto testOp = OperationDiagonal(testVec);
-  auto zeroOp = OperationDiagonal(zeroVec);
+  const auto size = gridStorage.getSize();
+  auto testVec = sgpp::base::DataVector(size, 1.0);
+  auto resultVec = sgpp::base::DataVector(size);
+  const auto shouldVec = std::array<double,5>{1, 0.25, 0.25, 0.25, 0.25};
 
-  auto is1 = DataVector(3);
-  zeroOp.mult(testVec, is1);
-  auto should1 = 0.0;
-  BOOST_CHECK_CLOSE(is1.l2Norm(), should1, 1e-7);
+  opDiag->mult(testVec, resultVec);
 
-  auto is2 = DataVector(3);
-  identOp.mult(testVec, is2);
-  auto should2 = testVec;
-  BOOST_CHECK_CLOSE(is2.l2Norm(), should2.l2Norm(), 1e-7);
-
-  auto is3 = DataVector(3);
-  testOp.mult(testVec, is3);
-  double should3Arr[] = {0.0, 1.0, 4.0};
-  auto should3 = DataVector(should3Arr, 3);
-  BOOST_CHECK_CLOSE(is3.l2Norm(), should3.l2Norm(), 1e-7);
-  */
-  BOOST_CHECK_CLOSE(9000.0, 42.0, 0.0);  // TODO(krenzls) write test!
+  for (size_t i = 0; i < size; ++i) {
+    BOOST_CHECK_CLOSE(resultVec[i], shouldVec[i], 1e-7);
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
