@@ -30,6 +30,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   bool use_level_cache;
   bool use_less;
   bool do_not_use_ternary;
+  bool use_implicit_zero;
 
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
@@ -47,6 +48,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     return output.str();
   }
 
+  /// Generate the opencl code to save the fixed gridpoint of a workitem to the local memory
   std::string save_from_global_to_private(size_t dimensions) {
     std::stringstream output;
     for (auto block = 0; block < dataBlockSize; block++) {
@@ -63,6 +65,167 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                << dimensions << " * 2 + 2 * " << i << " + 1];" << std::endl;
       }
     }
+    return output.str();
+  }
+
+  /// Generates the part of the opencl source code that calculates one entry of the density matrix
+  std::string calculate_matrix_entry(size_t block, size_t dimensions) {
+    std::stringstream output;
+    // Use alias names for levels and indices
+    std::string level_func1 = std::string("point_level_block") + std::to_string(block) +
+        std::string("[dim]");
+    std::string level_func2 = std::string("starting_points[i* ") + std::to_string(dimensions) +
+        std::string("*2+2*dim+1]");
+    std::string index_func1 = std::string("point_indices_block") + std::to_string(block) +
+        std::string("[dim]");
+    std::string index_func2 = std::string("starting_points[i* ") + std::to_string(dimensions) +
+        std::string("*2+2*dim]");
+    // In case we use local memory we need to adjust the alias names
+    if (useLocalMemory) {
+      level_func2 = std::string("level_local[i* ") + std::to_string(dimensions) +
+          std::string("+dim]");
+      index_func2 = std::string("indices_local[i* ") + std::to_string(dimensions) +
+          std::string("+dim]");
+    }
+    output << " zellenintegral = 1.0;" << std::endl;
+    // In case we want replace the ternary operator we need to declare the counter variable
+    if ((use_less && do_not_use_ternary) || (!use_implicit_zero && do_not_use_ternary))
+      output << this->indent[2] << "int same_levels = " << dimensions << ";" << std::endl;
+    // Loop over all dimensions
+    output << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
+           << ";dim++) {" << std::endl;
+    // In case we do not want to use that the entry is implicitly zero if we use the wrong order
+    // we need to find the smallest level
+    if (!use_implicit_zero) {
+      // Initialise with one gridpoint
+      output << this->indent[3] << "int index = " << index_func1 << ";" << std::endl;
+      output << this->indent[3] << "int level = " << level_func1 << ";" << std::endl;
+      output << this->indent[3] << "int index2 = " << index_func2 << ";" << std::endl;
+      output << this->indent[3] << "int level2 = " << level_func2 << ";" << std::endl;
+      // Check whether we need to use the other gridpoint as gridpoint 1
+      output << this->indent[3] << "if (level > level2) {" << std::endl;
+      output << this->indent[4] << "index = " << index_func2 << ";" << std::endl;
+      output << this->indent[4] << "level = " << level_func2 << ";" << std::endl;
+      output << this->indent[4] << "index2 = " << index_func1 << ";" << std::endl;
+      output << this->indent[4] << "level2 = " << level_func1 << ";" << std::endl;
+      output << this->indent[3] << "}" << std::endl;
+      // Replace alias names
+      level_func1 = std::string("level");
+      level_func2 = std::string("level2");
+      index_func1 = std::string("index");
+      index_func2 = std::string("index2");
+    }
+    // Loop to evaluate the base function on the left, right or mid points of the other basefunction
+    for (unsigned int i = 0; i < 1 + static_cast<int>(use_implicit_zero); i++) {
+      if (use_level_cache) {
+        // Reuse h values from host
+        output << this->indent[3] << "h = hs[" << level_func2 << "];" << std::endl;
+      } else {
+        // Calculate h
+        output << this->indent[3] << "h = 1.0 / (1 << " << level_func2 << ");" << std::endl;
+      }
+      // Calculate u
+      output << this->indent[3] << "u = (1 << " << level_func1 << ");" << std::endl;
+      // Check whether we will just need to calculate umid, or umid uright and uleft
+      if (use_less) {
+        // Calculate just umid
+        output << this->indent[3] << "umid = u * h * (" << index_func2
+               << ") - " << index_func1 << ";" << std::endl;
+        output << this->indent[3] << "umid = fabs(umid);" << std::endl;
+        output << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+        output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        // Add integral to result sum
+        if (i == 0)
+          output << this->indent[3] << "sum = h*(umid);" << std::endl;
+        else
+          output << this->indent[3] << "sum += h*(umid);" << std::endl;
+      } else {
+        // Calculate umid, uright and uleft
+        output << this->indent[3] << "umid = u * h * (" << index_func2
+               << ") - " << index_func1 << ";" << std::endl;
+        output << this->indent[3] << "umid = fabs(umid);" << std::endl;
+        output << this->indent[3] << "umid = 1.0-umid;" << std::endl;
+        output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        output << this->indent[3] << "uright = u*h*(" << index_func2 << " + 1) - "
+               << index_func1 << ";" << std::endl;
+        output << this->indent[3] << "uright = fabs(uright);" << std::endl;
+        output << this->indent[3] << "uright = 1.0-uright;" << std::endl;
+        output << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
+        output << this->indent[3] << "uleft = u*h*(" << index_func2 << " - 1) - "
+               << index_func1 << ";" << std::endl;
+        output << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
+        output << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
+        output << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
+        // Add integral to result sum
+        if (i == 0)
+          output << this->indent[3] << "sum = h/3.0*(umid + uleft + uright);" << std::endl;
+        else
+          output << this->indent[3] << "sum += h/3.0*(umid + uleft + uright);" << std::endl;
+      }
+      // Swap aliases
+      level_func2 = std::string("point_level_block") + std::to_string(block) +
+          std::string("[dim]");
+      level_func1 = std::string("starting_points[i* ") + std::to_string(dimensions) +
+          std::string("*2+2*dim+1]");
+      index_func2 = std::string("point_indices_block") + std::to_string(block) +
+          std::string("[dim]");
+      index_func1 = std::string("starting_points[i* ") + std::to_string(dimensions) +
+          std::string("*2+2*dim]");
+      if (useLocalMemory) {
+        level_func1 = std::string("level_local[i* ") + std::to_string(dimensions) +
+            std::string("+dim]");
+        index_func1 = std::string("indices_local[i* ") + std::to_string(dimensions) +
+            std::string("+dim]");
+      }
+    }
+    // Check whether we need to do something about base functions with the same level
+    if (use_less) {
+      if (!do_not_use_ternary) {
+        if (use_implicit_zero) {
+          // Use ternary operator to multiply with 1/3
+          output << this->indent[3] << "sum *= " << level_func2 << " == " << level_func1
+                 << " ? 1.0/3.0 : 1.0;" << std::endl;
+        } else {
+          // Use ternary operator to multiply with 2/3
+          output << this->indent[3] << "sum *= " << level_func2 << " == " << level_func1
+                 << " ? 2.0/3.0 : 1.0;" << std::endl;
+        }
+      } else {
+        // decrement counter of same levels by one if the two levels do not match
+        output << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*"
+               << dimensions << "+dim] - point_level_block" << block
+               << "[dim])),(int)(1));" << std::endl;
+      }
+    } else if (!use_implicit_zero) {
+      if (!do_not_use_ternary) {
+      output << this->indent[3] << "sum *= " << level_func2 << " == " << level_func1
+             << " ? 2.0 : 1.0;" << std::endl;
+      } else {
+        // decrement counter of same levels by one if the two levels do not match
+        output << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*"
+               << dimensions << "+dim] - point_level_block" << block
+               << "[dim])),(int)(1));" << std::endl;
+      }
+    }
+    // Update cell integral
+    output << this->indent[3] << "zellenintegral*=sum;" << std::endl;
+    output << this->indent[2] << "}" << std::endl;
+    // Update cell integral with missing factors
+    if (do_not_use_ternary) {
+      if (use_less) {
+        output << this->indent[2] << "zellenintegral *= divisors[same_levels];"
+               << std::endl;
+        if (!use_implicit_zero) {
+          output << this->indent[2] << "zellenintegral *= (1 << same_levels);"
+                 << std::endl;
+        }
+      } else if (!use_implicit_zero) {
+        output << this->indent[2] << "zellenintegral *= (1 << same_levels);"
+               << std::endl;
+      }
+    }
+    output << this->indent[2] << "gesamtint_block" << block
+           <<" += zellenintegral*alpha_local[i];" << std::endl;
     return output.str();
   }
 
@@ -84,8 +247,11 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       use_less = kernelConfiguration["USE_LESS_OPERATIONS"].getBool();
     if (kernelConfiguration.contains("DO_NOT_USE_TERNARY"))
       do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
+    if (kernelConfiguration.contains("USE_IMPLICIT"))
+      use_implicit_zero = kernelConfiguration["USE_IMPLICIT"].getBool();
   }
 
+  /// Generates the opencl source code for the density matrix-vector multiplication
   std::string generateSource(size_t dimensions, size_t problemsize) {
     std::stringstream sourceStream;
 
@@ -129,6 +295,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     for (size_t block = 0; block < dataBlockSize; block++)
       sourceStream << this->indent[0] << this->floatType() << " gesamtint_block" << block
                    <<" = 0.0;" << std::endl;
+    // Store points in local memory
     if (useLocalMemory) {
       sourceStream << this->indent[0] << "__local " << "int indices_local["
                    << localWorkgroupSize * dimensions << "];" << std::endl
@@ -154,187 +321,14 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
                    << "; i++) {" << std::endl
                    << this->indent[2] << "__private " << this->floatType();
-      // Generate body for each element in the block
-      for (size_t block = 0; block < dataBlockSize; block++) {
-        sourceStream << " zellenintegral = 1.0;" << std::endl;
-        if (use_less && do_not_use_ternary)
-          sourceStream << this->indent[2] << "int same_levels = " << dimensions << ";" << std::endl;
-        sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
-                     << ";dim++) {" << std::endl;
-        if (use_less) {
-          if (use_level_cache) {
-            sourceStream << this->indent[3] << "h = hs[level_local[i*" << dimensions
-                         << "+dim]];" << std::endl;
-          } else {
-            sourceStream << this->indent[3] << "h = 1.0 / (1 << level_local[i*" << dimensions
-                         << "+dim]);" << std::endl;
-          }
-          sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
-                       << "[dim]);" << std::endl
-                       << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
-                       << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
-          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "sum = h*(umid);" << std::endl;
-          if (use_level_cache) {
-            sourceStream << this->indent[3] << "h = hs[point_level_block" << block
-                         << "[dim]];" << std::endl;
-          } else {
-            sourceStream << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
-                         << "[dim]);" << std::endl;
-          }
-          sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
-                       << std::endl
-                       << this->indent[3] << "umid = u*h*(point_indices_block" << block
-                       << "[dim])-indices_local[i*" << dimensions << " + dim];"
-                       << std::endl;
-          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "sum += h*(umid);" << std::endl;
-          if (!do_not_use_ternary) {
-            sourceStream << this->indent[3] << "sum *= level_local[i* " << dimensions
-                         << "+dim] == point_level_block" << block << "[dim] ? 1.0/3.0 : 1.0;"
-                         << std::endl;
-          } else {
-            sourceStream << this->indent[3] << "same_levels -= min((int)(abs(level_local[i*"
-                         << dimensions << "+dim] - point_level_block" << block
-                         << "[dim])),(int)(1));" << std::endl;
-          }
-          sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
-        } else {
-          if (use_level_cache) {
-            sourceStream << this->indent[3] << "h = hs[level_local[i*" << dimensions
-                         << "+dim]];" << std::endl;
-          } else {
-            sourceStream << this->indent[3] << "h = 1.0 / (1 << level_local[i*" << dimensions
-                         << "+dim]);" << std::endl;
-          }
-          sourceStream << this->indent[3] << "u = (1 << point_level_block" << block
-                       << "[dim]);" << std::endl
-                       << this->indent[3] << "umid = u*h*(indices_local[i*" << dimensions
-                       << " + dim])-point_indices_block" << block << "[dim];" << std::endl;
-          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "uright = u*h*(indices_local[i*" << dimensions
-                       << " + dim] + 1)-point_indices_block" << block << "[dim];" << std::endl;
-          sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
-          sourceStream << this->indent[3] << "uright = 1.0-uright;" << std::endl;
-          sourceStream << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "uleft = u*h*(indices_local[i*" << dimensions
-                       << " + dim] - 1)-point_indices_block" << block << "[dim];" << std::endl;
-          sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
-          sourceStream << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
-          sourceStream << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "sum = h/3.0*(umid + uleft + uright);" << std::endl;
-          if (use_level_cache) {
-            sourceStream << this->indent[3] << "h = hs[point_level_block" << block
-                         << "[dim]];" << std::endl;
-          } else {
-            sourceStream << this->indent[3] << "h = 1.0 / (1 << point_level_block" << block
-                         << "[dim]);" << std::endl;
-          }
-          sourceStream << this->indent[3] << "u = (1 << level_local[i*" << dimensions << "+dim]);"
-                       << std::endl;
-          sourceStream << this->indent[3] << "umid = u*h*(point_indices_block" << block
-                       << "[dim])-indices_local[i*" << dimensions << " + dim];"
-                       << std::endl;
-          sourceStream << this->indent[3] << "umid = fabs(umid);" << std::endl;
-          sourceStream << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-          sourceStream << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "uright = u*h*(point_indices_block" << block
-                       << "[dim] + 1)-indices_local[i*" << dimensions << " + dim];"
-                       << std::endl;
-          sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
-          sourceStream << this->indent[3] << "uright = 1.0-uright;" << std::endl;
-          sourceStream << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "uleft = u*h*(point_indices_block" << block
-                       << "[dim] - 1)-indices_local[i*" << dimensions << " + dim];"
-                       << std::endl;
-          sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
-          sourceStream << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
-          sourceStream << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
-          sourceStream << this->indent[3] << "sum += h/3.0*(umid + uleft + uright);" << std::endl;
-          sourceStream << this->indent[3] << "zellenintegral*=sum;" << std::endl;
-        }  // end use more operations
-        sourceStream << this->indent[2] << "}" << std::endl;
-        if (do_not_use_ternary) {
-          sourceStream << this->indent[2] << "zellenintegral *= divisors[same_levels];"
-                       << std::endl;
-        }
-        sourceStream << this->indent[2] << "gesamtint_block" << block
-                     <<" += zellenintegral*alpha_local[i];" << std::endl;
-      }  // end blocking loop
-      sourceStream << this->indent[1] << "}" << std::endl;
-      sourceStream << this->indent[0] << "}" << std::endl;
-    } else {
-      sourceStream << this->indent[0] << "for(__private int i = 0; i < " << problemsize
-                   << "; i++) {" << std::endl;
-
-      for (size_t block = 0; block < dataBlockSize; block++) {
-        sourceStream << this->indent[1] << this->floatType() << " zellenintegral = 1.0;"
-                     << std::endl;
-        sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
-                     << ";dim++) {" << std::endl;
-        sourceStream << this->indent[2] << "int index = point_indices_block" << block << "[dim];"
-                     << std::endl;
-        sourceStream << this->indent[2] << "int level = point_level_block" << block << "[dim];"
-                     << std::endl;
-        sourceStream << this->indent[2] << "int index2 = starting_points[i* " << dimensions
-                     << "*2+2*dim];" << std::endl;
-        sourceStream << this->indent[2] << "int level2 = starting_points[i* " << dimensions
-                     << "*2+2*dim+1];" << std::endl;
-        sourceStream << this->indent[2] << "if(starting_points[gridindex* " << dimensions
-                     << "*2+2*dim+1]>starting_points[i* " << dimensions
-                     << "*2+2*dim+1]) {" << std::endl;
-        sourceStream << this->indent[3] << "index = starting_points[i* "
-                     << dimensions << "*2+2*dim];" << std::endl;
-        sourceStream << this->indent[3] << "level = starting_points[i* "
-                     << dimensions << "*2+2*dim+1];" << std::endl;
-        sourceStream << this->indent[3] << "index2 = point_indices_block" << block << "[dim];"
-                     << std::endl;
-        sourceStream << this->indent[3] << "level2 = point_level_block" << block << "[dim];"
-                     << std::endl;
-        sourceStream << this->indent[2] << "}" << std::endl;
-        sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
-        sourceStream << this->indent[2] << this->floatType() << " h = 1.0 / teiler;" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " grenze1 = h*(index2-1);" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " grenze2 = h*(index2+1);" << std::endl;
-        sourceStream << this->indent[2] << "int u= (1 << level);" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " uright = u*grenze2-index;" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " uleft = u*grenze1-index;" << std::endl;
-        sourceStream << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
-        sourceStream << this->indent[2] << "uleft = 1-uleft;" << std::endl;
-        sourceStream << this->indent[2] << "if(uleft<0)" << std::endl;
-        sourceStream << this->indent[3] << "uleft = 0;" << std::endl;
-        sourceStream << this->indent[3] << "uright = fabs(uright);" << std::endl;
-        sourceStream << this->indent[2] << "uright = 1-uright;" << std::endl;
-        sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
-        sourceStream << this->indent[3] << "uright = 0;" << std::endl;
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " integral = h/2.0*(uleft+uright);" << std::endl;
-        sourceStream << this->indent[2] << "if(starting_points[i* " << dimensions
-                     << "*2+2*dim+1] == starting_points[gridindex* "
-                     << dimensions << "*2+2*dim+1]) {" << std::endl;
-        sourceStream <<  this->indent[3] <<"integral = 2.0/3.0*h;" << std::endl;
-        sourceStream << this->indent[3] << "if(starting_points[i* " << dimensions
-                     << "*2+2*dim] != starting_points[gridindex* "
-                     << dimensions << "*2+2*dim])" << std::endl;
-        sourceStream << this->indent[4] << "integral = 0.0;" << std::endl;
-        sourceStream << this->indent[2] << "}" << std::endl;
-        sourceStream << this->indent[3] << "zellenintegral *= integral;" << std::endl;
-        sourceStream << this->indent[1] << "}" << std::endl;
-        sourceStream << this->indent[1] << "gesamtint_block" << block
-                     <<" += zellenintegral*alpha[i];" << std::endl;
-      }
-      sourceStream << this->indent[0] << "}" << std::endl;
     }
+
+    // Generate body for each element in the block
+    for (size_t block = 0; block < dataBlockSize; block++) {
+      sourceStream << calculate_matrix_entry(block, dimensions) << std::endl;
+    }
+    sourceStream << this->indent[1] << "}" << std::endl;
+    sourceStream << this->indent[0] << "}" << std::endl;
     for (auto block = 0; block < dataBlockSize; ++block) {
       sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
                    <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
