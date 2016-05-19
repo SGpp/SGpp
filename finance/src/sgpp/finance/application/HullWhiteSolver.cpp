@@ -56,9 +56,9 @@ HullWhiteSolver::~HullWhiteSolver() {
   }
 }
 
-void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
+void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
@@ -85,10 +85,10 @@ void HullWhiteSolver::setStochasticData(double theta, double sigma, double a) {
 void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                          size_t maxCGIterations, double epsilonCG,
                                          base::DataVector& alpha, bool verbose,
-                                         bool generateAnimation, size_t numEvalsAnimation) {
+                                         bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ExEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::BiCGStab* myCG = new solver::BiCGStab(maxCGIterations, epsilonCG);
     HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(
         *this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul",
@@ -137,10 +137,10 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                          size_t maxCGIterations, double epsilonCG,
                                          base::DataVector& alpha, bool verbose,
-                                         bool generateAnimation, size_t numEvalsAnimation) {
+                                         bool generateAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-                                               generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, myScreen);
     solver::BiCGStab* myCG = new solver::BiCGStab(maxCGIterations, epsilonCG);
     HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(
         *this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul",

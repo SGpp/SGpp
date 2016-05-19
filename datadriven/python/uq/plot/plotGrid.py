@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 
 def plotGrid(grid, alpha, admissibleSet, params, refined=None):
     gs = grid.getStorage()
-    x = [0.0] * gs.size()
-    y = [0.0] * gs.size()
+    x = [0.0] * gs.getSize()
+    y = [0.0] * gs.getSize()
 
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         x[i] = gs.get(i).getCoord(0)
         y[i] = gs.get(i).getCoord(1)
 
@@ -49,7 +49,7 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
     plt.plot(x, y, linestyle=' ', marker='o', color='g', markersize=20)     # grid
     # plt.plot(xa, ya, linestyle=' ', marker='^', color = 'y', markersize=20) # admissible set
     plt.plot(xr, yr, linestyle=' ', marker='v', color = 'r', markersize=20) # refined points
-    plt.title("size = %i" % gs.size())
+    plt.title("size = %i" % gs.getSize())
     # plt.xlim(0, 1)
     # plt.ylim(0, 1)
 

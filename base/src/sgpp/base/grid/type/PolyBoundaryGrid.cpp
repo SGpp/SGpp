@@ -11,47 +11,35 @@
 namespace sgpp {
 namespace base {
 
-PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage, boundaryLevel),
-  degree(1 << 16),
-  boundaryLevel(0) {
+PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr)
+    : Grid(istr), generator(storage), degree(1 << 16), boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
   basis_.reset(new SPolyBoundaryBase(degree));
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
-PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
-                                   size_t degree,
-                                   level_t boundaryLevel) :
-  Grid(dim),
-  generator(storage, boundaryLevel),
-  degree(degree),
-  basis_(new SPolyBoundaryBase(degree)),
-  boundaryLevel(boundaryLevel) {
-}
+PolyBoundaryGrid::PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel)
+    : Grid(dim),
+      generator(storage, boundaryLevel),
+      degree(degree),
+      basis_(new SPolyBoundaryBase(degree)),
+      boundaryLevel(boundaryLevel) {}
 
-PolyBoundaryGrid::~PolyBoundaryGrid() {
-}
+PolyBoundaryGrid::~PolyBoundaryGrid() {}
 
-const SBasis& PolyBoundaryGrid::getBasis() {
-  return *basis_;
-}
+const SBasis& PolyBoundaryGrid::getBasis() { return *basis_; }
 
-sgpp::base::GridType PolyBoundaryGrid::getType() {
-  return sgpp::base::GridType::PolyBoundary;
-}
+sgpp::base::GridType PolyBoundaryGrid::getType() { return sgpp::base::GridType::PolyBoundary; }
 
-size_t PolyBoundaryGrid::getDegree() const {
-  return this->degree;
-}
+size_t PolyBoundaryGrid::getDegree() const { return this->degree; }
 
 std::unique_ptr<Grid> PolyBoundaryGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new PolyBoundaryGrid(istr));
 }
 
-void PolyBoundaryGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void PolyBoundaryGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << degree << std::endl;
   ostr << boundaryLevel << std::endl;
 }
@@ -60,9 +48,7 @@ void PolyBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& PolyBoundaryGrid::getGenerator() {
-  return generator;
-}
+GridGenerator& PolyBoundaryGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp

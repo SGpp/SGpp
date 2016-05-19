@@ -5,6 +5,7 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -16,6 +17,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -29,7 +31,7 @@ OperationRosenblattTransformation1DLinear::OperationRosenblattTransformation1DLi
 OperationRosenblattTransformation1DLinear::~OperationRosenblattTransformation1DLinear() {}
 
 double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataVector* alpha1d,
-                                                                      double coord1d) {
+                                                                     double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
@@ -40,7 +42,7 @@ double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataV
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(this->grid));
   base::DataVector coord(1);
 
-  for (unsigned int i = 0; i < gs->getSize(); i++) {
+  for (size_t i = 0; i < gs->getSize(); i++) {
     coord[0] = gs->get(i)->getCoord(0);
     coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
@@ -57,22 +59,24 @@ double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataV
   it2 = coord_pdf.begin();
   std::vector<double> tmp;
   tmp.push_back(0.0);
-  double sum = 0.0, area;
+  double sum = 0.0, area = 0.0;
 
   for (++it2; it2 != coord_pdf.end(); ++it2) {
     // (*it).first : the coordinate
     // (*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
+    area = (it2->first - it1->first) * (it1->second + it2->second) / 2;
 
     // make sure that the cdf is monotonically increasing
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
     // OF NON POSITIVE DENSITY
     if (area < 0) {
+      std::cerr << "warning: negative area encountered " << (*it1).second << ", " << (*it2).second
+                << std::endl;
       area = 0;
     }
 
-    tmp.push_back(area);
     sum += area;
+    tmp.push_back(area);
     ++it1;
   }
 

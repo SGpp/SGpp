@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 namespace sgpp {
 namespace base {
@@ -95,20 +96,20 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       i += 1;
     } else if (state == PARSER_STATE::VALUE) {
       //      size_t next;
-//      double value = std::atof(&(serializedVector[i]));
-    	int endNumber = i;
-        while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') endNumber++;
-    	std::stringstream stream;
-    	for (size_t j = i; j < endNumber; j++) {
-    		stream << serializedVector[j];
-    	}
-    	std::string shortString(stream.str());
-//      double value = std::atof(shortString.c_str());
-    	double value = std::stod(shortString);
+      //      double value = std::atof(&(serializedVector[i]));
+      size_t endNumber = i;
+      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') endNumber++;
+      std::stringstream stream;
+      for (size_t j = i; j < endNumber; j++) {
+        stream << serializedVector[j];
+      }
+      std::string shortString(stream.str());
+      //      double value = std::atof(shortString.c_str());
+      double value = std::stod(shortString);
       v.append(value);
       state = PARSER_STATE::COMMAEND;
       //      i += next;
-//      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
       i = endNumber;
 
     } else if (state == PARSER_STATE::COMMAEND) {
@@ -495,11 +496,18 @@ void DataVector::normalize(double border) {
 void DataVector::toString(std::string& text) const {
   std::stringstream str;
 
+  str << std::scientific;
+  str.precision(20);
+
   str << "[";
 
   for (size_t i = 0; i < size; i++) {
     if (i != 0) {
       str << ", ";
+      // add linebreaks for readability
+      if (i % 20 == 0) {
+        str << std::endl;
+      }
     }
 
     str << data[i];

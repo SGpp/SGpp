@@ -11,48 +11,37 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
-ModFundamentalSplineGrid::ModFundamentalSplineGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage),
-  degree(1 << 16) {
+ModFundamentalSplineGrid::ModFundamentalSplineGrid(std::istream& istr)
+    : Grid(istr), generator(storage), degree(1 << 16) {
   istr >> degree;
   basis_.reset(new SFundamentalSplineModifiedBase(degree));
 }
 
+ModFundamentalSplineGrid::ModFundamentalSplineGrid(size_t dim, size_t degree)
+    : Grid(dim),
+      generator(storage),
+      degree(degree),
+      basis_(new SFundamentalSplineModifiedBase(degree)) {}
 
-ModFundamentalSplineGrid::ModFundamentalSplineGrid(size_t dim,
-    size_t degree) :
-  Grid(dim),
-  generator(storage),
-  degree(degree),
-  basis_(new SFundamentalSplineModifiedBase(degree)) {
-}
-
-ModFundamentalSplineGrid::~ModFundamentalSplineGrid() {
-}
+ModFundamentalSplineGrid::~ModFundamentalSplineGrid() {}
 
 sgpp::base::GridType ModFundamentalSplineGrid::getType() {
   return sgpp::base::GridType::ModFundamentalSpline;
 }
 
-const SBasis& ModFundamentalSplineGrid::getBasis() {
-  return *basis_;
-}
+const SBasis& ModFundamentalSplineGrid::getBasis() { return *basis_; }
 
-size_t ModFundamentalSplineGrid::getDegree() {
-  return this->degree;
-}
+size_t ModFundamentalSplineGrid::getDegree() { return this->degree; }
 
 std::unique_ptr<Grid> ModFundamentalSplineGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new ModFundamentalSplineGrid(istr));
 }
 
-void ModFundamentalSplineGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void ModFundamentalSplineGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << degree << std::endl;
 }
 
@@ -60,9 +49,7 @@ void ModFundamentalSplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& ModFundamentalSplineGrid::getGenerator() {
-  return generator;
-}
+GridGenerator& ModFundamentalSplineGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp

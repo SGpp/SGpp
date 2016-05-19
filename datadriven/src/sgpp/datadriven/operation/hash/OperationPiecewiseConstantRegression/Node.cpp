@@ -130,7 +130,7 @@ std::unique_ptr<Node> Node::hierarchizeChild(std::vector<double>& x, std::vector
   std::unique_ptr<Node> childNode = std::make_unique<Node>(x, h, support, dataset, values);
   childNode->hierarchize(targetMSE, targetMaxLevel, supportValue, nextDim, levelLimit);
 
-  return std::move(childNode);
+  return childNode;
 }
 
 void Node::hierarchize(double targetMSE, size_t targetMaxLevel, double parentValue,

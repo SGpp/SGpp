@@ -125,7 +125,7 @@ printSurfaceFile = %s
         gnuplotConfig = os.path.join(pathResults,
                                      "sgde_%i_%i_l%i.gnuplot" % (iteration, n, level))
         # generate the grid
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 1)
         grid.getGenerator().regular(level)
 
         if grid.getSize() <= n:

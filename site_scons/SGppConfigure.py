@@ -18,15 +18,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag})
 
-  checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
-  checkOpenCL(config)
-  checkBoostTests(config)
-  checkSWIG(config)
-  checkPython(config)
-  checkJava(config)
-
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
@@ -37,8 +28,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env.Append(CPPFLAGS=["-O3", "-g"])
   else:
     env.Append(CPPFLAGS=["-g", "-O0"])
-#   else:
-#       env.Append(CPPFLAGS=["-O3", "-g"])
 
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
@@ -97,17 +86,32 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env.AppendUnique(CPPPATH=["#/" + moduleFolder + "/src/"])
 
   # detour compiler output
-  env["PRINT_CMD_LINE_FUNC"] = Helper.print_cmd_line
+  env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
+
+  checkCpp11(config)
+  checkDoxygen(config)
+  checkDot(config)
+  checkOpenCL(config)
+  checkBoostTests(config)
+  checkSWIG(config)
+  checkPython(config)
+  checkJava(config)
+
+  if env["USE_CUDA"] == True:
+    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    config.env['CUDA_SDK_PATH'] = ''
+    config.env.Tool('cuda')
+    # clean up the flags to forward
+    # flagsToForward = [flag for flag in config.env["CPPFLAGS"] if flag not in ['-Wmissing-format-attribute', '']]
+    # flagsToForward = " -Xcompiler " + (" -Xcompiler ".join(flagsToForward))
+    # ensure same flags for host code
+    config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
+    # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
   env = config.Finish()
 
   print "Configuration done."
   print
-
-  # clear build_log file
-  with open(env["CMD_LOGFILE"], "a") as logFile:
-    logFile.seek(0)
-    logFile.truncate()
 
 def checkCpp11(config):
   # check C++11 support
@@ -118,6 +122,8 @@ def checkCpp11(config):
   config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
 def checkDoxygen(config):
+  if not config.env["DOC"]:
+    return
   # check whether Doxygen installed
   if not config.CheckExec("doxygen"):
     Helper.printWarning("Doxygen cannot be found.",
@@ -128,6 +134,9 @@ def checkDoxygen(config):
        r"[0-9.]*[0-9]+", subprocess.check_output(["doxygen", "--version"]))[0] + ".")
 
 def checkDot(config):
+  if not config.env["DOC"]:
+    return
+  
   # check whether dot installed
   if not config.CheckExec("dot"):
     Helper.printWarning("dot (Graphviz) cannot be found.",
@@ -231,16 +240,17 @@ def checkPython(config):
       numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
-        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ",",
-                            "skipping Python unit tests.")
-        config.env["RUN_PYTHON_TESTS"] = False
+        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path))
+        if config.env["RUN_PYTHON_TESTS"]:
+          config.env["RUN_PYTHON_TESTS"] = False
+          Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
     except:
-      Helper.printWarning("Warning: Numpy doesn't seem to be installed,"
-                          "skipping Python unit tests.")
-      config.env["RUN_PYTHON_TESTS"] = False
+      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_TESTS"] = False
   else:
-    Helper.printWarning("Python extension (SG_PYTHON) not enabled,",
-                        "skipping Python unit tests.")
+    Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
@@ -269,7 +279,7 @@ def checkJava(config):
                                  "with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h"
                                  "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h.")
   else:
-    Helper.printWarning("Java support (SG_JAVA) not enabled.")
+    Helper.printInfo("Java support (SG_JAVA) not enabled.")
 
 def configureGNUCompiler(config):
   if config.env["COMPILER"] == "openmpi":
@@ -284,33 +294,28 @@ def configureGNUCompiler(config):
     config.env["CXX"] = ("mpic++.mpich")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
-  else:  # gnu
-    gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
-    gcc_ver = config.env._get_major_minor_revision(gcc_ver_str)
-    Helper.printInfo("Using default gcc " + gcc_ver_str.strip() + ".")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} ({})".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -pedantic-errors -Wextra \
-      -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
-      -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
-      -Winvalid-pch -Wmissing-field-initializers -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wpointer-arith -Wredundant-decls -Wstack-protector \
-      -Wstrict-aliasing=2 -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
-      -Wunused-parameter -Wvariadic-macros -Wwrite-strings -Wuninitialized".split(" ")
-  # rather uninteresting: -Wlong-long -Wpadded -Wshadow -Wfloat-equal -Waggregate-return
-  #                       -Wimplicit -Wmissing-noreturn -Weffc++
-  # cannot really use:
+      "-Wall -pedantic -Wextra \
+      -Wcast-qual -Wconversion -Wformat=2 \
+      -Wformat-nonliteral -Wformat-security -Winit-self  \
+      -Wmissing-format-attribute \
+      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
+      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #     "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
+  #     "If you are going to use optimizations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
-      "-Wno-unused-parameter",
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse",
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
@@ -351,17 +356,22 @@ def configureGNUCompiler(config):
     config.env["SHLIBPREFIX"] = "lib"
 
 def configureClangCompiler(config):
-  Helper.printInfo("Using clang.")
-
   config.env["CC"] = ("clang")
   config.env["LINK"] = ("clang++")
   config.env["CXX"] = ("clang++")
+
+  versionString = subprocess.check_output([config.env["CXX"], "--version"])
+  try:
+    versionString = re.match(r"^.*version ([^ ]+)", versionString).group(1)
+  except AttributeError:
+    versionString = "(unknown version)"
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
-  allWarnings = "-Wall -Wextra".split(" ")
+  allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
@@ -369,8 +379,8 @@ def configureClangCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
-  config.env.Append(CPPFLAGS=["-fopenmp=libomp"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libomp"])
+  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -407,12 +417,13 @@ def configureIntelCompiler(config):
     config.env["LINK"] = ("mpiicpc")
     config.env["CXX"] = ("mpiicpc")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    Helper.printInfo("Using intel.mpi.")
   else:
     config.env["CC"] = ("icc")
     config.env["LINK"] = ("icpc")
     config.env["CXX"] = ("icpc")
-    Helper.printInfo("Using icc.")
+
+  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :

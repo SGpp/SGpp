@@ -65,20 +65,12 @@ class InterpolantVectorFunction : public VectorFunction {
   inline void eval(const base::DataVector& x, base::DataVector& value) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        for (size_t j = 0; j < m; j++) {
-          value[j] = INFINITY;
-        }
-
+        value.setAll(INFINITY);
         return;
       }
     }
 
-    base::DataVector curAlpha(alpha.getNrows());
-
-    for (size_t j = 0; j < m; j++) {
-      alpha.getColumn(j, curAlpha);
-      value[j] = opEval->eval(curAlpha, x);
-    }
+    opEval->eval(alpha, x, value);
   }
 
   /**

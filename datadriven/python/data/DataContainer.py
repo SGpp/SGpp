@@ -83,7 +83,7 @@ class DataContainer(object):
         return DataEntry(self.tempPoint, self.tempValue)
 
     def __contains__(self, key):
-        return key in self.dataDict[self.name]
+        return tuple(key) in self.dataDict[self.name]
 
     def delTrainingData(self):
         del self.dataDict[self.TRAIN_CATEGORY]
@@ -243,8 +243,8 @@ class DataContainer(object):
         newContainer = DataContainer(points=self.getPoints(), values=self.getValues(), name=self.name)
         for k in self.points.keys():
             if k != self.name:
-                newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.specifications[k], k)
-        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getSpecifiction(), container.getName())
+                newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.dataDict[k], self.specifications[k], k)
+        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getPointstoValuesMap(), container.getSpecifiction(), container.getName())
     
     
     ## Merges several data containers to one.
@@ -286,12 +286,14 @@ class DataContainer(object):
     #
     # @param points: DataVector new points
     # @param values: DataVector new values
+    # @param dataDict: dictionary {(x_1, x_2, ..., x_d): value}
     # @param name: String category name under which points and values should be stored
     # @param specification specification
     # @return: DataContainer itself
-    def __setSubContainer(self, points, values, specification, name):
+    def __setSubContainer(self, points, values, dataDict, specification, name):
         self.points[name] = points
         self.values[name] = values
+        self.dataDict[name] = dataDict
         self.specifications[name] = specification
         return self
     
@@ -315,7 +317,6 @@ class DataContainer(object):
             category = self.name
         return self.points[category]
     
-    
     ## Returns values stored in the data set with default name
     # @param category String category name of the requested data ("train" or "test")
     # @return: DataVector of values
@@ -328,6 +329,10 @@ class DataContainer(object):
     # @return: the DataSpecification object
     def getSpecifiction(self):
         return self.specifications[self.name]
+
+
+    def getPointstoValuesMap(self):
+        return self.dataDict[self.name]
     
     
     ## Return the default name of data set
@@ -354,6 +359,17 @@ class DataContainer(object):
             self.size = self.points[self.name].getNrows()
         return self.size
     
+    def getSizeTrain(self):
+        if self.TRAIN_CATEGORY in self.dataDict:
+            return len(self.dataDict[self.TRAIN_CATEGORY])
+        else:
+            return 0
+
+    def getSizeTest(self):
+        if self.TEST_CATEGORY in self.dataDict:
+            return len(self.dataDict[self.TEST_CATEGORY])
+        else:
+            return 0
     
     ## Return tuple of points and values
     #

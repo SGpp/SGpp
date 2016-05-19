@@ -9,29 +9,29 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 #include <cmath>
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
 
 /**
  * Modified polynomial base functions.
- * Special polynomial functions to cover values unequal 0 at the border. Implemented as seen in AWR 2 paper
- * by Prof. Bungartz (http://www5.in.tum.de/wiki/index.php/Algorithmen_des_Wissenschaftlichen_Rechnens_II_-_Winter_08)
+ * Special polynomial functions to cover values unequal 0 at the border. Implemented as seen in AWR
+ * 2 paper
+ * by Prof. Bungartz
+ * (http://www5.in.tum.de/wiki/index.php/Algorithmen_des_Wissenschaftlichen_Rechnens_II_-_Winter_08)
  */
-template<class LT, class IT>
-class PolyModifiedBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class PolyModifiedBasis : public Basis<LT, IT> {
  protected:
-  /// Pointer to polynoms
-  double* polynoms;
-  /// polynom's max. degree
-  size_t degree;
+  /// poly basis
+  SPolyBase polyBasis;
 
  public:
   /**
@@ -39,156 +39,94 @@ class PolyModifiedBasis: public Basis<LT, IT> {
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyModifiedBasis(size_t degree) : polynoms(NULL), degree(degree) {
-    // if(degree < 0)
-    // {
-    //   throw factory_exception("PolyBasis: degree < 0");
-    // }
-
-    int polycount = (1 << (degree + 1)) - 1;
-    std::vector<double> x;
-
-    // degree + 1 for the polynom, +1 for the integral value,
-    // +1 for the base-point
-    polynoms = new double[(degree + 1 + 2) * polycount];
-    initPolynoms(x, 1, 1);
-  }
+  explicit PolyModifiedBasis(size_t degree) : polyBasis(degree) {}
 
   /**
    * Destructor
    */
-  ~PolyModifiedBasis() override {
-    if (polynoms) {
-      delete [] polynoms;
-    }
-  }
+  ~PolyModifiedBasis() override {}
 
   /**
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.
    */
   double eval(LT level, IT index, double p) override {
-    size_t deg = degree + 1 < level ? degree + 1 : level;
+    const IT hInv = static_cast<IT>(1) << level;
+    const double hInvDbl = static_cast<double>(hInv);
 
-    size_t idMask = (1 << deg) - 1;
-    size_t id = (((index & idMask) >> 1) | (1 << (deg - 1))) - 1;
-
-    // scale p to a value in [-1.0,1.0]
-    double val = static_cast<double>(1 << level) * p -
-                  static_cast<double>(index);
-    return evalPolynom(id, deg, val);
+    if (level == 1) {
+      // first level
+      return 1.0;
+    } else if (index == 1) {
+      // left modified basis function
+      return ((p <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * p) : 0.0);
+    } else if (index == hInv - 1) {
+      // right modified basis function
+      return ((p >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.eval(level, index, p);
+    }
   }
 
-  double evalHierToTop(LT level, IT index, DataVector& koeffs, double pos) {
+  double evalSave(LT level, IT index, double p) {
+    // spacing on current level
+    double h = 1.0f / static_cast<double>(1 << level);
+
+    // check if p is out of bounds
+    if ((p <= h * static_cast<double>(index - 1)) || (p >= h * static_cast<double>(index + 1))) {
+      return 0.0f;
+    } else {
+      return eval(level, index, p);
+    }
+  }
+
+  double getIntegral(LT level, IT index) {
+    const IT hInv = static_cast<IT>(1) << level;
+
+    if (level == 1) {
+      // first level
+      return 1.0;
+    } else if ((index == 1) || (index == hInv - 1)) {
+      // left and right modified basis functions
+      return 2. / static_cast<double>(hInv);
+    } else {
+      // interior basis function
+      return polyBasis.getIntegral(level, index);
+    }
+  }
+
+  /**
+   * Evaluates all the hierarchical ancestors of the node defined by level
+   * and index. NOTE: It does not evaluate the current node itself.
+   *
+   * @param level
+   * @param index
+   * @param coeffs
+   * @param pos
+   * @return
+   */
+  double evalHierToTop(LT level, IT index, DataVector& coeffs, double pos) {
     double result = 0.0;
 
+    // just evaluate the hierarchical ancestors -> so start with the
+    // parent node
+    level--;
+    index >>= 1;
+    index |= 1;
+
     for (; level >= 1; level--) {
-      result += koeffs[level] * eval(level, index, pos);
-      index = ((index - 1) / 2);
-      index = (index % 2 == 0) ? (index + 1) : index;
+      result += coeffs[level] * eval(level, index, pos);
+      index >>= 1;
+      index |= 1;
+      //        index = ((index - 1) / 2);
+      //        index = (index % 2 == 0) ? (index + 1) : index;
     }
 
     return result;
   }
 
- private:
-  /**
-   * Evaluate a basis function.
-   * Has a dependence on the absolute position of grid point and support.
-   */
-  double evalPolynom(size_t id, size_t deg, double val) {
-    double* x_store = this->polynoms + (degree + 1 + 2) * id;
-    double* y_store = x_store + 2;
-
-    double y_val = y_store[deg - 1];
-    double x_val = x_store[0] +
-                    val * pow(2.0, -(1.0) * (static_cast<double>(deg)));
-
-    // Horner
-    for (size_t i = deg - 2; i > 0; i--) {
-      y_val = y_val * x_val + y_store[i];
-    }
-
-    return y_val * x_val + y_store[0];
-  }
-
-  /**
-   * recursively creates polynomial values
-   */
-  void initPolynoms(std::vector<double>& x, LT level, IT index) {
-    // Add new point
-    x.push_back(index * pow(2.0, -(1.0) * (static_cast<double>(level))));
-
-    std::vector<double> y;
-    std::vector<double> intpoly;
-
-    for (size_t i = 0; i < level - 1; i++) {
-      y.push_back(0.0);
-      intpoly.push_back(0.0);
-    }
-
-    y.push_back(1.0);
-    intpoly.push_back(0.0);
-
-    // Every poly has a unique id similiar to sparse grid level/index pairs
-    size_t id = ((index >> 1) | (1 << (level - 1))) - 1;
-
-    int n = level;
-    std::vector<std::vector<double> > lagpoly;
-
-    /**
-     * Fill lagpoly with multiplied lagrange polynomials
-     * Add lagrange polynomials together into intpoly
-     */
-    for (int i = 0; i < n; i++) {
-      lagpoly.push_back(std::vector<double>());
-      lagpoly[i].push_back(1.0);
-      double fac = y[i];
-
-      int j = 0;
-
-      for (int k = 0; k < n; k++) {
-        if (k == i) {
-          continue;
-        }
-
-        lagpoly[i].push_back(lagpoly[i][j]);
-
-        for (int jj = j; jj > 0; jj--) {
-          lagpoly[i][jj] = lagpoly[i][jj - 1] - lagpoly[i][jj] * x[k];
-        }
-
-        lagpoly[i][0] *= -x[k];
-        j += 1;
-        fac /= (x[i] - x[k]);
-      }
-
-      for (int l = 0; l < n; l++) {
-        lagpoly[i][l] *= fac;
-        intpoly[l] += lagpoly[i][l];
-      }
-    }
-
-    // determine position in storage.
-    // (degree + 1) polynomial factors and 2 values for integral and x-value
-    double* x_store = this->polynoms + (degree + 3) * id;
-    double* y_store = x_store + 2;
-
-    // Copy values into storage
-    for (int i = 0; i < n; i++) {
-      y_store[i] = intpoly[i];
-    }
-
-    x_store[0] = x.back();
-
-
-    if ((level) < degree + 1) {
-      initPolynoms(x, level + 1, index * 2 - 1);
-      initPolynoms(x, level + 1, index * 2 + 1);
-    }
-
-    x.pop_back();
-  }
+  size_t getDegree() { return polyBasis.getDegree(); }
 };
 
 // default type-def (unsigned int for level and index)

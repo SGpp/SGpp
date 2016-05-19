@@ -24,15 +24,15 @@ def computeCoefficients(jgrid, grid, alpha, f):
 
     # dehierarchization
     p = DataVector(jgs.getDimension())
-    A = DataMatrix(jgs.size(), jgs.getDimension())
-    for i in xrange(jgs.size()):
+    A = DataMatrix(jgs.getSize(), jgs.getDimension())
+    for i in xrange(jgs.getSize()):
         jgs.get(i).getCoords(p)
         A.setRow(i, p)
 
-    nodalValues = evalSGFunctionMulti(grid, alpha, A)
+    nodalValues = evalSGFunctionMulti(grid, alpha, A.array())
 
     # apply f to all grid points
-    jnodalValues = DataVector(jgs.size())
+    jnodalValues = DataVector(jgs.getSize())
     for i in xrange(len(nodalValues)):
         A.getRow(i, p)
 #         print i, p.array(), nodalValues[i], alpha.min(), alpha.max()
@@ -64,18 +64,17 @@ def computeErrors(jgrid, jalpha, grid, alpha, f, n=200):
     jgs = jgrid.getStorage()
 
     # create control samples
-    samples = DataMatrix(np.random.rand(n, jgs.getDimension()))
+    samples = np.random.rand(n, jgs.getDimension())
 
     # evaluate the sparse grid functions
     jnodalValues = evalSGFunctionMulti(jgrid, jalpha, samples)
     nodalValues = evalSGFunctionMulti(grid, alpha, samples)
 
     # compute errors
-    p = DataVector(jgs.getDimension())
     err = DataVector(n)
     for i in xrange(n):
-        samples.getRow(i, p)
-        y = f(p.array(), nodalValues[i])
+        p = samples[i, :]
+        y = f(p, nodalValues[i])
         err[i] = abs(y - jnodalValues[i])
 
     # get error statistics
@@ -147,8 +146,8 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
 
     # discretize on given level
     p = DataVector(dim)
-    nodalValues = DataVector(gs.size())
-    for i in xrange(gs.size()):
+    nodalValues = DataVector(gs.getSize())
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         # transform to the right space
         q = T.unitToProbabilistic(p.array())
@@ -200,26 +199,27 @@ def discretize(grid, alpha, f, epsilon=0.,
         accMiseL2 = l2error_grid
 
 #     print "iteration 0/%i (%i, %i, %g): %g, %g, %s" % \
-#         (refnums, jgs.size(), len(jalpha),
+#         (refnums, jgs.getSize(), len(jalpha),
 #          epsilon, accMiseL2, l2error_grid, maxdrift)
 
     ref = 0
-    errs = [jgs.size(), accMiseL2, l2error_grid, maxdrift]
+    errs = [jgs.getSize(), accMiseL2, l2error_grid, maxdrift]
     bestGrid, bestAlpha, bestL2Error = copyGrid(jgrid), DataVector(jalpha), accMiseL2
 
     # repeat refinement as long as there are iterations and the
     # minimum error epsilon is reached
+    jalpha = DataVector(jalpha)
     while ref < refnums and bestL2Error > epsilon:
         oldgrid = copyGrid(jgrid)
         rp = jgn.getNumberOfRefinablePoints()  # max(1, min(pointsNum, jgn.getNumberOfRefinablePoints()))
         jgn.refine(SurplusRefinementFunctor(jalpha, rp, epsilon))
 
         # if grid point has been added in the last iteration step
-        if len(basis_alpha) == jgs.size():
+        if len(basis_alpha) == jgs.getSize():
             break
 
         # extend alpha vector...
-        basis_alpha.resizeZero(jgs.size())
+        basis_alpha.resizeZero(jgs.getSize())
 
         # ------------------------------
         # compute joined sg function
@@ -233,7 +233,7 @@ def discretize(grid, alpha, f, epsilon=0.,
         # ------------------------------
         print "iteration %i/%i (%i, %i, %i, %i, %g): %g, %g, %s -> current best %g" % \
             (ref + 1, refnums,
-             jgs.size(), len(jalpha),
+             jgs.getSize(), len(jalpha),
              bestGrid.getSize(), len(bestAlpha),
              epsilon,
              accMiseL2, l2error_grid, maxdrift, bestL2Error)
@@ -249,7 +249,7 @@ def discretize(grid, alpha, f, epsilon=0.,
                 bestL2Error = accMiseL2
             else:
                 bestL2Error = l2error_grid
-            errs = [jgs.size(), accMiseL2, l2error_grid, maxdrift]
+            errs = [jgs.getSize(), accMiseL2, l2error_grid, maxdrift]
 
         ref += 1
 

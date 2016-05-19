@@ -3,9 +3,13 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import atexit
 import glob
 import os
+import pipes
+import platform
 import subprocess
+import sys
 import textwrap
 import SCons
 from SCons.Script.SConscript import SConsEnvironment
@@ -13,11 +17,18 @@ from SCons.Script.SConscript import SConsEnvironment
 import Helper
 import SGppConfigure
 
+sys.stdout = Helper.Logger(sys.stdout)
+sys.stderr = Helper.Logger(sys.stderr)
+finalMessagePrinter = Helper.FinalMessagePrinter()
+atexit.register(finalMessagePrinter.printMessage)
+
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
 # check scons
 EnsureSConsVersion(2, 1)
-print "Using SCons", SCons.__version__
+Helper.printInfo("Platform: {}".format(", ".join(platform.uname())))
+Helper.printInfo("Using SCons {} on Python {}".format(SCons.__version__, platform.python_version()))
+Helper.printInfo("SCons command line: {}".format(" ".join([pipes.quote(arg) for arg in sys.argv])))
 
 sconsVersion = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
 if sconsVersion < (2, 3, 0):
@@ -45,8 +56,8 @@ for wrapper in languageSupport:
   elif wrapper == "jsgpp":
     languageSupportNames.append("SG_JAVA")
 
-print "Available modules:", ", ".join(moduleNames)
-print "Available language support:", ", ".join(languageSupportNames)
+Helper.printInfo("Available modules: {}".format(", ".join(moduleNames)))
+Helper.printInfo("Available language support: {}".format(", ".join(languageSupportNames)))
 
 # Define and read variables
 #########################################################################
@@ -94,10 +105,10 @@ vars.Add("LIBDIR", "Set path where the built libraries are installed " +
                    "(default: EPREFIX/lib)")
 vars.Add("INCLUDEDIR", "Set path where the header files are installed " +
                        "(default: PREFIX/include)")
-vars.Add(BoolVariable("VERBOSE", "Enable verbose output", False))
-vars.Add("CMD_LOGFILE", "Set path to a file to capture the build log", "build.log")
+vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
+vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
@@ -143,6 +154,7 @@ else:
 #########################################################################
 
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
+finalMessagePrinter.env = env
 
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
@@ -171,10 +183,10 @@ if not env.GetOption("clean"):
   Helper.prepareDoxyfile(moduleFolders)
 
 if "CXX" in ARGUMENTS:
-  print "CXX: ", ARGUMENTS["CXX"]
+  Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
   env["CXX"] = ARGUMENTS["CXX"]
 if "CC" in ARGUMENTS:
-  print "CC: ", ARGUMENTS["CC"]
+  Helper.printInfo("CC: {}".format(ARGUMENTS["CC"]))
   env["CC"] = ARGUMENTS["CC"]
 if "CPPFLAGS" in ARGUMENTS:
   env["CPPFLAGS"] = ARGUMENTS["CPPFLAGS"].split(",")
@@ -241,6 +253,8 @@ if not env.GetOption("clean"):
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 if env["PLATFORM"] == "win32":
   Helper.setWin32Spawn(env)
+else:
+  Helper.setSpawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
@@ -382,7 +396,7 @@ for moduleFolder in moduleFolders:
   if not env["SG_" + moduleFolder.upper()]:
     continue
 
-  print "Preparing to build module:", moduleFolder
+  Helper.printInfo("Preparing to build module: {}".format(moduleFolder))
   # SConscript("src/sgpp/SConscript" + moduleFolder, variant_dir="#/tmp/build/", duplicate=0)
   env.SConscript("#/" + moduleFolder + "/SConscript", {"env": env, "moduleName": moduleFolder})
 
@@ -504,6 +518,9 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 if env["DOC"]:
     doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
     env.Alias("doxygen", doxygen)
+    # SCons doesn't know the *.doxy dependencies of the doxygen target
+    # ==> always consider out-of-date with AlwaysBuild
+    env.AlwaysBuild(doxygen)
 
 # Things to be cleaned
 #########################################################################
@@ -522,8 +539,15 @@ for module in moduleFolders:
 # Default targets
 #########################################################################
 
-# TODO(pfandedd): default target break targets that are not on the finalStepDependencies list, why do we even need this?
-# if not GetOption("clean"):
-#   env.Default(finalStepDependencies)
-# else:
-#   env.Default(finalStepDependencies + ["clean"])
+finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
+finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+
+if not GetOption("clean"):
+  env.Default(finalStepDependencies)
+  if "doxygen" in BUILD_TARGETS:
+    finalMessagePrinter.disable()
+  elif not env["PRINT_INSTRUCTIONS"]:
+    finalMessagePrinter.disable()
+else:
+  env.Default(finalStepDependencies + ["clean"])
+  finalMessagePrinter.disable()

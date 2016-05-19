@@ -13,6 +13,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -40,16 +42,29 @@ class OperationNaiveEvalHessianWaveletBoundary : public
   }
 
   /**
-   * @param       alpha       coefficient vector
-   * @param       point       evaluation point
-   * @param[out]  gradient    gradient vector of linear combination
-   * @param[out]  hessian     Hessian matrix of linear combination
-   * @return                  value of linear combination
+   * @param       alpha     coefficient vector
+   * @param       point     evaluation point
+   * @param[out]  gradient  gradient vector of the linear combination
+   * @param[out]  hessian   Hessian matrix of the linear combination
+   * @return                value of the linear combination
    */
   double evalHessian(const DataVector& alpha,
                       const DataVector& point,
                       DataVector& gradient,
                       DataMatrix& hessian) override;
+
+  /**
+   * @param       alpha     coefficient matrix (each column is a coefficient vector)
+   * @param       point     evaluation point
+   * @param[out]  value     values of the linear combination
+   * @param[out]  gradient  Jacobian of the linear combination (each row is a gradient vector)
+   * @param[out]  hessian   vector of Hessians of the linear combination
+   */
+  void evalHessian(const DataMatrix& alpha,
+                   const DataVector& point,
+                   DataVector& value,
+                   DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) override;
 
  protected:
   /// storage of the sparse grid

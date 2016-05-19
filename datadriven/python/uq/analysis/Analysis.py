@@ -73,12 +73,15 @@ class Analysis(object):
     def mean(self, iterations=None, ts=None):
         """
         compute means
-        @return: dictionary, {<iteration>: {<time>: mean}}
+        @return: dictionary, {<iteration>: {<time>: (mean, err)}}
         """
+        dropDict = True
         if iterations is None:
             iterations = self._iterations
+            dropDict = False
         if ts is None:
             ts = self._ts
+            dropDict = False
 
         ans = {}
         for iteration in iterations:
@@ -100,11 +103,12 @@ class Analysis(object):
 
                 ans[iteration][t] = moment
 
-        # remove dict structure if there are just one element
-        if len(iterations) == 1:
-            ans = ans[iterations[0]]
-        if len(ts) == 1:
-            ans = ans[ts[0]]
+        if dropDict:
+            # remove dict structure if there are just one element
+            if len(iterations) == 1:
+                ans = ans[iterations[0]]
+            if len(ts) == 1:
+                ans = ans[ts[0]]
 
         return ans
 
@@ -118,10 +122,13 @@ class Analysis(object):
         Compute the variance
         @return: dictionary, {<iteration>: {<time>: variance}}
         """
+        dropDict = True
         if iterations is None:
             iterations = self._iterations
+            dropDict = False
         if ts is None:
             ts = self._ts
+            dropDict = False
 
         ans = {}
         for iteration in iterations:
@@ -143,11 +150,12 @@ class Analysis(object):
 
                 ans[iteration][t] = moment
 
-        # remove dict structure if there are just one element
-        if len(iterations) == 1:
-            ans = ans[iterations[0]]
-        if len(ts) == 1:
-            ans = ans[ts[0]]
+        if dropDict:
+            # remove dict structure if there are just one element
+            if len(iterations) == 1:
+                ans = ans[iterations[0]]
+            if len(ts) == 1:
+                ans = ans[ts[0]]
 
         return ans
 

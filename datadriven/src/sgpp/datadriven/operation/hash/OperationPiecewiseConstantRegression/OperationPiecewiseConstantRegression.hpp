@@ -58,7 +58,7 @@ class OperationPiecewiseConstantRegression {
     std::cout << "total node count: " << (root->getChildCount() + 1) << std::endl;
     std::cout << "hierarchization max level: " << root->getHierarchizationMaxLevel() << std::endl;
 
-    return std::move(root);
+    return root;
   }
 };
 }  // namespace datadriven

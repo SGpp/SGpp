@@ -31,18 +31,19 @@ class DistributionType:
     """
     Describes how the samples are drawn:
     1) unit and uniform: the samples are all in the unit hyper cube and are
-                         samples uniformly
+                         sampled uniformly
     2) probabilistic and uniform: the samples are in the probabilistic space
                                   but sampled uniformly
     3) probabilistic and distributed: the samples are in the probabilistic
                                       space and sampled according to their
                                       distribution
+
     Examples:
     - MCSampler draws samples in (1)
     - rvs() draws samples in (3)
-    - after applying transformation to samples in (1) they can either be in
+    - after applying transformation to samples in (3) they can either be in
         (2) if the transformation is linear
-        (3) if the transformation is the inverse CDF transformation
+        (1) if the transformation is the inverse CDF transformation
     """
     UNITUNIFORM = 1
     PROBABILISTICUNIFORM = 2
@@ -58,7 +59,9 @@ class Samples(object):
         self._dtype = dtype
         self._isUnit = True
         self._isActive = True
-        self._dim = params.getStochasticDim()
+        self._dim = None
+        if params is not None:
+            self._dim = params.getStochasticDim()
 
     def combine(self, samples):
         for sample in samples:
@@ -120,7 +123,7 @@ class Samples(object):
         self._samples
 
     def ndarray(self):
-        samples = np.ndarray([len(self._samples), self._dim], dtype='float32')
+        samples = np.ndarray([len(self._samples), self._dim], dtype='float')
         if self._isUnit:
             if self._isActive:
                 # return just active tuples from the unit hypercube

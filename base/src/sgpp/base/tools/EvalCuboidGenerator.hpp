@@ -24,8 +24,8 @@ namespace base {
  */
 class EvalCuboidGenerator {
  private:
-  /// number of dimensions
-  size_t numDimensions;
+  // number of dimensions
+  // size_t numDimensions;
 
   /**
    * This function is a recursive implementation in order the build the evaluation cuboid

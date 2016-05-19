@@ -106,13 +106,12 @@ double OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientda
 }
 
 double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clientdata,
-                                                           sgpp::base::DataVector& alpha) {
+                                                          sgpp::base::DataVector& alpha) {
   double x;
   double* p = new double[dimensions];
 
   sgpp::base::DataVector point(dimensions);
-  std::unique_ptr<sgpp::base::OperationEval> opEval(
-      sgpp::op_factory::createOperationEval(*grid));
+  std::unique_ptr<sgpp::base::OperationEval> opEval(sgpp::op_factory::createOperationEval(*grid));
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
 
@@ -127,7 +126,7 @@ double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clien
         func(*reinterpret_cast<int*>(&dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
-  delete p;
+  delete[] p;
   return sqrt(res / static_cast<double>(numberOfSamples));
 }
 

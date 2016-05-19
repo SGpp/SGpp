@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
-  std::string scenarioFileName =
-      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
+  //  std::string scenarioFileName =
+  //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_double.scenario";
 
@@ -77,22 +77,22 @@ int main(int argc, char **argv) {
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_float.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_float.scenario";
-  //  std::string scenarioFileName =
-  //      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_float.scenario";
+  std::string scenarioFileName =
+      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_float.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_float.scenario";
 
-  std::string parameterFile("reproduce.cfg");
+  std::string parameterFile("friedman2_4d_300000_StreamingOCLMultiPlatform_float_tuned.cfg");
 
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
-//  for (size_t repeat = 0; repeat < 40; repeat++) {
-//	  std::cout << "repeat: " << repeat << std::endl;
+  // for (size_t repeat = 0; repeat < 40; repeat++) {
+  // std::cout << "repeat: " << repeat << std::endl;
   bool verbose = true;
   sgpp::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
@@ -111,6 +111,6 @@ int main(int argc, char **argv) {
   } catch (sgpp::base::operation_exception &e) {
     std::cout << "exception caught: " << e.what() << std::endl;
   }
-//  }
+  //  }
   return EXIT_SUCCESS;
 }

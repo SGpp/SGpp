@@ -14,10 +14,6 @@
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
 #include <sgpp/datadriven/application/Learner.hpp>
-// #include <sgpp/datadriven/application/LearnerDensityBased.hpp>
-// #include <sgpp/datadriven/application/LearnerDensityBasedReg.hpp>
-#include <sgpp/datadriven/application/LearnerSGD.hpp>
-// #include <sgpp/datadriven/application/LearnerOnlineSGD.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
@@ -32,6 +28,13 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
+
+#include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 

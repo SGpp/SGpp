@@ -14,7 +14,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -23,19 +22,19 @@ namespace datadriven {
  * application of classification for the Systemmatrix by using a
  * density function
  */
-class DensitySystemMatrix : public sgpp::base::OperationMatrix {
+class DensitySystemMatrix : public base::OperationMatrix {
  private:
   /// the lambda, the regularisation parameter
   double lambda;
   /// Operation A for calculating the data matrix
   /// (L2 Dot-Product of basis functions)
-  sgpp::base::OperationMatrix* A;
+  std::unique_ptr<base::OperationMatrix> A;
   /// OperationB for calculating the data matrix
-  sgpp::base::OperationMultipleEval* B;
+  std::unique_ptr<base::OperationMultipleEval> B;
   /// OperationMatrix, the regularisation method
-  sgpp::base::OperationMatrix* C;
+  base::OperationMatrix& C;
   /// Training data
-  sgpp::base::DataMatrix* data;
+  base::DataMatrix& data;
 
  public:
   /**
@@ -44,10 +43,10 @@ class DensitySystemMatrix : public sgpp::base::OperationMatrix {
    * @param grid  reference to the sparse grid
    * @param trainData reference to DataVector that contains the training data
    * @param C the regression functional
-   * @param lambdaRegression the regression parameter
+   * @param lambda the regression parameter
    */
-  DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
-                      sgpp::base::OperationMatrix& C, double lambdaRegression);
+  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix& C,
+                      double lambda);
 
   /**
    * Generates the left hand side of the classification equation
@@ -55,7 +54,7 @@ class DensitySystemMatrix : public sgpp::base::OperationMatrix {
    * @param alpha parameters for the sparse grid functions
    * @param result reference to the vector which will contain the result
    */
-  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
+  void mult(base::DataVector& alpha, base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
@@ -63,7 +62,7 @@ class DensitySystemMatrix : public sgpp::base::OperationMatrix {
    * @param b reference to the vector which will contain the result of the
    * matrix vector multiplication on the rhs
    */
-  void generateb(sgpp::base::DataVector& b);
+  void generateb(base::DataVector& b);
 
   /**
    * Std-Destructor

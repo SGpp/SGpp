@@ -31,9 +31,9 @@ HeatEquationSolverWithStretching::~HeatEquationSolverWithStretching() {
   }
 }
 
-void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretching, int level) {
+void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretching, size_t level) {
   this->dim = stretching.getDimensions();
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearStretchedBoundaryGrid(stretching);
 
@@ -45,7 +45,7 @@ void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretchin
   this->bGridConstructed = true;
 }
 
-void HeatEquationSolverWithStretching::constructGrid(base::BoundingBox& BoundingBox, int level) {
+void HeatEquationSolverWithStretching::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   std::cout << "I'm not supposed to be here, me is constructGrid\n";
 }
 
@@ -54,13 +54,12 @@ void HeatEquationSolverWithStretching::setHeatCoefficient(double a) { this->a = 
 void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                                           size_t maxCGIterations, double epsilonCG,
                                                           base::DataVector& alpha, bool verbose,
-                                                          bool generateAnimation,
-                                                          size_t numEvalsAnimation) {
+                                                          bool generateAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
     double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
-        "ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        "ExEul", numTimesteps, timestepsize, generateAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
     HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver =
@@ -93,13 +92,12 @@ void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, d
 void HeatEquationSolverWithStretching::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                                           size_t maxCGIterations, double epsilonCG,
                                                           base::DataVector& alpha, bool verbose,
-                                                          bool generateAnimation,
-                                                          size_t numEvalsAnimation) {
+                                                          bool generateAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
     double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
-        "ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        "ImEul", numTimesteps, timestepsize, generateAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
     HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver =
@@ -160,7 +158,7 @@ void HeatEquationSolverWithStretching::solveCrankNicolson(size_t numTimesteps, d
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN = new solver::CrankNicolson(numCNSteps, timestepsize);
 
     myStopwatch->start();
@@ -233,14 +231,14 @@ void HeatEquationSolverWithStretching::initScreen() {
 }
 
 void HeatEquationSolverWithStretching::printGrid(base::DataVector& alpha,
-                                                 double PointesPerDimension,
+                                                 size_t PointesPerDimension,
                                                  std::string tfilename) const {
   base::GridPrinterForStretching myPrinter(*this->myGrid);
-  myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
+  myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
 void HeatEquationSolverWithStretching::printGridDomain(base::DataVector& alpha,
-                                                       double PointesPerDimension,
+                                                       size_t PointesPerDimension,
                                                        base::BoundingBox& GridArea,
                                                        std::string tfilename) const {
   throw base::application_exception(
@@ -249,12 +247,11 @@ void HeatEquationSolverWithStretching::printGridDomain(base::DataVector& alpha,
 }
 
 void HeatEquationSolverWithStretching::printGridDomainStretching(base::DataVector& alpha,
-                                                                 double PointesPerDimension,
+                                                                 size_t PointesPerDimension,
                                                                  base::Stretching& GridArea,
                                                                  std::string tfilename) const {
   base::GridPrinterForStretching myPrinter(*this->myGrid);
-  myPrinter.printGridDomainStretching(alpha, tfilename, GridArea,
-                                      static_cast<size_t>(PointesPerDimension));
+  myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
 void HeatEquationSolverWithStretching::printSparseGrid(base::DataVector& alpha,

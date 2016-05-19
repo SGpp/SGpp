@@ -3,6 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
+from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 """
 @file    tnormal.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -45,6 +46,9 @@ class Normal(Dist):
         # standard normal
         self._dist = norm(loc=mu, scale=sigma)
 
+        self.__linearTrans = LinearTransformation(self._dist.cdf(self.__a),
+                                                  self._dist.cdf(self.__b))
+
     @classmethod
     def by_range(cls, *args, **kws):
         """
@@ -67,13 +71,24 @@ class Normal(Dist):
         return cls(mu, sigma, a, b)
 
     def pdf(self, x):
-        return self._dist.pdf(x)
+        if self.__a <= x <= self.__b:
+            return self._dist.pdf(x)
+        else:
+            return 0.0;
 
     def cdf(self, x):
-        return self._dist.cdf(x)
+        if self.__a <= x <= self.__b:
+            x_unit = self._dist.cdf(x)
+            return self.__linearTrans.probabilisticToUnit(value)
+        else:
+            raise AttributeError("normal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
 
     def ppf(self, x):
-        return self._dist.ppf(x)
+        if 0.0 <= x <= 1.0:
+            x_unit = self.__linearTrans.unitToProbabilistic(x)
+            return self._dist.ppf(x_unit)
+        else:
+            raise AttributeError("normal: ppf - x out of range [%g, %g]" % (self.__a, self.__b))
 
     def mean(self):
         return self.__mu

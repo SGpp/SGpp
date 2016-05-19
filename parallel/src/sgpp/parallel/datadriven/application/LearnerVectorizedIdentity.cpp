@@ -48,7 +48,7 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> LearnerVectorizedIdentity:
   return std::make_unique<sgpp::parallel::DMSystemMatrixVectorizedIdentity>(
       *(this->grid), trainDataset, lambda, this->vecType_);
 #else
-  return std::uniqu_ptr<datadriven::DMSystemMatrixBase>(
+  return std::unique_ptr<datadriven::DMSystemMatrixBase>(
       sgpp::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
           *(this->grid), trainDataset, lambda, this->vecType_, this->mpiType_));
 #endif

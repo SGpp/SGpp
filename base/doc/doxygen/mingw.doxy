@@ -190,8 +190,7 @@ Don't forget to add the locations of the Boost include and library path.
 scons -j 4 ^
   COMPILER=gnu ^
   BOOST_INCLUDE_PATH=C:\PATH_TO_BOOST ^
-  BOOST_LIBRARY_PATH=C:\PATH_TO_BOOST\stage\lib ^
-  VERBOSE=1
+  BOOST_LIBRARY_PATH=C:\PATH_TO_BOOST\stage\lib
 @endverbatim
 For additional remarks about building with SCons,
 please refer to the @ref linux_compilation "Linux page".

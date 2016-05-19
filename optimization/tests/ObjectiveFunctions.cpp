@@ -86,7 +86,7 @@ SphereGradient::~SphereGradient() {
 
 double SphereGradient::eval(const sgpp::base::DataVector& x,
                                    sgpp::base::DataVector& gradient) {
-  double result;
+  double result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
@@ -115,7 +115,7 @@ SphereHessian::~SphereHessian() {
 double SphereHessian::eval(const sgpp::base::DataVector& x,
                                   sgpp::base::DataVector& gradient,
                                   sgpp::base::DataMatrix& hessian) {
-  double result;
+  double result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
