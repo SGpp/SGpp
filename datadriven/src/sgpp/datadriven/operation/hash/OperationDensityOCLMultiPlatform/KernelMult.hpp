@@ -103,7 +103,7 @@ class KernelDensityMult {
       std::vector<T> hs;
       hs.push_back(0.0);
       for (int l = 1; l <= maxlevel; ++l) {
-        hs.push_back(1.0 / (1 << l));
+        hs.push_back(static_cast<T>(1.0 / (1 << l)));
       }
       deviceLevels.intializeTo(hs, 1, 0, maxlevel + 1);
     }
@@ -121,7 +121,7 @@ class KernelDensityMult {
       T divisor = 1.0;
       for (size_t i = 0; i < dims + 1; ++i) {
         divisors.push_back(divisor);
-        divisor /= 3.0;
+        divisor /= static_cast<T>(3.0);
       }
       deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
     }
@@ -154,7 +154,6 @@ class KernelDensityMult {
     } else {
       globalworkrange[0] = chunksize / dataBlockingSize;
     }
-    size_t real_count = globalworkrange[0];
     globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
 
     // Generate OpenCL source and build kernel if not already done

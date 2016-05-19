@@ -29,16 +29,16 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
     this->start_slave_code();
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(alpha.getPointer(), gridsize, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
+      MPI_Send(alpha.getPointer(), static_cast<int>(gridsize), MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
     // Create packages and let the slaves solve them
     double *partial_result = new double[2000];
     SimpleQueue<double> workitem_queue(gridsize, 2000);
     int chunkid = 0;
-    int messagesize = workitem_queue.receive_result(chunkid, partial_result);
+    size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
       std::cerr << messagesize << std::endl;
-      for (int i = 0; i < messagesize; i++) {
+      for (size_t i = 0; i < messagesize; i++) {
         result[chunkid + i] = partial_result[i];
       }
       messagesize = workitem_queue.receive_result(chunkid, partial_result);

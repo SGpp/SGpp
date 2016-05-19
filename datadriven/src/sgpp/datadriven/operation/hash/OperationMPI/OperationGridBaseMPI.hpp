@@ -23,13 +23,13 @@ class OperationGridMethod : public MPIOperation {
     // Store grid in integer array
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     gridsize = gridStorage.getSize();
-    int dimensions = gridStorage.getDimension();
+    size_t dimensions = gridStorage.getDimension();
     int *gridpoints = new int[gridsize * 2 * dimensions];
     size_t pointscount = 0;
     for (size_t i = 0; i < gridsize; i++) {
       sgpp::base::HashGridIndex *point = gridStorage.get(i);
       pointscount++;
-      for (int d = 0; d < dimensions; d++) {
+      for (size_t d = 0; d < dimensions; d++) {
         gridpoints[i * 2 * dimensions + 2 * d] = point->getIndex(d);
         gridpoints[i * 2 * dimensions + 2 * d + 1] = point->getLevel(d);
       }

@@ -75,7 +75,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::string currentplatformName = devices[0]->platformName;
     std::string currentdeviceName = devices[0]->deviceName;
     size_t counter = 0;
-    bool success = false;
     for (auto device : devices) {
       if (devices[counter]->platformName != currentplatformName) {
         platformcounter++;
@@ -92,7 +91,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
-        success = true;
         break;
       }
       counter++;
@@ -121,7 +119,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::string currentplatformName = devices[0]->platformName;
     std::string currentdeviceName = devices[0]->deviceName;
     size_t counter = 0;
-    bool success = false;
     for (auto device : devices) {
       if (devices[counter]->platformName != currentplatformName) {
         platformcounter++;
@@ -138,7 +135,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
                                               points, lambda);
-        success = true;
         break;
       }
       counter++;
@@ -154,10 +150,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(chunksize);
     for (size_t i = 0; i < chunksize; i++) {
-      resultVector[i] =(result[i]);
+      resultVector[i] = static_cast<T>(result[i]);
     }
     for (auto i = 0; i < gridSize; ++i) {
-      alphaVector[i] = alpha[i];
+      alphaVector[i] = static_cast<T>(alpha[i]);
     }
 
     if (verbose)

@@ -32,11 +32,11 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
     double *partial_result = new double[2000];
     SimpleQueue<double> workitem_queue(gridsize, 2000);
     int chunkid = 0;
-    int messagesize = workitem_queue.receive_result(chunkid, partial_result);
+    size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
       std::cerr << messagesize << std::endl;
-      for (int i = 0; i < messagesize; i++) {
+      for (size_t i = 0; i < messagesize; i++) {
         ret_rhs[chunkid + i] = partial_result[i];
       }
       messagesize = workitem_queue.receive_result(chunkid, partial_result);
