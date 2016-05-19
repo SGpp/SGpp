@@ -639,7 +639,7 @@ int main(int argc, char* argv[]) {
     nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    sgpp::base::DataMatrix data(0, 0);
+    sgpp::base::DataMatrix data(0, nDim);
     sgpp::base::DataVector classes(0);
     sgpp::base::DataMatrix& testdata = testdataset.getData();
     sgpp::base::DataVector& testclasses = testdataset.getTargets();

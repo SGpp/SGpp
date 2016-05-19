@@ -3,6 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
+from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 """
 @file    ASGCSampler.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -32,69 +33,112 @@ class ASGCSampler(Sampler):
     The ASGC sampler class
     """
 
-    def __init__(self):
+    def __init__(self, params, grid, refinementManager=None, stopPolicy=None):
         super(self.__class__, self).__init__()
-        self.__specification = ASGCSamplerSpecification()
-        self.__learner = None
-        self.samples = None
+        self.__grid = grid
+        self.__refinementManager = refinementManager
+        self.__stopPolicy = stopPolicy
+        self.__params = params
+
+        self.__samples = None
         self.__iteration = 0
+        self.__verbose = True
 
-    def getLearner(self):
-        return self.__learner
+    def getGrid(self):
+        return self.__grid
 
-    def setLearner(self, learner):
-        self.__learner = learner
+    def setGrid(self, grid):
+        self.__grid = grid
 
-    def getSpecification(self):
-        return self.__specification
+    def getCurrentIterationNumber(self):
+        return self.__iteration
 
-    def setSpecification(self, specification):
-        self.__specification = specification
-
-    def __getattr__(self, attr):
+    # ------------------------------------------------------------------------
+    def getCollocationNodes(self):
         """
-        Overrides built-in method if method called is not a object
-        method of this Descriptor, most probably it's a method of
-        ASGCSamplerSpecification so it tries to call the method
-        from our specification
-        @param attr: string method name
-        @return: method call in specification
+        Create a set of all collocation nodes
         """
-        return getattr(self.__specification, attr)
+        gs = self.__grid.getStorage()
+        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
+        p = DataVector(gs.getDimension())
+        for i in xrange(gs.getSize()):
+            gs.get(i).getCoords(p)
+            ps[i, :] = p.array()
 
-    def nextSamples(self):
+        return ps
+
+
+    def refineGrid(self, knowledge, qoi="_", refinets=[0]):
+        # load the time steps we use for refinement
+        oldGridSize = self.__grid.getSize()
+        oldAdmissibleSetSize = self.__refinementManager.getAdmissibleSet().getSize()
+
+        # refine
+        newCollocationNodes = self.__refinementManager.refineGrid(self.__grid,
+                                                                  knowledge,
+                                                                  self.__params,
+                                                                  qoi,
+                                                                  refinets)
+
+        # print some information
+        if self.__verbose:
+            print "iteration: %i" % self.__iteration
+            print "old grid size: %i" % oldGridSize
+            print "old AS size: %i" % oldAdmissibleSetSize
+            print "new collocation nodes: %i" % len(newCollocationNodes)
+            print "new grid size:", self.__grid.getSize()
+            print "new AS size: %i" % self.__refinementManager\
+                                          .getAdmissibleSet()\
+                                          .getSize()
+
+#         fig = plotGrid(self.__grid, self.__learner.getKnowledge().getAlpha(self.getQoI()),
+#                        self.getRefinement().getAdmissibleSet(),
+#                        self.__params, newCollocationNodes)
+# #         fig.savefig('%i.png' % self._learner.iteration)
+#         fig.show()
+#         import pdb; pdb.set_trace()
+
+        # parse them to a numpy array
+        gs = self.__grid.getStorage()
+        p = DataVector(gs.getDimension())
+        ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float')
+        for i, gp in enumerate(newCollocationNodes):
+            gp.getCoords(p)
+            ans[i, :] = p.array()
+
+        return ans
+    # ------------------------------------------------------------------------
+    def nextSamples(self, knowledge=None, qoi="_", refinets=[0]):
         """
         Generate the next samples with respect to the current knowledge
         @return: Samples, set of new samples
         """
-        # increase the iteration counter
-        self.__iteration += 1
-
-        dim = self.getParameters().getStochasticDim()
+        dim = self.__params.getStochasticDim()
         newCollocationNodes = np.ndarray([0, dim], dtype='float')
 
         # if no learning iteration has been done yet then
         # learn the regular grid
-        if self._iteration == 0:
+        if self.__iteration == 0:
             # initialize  store for samples
-            self.samples = Samples(self.getParameters())
+            self.samples = Samples(self.__params)
             # get collocation nodes
-            newCollocationNodes = self.__learner.getCollocationNodes()
+            newCollocationNodes = self.getCollocationNodes()
         # otherwise we learn the available data and refine
         # the grid adaptively
         else:
-            # check if the training has reached a limit
-            if not self.getStopPolicy().hasLimitReached(self.__learner):
+            if not self.__stopPolicy.hasLimitReached(self):
                 # refine the grid
-                newCollocationNodes = self.__learner.refineGrid()
-
-        # store them in a set of samples
-        ans = Samples(self.getParameters())
-        for p in newCollocationNodes:
-            ans.add(p, dtype=SampleType.ACTIVEUNIT)
+                newCollocationNodes = self.refineGrid(knowledge, qoi, refinets)
+            else:
+                raise AttributeError("There are no more samples available")
 
         # increase the internal counter
-        self._iteration += 1
+        self.__iteration += 1
+
+        # store them in a set of samples
+        ans = Samples(self.__params)
+        for p in newCollocationNodes:
+            ans.add(p, dtype=SampleType.ACTIVEUNIT)
 
         # join sample sets
         self.samples.combine(ans)
@@ -107,33 +151,11 @@ class ASGCSampler(Sampler):
             return True
         # if there is a stop policy check it to see if the training is complete
         else:
-            self.__learner.iteration += 1
-            ans = self.getStopPolicy() is not None and \
-                not self.getStopPolicy().isTrainingComplete(self.__learner)
-            self.__learner.iteration -= 1
-            return ans
+            return self.__stopPolicy is not None and \
+                not self.__stopPolicy.isTrainingComplete(self)
 
-    def learnData(self, dataset):
-        """
-        Learn the available data
-        @param dataset: UQSetting storing the simulation results
-        """
-        # check if there is some knowledge available
-        if dataset is None:
-            raise AttributeError('I need training data to proceed')
-
-        # learn the data
-        print "learning (%i)" % (self.getLearner().getGrid().getSize())
-        if self.getLearnWithTest():
-            self.__learner.setDataContainer(dataset, self.getTestSet())
-            self.__learner.learnDataWithTest()
-        else:
-            self.__learner.setDataContainer(dataset)
-            if self.getLearnWithFolding():
-                self.__learner.learnDataWithFolding()
-            else:
-                self.__learner.learnData()
-        print
+    def getSize(self):
+        return self.__grid.getStorage().getSize()
 
     # ----------------------------------------------------------------
     # ASGCSampler File Formatter

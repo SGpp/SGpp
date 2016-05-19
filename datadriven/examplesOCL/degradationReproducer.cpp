@@ -22,11 +22,11 @@ std::string baseFolder = "datadriven/performanceTests/scenarios/";
 
 void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
                    DataVector &alpha) {
-	std::cout << "opening file" << std::endl;
+  std::cout << "opening file" << std::endl;
   DataVector alphaReference = DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
-	std::cout << "opening done" << std::endl;
+  std::cout << "opening done" << std::endl;
   if (alphaReference.getSize() != alpha.getSize()) {
-    std::cout <<"error: size of reference vector doesn't match" << std::endl;
+    std::cout << "error: size of reference vector doesn't match" << std::endl;
   }
 
   std::ofstream outFile("differences.log");
@@ -57,7 +57,7 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
                         ") largestDifference: " + std::to_string(largestDifference) +
                         " (excepted: " +
                         std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
-//    throw sgpp::base::application_exception(message.c_str());
+    //    throw sgpp::base::application_exception(message.c_str());
     std::cout << message.c_str() << std::endl;
   } else {
     std::cout << "mse: " << mse << " ok!" << std::endl;
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
   std::string scenarioFileName =
-    baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
+      baseFolder + "friedman2_4d_300000_StreamingOCLMultiPlatform_double.scenario";
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_double.scenario";
 
@@ -86,13 +86,10 @@ int main(int argc, char **argv) {
 
   std::string parameterFile("hawaii_double_tuned.cfg");
 
-
-
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
-
 
   sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
@@ -108,12 +105,12 @@ int main(int argc, char **argv) {
       learner.learn(configuration, datasetFile);
       //  learner.learnAndCompare(configuration, datasetFile, 4);
 
-      DataVector &alpha = learner.getLearnedAlpha();
+      //      DataVector &alpha = learner.getLearnedAlpha();
       sgpp::datadriven::TestsetConfiguration testsetConfiguration =
-        scenario.getTestsetConfiguration();
-//      std::cout << "before verify" << std::endl;
-//      verifyLearned(testsetConfiguration, alpha);
-//      std::cout << "after verify" << std::endl;
+          scenario.getTestsetConfiguration();
+      //      std::cout << "before verify" << std::endl;
+      //      verifyLearned(testsetConfiguration, alpha);
+      //      std::cout << "after verify" << std::endl;
     } catch (sgpp::base::operation_exception &e) {
       std::cout << "exception caught: " << e.what() << std::endl;
     }

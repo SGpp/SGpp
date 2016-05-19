@@ -6,15 +6,20 @@ from pysgpp.extensions.datadriven.uq.uq_setting import UQSetting, UQSettingForma
 import gzip
 import re
 
-
 class UQSettingAdapter(DataAdapter):
 
-    def __init__(self, filename=""):
+    def __init__(self, uqSetting):
         """
         Constructor
         @param filename: string file name
         """
-        self.filename = filename
+        self.uqSetting = uqSetting
+
+    @classmethod
+    def fromFile(cls, filename):
+        # read from file
+        s = UQSettingFormatter().deserializeFromFile(filename)
+        return cls(UQSetting.fromJson(s))
 
     def loadData(self, qoi='_', name="train",
                  dtype=KnowledgeTypes.SIMPLE):
@@ -28,18 +33,16 @@ class UQSettingAdapter(DataAdapter):
 
         WARNING: dtype parameter not supported
         """
-        # read from file
-        s = UQSettingFormatter().deserializeFromFile(self.__filename)
-        testSetting = UQSetting.fromJson(s)
-        testData = testSetting.getTimeDependentResults(qoi)
+        data = self.uqSetting.getTimeDependentResults(qoi)
 
         # load result in a dictionary
         ans = {}
         ans[dtype] = {}
-        size = len(testData.itervalues().next())
+        numDims = self.uqSetting.getDim()
+        numberOfTimesteps = len(data.itervalues().next())
         # load data for all time steps
-        for t, values in testData.items():
-            mydata = DataMatrix(size, self._dim)
+        for t, values in data.items():
+            mydata = DataMatrix(numberOfTimesteps, numDims)
             sol = DataVector(size)
             for i, (sample, res) in enumerate(values.items()):
                 p = DataVector(sample.getActiveUnit())

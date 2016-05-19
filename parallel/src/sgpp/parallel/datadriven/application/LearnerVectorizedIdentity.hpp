@@ -39,6 +39,8 @@ class LearnerVectorizedIdentity : public sgpp::datadriven::LearnerBase {
                       const size_t numNeededIterations) override;
 
  public:
+  using LearnerBase::predict;
+
   /**
    * Constructor
    *

@@ -47,7 +47,7 @@ class SimulationLearnerBuilder(LearnerBuilder):
         if not os.path.exists(filename):
             raise AttributeError('the file "%s" does not exist' % filename)
 
-        adapter = UQSettingAdapter(filename)
+        adapter = UQSettingAdapter.fromFile(filename)
         dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
         if self._learner.dataContainer is not None:
             newDataContainer = {}

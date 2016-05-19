@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <map>
 
-
 namespace sgpp {
 namespace base {
 
@@ -42,10 +41,7 @@ class HashGridIndex {
   typedef uint32_t index_type;
 
   /// how the coordinates of the points are calculated
-  enum class PointDistribution {
-    Normal,
-    ClenshawCurtis
-  };
+  enum class PointDistribution { Normal, ClenshawCurtis };
 
   /**
    * Constructor of a n-Dim gridpoint
@@ -83,8 +79,9 @@ class HashGridIndex {
    * Serialize this Gridpoint e.g. for a storage or checkpointing
    *
    * @param ostream outstream object to which the gridpoint's information is written
+   * @param version the serialization version of the file
    */
-  void serialize(std::ostream& ostream);
+  void serialize(std::ostream& ostream, int version);
 
   /**
    * Gets the dimension of the gridpoint
@@ -94,7 +91,8 @@ class HashGridIndex {
   size_t getDimension() const;
 
   /**
-   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridIndex object
+   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridIndex
+   * object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -107,7 +105,8 @@ class HashGridIndex {
   }
 
   /**
-   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
+   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs
+   * the HashGridIndex object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -122,7 +121,8 @@ class HashGridIndex {
   }
 
   /**
-   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the HashGridIndex object
+   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the
+   * HashGridIndex object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -134,7 +134,8 @@ class HashGridIndex {
   }
 
   /**
-   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
+   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't
+   * rehash the HashGridIndex object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -165,9 +166,7 @@ class HashGridIndex {
    * @param d the dimension in which the ansatz function should be read
    * @return level
    */
-  inline level_type getLevel(size_t d) const {
-    return level[d];
-  }
+  inline level_type getLevel(size_t d) const { return level[d]; }
 
   /**
    * gets index <i>i</i> in dimension <i>d</i>
@@ -175,9 +174,7 @@ class HashGridIndex {
    * @param d the dimension in which the ansatz function should be read
    * @return index
    */
-  inline index_type getIndex(size_t d) const {
-    return index[d];
-  }
+  inline index_type getIndex(size_t d) const { return index[d]; }
 
   /**
    * Gets the point distribution of the grid point.
@@ -413,17 +410,14 @@ class HashGridIndex {
   static pointDistributionMap& typeMap();
   static pointDistributionVerboseMap& typeVerboseMap();
 
-
-  friend class HashGridIndexPointerHashFunctor;
-  friend class HashGridIndexPointerEqualityFunctor;
-  friend class HashGridIndexHashFunctor;
-  friend class HashGridIndexEqualityFunctor;
+  friend struct HashGridIndexPointerHashFunctor;
+  friend struct HashGridIndexPointerEqualityFunctor;
+  friend struct HashGridIndexHashFunctor;
+  friend struct HashGridIndexEqualityFunctor;
 };
 
 struct HashGridIndexPointerHashFunctor {
-  size_t operator()(const HashGridIndex* index) const {
-    return index->hash();
-  }
+  size_t operator()(const HashGridIndex* index) const { return index->hash(); }
 };
 
 struct HashGridIndexPointerEqualityFunctor {
@@ -433,9 +427,7 @@ struct HashGridIndexPointerEqualityFunctor {
 };
 
 struct HashGridIndexHashFunctor {
-  size_t operator()(const HashGridIndex& index) const {
-    return index.hash();
-  }
+  size_t operator()(const HashGridIndex& index) const { return index.hash(); }
 };
 
 struct HashGridIndexEqualityFunctor {

@@ -24,7 +24,11 @@ namespace optimization {
 namespace sle_solver {
 
 #ifdef USE_UMFPACK
+#if SUITESPARSE_MAIN_VERSION >= 4
+typedef SuiteSparse_long sslong;
+#else
 typedef UF_long sslong;
+#endif
 
 /**
  * @param       numeric result of umfpack_dl_numeric()

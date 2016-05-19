@@ -125,7 +125,7 @@ class DataVector {
    * If nrows is smaller than the current number of rows,
    * all superfluous entries are removed.
    *
-   * @param nrows New number of rows of the DataVector
+   * @param size New number of rows of the DataVector
    * @param value Initial value for the new entries
    */
   void resize(size_t size, double value);

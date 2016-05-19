@@ -24,8 +24,6 @@ class Euler : public ODESolver {
  private:
   /// specifies if a grid evaluation should be execute in every time step
   bool bAnimation;
-  /// specifies the evaluation per dimension when a animation is created
-  size_t evalsAnimation;
   /// specifies the type of euler that should be executed
   std::string ExMode;
   /// Pointer to sgpp::base::ScreenOutput object
@@ -40,11 +38,10 @@ class Euler : public ODESolver {
    * @param timestepSize the size of one timestep
    * @param generateAnimation set this, if you want to create a grid evaluation in every time step,
    * in order to create an animation
-   * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
   Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation = false,
-        size_t numEvalsAnimation = 20, sgpp::base::ScreenOutput* screen = NULL);
+        sgpp::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor

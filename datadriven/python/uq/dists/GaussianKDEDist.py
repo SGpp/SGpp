@@ -1,118 +1,75 @@
 from Dist import Dist
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 from pysgpp import (DataVector, DataMatrix, GaussianKDE,
-    createOperationRosenblattTransformationKDE,
-    createOperationInverseRosenblattTransformationKDE)
+                    createOperationRosenblattTransformationKDE,
+                    createOperationInverseRosenblattTransformationKDE)
 import numpy as np
 
+from EstimatedDist import EstimatedDist
 
-class GaussianKDEDist(Dist):
+
+class GaussianKDEDist(EstimatedDist):
     """
     Gaussian KDE using SG++ implementation
     """
 
     def __init__(self,
                  trainData,
-                 bounds=None,
-                 transformation=None):
-        super(GaussianKDEDist, self).__init__()
-        self.trainData = DataMatrix(trainData)
-        self.dist = GaussianKDE(self.trainData)
-        self.bounds = bounds
-        if self.bounds is None:
-            self.bounds = [[np.min(trainData[:, i]),
-                            np.max(trainData[:, i])]
-                           for i in xrange(trainData.shape[1])]
-        if len(self.bounds) == 1:
-            self.bounds = self.bounds[0]
-        if transformation is not None:
-            self.bounds = [trans.getBounds()
-                           for trans in transformation.getTransformations()]
-        self.dim = trainData.shape[1]
-        self.bandwidths = DataVector(self.dim)
-        self.dist.getBandwidths(self.bandwidths)
+                 bounds=None):
+        super(GaussianKDEDist, self).__init__(trainData, bounds)
+
+        trainData_matrix = DataMatrix(self.trainData)
+        self.dist = GaussianKDE(trainData_matrix)
 
     def pdf(self, x):
-        # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-
-        if isinstance(x, DataMatrix):
-            A = x
-            res = DataVector(A.getNrows())
-            res.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            res = DataVector(1)
-            res.setAll(0)
-
-        self.dist.pdf(A, res)
+        # transform the samples to the unit hypercube
+        x = self._convertEvalPoint(x)
+        x_matrix = DataMatrix(x)
+        res_vec = DataVector(x.shape[0])
+        self.dist.pdf(x_matrix, res_vec)
+        res = res_vec.array()
 
         if len(res) == 1:
             return res[0]
         else:
-            return res.array()
+            return res
 
     def cdf(self, x):
-        # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-        elif isMatrix(x):
-            x = DataMatrix(x)
-
-        if isinstance(x, DataMatrix):
-            A = x
-            B = DataMatrix(A.getNrows(), A.getNcols())
-            B.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            B = DataMatrix(1, len(x))
-            B.setAll(0)
+        # transform the samples to the unit hypercube
+        x = self._convertEvalPoint(x)
+        x_matrix = DataMatrix(x)
+        res_matrix = DataMatrix(x_matrix.getNrows(), x_matrix.getNcols())
+        res_matrix.setAll(0.0)
 
         # do the transformation
         opRosen = createOperationRosenblattTransformationKDE(self.dist)
-        opRosen.doTransformation(A, B)
+        opRosen.doTransformation(x_matrix, res_matrix)
 
         # transform the outcome
-        if isNumerical(x) or isinstance(x, DataVector):
-            return B.get(0, 0)
-        elif isinstance(x, DataMatrix):
-            return B.array()
+        res = res_matrix.array()
+        if res.shape[0] == 1 and res.shape[1] == 1:
+            return res[0, 0]
+        else:
+            return res
 
     def ppf(self, x):
-        # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-        elif isMatrix(x):
-            x = DataMatrix(x)
-
-        if isinstance(x, DataMatrix):
-            A = x
-            B = DataMatrix(A.getNrows(), A.getNcols())
-            B.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            B = DataMatrix(1, len(x))
-            B.setAll(0)
+        # transform the samples to the unit hypercube
+        x = self._convertEvalPoint(x)
+        x_matrix = DataMatrix(x)
+        res_matrix = DataMatrix(x_matrix.getNrows(), x_matrix.getNcols())
+        res_matrix.setAll(0.0)
 
         # do the transformation
-        opInvRosen = createOperationInverseRosenblattTransformationKDE(self.dist)
-        opInvRosen.doTransformation(A, B)
+        opRosen = createOperationInverseRosenblattTransformationKDE(self.dist)
+        opRosen.doTransformation(x_matrix, res_matrix)
 
         # transform the outcome
-        if isNumerical(x) or isinstance(x, DataVector):
-            return B.get(0, 0)
-        elif isinstance(x, DataMatrix):
-            return B.array()
+        res = res_matrix.array()
+        if res.shape[0] == 1 and res.shape[1] == 1:
+            return res[0, 0]
+        else:
+            return res
+
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
@@ -134,41 +91,5 @@ class GaussianKDEDist(Dist):
         self.dist.corrcoef(corrMatrix)
         return corrMatrix.array()
 
-    def getBounds(self):
-        return self.bounds
-
-    def getDim(self):
-        return self.dim
-
-    def getDistributions(self):
-        return [self]
-
     def __str__(self):
         return "GaussianKDEDist"
-
-#     def toJson(self):
-#         """
-#         Returns a string that represents the object
-#         """
-#         serializationString = '"module" : "' + \
-#                               self.__module__ + '",\n'
-#         # serialize dists
-#         attrName = "config"
-#         attrValue = self.__getattribute__(attrName)
-#         serializationString += '"' + attrName + '": "' + attrValue + '"'
-#
-#         return "{" + serializationString + "} \n"
-#
-#     @classmethod
-#     def fromJson(cls, jsonObject):
-#         """
-#         Restores the TNormal object from the json object with its
-#         attributes.
-#         @param jsonObject: json object
-#         @return: the restored SGDEdist object
-#         """
-#         key = 'config'
-#         if key in jsonObject:
-#             config = jsonObject[key]
-#
-#         return LibAGFDist(config)

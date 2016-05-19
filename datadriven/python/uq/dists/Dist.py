@@ -3,9 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
-from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
-from pysgpp import DataVector
 """
 @file    base.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -15,6 +12,10 @@ from pysgpp import DataVector
 
 @version  0.1
 """
+
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
+from pysgpp import DataVector
 
 from pysgpp.extensions.datadriven.uq.operations.discretization import discretizeFunction
 import numpy as np
@@ -74,7 +75,7 @@ class Dist(object):
         """
         @return: standard deviation
         """
-        raise NotImplementedError()
+        return np.sqrt(self.var())
 
     def getBounds(self):
         """

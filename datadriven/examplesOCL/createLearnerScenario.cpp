@@ -34,13 +34,13 @@ int main(int argc, char** argv) {
 
   sgpp::datadriven::InternalPrecision internalPrecision =
       sgpp::datadriven::InternalPrecision::Float;
-  std::string datasetFileName = "friedman1_10d_150000.arff";
+  std::string datasetFileName = "DR5_train.arff";
 
   double lambda = 0.0000001;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
-  gridConfig.level_ = 6;
+  gridConfig.level_ = 10;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
   // dummy values
   gridConfig.boundaryLevel_ = 0;
@@ -69,9 +69,9 @@ int main(int argc, char** argv) {
 
   std::string parameterFileName;
   if (internalPrecision == sgpp::datadriven::InternalPrecision::Double) {
-    parameterFileName = "platformDouble.cfg";
+    parameterFileName = "createPlatformDouble.cfg";
   } else {
-    parameterFileName = "platformFloat.cfg";
+    parameterFileName = "createPlatformFloat.cfg";
   }
 
   std::string basisFunctionName;

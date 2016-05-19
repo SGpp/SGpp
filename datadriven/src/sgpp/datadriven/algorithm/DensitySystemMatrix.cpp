@@ -14,52 +14,41 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
-DensitySystemMatrix::DensitySystemMatrix(sgpp::base::Grid& grid,
-    sgpp::base::DataMatrix& trainData, sgpp::base::OperationMatrix& C,
-    double lambdaRegression) {
-  this->data = &trainData;
-  this->lambda = lambdaRegression;
-
-  this->A = sgpp::op_factory::createOperationLTwoDotProduct(grid).release();
-  this->B = sgpp::op_factory::createOperationMultipleEval(grid, *(this->data)).release();
-  this->C = &C;
+DensitySystemMatrix::DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
+                                         sgpp::base::OperationMatrix& C, double lambda)
+    : lambda(lambda), C(C), data(trainData) {
+  A = op_factory::createOperationLTwoDotProduct(grid);
+  B = op_factory::createOperationMultipleEval(grid, data);
 }
 
-void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha,
-                               sgpp::base::DataVector& result) {
+DensitySystemMatrix::~DensitySystemMatrix() {}
+
+void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   // A * alpha
-  this->A->mult(alpha, result);
+  A->mult(alpha, result);
 
   // C * alpha
   base::DataVector tmp(result.getSize());
-  this->C->mult(alpha, tmp);
+  C.mult(alpha, tmp);
 
   // A * alpha + lambda * C * alpha
-  result.axpy(this->lambda, tmp);
+  result.axpy(lambda, tmp);
 }
-
 
 // Matrix-Multiplikation verwenden
 void DensitySystemMatrix::generateb(sgpp::base::DataVector& rhs) {
-  sgpp::base::DataVector y(this->data->getNrows());
+  sgpp::base::DataVector y(data.getNrows());
   y.setAll(1.0);
   // Bt * 1
-  this->B->multTranspose(y, rhs);
+  B->multTranspose(y, rhs);
   // 1 / 2M * Bt * 1
-  rhs.mult(1. / static_cast<double>(this->data->getNrows()));
-}
-
-DensitySystemMatrix::~DensitySystemMatrix() {
-  delete this->A;
-  delete this->B;
+  rhs.mult(1. / static_cast<double>(data.getNrows()));
 }
 
 }  // namespace datadriven
 }  // namespace sgpp
-

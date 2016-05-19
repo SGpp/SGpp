@@ -98,6 +98,16 @@ class DataMatrix {
   void resize(size_t nrows, size_t ncols);
 
   /**
+   * Resizes the quadratic DataMatrix to size rows and size columns.
+   * All new additional entries are uninitialized.
+   * If size is smaller than the current size of the quadratic DataMatrix,
+   * all superfluous entries are removed.
+   * 
+   * @param size New dimension of quadratic data DataMatrix
+   */
+  void resizeQuadratic(size_t size);
+
+  /**
    * Resizes the DataMatrix to nrows rows.
    * All new additional entries are set to zero.
    * If nrows is smaller than the current number of rows,
@@ -117,6 +127,14 @@ class DataMatrix {
    * @param ncols New number of columns of the DataMatrix
    */
   void resizeZero(size_t nrows, size_t ncols);
+
+  /**
+   * Resize current matrix to the submatrix Mat[row_1:row_2, col_1:col_2].
+   * 
+   * @param row_1, col_1 corresponding to left upper index of desired submatrix
+   * @param row_2, col_2 corresponding to right lower index of desired submatrix
+   */
+  void resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2);
 
   /**
    * Reserves memory for potentially inc_nrows new rows;
@@ -147,6 +165,15 @@ class DataMatrix {
    * @return Index of new row
    */
   size_t appendRow(const DataVector& vec);
+
+  /**
+   * Appends a new Col with data contained in DataVector vec
+   * and returns index of new col.
+   * 
+   * @param vec DataVector (length has to match getNcols()) with data
+   * @return Index of new col
+   */
+  size_t appendCol(const DataVector& vec);
 
   /**
    * Sets all entries of DataMatrix to value.

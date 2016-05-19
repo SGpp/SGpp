@@ -172,6 +172,31 @@ void DataMatrix::resize(size_t nrows, size_t ncols) {
   this->unused = 0;
 }
 
+void DataMatrix::resizeQuadratic(size_t size) {
+  // Throw exception if matrix is not quadratic
+  if (this->nrows != this->ncols) {
+    throw sgpp::base::data_exception("DataMatrix::resizeQuadratic : DataMatrix is not quadratic");
+  } else if (this->nrows == size) {
+    // don't do anything, if matrix already has the correct size
+    return;
+  }
+
+  // create new matrix
+  double* newdata = new double[size * size];
+
+  for (size_t i = 0; i < std::min(this->ncols, size); i++) {
+    std::memcpy(&newdata[i * size], this->data + i * (this->ncols),
+                std::min(this->ncols, size) * sizeof(double));
+  }
+
+  // Set new characteristics of DataMatrix
+  delete[] this->data;
+  this->data = newdata;
+  this->nrows = size;
+  this->ncols = size;
+  this->unused = 0;
+}
+
 void DataMatrix::resizeZero(size_t nrows) {
   // don't do anything, if matrix already has the correct size
   if (nrows == this->nrows) {
@@ -220,6 +245,34 @@ void DataMatrix::resizeZero(size_t nrows, size_t ncols) {
 
   this->nrows = nrows;
   this->ncols = ncols;
+  this->unused = 0;
+}
+
+void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2) {
+  if ((row_1 > row_2) ||(col_1 > col_2)) {
+    throw sgpp::base::data_exception(
+        "DataMatrix::getSubMatrix : Expected indices do not fulfill requirements");
+  } else if ((this->nrows < row_2) || (this->ncols < col_2)) {
+    throw sgpp::base::data_exception("DataMatrix::getSubMatrix : Indices are out of bounds");
+  } else if ((row_1 == row_2) && (col_1 == col_2)) {
+    // do nothing
+    return;
+  }
+
+  // create new matrix
+  double* newdata = new double[(row_2 - row_1 + 1) * (col_2 - col_1 + 1)];
+
+  for (size_t i = 0; i < (row_2 - row_1 + 1); i++) {
+    std::memcpy(&newdata[i * (col_2 - col_1 + 1)],
+                this->data + (row_1 - 1) * this->ncols + (col_1 -1) + i * this->ncols,
+                (col_2 - col_1 + 1) * sizeof(double));
+  }
+
+  // Set new characteristics of DataMatrix
+  delete[] this->data;
+  this->data = newdata;
+  this->nrows = row_2 - row_1 + 1;
+  this->ncols = col_2 - col_1 + 1;
   this->unused = 0;
 }
 
@@ -274,6 +327,30 @@ size_t DataMatrix::appendRow(const DataVector& vec) {
   // copy data
   std::memcpy(&this->data[x * this->ncols], vec.getPointer(), this->ncols * sizeof(double));
   return x;
+}
+
+size_t DataMatrix::appendCol(const DataVector& vec) {
+  if (vec.getSize() != this->nrows) {
+    throw sgpp::base::data_exception("DataMatrix::appendCol : Dimensions do not match");
+  }
+
+  // create new vector
+  double* newdata = new double[this->nrows  * (this->ncols + 1)];
+
+  for (size_t i = 0; i < this->nrows; i++) {
+    std::memcpy(&newdata[i * (this->ncols+1)], this->data + i * (this->ncols),
+                this->ncols * sizeof(double));
+  }
+
+  for (size_t j = 0; j < this->nrows; j++) {
+    newdata[j * (this->ncols + 1) + this->ncols] = vec[j];
+  }
+
+  delete[] this->data;
+  this->data = newdata;
+  this->ncols++;
+  unused = 0;
+  return(this->ncols);
 }
 
 void DataMatrix::setAll(double value) {
@@ -644,6 +721,10 @@ void DataMatrix::normalizeDimension(size_t d, double border) {
 
 void DataMatrix::toString(std::string& text) const {
   std::stringstream str;
+
+  str << std::scientific;
+  str.precision(20);
+
   str << "[";
 
   for (size_t i = 0; i < nrows; i++) {
@@ -652,6 +733,10 @@ void DataMatrix::toString(std::string& text) const {
     for (size_t j = 0; j < ncols; j++) {
       if (j != 0) {
         str << ", ";
+        // add linebreak for readability
+        if (j % 20 == 0) {
+          str << std::endl;
+        }
       }
 
       str << data[i * ncols + j];

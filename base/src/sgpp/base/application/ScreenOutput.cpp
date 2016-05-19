@@ -62,7 +62,7 @@ void ScreenOutput::update(size_t progress, std::string status) {
 
   std::cout << "[";
 
-  for (i = 0; i < static_cast<int>((static_cast<double>(progress)) * 0.64); i++) {
+  for (i = 0; i < static_cast<size_t>(static_cast<double>(progress) * 0.64); i++) {
     std::cout << "=";
   }
 

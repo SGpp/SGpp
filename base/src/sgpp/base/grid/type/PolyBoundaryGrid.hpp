@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -43,7 +42,7 @@ class PolyBoundaryGrid : public Grid {
 
   const SBasis& getBasis() override;
   sgpp::base::GridType getType() override;
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   GridGenerator& getGenerator() override;
 

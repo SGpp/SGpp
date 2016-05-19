@@ -207,7 +207,8 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
   for (size_t i = 0; i < tunableParameters.size(); i++) {
     TunableParameter &tunableParameter = tunableParameters[i];
-    std::cout << tunableParameter.getName() << " values: " << tunableParameter.getValues().size() << std::endl;
+    std::cout << tunableParameter.getName() << " values: " << tunableParameter.getValues().size()
+              << std::endl;
     if (i == 0) {
       configuredExperiments = tunableParameter.getValues().size();
     }
@@ -245,11 +246,11 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
   }
 
   if (verbose) {
-	std::cout << "-----------------------------------" << std::endl;
-	for (std::string &key : kernelNode.keys()) {
-	  std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
-	}
-	std::cout << "-----------------------------------" << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
+    for (std::string &key : kernelNode.keys()) {
+      std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
+    }
+    std::cout << "-----------------------------------" << std::endl;
     std::cout << "evaluating combination (" << currentExperiment << "/" << configuredExperiments
               << ") for current device" << std::endl;
   }

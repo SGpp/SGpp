@@ -50,6 +50,19 @@ class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
                                 const DataVector& point,
                                 size_t derivDim) override;
 
+  /**
+   * @param       alpha               coefficient matrix (each column is a coefficient vector)
+   * @param       point               evaluation point
+   * @param       derivDim            dimension in which the partial derivative should be taken
+   *                                  (0, ..., d-1)
+   * @param[out]  partialDerivative   values of the partial derivatives of the linear combination
+   *                                  (the j-th entry corresponds to the j-th column of alpha)
+   */
+  void evalPartialDerivative(const DataMatrix& alpha,
+                             const DataVector& point,
+                             size_t derivDim,
+                             DataVector& partialDerivative) override;
+
  protected:
   /// storage of the sparse grid
   GridStorage& storage;
