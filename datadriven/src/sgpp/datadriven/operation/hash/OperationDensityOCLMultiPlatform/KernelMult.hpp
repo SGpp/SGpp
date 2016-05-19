@@ -115,18 +115,16 @@ class KernelDensityMult {
       use_less = kernelConfiguration["USE_LESS_OPERATIONS"].getBool();
     // Checking whether to use ternary operator for integrating base functions with
     // the same level
-    if (use_less) {
-      if (kernelConfiguration.contains("DO_NOT_USE_TERNARY"))
-        do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
-      if (do_not_use_ternary) {
-        std::vector<T> divisors;
-        T divisor = 1.0;
-        for (size_t i = 0; i < dims + 1; ++i) {
-          divisors.push_back(divisor);
-          divisor /= 3.0;
-        }
-        deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
+    if (kernelConfiguration.contains("DO_NOT_USE_TERNARY"))
+      do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
+    if (do_not_use_ternary) {
+      std::vector<T> divisors;
+      T divisor = 1.0;
+      for (size_t i = 0; i < dims + 1; ++i) {
+        divisors.push_back(divisor);
+        divisor /= 3.0;
       }
+      deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
     }
 
     // Finish writing all buffers
@@ -234,7 +232,7 @@ class KernelDensityMult {
       }
       argument_counter++;
     }
-    if (use_less && do_not_use_ternary) {
+    if (do_not_use_ternary) {
       err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
                            this->deviceDivisors.getBuffer());
       if (err != CL_SUCCESS) {
