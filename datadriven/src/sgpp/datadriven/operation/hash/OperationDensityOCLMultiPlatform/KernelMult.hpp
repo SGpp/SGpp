@@ -60,7 +60,7 @@ class KernelDensityMult {
       device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
       deviceAlpha(device), deviceResultData(device), deviceLevels(device),
       deviceDivisors(device), kernelMult(nullptr),
-      kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
+      kernelSourceBuilder(kernelConfiguration), manager(manager),
       deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), use_level_cache(false),
       use_less(false), do_not_use_ternary(false) {
     this->verbose = true;
@@ -107,7 +107,6 @@ class KernelDensityMult {
       }
       deviceLevels.intializeTo(hs, 1, 0, maxlevel + 1);
     }
-
 
     // Check whether to use more operations to avoid branching on integrating base functions
     // with same level
@@ -352,6 +351,20 @@ class KernelDensityMult {
 
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(102400));
+        }
+        if (kernelNode.contains("USE_LEVEL_CACHE") == false) {
+          kernelNode.addIDAttr("USE_LEVEL_CACHE", false);
+        }
+        if (kernelNode.contains("USE_LESS_OPERATIONS") == false) {
+          kernelNode.addIDAttr("USE_LESS_OPERATIONS", true);
+        }
+
+        if (kernelNode.contains("DO_NOT_USE_TERNARY") == false) {
+          kernelNode.addIDAttr("DO_NOT_USE_TERNARY", false);
+        }
+
+        if (kernelNode.contains("USE_IMPLICIT") == false) {
+          kernelNode.addIDAttr("USE_IMPLICIT", true);
         }
       }
     }

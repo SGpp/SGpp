@@ -32,22 +32,6 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   bool do_not_use_ternary;
   bool use_implicit_zero;
 
-  std::string getData(std::string dim, size_t dataBlockingIndex) {
-    std::stringstream output;
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-      output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-      output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
-      output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim
-             << ") + " << dataBlockingIndex << "]";
-    } else {
-      std::string error("OCL Error: Illegal value for parameter \"KERNEL_STORE_DATA\"");
-      throw new base::operation_exception(error.c_str());
-    }
-    return output.str();
-  }
-
   /// Generate the opencl code to save the fixed gridpoint of a workitem to the local memory
   std::string save_from_global_to_private(size_t dimensions) {
     std::stringstream output;
@@ -231,10 +215,10 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
 
 
  public:
-  SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
-                    size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims), dataBlockSize(1),
-      use_level_cache(false), use_less(false), do_not_use_ternary(false) {
+  SourceBuilderMult(json::Node &kernelConfiguration) :
+      kernelConfiguration(kernelConfiguration), dataBlockSize(1),
+      use_level_cache(false), use_less(true), do_not_use_ternary(false),
+      use_implicit_zero(true) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
