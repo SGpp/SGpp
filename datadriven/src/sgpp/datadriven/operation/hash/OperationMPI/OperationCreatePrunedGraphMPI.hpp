@@ -26,7 +26,7 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
         OperationGraphMethodMPI(data, grid.getDimension(), k) {
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(alpha.getPointer(), gridsize, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
+      MPI_Send(alpha.getPointer(), static_cast<int>(gridsize), MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
   }
   std::vector<int> createPrunedGraph(double treshold) {
     OperationGridMethod::start_slave_code();
@@ -38,10 +38,10 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
     int *partial_result = new int[2000 * k];
     SimpleQueue<int> workitem_queue(datasize / dimensions, 2000);
     int chunkid = 0;
-    int messagesize = workitem_queue.receive_result(chunkid, partial_result);
+    size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
-      for (int i = 0; i < messagesize; i++) {
+      for (size_t i = 0; i < messagesize; i++) {
         ret_graph[chunkid*k+i] = partial_result[i];
       }
       messagesize = workitem_queue.receive_result(chunkid, partial_result);

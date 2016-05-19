@@ -72,7 +72,7 @@ class KernelCreateGraph {
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
 
     if (kernelConfiguration.contains("APPROX_REG_COUNT")) {
-      int approxRegCount = kernelConfiguration["APPROX_REG_COUNT"].getUInt();
+      size_t approxRegCount = kernelConfiguration["APPROX_REG_COUNT"].getUInt();
       // Check range and whether x is a power of 2 or not
       if (approxRegCount < k || approxRegCount > localSize ||
           (approxRegCount & (approxRegCount - 1))) {

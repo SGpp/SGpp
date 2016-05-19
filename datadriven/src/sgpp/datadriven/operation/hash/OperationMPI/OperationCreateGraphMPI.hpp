@@ -33,10 +33,10 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
     int *partial_result = new int[2000 * k];
     SimpleQueue<int> workitem_queue(datasize / dimensions, 2000);
     int chunkid = 0;
-    int messagesize = workitem_queue.receive_result(chunkid, partial_result);
+    size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
-      for (int i = 0; i < messagesize; i++) {
+      for (size_t i = 0; i < messagesize; i++) {
         returngraph[chunkid*k+i] = partial_result[i];
       }
       messagesize = workitem_queue.receive_result(chunkid, partial_result);
