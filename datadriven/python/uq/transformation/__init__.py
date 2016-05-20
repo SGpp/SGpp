@@ -8,7 +8,7 @@ __version__ = "0.1"
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from InverseCDFTransformation import InverseCDFTransformation
+from RosenblattTransformation import RosenblattTransformation
 from JointTransformation import JointTransformation
 from LinearTransformation import LinearTransformation
 from Transformation import Transformation

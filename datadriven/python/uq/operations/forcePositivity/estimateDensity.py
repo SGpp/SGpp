@@ -7,50 +7,35 @@ Created on Feb 6, 2015
 
 from interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
-import ConfigParser as cp
+import os
+import tempfile, uuid, json
 
 
 class EstimateDensityAlgorithm(InterpolationAlgorithm):
 
-    def __init__(self, config):
-        # load path and file names of the grid and if the coefficients from
-        # the config file
-        s = cp.ConfigParser()
-        s.optionxform = str  # force the parser to read keywords case sensitive
-        s.read(config)
-        if 'gridFile' not in s.options('dmest'):
-            raise AttributeError("option 'gridFile' is required in section 'dmest'")
-        if 'writeGridFile' not in s.options('dmest'):
-            raise AttributeError("option 'writeGridFile' is required in section 'dmest'")
-        if 'writeAlphaFile' not in s.options('dmest'):
-            raise AttributeError("option 'writeAlphaFile' is required in section 'dmest'")
+    def __init__(self, trainSamples, config={}):
+        self.config = config.copy()
+        self.trainSamples = trainSamples
 
-        # load the file where the grid is stored
-        self.gridfile = s.get('dmest', 'writeGridFile')
-
-        if self.gridfile != s.get('dmest', 'gridFile'):
-            raise AttributeError("option 'writeGridFile' has to be the same as 'gridFile'")
+        if "grid_filename" in self.config:
+            self.gridfile = self.config["grid_filename"]
+        else:
+            # get temp directory
+            self.gridfile = os.path.join(tempfile.gettempdir(),
+                                         "sgde-grid-%s.grid" % str(uuid.uuid4()))
+            self.config["grid_filename"] = self.gridfile
 
         # remove refinement if there is some
-        if "refNr" in s.options("dmest"):
-            s.set('dmest', 'refNr', 0)
+        if "refinement_numSteps" in self.config:
+            self.config["refinement_numSteps"] = 0
 
-        # write new config to file
-        tmpConfig = "%s.tmp" % config
-        fd = open(tmpConfig, "w")
-        s.write(fd)
-        fd.close()
-
-        self.config = tmpConfig
-
-    def computeHierarchicalCoefficients(self, grid, alpha, newGridPoints):
+    def computeHierarchicalCoefficients(self, grid, alpha, addedGridPoints=None):
         # serialize grid
         fd = open(self.gridfile, "w")
         fd.write(grid.serialize())
         fd.close()
 
         # estimate the density on the given grid
-        dist = SGDEdist.byConfig(self.config)
+        dist = SGDEdist.byLearnerSGDEConfig(self.trainSamples, config=self.config)
 
-        # return new new coefficient vector
         return dist.alpha

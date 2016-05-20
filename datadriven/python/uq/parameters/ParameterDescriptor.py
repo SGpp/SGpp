@@ -1,11 +1,12 @@
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
                           Lognormal, Beta, MultivariateNormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
-                                   InverseCDFTransformation)
+                                                            RosenblattTransformation)
 
 from DeterministicParameter import DeterministicParameter
 from UncertainParameter import UncertainParameter
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.dists.DataDist import DataDist
 
 
 class ParameterDescriptor(object):
@@ -60,22 +61,6 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         self._dist = None
         self.__trans = None
 
-    def withSGDEDistribution(self, dist):
-        if isinstance(dist, SGDEdist):
-            self._dist = dist
-        else:
-            raise AttributeError('the argument needs to be a SGDEDist object')
-        return self
-
-    def withSGDEConfig(self, config, *args, **kws):
-        """
-        Estimates the density from training data
-        @param config: configuration file for density estimation
-        @return: self
-        """
-        self._dist = SGDEdist(config, *args, **kws)
-        return self
-
     def withUniformDistribution(self, a, b):
         self._dist = Uniform(a, b)
         return self
@@ -100,6 +85,10 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         self._dist = MultivariateNormal(mu, cov, a, b)
         return self
 
+    def withSampleDistribution(self, samples):
+        self._dist = DataDist(samples)
+        return self
+
     def withDistribution(self, dist):
         if issubclass(dist.__class__, Dist):
             self._dist = dist
@@ -117,13 +106,11 @@ class UncertainParameterDesciptor(ParameterDescriptor):
                                   LinearTransformation' % self.__name)
         return self
 
-    def withInverseCDFTransformation(self):
+    def withRosenblattTransformation(self):
         if self._dist is not None:
-            self.__trans = InverseCDFTransformation(self._dist)
+            self.__trans = RosenblattTransformation(self._dist)
         else:
-            raise AttributeError('the distribution of "%s" is not specified \
-                                  yet but it is needed to know to apply the \
-                                  InverseCDFTransformation' % self.__name)
+            raise AttributeError('the distribution of "%s" is not specified yet but it is needed to know to apply the Rosenblatt transformation' % self.__name)
         return self
 
     def andGetResult(self):

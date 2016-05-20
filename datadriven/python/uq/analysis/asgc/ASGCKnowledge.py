@@ -59,7 +59,7 @@ class ASGCKnowledge(object):
         get available iterations
         @return: sorted list of integes
         """
-        return self.__alphas.keys()
+        return self.__grids.keys()
 
     def getIteration(self):
         """
@@ -213,6 +213,9 @@ class ASGCKnowledge(object):
         self.__iteration = iteration
         self.__grids[iteration][qoi] = copyGrid(grid)
         self.__alphas[iteration][qoi][dtype][t] = DataVector(alpha)
+
+    def clearAlphas(self):
+        self.__alphas = {}
 
     # ----------------------------------------------------------------
     # ASGCKnowledge File Formatter
