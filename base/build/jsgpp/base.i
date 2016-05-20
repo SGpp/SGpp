@@ -5,6 +5,16 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
+// -------------------------------------------------------
+// shared pointer declarations
+// this needs to be done before the declarations of the types themselves
+//%include <std_shared_ptr.i>
+//%shared_ptr(sgpp::base::Grid)
+//%shared_ptr(sgpp::base::DataVector)
+//%shared_ptr(sgpp::base::DataMatrix)
+// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
+// -------------------------------------------------------
+
 namespace std {
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
@@ -109,6 +119,12 @@ namespace std {
 %include "base/src/sgpp/base/tools/GridPrinter.hpp"
 %include "base/src/sgpp/base/tools/GridPrinterForStretching.hpp"
 %include "base/src/sgpp/base/tools/StdNormalDistribution.hpp"
+%include "base/src/sgpp/base/tools/QuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
+
+%include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
 
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
@@ -200,7 +216,7 @@ namespace std {
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-//%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+//%apply std::vector<double> *INPUT { std::vector<double>& point };
 
 %template(SGetAffectedBasisFunctions) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBase>;
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;

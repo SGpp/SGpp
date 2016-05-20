@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <string>
+#include <random>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/datatypes/DataMatrix.hpp"
@@ -13,6 +14,30 @@
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
 #include "sgpp/datadriven/application/GaussianKDE.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridStorage;
+
+void randu(DataVector& rvar, std::mt19937& generator) {
+  std::uniform_real_distribution<double> distribution(0.0, 1.0);
+  for (size_t j = 0; j < rvar.getSize(); ++j) {
+    rvar[j] = distribution(generator);
+  }
+}
+
+void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
+  size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
+
+  std::mt19937 generator(seedValue);
+  DataVector sample(ndim);
+  for (size_t i = 0; i < nsamples; ++i) {
+    randu(sample, generator);
+    rvar.setRow(i, sample);
+  }
+}
 
 int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
@@ -27,6 +52,7 @@ int main(int argc, char** argv) {
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
+  //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
@@ -39,8 +65,8 @@ int main(int argc, char** argv) {
   sgpp::solver::SLESolverConfiguration solverConfig;
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
-  solverConfig.eps_ = 1e-10;
-  solverConfig.threshold_ = 1e-10;
+  solverConfig.eps_ = 1e-14;
+  solverConfig.threshold_ = 1e-14;
 
   // configure regularization
   std::cout << "# create regularization config" << std::endl;
@@ -99,4 +125,25 @@ int main(int argc, char** argv) {
   std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
   kde.cov(C);
   std::cout << C.toString() << std::endl;
+
+  std::cout << "------------------------------------------------------" << std::endl;
+  // inverse Rosenblatt transformation
+  auto opInvRos =
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
+  sgpp::base::DataMatrix points(12, gridConfig.dim_);
+  randu(points);
+
+  std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << points.toString() << std::endl;
+
+  sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
+  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
+
+  points.setAll(0.0);
+  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
+  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
+  std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << pointsCdf.toString() << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << points.toString() << std::endl;
 }

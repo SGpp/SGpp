@@ -13,6 +13,7 @@
 #include <utility>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -60,14 +61,14 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   for (++it2; it2 != coord_pdf.end(); ++it2) {
     // (*it).first : the coordinate
     // (*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
+    area = ((*it2).first - (*it1).first) / 2 * (it1->second + it2->second);
 
     // make sure that the cdf is monotonically increasing
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
     // OF NON POSITIVE DENSITY
     if (area < 0) {
-      std::cerr << "warning: negative area encountered (inverse) " << (*it1).second << ", "
-                << (*it2).second << std::endl;
+      std::cerr << "warning: negative area encountered (inverse) " << it1->second << ", "
+                << it2->second << std::endl;
       area = 0;
     }
 

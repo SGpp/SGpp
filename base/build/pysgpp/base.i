@@ -8,10 +8,11 @@
 // -------------------------------------------------------
 // shared pointer declarations
 // this needs to be done before the declarations of the types themselves
-%include <std_shared_ptr.i>
-%shared_ptr(sgpp::base::Grid)
-%shared_ptr(sgpp::base::DataVector)
-%shared_ptr(sgpp::base::DataMatrix)
+//%include <std_shared_ptr.i>
+//%shared_ptr(sgpp::base::Grid)
+//%shared_ptr(sgpp::base::DataVector)
+//%shared_ptr(sgpp::base::DataMatrix)
+// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
 // -------------------------------------------------------
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
@@ -160,7 +161,7 @@ namespace std {
 %template(SLinearModifiedBase) sgpp::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) sgpp::base::PolyBasis<unsigned int, unsigned int>;
 %template(SPolyBoundaryBase) sgpp::base::PolyBoundaryBasis<unsigned int, unsigned int>;
-//%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) sgpp::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) sgpp::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
 %template(SWaveletModifiedBase) sgpp::base::WaveletModifiedBasis<unsigned int, unsigned int>;

@@ -12,6 +12,20 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_200 Version 2.0.0, 2016/05/20
+- Download:
+  <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.0.0.tar.gz">
+  sgpp_2.0.0.tar.gz</a>
+
+As we have retructured (and significantly improved) several of the interfaces, we switched to a new, major version. As we don't provide backwards compatibility, we list here the most Important changes:
+- Corrected syntax for getter and setter functions, e.g. sgpp::base::Grid::getDimension()
+- 
+
+New features:
+- Improved Scons support
+- Bug fixes in Scons script for incompatible versions of icc and gcc
+- More unit tests
+
 @subsection downloads_history_110 Version 1.1.0, 2016/02/24
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_1.1.0.tar.gz">

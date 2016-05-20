@@ -66,6 +66,8 @@ struct RegularGridConfiguration {
   size_t maxDegree_;
   /// level of boundary grid
   size_t boundaryLevel_;
+  /// string to serialized grid
+  std::string filename_;
 };
 
 /**
