@@ -27,7 +27,7 @@ class OperationMakePositiveFast(object):
         self.grid = grid
         self.numDims = grid.getStorage().getDimension()
         self.maxLevel = grid.getStorage().getMaxLevel()
-        self.verbose = True
+        self.verbose = False
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
         if self.candidateSearchAlgorithm is None:
@@ -35,6 +35,8 @@ class OperationMakePositiveFast(object):
 
         self.maxNewGridPoints = 10
         self.addAllGridPointsOnNextLevel = True
+
+        self.lastMinimumCandidateLevelSum = None
 
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
@@ -167,45 +169,48 @@ class OperationMakePositiveFast(object):
         gs = grid.getStorage()
         nonExistingCandidates = [gp for gp in candidates if not gs.has_key(gp)]
 
-        # evaluate the remaining candidates
-        samples = np.ndarray((len(nonExistingCandidates), self.numDims))
-        p = DataVector(self.numDims)
-        for i, gp in enumerate(nonExistingCandidates):
-            gp.getCoords(p)
-            samples[i, :] = p.array()
-        eval = evalSGFunctionMulti(grid, alpha, samples)
-
-        negativeNonExistingCandidates = [gp for i, gp in enumerate(nonExistingCandidates) if eval[i] < 0.0]
-
         # sort the non existing grid points by level
-        finalCandidates = self.sortCandidatesByLevelSum(negativeNonExistingCandidates)
+        finalCandidates = self.sortCandidatesByLevelSum(nonExistingCandidates)
 
         levelSums = sorted(finalCandidates.keys())
-        if self.verbose:
-            cntCandidates = 0
-            for levelSum in levelSums:
-                cntCandidates += len(finalCandidates[levelSum])
-                print "# candidates          : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[levelSum]),
-                                                                             len(candidates),
-                                                                             levelSum,
-                                                                             np.max(levelSum))
-            print "                        ----"
-            print "                        %i" % cntCandidates
+        if self.lastMinimumCandidateLevelSum is None:
+            ix = 0
+        else:
+            ixs = np.where(np.array(levelSums) == self.lastMinimumCandidateLevelSum)[0]
+            if len(ixs) == 0:
+                ix = 0
+            elif len(ixs) == 1:
+                ix = ixs[0] + 1
+            else:
+                raise AttributeError("this should never happen")
 
         done = False
-        i = 0
         addedGridPoints = []
         minLevelSum = -1
         nextLevelCosts = 0
 
-        while not done and i < len(levelSums):
-            minLevelSum = levelSums[i]
+        while not done and ix < len(levelSums):
+            minLevelSum = levelSums[ix]
+            self.lastMinimumCandidateLevelSum = minLevelSum
+
+            currentCandidates = finalCandidates[minLevelSum]
             if self.verbose:
-                print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[minLevelSum]),
+                print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(currentCandidates),
                                                                              len(candidates),
                                                                              minLevelSum,
                                                                              np.max(levelSums))
-            for gp in finalCandidates[minLevelSum]:
+
+            # evaluate the remaining candidates
+            samples = np.ndarray((len(currentCandidates), self.numDims))
+            p = DataVector(self.numDims)
+            for j, gp in enumerate(currentCandidates):
+                gp.getCoords(p)
+                samples[j, :] = p.array()
+            eval = evalSGFunctionMulti(grid, alpha, samples)
+
+            negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < 0.0]
+
+            for gp in negativeNonExistingCandidates:
                 addedGridPoints += insertPoint(grid, gp)
                 addedGridPoints += insertHierarchicalAncestors(grid, gp)
 
@@ -217,7 +222,7 @@ class OperationMakePositiveFast(object):
                 nextLevelCosts = len(finalCandidates[minLevelSum])
                 done = True
 
-            i += 1
+            ix += 1
 
         # recompute the leaf property and return the result
         grid.getStorage().recalcLeafProperty()
