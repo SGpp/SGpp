@@ -22,7 +22,7 @@ HashGridIterator::HashGridIterator(HashGridStorage& storage) :
   }
 
   index.rehash();
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 
@@ -37,7 +37,7 @@ HashGridIterator::HashGridIterator(HashGridIterator& copy) :
   }
 
   index.rehash();
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 HashGridIterator::~HashGridIterator() {
@@ -51,25 +51,25 @@ HashGridIterator::resetToLevelZero() {
   }
 
   index.rehash();
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
 HashGridIterator::resetToLeftLevelZero(size_t dim) {
   index.set(dim, 0, 0);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
 HashGridIterator::resetToRightLevelZero(size_t dim) {
   index.set(dim, 0, 1);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
 HashGridIterator::resetToLevelOne(size_t d) {
   index.set(d, 1, 1);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
@@ -78,7 +78,7 @@ HashGridIterator::leftChild(size_t dim) {
   index_type::index_type i;
   index.get(dim, l, i);
   index.set(dim, l + 1, 2 * i - 1);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
@@ -87,7 +87,7 @@ HashGridIterator::rightChild(size_t dim) {
   index_type::index_type i;
   index.get(dim, l, i);
   index.set(dim, l + 1, 2 * i + 1);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
@@ -100,7 +100,7 @@ HashGridIterator::up(size_t d) {
   i += i % 2 == 0 ? 1 : 0;
 
   index.set(d, l - 1, i);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
@@ -109,7 +109,7 @@ HashGridIterator::stepLeft(size_t d) {
   index_type::index_type i;
   index.get(d, l, i);
   index.set(d, l, i - 2);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 void
@@ -118,7 +118,7 @@ HashGridIterator::stepRight(size_t d) {
   index_type::index_type i;
   index.get(d, l, i);
   index.set(d, l, i + 2);
-  this->seq_ = storage.getSequenceNumber(&index);
+  this->seq_ = storage.getSequenceNumber(index);
 }
 
 bool

@@ -184,12 +184,12 @@ BOOST_AUTO_TEST_CASE(testSeq) {
   i.set(0, 1, 1);
   i.getLeftChild(0);
 
-  size_t seq = s.getSequenceNumber(&i);
+  size_t seq = s.getSequenceNumber(i);
   BOOST_CHECK(!(s.isValidSequenceNumber(seq)));
 
   i.getLeftChild(0);
 
-  seq = s.getSequenceNumber(&i);
+  seq = s.getSequenceNumber(i);
   BOOST_CHECK(s.isValidSequenceNumber(seq));
 }
 
