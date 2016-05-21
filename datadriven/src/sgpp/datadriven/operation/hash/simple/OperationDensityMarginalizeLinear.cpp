@@ -80,7 +80,7 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
-    mseqNr = mgs->getSequenceNumber(&mgp);
+    mseqNr = mgs->getSequenceNumber(mgp);
     /**
      * Attention:
      * The integral of one basis functions changes for if another

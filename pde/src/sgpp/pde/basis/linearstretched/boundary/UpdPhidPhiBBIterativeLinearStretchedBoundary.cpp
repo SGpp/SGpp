@@ -42,7 +42,7 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
-            result[storage->getSequenceNumber(&index_zero)] += ((-1.0 * Qqout) * alpha[i]);
+            result[storage->getSequenceNumber(index_zero)] += ((-1.0 * Qqout) * alpha[i]);
           }
         }
       }
@@ -61,7 +61,7 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
-            result[storage->getSequenceNumber(&index_zero)] += ((-1.0) * alpha[i]);
+            result[storage->getSequenceNumber(index_zero)] += ((-1.0) * alpha[i]);
           }
         }
       }

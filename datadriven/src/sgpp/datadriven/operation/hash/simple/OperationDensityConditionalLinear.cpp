@@ -115,7 +115,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
-    mseqNr = mgs->getSequenceNumber(&mgp);
+    mseqNr = mgs->getSequenceNumber(mgp);
     // update corresponding coefficient
     malpha[mseqNr] += alpha[seqNr] * zeta[seqNr];
   }

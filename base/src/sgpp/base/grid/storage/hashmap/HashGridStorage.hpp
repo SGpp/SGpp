@@ -302,7 +302,7 @@ class HashGridStorage {
    *
    * @return the seq number for index
    */
-  size_t getSequenceNumber(HashGridIndex* index);
+  size_t getSequenceNumber(HashGridIndex& index) const;
 
   /**
    * Tests if seq number does not point to a valid grid index
@@ -478,8 +478,8 @@ bool inline HashGridStorage::isContaining(HashGridIndex& index) const {
   return map.find(&index) != map.end();
 }
 
-size_t inline HashGridStorage::getSequenceNumber(HashGridIndex* index) {
-  grid_map_iterator iter = map.find(index);
+size_t inline HashGridStorage::getSequenceNumber(HashGridIndex& index) const {
+  grid_map_const_iterator iter = map.find(&index);
 
   if (iter != map.end()) {
     return iter->second;

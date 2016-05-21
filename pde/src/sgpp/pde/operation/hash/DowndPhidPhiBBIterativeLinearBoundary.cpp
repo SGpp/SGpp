@@ -46,7 +46,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                result[storage->getSequenceNumber(&index_one)] += ((-1.0 * Qqout) * alpha[i]);
+                result[storage->getSequenceNumber(index_one)] += ((-1.0 * Qqout) * alpha[i]);
               }
             }
           }
@@ -82,7 +82,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                result[storage->getSequenceNumber(&index_one)] += ((-1.0) * alpha[i]);
+                result[storage->getSequenceNumber(index_one)] += ((-1.0) * alpha[i]);
               }
             }
           }
