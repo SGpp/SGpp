@@ -58,9 +58,11 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
   _seqr1 = index.seq();
   _valr1 = storage->isValidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
 
-  if (!storage->isValidSequenceNumber(_seql1)) result[_seql1] = 11.0 / 75.0 * _vall1 + 1.0 / 25.0 * _valr1;
+  if (!storage->isValidSequenceNumber(_seql1))
+    result[_seql1] = 11.0 / 75.0 * _vall1 + 1.0 / 25.0 * _valr1;
 
-  if (!storage->isValidSequenceNumber(_seqr1)) result[_seqr1] = 11.0 / 75.0 * _valr1 + 1.0 / 25.0 * _vall1;
+  if (!storage->isValidSequenceNumber(_seqr1))
+    result[_seqr1] = 11.0 / 75.0 * _valr1 + 1.0 / 25.0 * _vall1;
 
   //
   //    result[_seql1] = 11.0 / 75.0 * source[_seql1];

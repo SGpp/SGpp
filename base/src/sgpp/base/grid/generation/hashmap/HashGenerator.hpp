@@ -262,7 +262,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
 
         // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
@@ -333,7 +333,7 @@ class HashGenerator {
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
         bool skip = false;
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
 
         // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
@@ -475,7 +475,7 @@ class HashGenerator {
       for (size_t g = 0; g < gridSize; g++) {
               level_t levelSum = 0;
               level_t numberOfZeroLevels = 0;
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
         bool firstPoint = true;
 
               // calculate level sum and count number of zero levels
@@ -593,7 +593,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
 
         // Calculate level-sum
         level_t level_sum = idx.getLevelSum() - 1;
@@ -681,7 +681,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
 
         // add remaining level-index pairs in current dimension d
         for (level_t l = 1; l <= n; l++) {
@@ -764,7 +764,7 @@ class HashGenerator {
 
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
-        index_type idx(*storage.getGridIndex(g));
+        index_type idx(storage.getGridIndex(g));
 
         // add remaining level-index pairs in current dimension d
         for (level_t l = 1; l <= n; l++) {

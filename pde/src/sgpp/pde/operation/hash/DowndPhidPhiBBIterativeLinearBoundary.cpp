@@ -32,7 +32,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
     for (size_t i = 0; i < storage->getSize(); i++) {
       sgpp::base::GridStorage::index_type::level_type level;
       sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         if (index == 0) {
@@ -42,7 +42,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = *(*storage)[i];
+              sgpp::base::GridIndex index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
@@ -68,7 +68,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
     for (size_t i = 0; i < storage->getSize(); i++) {
       sgpp::base::GridStorage::index_type::level_type level;
       sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         if (index == 0) {
@@ -78,7 +78,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = *(*storage)[i];
+              sgpp::base::GridIndex index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {

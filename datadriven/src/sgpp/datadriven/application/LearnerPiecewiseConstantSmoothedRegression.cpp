@@ -98,13 +98,11 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
 
       // Weight surplus with function evaluation at grid points
       std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
-      GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < gridStorage->getSize(); i++) {
-        gp = gridStorage->getGridIndex(i);
-        gp->getCoords(p);
+        gridStorage->getGridIndex(i).getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 

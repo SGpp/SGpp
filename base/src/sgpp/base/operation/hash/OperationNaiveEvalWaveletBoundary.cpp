@@ -16,7 +16,7 @@ double OperationNaiveEvalWaveletBoundary::eval(const DataVector& alpha,
   double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
@@ -47,7 +47,7 @@ void OperationNaiveEvalWaveletBoundary::eval(const DataMatrix& alpha,
   value.setAll(0.0);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {

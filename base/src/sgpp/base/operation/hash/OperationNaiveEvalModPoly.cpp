@@ -14,7 +14,7 @@ double OperationNaiveEvalModPoly::eval(const DataVector& alpha, const DataVector
   double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t idim = 0; idim < dim; idim++) {
@@ -44,7 +44,7 @@ void OperationNaiveEvalModPoly::eval(const DataMatrix& alpha, const DataVector& 
   value.setAll(0.0);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {

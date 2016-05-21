@@ -21,7 +21,7 @@ void VariableDiscountFactor::getDiscountFactor(sgpp::base::DataVector& factor, d
   double tmp;
 
   for (size_t i = 0; i < storage->getSize(); i++) {
-    std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
+    std::string coords = (*storage)[i].getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     double dblFuncValues[2];
 

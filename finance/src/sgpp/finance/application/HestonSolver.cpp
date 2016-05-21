@@ -126,7 +126,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, double s
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
-              this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*(this->myBoundingBox));
+              this->myGridStorage->getGridIndex(i).getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -199,7 +199,8 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
         this->tBoundaryType = "Dirichlet";
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-          std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+          std::string coords =
+              this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -439,7 +440,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, double strike,
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->getGridIndex(i)->getCoordsBB(coords, *this->myBoundingBox);
+        this->myGridStorage->getGridIndex(i).getCoordsBB(coords, *this->myBoundingBox);
 
         // The stock prices come from the coordinates of the 0th, 2nd, 4th, 6th... dimensions. The
         // other dimensions are the volatilities...they don't count for adding up stock prices.
@@ -485,9 +486,10 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
     std::ofstream fileout;
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords =
+          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
 
-      base::GridIndex* curPoint = (*myGridStorage)[i];
+      base::GridIndex& curPoint = (*myGridStorage)[i];
 
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
@@ -512,13 +514,13 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
           tmp += dblFuncValues[2 * j];
         }
 
-        if (!curPoint->isInnerPoint() &&
+        if (!curPoint.isInnerPoint() &&
             dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary) {
           // Dirichlet condition when v -> inf is that U = S
           alpha[i] = dblFuncValues[0];
           // (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/
           // (this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
-        } else if (!curPoint->isInnerPoint() &&
+        } else if (!curPoint.isInnerPoint() &&
                    dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary) {
           // Set boundary to be the linear function at s_max
           double normalPayoff =
@@ -535,7 +537,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
           alpha[i] = std::max<double>(((tmp / static_cast<double>(numAssets)) - strike), 0.0);
         }
       } else if (payoffType == "std_euro_put") {
-        if (!curPoint->isInnerPoint()) {
+        if (!curPoint.isInnerPoint()) {
           if (numAssets == 1 &&
               dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary) {
             // Vmax boundary for a single asset. Strike price
@@ -622,9 +624,9 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
     size_t numNonZeroInner = 0;
 
     for (size_t i = 0; i < numTotalGridPoints; i++) {
-      base::GridIndex* curPoint = (*myGridStorage)[i];
+      base::GridIndex& curPoint = (*myGridStorage)[i];
 
-      if (curPoint->isInnerPoint() && alpha.get(i) != 0) numNonZeroInner++;
+      if (curPoint.isInnerPoint() && alpha.get(i) != 0) numNonZeroInner++;
     }
 
     int k = 0;
@@ -645,11 +647,12 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, dou
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords =
+          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
-      base::GridIndex* curPoint = (*myGridStorage)[i];
+      base::GridIndex& curPoint = (*myGridStorage)[i];
 
       for (size_t j = 0; j < this->dim; j++) {
         coordsStream >> tmp;
@@ -669,7 +672,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, dou
         // Thus, in oder to determine the payoff value, we have to only iterate over the first,
         // third, fifth... dimensions.
 
-        if (!curPoint->isInnerPoint()) {
+        if (!curPoint.isInnerPoint()) {
           double sumStockPrices = 0.0;
           double kMultiplier = 0;
 
@@ -699,7 +702,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, dou
           alpha[i] = std::max<double>(((tmp / static_cast<double>(numAssets)) - strike), 0.0);
         }
       } else if (payoffType == "std_euro_put") {
-        if (!curPoint->isInnerPoint()) {
+        if (!curPoint.isInnerPoint()) {
           if (numAssets == 1 &&
               dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary) {
             // Vmax boundary for a single asset. Strike price
@@ -904,7 +907,8 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, double ma
   double tmp;
 
   for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-    std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+    std::string coords =
+        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[dim];
 
@@ -939,7 +943,8 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, double
   double tmp;
 
   for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-    std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+    std::string coords =
+        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[dim];
 
@@ -1015,7 +1020,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
   double tmp;
 
   for (size_t i = 0; i < grid1d->getSize(); i++) {
-    std::string coords = grid1d->getStorage().getGridIndex(i)->getCoordsStringBB(*boundingBox1d);
+    std::string coords = grid1d->getStorage().getGridIndex(i).getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[1];
     coordsStream >> tmp;
@@ -1038,7 +1043,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
   finance::BlackScholesSolver* myBSSolver = new finance::BlackScholesSolver(false);
 
   for (size_t i = 0; i < grid1d->getSize(); i++) {
-    std::string coords = grid1d->getStorage().getGridIndex(i)->getCoordsStringBB(*boundingBox1d);
+    std::string coords = grid1d->getStorage().getGridIndex(i).getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[1];
     coordsStream >> tmp;
@@ -1095,7 +1100,8 @@ void HestonSolver::GetBsExactSolution(base::DataVector& alphaBS, double maturity
   double S, v;
 
   for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
-    std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*this->myBoundingBox);
+    std::string coords =
+        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     coordsStream >> S;
     coordsStream >> v;

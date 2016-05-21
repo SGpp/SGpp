@@ -33,12 +33,12 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
     for (size_t i = 0; i < storage->getSize(); i++) {
       sgpp::base::GridStorage::index_type::level_type level;
       sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = *(*storage)[i];
+          sgpp::base::GridIndex index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
@@ -52,12 +52,12 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
     for (size_t i = 0; i < storage->getSize(); i++) {
       sgpp::base::GridStorage::index_type::level_type level;
       sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = *(*storage)[i];
+          sgpp::base::GridIndex index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {

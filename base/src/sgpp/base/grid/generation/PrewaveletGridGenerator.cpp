@@ -57,7 +57,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
   // Check if a gridpoint within the shadow storage
   // is now part of the actual grid!
   for (size_t i = start; i < end; i++) {
-    if (shadowstorage.find(storage.getGridIndex(i)) != shadowstorage.end()) {
+    if (shadowstorage.find(&storage.getGridIndex(i)) != shadowstorage.end()) {
       consolidateShadow();
       break;
     }
@@ -65,20 +65,20 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
 
   // Now add all missing neigbours to the shadowStorage
   for (size_t i = start; i < end; i++) {
-    GridStorage::index_pointer index = this->storage.getGridIndex(i);
+    GridIndex& index = this->storage.getGridIndex(i);
 
     level_t sum = 0;
 
     for (size_t d = 0; d < storage.getDimension(); ++d) {
       index_t current_index;
       level_t current_level;
-      index->get(d, current_level, current_index);
+      index.get(d, current_level, current_index);
       sum += current_level;
     }
 
     GridStorage::grid_iterator iter(storage);
     GridStorage::grid_iterator shadowIter(shadowstorage);
-    addNeighbours(*this->storage.getGridIndex(i), 0, sum, iter, shadowIter);
+    addNeighbours(this->storage.getGridIndex(i), 0, sum, iter, shadowIter);
   }
 }
 
@@ -100,7 +100,7 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 
     iter.up(d);
     shadowIter.up(d);
-    this->storage.getGridIndex(iter.seq())->setLeaf(false);
+    this->storage.getGridIndex(iter.seq()).setLeaf(false);
 
     // Ok, point is neither in storage, nor in shadowstorage ...
     if (storage.isValidSequenceNumber(iter.seq()) &&
@@ -225,14 +225,14 @@ void PrewaveletGridGenerator::consolidateShadow() {
   GridStorage temp(storage.getDimension());
 
   for (size_t i = 0; i < shadowstorage.getSize(); i++) {
-    temp.insert(*shadowstorage.getGridIndex(i));
+    temp.insert(shadowstorage.getGridIndex(i));
   }
 
   shadowstorage.clear();
 
   for (size_t i = 0; i < temp.getSize(); i++) {
-    if (storage.find(temp.getGridIndex(i)) == storage.end()) {
-      shadowstorage.insert(*temp.getGridIndex(i));
+    if (storage.find(&temp.getGridIndex(i)) == storage.end()) {
+      shadowstorage.insert(temp.getGridIndex(i));
     }
   }
 }

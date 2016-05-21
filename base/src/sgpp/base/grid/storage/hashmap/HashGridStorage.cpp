@@ -102,7 +102,7 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom)
       bUseStretching(copyFrom.bUseStretching) {
   // copy gridpoints
   for (size_t i = 0; i < copyFrom.getSize(); i++) {
-    this->insert(*(copyFrom[i]));
+    this->insert(copyFrom[i]);
   }
 }
 

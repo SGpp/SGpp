@@ -48,24 +48,22 @@ void OperationRegularizationDiagonal::init() {
 void OperationRegularizationDiagonal::initIsotropicPenalty() {
   // \frac{1}{\max\{l_1,\dots,l_d\}-\min\{l_1,\dots,l_d\}+1}d
   size_t dim = storage->getDimension();
-  base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->getGridIndex(i);
-    diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * static_cast<double>(dim);
+    base::GridIndex& gi = storage->getGridIndex(i);
+    diagonal[i] = 1.0 / (gi.getLevelMax() - gi.getLevelMin() + 1) * static_cast<double>(dim);
   }
 }
 void OperationRegularizationDiagonal::initAnisotropicPenalty() {
   // \frac{1}{2}\log(1+(\frac{\max\{l_1,\dots,l_d\}}{\max\{\min\{l_1,\dots,l_d\},1\}})d)
   size_t dim = storage->getDimension();
-  base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->getGridIndex(i);
+    base::GridIndex& gi = storage->getGridIndex(i);
     diagonal[i] =
         0.5 * log(1. +
-                  static_cast<double>(gi->getLevelMax()) /
-                      static_cast<double>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
+                  static_cast<double>(gi.getLevelMax()) /
+                      static_cast<double>(std::max(static_cast<int>(gi.getLevelMin()), 1)) *
                       static_cast<double>(dim));
   }
 }

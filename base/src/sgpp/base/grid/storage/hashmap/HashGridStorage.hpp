@@ -196,7 +196,7 @@ class HashGridStorage {
    *
    * @return gridindex object (pointer)
    */
-  inline index_pointer operator[](size_t seq) { return list[seq]; }
+  inline HashGridIndex& operator[](size_t seq) { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
@@ -204,7 +204,7 @@ class HashGridStorage {
    * @param seq the sequence number of the index
    * @return gridindex object (constant pointer)
    */
-  inline index_const_pointer operator[](size_t seq) const { return list[seq]; }
+  inline const HashGridIndex& operator[](size_t seq) const { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
@@ -213,7 +213,7 @@ class HashGridStorage {
    *
    * @return gridindex object (pointer)
    */
-  inline index_pointer getGridIndex(size_t seq) const { return list[seq]; }
+  inline HashGridIndex& getGridIndex(size_t seq) const { return *list[seq]; }
 
   /**
    * insert a new index into map

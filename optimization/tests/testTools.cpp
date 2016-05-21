@@ -33,10 +33,10 @@ void gridEqualityTest(sgpp::base::Grid& grid1, sgpp::base::Grid& grid2) {
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(storage1[k]->getLevel(t),
-                        storage2[k]->getLevel(t));
-      BOOST_CHECK_EQUAL(storage1[k]->getIndex(t),
-                        storage2[k]->getIndex(t));
+      BOOST_CHECK_EQUAL(storage1[k].getLevel(t),
+                        storage2[k].getLevel(t));
+      BOOST_CHECK_EQUAL(storage1[k].getIndex(t),
+                        storage2[k].getIndex(t));
     }
   }
 }

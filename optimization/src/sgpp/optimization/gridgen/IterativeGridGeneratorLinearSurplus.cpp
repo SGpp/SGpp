@@ -128,7 +128,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
 
   for (size_t i = 0; i < currentN; i++) {
     // set correct point distribution
-    gridStorage[i]->setPointDistribution(distr);
+    gridStorage[i].setPointDistribution(distr);
   }
 
   // parallel evaluation of f in the initial grid points
@@ -213,7 +213,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     for (size_t i = currentN; i < newN; i++) {
       // set point distribution accordingly to
       // normal/Clenshaw-Curtis grids
-      gridStorage[i]->setPointDistribution(distr);
+      gridStorage[i].setPointDistribution(distr);
     }
 
     // evaluation of f in the new grid points

@@ -194,7 +194,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i)->getCoordsStringStretching(*this->myStretching);
+          this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

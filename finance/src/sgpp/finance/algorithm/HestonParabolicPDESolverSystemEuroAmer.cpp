@@ -588,13 +588,13 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
       sgpp::base::GridStorage* storage = &this->BoundGrid->getStorage();
 
       for (size_t i = 0; i < storage->getSize(); i++) {
-        sgpp::base::GridIndex* curPoint = (*storage)[i];
+        sgpp::base::GridIndex& curPoint = (*storage)[i];
 
         sgpp::base::DataVector pointCoords(storage->getDimension());
-        curPoint->getCoords(pointCoords);
+        curPoint.getCoords(pointCoords);
 
         // Discount the boundary points
-        if (!curPoint->isInnerPoint()) {
+        if (!curPoint.isInnerPoint()) {
           this->alpha_complete->set(
               i, this->alpha_complete->get(i) * exp(((-1.0) * (this->r * this->TimestepSize))));
         }

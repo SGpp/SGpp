@@ -102,7 +102,7 @@ int main() {
   sgpp::base::DataMatrix hAlpha(N, mH);
 
   for (size_t i = 0; i < N; i++) {
-    const sgpp::base::GridIndex& gp = *gridStorage[i];
+    const sgpp::base::GridIndex& gp = gridStorage[i];
 
     for (size_t t = 0; t < d; t++) {
       x[t] = gp.getCoord(t);

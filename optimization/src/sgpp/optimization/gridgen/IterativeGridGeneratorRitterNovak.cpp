@@ -128,7 +128,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   refinementAlpha.setAll(0.0);
 
   for (size_t i = 0; i < currentN; i++) {
-    base::GridIndex& gp = *gridStorage[i];
+    base::GridIndex& gp = gridStorage[i];
     gp.setPointDistribution(distr);
     // prepare fXOrder and rank
     fXOrder[i] = i;
@@ -193,7 +193,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
         // ==> check if a refinement of this point would generate
         // children with a level greater than max_level
         // (in one coordinate), if yes ignore the point
-        base::GridIndex& gp = *gridStorage[i];
+        base::GridIndex& gp = gridStorage[i];
 
         {
           base::index_t sourceIndex, childIndex;
@@ -283,7 +283,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     refinementAlpha[iBest] = 0.0;
 
     for (size_t i = currentN; i < newN; i++) {
-      base::GridIndex& gp = *gridStorage[i];
+      base::GridIndex& gp = gridStorage[i];
       // set point distribution accordingly to normal/Clenshaw-Curtis grids
       gp.setPointDistribution(distr);
       refinementAlpha[i] = 0.0;

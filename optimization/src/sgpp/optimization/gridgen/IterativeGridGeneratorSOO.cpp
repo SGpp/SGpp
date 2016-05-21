@@ -81,7 +81,7 @@ bool IterativeGridGeneratorSOO::generate() {
   fX.resize(N);
 
   {
-    base::GridIndex& gp = *gridStorage[0];
+    base::GridIndex& gp = gridStorage[0];
     base::DataVector x(d);
 
     for (size_t t = 0; t < d; t++) {
@@ -156,7 +156,7 @@ bool IterativeGridGeneratorSOO::generate() {
         refinementAlpha[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
-          base::GridIndex& gp = *gridStorage[i];
+          base::GridIndex& gp = gridStorage[i];
           // set point distribution accordingly to
           // normal/Clenshaw-Curtis grids
           gp.setPointDistribution(distr);

@@ -53,7 +53,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Scal
   functionValues.resize(n);
 
   for (size_t i = 0; i < n; i++) {
-    sgpp::base::GridIndex& gp = *gridStorage[i];
+    sgpp::base::GridIndex& gp = gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
@@ -88,7 +88,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Vect
   functionValues.resize(n, m);
 
   for (size_t i = 0; i < n; i++) {
-    sgpp::base::GridIndex& gp = *gridStorage[i];
+    sgpp::base::GridIndex& gp = gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)

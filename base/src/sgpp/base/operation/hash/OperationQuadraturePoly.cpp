@@ -13,14 +13,13 @@ namespace base {
 double OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
   double res = 0;
   double tmpres = 0;
-  GridIndex* gp;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    gp = storage.getGridIndex(i);
+    GridIndex& gp = storage.getGridIndex(i);
     tmpres = 1.;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
+      tmpres *= base.getIntegral(gp.getLevel(d), gp.getIndex(d));
     }
 
     res += alpha[i] * tmpres;
