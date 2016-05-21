@@ -116,7 +116,7 @@ class HashGridIndex {
   inline void set(size_t d, level_type l, index_type i, bool isLeaf) {
     level[d] = l;
     index[d] = i;
-    Leaf = isLeaf;
+    leaf = isLeaf;
     rehash();
   }
 
@@ -145,7 +145,7 @@ class HashGridIndex {
   inline void push(size_t d, level_type l, index_type i, bool isLeaf) {
     level[d] = l;
     index[d] = i;
-    Leaf = isLeaf;
+    leaf = isLeaf;
   }
 
   /**
@@ -242,14 +242,7 @@ class HashGridIndex {
   bool isInnerPoint() const;
 
   /**
-   * gets a Pointer to the instance of the HashGridIndex Object
-   *
-   * @return Pointer to this instance
-   */
-  HashGridIndex* getPointer();
-
-  /**
-   * rehashs the current gridpoint
+   * rehashs the current gridpoint and sets hInv
    */
   void rehash();
 
@@ -258,7 +251,7 @@ class HashGridIndex {
    *
    * @return the hash value of the instance
    */
-  size_t hash() const;
+  size_t getHash() const;
 
   /**
    * checks whether this gridpoints is identical to another one
@@ -451,12 +444,14 @@ class HashGridIndex {
   level_type* level;
   /// pointer to array that stores the ansatzfunctions' indices
   index_type* index;
+  /// pointer to array that stores the mesh widths (1 << level[d] for each dimension)
+  index_type* hInv;
   /// distribution of the grid point (Normal or ClenshawCurtis)
   PointDistribution distr;
   /// stores if this gridpoint is a leaf
-  bool Leaf;
+  bool leaf;
   /// stores the hashvalue of the gridpoint
-  size_t hash_value;
+  size_t hash;
 
   static pointDistributionMap& typeMap();
   static pointDistributionVerboseMap& typeVerboseMap();
@@ -468,7 +463,7 @@ class HashGridIndex {
 };
 
 struct HashGridIndexPointerHashFunctor {
-  size_t operator()(const HashGridIndex* index) const { return index->hash(); }
+  size_t operator()(const HashGridIndex* index) const { return index->getHash(); }
 };
 
 struct HashGridIndexPointerEqualityFunctor {
@@ -478,7 +473,7 @@ struct HashGridIndexPointerEqualityFunctor {
 };
 
 struct HashGridIndexHashFunctor {
-  size_t operator()(const HashGridIndex& index) const { return index.hash(); }
+  size_t operator()(const HashGridIndex& index) const { return index.getHash(); }
 };
 
 struct HashGridIndexEqualityFunctor {
