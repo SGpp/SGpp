@@ -370,9 +370,9 @@ Grid::Grid(std::istream& istr) : storage(istr) {}
 
 Grid::Grid(size_t dim) : storage(dim) {}
 
-Grid::Grid(BoundingBox& BB) : storage(BB) {}
+Grid::Grid(BoundingBox& boundingBox) : storage(boundingBox) {}
 
-Grid::Grid(Stretching& BB) : storage(BB) {}
+Grid::Grid(Stretching& stretching) : storage(stretching) {}
 
 Grid::~Grid() {}
 
@@ -382,9 +382,9 @@ BoundingBox& Grid::getBoundingBox() { return *storage.getBoundingBox(); }
 
 Stretching& Grid::getStretching() { return *storage.getStretching(); }
 
-void Grid::setBoundingBox(BoundingBox& bb) { storage.setBoundingBox(bb); }
+void Grid::setBoundingBox(BoundingBox& boundingBox) { storage.setBoundingBox(boundingBox); }
 
-void Grid::setStretching(Stretching& bb) { storage.setStretching(bb); }
+void Grid::setStretching(Stretching& stretching) { storage.setStretching(stretching); }
 
 void Grid::serialize(std::string& ostr, int version) {
   std::ostringstream ostream;
