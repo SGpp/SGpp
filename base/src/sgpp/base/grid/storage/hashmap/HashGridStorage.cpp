@@ -381,14 +381,14 @@ void HashGridStorage::recalcLeafProperty() {
 
       if (l > 0) {
         // Test left child
-        getLeftChild(point, current_dim);
+        point->getLeftChild(current_dim);
         isLeaf = isLeaf && !isContaining(point);
 
         // restore value for dimension
         point->set(current_dim, l, i);
 
         // Test right child
-        getRightChild(point, current_dim);
+        point->getRightChild(current_dim);
         isLeaf = isLeaf && !isContaining(point);
       } else {
         // Test level 0
