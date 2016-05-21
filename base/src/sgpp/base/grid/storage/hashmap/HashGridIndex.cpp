@@ -19,25 +19,27 @@
 namespace sgpp {
 namespace base {
 
-HashGridIndex::HashGridIndex(size_t dim)
-    : DIM(dim), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
-  level = new level_type[dim];
-  index = new index_type[dim];
-  Leaf = false;
+HashGridIndex::HashGridIndex(size_t dimension)
+    : dimension(dimension), level(NULL), index(NULL), distr(PointDistribution::Normal),
+      hash_value(0) {
+  level = new level_type[dimension];
+  index = new index_type[dimension];
+  Leaf = false;dimension
 }
 
 HashGridIndex::HashGridIndex()
-    : DIM(0), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
+    : dimension(0), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
   Leaf = false;
 }
 
 HashGridIndex::HashGridIndex(const HashGridIndex& o)
-    : DIM(o.DIM), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
-  level = new level_type[DIM];
-  index = new index_type[DIM];
+    : dimension(o.dimension), level(NULL), index(NULL), distr(PointDistribution::Normal),
+      hash_value(0) {
+  level = new level_type[dimension];
+  index = new index_type[dimension];
   Leaf = false;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     level[d] = o.level[d];
     index[d] = o.index[d];
   }
@@ -48,16 +50,16 @@ HashGridIndex::HashGridIndex(const HashGridIndex& o)
 }
 
 HashGridIndex::HashGridIndex(std::istream& istream, int version)
-    : DIM(0), level(NULL), index(NULL), hash_value(0) {
+    : dimension(0), level(NULL), index(NULL), hash_value(0) {
   size_t temp_leaf;
 
-  istream >> DIM;
+  istream >> dimension;
 
-  level = new level_type[DIM];
-  index = new index_type[DIM];
+  level = new level_type[dimension];
+  index = new index_type[dimension];
   Leaf = false;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     istream >> level[d];
     istream >> index[d];
   }
@@ -109,9 +111,9 @@ HashGridIndex::~HashGridIndex() {
 }
 
 void HashGridIndex::serialize(std::ostream& ostream, int version) {
-  ostream << DIM << std::endl;
+  ostream << dimension << std::endl;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     ostream << level[d] << " ";
     ostream << index[d] << " ";
   }
@@ -124,7 +126,7 @@ void HashGridIndex::serialize(std::ostream& ostream, int version) {
   }
 }
 
-size_t HashGridIndex::getDimension() const { return DIM; }
+size_t HashGridIndex::getDimension() const { return dimension; }
 
 HashGridIndex::PointDistribution HashGridIndex::getPointDistribution() const { return distr; }
 
@@ -153,7 +155,7 @@ double HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
 }
 
 bool HashGridIndex::isInnerPoint() const {
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     if (level[d] == 0) return false;
   }
 
@@ -165,7 +167,7 @@ HashGridIndex* HashGridIndex::getPointer() { return this; }
 void HashGridIndex::rehash() {
   size_t hash = 0xdeadbeef;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     hash = (1 << level[d]) + index[d] + hash * 65599;
   }
 
@@ -175,13 +177,13 @@ void HashGridIndex::rehash() {
 size_t HashGridIndex::hash() const { return hash_value; }
 
 bool HashGridIndex::equals(const HashGridIndex& rhs) const {
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     if (level[d] != rhs.level[d]) {
       return false;
     }
   }
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     if (index[d] != rhs.index[d]) {
       return false;
     }
@@ -197,7 +199,7 @@ HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
     return *this;
   }
 
-  if (DIM != rhs.DIM) {
+  if (dimension != rhs.dimension) {
     if (level) {
       delete[] level;
     }
@@ -206,13 +208,13 @@ HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
       delete[] index;
     }
 
-    DIM = rhs.DIM;
+    dimension = rhs.dimension;
 
-    level = new level_type[DIM];
-    index = new index_type[DIM];
+    level = new level_type[dimension];
+    index = new index_type[dimension];
   }
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     level[d] = rhs.level[d];
     index[d] = rhs.index[d];
   }
@@ -234,7 +236,7 @@ std::string HashGridIndex::toString() const {
 void HashGridIndex::toString(std::ostream& stream) const {
   stream << "[";
 
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     if (i != 0) {
       stream << ",";
     }
@@ -247,19 +249,19 @@ void HashGridIndex::toString(std::ostream& stream) const {
 }
 
 void HashGridIndex::getCoords(DataVector& p) const {
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     p.set(d, getCoord(d));
   }
 }
 
 void HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) const {
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     p.set(d, BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d));
   }
 }
 
 void HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     if (level[d] == 0) {
       p.set(d, stretch.getIntervalWidth(d) * static_cast<double>(index[d]) +
                    stretch.getIntervalOffset(d));
@@ -275,14 +277,14 @@ std::string HashGridIndex::getCoordsString() const {
   // switch on scientific notation:
   // return_stream << std::scientific;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     if (level[d] == 0) {
       return_stream << index[d];
     } else {
       return_stream << std::scientific << getCoord(d);
     }
 
-    if (d < DIM - 1) {
+    if (d < dimension - 1) {
       return_stream << " ";
     }
   }
@@ -293,11 +295,11 @@ std::string HashGridIndex::getCoordsString() const {
 std::string HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
   std::stringstream return_stream;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     return_stream << std::scientific
                   << BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d);
 
-    if (d < DIM - 1) {
+    if (d < dimension - 1) {
       return_stream << " ";
     }
   }
@@ -308,10 +310,10 @@ std::string HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
 std::string HashGridIndex::getCoordsStringStretching(Stretching& stretch) const {
   std::stringstream return_stream;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     return_stream << std::scientific << stretch.getCoordinates(level[d], index[d], d);
 
-    if (d < DIM - 1) {
+    if (d < dimension - 1) {
       return_stream << " ";
     }
   }
@@ -322,7 +324,7 @@ std::string HashGridIndex::getCoordsStringStretching(Stretching& stretch) const 
 HashGridIndex::level_type HashGridIndex::getLevelSum() const {
   HashGridIndex::level_type levelsum = 0;
 
-  for (size_t d = 0; d < DIM; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     levelsum += level[d];
   }
 
@@ -332,7 +334,7 @@ HashGridIndex::level_type HashGridIndex::getLevelSum() const {
 HashGridIndex::level_type HashGridIndex::getLevelMax() const {
   HashGridIndex::level_type levelmax = level[0];
 
-  for (size_t d = 1; d < DIM; d++) {
+  for (size_t d = 1; d < dimension; d++) {
     levelmax = std::max(levelmax, level[d]);
   }
 
@@ -342,7 +344,7 @@ HashGridIndex::level_type HashGridIndex::getLevelMax() const {
 HashGridIndex::level_type HashGridIndex::getLevelMin() const {
   HashGridIndex::level_type levelmin = level[0];
 
-  for (size_t d = 1; d < DIM; d++) {
+  for (size_t d = 1; d < dimension; d++) {
     levelmin = std::min(levelmin, level[d]);
   }
 
