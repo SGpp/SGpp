@@ -88,7 +88,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
       }
     }
 
-    if (!mgs->isContaining(&mgp)) mgs->insert(mgp);
+    if (!mgs->isContaining(mgp)) mgs->insert(mgp);
   }
 
   mgs->recalcLeafProperty();
@@ -110,7 +110,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
         mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
     }
 
-    if (!mgs->isContaining(&mgp))
+    if (!mgs->isContaining(mgp))
       throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
 

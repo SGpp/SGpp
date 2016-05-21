@@ -216,7 +216,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
     // we only have one child on level 1
     index.set(d, 1, 1);
 
-    if (!storage.isContaining(&index)) {
+    if (!storage.isContaining(index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -224,7 +224,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
     // generate left child, if necessary
     index.set(d, source_level + 1, 2 * source_index - 1);
 
-    if (!storage.isContaining(&index)) {
+    if (!storage.isContaining(index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -232,7 +232,7 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
     // generate right child, if necessary
     index.set(d, source_level + 1, 2 * source_index + 1);
 
-    if (!storage.isContaining(&index)) {
+    if (!storage.isContaining(index)) {
       index.setLeaf(true);
       createGridpoint(storage, index);
     }
@@ -320,13 +320,13 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
         // if we have already a left boundary...
         index.set(d, 0, 0);
 
-        if (storage.isContaining(&index)) {
+        if (storage.isContaining(index)) {
           // ... we have to read leaf property
           bool Leaf = index.isLeaf();
           // ... we have to generate the correspondending right boundary
           index.set(d, 0, 1);
 
-          if (!storage.isContaining(&index)) {
+          if (!storage.isContaining(index)) {
             bool saveLeaf = index.isLeaf();
             index.setLeaf(Leaf);
             createGridpoint(storage, index);
@@ -340,13 +340,13 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
         // if we have already a right boundary...
         index.set(d, 0, 1);
 
-        if (storage.isContaining(&index)) {
+        if (storage.isContaining(index)) {
           // ... we have to read leaf property
           bool Leaf = index.isLeaf();
           // ... we have to generate the correspondending right boundary
           index.set(d, 0, 0);
 
-          if (!storage.isContaining(&index)) {
+          if (!storage.isContaining(index)) {
             bool saveLeaf = index.isLeaf();
             index.setLeaf(Leaf);
             createGridpoint(storage, index);

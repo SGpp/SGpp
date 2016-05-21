@@ -293,7 +293,7 @@ class HashGridStorage {
    *
    * @return true if the index is in the storage
    */
-  bool isContaining(HashGridIndex* index);
+  bool isContaining(HashGridIndex& index) const;
 
   /**
    * Gets the seq number for index
@@ -474,8 +474,8 @@ HashGridStorage::grid_map_iterator inline HashGridStorage::begin() { return map.
 
 HashGridStorage::grid_map_iterator inline HashGridStorage::end() { return map.end(); }
 
-bool inline HashGridStorage::isContaining(HashGridIndex* index) {
-  return map.find(index) != map.end();
+bool inline HashGridStorage::isContaining(HashGridIndex& index) const {
+  return map.find(&index) != map.end();
 }
 
 size_t inline HashGridStorage::getSequenceNumber(HashGridIndex* index) {

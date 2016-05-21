@@ -191,7 +191,7 @@ void HashRefinement::refineGridpoint1D(GridStorage& storage, index_type& index,
   // generate left child, if necessary
   index.set(d, source_level + 1, 2 * source_index - 1);
 
-  if (!storage.isContaining(&index)) {
+  if (!storage.isContaining(index)) {
     index.setLeaf(true);
     createGridpoint(storage, index);
   }
@@ -199,7 +199,7 @@ void HashRefinement::refineGridpoint1D(GridStorage& storage, index_type& index,
   // generate right child, if necessary
   index.set(d, source_level + 1, 2 * source_index + 1);
 
-  if (!storage.isContaining(&index)) {
+  if (!storage.isContaining(index)) {
     index.setLeaf(true);
     createGridpoint(storage, index);
   }

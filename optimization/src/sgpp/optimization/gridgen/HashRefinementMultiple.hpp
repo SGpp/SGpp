@@ -77,7 +77,7 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage.isContaining(&index)) {
+      while (storage.isContaining(index)) {
         childIndex *= 2;
         childLevel++;
         index.set(t, childLevel, childIndex - 1);
@@ -96,7 +96,7 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage.isContaining(&index)) {
+      while (storage.isContaining(index)) {
         childIndex *= 2;
         childLevel++;
         index.set(t, childLevel, childIndex + 1);
