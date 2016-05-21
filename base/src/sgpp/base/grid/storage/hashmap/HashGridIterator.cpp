@@ -140,8 +140,7 @@ HashGridIterator::hintLeft(size_t d) {
   index.get(d, l, i);
   index.set(d, l + 1, 2 * i - 1);
 
-  HashGridIndex* my_Index = index.getPointer();
-  hasIndex = storage.isContaining(*my_Index);
+  hasIndex = storage.isContaining(index);
 
   index.set(d, l, i);
 
@@ -157,8 +156,7 @@ HashGridIterator::hintRight(size_t d) {
   index.get(d, l, i);
   index.set(d, l + 1, 2 * i + 1);
 
-  HashGridIndex* my_Index = index.getPointer();
-  hasIndex = storage.isContaining(*my_Index);
+  hasIndex = storage.isContaining(index);
 
   index.set(d, l, i);
 

@@ -19,25 +19,28 @@
 namespace sgpp {
 namespace base {
 
-HashGridIndex::HashGridIndex(size_t dimension)
-    : dimension(dimension), level(NULL), index(NULL), distr(PointDistribution::Normal),
-      hash_value(0) {
+HashGridIndex::HashGridIndex(size_t dimension) :
+    dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr),
+    distr(PointDistribution::Normal), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
-  Leaf = false;dimension
+  hInv = new index_type[dimension];
+  leaf = false;
 }
 
-HashGridIndex::HashGridIndex()
-    : dimension(0), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
-  Leaf = false;
+HashGridIndex::HashGridIndex() :
+    dimension(0), level(nullptr), index(nullptr), hInv(nullptr),
+    distr(PointDistribution::Normal), hash(0) {
+  leaf = false;
 }
 
-HashGridIndex::HashGridIndex(const HashGridIndex& o)
-    : dimension(o.dimension), level(NULL), index(NULL), distr(PointDistribution::Normal),
-      hash_value(0) {
+HashGridIndex::HashGridIndex(const HashGridIndex& o) :
+    dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr),
+    distr(PointDistribution::Normal), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
-  Leaf = false;
+  hInv = new index_type[dimension];
+  leaf = false;
 
   for (size_t d = 0; d < dimension; d++) {
     level[d] = o.level[d];
@@ -45,19 +48,20 @@ HashGridIndex::HashGridIndex(const HashGridIndex& o)
   }
 
   distr = o.distr;
-  Leaf = o.Leaf;
+  leaf = o.leaf;
   rehash();
 }
 
-HashGridIndex::HashGridIndex(std::istream& istream, int version)
-    : dimension(0), level(NULL), index(NULL), hash_value(0) {
+HashGridIndex::HashGridIndex(std::istream& istream, int version) :
+    dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   size_t temp_leaf;
 
   istream >> dimension;
 
   level = new level_type[dimension];
   index = new index_type[dimension];
-  Leaf = false;
+  hInv = new index_type[dimension];
+  leaf = false;
 
   for (size_t d = 0; d < dimension; d++) {
     istream >> level[d];
@@ -69,12 +73,12 @@ HashGridIndex::HashGridIndex(std::istream& istream, int version)
     istream >> temp_leaf;
 
     if (temp_leaf == 0) {
-      Leaf = false;
+      leaf = false;
     } else {
-      Leaf = true;
+      leaf = true;
     }
   } else {
-    Leaf = false;
+    leaf = false;
   }
 
   if (version == 6) {
@@ -108,6 +112,10 @@ HashGridIndex::~HashGridIndex() {
   if (index) {
     delete[] index;
   }
+
+  if (hInv) {
+    delete[] hInv;
+  }
 }
 
 void HashGridIndex::serialize(std::ostream& ostream, int version) {
@@ -120,35 +128,44 @@ void HashGridIndex::serialize(std::ostream& ostream, int version) {
 
   ostream << std::endl;
 
-  ostream << Leaf << std::endl;
+  ostream << leaf << std::endl;
   if (version > 5) {
     ostream << typeVerboseMap()[distr] << std::endl;
   }
 }
 
-size_t HashGridIndex::getDimension() const { return dimension; }
+size_t HashGridIndex::getDimension() const {
+  return dimension;
+}
 
-HashGridIndex::PointDistribution HashGridIndex::getPointDistribution() const { return distr; }
+HashGridIndex::PointDistribution HashGridIndex::getPointDistribution() const {
+  return distr;
+}
 
 void HashGridIndex::setPointDistribution(HashGridIndex::PointDistribution distr) {
   this->distr = distr;
 }
 
-void HashGridIndex::setLeaf(bool isLeaf) { Leaf = isLeaf; }
+void HashGridIndex::setLeaf(bool isLeaf) {
+  leaf = isLeaf;
+}
 
-bool HashGridIndex::isLeaf() { return Leaf; }
+bool HashGridIndex::isLeaf() {
+  return leaf;
+}
 
 double HashGridIndex::getCoord(size_t d) const {
   if (distr == PointDistribution::Normal) {
     // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
-    return static_cast<double>(index[d]) /
-           static_cast<double>(static_cast<index_type>(1) << level[d]);
+    return static_cast<double>(index[d]) / static_cast<double>(hInv[d]);
   } else {
     return ClenshawCurtisTable::getInstance().getPoint(level[d], index[d]);
   }
 }
 
-double HashGridIndex::getCoordBB(size_t d, double q, double t) const { return q * getCoord(d) + t; }
+double HashGridIndex::getCoordBB(size_t d, double q, double t) const {
+  return q * getCoord(d) + t;
+}
 
 double HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
   return stretch->getCoordinates(level[d], index[d], d);
@@ -156,25 +173,28 @@ double HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
 
 bool HashGridIndex::isInnerPoint() const {
   for (size_t d = 0; d < dimension; d++) {
-    if (level[d] == 0) return false;
+    if (level[d] == 0) {
+      return false;
+    }
   }
 
   return true;
 }
 
-HashGridIndex* HashGridIndex::getPointer() { return this; }
-
 void HashGridIndex::rehash() {
   size_t hash = 0xdeadbeef;
 
   for (size_t d = 0; d < dimension; d++) {
-    hash = (1 << level[d]) + index[d] + hash * 65599;
+    hInv[d] = static_cast<index_type>(1) << level[d];
+    hash = hInv[d] + index[d] + hash * 65599;
   }
 
-  hash_value = hash;
+  this->hash = hash;
 }
 
-size_t HashGridIndex::hash() const { return hash_value; }
+size_t HashGridIndex::getHash() const {
+  return hash;
+}
 
 bool HashGridIndex::equals(const HashGridIndex& rhs) const {
   for (size_t d = 0; d < dimension; d++) {
@@ -192,7 +212,9 @@ bool HashGridIndex::equals(const HashGridIndex& rhs) const {
   return true;
 }
 
-HashGridIndex& HashGridIndex::assign(const HashGridIndex& rhs) { return this->operator=(rhs); }
+HashGridIndex& HashGridIndex::assign(const HashGridIndex& rhs) {
+  return this->operator=(rhs);
+}
 
 HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
   if (this == &rhs) {
@@ -208,10 +230,15 @@ HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
       delete[] index;
     }
 
+    if (hInv) {
+      delete[] hInv;
+    }
+
     dimension = rhs.dimension;
 
     level = new level_type[dimension];
     index = new index_type[dimension];
+    hInv = new index_type[dimension];
   }
 
   for (size_t d = 0; d < dimension; d++) {
@@ -220,7 +247,7 @@ HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
   }
 
   distr = rhs.distr;
-  Leaf = rhs.Leaf;
+  leaf = rhs.leaf;
 
   rehash();
   return *this;
