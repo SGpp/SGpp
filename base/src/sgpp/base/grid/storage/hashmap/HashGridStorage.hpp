@@ -392,16 +392,16 @@ class HashGridStorage {
   /**
    * sets the bounding box of the current grid
    *
-   * @param bb bounding box to which the HashGridStorage's pointer is set
+   * @param boundingBox bounding box to which the HashGridStorage's pointer is set
    */
-  void setBoundingBox(BoundingBox& bb);
+  void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the stretching bounding box of the current grid
    *
-   * @param bb stretching to which the HashGridStorage's pointer is set
+   * @param stretching stretching to which the HashGridStorage's pointer is set
    */
-  void setStretching(Stretching& bb);
+  void setStretching(Stretching& stretching);
 
   /**
    * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -491,7 +491,7 @@ class HashGridStorage {
   /// the grid's stretching
   Stretching* stretching;
 
-  /// Flag to check if stretching or bb used
+  /// Flag to check if stretching or boundingBox used
   bool bUseStretching;
 
   /**

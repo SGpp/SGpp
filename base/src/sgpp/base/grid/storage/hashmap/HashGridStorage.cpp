@@ -408,22 +408,22 @@ BoundingBox* HashGridStorage::getBoundingBox() { return boundingBox; }
 
 Stretching* HashGridStorage::getStretching() { return stretching; }
 
-void HashGridStorage::setBoundingBox(BoundingBox& bb) {
+void HashGridStorage::setBoundingBox(BoundingBox& boundingBox) {
   if (!bUseStretching) {
-    delete boundingBox;
+    delete this->boundingBox;
   }
 
   if (bUseStretching) {
     delete stretching;
   }
 
-  boundingBox = new BoundingBox(bb);
+  this->boundingBox = new BoundingBox(boundingBox);
   bUseStretching = false;
 }
 
-void HashGridStorage::setStretching(Stretching& bb) {
+void HashGridStorage::setStretching(Stretching& stretching) {
   if (bUseStretching) {
-    delete stretching;
+    delete this->stretching;
   }
 
   if (!bUseStretching) {
@@ -431,7 +431,7 @@ void HashGridStorage::setStretching(Stretching& bb) {
   }
 
   bUseStretching = true;
-  stretching = new Stretching(bb);
+  this->stretching = new Stretching(stretching);
 }
 
 void HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& index) {
