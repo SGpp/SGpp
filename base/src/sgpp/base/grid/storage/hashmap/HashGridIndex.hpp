@@ -46,9 +46,9 @@ class HashGridIndex {
   /**
    * Constructor of a n-Dim gridpoint
    *
-   * @param dim the dimension of the gridpoint
+   * @param dimension the dimension of the gridpoint
    */
-  explicit HashGridIndex(size_t dim);
+  explicit HashGridIndex(size_t dimension);
 
   /**
    * Standard-Constructor
@@ -446,7 +446,7 @@ class HashGridIndex {
 
  private:
   /// the dimension of the gridpoint
-  size_t DIM;
+  size_t dimension;
   /// pointer to array that stores the ansatzfunctions' level
   level_type* level;
   /// pointer to array that stores the ansatzfunctions' indices

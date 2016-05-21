@@ -68,9 +68,9 @@ class HashGridStorage {
    *
    * initializes the boundingBox with a trivial cube
    *
-   * @param dim the dimension of the sparse grid
+   * @param dimension the dimension of the sparse grid
    */
-  explicit HashGridStorage(size_t dim);
+  explicit HashGridStorage(size_t dimension);
 
   /**
    * Constructor
@@ -429,7 +429,7 @@ class HashGridStorage {
 
  private:
   /// the dimension of the grid
-  size_t DIM;
+  size_t dimension;
 
   /// the grid points
   grid_list list;
