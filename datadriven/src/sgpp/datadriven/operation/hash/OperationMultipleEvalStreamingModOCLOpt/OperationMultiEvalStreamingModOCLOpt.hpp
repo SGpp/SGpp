@@ -333,7 +333,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage.getGridIndex(i)->get(dim, curLevel, curIndex);
+        storage.getGridIndex(i).get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->levelMask[i * this->dims + dim] = 0.0;

@@ -29,7 +29,7 @@ double OperationNaiveEvalHessianModBsplineClenshawCurtis::evalHessian(const Data
   DataMatrix curHessian(d, d);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
     curGradient.setAll(alpha[i]);
     curHessian.setAll(alpha[i]);
@@ -102,7 +102,7 @@ void OperationNaiveEvalHessianModBsplineClenshawCurtis::evalHessian(
   DataMatrix curHessian(d, d);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridIndex& gp = storage[i];
     double curValue = 1.0;
     curGradient.setAll(1.0);
     curHessian.setAll(1.0);

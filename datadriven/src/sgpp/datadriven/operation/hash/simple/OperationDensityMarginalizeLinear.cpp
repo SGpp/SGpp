@@ -29,11 +29,10 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
-  sgpp::base::GridIndex* gp;
   sgpp::base::GridIndex mgp(mgs->getDimension());
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    gp = gs->getGridIndex(i);
+    sgpp::base::GridIndex& gp = gs->getGridIndex(i);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       // skip direction in which we marginalize
@@ -41,9 +40,9 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
         continue;
       } else {
         if (d < mdim) {
-          mgp.set(d, gp->getLevel(d), gp->getIndex(d));
+          mgp.set(d, gp.getLevel(d), gp.getIndex(d));
         } else {
-          mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
+          mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
         }
       }
     }
@@ -64,15 +63,15 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   size_t mseqNr;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    gp = gs->getGridIndex(seqNr);
+    sgpp::base::GridIndex& gp = gs->getGridIndex(seqNr);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d == mdim)
-        mdimLevel = gp->getLevel(d);
+        mdimLevel = gp.getLevel(d);
       else if (d < mdim)
-        mgp.set(d, gp->getLevel(d), gp->getIndex(d));
+        mgp.set(d, gp.getLevel(d), gp.getIndex(d));
       else
-        mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
+        mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
     }
 
     if (!mgs->isContaining(mgp))

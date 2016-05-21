@@ -166,7 +166,7 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha,
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
     std::string coords =
-      myGrid->getStorage().getGridIndex(i)->getCoordsStringStretching(
+      myGrid->getStorage().getGridIndex(i).getCoordsStringStretching(
         myGrid->getStretching());
     std::stringstream coordsStream(coords);
 
@@ -198,7 +198,7 @@ void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha,
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
     std::string coords =
-      myGrid->getStorage().getGridIndex(i)->getCoordsStringStretching(
+      myGrid->getStorage().getGridIndex(i).getCoordsStringStretching(
         myGrid->getStretching());
     std::stringstream coordsStream(coords);
 

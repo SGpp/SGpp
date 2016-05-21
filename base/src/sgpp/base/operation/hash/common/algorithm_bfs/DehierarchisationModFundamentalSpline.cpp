@@ -29,7 +29,7 @@ void DehierarchisationModFundamentalSpline::operator()(
   SFundamentalSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *storage[q];
+    const GridIndex& point = storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -87,7 +87,7 @@ void DehierarchisationModFundamentalSpline::operator()(
   SFundamentalSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *storage[q];
+    const GridIndex& point = storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {

@@ -336,7 +336,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep() {
     double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
-      std::string coords = this->BoundGrid->getStorage().getGridIndex(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getGridIndex(i).getCoordsStringBB(*myBB);
       std::stringstream coordsStream(coords);
 
       double tmp;

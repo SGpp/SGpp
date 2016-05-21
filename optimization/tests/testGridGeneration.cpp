@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         sgpp::base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
-          x[t] = (grid->getStorage())[i]->getCoord(t);
+          x[t] = (grid->getStorage())[i].getCoord(t);
         }
 
         // test function value

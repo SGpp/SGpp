@@ -287,10 +287,10 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage& storage,
 
 void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage& storage,
     size_t refine_index, unsigned int maxLevel) {
-  index_type index(*storage[refine_index]);
+  index_type index(storage[refine_index]);
 
   // Sets leaf property of index, which is refined to false
-  storage[refine_index]->setLeaf(false);
+  storage[refine_index].setLeaf(false);
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
     refineGridpoint1D(storage, index, d, maxLevel);

@@ -283,7 +283,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
 
     for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
       std::vector<double> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage().getGridIndex(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getGridIndex(i).getCoordsStringBB(*myBB);
       std::stringstream coordsStream(coords);
 
       double tmp;

@@ -114,11 +114,9 @@ int main() {
    * \c getCoord(dim).
    * The current coefficient vector is then printed.
    */
-  sgpp::base::GridIndex* gp;
-
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    gp = gridStorage.getGridIndex(i);
-    alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
+    sgpp::base::GridIndex& gp = gridStorage.getGridIndex(i);
+    alpha[i] = f(gp.getCoord(0), gp.getCoord(1));
   }
 
   std::cout << "alpha before hierarchization: " << alpha.toString() << std::endl;

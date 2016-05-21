@@ -81,9 +81,9 @@ class HashCoarsening {
 
     // assure that only the first numFirstPoints are checked for coarsening
     for (size_t z = 0; z < numFirstPoints; z++) {
-      index_type* index = storage.getGridIndex(z);
+      index_type& index = storage.getGridIndex(z);
 
-      if (index->isLeaf() && index->isInnerPoint()) {
+      if (index.isLeaf() && index.isInnerPoint()) {
         CoarseningFunctor::value_type current_value = functor(storage, z);
 
         if (current_value < removePoints[max_idx].second) {

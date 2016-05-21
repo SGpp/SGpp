@@ -39,9 +39,9 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
 
   for (size_t n = 0; n < gridStore.getSize(); n++) {
     if (doStretch) {
-      gridStore.getGridIndex(n)->getCoordsStretching(coords, *stretch);
+      gridStore.getGridIndex(n).getCoordsStretching(coords, *stretch);
     } else {
-      gridStore.getGridIndex(n)->getCoords(coords);
+      gridStore.getGridIndex(n).getCoords(coords);
     }
 
     node_values[n] = func(coords);
@@ -57,9 +57,9 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
 
     for (size_t n = 0; n < gridStore.getSize(); n++) {
       if (doStretch) {
-        gridStore.getGridIndex(n)->getCoordsStretching(coords, *stretch);
+        gridStore.getGridIndex(n).getCoordsStretching(coords, *stretch);
       } else {
-        gridStore.getGridIndex(n)->getCoords(coords);
+        gridStore.getGridIndex(n).getCoords(coords);
       }
 
       double eval = op->eval(alpha, coords);
@@ -70,9 +70,9 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
 
     for (size_t n = 0; n < gridStore.getSize(); n++) {
       if (doStretch) {
-        gridStore.getGridIndex(n)->getCoordsStretching(coords, *stretch);
+        gridStore.getGridIndex(n).getCoordsStretching(coords, *stretch);
       } else {
-        gridStore.getGridIndex(n)->getCoords(coords);
+        gridStore.getGridIndex(n).getCoords(coords);
       }
 
       double eval = op->eval(alpha, coords);

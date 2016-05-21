@@ -107,7 +107,7 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
   f.write(reinterpret_cast<const char*>(&d), sizeof(d));
 
   for (size_t j = 0; j < N; j++) {
-    const base::GridIndex& gp = *gridStorage[j];
+    const base::GridIndex& gp = gridStorage[j];
 
     for (size_t t = 0; t < d; t++) {
       const double x = gp.getCoord(t);

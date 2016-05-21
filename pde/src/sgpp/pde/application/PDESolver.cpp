@@ -44,7 +44,8 @@ void PDESolver::getGridNormalDistribution(sgpp::base::DataVector& alpha,
     sgpp::base::StdNormalDistribution myNormDistr;
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->getGridIndex(i)->getCoordsStringBB(*(this->myBoundingBox));
+      std::string coords =
+          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
       value = 1.0;

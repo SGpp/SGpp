@@ -244,10 +244,10 @@ void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
 
 void HashRefinementBoundaries::refineGridpoint(GridStorage& storage,
     size_t refine_index) {
-  index_type index(*storage[refine_index]);
+  index_type index(storage[refine_index]);
 
   // Sets leaf property of index, which is refined to false
-  storage[refine_index]->setLeaf(false);
+  storage[refine_index].setLeaf(false);
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
     refineGridpoint1D(storage, index, d);
@@ -333,7 +333,7 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the left boundary
-            (storage.getGridIndex((storage.find(&index))->second))->setLeaf(Leaf);
+            storage.getGridIndex(storage.find(&index)->second).setLeaf(Leaf);
           }
         }
 
@@ -353,7 +353,7 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the right boundary
-            (storage.getGridIndex((storage.find(&index))->second))->setLeaf(Leaf);
+            storage.getGridIndex(storage.find(&index)->second).setLeaf(Leaf);
           }
         }
 

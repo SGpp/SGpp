@@ -62,15 +62,15 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = myGridStorage[i];
+        GridIndex& curPoint = myGridStorage[i];
 
-        if (curPoint->isInnerPoint() == true) {
+        if (curPoint.isInnerPoint() == true) {
           // handle coefficients
           this->conCoefArray[numInner] = i;
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage().insert(*curPoint);
+          (*innerGrid)->getStorage().insert(curPoint);
         }
       }
 
@@ -111,15 +111,15 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = myGridStorage[i];
+        GridIndex& curPoint = myGridStorage[i];
 
-        if (curPoint->isInnerPoint() == true) {
+        if (curPoint.isInnerPoint() == true) {
           // handle coefficients
           this->conCoefArray[numInner] = i;
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage().insert(*curPoint);
+          (*innerGrid)->getStorage().insert(curPoint);
         }
       }
 
@@ -175,15 +175,15 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex* curPoint = myGridStorage[i];
+        GridIndex& curPoint = myGridStorage[i];
 
-        if (curPoint->isInnerPoint() == true) {
+        if (curPoint.isInnerPoint() == true) {
           // handle coefficients
           this->conCoefArray[numInner] = i;
           (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
           numInner++;
           // insert point into inner grid
-          (*innerGrid)->getStorage().insert(*curPoint);
+          (*innerGrid)->getStorage().insert(curPoint);
         }
       }
 
