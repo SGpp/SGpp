@@ -389,6 +389,57 @@ class HashGridIndex {
    */
   level_type getLevelMin() const;
 
+  /**
+   * Sets the index to the left level zero parent
+   *
+   * @param dim the dimension in which the modification is taken place
+   */
+  inline void getLeftLevelZero(size_t dim) {
+    set(dim, 0, 0);
+  }
+
+  /**
+   * Sets the index to the right level zero parent
+   *
+   * @param dim the dimension in which the modification is taken place
+   */
+  inline void getRightLevelZero(size_t dim) {
+    set(dim, 0, 1);
+  }
+
+  /**
+   * Sets the index to the left child
+   *
+   * @param dim the dimension in which the modification is taken place
+   */
+  inline void getLeftChild(size_t dim) {
+    level_type l;
+    index_type i;
+    get(dim, l, i);
+    set(dim, l + 1, 2 * i - 1);
+  }
+
+  /**
+   * Sets the index to the right child
+   *
+   * @param dim the dimension in which the modification is taken place
+   */
+  inline void getRightChild(size_t dim) {
+    level_type l;
+    index_type i;
+    get(dim, l, i);
+    set(dim, l + 1, 2 * i + 1);
+  }
+
+  /**
+   * Resets the index to the top level in direction d
+   *
+   * @param d the dimension in which the modification is taken place
+   */
+  inline void getRoot(size_t d) {
+    set(d, 1, 1);
+  }
+
  protected:
   typedef std::map<std::string, PointDistribution> pointDistributionMap;
   typedef std::map<PointDistribution, std::string> pointDistributionVerboseMap;

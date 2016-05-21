@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(testChilds) {
   HashGridIndex i(1);
 
   i.set(0, 1, 1);
-  s.getLeftChild(&i, 0);
+  i.getLeftChild(0);
 
   HashGridIndex::level_type l, l2 = 2;
   HashGridIndex::index_type ind, ind2 = 1;
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(testChilds) {
   BOOST_CHECK_EQUAL(ind, ind2);
 
   i.set(0, 1, 1);
-  s.getRightChild(&i, 0);
+  i.getRightChild(0);
   l2 = 2;
   ind2 = 3;
   i.get(0, l, ind);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(testLevelZero) {
   HashGridIndex i(1);
 
   i.set(0, 1, 1);
-  s.getLeftLevelZero(&i, 0);
+  i.getLeftLevelZero(0);
 
   HashGridIndex::level_type l, l2 = 0;
   HashGridIndex::index_type ind, ind2 = 0;
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(testLevelZero) {
 
   ind2 = 1;
   i.set(0, 1, 1);
-  s.getRightLevelZero(&i, 0);
+  i.getRightLevelZero(0);
   i.get(0, l, ind);
   BOOST_CHECK_EQUAL(l, l2);
   BOOST_CHECK_EQUAL(ind, ind2);
@@ -161,9 +161,9 @@ BOOST_AUTO_TEST_CASE(testTop) {
   HashGridIndex i(1);
 
   i.set(0, 1, 1);
-  s.getLeftChild(&i, 0);
+  i.getLeftChild(0);
 
-  s.getRoot(&i, 0);
+  i.getRoot(0);
 
   HashGridIndex::level_type l, l2 = 1;
   HashGridIndex::index_type ind, ind2 = 1;
@@ -182,12 +182,12 @@ BOOST_AUTO_TEST_CASE(testSeq) {
   HashGridIndex i(1);
 
   i.set(0, 1, 1);
-  s.getLeftChild(&i, 0);
+  i.getLeftChild(0);
 
   size_t seq = s.getSequenceNumber(&i);
   BOOST_CHECK(!(s.isValidSequenceNumber(seq)));
 
-  s.getLeftChild(&i, 0);
+  i.getLeftChild(0);
 
   seq = s.getSequenceNumber(&i);
   BOOST_CHECK(s.isValidSequenceNumber(seq));

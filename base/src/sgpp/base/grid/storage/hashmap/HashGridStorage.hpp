@@ -296,46 +296,6 @@ class HashGridStorage {
   bool isContaining(HashGridIndex* index);
 
   /**
-   * Sets the index to the left level zero parent
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void getLeftLevelZero(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the right level zero parent
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void getRightLevelZero(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the left child
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void getLeftChild(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the right child
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void getRightChild(HashGridIndex* index, size_t dim);
-
-  /**
-   * Resets the index to the top level in direction d
-   *
-   * @param index pointer to index the should be modified
-   * @param d the dimension in which the modification is taken place
-   */
-  void getRoot(HashGridIndex* index, size_t d);
-
-  /**
    * Gets the seq number for index
    *
    * @param index pointer to index which sequence number should be determined
@@ -517,36 +477,6 @@ HashGridStorage::grid_map_iterator inline HashGridStorage::end() { return map.en
 bool inline HashGridStorage::isContaining(HashGridIndex* index) {
   return map.find(index) != map.end();
 }
-
-void inline HashGridStorage::getLeftLevelZero(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, 0, 0);
-}
-
-void inline HashGridStorage::getRightLevelZero(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, 0, 1);
-}
-
-void inline HashGridStorage::getLeftChild(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, l + 1, 2 * i - 1);
-}
-
-void inline HashGridStorage::getRightChild(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, l + 1, 2 * i + 1);
-}
-
-void inline HashGridStorage::getRoot(HashGridIndex* index, size_t d) { index->set(d, 1, 1); }
 
 size_t inline HashGridStorage::getSequenceNumber(HashGridIndex* index) {
   grid_map_iterator iter = map.find(index);
