@@ -526,7 +526,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       base::DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < grid.getSize(); i++) {
-        gp = gridStorage.get(i);
+        gp = gridStorage.getGridIndex(i);
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }

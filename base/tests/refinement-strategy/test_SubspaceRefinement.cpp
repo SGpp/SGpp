@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   BOOST_CHECK_EQUAL(storage.getSize(), 33);
 
   for (size_t i = 0; i < storage.getSize(); i++) {
-    HashGridIndex* index = storage.get(i);
+    HashGridIndex* index = storage.getGridIndex(i);
     BOOST_CHECK((index->getIndex(0) == 4) == false);
   }
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   BOOST_CHECK_EQUAL(storage.getSize(), 33);
 
   for (size_t i = 0; i < storage.getSize(); i++) {
-    HashGridIndex* index = storage.get(i);
+    HashGridIndex* index = storage.getGridIndex(i);
     BOOST_CHECK((index->getIndex(0) == 4 || index->getIndex(1) == 4) == false);
   }
 

@@ -119,7 +119,7 @@ HashGridStorage::~HashGridStorage() {
   }
 }
 
-void HashGridStorage::emptyStorage() {
+void HashGridStorage::clear() {
   // delete all grid points
   for (grid_list_iterator iter = list.begin(); iter != list.end(); iter++) {
     delete *iter;
@@ -178,7 +178,7 @@ std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoint
   return remainingPoints;
 }
 
-void HashGridStorage::unserialize_noAlgoDims(std::string& istr) {
+void HashGridStorage::unserializeNoAlgoDims(std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
 
@@ -311,7 +311,7 @@ void HashGridStorage::toString(std::ostream& stream) {
 
 size_t HashGridStorage::getSize() const { return map.size(); }
 
-size_t HashGridStorage::getNumInnerPoints() const {
+size_t HashGridStorage::getNumberOfInnerPoints() const {
   size_t innerPoints = 0;
 
   for (size_t p = 0; p < map.size(); p++) {
@@ -326,11 +326,11 @@ size_t HashGridStorage::getDimension() const { return DIM; }
 size_t HashGridStorage::insert(index_type& index) {
   index_pointer insert = new HashGridIndex(index);
   list.push_back(insert);
-  return (map[insert] = this->seq() - 1);
+  return (map[insert] = list.size() - 1);
 }
 
 void HashGridStorage::update(index_type& index, size_t pos) {
-  if (pos < seq()) {
+  if (pos < list.size()) {
     // Remove old element at pos
     index_pointer del = list[pos];
     map.erase(del);
@@ -381,19 +381,19 @@ void HashGridStorage::recalcLeafProperty() {
 
       if (l > 0) {
         // Test left child
-        left_child(point, current_dim);
-        isLeaf = isLeaf && !has_key(point);
+        getLeftChild(point, current_dim);
+        isLeaf = isLeaf && !isContaining(point);
 
         // restore value for dimension
         point->set(current_dim, l, i);
 
         // Test right child
-        right_child(point, current_dim);
-        isLeaf = isLeaf && !has_key(point);
+        getRightChild(point, current_dim);
+        isLeaf = isLeaf && !isContaining(point);
       } else {
         // Test level 0
         point->set(current_dim, 1, 1);
-        isLeaf = isLeaf && !has_key(point);
+        isLeaf = isLeaf && !isContaining(point);
       }
 
       // restore value for dimension

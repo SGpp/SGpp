@@ -117,7 +117,7 @@ int main() {
   sgpp::base::GridIndex* gp;
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    gp = gridStorage.get(i);
+    gp = gridStorage.getGridIndex(i);
     alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
   }
 

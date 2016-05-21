@@ -295,7 +295,7 @@ void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t 
   ptrLcl_qBound = (REAL*)calloc(lcl_q_sizeBound, sizeof(REAL));
   ptrAlphaEndBound = (REAL*)calloc(alphaend_sizeBound, sizeof(REAL));
 
-  size_t innerpoints = storage->getNumInnerPoints();
+  size_t innerpoints = storage->getNumberOfInnerPoints();
   size_t pad2 = padding_size - (innerpoints % padding_size);
   storageInnerSizeBound = innerpoints;
   storageInnerSizePaddedBound = innerpoints + pad2;

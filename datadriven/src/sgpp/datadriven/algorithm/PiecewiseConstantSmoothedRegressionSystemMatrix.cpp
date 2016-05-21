@@ -54,7 +54,7 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
   #pragma omp parallel for
 
   for (size_t gridIndex = 0; gridIndex < storage->getSize(); gridIndex++) {
-    base::GridIndex* gridPoint = storage->get(gridIndex);
+    base::GridIndex* gridPoint = storage->getGridIndex(gridIndex);
     size_t integratedNodes;
     rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
     #pragma omp atomic

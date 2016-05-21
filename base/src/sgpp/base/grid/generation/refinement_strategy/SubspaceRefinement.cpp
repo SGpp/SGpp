@@ -169,7 +169,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
         grid_index.set(d, level_vector[d], (*index_it)[d]);
       }
 
-      refineGridpoint(storage, storage.seq(&grid_index));
+      refineGridpoint(storage, storage.getSequenceNumber(&grid_index));
     }
   }
 }

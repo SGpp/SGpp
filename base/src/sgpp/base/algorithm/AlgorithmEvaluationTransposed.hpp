@@ -141,7 +141,7 @@ class AlgorithmEvaluationTransposed {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;

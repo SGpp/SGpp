@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     DataVector alpha(n);
 
     for (size_t i = 0; i < n; i++) {
-      GridIndex& gp = *grid.getStorage().get(i);
+      GridIndex& gp = *grid.getStorage().getGridIndex(i);
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       for (size_t i = 0; i < n; i++) {
         // evaluate function by hand
-        GridIndex& gp = *grid.getStorage().get(i);
+        GridIndex& gp = *grid.getStorage().getGridIndex(i);
         double val = alpha[i];
 
         for (size_t t = 0; t < d; t++) {

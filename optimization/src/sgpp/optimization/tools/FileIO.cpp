@@ -141,7 +141,7 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage,
   f.read(reinterpret_cast<char*>(&N), sizeof(N));
   f.read(reinterpret_cast<char*>(&d), sizeof(d));
 
-  gridStorage.emptyStorage();
+  gridStorage.clear();
   functionValues.resize(N);
   base::GridIndex gp(d);
 

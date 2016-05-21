@@ -28,7 +28,7 @@ GridDataBase::GridDataBase(Grid* grid, DataVector& values) : _map(),
   GridStorage& gs = grid->getStorage();
 
   for (size_t i = 0; i < gs.getSize(); i++) {
-    set(gs.get(i), values[gs.seq(gs.get(i))]);
+    set(gs.getGridIndex(i), values[gs.getSequenceNumber(gs.getGridIndex(i))]);
   }
 }
 

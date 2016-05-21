@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
     for (auto& gridGen : gridGens) {
       // empty grid
-      grid->getStorage().emptyStorage();
+      grid->getStorage().clear();
 
       // generate grid
       BOOST_CHECK(gridGen->generate());

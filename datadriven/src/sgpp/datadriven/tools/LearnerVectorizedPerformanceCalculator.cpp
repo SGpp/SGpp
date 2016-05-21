@@ -50,7 +50,7 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
 
   if (grid.getType() == base::GridType::ModLinear) {
     for (size_t g = 0; g < grid.getSize(); g++) {
-      base::GridIndex* curPoint = grid.getStorage().get(g);
+      base::GridIndex* curPoint = grid.getStorage().getGridIndex(g);
 
       for (size_t h = 0; h < nDim; h++) {
         base::GridStorage::index_type::level_type level;

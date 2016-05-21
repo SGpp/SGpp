@@ -96,7 +96,7 @@ AbstractRefinement::refinement_list_type PredictiveRefinement::getIndicator(
 
     if (error > iThreshold_) {
       key = new refinement_key_type(*(iter->first),
-                                    storage.seq(iter->first), d);
+                                    storage.getSequenceNumber(iter->first), d);
       list.emplace_front(
         std::shared_ptr<AbstractRefinement::refinement_key_type>(key),
         error);
