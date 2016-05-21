@@ -258,7 +258,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage& storage,
       // we only have one child on level 1
       index.set(d, 1, 1);
 
-      if (!storage.isContaining(&index)) {
+      if (!storage.isContaining(index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }
@@ -266,7 +266,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage& storage,
       // generate left child, if necessary
       index.set(d, source_level + 1, 2 * source_index - 1);
 
-      if (!storage.isContaining(&index)) {
+      if (!storage.isContaining(index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }
@@ -274,7 +274,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage& storage,
       // generate right child, if necessary
       index.set(d, source_level + 1, 2 * source_index + 1);
 
-      if (!storage.isContaining(&index)) {
+      if (!storage.isContaining(index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }

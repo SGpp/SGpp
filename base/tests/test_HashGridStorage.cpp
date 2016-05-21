@@ -221,38 +221,38 @@ BOOST_AUTO_TEST_CASE(testPeriodic2D) {
   HashGridIndex i(2);
   i.set(0, 0, 0);
   i.set(1, 0, 0);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.isContaining(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 1, 1);
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.isContaining(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testPeriodic3D) {
@@ -290,19 +290,19 @@ BOOST_AUTO_TEST_CASE(testRegular2D) {
   i.set(0, 1, 1);
   i.set(1, 1, 1);
 
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.isContaining(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testRegular3D) {
@@ -340,25 +340,25 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
   i.set(0, 1, 1);
   i.set(1, 1, 1);
 
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.isContaining(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 0, 0);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 0, 0);
-  BOOST_CHECK(s2.isContaining(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {

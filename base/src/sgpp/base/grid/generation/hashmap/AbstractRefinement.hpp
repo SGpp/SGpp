@@ -234,7 +234,7 @@ class AbstractRefinement {
                                          index_type& index) {
     // For efficiency this function is defined the header file, this way it
     // be easily inlined by compiler.
-    if (!storage.isContaining(&index)) {
+    if (!storage.isContaining(index)) {
       // save old leaf value
       bool saveLeaf = index.isLeaf();
       index.setLeaf(false);
