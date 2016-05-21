@@ -52,7 +52,7 @@ int main() {
   for (int step = 0; step < 5; step++) {
     // set function values in alpha
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      gp = gridStorage.get(i);
+      gp = gridStorage.getGridIndex(i);
       alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
     }
 

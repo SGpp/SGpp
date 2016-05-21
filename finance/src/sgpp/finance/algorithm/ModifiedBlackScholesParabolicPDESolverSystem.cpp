@@ -40,7 +40,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
 
   for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
     // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-    std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
+    std::string coords = this->BoundGrid->getStorage().getGridIndex(i)->getCoordsStringBB(
         this->BoundGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
     double dblFuncValues[2];

@@ -234,7 +234,7 @@ class AbstractRefinement {
                                          index_type& index) {
     // For efficiency this function is defined the header file, this way it
     // be easily inlined by compiler.
-    if (!storage.has_key(&index)) {
+    if (!storage.isContaining(&index)) {
       // save old leaf value
       bool saveLeaf = index.isLeaf();
       index.setLeaf(false);
@@ -243,7 +243,7 @@ class AbstractRefinement {
       index.setLeaf(saveLeaf);
     } else {
       // set stored index to false
-      (storage.get((storage.find(&index))->second))->setLeaf(false);
+      (storage.getGridIndex((storage.find(&index))->second))->setLeaf(false);
     }
   }
 

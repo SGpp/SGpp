@@ -208,7 +208,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
               childIndex = sourceIndex;
               childLevel = sourceLevel;
 
-              while (gridStorage.has_key(&gp)) {
+              while (gridStorage.isContaining(&gp)) {
                 childIndex *= 2;
                 childLevel++;
                 gp.set(t, childLevel, childIndex - 1);
@@ -227,7 +227,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
               childIndex = sourceIndex;
               childLevel = sourceLevel;
 
-              while (gridStorage.has_key(&gp)) {
+              while (gridStorage.isContaining(&gp)) {
                 childIndex *= 2;
                 childLevel++;
                 gp.set(t, childLevel, childIndex + 1);

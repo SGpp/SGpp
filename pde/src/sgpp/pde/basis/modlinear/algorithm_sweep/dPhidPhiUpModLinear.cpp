@@ -38,14 +38,14 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.leftChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
       f = 0.0;
       index.stepRight(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
@@ -59,7 +59,7 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.leftChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
@@ -75,7 +75,7 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.rightChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 

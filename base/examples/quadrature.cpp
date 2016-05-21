@@ -61,7 +61,7 @@ int main() {
   double p[2];
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    gp = gridStorage.get(i);
+    gp = gridStorage.getGridIndex(i);
     p[0] = gp->getCoord(0);
     p[1] = gp->getCoord(1);
     alpha[i] = f(2, p, NULL);

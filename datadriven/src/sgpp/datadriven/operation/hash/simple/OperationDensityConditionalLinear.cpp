@@ -26,7 +26,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   sgpp::base::GridIndex* gp;
 
   for (size_t seqNr = 0; seqNr < alpha.getSize(); seqNr++) {
-    gp = gs->get(seqNr);
+    gp = gs->getGridIndex(seqNr);
     zeta[seqNr] =
         std::max(1. - std::fabs(xbar * std::pow(2.0, static_cast<double>(gp->getLevel(mdim))) -
                                 static_cast<double>(gp->getIndex(mdim))),
@@ -41,7 +41,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   double tmpint = 0;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    gp = gs->get(seqNr);
+    gp = gs->getGridIndex(seqNr);
     tmpint = 1;
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
@@ -73,7 +73,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   sgpp::base::GridIndex mgp(mgs->getDimension());
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    gp = gs->get(seqNr);
+    gp = gs->getGridIndex(seqNr);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       // skip direction in which we marginalize
@@ -88,7 +88,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
       }
     }
 
-    if (!mgs->has_key(&mgp)) mgs->insert(mgp);
+    if (!mgs->isContaining(&mgp)) mgs->insert(mgp);
   }
 
   mgs->recalcLeafProperty();
@@ -101,7 +101,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   size_t mseqNr;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    gp = gs->get(seqNr);
+    gp = gs->getGridIndex(seqNr);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d < mdim)
@@ -110,12 +110,12 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
         mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
     }
 
-    if (!mgs->has_key(&mgp))
+    if (!mgs->isContaining(&mgp))
       throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
-    mseqNr = mgs->seq(&mgp);
+    mseqNr = mgs->getSequenceNumber(&mgp);
     // update corresponding coefficient
     malpha[mseqNr] += alpha[seqNr] * zeta[seqNr];
   }

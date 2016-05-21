@@ -188,7 +188,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
   for (size_t i = 0; i < this->storage->getSize(); i++) {
     for (size_t dim = 0; dim < dims; dim++) {
-      storage->get(i)->get(dim, curLevel, curIndex);
+      storage->getGridIndex(i)->get(dim, curLevel, curIndex);
 
       if (curLevel == 1) {
         this->level[i * dims + dim] = 0.0;

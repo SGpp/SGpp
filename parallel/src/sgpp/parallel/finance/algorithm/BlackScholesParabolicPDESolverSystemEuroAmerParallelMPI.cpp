@@ -547,7 +547,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
       double* dblFuncValues = new double[dim];
 
       for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
-        std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
+        std::string coords = this->BoundGrid->getStorage().getGridIndex(i)->getCoordsStringBB(*myBB);
         std::stringstream coordsStream(coords);
 
         double tmp;
@@ -648,8 +648,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
 
       myGlobalMPIComm->receiveGridStorage(bound_grid_storage);
 
-      this->BoundGrid->getStorage().emptyStorage();
-      this->BoundGrid->getStorage().unserialize_noAlgoDims(bound_grid_storage);
+      this->BoundGrid->getStorage().clear();
+      this->BoundGrid->getStorage().unserializeNoAlgoDims(bound_grid_storage);
       this->alpha_complete->resize(this->BoundGrid->getStorage().getSize());
 
       // rebuild the inner grid + coefficients

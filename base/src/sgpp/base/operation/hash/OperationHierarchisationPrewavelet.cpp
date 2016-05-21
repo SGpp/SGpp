@@ -61,10 +61,10 @@ void OperationHierarchisationPrewavelet::doDehierarchisation(
 
 void OperationHierarchisationPrewavelet::expandGrid() {
   for (size_t i = 0; i < shadowStorage.getSize(); i++) {
-    (*shadowStorage.get(i)).toString(std::cout);
-    this->storage.insert(*shadowStorage.get(i));
+    (*shadowStorage.getGridIndex(i)).toString(std::cout);
+    this->storage.insert(*shadowStorage.getGridIndex(i));
 
-    if ((*shadowStorage.get(i)).isLeaf())
+    if ((*shadowStorage.getGridIndex(i)).isLeaf())
       std::cout << "is Leaf : " << std::endl;
     else
       std::cout << "nooo" << std::endl;

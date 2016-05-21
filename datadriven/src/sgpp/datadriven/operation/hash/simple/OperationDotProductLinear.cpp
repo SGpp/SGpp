@@ -23,7 +23,7 @@ double OperationDotProductLinear::eval(base::DataVector& x1, base::DataVector& x
   // for (GridStorage::grid_iterator working = storage->begin(); working != storage->end();
   // working++){
   for (size_t i = 0; i < storage->getSize(); i++) {
-    base::GridStorage::index_type working = *storage->get(i);
+    base::GridStorage::index_type working = *storage->getGridIndex(i);
     double value1 = 1.0;
     double value2 = 1.0;
 

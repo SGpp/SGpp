@@ -168,7 +168,7 @@ class HashGridIterator {
   inline void set(size_t d, index_type::level_type l,
                   index_type::index_type i) {
     index.set(d, l, i);
-    this->seq_ = storage.seq(&index);
+    this->seq_ = storage.getSequenceNumber(&index);
   }
 
   /**
@@ -179,7 +179,7 @@ class HashGridIterator {
    */
   inline void set(const index_type& point) {
     index = point;
-    this->seq_ = storage.seq(&index);
+    this->seq_ = storage.getSequenceNumber(&index);
   }
 
   /**

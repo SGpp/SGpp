@@ -149,7 +149,7 @@ class GetAffectedBasisFunctions {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -262,7 +262,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         // std::cout << "Grid not found or dim exceed breaking..Grid: " <<
         // seq<<" dim "<<current_dim<<std::endl;
         break;
@@ -293,7 +293,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           working.stepRight(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -315,7 +315,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           working.stepLeft(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -451,7 +451,7 @@ class GetAffectedBasisFunctions <
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         // std::cout << "Grid not found or dim exceed breaking..Grid: " <<
         // seq<<" dim "<<current_dim<<std::endl;
         break;
@@ -482,7 +482,7 @@ class GetAffectedBasisFunctions <
           working.stepRight(current_dim);
           tmpSeq = working.seq();
 
-          if ( !(storage.end(tmpSeq)) ) {
+          if ( !(storage.isValidSequenceNumber(tmpSeq)) ) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -502,7 +502,7 @@ class GetAffectedBasisFunctions <
           working.stepLeft(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -615,7 +615,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -718,7 +718,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -864,7 +864,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1156,7 +1156,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1285,7 +1285,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1389,7 +1389,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;

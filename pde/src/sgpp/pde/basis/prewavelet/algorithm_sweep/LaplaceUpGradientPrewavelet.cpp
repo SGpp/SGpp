@@ -38,7 +38,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
 
   index.set(dim, l, 1);
   _seqr = index.seq();
-  _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+  _valr = storage->isValidSequenceNumber(_seqr) ? 0.0 : source[_seqr];
 
   double* temp_current = new double[(1 << (l - 1)) - 1];
 
@@ -47,7 +47,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     _vall = _valr;
     index.set(dim, l, 2 * i + 3);
     _seqr = index.seq();
-    _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+    _valr = storage->isValidSequenceNumber(_seqr) ? 0.0 : source[_seqr];
     temp_current[i] = -0.6 * (_vall + _valr);
   }
 
@@ -59,7 +59,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] =
           0.9 * h * (2 * temp_current[i] - temp_current[i + 1]) -
           0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - temp_current[i]) +
@@ -69,7 +69,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] =
           h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) +
           -0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
@@ -81,7 +81,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
       index.set(dim, l, i + 1);
       _seq = index.seq();
 
-      if (!storage->end(_seq))
+      if (!storage->isValidSequenceNumber(_seq))
         result[_seq] =
             h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) -
             0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
@@ -94,7 +94,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] =
           h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) +
           -0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
@@ -106,7 +106,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] =
           0.9 * h * (2 * temp_current[i] - temp_current[i - 1]) -
           0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i - 1] - temp_current[i]) +
@@ -114,14 +114,14 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
 
     index.set(dim, l, 1);
     _seqr = index.seq();
-    _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+    _valr = storage->isValidSequenceNumber(_seqr) ? 0.0 : source[_seqr];
 
     for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
       _seql = _seqr;
       _vall = _valr;
       index.set(dim, l, 2 * i + 3);
       _seqr = index.seq();
-      _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+      _valr = storage->isValidSequenceNumber(_seqr) ? 0.0 : source[_seqr];
       temp_current[i] = -0.6 * (_vall + _valr) + temp_current[2 * i + 1];
     }
   }
@@ -132,7 +132,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, 2, 1);
     _seql = index.seq();
 
-    if (!storage->end(_seql)) {
+    if (!storage->isValidSequenceNumber(_seql)) {
       result[_seql] = 0.9 * h * (2 * temp_current[0] - temp_current[1]) -
                       0.6 * h * (-temp_current[2] + 2 * temp_current[1] - temp_current[0]) +
                       0.1 * h * (-temp_current[1] + 2 * temp_current[2]);
@@ -144,7 +144,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     index.set(dim, 2, 3);
     _seqr = index.seq();
 
-    if (!storage->end(_seqr)) {
+    if (!storage->isValidSequenceNumber(_seqr)) {
       result[_seqr] = 0.9 * h * (2 * temp_current[2] - temp_current[1]) -
                       0.6 * h * (-temp_current[0] + 2 * temp_current[1] - temp_current[2]) +
                       0.1 * h * (-temp_current[1] + 2 * temp_current[0]);

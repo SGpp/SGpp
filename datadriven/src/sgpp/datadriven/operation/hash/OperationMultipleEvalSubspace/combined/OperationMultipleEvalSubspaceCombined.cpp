@@ -71,7 +71,7 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(
   base::index_t curIndex;
 
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -94,7 +94,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector& result) {
   base::index_t curIndex;
 
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);

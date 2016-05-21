@@ -47,13 +47,13 @@ void PhidPhiDownBBLinearStretched::rec(sgpp::base::DataVector& source,
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

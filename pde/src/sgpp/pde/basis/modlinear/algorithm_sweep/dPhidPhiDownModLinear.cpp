@@ -49,13 +49,13 @@ void dPhidPhiDownModLinear::rec(sgpp::base::DataVector& source, sgpp::base::Data
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, f + f_local);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, f + f_local);
     }
 

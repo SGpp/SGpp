@@ -94,7 +94,7 @@ int main() {
     DataVector gridPointCoordinates(dim);
 
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      gridStorage.get(i)->getCoords(gridPointCoordinates);
+      gridStorage.getGridIndex(i)->getCoords(gridPointCoordinates);
       alpha[i] = f(gridPointCoordinates[0], gridPointCoordinates[1]);
     }
 

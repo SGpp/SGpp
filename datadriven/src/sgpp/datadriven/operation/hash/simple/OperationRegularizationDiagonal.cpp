@@ -51,7 +51,7 @@ void OperationRegularizationDiagonal::initIsotropicPenalty() {
   base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->get(i);
+    gi = storage->getGridIndex(i);
     diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * static_cast<double>(dim);
   }
 }
@@ -61,7 +61,7 @@ void OperationRegularizationDiagonal::initAnisotropicPenalty() {
   base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->get(i);
+    gi = storage->getGridIndex(i);
     diagonal[i] =
         0.5 * log(1. +
                   static_cast<double>(gi->getLevelMax()) /
