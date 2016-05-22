@@ -1,5 +1,5 @@
 from pysgpp.extensions.datadriven.uq.operations import balance
-from pysgpp import (DataVector, HashGridIndex,
+from pysgpp import (DataVector, HashGridPoint,
                     SurplusRefinementFunctor,
                     HashGridStorage,
                     Linear, LinearL0Boundary, LinearBoundary,
@@ -289,7 +289,7 @@ class RefinementManager(object):
                 pointsNum -= 1
 
                 # store which point has been refined
-                refinedPoints.append(HashGridIndex(gp))
+                refinedPoints.append(HashGridPoint(gp))
                 newGridPoints += nps
 
         # balance the grid

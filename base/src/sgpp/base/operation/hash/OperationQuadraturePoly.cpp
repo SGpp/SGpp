@@ -15,7 +15,7 @@ double OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
   double tmpres = 0;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    GridIndex& gp = storage.getGridIndex(i);
+    GridPoint& gp = storage.getGridPoint(i);
     tmpres = 1.;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HASHGRIDINDEX_HPP
-#define HASHGRIDINDEX_HPP
+#ifndef HASHGRIDPOINT_HPP
+#define HASHGRIDPOINT_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -33,7 +33,7 @@ namespace base {
  * of this class are members in the hashmap that represents the
  * whole grid.
  */
-class HashGridIndex {
+class HashGridPoint {
  public:
   /// level type
   typedef uint32_t level_type;
@@ -48,19 +48,19 @@ class HashGridIndex {
    *
    * @param dimension the dimension of the gridpoint
    */
-  explicit HashGridIndex(size_t dimension);
+  explicit HashGridPoint(size_t dimension);
 
   /**
    * Standard-Constructor
    */
-  HashGridIndex();
+  HashGridPoint();
 
   /**
    * Copy-Constructor
    *
-   * @param o constant reference to HashGridIndex object
+   * @param o constant reference to HashGridPoint object
    */
-  HashGridIndex(const HashGridIndex& o);
+  HashGridPoint(const HashGridPoint& o);
 
   /**
    * Serialisation-Constructor
@@ -68,12 +68,12 @@ class HashGridIndex {
    * @param istream instream object the contains the information about the gridpoint
    * @param version the serialization version of the file
    */
-  HashGridIndex(std::istream& istream, int version);
+  HashGridPoint(std::istream& istream, int version);
 
   /**
    * Destructor
    */
-  ~HashGridIndex();
+  ~HashGridPoint();
 
   /**
    * Serialize this Gridpoint e.g. for a storage or checkpointing
@@ -91,7 +91,7 @@ class HashGridIndex {
   size_t getDimension() const;
 
   /**
-   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridIndex
+   * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridPoint
    * object
    *
    * @param d the dimension in which the ansatzfunction is set
@@ -106,7 +106,7 @@ class HashGridIndex {
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs
-   * the HashGridIndex object
+   * the HashGridPoint object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -122,7 +122,7 @@ class HashGridIndex {
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the
-   * HashGridIndex object
+   * HashGridPoint object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -135,7 +135,7 @@ class HashGridIndex {
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't
-   * rehash the HashGridIndex object
+   * rehash the HashGridPoint object
    *
    * @param d the dimension in which the ansatzfunction is set
    * @param l the level of the ansatzfunction
@@ -265,29 +265,29 @@ class HashGridIndex {
    * two objects x and y are defined to be equivalent
    * when both f(x,y) and f(y,x) are false -> equalsSGLRBHash
    *
-   * @param rhs reference the another HashGridIndex instance
+   * @param rhs reference the another HashGridPoint instance
    *
    * @return true if the gridpoints are identical otherwise false
    */
-  bool equals(const HashGridIndex& rhs) const;
+  bool equals(const HashGridPoint& rhs) const;
 
   /**
    * A wrapper for operator=
    *
-   * @param rhs a reference to a HashGridIndex that contains the values that should be copied
+   * @param rhs a reference to a HashGridPoint that contains the values that should be copied
    *
-   * @return returns a reference HashGridIndex
+   * @return returns a reference HashGridPoint
    */
-  HashGridIndex& assign(const HashGridIndex& rhs);
+  HashGridPoint& assign(const HashGridPoint& rhs);
 
   /**
    * operator to assign the current grid point with the values of another one
    *
-   * @param rhs a reference to a HashGridIndex that contains the values that should be copied
+   * @param rhs a reference to a HashGridPoint that contains the values that should be copied
    *
-   * @return returns a reference HashGridIndex
+   * @return returns a reference HashGridPoint
    */
-  HashGridIndex& operator=(const HashGridIndex& rhs);
+  HashGridPoint& operator=(const HashGridPoint& rhs);
 
   /**
    * Generates a string with level and index of the gridpoint.
@@ -456,28 +456,28 @@ class HashGridIndex {
   static pointDistributionMap& typeMap();
   static pointDistributionVerboseMap& typeVerboseMap();
 
-  friend struct HashGridIndexPointerHashFunctor;
-  friend struct HashGridIndexPointerEqualityFunctor;
-  friend struct HashGridIndexHashFunctor;
-  friend struct HashGridIndexEqualityFunctor;
+  friend struct HashGridPointPointerHashFunctor;
+  friend struct HashGridPointPointerEqualityFunctor;
+  friend struct HashGridPointHashFunctor;
+  friend struct HashGridPointEqualityFunctor;
 };
 
-struct HashGridIndexPointerHashFunctor {
-  size_t operator()(const HashGridIndex* index) const { return index->getHash(); }
+struct HashGridPointPointerHashFunctor {
+  size_t operator()(const HashGridPoint* index) const { return index->getHash(); }
 };
 
-struct HashGridIndexPointerEqualityFunctor {
-  size_t operator()(const HashGridIndex* s1, const HashGridIndex* s2) const {
+struct HashGridPointPointerEqualityFunctor {
+  size_t operator()(const HashGridPoint* s1, const HashGridPoint* s2) const {
     return s1->equals(*s2);
   }
 };
 
-struct HashGridIndexHashFunctor {
-  size_t operator()(const HashGridIndex& index) const { return index.getHash(); }
+struct HashGridPointHashFunctor {
+  size_t operator()(const HashGridPoint& index) const { return index.getHash(); }
 };
 
-struct HashGridIndexEqualityFunctor {
-  size_t operator()(const HashGridIndex& s1, const HashGridIndex& s2) const {
+struct HashGridPointEqualityFunctor {
+  size_t operator()(const HashGridPoint& s1, const HashGridPoint& s2) const {
     return s1.equals(s2);
   }
 };
@@ -485,4 +485,4 @@ struct HashGridIndexEqualityFunctor {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* HASHGRIDINDEX_HPP */
+#endif /* HASHGRIDPOINT_HPP */

@@ -37,7 +37,7 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& alp
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = (*storage)[i];
+          sgpp::base::GridPoint index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -56,7 +56,7 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& alp
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = (*storage)[i];
+          sgpp::base::GridPoint index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {

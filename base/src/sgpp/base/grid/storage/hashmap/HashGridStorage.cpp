@@ -154,7 +154,7 @@ std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoint
     size_t tmpIndex = *iter;
     size_t curPos = tmpIndex - delCounter;
 
-    // GridIndex
+    // GridPoint
     curPoint = list[curPos];
 
     // erase point
@@ -324,7 +324,7 @@ size_t HashGridStorage::getNumberOfInnerPoints() const {
 size_t HashGridStorage::getDimension() const { return dimension; }
 
 size_t HashGridStorage::insert(index_type& index) {
-  index_pointer insert = new HashGridIndex(index);
+  index_pointer insert = new HashGridPoint(index);
   list.push_back(insert);
   return (map[insert] = list.size() - 1);
 }
@@ -336,7 +336,7 @@ void HashGridStorage::update(index_type& index, size_t pos) {
     map.erase(del);
     delete del;
     // Insert update
-    index_pointer insert = new HashGridIndex(index);
+    index_pointer insert = new HashGridPoint(index);
     list[pos] = insert;
     map[insert] = pos;
   }
@@ -731,7 +731,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 
   for (size_t i = 0; i < num; i++) {
-    index_pointer index = new HashGridIndex(istream, version);
+    index_pointer index = new HashGridPoint(istream, version);
     list.push_back(index);
     map[index] = i;
   }

@@ -10,13 +10,13 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include "sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;
-using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridPoint;
 using sgpp::base::HashGridStorage;
 using sgpp::base::HashRefinement;
 using sgpp::base::SubspaceRefinement;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   BOOST_CHECK_EQUAL(storage.getSize(), 33);
 
   for (size_t i = 0; i < storage.getSize(); i++) {
-    HashGridIndex& index = storage.getGridIndex(i);
+    HashGridPoint& index = storage.getGridPoint(i);
     BOOST_CHECK((index.getIndex(0) == 4) == false);
   }
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   BOOST_CHECK_EQUAL(storage.getSize(), 33);
 
   for (size_t i = 0; i < storage.getSize(); i++) {
-    HashGridIndex& index = storage.getGridIndex(i);
+    HashGridPoint& index = storage.getGridPoint(i);
     BOOST_CHECK((index.getIndex(0) == 4 || index.getIndex(1) == 4) == false);
   }
 

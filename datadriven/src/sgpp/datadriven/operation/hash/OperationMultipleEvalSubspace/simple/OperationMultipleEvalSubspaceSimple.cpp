@@ -116,8 +116,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   base::index_t curIndex;
 
   //calculate the maxLevel first
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getGridPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -129,8 +129,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   }
 
   //create map of subspaces -> now we know which subspaces actually exist in the grid
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getGridPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -364,8 +364,8 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getGridPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -374,7 +374,7 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(
       maxIndex[d] = 1 << curLevel;
     }
 
-    this->setSurplus(level, maxIndex, index, surplusVector.get(gridIndex));
+    this->setSurplus(level, maxIndex, index, surplusVector.get(gridPoint));
   }
 }
 
@@ -387,8 +387,8 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->getGridIndex(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getGridPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -401,7 +401,7 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
     bool isVirtual;
     this->getSurplus(level, maxIndex, index, surplus, isVirtual);
 
-    result.set(gridIndex, surplus);
+    result.set(gridPoint, surplus);
   }
 }
 

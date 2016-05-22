@@ -192,7 +192,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, double 
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

@@ -55,7 +55,7 @@ Grid* hierarchize(std::uint32_t dim, std::uint32_t level, DataVector& alpha,
   DataVector coords(dim);
   GridStorage& gs = grid->getStorage();
   for (size_t i = 0; i < grid->getSize(); i++) {
-    gs.getGridIndex(i).getCoords(coords);
+    gs.getGridPoint(i).getCoords(coords);
     alpha[i] = func(coords);
   }
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);

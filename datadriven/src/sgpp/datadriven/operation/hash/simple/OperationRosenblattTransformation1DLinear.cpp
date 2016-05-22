@@ -43,7 +43,7 @@ double OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataV
   base::DataVector coord(1);
 
   for (size_t i = 0; i < gs->getSize(); i++) {
-    coord[0] = gs->getGridIndex(i).getCoord(0);
+    coord[0] = gs->getGridPoint(i).getCoord(0);
     coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }

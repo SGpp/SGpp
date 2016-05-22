@@ -230,7 +230,7 @@ double Node::evaluate(std::vector<double>& point) {
   return sum;
 }
 
-double Node::integrate(sgpp::base::GridIndex& gridPoint, size_t& integratedNodes,
+double Node::integrate(sgpp::base::GridPoint& gridPoint, size_t& integratedNodes,
                         size_t levelLimit) {
   if (levelLimit == 0) {
     integratedNodes = 1;

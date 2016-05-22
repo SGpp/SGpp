@@ -1,4 +1,4 @@
-from pysgpp import Grid, DataVector, createOperationEval, HashGridIndex
+from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from findCandidateSet import CandidateSet
 import numpy as np
 
@@ -30,4 +30,4 @@ class FullGridCandidates(CandidateSet):
         for i in xrange(fullGridStorage.getSize()):
             gp = fullGridStorage.get(i)
             if not gs.has_key(gp):
-                self.candidates.append(HashGridIndex(gp))
+                self.candidates.append(HashGridPoint(gp))

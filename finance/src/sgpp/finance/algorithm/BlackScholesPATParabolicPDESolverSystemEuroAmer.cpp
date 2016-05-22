@@ -26,7 +26,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
     std::string OperationMode, double dStrike, std::string option_type, double r, bool useCoarsen,
     double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -223,7 +223,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
 
     for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
       std::vector<double> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage().getGridIndex(i).getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getGridPoint(i).getCoordsStringBB(*myBB);
       std::stringstream coordsStream(coords);
 
       double tmp;

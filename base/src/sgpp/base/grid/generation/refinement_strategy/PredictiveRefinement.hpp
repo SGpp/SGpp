@@ -28,7 +28,7 @@ class PredictiveRefinement_refinement_key : public
   /**
    * Constructor
    *
-   * @param index grid index
+   * @param index grid point
    * @param seq sequence number in the hash grid storage
    * @param dim dimensionality
    */

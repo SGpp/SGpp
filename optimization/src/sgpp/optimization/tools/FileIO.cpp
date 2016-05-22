@@ -107,12 +107,12 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
   f.write(reinterpret_cast<const char*>(&d), sizeof(d));
 
   for (size_t j = 0; j < N; j++) {
-    const base::GridIndex& gp = gridStorage[j];
+    const base::GridPoint& gp = gridStorage[j];
 
     for (size_t t = 0; t < d; t++) {
       const double x = gp.getCoord(t);
-      base::GridIndex::level_type l = gp.getLevel(t);
-      base::GridIndex::index_type i = gp.getIndex(t);
+      base::GridPoint::level_type l = gp.getLevel(t);
+      base::GridPoint::index_type i = gp.getIndex(t);
 
       // coordinate, level and index of current grid point
       f.write(reinterpret_cast<const char*>(&x), sizeof(x));
@@ -143,13 +143,13 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage,
 
   gridStorage.clear();
   functionValues.resize(N);
-  base::GridIndex gp(d);
+  base::GridPoint gp(d);
 
   for (size_t j = 0; j < N; j++) {
     for (size_t t = 0; t < d; t++) {
       double x;
-      base::GridIndex::level_type l;
-      base::GridIndex::index_type i;
+      base::GridPoint::level_type l;
+      base::GridPoint::index_type i;
       f.read(reinterpret_cast<char*>(&x), sizeof(x));
       f.read(reinterpret_cast<char*>(&l), sizeof(l));
       f.read(reinterpret_cast<char*>(&i), sizeof(i));

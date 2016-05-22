@@ -42,7 +42,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = (*storage)[i];
+              sgpp::base::GridPoint index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
@@ -78,7 +78,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = (*storage)[i];
+              sgpp::base::GridPoint index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {

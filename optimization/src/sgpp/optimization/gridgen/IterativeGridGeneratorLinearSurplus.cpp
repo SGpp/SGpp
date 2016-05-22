@@ -76,13 +76,13 @@ void IterativeGridGeneratorLinearSurplus::setInitialLevel(base::level_t initialL
 bool IterativeGridGeneratorLinearSurplus::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
 
-  base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
+  base::GridPoint::PointDistribution distr = base::GridPoint::PointDistribution::Normal;
 
   if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
       (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
       (grid.getType() == base::GridType::LinearClenshawCurtis)) {
     // Clenshaw-Curtis grid
-    distr = base::GridIndex::PointDistribution::ClenshawCurtis;
+    distr = base::GridPoint::PointDistribution::ClenshawCurtis;
   }
 
   std::unique_ptr<base::AbstractRefinement> abstractRefinement;

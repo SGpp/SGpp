@@ -1677,7 +1677,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
                                   size_t timeSt, double dt, size_t CGIt, double CGeps,
                                   std::string Solver, std::string refinementMode,
                                   int numRefinePoints,
-                                  sgpp::base::HashGridIndex::level_type maxRefineLevel,
+                                  sgpp::base::HashGridPoint::level_type maxRefineLevel,
                                   size_t nIterAdaptSteps, double dRefineThreshold, bool useCoarsen,
                                   std::string adaptSolvingMode, double coarsenThreshold,
                                   bool isLogSolve, bool useNormalDist) {

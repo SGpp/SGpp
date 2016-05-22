@@ -293,14 +293,14 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     level = std::vector<T>(gridSizeBuffers * dims);
     index = std::vector<T>(gridSizeBuffers * dims);
 
-    base::HashGridIndex::level_type curLevel;
-    base::HashGridIndex::index_type curIndex;
+    base::HashGridPoint::level_type curLevel;
+    base::HashGridPoint::index_type curIndex;
 
     /// pointer to index_type
     base::HashGridStorage::index_pointer gridPoint;
 
     for (size_t i = 0; i < gridSizeUnpadded; i++) {
-      gridPoint = storage.getGridIndex(i);
+      gridPoint = storage.getGridPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);

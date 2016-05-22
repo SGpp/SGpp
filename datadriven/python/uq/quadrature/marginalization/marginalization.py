@@ -1,4 +1,4 @@
-from pysgpp import DataVector, HashGridIndex
+from pysgpp import DataVector, HashGridPoint
 from pysgpp.extensions.datadriven.uq.operations import createGrid, getBasis
 from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
@@ -22,7 +22,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     n_gs = n_grid.getStorage()
 
     # insert grid points
-    n_gp = HashGridIndex(n_dim)
+    n_gp = HashGridPoint(n_dim)
     for i in xrange(gs.getSize()):
         gp = gs.get(i)
         for d in range(dim):
@@ -67,7 +67,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
         else:
             dist, trans = measure[0][dd], measure[1][dd]
             lf = LinearGaussQuadratureStrategy([dist], [trans])
-            gpdd = HashGridIndex(1)
+            gpdd = HashGridPoint(1)
             gpdd.set(0, dd_level, dd_index)
             q, err = lf.computeLinearFormByList([gpdd], basis)
             q = q[0] * trans.vol()

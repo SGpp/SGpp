@@ -35,7 +35,7 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
   base::DataVector x(d, 0.0);
 
   for (size_t j = 0; j < storage.getSize(); j++) {
-    const base::GridIndex& gp = storage[j];
+    const base::GridPoint& gp = storage[j];
 
     for (size_t t = 0; t < d; t++) {
       x[t] = gp.getCoord(t);
@@ -68,7 +68,7 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
     alpha.getColumn(i, alpha1);
 
     for (size_t j = 0; j < storage.getSize(); j++) {
-      const base::GridIndex& gp = storage[j];
+      const base::GridPoint& gp = storage[j];
 
       for (size_t t = 0; t < d; t++) {
         x[t] = gp.getCoord(t);

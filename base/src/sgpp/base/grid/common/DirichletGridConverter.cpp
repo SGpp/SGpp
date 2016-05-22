@@ -62,7 +62,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex& curPoint = myGridStorage[i];
+        GridPoint& curPoint = myGridStorage[i];
 
         if (curPoint.isInnerPoint() == true) {
           // handle coefficients
@@ -111,7 +111,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex& curPoint = myGridStorage[i];
+        GridPoint& curPoint = myGridStorage[i];
 
         if (curPoint.isInnerPoint() == true) {
           // handle coefficients
@@ -175,7 +175,7 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
       size_t numInner = 0;
 
       for (size_t i = 0; i < this->numTotalGridPoints; i++) {
-        GridIndex& curPoint = myGridStorage[i];
+        GridPoint& curPoint = myGridStorage[i];
 
         if (curPoint.isInnerPoint() == true) {
           // handle coefficients

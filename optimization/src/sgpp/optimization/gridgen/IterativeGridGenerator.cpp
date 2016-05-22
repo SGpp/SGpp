@@ -56,7 +56,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 
     for (size_t i = oldGridSize; i < curGridSize; i++) {
       // convert grid point to coordinate vector
-      const base::GridIndex& gp = gridStorage[i];
+      const base::GridPoint& gp = gridStorage[i];
 
       for (size_t t = 0; t < d; t++) {
         x[t] = gp.getCoord(t);

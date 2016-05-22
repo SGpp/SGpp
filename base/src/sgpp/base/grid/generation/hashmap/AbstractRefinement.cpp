@@ -53,7 +53,7 @@ void AbstractRefinement::createGridpoint1D(index_type& index,
 
 void AbstractRefinement::refineGridpoint1D(GridStorage& storage, size_t seq,
     size_t d) {
-  this->refineGridpoint1D(storage, storage.getGridIndex(seq), d);
+  this->refineGridpoint1D(storage, storage.getGridPoint(seq), d);
 }
 
 

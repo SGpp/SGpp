@@ -14,7 +14,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
 using sgpp::base::DataMatrix;
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //  BOOST_CHECK_EQUAL(storage.getSize(), 9);
   //
   //  for (size_t i = 0; i < storage.getSize(); i++) {
-  //    HashGridIndex* index = storage.get(i);
+  //    HashGridPoint* index = storage.get(i);
   //    BOOST_CHECK((index->getIndex(0) == 4) == false);
   //  }
   //

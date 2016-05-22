@@ -126,7 +126,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, double s
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
-              this->myGridStorage->getGridIndex(i).getCoordsStringBB(*(this->myBoundingBox));
+              this->myGridStorage->getGridPoint(i).getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -180,7 +180,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, double s
 void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha, double strike,
                                                          std::string payoffType,
                                                          double dStrikeDistance,
-                                                         base::GridIndex::level_type maxLevel) {
+                                                         base::GridPoint::level_type maxLevel) {
   size_t nRefinements = 0;
 
   this->dStrike = strike;
@@ -200,7 +200,7 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
-              this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+              this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -420,7 +420,7 @@ void HestonSolver::initScreen() {
 }
 
 void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
-                                           base::GridIndex::level_type refineMaxLevel,
+                                           base::GridPoint::level_type refineMaxLevel,
                                            int numCoarsenPoints, double coarsenThreshold,
                                            double refineThreshold) {
   this->useCoarsen = true;
@@ -440,7 +440,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, double strike,
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->getGridIndex(i).getCoordsBB(coords, *this->myBoundingBox);
+        this->myGridStorage->getGridPoint(i).getCoordsBB(coords, *this->myBoundingBox);
 
         // The stock prices come from the coordinates of the 0th, 2nd, 4th, 6th... dimensions. The
         // other dimensions are the volatilities...they don't count for adding up stock prices.
@@ -487,9 +487,9 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
 
-      base::GridIndex& curPoint = (*myGridStorage)[i];
+      base::GridPoint& curPoint = (*myGridStorage)[i];
 
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
@@ -624,7 +624,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double s
     size_t numNonZeroInner = 0;
 
     for (size_t i = 0; i < numTotalGridPoints; i++) {
-      base::GridIndex& curPoint = (*myGridStorage)[i];
+      base::GridPoint& curPoint = (*myGridStorage)[i];
 
       if (curPoint.isInnerPoint() && alpha.get(i) != 0) numNonZeroInner++;
     }
@@ -648,11 +648,11 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, dou
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
-      base::GridIndex& curPoint = (*myGridStorage)[i];
+      base::GridPoint& curPoint = (*myGridStorage)[i];
 
       for (size_t j = 0; j < this->dim; j++) {
         coordsStream >> tmp;
@@ -908,7 +908,7 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, double ma
 
   for (size_t i = 0; i < this->myGrid->getSize(); i++) {
     std::string coords =
-        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+        this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[dim];
 
@@ -944,7 +944,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, double
 
   for (size_t i = 0; i < this->myGrid->getSize(); i++) {
     std::string coords =
-        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+        this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[dim];
 
@@ -1020,7 +1020,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
   double tmp;
 
   for (size_t i = 0; i < grid1d->getSize(); i++) {
-    std::string coords = grid1d->getStorage().getGridIndex(i).getCoordsStringBB(*boundingBox1d);
+    std::string coords = grid1d->getStorage().getGridPoint(i).getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[1];
     coordsStream >> tmp;
@@ -1043,7 +1043,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
   finance::BlackScholesSolver* myBSSolver = new finance::BlackScholesSolver(false);
 
   for (size_t i = 0; i < grid1d->getSize(); i++) {
-    std::string coords = grid1d->getStorage().getGridIndex(i).getCoordsStringBB(*boundingBox1d);
+    std::string coords = grid1d->getStorage().getGridPoint(i).getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     double* dblFuncValues = new double[1];
     coordsStream >> tmp;
@@ -1101,7 +1101,7 @@ void HestonSolver::GetBsExactSolution(base::DataVector& alphaBS, double maturity
 
   for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     std::string coords =
-        this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+        this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     coordsStream >> S;
     coordsStream >> v;

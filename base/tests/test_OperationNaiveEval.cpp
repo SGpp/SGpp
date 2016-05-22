@@ -26,7 +26,7 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
-using sgpp::base::GridIndex;
+using sgpp::base::GridPoint;
 using sgpp::base::GridType;
 using sgpp::base::OperationNaiveEval;
 using sgpp::base::OperationNaiveEvalGradient;
@@ -37,7 +37,7 @@ using sgpp::base::SPolyBase;
 using sgpp::base::SPolyBoundaryBase;
 using sgpp::base::SPolyModifiedBase;
 
-double basisEval(SBasis& basis, GridIndex::level_type l, GridIndex::index_type i, double x) {
+double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i, double x) {
   SPolyBase* polyBasis = dynamic_cast<SPolyBase*>(&basis);
   SPolyModifiedBase* polyModBasis = dynamic_cast<SPolyModifiedBase*>(&basis);
   SPolyBoundaryBase* polyBoundaryBasis = dynamic_cast<SPolyBoundaryBase*>(&basis);
@@ -123,14 +123,14 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     DataVector alpha(n);
 
     for (size_t i = 0; i < n; i++) {
-      GridIndex& gp = grid.getStorage().getGridIndex(i);
+      GridPoint& gp = grid.getStorage().getGridPoint(i);
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
       if ((grid.getType() == GridType::BsplineClenshawCurtis) ||
           (grid.getType() == GridType::ModBsplineClenshawCurtis) ||
           (grid.getType() == GridType::LinearClenshawCurtis)) {
-        gp.setPointDistribution(GridIndex::PointDistribution::ClenshawCurtis);
+        gp.setPointDistribution(GridPoint::PointDistribution::ClenshawCurtis);
       }
 
       alpha[i] = normalDistribution(generator);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       for (size_t i = 0; i < n; i++) {
         // evaluate function by hand
-        GridIndex& gp = grid.getStorage().getGridIndex(i);
+        GridPoint& gp = grid.getStorage().getGridPoint(i);
         double val = alpha[i];
 
         for (size_t t = 0; t < d; t++) {
