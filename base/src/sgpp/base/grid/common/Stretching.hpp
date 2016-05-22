@@ -51,7 +51,6 @@ class Stretching : public BoundingBox {
   int* discreteVectorLevel;
   std::string* stretchingMode;
 
-
   /*
    * generates the lookup table up to level 11 for all dimensions, the rest is calculated via the
    * Stretching type given.
@@ -76,7 +75,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param dimension dimension of the node
    */
-  double stretchingXform(int level, int index, size_t dimension);
+  double stretchingXform(int level, int index, size_t dimension) const;
 
   /*
    * calculates the logarithm transform in the given dimension
@@ -85,7 +84,7 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  void logXform(Stretching1D& str1D, size_t dimension);
+  void logXform(Stretching1D& str1D, size_t dimension) const;
 
   /*
    * overloaded
@@ -95,7 +94,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param dimension dimension of the node
    */
-  double logXform(int level, int index, size_t dimension);
+  double logXform(int level, int index, size_t dimension) const;
 
   /*
    * calculates the leentvar transform in the given dimension
@@ -104,7 +103,7 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  void leentvaarXform(Stretching1D& str1D, size_t dimension);
+  void leentvaarXform(Stretching1D& str1D, size_t dimension) const;
 
   /*
    * overloaded
@@ -114,14 +113,14 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  double leentvaarXform(int level, int index, size_t dimension);
+  double leentvaarXform(int level, int index, size_t dimension) const;
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  void noXform(Stretching1D& str1D, size_t dimension);
+  void noXform(Stretching1D& str1D, size_t dimension) const;
 
   /*
    * overloaded
@@ -132,7 +131,7 @@ class Stretching : public BoundingBox {
    * @param dimension dimension of the node
    *
    */
-  double noXform(int level, int index, size_t dimension);
+  double noXform(int level, int index, size_t dimension) const;
 
   /*
    * calculates the lookup table index
@@ -140,7 +139,7 @@ class Stretching : public BoundingBox {
    * @param level level of the point
    * @param index index of the point
    */
-  int calculateLookupIndex(int level, int index);
+  int calculateLookupIndex(int level, int index) const;
 
   /*
    * gets the discrete points that are stretched and creates a lookup table
@@ -150,10 +149,9 @@ class Stretching : public BoundingBox {
    * @param discreteVectorLevel how many levels the grid vector points form
    */
 
-  void parseVectorToLookupTable(std::vector<double> vec,
+  void parseVectorToLookupTable(std::vector<double>& vec,
                                 Stretching1D& stretch1d,
-                                size_t dim, int& discreteVectorLevel);
-
+                                size_t dim, int& discreteVectorLevel) const;
 
   /*
    * calculates the left and right neighbor index and levels
@@ -165,7 +163,7 @@ class Stretching : public BoundingBox {
    * @param rightIndex right neighbor index
    */
   void calculateNeighborSpecs(int level, int index, int& leftLevel,
-                              int& leftIndex, int& rightLevel, int& rightIndex);
+                              int& leftIndex, int& rightLevel, int& rightIndex) const;
 
  public:
   /**
@@ -178,12 +176,12 @@ class Stretching : public BoundingBox {
    * @param boundaries DimensionBoundary struct to get the boundary values for Stretching
    * @param stretching1ds array to define the stretching type
    */
-  Stretching(size_t dim, DimensionBoundary* boundaries,
-             Stretching1D* stretching1ds);
+  Stretching(size_t dim, const DimensionBoundary* boundaries,
+             const Stretching1D* stretching1ds);
 
 
-  Stretching(size_t dim, std::vector<DimensionBoundary> boundaries,
-             std::vector<Stretching1D> t);
+  Stretching(size_t dim, const std::vector<DimensionBoundary>& boundaries,
+             const std::vector<Stretching1D>& t);
 
   /**
    * Constructor for Stretching
@@ -203,7 +201,7 @@ class Stretching : public BoundingBox {
    *
    * @param copyStretching reference to a Stretching Object whose values are copied
    */
-  Stretching(Stretching& copyStretching);
+  Stretching(const Stretching& copyStretching);
 
   /**
    * Destructor
@@ -218,7 +216,7 @@ class Stretching : public BoundingBox {
    * @param dimension dimension of the node
    *
    */
-  double getCoordinates(int level, int index, size_t dimension);
+  double getCoordinates(int level, int index, size_t dimension) const;
 
   /*
    * Returns the type of the Stretching of the dimension given
@@ -226,12 +224,12 @@ class Stretching : public BoundingBox {
    * @param dim dimension index of the type array
    *
    */
-  Stretching1D getStretching1D(size_t dim);
+  Stretching1D getStretching1D(size_t dim) const;
 
   /*
    * Prints the lookup table generated. Used for debugging
    */
-  void printLookupTable();
+  void printLookupTable() const;
 
   /*
    * Given the level, index and dimension, returns the lookup entries for left, current and right positions.
@@ -245,25 +243,25 @@ class Stretching : public BoundingBox {
    */
   void getAdjacentPositions(int level, int index, size_t dimension,
                             double& posc,
-                            double& posl, double& posr);
+                            double& posl, double& posr) const;
 
   /*
    * returns the stretchingMode, can be "analytic" or "discrete"
    */
-  std::string* getStretchingMode();
+  std::string* getStretchingMode() const;
 
   /*
    * returns the discreteVector for the discrete grid structure.
    * used for serializing the grid
    */
-  std::vector<double>* getDiscreteVector(bool bSort);
+  std::vector<double>* getDiscreteVector(bool bSort) const;
 
   /*
    * returns the discretevectorlevel array of size nDim
    */
-  int* getDiscreteVectorLevel();
+  int* getDiscreteVectorLevel() const;
 
-  void calculateNeighborLookup(int maxlevel);
+  void calculateNeighborLookup(int maxlevel) const;
 };
 
 }  // namespace base
