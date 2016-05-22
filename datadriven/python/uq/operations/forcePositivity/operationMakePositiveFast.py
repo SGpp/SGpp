@@ -6,7 +6,7 @@ Created on Apr 19, 2016
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList
+from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \

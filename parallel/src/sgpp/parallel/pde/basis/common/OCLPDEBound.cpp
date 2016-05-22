@@ -79,7 +79,7 @@ void boundarytransposer(REAL* sink, REAL* source, size_t dim1, size_t dim2,
   unsigned k = 0;
 
   for (unsigned i = 0; i < dim2; i++) {
-    sgpp::base::GridIndex* curPoint = (*storage)[i];
+    sgpp::base::GridPoint* curPoint = (*storage)[i];
 
     if (curPoint->isInnerPoint()) {
       for (unsigned j = 0; j < dim1; j++) {
@@ -317,7 +317,7 @@ void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t 
   unsigned num = 0;
 
   for (unsigned i = 0; i < storage->getSize(); i++) {
-    sgpp::base::GridIndex* curPoint = (*storage)[i];
+    sgpp::base::GridPoint* curPoint = (*storage)[i];
 
     if (curPoint->isInnerPoint()) {
       offsetBound[num] = i;

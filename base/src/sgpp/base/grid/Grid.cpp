@@ -411,8 +411,8 @@ void Grid::refine(DataVector& vector, int numOfPoints) {
 }
 
 void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf) {
-  // create HashGridIndex object for the point
-  GridIndex pointIndex(dim);
+  // create HashGridPoint object for the point
+  GridPoint pointIndex(dim);
 
   for (unsigned int i = 0; i < dim - 1; i++) {
     pointIndex.push(i, levels[i], indices[i]);

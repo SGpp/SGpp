@@ -23,7 +23,7 @@ void OperationRegularizationDiagonalLinearBoundary::initHkmix(double k) {
   double res;
 
   for (size_t i = 0; i < size; i++) {
-    base::GridIndex& gi = storage->getGridIndex(i);
+    base::GridPoint& gi = storage->getGridPoint(i);
     res = 1.0;
 
     for (size_t d = 0; d < dim; d++) {
@@ -39,7 +39,7 @@ void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace(double k) {
   double res, resd;
 
   for (size_t i = 0; i < size; i++) {
-    base::GridIndex& gi = storage->getGridIndex(i);
+    base::GridPoint& gi = storage->getGridPoint(i);
     res = 0.0;
 
     for (size_t d = 0; d < dim; d++) {

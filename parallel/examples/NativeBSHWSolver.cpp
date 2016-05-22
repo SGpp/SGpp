@@ -500,7 +500,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
                        std::string fileBound, std::string payoffType, size_t timeSt, double dt,
                        size_t CGIt, double CGeps, std::string Solver, double T, double dStrike,
                        bool isLogSolve, std::string refinementMode, int numRefinePoints,
-                       sgpp::base::GridIndex::level_type maxRefineLevel, size_t nIterAdaptSteps,
+                       sgpp::base::GridPoint::level_type maxRefineLevel, size_t nIterAdaptSteps,
                        double dRefineThreshold, bool useCoarsen, std::string adaptSolvingMode,
                        double coarsenThreshold, bool useNormalDist) {
   size_t dim = d;

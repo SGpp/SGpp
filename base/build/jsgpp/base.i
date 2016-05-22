@@ -50,19 +50,19 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataVector.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrix.hpp"
 
-%rename(GridIndex) sgpp::base::HashGridIndex;
+%rename(GridPoint) sgpp::base::HashGridPoint;
 %rename(GridStorage) sgpp::base::HashGridStorage;
 
 // The Good, i.e. without any modifications
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%rename(operatorAssignment) sgpp::base::HashGridIndex::operator=;
-%rename(operatorParentheses) sgpp::base::HashGridIndexPointerHashFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexPointerEqualityFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexHashFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexEqualityFunctor::operator();
-%include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
+%rename(operatorAssignment) sgpp::base::HashGridPoint::operator=;
+%rename(operatorParentheses) sgpp::base::HashGridPointPointerHashFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointPointerEqualityFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointHashFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointEqualityFunctor::operator();
+%include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"

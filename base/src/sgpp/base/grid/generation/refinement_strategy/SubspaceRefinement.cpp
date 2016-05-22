@@ -156,7 +156,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  HashGridIndex grid_index(storage.getDimension());
+  HashGridPoint grid_index(storage.getDimension());
 
   // refine all points of the subspace in all dimensions
   for (AbstractRefinement::refinement_pair_type& pair : collection) {

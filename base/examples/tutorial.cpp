@@ -115,7 +115,7 @@ int main() {
    * The current coefficient vector is then printed.
    */
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridIndex& gp = gridStorage.getGridIndex(i);
+    sgpp::base::GridPoint& gp = gridStorage.getGridPoint(i);
     alpha[i] = f(gp.getCoord(0), gp.getCoord(1));
   }
 

@@ -68,7 +68,7 @@ void BlackScholesSolverWithStretching::getGridNormalDistribution(sgpp::base::Dat
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*(this->myStretching));
+          this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*(this->myStretching));
       std::stringstream coordsStream(coords);
 
       value = 1.0;
@@ -140,7 +140,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(sgpp::base::D
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
-              this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*(this->myStretching));
+              this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*(this->myStretching));
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -195,7 +195,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(sgpp::base::D
 
 void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
     sgpp::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance,
-    sgpp::base::GridIndex::level_type maxLevel) {
+    sgpp::base::GridPoint::level_type maxLevel) {
   size_t nRefinements = 0;
 
   this->dStrike = strike;
@@ -214,7 +214,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
-              this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*this->myStretching);
+              this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*this->myStretching);
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -345,7 +345,7 @@ size_t BlackScholesSolverWithStretching::getGridPointsAtMoney(std::string payoff
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         sgpp::base::DataVector coords(this->dim);
-        this->myGridStorage->getGridIndex(i).getCoordsStretching(coords, *this->myStretching);
+        this->myGridStorage->getGridPoint(i).getCoordsStretching(coords, *this->myStretching);
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put") {
           for (size_t d = 0; d < this->dim; d++) {
@@ -382,7 +382,7 @@ void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(sgpp::base::D
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*this->myStretching);
+          this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -432,7 +432,7 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*this->myStretching);
+          this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -494,7 +494,7 @@ void BlackScholesSolverWithStretching::getAnalyticAlpha1D(base::DataVector& alph
   // compute values of analytic solution on given grid
   for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     std::string coords =
-        this->myGridStorage->getGridIndex(i).getCoordsStringStretching(*this->myStretching);
+        this->myGridStorage->getGridPoint(i).getCoordsStringStretching(*this->myStretching);
     std::stringstream coordsStream(coords);
     coordsStream >> coord;
 

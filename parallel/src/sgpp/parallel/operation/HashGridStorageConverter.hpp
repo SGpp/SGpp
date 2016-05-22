@@ -5,7 +5,7 @@
 
 #pragma once
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 

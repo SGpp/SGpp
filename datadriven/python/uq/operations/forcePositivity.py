@@ -1,4 +1,4 @@
-from pysgpp import (DataVector, DataMatrix, Grid, HashGridIndex)
+from pysgpp import (DataVector, DataMatrix, Grid, HashGridPoint)
 from sparse_grid import (evalSGFunctionMulti, hierarchize,
                          copyGrid, evalSGFunction, insertPoint,
                          insertHierarchicalAncestors)

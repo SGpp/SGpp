@@ -257,7 +257,7 @@ void BlackScholesHullWhiteSolver::initScreen() {
 
 void BlackScholesHullWhiteSolver::setEnableCoarseningData(
     std::string adaptSolveMode, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints,
+    sgpp::base::GridPoint::level_type refineMaxLevel, int numCoarsenPoints,
     double coarsenThreshold, double refineThreshold) {
   this->useCoarsen = true;
   this->coarsenThreshold = coarsenThreshold;
@@ -277,7 +277,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->getGridIndex(i).getCoordsBB(coords, *this->myBoundingBox);
+        this->myGridStorage->getGridPoint(i).getCoordsBB(coords, *this->myBoundingBox);
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "GMIB") {
           for (size_t d = 0; d < this->dim; d++) {
@@ -318,7 +318,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
-          this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

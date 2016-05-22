@@ -32,7 +32,7 @@ using sgpp::base::DataVector;
 using sgpp::base::OperationMatrix;
 using sgpp::base::Grid;
 using sgpp::base::SurplusRefinementFunctor;
-using sgpp::base::GridIndex;
+using sgpp::base::GridPoint;
 using sgpp::base::OperationEval;
 using sgpp::base::application_exception;
 
@@ -102,7 +102,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < gridStorage->getSize(); i++) {
-        gridStorage->getGridIndex(i).getCoords(p);
+        gridStorage->getGridPoint(i).getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 

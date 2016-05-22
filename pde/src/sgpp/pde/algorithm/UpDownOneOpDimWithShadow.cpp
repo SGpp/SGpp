@@ -55,7 +55,7 @@ void UpDownOneOpDimWithShadow::mult(sgpp::base::DataVector& alpha, sgpp::base::D
 
 void UpDownOneOpDimWithShadow::expandGrid() {
   for (size_t i = 0; i < shadowStorage->getSize(); i++) {
-    storage->insert(shadowStorage->getGridIndex(i));
+    storage->insert(shadowStorage->getGridPoint(i));
   }
 }
 

@@ -22,7 +22,7 @@
 
 using sgpp::base::DataVector;
 using sgpp::base::DimensionBoundary;
-using sgpp::base::GridIndex;
+using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::index_t;
 using sgpp::base::level_t;
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(TestWaveletModifiedBasis) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   sgpp::base::SLinearBase b;
 
@@ -448,7 +448,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsBoundary) {
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   sgpp::base::SLinearBoundaryBase b;
 
@@ -486,7 +486,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
   dimBound.rightBoundary = 7;
   Stretching stretch(1, &dimBound, &str1d);
 
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   s.setStretching(stretch);
 

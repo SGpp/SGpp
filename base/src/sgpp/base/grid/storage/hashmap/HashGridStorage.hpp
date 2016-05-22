@@ -8,7 +8,7 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -42,14 +42,14 @@ class HashGridIterator;
 class HashGridStorage {
  public:
   /// type of grid points
-  typedef HashGridIndex index_type;
+  typedef HashGridPoint index_type;
   /// pointer to index_type
-  typedef HashGridIndex* index_pointer;
+  typedef HashGridPoint* index_pointer;
   /// pointer to constant index_type
-  typedef const HashGridIndex* index_const_pointer;
+  typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
-  typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor,
-                             HashGridIndexPointerEqualityFunctor> grid_map;
+  typedef std::unordered_map<index_pointer, size_t, HashGridPointPointerHashFunctor,
+                             HashGridPointPointerEqualityFunctor> grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
@@ -194,26 +194,26 @@ class HashGridStorage {
    *
    * @param seq the sequence number of the index
    *
-   * @return gridindex object (pointer)
+   * @return gridpoint object (pointer)
    */
-  inline HashGridIndex& operator[](size_t seq) { return *list[seq]; }
+  inline HashGridPoint& operator[](size_t seq) { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
    *
    * @param seq the sequence number of the index
-   * @return gridindex object (constant pointer)
+   * @return gridpoint object (constant pointer)
    */
-  inline const HashGridIndex& operator[](size_t seq) const { return *list[seq]; }
+  inline const HashGridPoint& operator[](size_t seq) const { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
    *
    * @param seq the sequence number of the index
    *
-   * @return gridindex object (pointer)
+   * @return gridpoint object (pointer)
    */
-  inline HashGridIndex& getGridIndex(size_t seq) const { return *list[seq]; }
+  inline HashGridPoint& getGridPoint(size_t seq) const { return *list[seq]; }
 
   /**
    * insert a new index into map
@@ -293,7 +293,7 @@ class HashGridStorage {
    *
    * @return true if the index is in the storage
    */
-  bool isContaining(HashGridIndex& index) const;
+  bool isContaining(HashGridPoint& index) const;
 
   /**
    * Gets the seq number for index
@@ -302,10 +302,10 @@ class HashGridStorage {
    *
    * @return the seq number for index
    */
-  size_t getSequenceNumber(HashGridIndex& index) const;
+  size_t getSequenceNumber(HashGridPoint& index) const;
 
   /**
-   * Tests if seq number does not point to a valid grid index
+   * Tests if seq number does not point to a valid grid point
    *
    * @param s sequence number that should be tested
    *
@@ -455,7 +455,7 @@ class HashGridStorage {
 };
 
 HashGridStorage::index_pointer inline HashGridStorage::create(index_type& index) {
-  index_pointer insert = new HashGridIndex(index);
+  index_pointer insert = new HashGridPoint(index);
   return insert;
 }
 
@@ -474,11 +474,11 @@ HashGridStorage::grid_map_iterator inline HashGridStorage::begin() { return map.
 
 HashGridStorage::grid_map_iterator inline HashGridStorage::end() { return map.end(); }
 
-bool inline HashGridStorage::isContaining(HashGridIndex& index) const {
+bool inline HashGridStorage::isContaining(HashGridPoint& index) const {
   return map.find(&index) != map.end();
 }
 
-size_t inline HashGridStorage::getSequenceNumber(HashGridIndex& index) const {
+size_t inline HashGridStorage::getSequenceNumber(HashGridPoint& index) const {
   grid_map_const_iterator iter = map.find(&index);
 
   if (iter != map.end()) {

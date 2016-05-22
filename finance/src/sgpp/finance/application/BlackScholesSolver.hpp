@@ -74,7 +74,7 @@ class BlackScholesSolver : public sgpp::pde::ParabolicPDESolver {
   /// transformation
   bool usePAT;
   /// max. level for refinement during solving
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
   /// variable to store needed solving iterations
   size_t nNeededIterations;
   /// variable to store the solving time
@@ -221,7 +221,7 @@ class BlackScholesSolver : public sgpp::pde::ParabolicPDESolver {
   virtual void refineInitialGridWithPayoffToMaxLevel(sgpp::base::DataVector& alpha, double strike,
                                                      std::string payoffType,
                                                      double dStrikeDistance,
-                                                     sgpp::base::GridIndex::level_type maxLevel);
+                                                     sgpp::base::GridPoint::level_type maxLevel);
 
   /**
    * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -393,7 +393,7 @@ class BlackScholesSolver : public sgpp::pde::ParabolicPDESolver {
    *  @param refineThreshold Threshold needed to determine if a grid point should be refined
    */
   virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
-                                       sgpp::base::GridIndex::level_type refineMaxLevel,
+                                       sgpp::base::GridPoint::level_type refineMaxLevel,
                                        int numCoarsenPoints, double coarsenThreshold,
                                        double refineThreshold);
 

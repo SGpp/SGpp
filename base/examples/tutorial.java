@@ -52,7 +52,7 @@ import sgpp.DataVector;
 import sgpp.GridGenerator;
 import sgpp.GridStorage;
 import sgpp.Grid;
-import sgpp.GridIndex;
+import sgpp.GridPoint;
 import sgpp.jsgpp;
 import sgpp.OperationEval;
 
@@ -115,7 +115,7 @@ public class tutorial {
      * \c getCoord(dim).
      * The current coefficient vector is then printed.
      */
-    GridIndex gp = new GridIndex();
+    GridPoint gp = new GridPoint();
 
     for (int i = 0; i < gridStorage.getSize(); i++) {
       gp = gridStorage.get(i);

@@ -38,7 +38,7 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = (*storage)[i];
+          sgpp::base::GridPoint index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
@@ -57,7 +57,7 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
       if (level == 0) {
         // up
         if (index == 1) {
-          sgpp::base::GridIndex index_zero = (*storage)[i];
+          sgpp::base::GridPoint index_zero = (*storage)[i];
           index_zero.set(dim, 0, 0);
 
           if (!stretching->hasDirichletBoundaryLeft(dim)) {

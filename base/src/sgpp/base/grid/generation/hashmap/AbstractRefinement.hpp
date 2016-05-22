@@ -33,7 +33,7 @@ class AbstractRefinement_refinement_key {
    * @param index The index of the grid point in the HashGridStorage
    * @param seq The sequential number of the grid points in the HashGridStorage
    */
-  AbstractRefinement_refinement_key(const HashGridIndex& index, size_t seq) :
+  AbstractRefinement_refinement_key(const HashGridPoint& index, size_t seq) :
     index(index), seq(seq), level_vector() {
   }
 
@@ -65,7 +65,7 @@ class AbstractRefinement_refinement_key {
    *
    * @return index
    */
-  HashGridIndex& getIndex() {
+  HashGridPoint& getIndex() {
     return index;
   }
 
@@ -79,7 +79,7 @@ class AbstractRefinement_refinement_key {
   }
 
  private:
-  HashGridIndex index;
+  HashGridPoint index;
   size_t seq;
   std::vector<level_t> level_vector;
 };
@@ -90,10 +90,10 @@ class AbstractRefinement_refinement_key {
  */
 class AbstractRefinement {
  public:
-  typedef HashGridIndex index_type;
+  typedef HashGridPoint index_type;
   typedef HashGridStorage::index_pointer index_pointer;
-  typedef HashGridIndex::index_type index_t;
-  typedef HashGridIndex::level_type level_t;
+  typedef HashGridPoint::index_type index_t;
+  typedef HashGridPoint::level_type level_t;
 
 
 
@@ -243,7 +243,7 @@ class AbstractRefinement {
       index.setLeaf(saveLeaf);
     } else {
       // set stored index to false
-      storage.getGridIndex((storage.find(&index))->second).setLeaf(false);
+      storage.getGridPoint((storage.find(&index))->second).setLeaf(false);
     }
   }
 
@@ -269,7 +269,7 @@ class AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
-   * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+   * @param collection container with grid element identifiers (e.g. sequence number, grid point)
    *  and corresponding refinement values (usually empty)
    */
   virtual void collectRefinablePoints(
@@ -283,7 +283,7 @@ class AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
-   * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+   * @param collection container with grid element identifiers (e.g. sequence number, grid point)
    *  and corresponding refinement values
    */
   virtual void refineGridpointsCollection(

@@ -53,7 +53,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Scal
   functionValues.resize(n);
 
   for (size_t i = 0; i < n; i++) {
-    sgpp::base::GridIndex& gp = gridStorage[i];
+    sgpp::base::GridPoint& gp = gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
@@ -61,7 +61,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Scal
         grid.getType() == sgpp::base::GridType::ModBsplineClenshawCurtis ||
         grid.getType() == sgpp::base::GridType::LinearClenshawCurtis) {
       gp.setPointDistribution(
-        sgpp::base::GridIndex::PointDistribution::ClenshawCurtis);
+        sgpp::base::GridPoint::PointDistribution::ClenshawCurtis);
     }
 
     for (size_t t = 0; t < d; t++) {
@@ -88,7 +88,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Vect
   functionValues.resize(n, m);
 
   for (size_t i = 0; i < n; i++) {
-    sgpp::base::GridIndex& gp = gridStorage[i];
+    sgpp::base::GridPoint& gp = gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
@@ -96,7 +96,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Vect
         grid.getType() == sgpp::base::GridType::ModBsplineClenshawCurtis ||
         grid.getType() == sgpp::base::GridType::LinearClenshawCurtis) {
       gp.setPointDistribution(
-        sgpp::base::GridIndex::PointDistribution::ClenshawCurtis);
+        sgpp::base::GridPoint::PointDistribution::ClenshawCurtis);
     }
 
     for (size_t t = 0; t < d; t++) {

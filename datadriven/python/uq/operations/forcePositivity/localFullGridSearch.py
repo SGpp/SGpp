@@ -1,8 +1,8 @@
-from pysgpp import Grid, DataVector, createOperationEval, HashGridIndex
+from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from findCandidateSet import CandidateSet
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp.pysgpp_swig import HashGridIndex
+from pysgpp.pysgpp_swig import HashGridPoint
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
     isHierarchicalAncestor
@@ -47,7 +47,7 @@ class LocalFullGridCandidates(CandidateSet):
     def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, overlap, grid):
         numDims = gpi.getDimension()
         gs = grid.getStorage()
-        gpintersection = HashGridIndex(self.numDims)
+        gpintersection = HashGridPoint(self.numDims)
 
         # find all possible intersections of grid points
         comparisonCosts = 0
@@ -149,13 +149,13 @@ class LocalFullGridCandidates(CandidateSet):
             currentgp = gps.pop()
             children.append(getLevel(currentgp))
             if currentgp.getLevel(idim) < self.maxLevel:
-                gpl = HashGridIndex(currentgp)
+                gpl = HashGridPoint(currentgp)
                 gs.left_child(gpl, idim)
                 if gs.has_key(gpl):
                     gps.append(gpl)
 
                 # get right child
-                gpr = HashGridIndex(currentgp)
+                gpr = HashGridPoint(currentgp)
                 gs.right_child(gpr, idim)
                 if gs.has_key(gpr):
                     gps.append(gpr)
@@ -164,7 +164,7 @@ class LocalFullGridCandidates(CandidateSet):
 
 
     def getLocalMaxLevel(self, dup, levels, indices, grid):
-        gp = HashGridIndex(self.numDims)
+        gp = HashGridPoint(self.numDims)
         for idim, (level, index) in enumerate(zip(levels, indices)):
             gp.set(idim, level, index)
 
@@ -279,7 +279,7 @@ class LocalFullGridCandidates(CandidateSet):
                 levels = [None] * self.numDims
                 indices = [None] * self.numDims
                 for levelsGlobal, indicesGlobal in globalGrid.keys():
-                    gpdd = HashGridIndex(self.numDims)
+                    gpdd = HashGridPoint(self.numDims)
                     for idim in xrange(self.numDims):
                         lg, ig = levelsGlobal[idim], indicesGlobal[idim]
                         llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]

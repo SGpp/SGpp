@@ -40,7 +40,7 @@ class LinearQuadratureStrategy(HashQuadrature):
     def computeLinearFormByList(self, gps, basis):
         """
         Compute bilinear form for two lists of grid points
-        @param gps: list of HashGridIndex
+        @param gps: list of HashGridPoint
         @param basis: SG++ basis for grid indices gpsi
         @return: numpy array
         """
@@ -61,7 +61,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
-        @param gp: HashGridIndex
+        @param gp: HashGridPoint
         @param basis: SG++ Basis
         @param d: int dimension
         """
@@ -79,7 +79,7 @@ class LinearQuadratureStrategy(HashQuadrature):
     def computeLinearFormEntry(self, gp, basis, d):
         """
         Compute the bilinear form of one grid point with another one
-        @param gp: HashGridIndex
+        @param gp: HashGridPoint
         @param basis: SG++ Basis
         """
         raise NotImplementedError()

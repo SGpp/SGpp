@@ -60,7 +60,7 @@ int main() {
   double p[2];
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridIndex& gp = gridStorage.getGridIndex(i);
+    sgpp::base::GridPoint& gp = gridStorage.getGridPoint(i);
     p[0] = gp.getCoord(0);
     p[1] = gp.getCoord(1);
     alpha[i] = f(2, p, NULL);

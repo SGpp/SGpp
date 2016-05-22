@@ -8,7 +8,7 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -24,16 +24,16 @@ namespace base {
 
 /**
  * This class can be used for storage agnostic algorithms.
- * GridIndex has to support: constructor, get, set, push, rehash
+ * GridPoint has to support: constructor, get, set, push, rehash
  */
 class HashGridIterator {
  public:
   /// type of grid points
-  typedef HashGridIndex index_type;
+  typedef HashGridPoint index_type;
   /// index type
-  typedef HashGridIndex::index_type index_t;
+  typedef HashGridPoint::index_type index_t;
   /// level type
-  typedef HashGridIndex::level_type level_t;
+  typedef HashGridPoint::level_type level_t;
 
   /**
    * Constructor of the griditerator object
@@ -219,8 +219,8 @@ class HashGridIterator {
  private:
   /// reference the the hashmap that stores the gridpoints
   HashGridStorage& storage;
-  /// GridIndex object used to operate on the current position in the hashmap
-  HashGridIndex index;
+  /// GridPoint object used to operate on the current position in the hashmap
+  HashGridPoint index;
   // true if the current point is a leaf, otherwise false
   // bool Leaf;
   /// the current gridpoint's index

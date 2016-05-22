@@ -1,4 +1,4 @@
-from pysgpp import Grid, DataVector, createOperationEval, HashGridIndex
+from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from findCandidateSet import CandidateSet
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import parent, \
@@ -21,14 +21,14 @@ class SearchLevelWiseForCandidates(CandidateSet):
         for idim in xrange(gp.getDimension()):
             if gp.getLevel(idim) < maxLevel:
                 self.costs += 1
-                gpl = HashGridIndex(gp)
+                gpl = HashGridPoint(gp)
                 gs.left_child(gpl, idim)
                 level, index = tuple(getLevel(gpl)), tuple(getIndex(gpl))
                 children[level, index] = gpl
 
                 # get right child
                 self.costs += 1
-                gpr = HashGridIndex(gp)
+                gpr = HashGridPoint(gp)
                 gs.right_child(gpr, idim)
                 level, index = tuple(getLevel(gpr)), tuple(getIndex(gpr))
                 children[level, index] = gpr
@@ -54,7 +54,7 @@ class SearchLevelWiseForCandidates(CandidateSet):
                 self.costs += 1
                 gp = gs.get(i)
                 if alpha[i] < 0.0:
-                    candidates.append(HashGridIndex(gp))
+                    candidates.append(HashGridPoint(gp))
                     self.minLevelSum = min(self.minLevelSum, gp.getLevelSum())
                     self.maxLevelSum = max(self.maxLevelSum, gp.getLevelSum())
 

@@ -1,7 +1,7 @@
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval,
                     DataVector, DataMatrix,
-                    HashGridIndex,
+                    HashGridPoint,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
 #                     DMVectorizationPaddingAssistant_padDataset,
                     Grid,
@@ -69,7 +69,7 @@ def copyGrid(grid, level=0, deg=1):
 
         # insert grid point
         if not newGs.has_key(gp):
-            newGs.insert(HashGridIndex(gp))
+            newGs.insert(HashGridPoint(gp))
 
     newGs.recalcLeafProperty()
     return newGrid
@@ -139,7 +139,7 @@ def parent(grid, gp, d):
 
     if isValid1d(grid, level, index):
         # create parent
-        ans = HashGridIndex(gp)
+        ans = HashGridPoint(gp)
         ans.set(d, level, index)
         return ans
 
@@ -199,15 +199,15 @@ def getNonExistingHierarchicalAncestors(grid, gp):
 #     """
 #     insert all hierarchical ancestors recursively to the grid
 #     @param grid: Grid
-#     @param gp: HashGridIndex
-#     @return: list of HashGridIndex, contains all the newly added grid points
+#     @param gp: HashGridPoint
+#     @return: list of HashGridPoint, contains all the newly added grid points
 #     """
 #     newGridPoints = []
 #     gs = grid.getStorage()
 #     gps = [gp]
 #     while len(gps) > 0:
 #         gp = gps.pop()
-#         gpc = HashGridIndex(gp)
+#         gpc = HashGridPoint(gp)
 #         for dim in xrange(gp.getDimension()):
 #             oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
 #             # run up to the root node until you find one existing node
@@ -219,7 +219,7 @@ def getNonExistingHierarchicalAncestors(grid, gp):
 #                 gpc.set(dim, level, index)
 #
 #                 if not gs.has_key(gpc):
-#                     newGridPoints.append(HashGridIndex(gpc))
+#                     newGridPoints.append(HashGridPoint(gpc))
 #                 else:
 #                     break
 #
@@ -253,7 +253,7 @@ def insertHierarchicalAncestors(grid, gp):
 def hasChildren(grid, gp):
     gs = grid.getStorage()
     d = 0
-    gpn = HashGridIndex(gp)
+    gpn = HashGridPoint(gp)
     while d < gs.getDimension():
         # load level index
         level, index = gp.getLevel(d), gp.getIndex(d)
@@ -332,8 +332,8 @@ def insertTruncatedBorder(grid, gp):
     """
     insert points on the border recursively for grids with border
     @param grid: Grid
-    @param gp: HashGridIndex
-    @return: list of HashGridIndex, contains all the newly added grid points
+    @param gp: HashGridPoint
+    @return: list of HashGridPoint, contains all the newly added grid points
     """
     gs = grid.getStorage()
     gps = [gp]
@@ -345,7 +345,7 @@ def insertTruncatedBorder(grid, gp):
         gp.getCoords(p)
         for d in xrange(gs.getDimension()):
             # right border in d
-            rgp = HashGridIndex(gp)
+            rgp = HashGridPoint(gp)
             gs.right_levelzero(rgp, d)
             # insert the point
             if not gs.has_key(rgp):
@@ -355,7 +355,7 @@ def insertTruncatedBorder(grid, gp):
                     gps.append(rgp)
 
             # left border in d
-            lgp = HashGridIndex(gp)
+            lgp = HashGridPoint(gp)
             gs.left_levelzero(lgp, d)
             # insert the point
             if not gs.has_key(lgp):
@@ -376,9 +376,9 @@ def insertPoint(grid, gp):
     if gs.has_key(gp) or not isValid(grid, gp):
         return []
 
-    success = gs.insert(HashGridIndex(gp)) > -1
+    success = gs.insert(HashGridPoint(gp)) > -1
     if success:
-        return [HashGridIndex(gp)]
+        return [HashGridPoint(gp)]
     else:
         raise AttributeError('can not insert this new grid point to the storage')
 
@@ -387,13 +387,13 @@ def isRefineable(grid, gp):
     gs = grid.getStorage()
     for d in xrange(gs.getDimension()):
         # left child in dimension dim
-        gpl = HashGridIndex(gp)
+        gpl = HashGridPoint(gp)
         gs.left_child(gpl, d)
         if not gs.has_key(gpl) and isValid(grid, gpl):
             return True
 
         # right child in dimension dim
-        gpr = HashGridIndex(gp)
+        gpr = HashGridPoint(gp)
         gs.right_child(gpr, d)
         if not gs.has_key(gpr) and isValid(grid, gpr):
             return True
@@ -485,9 +485,9 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
             gp = gs.get(ix)
 
             # append left and right child
-            gpl = HashGridIndex(gp)
+            gpl = HashGridPoint(gp)
             gs.left_child(gpl, d)
-            gpr = HashGridIndex(gp)
+            gpr = HashGridPoint(gp)
             gs.right_child(gpr, d)
 
             gps = []
@@ -506,9 +506,9 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
                 alpha[ix] -= diff
 
                 # append left and right child
-                gpl = HashGridIndex(gpc)
+                gpl = HashGridPoint(gpc)
                 gs.left_child(gpl, d)
-                gpr = HashGridIndex(gpc)
+                gpr = HashGridPoint(gpc)
                 gs.right_child(gpr, d)
 
                 if gs.has_key(gpr):
@@ -554,7 +554,7 @@ def dehierarchizeList(grid, alpha, gps):
     evaluate sparse grid function at grid points in gps
     @param grid: Grid
     @param alpha: DataVector
-    @param gps: list of HashGridIndex
+    @param gps: list of HashGridPoint
     """
     dim = grid.getDimension()
     p = DataVector(dim)
@@ -576,11 +576,11 @@ def balance(grid):
         gp = gps.pop()
         for dim in xrange(gs.getDimension()):
             # left child in dimension dim
-            lgp = HashGridIndex(gp)
+            lgp = HashGridPoint(gp)
             gs.left_child(lgp, dim)
 
             # right child in dimension dim
-            rgp = HashGridIndex(gp)
+            rgp = HashGridPoint(gp)
             gs.right_child(rgp, dim)
 
             if gs.has_key(lgp) and not gs.has_key(rgp):
@@ -696,7 +696,7 @@ def estimateSurplus(grid, gp, v):
     """
     Linear extrapolation of the surplus
     @param grid: Grid
-    @param gp: HashGridIndex
+    @param gp: HashGridPoint
     @param v: DataVector, surplus vector
     @return: float, estimated surplus for gp
     """
@@ -826,7 +826,7 @@ def checkPositivity(grid, alpha):
     for i, yi in enumerate(res):
         if yi < -1e-11:
             cnt += 1
-            negativeGridPoints[i] = yi, HashGridIndex(fullHashGridStorage.get(i))
+            negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.get(i))
             ymin = min(ymin, yi)
             ymax = max(ymax, yi)
 #             print "  %s = %g" % (A[i, :], yi)

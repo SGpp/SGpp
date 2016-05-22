@@ -18,7 +18,7 @@ double OperationNaiveEvalPartialDerivativeModBspline::evalPartialDerivative(
   double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = storage[i];
+    const GridPoint& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
@@ -53,7 +53,7 @@ void OperationNaiveEvalPartialDerivativeModBspline::evalPartialDerivative(
   partialDerivative.setAll(0.0);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = storage[i];
+    const GridPoint& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {

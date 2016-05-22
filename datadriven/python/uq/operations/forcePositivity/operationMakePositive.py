@@ -6,7 +6,7 @@ Created on Feb 6, 2015
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
+from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList, \
     createOperationQuadrature, GridType_LinearBoundary, GridType_PolyBoundary
 import warnings
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
@@ -87,7 +87,7 @@ class OperationMakePositive(object):
                 for gp in acc:
                     ix = gs.seq(gp)
                     if ix not in candidates:
-                        candidates[ix] = HashGridIndex(gp)
+                        candidates[ix] = HashGridPoint(gp)
 
         return candidates.values()
 
@@ -128,7 +128,7 @@ class OperationMakePositive(object):
         gs.left_child(gp, d)
         gp.getCoords(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         if level + 1 < maxLevel:
             self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p, opEval, maxLevel, acc)
@@ -140,7 +140,7 @@ class OperationMakePositive(object):
         gs.right_child(gp, d)
         gp.getCoords(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         # store them for next round
         if level + 1 < maxLevel:

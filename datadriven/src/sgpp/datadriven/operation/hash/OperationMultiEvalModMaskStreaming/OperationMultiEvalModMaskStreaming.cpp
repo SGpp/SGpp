@@ -178,8 +178,8 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   size_t gridSize = this->storage->getSize() + padding;
   size_t dims = this->storage->getDimension();
 
-  sgpp::base::HashGridIndex::level_type curLevel;
-  sgpp::base::HashGridIndex::index_type curIndex;
+  sgpp::base::HashGridPoint::level_type curLevel;
+  sgpp::base::HashGridPoint::index_type curIndex;
 
   this->level = std::vector<double>(gridSize * dims);
   this->index = std::vector<double>(gridSize * dims);
@@ -188,7 +188,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
   for (size_t i = 0; i < this->storage->getSize(); i++) {
     for (size_t dim = 0; dim < dims; dim++) {
-      storage->getGridIndex(i).get(dim, curLevel, curIndex);
+      storage->getGridPoint(i).get(dim, curLevel, curIndex);
 
       if (curLevel == 1) {
         this->level[i * dims + dim] = 0.0;
@@ -208,7 +208,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
         this->offset[i * dims + dim] = 2.0;
       } else if (curIndex ==
-                 static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                 static_cast<sgpp::base::HashGridPoint::level_type>(((1 << curLevel) - 1))) {
         this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
         this->index[i * dims + dim] = static_cast<double>(curIndex);
 

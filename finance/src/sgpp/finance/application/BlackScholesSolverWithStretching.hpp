@@ -134,7 +134,7 @@ class BlackScholesSolverWithStretching : public BlackScholesSolver {
   virtual void refineInitialGridWithPayoffToMaxLevel(sgpp::base::DataVector& alpha, double strike,
                                                      std::string payoffType,
                                                      double dStrikeDistance,
-                                                     sgpp::base::GridIndex::level_type maxLevel);
+                                                     sgpp::base::GridPoint::level_type maxLevel);
 
   /**
    * Inits the alpha vector with a payoff function of an European call option or put option

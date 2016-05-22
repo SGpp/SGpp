@@ -211,7 +211,7 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(sgpp::base::DataVector& alpha
     double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->getGridIndex(i).getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

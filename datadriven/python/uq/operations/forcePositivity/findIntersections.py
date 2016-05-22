@@ -1,5 +1,5 @@
 from findCandidateSet import CandidateSet
-from pysgpp import HashGridIndex, DataVector, createOperationEval
+from pysgpp import HashGridPoint, DataVector, createOperationEval
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     hasAllChildren, getHierarchicalAncestors, getLevel, getIndex
@@ -41,7 +41,7 @@ class IntersectionCandidates(CandidateSet):
         for i in xrange(1, gs.getSize()):
             gp = gs.get(i)
             if gp.getLevelMin() == 1:
-                gps.append(HashGridIndex(gp))
+                gps.append(HashGridPoint(gp))
         return gps
     
     def findAnchorPoints(self, gps):
@@ -51,7 +51,7 @@ class IntersectionCandidates(CandidateSet):
             for idim in xrange(gp.getDimension()):
                 level[idim] = 1
                 if tuple(level) not in ans:
-                    anchorgp = HashGridIndex(gp)
+                    anchorgp = HashGridPoint(gp)
                     gp.set(idim, 1, gp.getIndex(idim))
                     ans[tuple(level)] = anchorgp
 
@@ -100,7 +100,7 @@ class IntersectionCandidates(CandidateSet):
             level, index = self.findIntersection(gpi, gpj)
             key = tuple(level + index)
             if key not in overlap and key not in self.already_checked:
-                intersection = HashGridIndex(numDims)
+                intersection = HashGridPoint(numDims)
                 for idim in xrange(numDims):
                     intersection.set(idim, level[idim], index[idim])
 

@@ -1093,7 +1093,7 @@ class Matrix:
             result.axpy(M*self.l, alpha)
             # now correct for level 1 again
             gridStorage = self.grid.getStorage()
-            gi = GridIndex(gridStorage.getDimension())
+            gi = GridPoint(gridStorage.getDimension())
             for d in range(gridStorage.getDimension()):
                 gi.set(d, 1, 1)
             i = gridStorage.seq(gi)

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sys/types.h>
@@ -19,7 +19,7 @@
 namespace sgpp {
 namespace base {
 
-HashGridIndex::HashGridIndex(size_t dimension) :
+HashGridPoint::HashGridPoint(size_t dimension) :
     dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr),
     distr(PointDistribution::Normal), hash(0) {
   level = new level_type[dimension];
@@ -28,13 +28,13 @@ HashGridIndex::HashGridIndex(size_t dimension) :
   leaf = false;
 }
 
-HashGridIndex::HashGridIndex() :
+HashGridPoint::HashGridPoint() :
     dimension(0), level(nullptr), index(nullptr), hInv(nullptr),
     distr(PointDistribution::Normal), hash(0) {
   leaf = false;
 }
 
-HashGridIndex::HashGridIndex(const HashGridIndex& o) :
+HashGridPoint::HashGridPoint(const HashGridPoint& o) :
     dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr),
     distr(PointDistribution::Normal), hash(0) {
   level = new level_type[dimension];
@@ -52,7 +52,7 @@ HashGridIndex::HashGridIndex(const HashGridIndex& o) :
   rehash();
 }
 
-HashGridIndex::HashGridIndex(std::istream& istream, int version) :
+HashGridPoint::HashGridPoint(std::istream& istream, int version) :
     dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   size_t temp_leaf;
 
@@ -104,7 +104,7 @@ HashGridIndex::HashGridIndex(std::istream& istream, int version) :
 /**
  * Destructor
  */
-HashGridIndex::~HashGridIndex() {
+HashGridPoint::~HashGridPoint() {
   if (level) {
     delete[] level;
   }
@@ -118,7 +118,7 @@ HashGridIndex::~HashGridIndex() {
   }
 }
 
-void HashGridIndex::serialize(std::ostream& ostream, int version) {
+void HashGridPoint::serialize(std::ostream& ostream, int version) {
   ostream << dimension << std::endl;
 
   for (size_t d = 0; d < dimension; d++) {
@@ -134,27 +134,27 @@ void HashGridIndex::serialize(std::ostream& ostream, int version) {
   }
 }
 
-size_t HashGridIndex::getDimension() const {
+size_t HashGridPoint::getDimension() const {
   return dimension;
 }
 
-HashGridIndex::PointDistribution HashGridIndex::getPointDistribution() const {
+HashGridPoint::PointDistribution HashGridPoint::getPointDistribution() const {
   return distr;
 }
 
-void HashGridIndex::setPointDistribution(HashGridIndex::PointDistribution distr) {
+void HashGridPoint::setPointDistribution(HashGridPoint::PointDistribution distr) {
   this->distr = distr;
 }
 
-void HashGridIndex::setLeaf(bool isLeaf) {
+void HashGridPoint::setLeaf(bool isLeaf) {
   leaf = isLeaf;
 }
 
-bool HashGridIndex::isLeaf() {
+bool HashGridPoint::isLeaf() {
   return leaf;
 }
 
-double HashGridIndex::getCoord(size_t d) const {
+double HashGridPoint::getCoord(size_t d) const {
   if (distr == PointDistribution::Normal) {
     // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
     return static_cast<double>(index[d]) / static_cast<double>(hInv[d]);
@@ -163,15 +163,15 @@ double HashGridIndex::getCoord(size_t d) const {
   }
 }
 
-double HashGridIndex::getCoordBB(size_t d, double q, double t) const {
+double HashGridPoint::getCoordBB(size_t d, double q, double t) const {
   return q * getCoord(d) + t;
 }
 
-double HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
+double HashGridPoint::getCoordStretching(size_t d, Stretching* stretch) {
   return stretch->getCoordinates(level[d], index[d], d);
 }
 
-bool HashGridIndex::isInnerPoint() const {
+bool HashGridPoint::isInnerPoint() const {
   for (size_t d = 0; d < dimension; d++) {
     if (level[d] == 0) {
       return false;
@@ -181,7 +181,7 @@ bool HashGridIndex::isInnerPoint() const {
   return true;
 }
 
-void HashGridIndex::rehash() {
+void HashGridPoint::rehash() {
   size_t hash = 0xdeadbeef;
 
   for (size_t d = 0; d < dimension; d++) {
@@ -192,11 +192,11 @@ void HashGridIndex::rehash() {
   this->hash = hash;
 }
 
-size_t HashGridIndex::getHash() const {
+size_t HashGridPoint::getHash() const {
   return hash;
 }
 
-bool HashGridIndex::equals(const HashGridIndex& rhs) const {
+bool HashGridPoint::equals(const HashGridPoint& rhs) const {
   for (size_t d = 0; d < dimension; d++) {
     if (level[d] != rhs.level[d]) {
       return false;
@@ -212,11 +212,11 @@ bool HashGridIndex::equals(const HashGridIndex& rhs) const {
   return true;
 }
 
-HashGridIndex& HashGridIndex::assign(const HashGridIndex& rhs) {
+HashGridPoint& HashGridPoint::assign(const HashGridPoint& rhs) {
   return this->operator=(rhs);
 }
 
-HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
+HashGridPoint& HashGridPoint::operator=(const HashGridPoint& rhs) {
   if (this == &rhs) {
     return *this;
   }
@@ -253,14 +253,14 @@ HashGridIndex& HashGridIndex::operator=(const HashGridIndex& rhs) {
   return *this;
 }
 
-std::string HashGridIndex::toString() const {
+std::string HashGridPoint::toString() const {
   std::ostringstream ostream;
   toString(ostream);
 
   return ostream.str();
 }
 
-void HashGridIndex::toString(std::ostream& stream) const {
+void HashGridPoint::toString(std::ostream& stream) const {
   stream << "[";
 
   for (size_t i = 0; i < dimension; i++) {
@@ -275,19 +275,19 @@ void HashGridIndex::toString(std::ostream& stream) const {
   stream << " ]";
 }
 
-void HashGridIndex::getCoords(DataVector& p) const {
+void HashGridPoint::getCoords(DataVector& p) const {
   for (size_t d = 0; d < dimension; d++) {
     p.set(d, getCoord(d));
   }
 }
 
-void HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) const {
+void HashGridPoint::getCoordsBB(DataVector& p, BoundingBox& BB) const {
   for (size_t d = 0; d < dimension; d++) {
     p.set(d, BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d));
   }
 }
 
-void HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
+void HashGridPoint::getCoordsStretching(DataVector& p, Stretching& stretch) const {
   for (size_t d = 0; d < dimension; d++) {
     if (level[d] == 0) {
       p.set(d, stretch.getIntervalWidth(d) * static_cast<double>(index[d]) +
@@ -298,7 +298,7 @@ void HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) cons
   }
 }
 
-std::string HashGridIndex::getCoordsString() const {
+std::string HashGridPoint::getCoordsString() const {
   std::stringstream return_stream;
 
   // switch on scientific notation:
@@ -319,7 +319,7 @@ std::string HashGridIndex::getCoordsString() const {
   return return_stream.str();
 }
 
-std::string HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
+std::string HashGridPoint::getCoordsStringBB(BoundingBox& BB) const {
   std::stringstream return_stream;
 
   for (size_t d = 0; d < dimension; d++) {
@@ -334,7 +334,7 @@ std::string HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
   return return_stream.str();
 }
 
-std::string HashGridIndex::getCoordsStringStretching(Stretching& stretch) const {
+std::string HashGridPoint::getCoordsStringStretching(Stretching& stretch) const {
   std::stringstream return_stream;
 
   for (size_t d = 0; d < dimension; d++) {
@@ -348,8 +348,8 @@ std::string HashGridIndex::getCoordsStringStretching(Stretching& stretch) const 
   return return_stream.str();
 }
 
-HashGridIndex::level_type HashGridIndex::getLevelSum() const {
-  HashGridIndex::level_type levelsum = 0;
+HashGridPoint::level_type HashGridPoint::getLevelSum() const {
+  HashGridPoint::level_type levelsum = 0;
 
   for (size_t d = 0; d < dimension; d++) {
     levelsum += level[d];
@@ -358,8 +358,8 @@ HashGridIndex::level_type HashGridIndex::getLevelSum() const {
   return levelsum;
 }
 
-HashGridIndex::level_type HashGridIndex::getLevelMax() const {
-  HashGridIndex::level_type levelmax = level[0];
+HashGridPoint::level_type HashGridPoint::getLevelMax() const {
+  HashGridPoint::level_type levelmax = level[0];
 
   for (size_t d = 1; d < dimension; d++) {
     levelmax = std::max(levelmax, level[d]);
@@ -368,8 +368,8 @@ HashGridIndex::level_type HashGridIndex::getLevelMax() const {
   return levelmax;
 }
 
-HashGridIndex::level_type HashGridIndex::getLevelMin() const {
-  HashGridIndex::level_type levelmin = level[0];
+HashGridPoint::level_type HashGridPoint::getLevelMin() const {
+  HashGridPoint::level_type levelmin = level[0];
 
   for (size_t d = 1; d < dimension; d++) {
     levelmin = std::min(levelmin, level[d]);
@@ -378,7 +378,7 @@ HashGridIndex::level_type HashGridIndex::getLevelMin() const {
   return levelmin;
 }
 
-std::map<std::string, base::HashGridIndex::PointDistribution>& HashGridIndex::typeMap() {
+std::map<std::string, base::HashGridPoint::PointDistribution>& HashGridPoint::typeMap() {
   // This is only executed once!
   static pointDistributionMap* tMap = new pointDistributionMap();
 
@@ -387,21 +387,21 @@ std::map<std::string, base::HashGridIndex::PointDistribution>& HashGridIndex::ty
  * Insert strings here.
  */
 #ifdef _WIN32
-    tMap->insert(std::pair<std::string, base::HashGridIndex::PointDistribution>(
-        "Normal", HashGridIndex::PointDistribution::Normal));
-    tMap->insert(std::pair<std::string, base::HashGridIndex::PointDistribution>(
-        "ClenshawCurtis", HashGridIndex::PointDistribution::ClenshawCurtis));
+    tMap->insert(std::pair<std::string, base::HashGridPoint::PointDistribution>(
+        "Normal", HashGridPoint::PointDistribution::Normal));
+    tMap->insert(std::pair<std::string, base::HashGridPoint::PointDistribution>(
+        "ClenshawCurtis", HashGridPoint::PointDistribution::ClenshawCurtis));
 #else
-    tMap->insert(std::make_pair("Normal", HashGridIndex::PointDistribution::Normal));
+    tMap->insert(std::make_pair("Normal", HashGridPoint::PointDistribution::Normal));
     tMap->insert(
-        std::make_pair("ClenshawCurtis", HashGridIndex::PointDistribution::ClenshawCurtis));
+        std::make_pair("ClenshawCurtis", HashGridPoint::PointDistribution::ClenshawCurtis));
 #endif
   }
 
   return *tMap;
 }
 
-std::map<base::HashGridIndex::PointDistribution, std::string>& HashGridIndex::typeVerboseMap() {
+std::map<base::HashGridPoint::PointDistribution, std::string>& HashGridPoint::typeVerboseMap() {
   // This is only executed once!
   static pointDistributionVerboseMap* verboseMap = new pointDistributionVerboseMap();
 
@@ -410,14 +410,14 @@ std::map<base::HashGridIndex::PointDistribution, std::string>& HashGridIndex::ty
  * Insert strings here.
  */
 #ifdef _WIN32
-    verboseMap->insert(std::pair<base::HashGridIndex::PointDistribution, std::string>(
-        HashGridIndex::PointDistribution::Normal, "Normal"));
-    verboseMap->insert(std::pair<base::HashGridIndex::PointDistribution, std::string>(
-        HashGridIndex::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
+    verboseMap->insert(std::pair<base::HashGridPoint::PointDistribution, std::string>(
+        HashGridPoint::PointDistribution::Normal, "Normal"));
+    verboseMap->insert(std::pair<base::HashGridPoint::PointDistribution, std::string>(
+        HashGridPoint::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
 #else
-    verboseMap->insert(std::make_pair(HashGridIndex::PointDistribution::Normal, "Normal"));
+    verboseMap->insert(std::make_pair(HashGridPoint::PointDistribution::Normal, "Normal"));
     verboseMap->insert(
-        std::make_pair(HashGridIndex::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
+        std::make_pair(HashGridPoint::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
 #endif
   }
 

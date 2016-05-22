@@ -73,8 +73,8 @@ def computeBFGridPoint(basis, U, gpi, gps):
     stored in gps
     @param basis: basis of sparse grid function,
     @param U: list of distributions
-    @param gpi: HashGridIndex
-    @param gps: list of HashGridIndex
+    @param gpi: HashGridPoint
+    @param gps: list of HashGridPoint
     """
     n = len(gps)
     s = np.ndarray(gpi.getDimension(), dtype='float')
