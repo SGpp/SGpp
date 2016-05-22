@@ -22,7 +22,6 @@
 #include <vector>
 #include <algorithm>
 
-
 namespace sgpp {
 namespace base {
 
@@ -47,9 +46,9 @@ struct Stretching1D {
 
 class Stretching : public BoundingBox {
  private:
-  Stretching1D* stretching1Ds;
-  int* discreteVectorLevel;
-  std::string* stretchingMode;
+  std::vector<Stretching1D> stretching1Ds;
+  std::vector<int> discreteVectorLevel;
+  std::string stretchingMode;
 
   /*
    * generates the lookup table up to level 11 for all dimensions, the rest is calculated via the
@@ -172,15 +171,11 @@ class Stretching : public BoundingBox {
    * initializes the Stretching using the boundaries with the input type array given
    * for each dimension
    *
-   * @param dimension number of the dimensions used with the grid
-   * @param boundaries DimensionBoundary struct to get the boundary values for Stretching
-   * @param stretching1ds array to define the stretching type
+   * @param boundaries BoundingBox1D struct to get the boundary values for Stretching
+   * @param stretching1Ds array to define the stretching type
    */
-  Stretching(size_t dimension, const BoundingBox1D* boundaries,
-             const Stretching1D* stretching1ds);
-
-  Stretching(size_t dimension, const std::vector<BoundingBox1D>& boundaries,
-             const std::vector<Stretching1D>& t);
+  Stretching(const std::vector<BoundingBox1D>& boundaries,
+             const std::vector<Stretching1D>& stretching1Ds);
 
   /**
    * Constructor for Stretching
@@ -192,20 +187,6 @@ class Stretching : public BoundingBox {
    * of the specific level the vector defines for each dimension.
    */
   Stretching(size_t dimension, std::vector<double>* coordinates);
-
-  /**
-   * Copy-Constructor
-   *
-   * initializes the Stretching with values of another Stretching instance
-   *
-   * @param copyStretching reference to a Stretching Object whose values are copied
-   */
-  Stretching(const Stretching& copyStretching);
-
-  /**
-   * Destructor
-   */
-  ~Stretching();
 
   /*
    * Gets the node position defined in the input parameters
@@ -245,7 +226,7 @@ class Stretching : public BoundingBox {
   /*
    * returns the stretchingMode, can be "analytic" or "discrete"
    */
-  std::string* getStretchingMode() const;
+  std::string getStretchingMode() const;
 
   /*
    * returns the discreteVector for the discrete grid structure.
@@ -256,7 +237,7 @@ class Stretching : public BoundingBox {
   /*
    * returns the discretevectorlevel array of size nDim
    */
-  int* getDiscreteVectorLevel() const;
+  std::vector<int> getDiscreteVectorLevel() const;
 
   void calculateNeighborLookup(int maxlevel) const;
 };

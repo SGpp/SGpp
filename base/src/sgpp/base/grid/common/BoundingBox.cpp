@@ -9,70 +9,27 @@
 
 #include <sstream>
 #include <string>
-
+#include <vector>
 
 namespace sgpp {
 namespace base {
 
-BoundingBox::BoundingBox(size_t dimension) {
-  this->dimension = dimension;
-  dimensionBoundaries = new BoundingBox1D[dimension];
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i].leftBoundary = 0.0;
-    dimensionBoundaries[i].rightBoundary = 1.0;
-    dimensionBoundaries[i].bDirichletLeft = false;
-    dimensionBoundaries[i].bDirichletRight = false;
-  }
-
-  bTrivialCube = true;
+BoundingBox::BoundingBox(size_t dimension) :
+    dimension(dimension),
+    boundingBox1Ds(dimension, {0.0, 1.0}) {
 }
 
-BoundingBox::BoundingBox(size_t dimension, const BoundingBox1D* boundaries) {
-  bTrivialCube = true;
-  this->dimension = dimension;
-  dimensionBoundaries = new BoundingBox1D[dimension];
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i] = boundaries[i];
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-  }
+BoundingBox::BoundingBox(const std::vector<BoundingBox1D>& boundingBox1Ds) :
+    dimension(boundingBox1Ds.size()),
+    boundingBox1Ds(boundingBox1Ds) {
 }
 
-BoundingBox::BoundingBox(const BoundingBox& copyBoundingBox) {
-  bTrivialCube = true;
-  dimension = copyBoundingBox.getDimensions();
-  dimensionBoundaries = new BoundingBox1D[dimension];
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-  }
-}
-
-BoundingBox::~BoundingBox() {
-  delete[] dimensionBoundaries;
-}
-
-void BoundingBox::setBoundary(size_t d, const BoundingBox1D& newBoundaries) {
-  dimensionBoundaries[d] = newBoundaries;
-
-  if (dimensionBoundaries[d].leftBoundary != 0.0
-      || dimensionBoundaries[d].rightBoundary != 1.0) {
-    bTrivialCube = false;
-  }
+void BoundingBox::setBoundary(size_t d, const BoundingBox1D& boundingBox1D) {
+  boundingBox1Ds[d] = boundingBox1D;
 }
 
 BoundingBox1D BoundingBox::getBoundary(size_t d) const {
-  return dimensionBoundaries[d];
+  return boundingBox1Ds[d];
 }
 
 size_t BoundingBox::getDimensions() const {
@@ -80,31 +37,38 @@ size_t BoundingBox::getDimensions() const {
 }
 
 double BoundingBox::getIntervalWidth(size_t d) const {
-  return dimensionBoundaries[d].rightBoundary - dimensionBoundaries[d].leftBoundary;
+  return boundingBox1Ds[d].rightBoundary - boundingBox1Ds[d].leftBoundary;
 }
 
 double BoundingBox::getIntervalOffset(size_t d) const {
-  return dimensionBoundaries[d].leftBoundary;
+  return boundingBox1Ds[d].leftBoundary;
 }
 
-bool BoundingBox::isTrivialCube() const {
-  return bTrivialCube;
+bool BoundingBox::isUnitCube() const {
+  for (size_t d = 0; d < dimension; d++) {
+    if ((boundingBox1Ds[d].leftBoundary != 0.0) ||
+        (boundingBox1Ds[d].rightBoundary != 1.0)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool BoundingBox::hasDirichletBoundaryLeft(size_t d) const {
-  return dimensionBoundaries[d].bDirichletLeft;
+  return boundingBox1Ds[d].bDirichletLeft;
 }
 
 bool BoundingBox::hasDirichletBoundaryRight(size_t d) const {
-  return dimensionBoundaries[d].bDirichletRight;
+  return boundingBox1Ds[d].bDirichletRight;
 }
 
 void BoundingBox::toString(std::string& text) const {
   std::stringstream str;
 
   for (size_t d = 0; d < dimension; d++) {
-    str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
-        << "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
+    str << "Dimensions " << d << "(" << boundingBox1Ds[d].leftBoundary
+        << "," <<  boundingBox1Ds[d].rightBoundary << ")\n";
   }
 
   text = str.str();

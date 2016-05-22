@@ -218,7 +218,7 @@ void HashGridStorage::serialize(std::ostream& ostream, int version) {
     ostream << std::endl;
   } else {
     // If analytic stretching, print the stretching type
-    if (*(stretching->getStretchingMode()) == "analytic") {
+    if (stretching->getStretchingMode() == "analytic") {
       ostream << std::scientific << 1 << std::endl;
 
       // Print the bounding box
@@ -252,7 +252,7 @@ void HashGridStorage::serialize(std::ostream& ostream, int version) {
         ostream << std::scientific << stretchingType << " " << str1d.x_0 << " " << str1d.xsi
                 << std::endl;
       }
-    } else if (*(stretching->getStretchingMode()) == "discrete") {
+    } else if (stretching->getStretchingMode() == "discrete") {
       // If discrete stretching, print the grid vector
       ostream << std::scientific << 2 << std::endl;
 
@@ -265,7 +265,7 @@ void HashGridStorage::serialize(std::ostream& ostream, int version) {
 
       ostream << std::endl;
       std::vector<double>* vec = stretching->getDiscreteVector(true);
-      int* vecLevel = stretching->getDiscreteVectorLevel();
+      std::vector<int> vecLevel = stretching->getDiscreteVectorLevel();
 
       for (size_t i = 0; i < dimension; i++) {
         ostream << std::scientific << vecLevel[i] << std::endl;
@@ -653,8 +653,8 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
       // Stretching with analytic mode
       boundingBox = NULL;
       bUseStretching = true;
-      Stretching1D* str1ds = new Stretching1D[dimension];
-      BoundingBox1D* tempBounds = new BoundingBox1D[dimension];
+      std::vector<Stretching1D> str1ds(dimension, Stretching1D());
+      std::vector<BoundingBox1D> tempBounds(dimension, BoundingBox1D());
 
       // reads the boundary data
       for (size_t i = 0; i < dimension; i++) {
@@ -692,9 +692,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
         istream >> str1ds[i].xsi;
       }
 
-      stretching = new Stretching(dimension, tempBounds, str1ds);
-      delete[] tempBounds;
-      delete[] str1ds;
+      stretching = new Stretching(tempBounds, str1ds);
     } else if (useStretching == 2) {
       // Stretching with discrete Mode
 

@@ -246,7 +246,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssets,
-                       sgpp::base::BoundingBox1D* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -302,7 +302,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets,
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readAnalyzeData(std::string tFile, size_t numAssets,
-                    sgpp::base::BoundingBox1D* BoundaryArray, size_t& points) {
+                    std::vector<sgpp::base::BoundingBox1D>& BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -589,13 +589,13 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     myBSSolver->resetSolveTime();
 
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+      std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
       if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
         return;
       }
 
-      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
       delete[] myBoundaries;
 
       // Construct a grid
@@ -612,7 +612,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
         }
 
         sgpp::base::BoundingBox* myEvalBoundingBox =
-            new sgpp::base::BoundingBox(dim, myEvalBoundaries);
+            new sgpp::base::BoundingBox(myEvalBoundaries);
         delete[] myEvalBoundaries;
 
         sgpp::base::EvalCuboidGenerator* myEvalCuboidGen = new sgpp::base::EvalCuboidGenerator();
@@ -931,13 +931,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   }
 
   if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+    std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
     if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
       return;
     }
 
-    sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+    sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
     delete[] myBoundaries;
 
     // init Screen Object

@@ -222,5 +222,5 @@ namespace std {
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
+%template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;

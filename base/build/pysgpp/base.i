@@ -55,7 +55,7 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
-%ignore sgpp::base::BoundingBox::toString(std::string& text);
+%ignore sgpp::base::BoundingBox::toString(std::string& text) const;
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
@@ -181,7 +181,7 @@ namespace std {
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
+%template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
 
 
