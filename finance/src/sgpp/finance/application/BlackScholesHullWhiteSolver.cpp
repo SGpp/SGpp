@@ -136,7 +136,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
     std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
     myStopwatch->start();
 
-    // DimensionBoundary* myBoundaries = new DimensionBoundary[2];
+    // BoundingBox1D* myBoundaries = new BoundingBox1D[2];
     base::BoundingBox* t = &this->myGrid->getBoundingBox();
 
     base::BoundingBox1D* myBoundaries = new base::BoundingBox1D[dim];

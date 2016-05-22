@@ -176,8 +176,8 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
 #ifdef HEDGE
   sgpp::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
-  sgpp::base::DimensionBoundary* myBoundaries =
-      new sgpp::base::DimensionBoundary[grid_bb->getDimensions()];
+  sgpp::base::BoundingBox1D* myBoundaries =
+      new sgpp::base::BoundingBox1D[grid_bb->getDimensions()];
 
   for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
     if (bLogTransform == true) {

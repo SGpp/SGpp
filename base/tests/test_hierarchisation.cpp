@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.00001;
   dimBound.rightBoundary = 1.;
-  Stretching stretch(dim, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
   std::unique_ptr<Grid> grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage().setStretching(stretch);
   testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-13, false);
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   str1d.type = "sinh";
   str1d.x_0 = 1.;
   str1d.xsi = 10;
-  BoundingBox1D dimBound;  // = new DimensionBoundary();
+  BoundingBox1D dimBound;  // = new BoundingBox1D();
   dimBound.leftBoundary = 0.001;
   dimBound.rightBoundary = 1.;
 
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   dimBound_vec.push_back(dimBound);
   dimBound_vec.push_back(dimBound);
 
-  Stretching stretch(dim, dimBound_vec, stretch_vec);
+  Stretching stretch(dimBound_vec, stretch_vec);
   std::unique_ptr<Grid> grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage().setStretching(stretch);
   testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12, false);

@@ -972,18 +972,10 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v) {
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European "
         "call option with one asset!");
 
-  size_t dim1d = 1;
   int levels1d = this->levels;
 
   // Build a new 1d grid for stock price
-  base::BoundingBox1D* boundaries1d = new base::BoundingBox1D[dim1d];
-
-  boundaries1d[0].leftBoundary = this->myBoundingBox->getBoundary(0).leftBoundary;
-  boundaries1d[0].rightBoundary = this->myBoundingBox->getBoundary(0).rightBoundary;
-  boundaries1d[0].bDirichletLeft = this->myBoundingBox->getBoundary(0).bDirichletLeft;
-  boundaries1d[0].bDirichletRight = this->myBoundingBox->getBoundary(0).bDirichletRight;
-
-  base::BoundingBox* boundingBox1d = new base::BoundingBox(dim1d, boundaries1d);
+  base::BoundingBox* boundingBox1d = new base::BoundingBox({this->myBoundingBox->getBoundary(0)});
 
   base::Grid* grid1d = new base::LinearBoundaryGrid(*boundingBox1d);
 
@@ -1008,7 +1000,6 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v) {
 
   this->myGrid = gridTemp;
 
-  delete[] boundaries1d;
   delete grid1d;
   delete alphaHeston;
   delete alphaBS;

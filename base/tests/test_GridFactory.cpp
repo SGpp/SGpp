@@ -841,7 +841,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
   std::vector<Stretching1D> str1dvector(2);
   str1dvector[0] = str1d;
   str1dvector[1] = str1d;
-  Stretching stretch(2, dimBoundaryVector, str1dvector);
+  Stretching stretch(dimBoundaryVector, str1dvector);
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(2);
   GridStorage& storage = factory->getStorage();
@@ -906,7 +906,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
   factory->getStorage().setStretching(stretch);
@@ -945,13 +945,13 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   /*
-  from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
+  from pysgpp import Grid, DataVector, Stretching, Stretching1D, BoundingBox1D
 
   str1d = Stretching1D()
   str1d.type='log'
   str1d.x_0=1
   str1d.xsi=10
-  dimBound = DimensionBoundary()
+  dimBound = BoundingBox1D()
   dimBound.leftBoundary=0.5
   dimBound.rightBoundary=7
   stretch=Stretching(1,dimBound,str1d)
@@ -978,7 +978,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
   factory->getStorage().setStretching(stretch);

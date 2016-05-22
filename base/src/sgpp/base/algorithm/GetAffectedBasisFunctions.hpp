@@ -581,7 +581,7 @@ class GetAffectedBasisFunctions <
     bool useBB = false;
 
     // Check for special bounding box
-    if (!this->BB->isTrivialCube()) {
+    if (!this->BB->isUnitCube()) {
       useBB = true;
     }
 
@@ -1251,7 +1251,7 @@ class GetAffectedBasisFunctions <
     bool useBB = false;
 
     // Check for special bounding box
-    if (!this->BB->isTrivialCube()) {
+    if (!this->BB->isUnitCube()) {
       useBB = true;
     }
 

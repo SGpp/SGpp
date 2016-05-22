@@ -135,7 +135,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests,
 }
 
 int readStretchingData(std::string tFile, size_t numAssests,
-                       sgpp::base::Stretching1D* streching1dArray) {
+                       std::vector<sgpp::base::Stretching1D>& streching1dArray) {
   std::fstream file;
   std::string stretchingType;
   double x_0, xsi;
@@ -167,7 +167,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
                       std::string stretchingMode) {
   size_t timesteps = (size_t)(T / dt);
 
-  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -183,7 +183,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
   sgpp::base::Stretching* myStretching;
 
   if (stretchingMode == "analytic") {
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -191,8 +191,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
       return;
     }
 
-    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
-    delete[] stretching1dArray;
+    myStretching = new sgpp::base::Stretching(myBoundaries, stretching1dArray);
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
     int readStretchData = readDiscreteStretchingData(fileStretch, dim, discreteCoordinates);
@@ -208,8 +207,6 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
     std::cout << "Unsupported Stretching Mode Specified\n";
     return;
   }
-
-  delete[] myBoundaries;
 
   // init Screen Object
   myHESolver->initScreen();

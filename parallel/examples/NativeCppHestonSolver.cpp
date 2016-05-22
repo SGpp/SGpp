@@ -255,7 +255,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numDims,
-                       sgpp::base::BoundingBox1D* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -346,7 +346,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
   }
 
   // We have boundary data for each dimension in the PDE
-  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[pdeDim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(pdeDim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, pdeDim, myBoundaries) != 0) {
     return;
@@ -366,8 +366,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
     return;
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(pdeDim, myBoundaries);
-  delete[] myBoundaries;
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   // init Screen Object
   myHestonSolver->initScreen();

@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
   BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
   GridPoint i(1);
   GridStorage s(1);

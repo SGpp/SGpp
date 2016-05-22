@@ -437,20 +437,18 @@ class HashGridStorage {
    * @return      coordinate of the point in dimension d
    */
   inline double getCoordinate(HashGridPoint point, size_t d) const {
-    const double x = point.getStandardCoordinate(d);
-
     if ((boundingBox == nullptr) && (stretching == nullptr)) {
-      return x;
+      return point.getStandardCoordinate(d);
     } else {
-      HashGridPoint::level_type level;
-      HashGridPoint::index_type index;
-
-      point.get(d, level, index);
-
       if (bUseStretching) {
+        HashGridPoint::level_type level;
+        HashGridPoint::index_type index;
+
+        point.get(d, level, index);
         return stretching->getCoordinate(level, index, d);
       } else {
-        return boundingBox->getIntervalWidth(d) * x + boundingBox->getIntervalOffset(d);
+        return boundingBox->getIntervalWidth(d) * point.getStandardCoordinate(d) +
+            boundingBox->getIntervalOffset(d);
       }
     }
   }

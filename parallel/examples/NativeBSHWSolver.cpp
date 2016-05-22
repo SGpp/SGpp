@@ -81,7 +81,7 @@ int readStochasticData(std::string tFile, size_t numAssests, sgpp::base::DataVec
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssests,
-                       sgpp::base::BoundingBox1D* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -265,7 +265,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
     return;
   }
 
-  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -281,7 +281,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
     myBSHWSolver = new sgpp::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
   // delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
@@ -322,19 +322,18 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sgpp::base::BoundingBox1D* myAreaBoundaries = new sgpp::base::BoundingBox1D[dim];
+      std::vector<sgpp::base::BoundingBox1D> myAreaBoundaries(dim, sgpp::base::BoundingBox1D());
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      sgpp::base::BoundingBox* myGridArea = new sgpp::base::BoundingBox(dim, myAreaBoundaries);
+      sgpp::base::BoundingBox* myGridArea = new sgpp::base::BoundingBox(myAreaBoundaries);
 
       myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea,
                                     "payoff_area.level_" + level_string.str() + ".gnuplot");
 
-      delete[] myAreaBoundaries;
       delete myGridArea;
     }
 
@@ -416,7 +415,6 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
     point.push_back(point_i);
   }
 
-  delete[] myBoundaries;
   std::cout << "Optionprice at [" << point[0] << ", " << point[1]
             << "] (center): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl
             << std::endl;
@@ -517,7 +515,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
     return;
   }
 
-  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -533,7 +531,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
     myBSHWSolver = new sgpp::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
   // delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
@@ -659,18 +657,17 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sgpp::base::BoundingBox1D* myAreaBoundaries = new sgpp::base::BoundingBox1D[dim];
+      std::vector<sgpp::base::BoundingBox1D> myAreaBoundaries(dim, sgpp::base::BoundingBox1D());
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      sgpp::base::BoundingBox* myGridArea = new sgpp::base::BoundingBox(dim, myAreaBoundaries);
+      sgpp::base::BoundingBox* myGridArea = new sgpp::base::BoundingBox(myAreaBoundaries);
 
       myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.adaptive.gnuplot");
 
-      delete[] myAreaBoundaries;
       delete myGridArea;
     }
 
@@ -747,7 +744,6 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
     point.push_back(point_i);
   }
 
-  delete[] myBoundaries;
   std::cout << "Optionprice at [" << point[0] << ", " << point[1]
             << "] (center of domain): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl
             << std::endl;

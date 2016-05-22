@@ -301,7 +301,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
   for (size_t l = start_level; l <= end_level; l++) {
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+      std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
       // set the bounding box
       for (size_t i = 0; i < dim; i++) {
@@ -311,7 +311,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
         myBoundaries[i].bDirichletRight = true;
       }
 
-      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
       delete[] myBoundaries;
 
       // in first iteration -> calculate the evaluation points
@@ -464,7 +464,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
   for (size_t l = start_level; l <= end_level; l++) {
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+      std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
       // set the bounding box
       for (size_t i = 0; i < dim; i++) {
@@ -474,7 +474,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
         myBoundaries[i].bDirichletRight = true;
       }
 
-      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+      sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
       delete[] myBoundaries;
 
 #ifndef __MIC__
@@ -626,7 +626,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
   std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
 
   if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
+    std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
     // set the bounding box
     for (size_t i = 0; i < dim; i++) {
@@ -636,7 +636,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
       myBoundaries[i].bDirichletRight = true;
     }
 
-    sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+    sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
     delete[] myBoundaries;
 
     // init Screen Object

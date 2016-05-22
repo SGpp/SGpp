@@ -15,11 +15,12 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 
 #define CRNIC_IMEUL_STEPS 3
 
 int readBoudingBoxData(std::string tFile, size_t numAssests,
-                       sgpp::base::BoundingBox1D* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -77,15 +78,14 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[1];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries = {sgpp::base::BoundingBox1D()};
 
   if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0) {
     return;
   }
 
   sgpp::finance::HullWhiteSolver* myHWSolver = new sgpp::finance::HullWhiteSolver();
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(1, myBoundaries);
-  delete[] myBoundaries;
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   // init Screen Object
   myHWSolver->initScreen();

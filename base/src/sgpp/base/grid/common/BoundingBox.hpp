@@ -10,7 +10,7 @@
 
 #include <cstddef>
 #include <string>
-
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -19,14 +19,42 @@ namespace base {
  * struct that defines the boundaries for one specific dimension
  */
 struct BoundingBox1D {
-  /// the left boundary
+  /// left boundary
   double leftBoundary;
-  /// the right boundary
+  /// right boundary
   double rightBoundary;
-  /// Use Dirichlet-Boundaries on the left boundary
+  /// whether to use Dirichlet boundaries on the left boundary
   bool bDirichletLeft;
-  /// Use Dirichlet-Boundaries on the right boundary
+  /// whether to use Dirichlet boundaries on the right boundary
   bool bDirichletRight;
+
+  /**
+   * Default constructor initializing leftBoundary = 0, rightBoundary = 1, and
+   * bDirichletLeft = bDirichletLeft = false.
+   */
+  BoundingBox1D() : BoundingBox1D(0.0, 1.0, false, false) {}
+
+  /**
+   * Constructor initializing bDirichletLeft = bDirichletLeft = false.
+   *
+   * @param leftBoundary  left boundary position
+   * @param rightBoundary right boundary position
+   */
+  BoundingBox1D(double leftBoundary, double rightBoundary) :
+    BoundingBox1D(leftBoundary, rightBoundary, false, false) {}
+
+  /**
+   * Constructor.
+   *
+   * @param leftBoundary    left boundary position
+   * @param rightBoundary   right boundary position
+   * @param bDirichletLeft  whether to use Dirichlet boundaries on the left boundary
+   * @param bDirichletRight whether to use Dirichlet boundaries on the right boundary
+   */
+  BoundingBox1D(double leftBoundary, double rightBoundary,
+                bool bDirichletLeft, bool bDirichletRight) :
+                  leftBoundary(leftBoundary), rightBoundary(rightBoundary),
+                  bDirichletLeft(bDirichletLeft), bDirichletRight(bDirichletRight) {}
 };
 
 /**
@@ -41,9 +69,7 @@ class BoundingBox {
   /// the number of dimensions used with the grid
   size_t dimension;
   /// Array that contains all left boundaries for all dimensions
-  BoundingBox1D* dimensionBoundaries;
-  /// is true if the complete Bounding Box desribes a trivial cube
-  bool bTrivialCube;
+  std::vector<BoundingBox1D> boundingBox1Ds;
 
  public:
   /**
@@ -60,89 +86,84 @@ class BoundingBox {
    *
    * initializes the Bounding with specific values for all dimensions
    *
-   * @param dimension number of the dimensions used with the grid
-   * @param boundaries array that contains all boundaries
+   * @param boundingBox1Ds array that contains all boundaries
    */
-  BoundingBox(size_t dimension, const BoundingBox1D* boundaries);
+  explicit BoundingBox(const std::vector<BoundingBox1D>& boundingBox1Ds);
 
   /**
-   * Copy-Constructor
+   * Sets left and right boundary for a specific dimension.
    *
-   * initializes the Bounding with values of another bounding Box
-   *
-   * @param copyBoundingBox reference to a BoundingBox Object whose values are copied
+   * @param d             the dimension in which the boundary should be changed
+   * @param boundingBox1D reference to a BoundingBox1D object that contains the new boundaries
    */
-  BoundingBox(const BoundingBox& copyBoundingBox);
+  void setBoundary(size_t d, const BoundingBox1D& boundingBox1D);
 
   /**
-   * Desctructor
-   */
-  virtual ~BoundingBox();
-
-  /**
-   * set the left and right boundary for a specific dimension
+   * Returns the left and right boundary for a specific dimension.
    *
-   * @param d the dimension in which the boundary should be changed
-   * @param newBoundaries reference to a DimensionBoundary object, that contains the new boundaries
-   */
-  void setBoundary(size_t d, const BoundingBox1D& newBoundaries);
-
-  /**
-   * gets the left and right boundary for a specific dimension
-   *
-   * @param d the dimension in which the boundary should be read
-   * @return a DimensionBoundary object, that contains the boundaries
+   * @param d   the dimension in which the boundary should be read
+   * @return    a BoundingBox1D object that contains the boundaries
    */
   BoundingBox1D getBoundary(size_t d) const;
 
   /**
-   * gets the dimensions of the cube stored in this bounding box
+   * Returns the number of dimensions of this bounding box.
    *
-   * @return the number of dimensions
+   * @return number of dimensions
    */
   size_t getDimensions() const;
 
   /**
-   * gets the width of the interval in one dimension
+   * Calculates the width of the interval in one dimension.
    *
    * @param d the dimension in which the width of the interval should be determined
-   * @return the width of the interval
+   * @return  width of the interval
    */
   double getIntervalWidth(size_t d) const;
 
   /**
-   * gets the offset in positive x-direction of the interval in one dimension
+   * Returns the offset in positive x-direction of the interval in one dimension.
    *
-   * @param d the dimension in which the offset of the interval should be determined
-   * @return the offset in positive x-direction of the interval
+   * @param d dimension in which the offset of the interval should be determined
+   * @return  offset in positive x-direction of the interval
    */
   double getIntervalOffset(size_t d) const;
 
   /**
-   * Use this function to determine if this bounding box describes a trivial cube [0;1]^d
+   * Determine if this bounding box describes the unit cube \f$[0, 1]^d\f$.
    *
-   * @return true if this bounding boy is a trivial cube otherwise false
+   * @return true if this bounding box is the unit cube, otherwise false
    */
-  bool isTrivialCube() const;
+  bool isUnitCube() const;
 
   /**
-   * Determines, if the interval in the specified dimension has left dirichlet boundary conditions
+   * Determines if the interval in the specified dimension has left Dirichlet boundary conditions.
    *
    * @param dimension the dimension for which the left boundary condition should be determined
-   * @return true if Dirichlet Boundary conditions, otherwise false
+   * @return true     if Dirichlet Boundary conditions, otherwise false
    */
   bool hasDirichletBoundaryLeft(size_t d) const;
 
   /**
-   * Determines, if the interval in the specified dimension has right dirichlet boundary conditions
+   * Determines if the interval in the specified dimension has right Dirichlet boundary conditions.
    *
    * @param dimension the dimension for which the right boundary condition should be determined
-   * @return true if Dirichlet Boundary conditions, otherwise false
+   * @return true     if Dirichlet Boundary conditions, otherwise false
    */
   bool hasDirichletBoundaryRight(size_t d) const;
 
+  /**
+   * Converts the BoundingBox to a string.
+   *
+   * @param text string to which the data is written
+   */
   void toString(std::string& text) const;
 
+  /**
+   * Converts the BoundingBox to a string.
+   *
+   * @return string to which the data is written
+   */
   std::string toString() const;
 };
 

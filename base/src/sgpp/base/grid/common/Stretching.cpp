@@ -165,7 +165,6 @@ static int leftIdx[2047] = {
   126, 1019, 509, 1020, 254, 1021, 510, 1022
 };
 
-
 static int rightIdx[2047] = {
   -1, 0, -1, 1, 0, 2, -1, 3, 1, 4, 0, 5, 2, 6, -1, 7, 3, 8, 1, 9, 4, 10,
   0, 11, 5, 12, 2, 13, 6, 14, -1, 15, 7, 16,
@@ -302,118 +301,35 @@ static int rightIdx[2047] = {
   1017, 508, 1018, 126, 1019, 509, 1020, 254, 1021, 510, 1022, -1
 };
 
-Stretching::Stretching(size_t dimension, const BoundingBox1D* boundaries,
-                      const Stretching1D* t) : BoundingBox(dimension, boundaries) {
-  bTrivialCube = true;
-  stretching1Ds = new Stretching1D[dimension];
-  dimensionBoundaries = new BoundingBox1D[dimension];
-  discreteVectorLevel = new int[dimension];
-  stretchingMode = new std::string("analytic");
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i] = boundaries[i];
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-
-    discreteVectorLevel[i] = -1;
-    stretching1Ds[i] = t[i];
-  }
-
-  generateLookupTable();
-}
-
-Stretching::Stretching(size_t dimension, const std::vector<BoundingBox1D>& boundaries,
-                       const std::vector<Stretching1D>& t) : BoundingBox(dimension) {
-  bTrivialCube = true;
-  stretching1Ds = new Stretching1D[dimension];
-  dimensionBoundaries = new BoundingBox1D[dimension];
-  discreteVectorLevel = new int[dimension];
-  stretchingMode = new std::string("analytic");
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i] = boundaries[i];
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-
-    discreteVectorLevel[i] = -1;
-    stretching1Ds[i] = t[i];
-  }
-
+Stretching::Stretching(const std::vector<BoundingBox1D>& boundaries,
+                      const std::vector<Stretching1D>& stretching1Ds) :
+                          BoundingBox(boundaries),
+                          stretching1Ds(stretching1Ds),
+                          discreteVectorLevel(dimension, -1),
+                          stretchingMode("analytic") {
   generateLookupTable();
 }
 
 Stretching::Stretching(size_t dimension, std::vector<double>* coordinates) :
-    BoundingBox(dimension) {
-  bTrivialCube = true;
-  stretching1Ds = new Stretching1D[dimension];
-  dimensionBoundaries = new BoundingBox1D[dimension];
-  discreteVectorLevel = new int[dimension];
-  stretchingMode = new std::string("discrete");
-  int _1DArrayLength = 0;
-
-  for (size_t i = 0; i < dimension; i++) {
-    _1DArrayLength = static_cast<int>(coordinates[i].size());
-    dimensionBoundaries[i].leftBoundary = coordinates[i][0];
-    dimensionBoundaries[i].rightBoundary = coordinates[i][_1DArrayLength - 1];
-    dimensionBoundaries[i].bDirichletLeft = true;
-    dimensionBoundaries[i].bDirichletRight = true;
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-
-    parseVectorToLookupTable(coordinates[i], stretching1Ds[i], i,
-                             discreteVectorLevel[i]);
-    generateLeftRightArrays(stretching1Ds[i], i);
+    BoundingBox(dimension),
+    stretching1Ds(dimension, Stretching1D()),
+    discreteVectorLevel(dimension, 0),
+    stretchingMode("discrete") {
+  for (size_t d = 0; d < dimension; d++) {
+    boundingBox1Ds[d] = {
+        coordinates[d][0],
+        coordinates[d][coordinates[d].size() - 1],
+        true,
+        true
+    };
+    parseVectorToLookupTable(coordinates[d], stretching1Ds[d], d,
+                             discreteVectorLevel[d]);
+    generateLeftRightArrays(stretching1Ds[d], d);
   }
 
   // No need to generate lookup table,
   // as it is done in parseVectorToLookupTable
 }
-
-Stretching::Stretching(const Stretching& copyStretching) : BoundingBox(copyStretching) {
-  bTrivialCube = true;
-  dimensionBoundaries = new BoundingBox1D[dimension];
-  stretching1Ds = new Stretching1D[dimension];
-  discreteVectorLevel = new int[dimension];
-  stretchingMode = new std::string(*(copyStretching.getStretchingMode()));
-
-
-  for (size_t i = 0; i < dimension; i++) {
-    dimensionBoundaries[i] = copyStretching.getBoundary(i);
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-
-    discreteVectorLevel[i] = copyStretching.discreteVectorLevel[i];
-    stretching1Ds[i] =
-      copyStretching.getStretching1D(*reinterpret_cast<int*>(&i));
-  }
-}
-
-Stretching::~Stretching() {
-  if (stretching1Ds != NULL) {
-    delete[] stretching1Ds;
-  }
-
-  if (discreteVectorLevel != NULL) {
-    delete[] discreteVectorLevel;
-  }
-
-  if (stretchingMode != NULL) {
-    delete stretchingMode;
-  }
-}
-
 
 void Stretching::generateLookupTable() {
   //  std::cout<<"Generate Lookup Table"<<std::endl;
@@ -454,7 +370,7 @@ void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t d) {
       if (lidx >= 0) {
         str1D.lookup[idx][1] = str1D.lookup[lidx][0];
       } else if (lidx == -2) {
-        str1D.lookup[idx][1] =  dimensionBoundaries[d].leftBoundary;
+        str1D.lookup[idx][1] =  boundingBox1Ds[d].leftBoundary;
       }
 
       // Create right neighbors table
@@ -463,7 +379,7 @@ void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t d) {
       if (ridx >= 0) {
         str1D.lookup[idx][2] = str1D.lookup[ridx][0];
       } else if (ridx == -1) {
-        str1D.lookup[idx][2] =  dimensionBoundaries[d].rightBoundary;
+        str1D.lookup[idx][2] =  boundingBox1Ds[d].rightBoundary;
       }
 
       idx++;
@@ -645,16 +561,13 @@ int Stretching::calculateLookupIndex(int l, int i) const {
 double Stretching::getCoordinate(int level, int index, size_t d) const {
   if (level == 0) {
     if (index == 0) {
-      return dimensionBoundaries[d].leftBoundary;
-    } else if (index == 1) {
-      return dimensionBoundaries[d].rightBoundary;
+      return boundingBox1Ds[d].leftBoundary;
+    } else {
+      return boundingBox1Ds[d].rightBoundary;
     }
   } else {
     return stretchingXform(level, index, d);
   }
-
-  // should not happen
-  return 0.0;
 }
 
 Stretching1D Stretching::getStretching1D(size_t d) const {
@@ -662,11 +575,11 @@ Stretching1D Stretching::getStretching1D(size_t d) const {
 }
 
 void Stretching::printLookupTable() const {
-  for (size_t i = 0; i < dimension; i++) {
-    std::cout << std::endl << "dim" << i << std::endl;
+  for (size_t d = 0; d < dimension; d++) {
+    std::cout << std::endl << "dim" << d << std::endl;
 
     for (int j = 0; j < LOOKUPSIZE; j++) {
-      std::cout << stretching1Ds[i].lookup[j][0] << " ";
+      std::cout << stretching1Ds[d].lookup[j][0] << " ";
     }
 
     std::cout << std::endl;
@@ -794,7 +707,7 @@ void Stretching::parseVectorToLookupTable(std::vector<double>& vec,
   }
 }
 
-std::string* Stretching::getStretchingMode() const {
+std::string Stretching::getStretchingMode() const {
   return stretchingMode;
 }
 
@@ -802,20 +715,20 @@ std::vector<double>* Stretching::getDiscreteVector(bool bSort) const {
   std::vector<double>* vec;
   int elemsToRead = 0;
 
-  if (*stretchingMode == "discrete") {
+  if (stretchingMode == "discrete") {
     vec = new std::vector<double>[dimension];
 
-    for (size_t i = 0; i < dimension; i++) {
-      Stretching1D str1d = getStretching1D(*reinterpret_cast<int*>(&i));
-      elemsToRead = static_cast<int>((pow(2.0, discreteVectorLevel[i]) - 1));
-      vec[i] = std::vector<double>(elemsToRead + 2, 0);
-      vec[i][0] = dimensionBoundaries[i].leftBoundary;
+    for (size_t d = 0; d < dimension; d++) {
+      Stretching1D str1d = getStretching1D(*reinterpret_cast<int*>(&d));
+      elemsToRead = static_cast<int>((pow(2.0, discreteVectorLevel[d]) - 1));
+      vec[d] = std::vector<double>(elemsToRead + 2, 0);
+      vec[d][0] = boundingBox1Ds[d].leftBoundary;
 
       for (int j = 0; j < elemsToRead; j++) {
-        vec[i][j + 1] = str1d.lookup[j][0];
+        vec[d][j + 1] = str1d.lookup[j][0];
       }
 
-      vec[i][elemsToRead + 1] = dimensionBoundaries[i].rightBoundary;
+      vec[d][elemsToRead + 1] = boundingBox1Ds[d].rightBoundary;
     }
 
     if (bSort) {
@@ -831,7 +744,7 @@ std::vector<double>* Stretching::getDiscreteVector(bool bSort) const {
   }
 }
 
-int* Stretching::getDiscreteVectorLevel() const {
+std::vector<int> Stretching::getDiscreteVectorLevel() const {
   return discreteVectorLevel;
 }
 
