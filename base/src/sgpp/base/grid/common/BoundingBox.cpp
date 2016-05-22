@@ -14,11 +14,11 @@
 namespace sgpp {
 namespace base {
 
-BoundingBox::BoundingBox(size_t dim) {
-  nDim = dim;
-  dimensionBoundaries = new DimensionBoundary[nDim];
+BoundingBox::BoundingBox(size_t dimension) {
+  this->dimension = dimension;
+  dimensionBoundaries = new BoundingBox1D[dimension];
 
-  for (size_t i = 0; i < nDim; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     dimensionBoundaries[i].leftBoundary = 0.0;
     dimensionBoundaries[i].rightBoundary = 1.0;
     dimensionBoundaries[i].bDirichletLeft = false;
@@ -28,12 +28,12 @@ BoundingBox::BoundingBox(size_t dim) {
   bTrivialCube = true;
 }
 
-BoundingBox::BoundingBox(size_t dim, const DimensionBoundary* boundaries) {
+BoundingBox::BoundingBox(size_t dimension, const BoundingBox1D* boundaries) {
   bTrivialCube = true;
-  nDim = dim;
-  dimensionBoundaries = new DimensionBoundary[nDim];
+  this->dimension = dimension;
+  dimensionBoundaries = new BoundingBox1D[dimension];
 
-  for (size_t i = 0; i < nDim; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     dimensionBoundaries[i] = boundaries[i];
 
     if (dimensionBoundaries[i].leftBoundary != 0.0
@@ -45,10 +45,10 @@ BoundingBox::BoundingBox(size_t dim, const DimensionBoundary* boundaries) {
 
 BoundingBox::BoundingBox(const BoundingBox& copyBoundingBox) {
   bTrivialCube = true;
-  nDim = copyBoundingBox.getDimensions();
-  dimensionBoundaries = new DimensionBoundary[nDim];
+  dimension = copyBoundingBox.getDimensions();
+  dimensionBoundaries = new BoundingBox1D[dimension];
 
-  for (size_t i = 0; i < nDim; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
 
     if (dimensionBoundaries[i].leftBoundary != 0.0
@@ -62,49 +62,47 @@ BoundingBox::~BoundingBox() {
   delete[] dimensionBoundaries;
 }
 
-void BoundingBox::setBoundary(size_t dimension,
-                              const DimensionBoundary& newBoundaries) {
-  dimensionBoundaries[dimension] = newBoundaries;
+void BoundingBox::setBoundary(size_t d, const BoundingBox1D& newBoundaries) {
+  dimensionBoundaries[d] = newBoundaries;
 
-  if (dimensionBoundaries[dimension].leftBoundary != 0.0
-      || dimensionBoundaries[dimension].rightBoundary != 1.0) {
+  if (dimensionBoundaries[d].leftBoundary != 0.0
+      || dimensionBoundaries[d].rightBoundary != 1.0) {
     bTrivialCube = false;
   }
 }
 
-DimensionBoundary BoundingBox::getBoundary(size_t dimension) const {
-  return dimensionBoundaries[dimension];
+BoundingBox1D BoundingBox::getBoundary(size_t d) const {
+  return dimensionBoundaries[d];
 }
 
 size_t BoundingBox::getDimensions() const {
-  return nDim;
+  return dimension;
 }
 
-double BoundingBox::getIntervalWidth(size_t dimension) const {
-  return dimensionBoundaries[dimension].rightBoundary -
-         dimensionBoundaries[dimension].leftBoundary;
+double BoundingBox::getIntervalWidth(size_t d) const {
+  return dimensionBoundaries[d].rightBoundary - dimensionBoundaries[d].leftBoundary;
 }
 
-double BoundingBox::getIntervalOffset(size_t dimension) const {
-  return dimensionBoundaries[dimension].leftBoundary;
+double BoundingBox::getIntervalOffset(size_t d) const {
+  return dimensionBoundaries[d].leftBoundary;
 }
 
 bool BoundingBox::isTrivialCube() const {
   return bTrivialCube;
 }
 
-bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension) const {
-  return dimensionBoundaries[dimension].bDirichletLeft;
+bool BoundingBox::hasDirichletBoundaryLeft(size_t d) const {
+  return dimensionBoundaries[d].bDirichletLeft;
 }
 
-bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) const {
-  return dimensionBoundaries[dimension].bDirichletRight;
+bool BoundingBox::hasDirichletBoundaryRight(size_t d) const {
+  return dimensionBoundaries[d].bDirichletRight;
 }
 
 void BoundingBox::toString(std::string& text) const {
   std::stringstream str;
 
-  for (size_t d = 0; d < nDim; d++) {
+  for (size_t d = 0; d < dimension; d++) {
     str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
         << "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
   }

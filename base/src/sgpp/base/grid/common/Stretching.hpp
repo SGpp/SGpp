@@ -61,7 +61,7 @@ class Stretching : public BoundingBox {
    * generates the positions of the left and right neighbors of one specific level and index point.
    * Written to the lookup table
    */
-  void generateLeftRightArrays(Stretching1D& str1D, size_t dim);
+  void generateLeftRightArrays(Stretching1D& str1D, size_t d);
 
   /*
    * The main Stretching function uses the formula
@@ -73,18 +73,18 @@ class Stretching : public BoundingBox {
    *Note to self: may take other than double, take care
    * @param level level of the node
    * @param index index of the node
-   * @param dimension dimension of the node
+   * @param d dimension of the node
    */
-  double stretchingXform(int level, int index, size_t dimension) const;
+  double stretchingXform(int level, int index, size_t d) const;
 
   /*
    * calculates the logarithm transform in the given dimension
    *
    * \f$ f = log(x) \text{and} f^{-1}=e^x \f$
    *
-   * @param dimension describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs.
    */
-  void logXform(Stretching1D& str1D, size_t dimension) const;
+  void logXform(Stretching1D& str1D, size_t d) const;
 
   /*
    * overloaded
@@ -92,18 +92,18 @@ class Stretching : public BoundingBox {
    *
    * @param level level of the node
    * @param index index of the node
-   * @param dimension dimension of the node
+   * @param d dimension of the node
    */
-  double logXform(int level, int index, size_t dimension) const;
+  double logXform(int level, int index, size_t d) const;
 
   /*
    * calculates the leentvar transform in the given dimension
    *
    * \f$ f= sinh_{-1}(\xi(x-x_0) \text{and} f^{-1}=frac{1}{\xi}sinh(y)+x_0\f$
    *
-   * @param dimension describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs.
    */
-  void leentvaarXform(Stretching1D& str1D, size_t dimension) const;
+  void leentvaarXform(Stretching1D& str1D, size_t d) const;
 
   /*
    * overloaded
@@ -111,16 +111,16 @@ class Stretching : public BoundingBox {
    *
    * \f$ f= sinh_{-1}(\xi(x-x_0) \text{and} f^{-1}=frac{1}{\xi}sinh(y)+x_0\f$
    *
-   * @param dimension describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs.
    */
-  double leentvaarXform(int level, int index, size_t dimension) const;
+  double leentvaarXform(int level, int index, size_t d) const;
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
    *
-   * @param dimension describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs.
    */
-  void noXform(Stretching1D& str1D, size_t dimension) const;
+  void noXform(Stretching1D& str1D, size_t d) const;
 
   /*
    * overloaded
@@ -128,10 +128,10 @@ class Stretching : public BoundingBox {
    *
    * @param level level of the node
    * @param index index of the node
-   * @param dimension dimension of the node
+   * @param d dimension of the node
    *
    */
-  double noXform(int level, int index, size_t dimension) const;
+  double noXform(int level, int index, size_t d) const;
 
   /*
    * calculates the lookup table index
@@ -145,13 +145,13 @@ class Stretching : public BoundingBox {
    * gets the discrete points that are stretched and creates a lookup table
    * @param vec double vector containing the discrete points, includes left and right boundary
    * @param stretch1d Stretch1D to write on the type of stretching and lookup table
-   * @param dim dimension of the node
+   * @param d dimension of the node
    * @param discreteVectorLevel how many levels the grid vector points form
    */
 
   void parseVectorToLookupTable(std::vector<double>& vec,
                                 Stretching1D& stretch1d,
-                                size_t dim, int& discreteVectorLevel) const;
+                                size_t d, int& discreteVectorLevel) const;
 
   /*
    * calculates the left and right neighbor index and levels
@@ -172,15 +172,14 @@ class Stretching : public BoundingBox {
    * initializes the Stretching using the boundaries with the input type array given
    * for each dimension
    *
-   * @param dim number of the dimensions used with the grid
+   * @param dimension number of the dimensions used with the grid
    * @param boundaries DimensionBoundary struct to get the boundary values for Stretching
    * @param stretching1ds array to define the stretching type
    */
-  Stretching(size_t dim, const DimensionBoundary* boundaries,
+  Stretching(size_t dimension, const BoundingBox1D* boundaries,
              const Stretching1D* stretching1ds);
 
-
-  Stretching(size_t dim, const std::vector<DimensionBoundary>& boundaries,
+  Stretching(size_t dimension, const std::vector<BoundingBox1D>& boundaries,
              const std::vector<Stretching1D>& t);
 
   /**
@@ -188,11 +187,11 @@ class Stretching : public BoundingBox {
    *
    * initializes the Stretching using the coordinates given. (For Janos' request)
    *
-   * @param dim number of the dimensions used with the grid
+   * @param dimension number of the dimensions used with the grid
    * @param coordinates vector<double> array to get the boundaries, as well as the coordinates
    * of the specific level the vector defines for each dimension.
    */
-  Stretching(size_t dim, std::vector<double>* coordinates);
+  Stretching(size_t dimension, std::vector<double>* coordinates);
 
   /**
    * Copy-Constructor
@@ -213,18 +212,17 @@ class Stretching : public BoundingBox {
    *
    * @param level level of the node
    * @param index index of the node
-   * @param dimension dimension of the node
-   *
+   * @param d dimension of the node
    */
-  double getCoordinates(int level, int index, size_t dimension) const;
+  double getCoordinate(int level, int index, size_t d) const;
 
   /*
    * Returns the type of the Stretching of the dimension given
    *
-   * @param dim dimension index of the type array
+   * @param d dimension index of the type array
    *
    */
-  Stretching1D getStretching1D(size_t dim) const;
+  Stretching1D getStretching1D(size_t d) const;
 
   /*
    * Prints the lookup table generated. Used for debugging
@@ -236,14 +234,13 @@ class Stretching : public BoundingBox {
    *
    * @param level level of the node
    * @param index index of the node
-   * @param dimension dimension of the node
+   * @param d dimension of the node
    * @param posc the point itself
    * @param posl left point
    * @param posr right point
    */
-  void getAdjacentPositions(int level, int index, size_t dimension,
-                            double& posc,
-                            double& posl, double& posr) const;
+  void getAdjacentPositions(int level, int index, size_t d,
+                            double& posc, double& posl, double& posr) const;
 
   /*
    * returns the stretchingMode, can be "analytic" or "discrete"

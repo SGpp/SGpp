@@ -167,7 +167,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
                       std::string stretchingMode) {
   size_t timesteps = (size_t)(T / dt);
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {

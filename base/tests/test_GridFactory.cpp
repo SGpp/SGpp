@@ -17,7 +17,7 @@
 using sgpp::base::BoundingBox;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
-using sgpp::base::DimensionBoundary;
+using sgpp::base::BoundingBox1D;
 using sgpp::base::generation_exception;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -830,11 +830,11 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
   str1d.x_0 = 1;
   str1d.xsi = 10;
 
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
 
-  std::vector<DimensionBoundary> dimBoundaryVector(2);
+  std::vector<BoundingBox1D> dimBoundaryVector(2);
   dimBoundaryVector[0] = dimBound;
   dimBoundaryVector[1] = dimBound;
 
@@ -903,7 +903,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
   Stretching stretch(1, &dimBound, &str1d);
@@ -975,7 +975,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
   Stretching stretch(1, &dimBound, &str1d);

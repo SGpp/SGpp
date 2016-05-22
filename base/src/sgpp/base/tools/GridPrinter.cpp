@@ -55,8 +55,8 @@ void GridPrinter::printLevelIndexGrid(std::string tFilename) {
 void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
                                   BoundingBox& GridArea,
                                   size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -102,8 +102,8 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
 
 void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
                             size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {

@@ -91,7 +91,7 @@ class AlgorithmEvaluation {
 
     if ( bb != NULL ) {
       for (size_t d = 0; d < dim; ++d) {
-        DimensionBoundary dimbb = bb->getBoundary(d);
+        BoundingBox1D dimbb = bb->getBoundary(d);
         // std::cout << "Dimension: " << d << " (left: " <<
         // dimbb.leftBoundary << ", right: " << dimbb.rightBoundary << ")" <<
         // std::endl;

@@ -301,7 +301,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
   for (size_t l = start_level; l <= end_level; l++) {
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
       // set the bounding box
       for (size_t i = 0; i < dim; i++) {
@@ -464,7 +464,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
   for (size_t l = start_level; l <= end_level; l++) {
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
       // set the bounding box
       for (size_t i = 0; i < dim; i++) {
@@ -626,7 +626,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
   std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
 
   if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+    sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
     // set the bounding box
     for (size_t i = 0; i < dim; i++) {

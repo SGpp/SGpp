@@ -879,7 +879,7 @@ class GetAffectedBasisFunctions <
         if (work_level > 0) {
           // stretch->getAdjacentPositions(static_cast<int>(temp),
           // static_cast<int>(work_index), current_dim,posl,posr);
-          // posc=stretch->getCoordinates(static_cast<int>(temp),
+          // posc=stretch->getCoordinate(static_cast<int>(temp),
           // static_cast<int>(work_index), current_dim);
           stretch->getAdjacentPositions(static_cast<int>(temp),
                                         static_cast<int>(work_index),
@@ -965,7 +965,7 @@ class GetAffectedBasisFunctions <
         // hat = (stretch->getIntervalWidth(current_dim)*((
         // 1.0/static_cast<double>(h))*static_cast<double>(
         // global_work_index))) + stretch->getIntervalOffset(current_dim);
-        hat = stretch->getCoordinates(static_cast<int>(work_level),
+        hat = stretch->getCoordinate(static_cast<int>(work_level),
                                       static_cast<int>(global_work_index),
                                       current_dim);
 
@@ -984,8 +984,8 @@ class GetAffectedBasisFunctions <
         // BB->getIntervalOffset(current_dim)))
         // break;
 
-        if ((point[current_dim] == stretch->getCoordinates(0, 0, current_dim))
-            || (point[current_dim] == stretch->getCoordinates(0, 1,
+        if ((point[current_dim] == stretch->getCoordinate(0, 0, current_dim))
+            || (point[current_dim] == stretch->getCoordinate(0, 1,
                 current_dim))) {
           break;
         }

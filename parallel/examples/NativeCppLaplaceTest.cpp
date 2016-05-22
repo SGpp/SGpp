@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   grid_selection.assign(argv[7]);
   lmb = atoi(argv[8]);
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {

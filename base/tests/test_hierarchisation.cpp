@@ -14,7 +14,7 @@
 #include <vector>
 
 using sgpp::base::DataVector;
-using sgpp::base::DimensionBoundary;
+using sgpp::base::BoundingBox1D;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   str1d.type = "log";
   str1d.x_0 = 0.;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.00001;
   dimBound.rightBoundary = 1.;
   Stretching stretch(dim, &dimBound, &str1d);
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   str1d.type = "sinh";
   str1d.x_0 = 1.;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;  // = new DimensionBoundary();
+  BoundingBox1D dimBound;  // = new DimensionBoundary();
   dimBound.leftBoundary = 0.001;
   dimBound.rightBoundary = 1.;
 
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   stretch_vec.push_back(str1d);
   stretch_vec.push_back(str1d);
   stretch_vec.push_back(str1d);
-  std::vector<DimensionBoundary> dimBound_vec;
+  std::vector<BoundingBox1D> dimBound_vec;
   dimBound_vec.push_back(dimBound);
   dimBound_vec.push_back(dimBound);
   dimBound_vec.push_back(dimBound);

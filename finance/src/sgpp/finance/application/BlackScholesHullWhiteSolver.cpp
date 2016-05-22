@@ -139,7 +139,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
     // DimensionBoundary* myBoundaries = new DimensionBoundary[2];
     base::BoundingBox* t = &this->myGrid->getBoundingBox();
 
-    base::DimensionBoundary* myBoundaries = new base::DimensionBoundary[dim];
+    base::BoundingBox1D* myBoundaries = new base::BoundingBox1D[dim];
 
     myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
     myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);

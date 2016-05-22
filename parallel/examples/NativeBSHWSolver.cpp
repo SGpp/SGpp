@@ -81,7 +81,7 @@ int readStochasticData(std::string tFile, size_t numAssests, sgpp::base::DataVec
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssests,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       sgpp::base::BoundingBox1D* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -265,7 +265,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -322,7 +322,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sgpp::base::DimensionBoundary* myAreaBoundaries = new sgpp::base::DimensionBoundary[dim];
+      sgpp::base::BoundingBox1D* myAreaBoundaries = new sgpp::base::BoundingBox1D[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
@@ -517,7 +517,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -659,7 +659,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sgpp::base::DimensionBoundary* myAreaBoundaries = new sgpp::base::DimensionBoundary[dim];
+      sgpp::base::BoundingBox1D* myAreaBoundaries = new sgpp::base::BoundingBox1D[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;

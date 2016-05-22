@@ -197,7 +197,7 @@ std::string HashGridStorage::serialize(int version) {
 }
 
 void HashGridStorage::serialize(std::ostream& ostream, int version) {
-  DimensionBoundary tempBound;
+  BoundingBox1D tempBound;
 
   // Print version, dimensions and number of gridpoints
   ostream << version << " ";
@@ -615,7 +615,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
     boundingBox = new BoundingBox(dimension);
     stretching = NULL;
     bUseStretching = false;
-    DimensionBoundary tempBound;
+    BoundingBox1D tempBound;
 
     // reads the bounding box
     for (size_t i = 0; i < dimension; i++) {
@@ -629,7 +629,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   } else if (version >= 5) {
     //      std::cout<<"Version 5 parse starts\n";
     int useStretching;
-    DimensionBoundary tempBound;
+    BoundingBox1D tempBound;
     istream >> useStretching;
 
     if (useStretching == 0) {
@@ -654,7 +654,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
       boundingBox = NULL;
       bUseStretching = true;
       Stretching1D* str1ds = new Stretching1D[dimension];
-      DimensionBoundary* tempBounds = new DimensionBoundary[dimension];
+      BoundingBox1D* tempBounds = new BoundingBox1D[dimension];
 
       // reads the boundary data
       for (size_t i = 0; i < dimension; i++) {
