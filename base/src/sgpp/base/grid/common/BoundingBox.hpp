@@ -63,7 +63,7 @@ class BoundingBox {
    * @param dim number of the dimensions used with the grid
    * @param boundaries array that contains all boundaries
    */
-  BoundingBox(size_t dim, DimensionBoundary* boundaries);
+  BoundingBox(size_t dim, const DimensionBoundary* boundaries);
 
   /**
    * Copy-Constructor
@@ -72,7 +72,7 @@ class BoundingBox {
    *
    * @param copyBoundingBox reference to a BoundingBox Object whose values are copied
    */
-  BoundingBox(BoundingBox& copyBoundingBox);
+  BoundingBox(const BoundingBox& copyBoundingBox);
 
   /**
    * Desctructor
@@ -85,7 +85,7 @@ class BoundingBox {
    * @param dimension the dimension in which the boundary should be changed
    * @param newBoundaries reference to a DimensionBoundary object, that contains the new boundaries
    */
-  void setBoundary(size_t dimension, DimensionBoundary& newBoundaries);
+  void setBoundary(size_t dimension, const DimensionBoundary& newBoundaries);
 
   /**
    * gets the left and right boundary for a specific dimension
@@ -94,14 +94,14 @@ class BoundingBox {
    *
    * @return a DimensionBoundary object, that contains the boundaries
    */
-  DimensionBoundary getBoundary(size_t dimension);
+  DimensionBoundary getBoundary(size_t dimension) const;
 
   /**
    * gets the dimensions of the cube stored in this bounding box
    *
    * @return the number of dimensions
    */
-  size_t getDimensions();
+  size_t getDimensions() const;
 
   /**
    * gets the width of the interval in one dimension
@@ -110,7 +110,7 @@ class BoundingBox {
    *
    * @return the width of the interval
    */
-  double getIntervalWidth(size_t dimension);
+  double getIntervalWidth(size_t dimension) const;
 
   /**
    * gets the offset in positive x-direction of the interval in one dimension
@@ -119,14 +119,14 @@ class BoundingBox {
    *
    * @return the offset in positive x-direction of the interval
    */
-  double getIntervalOffset(size_t dimension);
+  double getIntervalOffset(size_t dimension) const;
 
   /**
    * Use this function to determine if this bounding box describes a trivial cube [0;1]^d
    *
    * @return true if this bounding boy is a trivial cube otherwise false
    */
-  bool isTrivialCube();
+  bool isTrivialCube() const;
 
   /**
    * Determines, if the interval in the specified dimension has left dirichlet boundary conditions
@@ -135,7 +135,7 @@ class BoundingBox {
    *
    * @return true if Dirichlet Boundary conditions, otherwise false
    */
-  bool hasDirichletBoundaryLeft(size_t dimension);
+  bool hasDirichletBoundaryLeft(size_t dimension) const;
 
   /**
    * Determines, if the interval in the specified dimension has right dirichlet boundary conditions
@@ -144,11 +144,11 @@ class BoundingBox {
    *
    * @return true if Dirichlet Boundary conditions, otherwise false
    */
-  bool hasDirichletBoundaryRight(size_t dimension);
+  bool hasDirichletBoundaryRight(size_t dimension) const;
 
-  void toString(std::string& text);
+  void toString(std::string& text) const;
 
-  std::string toString();
+  std::string toString() const;
 };
 
 }  // namespace base

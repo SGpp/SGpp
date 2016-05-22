@@ -28,7 +28,7 @@ BoundingBox::BoundingBox(size_t dim) {
   bTrivialCube = true;
 }
 
-BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries) {
+BoundingBox::BoundingBox(size_t dim, const DimensionBoundary* boundaries) {
   bTrivialCube = true;
   nDim = dim;
   dimensionBoundaries = new DimensionBoundary[nDim];
@@ -43,7 +43,7 @@ BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries) {
   }
 }
 
-BoundingBox::BoundingBox(BoundingBox& copyBoundingBox) {
+BoundingBox::BoundingBox(const BoundingBox& copyBoundingBox) {
   bTrivialCube = true;
   nDim = copyBoundingBox.getDimensions();
   dimensionBoundaries = new DimensionBoundary[nDim];
@@ -63,7 +63,7 @@ BoundingBox::~BoundingBox() {
 }
 
 void BoundingBox::setBoundary(size_t dimension,
-                              DimensionBoundary& newBoundaries) {
+                              const DimensionBoundary& newBoundaries) {
   dimensionBoundaries[dimension] = newBoundaries;
 
   if (dimensionBoundaries[dimension].leftBoundary != 0.0
@@ -72,37 +72,36 @@ void BoundingBox::setBoundary(size_t dimension,
   }
 }
 
-DimensionBoundary BoundingBox::getBoundary(size_t dimension) {
+DimensionBoundary BoundingBox::getBoundary(size_t dimension) const {
   return dimensionBoundaries[dimension];
 }
 
-size_t BoundingBox::getDimensions() {
+size_t BoundingBox::getDimensions() const {
   return nDim;
 }
 
-double BoundingBox::getIntervalWidth(size_t dimension) {
+double BoundingBox::getIntervalWidth(size_t dimension) const {
   return dimensionBoundaries[dimension].rightBoundary -
          dimensionBoundaries[dimension].leftBoundary;
 }
 
-double BoundingBox::getIntervalOffset(size_t dimension) {
+double BoundingBox::getIntervalOffset(size_t dimension) const {
   return dimensionBoundaries[dimension].leftBoundary;
 }
 
-bool BoundingBox::isTrivialCube() {
+bool BoundingBox::isTrivialCube() const {
   return bTrivialCube;
 }
 
-bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension) {
+bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension) const {
   return dimensionBoundaries[dimension].bDirichletLeft;
 }
 
-bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) {
+bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) const {
   return dimensionBoundaries[dimension].bDirichletRight;
 }
 
-
-void BoundingBox::toString(std::string& text) {
+void BoundingBox::toString(std::string& text) const {
   std::stringstream str;
 
   for (size_t d = 0; d < nDim; d++) {
@@ -113,7 +112,7 @@ void BoundingBox::toString(std::string& text) {
   text = str.str();
 }
 
-std::string BoundingBox::toString() {
+std::string BoundingBox::toString() const {
   std::string str;
   toString(str);
   return str;
