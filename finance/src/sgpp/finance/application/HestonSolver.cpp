@@ -976,7 +976,7 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v) {
   int levels1d = this->levels;
 
   // Build a new 1d grid for stock price
-  base::DimensionBoundary* boundaries1d = new base::DimensionBoundary[dim1d];
+  base::BoundingBox1D* boundaries1d = new base::BoundingBox1D[dim1d];
 
   boundaries1d[0].leftBoundary = this->myBoundingBox->getBoundary(0).leftBoundary;
   boundaries1d[0].rightBoundary = this->myBoundingBox->getBoundary(0).rightBoundary;
@@ -1233,8 +1233,8 @@ double HestonSolver::GaussLobattoInt(double a, double b, double abstol, size_t m
 
 void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base::DataVector* exact,
                                                 std::string filename, size_t PointsPerDimension) {
-  base::DimensionBoundary dimOne;
-  base::DimensionBoundary dimTwo;
+  base::BoundingBox1D dimOne;
+  base::BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   fileout.open(filename.c_str());

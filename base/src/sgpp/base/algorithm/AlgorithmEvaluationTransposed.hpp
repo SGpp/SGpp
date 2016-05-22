@@ -66,7 +66,7 @@ class AlgorithmEvaluationTransposed {
       bool inside = true;
 
       for (size_t d = 0; d < dim; ++d) {
-        DimensionBoundary dimbb = bb->getBoundary(d);
+        BoundingBox1D dimbb = bb->getBoundary(d);
 
         if (!(dimbb.leftBoundary <= point[d] &&
               point[d] <= dimbb.rightBoundary) ) {
@@ -80,7 +80,7 @@ class AlgorithmEvaluationTransposed {
         return;
       } else {
         for (size_t d = 0; d < dim; ++d) {
-          DimensionBoundary dimbb = bb->getBoundary(d);
+          BoundingBox1D dimbb = bb->getBoundary(d);
 
           point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary -
                      dimbb.leftBoundary);

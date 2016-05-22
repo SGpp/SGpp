@@ -40,7 +40,7 @@ double OperationEvalModLinear::eval(const DataVector& alpha,
 
   if (bb != NULL) {
     for (size_t d = 0; d < dim; ++d) {
-      DimensionBoundary dimbb = bb->getBoundary(d);
+      BoundingBox1D dimbb = bb->getBoundary(d);
 
       if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
         continue;

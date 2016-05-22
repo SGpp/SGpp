@@ -255,7 +255,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numDims,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       sgpp::base::BoundingBox1D* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -346,7 +346,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
   }
 
   // We have boundary data for each dimension in the PDE
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[pdeDim];
+  sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[pdeDim];
 
   if (readBoudingBoxData(fileBound, pdeDim, myBoundaries) != 0) {
     return;

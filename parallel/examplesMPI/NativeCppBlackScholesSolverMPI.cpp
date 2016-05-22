@@ -246,7 +246,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssets,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       sgpp::base::BoundingBox1D* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -302,7 +302,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets,
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readAnalyzeData(std::string tFile, size_t numAssets,
-                    sgpp::base::DimensionBoundary* BoundaryArray, size_t& points) {
+                    sgpp::base::BoundingBox1D* BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -589,7 +589,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     myBSSolver->resetSolveTime();
 
     if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+      sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
       if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
         return;
@@ -605,7 +605,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       // in first iteration -> calculate the evaluation points
       if (i == start_l) {
         size_t points = 0;
-        sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+        sgpp::base::BoundingBox1D* myEvalBoundaries = new sgpp::base::BoundingBox1D[dim];
 
         if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
           return;
@@ -931,7 +931,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   }
 
   if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+    sgpp::base::BoundingBox1D* myBoundaries = new sgpp::base::BoundingBox1D[dim];
 
     if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
       return;

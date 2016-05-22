@@ -448,12 +448,7 @@ class HashGridStorage {
       point.get(d, level, index);
 
       if (bUseStretching) {
-        if (level == 0) {
-          return stretching->getIntervalWidth(d) * static_cast<double>(index) +
-              stretching->getIntervalOffset(d);
-        } else {
-          return stretching->getCoordinates(level, index, d);
-        }
+        return stretching->getCoordinate(level, index, d);
       } else {
         return boundingBox->getIntervalWidth(d) * x + boundingBox->getIntervalOffset(d);
       }

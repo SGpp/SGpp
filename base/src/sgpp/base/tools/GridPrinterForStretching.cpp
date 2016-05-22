@@ -36,8 +36,8 @@ void GridPrinterForStretching::printGridDomain(DataVector& alpha,
 
 void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
     std::string tFilename, Stretching& GridArea, size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -83,8 +83,8 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
 
 void GridPrinterForStretching::printGrid(DataVector& alpha,
     std::string tFilename, size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
