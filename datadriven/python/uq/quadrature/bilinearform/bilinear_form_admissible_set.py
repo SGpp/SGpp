@@ -212,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # define transformation function
                     T = LinearTransformation(lb, ub)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).getCoord(0)
+                        x = ngs.get(k).getStandardCoordinate(0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
                             basis.eval(ljd, ijd, x)
@@ -262,9 +262,9 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
 #     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.seq(gpi)
-        gpi.getCoords(p)
+        gpi.getStandardCoordinates(p)
         for j in xrange(gs.size()):
-            gs.get(j).getCoords(q)
+            gs.get(j).getStandardCoordinates(q)
 #             for d in xrange(gs.getDimension()):
 #                 # get level index
 #                 xlow = max(p[0], q[0])
@@ -299,7 +299,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # run over all rows
     p = DataVector(gs.getDimension())
     for i, gpi in enumerate(admissibleSet.values()):
-        gpi.getCoords(p)
+        gpi.getStandardCoordinates(p)
         for d in xrange(gs.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)

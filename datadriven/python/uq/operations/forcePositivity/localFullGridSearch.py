@@ -118,19 +118,19 @@ class LocalFullGridCandidates(CandidateSet):
 
         for gp in candidates.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "x ", color="green")
 
         for gp in ans.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "o ", color="green")
 
 
         p = DataVector(grid.getStorage().getDimension())
-        gpi.getCoords(p)
+        gpi.getStandardCoordinates(p)
         plt.plot(p[0], p[1], "^ ", color="orange")
-        gpj.getCoords(p)
+        gpj.getStandardCoordinates(p)
         plt.plot(p[0], p[1], "^ ", color="orange")
 
         plt.xlim(0, 1)

@@ -193,7 +193,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(int dim, _Tp (*f)(std::
       std::vector<double> coords(dim, 0);
 
       for (unsigned int j = 0; j < num_elem; j++) {
-        grid->getCoords(j, coords);
+        grid->getStandardCoordinates(j, coords);
         grid->getVectorIndex(j, indices);
         _Tp jacobian_j = 1.0;
 
@@ -236,7 +236,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(int dim, _Tp (*f)(std::
     std::vector<double> coords(dim, 0);
 
     for (unsigned int j = 0; j < num_elem; j++) {
-      grid->getCoords(j, coords);
+      grid->getStandardCoordinates(j, coords);
       grid->getVectorIndex(j, indices);
       _Tp jacobian_j = 1.0;
 

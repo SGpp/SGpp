@@ -47,7 +47,7 @@ for refnum in range(5):
     # set function values in alpha
     for i in xrange(gridStorage.getSize()):
         gp = gridStorage.get(i)
-        alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
+        alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
     # hierarchize
     pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)

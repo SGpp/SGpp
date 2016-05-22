@@ -13,7 +13,7 @@
 #     ps = DataMatrix(n_gs.size(), n_gs.getDimension())
 #     p = DataVector(n_gs.getDimension())
 #     for i in xrange(n_gs.size()):
-#         n_gs.get(i).getCoords(p)
+#         n_gs.get(i).getStandardCoordinates(p)
 #         ps.setRow(i, p)
 #
 #     nodalValues = evalSGFunctionMulti(grid, basis_alpha, ps)
@@ -40,7 +40,7 @@
 #         # p = DataVector(n_gs.getDimension())
 #         # for i in xrange(n_gs.size()):
 #         #     gp = n_gs.get(i)
-#         #     gp.getCoords(p)
+#         #     gp.getStandardCoordinates(p)
 #         #     y1 = nodalValues[i]
 #         #     y2 = evalSGFunction(n_grid, n_alpha, p)
 #         #     if abs(y1 - y2) >= 1e-13:

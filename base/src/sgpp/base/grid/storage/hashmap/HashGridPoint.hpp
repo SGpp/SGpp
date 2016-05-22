@@ -40,9 +40,6 @@ class HashGridPoint {
   /// index type
   typedef uint32_t index_type;
 
-  /// how the coordinates of the points are calculated
-  enum class PointDistribution { Normal, ClenshawCurtis };
-
   /**
    * Constructor of a n-Dim gridpoint
    *
@@ -177,20 +174,6 @@ class HashGridPoint {
   inline index_type getIndex(size_t d) const { return index[d]; }
 
   /**
-   * Gets the point distribution of the grid point.
-   *
-   * @return point distribution
-   */
-  PointDistribution getPointDistribution() const;
-
-  /**
-   * Sets the point distribution of the grid point.
-   *
-   * @param distr new point distribution
-   */
-  void setPointDistribution(PointDistribution distr);
-
-  /**
    * Set the leaf property; a grid point is called a leaf, if it has <b>not a single</b> child.
    *
    * @param isLeaf specifies if the current index is a leaf (i.e. has <b>no</b> child nodes) or not
@@ -206,33 +189,26 @@ class HashGridPoint {
 
   /**
    * determines the coordinate in a given dimension
+   * "Standard" means no bounding box (i.e., the domain is the unit hypercube)
+   * and no stretching (i.e., the points have the standard locations \f$i \cdot 2^{-\ell}\f$).
    *
    * @param d the dimension in which the coordinate should be calculated
    *
    * @return the coordinate in the given dimension
    */
-  double getCoord(size_t d) const;
+  inline double getStandardCoordinate(size_t d) const {
+    // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
+    return static_cast<double>(index[d]) / static_cast<double>(hInv[d]);
+  }
 
   /**
-   * determines the coordinate in a given dimension
+   * Sets the entries of DataVector p to the coordinates of the gridpoint
+   * "Standard" means no bounding box (i.e., the domain is the unit hypercube)
+   * and no stretching (i.e., the points have the standard locations \f$i \cdot 2^{-\ell}\f$).
    *
-   * @param d the dimension in which the coordinate should be calculated
-   * @param q the intervals width in this dimension
-   * @param t the offset in this dimension
-   *
-   * @return the coordinate in the given dimension
+   * @param p the (result) DataVector p that should be overwritten
    */
-  double getCoordBB(size_t d, double q, double t) const;
-
-  /**
-   * determines the coordinate in a given dimension
-   *
-   * @param d the dimension in which the coordinate should be calculated
-   * @param stretch the stretching the index belongs to
-   *
-   * @return the coordinate in the given dimension
-   */
-  double getCoordStretching(size_t d, Stretching* stretch);
+  void getStandardCoordinates(DataVector& coordinates) const;
 
   /**
    * determines if the grid point is an inner grid point
@@ -307,61 +283,6 @@ class HashGridPoint {
   void toString(std::ostream& stream) const;
 
   /**
-   * Sets the entries of DataVector p to the coordinates of the gridpoint
-   *
-   * @param p the (result) DataVector p that should be overwritten
-   */
-  void getCoords(DataVector& p) const;
-
-  /**
-   * Sets the entries of DataVector p to the coordinates of the gridpoint with bounding box
-   *
-   * @param p the (result) DataVector p that should be overwritten
-   * @param BB reference to BoundingBox Object, that stores all boundaries for all dimensions
-   */
-  void getCoordsBB(DataVector& p, BoundingBox& BB) const;
-
-  /**
-   * Sets the entries of DataVector p to the coordinates of the gridpoint with stretching
-   *
-   * @param p the (result) DataVector p that should be overwritten
-   * @param stretch reference to Stretching Object, that stores grid points in all dimensions
-   */
-  void getCoordsStretching(DataVector& p, Stretching& stretch) const;
-
-  /**
-   * Generates a string with all coordinates of the grid point.
-   * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
-   *
-   * @return returns a string with the coordinates of the grid point separated by whitespace
-   */
-  std::string getCoordsString() const;
-
-  /**
-   * Generates a string with all coordinates of the grid point with bounding box
-   * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
-   *
-   * This version scales the coordinates with q and t
-   *
-   * @param BB reference to BoundingBox Object, that stores all boundaries for all dimensionst
-   *
-   * @return returns a string with the coordinates of the grid point separated by whitespace
-   */
-  std::string getCoordsStringBB(BoundingBox& BB) const;
-
-  /**
-   * Generates a string with all coordinates of the grid point with bounding box
-   * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
-   *
-   * This version scales the coordinates with q and t
-   *
-   * @param stretch reference to Stretching Object, that stores all boundaries for all dimensions
-   *
-   * @return returns a string with the coordinates of the grid point separated by whitespace
-   */
-  std::string getCoordsStringStretching(Stretching& stretch) const;
-
-  /**
    * Returns the sum of the one-dimensional levels, i.e., @f$ |\vec{l}|_1 @f$.
    *
    * @return the sum of the one-dimensional levels
@@ -433,10 +354,6 @@ class HashGridPoint {
     set(d, 1, 1);
   }
 
- protected:
-  typedef std::map<std::string, PointDistribution> pointDistributionMap;
-  typedef std::map<PointDistribution, std::string> pointDistributionVerboseMap;
-
  private:
   /// the dimension of the gridpoint
   size_t dimension;
@@ -446,15 +363,10 @@ class HashGridPoint {
   index_type* index;
   /// pointer to array that stores the mesh widths (1 << level[d] for each dimension)
   index_type* hInv;
-  /// distribution of the grid point (Normal or ClenshawCurtis)
-  PointDistribution distr;
   /// stores if this gridpoint is a leaf
   bool leaf;
   /// stores the hashvalue of the gridpoint
   size_t hash;
-
-  static pointDistributionMap& typeMap();
-  static pointDistributionVerboseMap& typeVerboseMap();
 
   friend struct HashGridPointPointerHashFunctor;
   friend struct HashGridPointPointerEqualityFunctor;

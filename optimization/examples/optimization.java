@@ -143,10 +143,7 @@ public class optimization {
         }
       }
 
-      for (int t = 0; t < d; t++) {
-        x0.set(t, gridStorage.get(x0Index).getCoord(t));
-      }
-
+      x0 = gridStorage.getCoordinates(gridStorage.get(x0Index));
       ftX0 = ft.eval(x0);
     }
 

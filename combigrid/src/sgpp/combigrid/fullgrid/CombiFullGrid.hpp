@@ -355,7 +355,7 @@ class FullGrid {
       // O(dim)
 
       new_grid->getVectorIndex(j_k, k_idx);
-      new_grid->getCoords(j_k, k_coords);
+      new_grid->getStandardCoordinates(j_k, k_coords);
 
       // take the bounding box of e O(dim)
       bounding_box(k_idx, new_levels, bb_idx, bb_coords);
@@ -447,7 +447,7 @@ class FullGrid {
   /** return the coordinates on the unit square
    * @param elemIndex [IN] index of the element in the vector
    * @param coords [OUT] the vector must be resized already*/
-  void getCoords(int elemIndex, std::vector<double>& coords) const {
+  void getStandardCoordinates(int elemIndex, std::vector<double>& coords) const {
     // temporary variables
     // int verb = 6;
     int ind = 0;
@@ -469,7 +469,7 @@ class FullGrid {
         // set the coordinate based on if we have boundary points
         tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
         (gridDomain_->get1DDomain(j)).transformUnitToReal(levels_[j], ind + tmp_add, coords[j]);
-        // COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " ,
+        // COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getStandardCoordinates j:" << j << " ,
         // coords[j]:" << coords[j]);
       }
     }

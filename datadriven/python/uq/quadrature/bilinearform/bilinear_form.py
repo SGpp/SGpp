@@ -124,7 +124,7 @@ def computeBilinearForm(grid, U):
                     lid, iid = gpi.getLevel(d), int(iid)
                     ljd, ijd = gpj.getLevel(d), int(ijd)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).getCoord(0)
+                        x = ngs.get(k).getStandardCoordinate(0)
                         nodalValues[k] = max(0, basis.eval(lid, iid, x)) * \
                             max(0, basis.eval(ljd, ijd, x))
                     # ... by hierarchization
@@ -154,9 +154,9 @@ def computePiecewiseConstantBilinearForm(grid, U):
     q = DataVector(gs.getDimension())
 
     for i in xrange(gs.size()):
-        gs.get(i).getCoords(p)
+        gs.get(i).getStandardCoordinates(p)
         for j in xrange(gs.size()):
-            gs.get(j).getCoords(q)
+            gs.get(j).getStandardCoordinates(q)
             # compute center of the support
             p.add(q)
             p.mult(0.5)

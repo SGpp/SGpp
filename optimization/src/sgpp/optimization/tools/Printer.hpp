@@ -62,7 +62,7 @@ inline std::ostream& operator<<(std::ostream& stream, const sgpp::base::GridPoin
   base::DataVector xCoord(x.getDimension());
 
   for (size_t t = 0; t < x.getDimension(); t++) {
-    xCoord[t] = x.getCoord(t);
+    xCoord[t] = x.getStandardCoordinate(t);
   }
 
   return stream << xCoord;

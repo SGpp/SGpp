@@ -26,7 +26,7 @@ def plotNodal1d(grid, alpha):
     x = np.zeros(gs.size())
     nodalValues = np.zeros(gs.size())
     for i in xrange(gs.size()):
-        x[i] = gs.get(i).getCoord(0)
+        x[i] = gs.get(i).getStandardCoordinate(0)
         nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
 
     plt.plot(x, nodalValues, " ", marker="o")

@@ -26,7 +26,7 @@ def computeCoefficients(jgrid, grid, alpha, f):
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.getSize(), jgs.getDimension())
     for i in xrange(jgs.getSize()):
-        jgs.get(i).getCoords(p)
+        jgs.get(i).getStandardCoordinates(p)
         A.setRow(i, p)
 
     nodalValues = evalSGFunctionMulti(grid, alpha, A.array())
@@ -148,7 +148,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
     p = DataVector(dim)
     nodalValues = DataVector(gs.getSize())
     for i in xrange(gs.getSize()):
-        gs.get(i).getCoords(p)
+        gs.get(i).getStandardCoordinates(p)
         # transform to the right space
         q = T.unitToProbabilistic(p.array())
         # apply the given function

@@ -135,10 +135,7 @@ for i = 1:functionValues.getSize()-1
     end
 end
 
-for t = 0:d-1
-    x0.set(t, gridStorage.get(x0Index).getCoord(t));
-end
-
+x0 = gridStorage.getCoordinates(gridStorage.get(x0Index));
 ftX0 = ft.eval(x0);
 
 fprintf(['x0 = ' char(x0.toString()) '\n']);

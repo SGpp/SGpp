@@ -112,7 +112,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # bordergs = borderGrid.getStorage()
         # p = DataVector(gs.getDimension())
         # for i in xrange(gs.size()):
-        #     gs.get(i).getCoords(p)
+        #     gs.get(i).getStandardCoordinates(p)
         #     nodalValues[i] -= evalSGFunction(borderGrid, borderAlpha, p)
         # nalpha = hierarchize(grid, nodalValues)
         # # # check if interpolation criterion is fulfilled for splitted grid
@@ -120,7 +120,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # # for i in xrange(gs.size()):
         # #     gp = gs.get(i)
         # #     if bordergs.has_key(gp):
-        # #         gp.getCoords(p)
+        # #         gp.getStandardCoordinates(p)
         # #         res1 = evalSGFunction(grid, alpha, p)
         # #         res2 = evalSGFunction(grid, nalpha, p) + evalSGFunction(borderGrid, borderAlpha, p)
         # #         print res1, res2, abs(res1 - res2)

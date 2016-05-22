@@ -81,11 +81,11 @@ fprintf('length of alpha vector: %u\n', alpha.getSize());
 %% The \c for loop iterates over all grid points: For each grid
 %% point \c gp, the corresponding coefficient \f$\alpha_j\f$ is set to the
 %% function value at the grid point's coordinates which are obtained by
-%% \c getCoord(dim).
+%% \c getStandardCoordinate(dim).
 %% The current coefficient vector is then printed.
 for i = 0:gridStorage.getSize()-1
     gp = gridStorage.get(i);
-    alpha.set(i, f(gp.getCoord(0), gp.getCoord(1)));
+    alpha.set(i, f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)));
 end
 
 fprintf('alpha before hierarchization: %s\n', char(alpha.toString()));

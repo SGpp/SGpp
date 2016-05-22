@@ -26,24 +26,16 @@ using sgpp::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
                                           double (*func)(DataVector&), double tolerance = 0.0,
-                                          bool naiveOp = false, bool doStretch = false) {
+                                          bool naiveOp = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
   size_t dim = gridStore.getDimension();
-  Stretching* stretch = NULL;
-
-  if (doStretch) stretch = gridStore.getStretching();
 
   DataVector node_values = DataVector(gridStore.getSize());
   DataVector coords = DataVector(dim);
 
   for (size_t n = 0; n < gridStore.getSize(); n++) {
-    if (doStretch) {
-      gridStore.getGridPoint(n).getCoordsStretching(coords, *stretch);
-    } else {
-      gridStore.getGridPoint(n).getCoords(coords);
-    }
-
+    gridStore.getCoordinates(gridStore[n], coords);
     node_values[n] = func(coords);
   }
 
@@ -56,12 +48,7 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
     std::unique_ptr<OperationNaiveEval> op(sgpp::op_factory::createOperationNaiveEval(grid));
 
     for (size_t n = 0; n < gridStore.getSize(); n++) {
-      if (doStretch) {
-        gridStore.getGridPoint(n).getCoordsStretching(coords, *stretch);
-      } else {
-        gridStore.getGridPoint(n).getCoords(coords);
-      }
-
+      gridStore.getCoordinates(gridStore[n], coords);
       double eval = op->eval(alpha, coords);
       BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
     }
@@ -69,12 +56,7 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
     std::unique_ptr<OperationEval> op(sgpp::op_factory::createOperationEval(grid));
 
     for (size_t n = 0; n < gridStore.getSize(); n++) {
-      if (doStretch) {
-        gridStore.getGridPoint(n).getCoordsStretching(coords, *stretch);
-      } else {
-        gridStore.getGridPoint(n).getCoords(coords);
-      }
-
+      gridStore.getCoordinates(gridStore[n], coords);
       double eval = op->eval(alpha, coords);
       BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
     }
@@ -235,7 +217,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   Stretching stretch(dim, &dimBound, &str1d);
   std::unique_ptr<Grid> grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage().setStretching(stretch);
-  testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-13, false, true);
+  testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-13, false);
 }
 
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
@@ -261,7 +243,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   Stretching stretch(dim, dimBound_vec, stretch_vec);
   std::unique_ptr<Grid> grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage().setStretching(stretch);
-  testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12, false, true);
+  testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12, false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

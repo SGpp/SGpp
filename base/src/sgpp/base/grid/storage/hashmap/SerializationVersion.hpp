@@ -19,7 +19,8 @@
  *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
  * Version 7: PointDistribution changed from enum to enum class
  * Version 8: Add custom boundaryLevel (>= 1) for LinearBoundaryGrid etc.
+ * Version 9: Remove PointDistribution again, include Clenshaw-Curtis points in Stretching
  */
-#define SERIALIZATION_VERSION 8
+#define SERIALIZATION_VERSION 9
 
 #endif /* SERIALIZATIONVERSION_HPP */

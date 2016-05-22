@@ -172,8 +172,8 @@ class RefinementManager(object):
 #             plotDensity2d(params.getIndependentJointDistribution())
 #             values = self._admissibleSet.values()
 #             for i, ri in enumerate(rix):
-#                 values[ri].getCoords(p)
-#                 while i < len(rix) and.getCoord(r[ri] - r[rix[i]]) < 1e-10:
+#                 values[ri].getStandardCoordinates(p)
+#                 while i < len(rix) and.getStandardCoordinate(r[ri] - r[rix[i]]) < 1e-10:
 #                     i += 1
 #                 plt.plot(p[0], p[1], marker="o", color='yellow')
 #                 plt.text(p[0], p[1], "%i" % (i - 1,), color='yellow',
@@ -306,17 +306,17 @@ class RefinementManager(object):
 #             p = DataVector(gs.getDimension())
 #
 #             for gp in refinedPoints:
-#                 gp.getCoords(p)
+#                 gp.getStandardCoordinates(p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=20,
 #                          linestyle='', color='green')
 #
 #             for i in xrange(gs.getSize()):
-#                 gs.get(i).getCoords(p)
+#                 gs.get(i).getStandardCoordinates(p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='blue')
 #
 #             for gp in newGridPoints:
-#                 gp.getCoords(p)
+#                 gp.getStandardCoordinates(p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='red')
 #

@@ -44,18 +44,10 @@ bool IterativeGridGeneratorSOO::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
 
   bool result = true;
-  base::GridPoint::PointDistribution distr = base::GridPoint::PointDistribution::Normal;
   base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
-
-  if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
-      grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
-      grid.getType() == base::GridType::LinearClenshawCurtis) {
-    // Clenshaw-Curtis grid
-    distr = base::GridPoint::PointDistribution::ClenshawCurtis;
-  }
 
   // generate initial grid
   {
@@ -81,13 +73,7 @@ bool IterativeGridGeneratorSOO::generate() {
   fX.resize(N);
 
   {
-    base::GridPoint& gp = gridStorage[0];
-    base::DataVector x(d);
-
-    for (size_t t = 0; t < d; t++) {
-      x[t] = gp.getCoord(t);
-    }
-
+    base::DataVector x(gridStorage.getCoordinates(gridStorage[0]));
     fX[0] = f.eval(x);
   }
 
@@ -157,9 +143,6 @@ bool IterativeGridGeneratorSOO::generate() {
 
         for (size_t i = currentN; i < newN; i++) {
           base::GridPoint& gp = gridStorage[i];
-          // set point distribution accordingly to
-          // normal/Clenshaw-Curtis grids
-          gp.setPointDistribution(distr);
           refinementAlpha[i] = 0.0;
           size_t depth = 0;
 

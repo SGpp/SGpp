@@ -100,8 +100,8 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
     double* s_coords = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords =
-          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*(this->myBoundingBox));
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getGridPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
@@ -179,8 +179,8 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, do
         double dDistance = 0.0;
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-          std::string coords =
-              this->myGridStorage->getGridPoint(i).getCoordsStringBB(*(this->myBoundingBox));
+          std::string coords = this->myGridStorage->getCoordinates(
+              this->myGridStorage->getGridPoint(i)).toString();
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -253,8 +253,8 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
         this->tBoundaryType = "Dirichlet";
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-          std::string coords =
-              this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
+          std::string coords = this->myGridStorage->getCoordinates(
+              this->myGridStorage->getGridPoint(i)).toString();
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -1253,8 +1253,8 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, do
 
   // compute values of analytic solution on given grid
   for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
-    std::string coords =
-        this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
+    std::string coords = this->myGridStorage->getCoordinates(
+        this->myGridStorage->getGridPoint(i)).toString();
     std::stringstream coordsStream(coords);
     coordsStream >> coord;
 
@@ -1387,7 +1387,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double s
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->getGridPoint(i).getCoordsBB(coords, *this->myBoundingBox);
+        this->myGridStorage->getCoordinates(this->myGridStorage->getGridPoint(i), coords);
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
             payoffType == "std_amer_put") {
@@ -1421,8 +1421,8 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, do
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords =
-          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getGridPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -1470,8 +1470,8 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords =
-          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getGridPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -1519,8 +1519,8 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords =
-          this->myGridStorage->getGridPoint(i).getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getGridPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -1652,8 +1652,8 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
   fileout.open(tfilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =
-        myGrid->getStorage().getGridPoint(i).getCoordsStringBB(myGrid->getBoundingBox());
+    std::string coords = this->myGridStorage->getCoordinates(
+        this->myGridStorage->getGridPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     double* dblFuncValues = new double[dim];

@@ -427,6 +427,59 @@ class HashGridStorage {
   void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
                                          DataMatrixSP& mask, DataMatrixSP& offset);
 
+  /**
+   * Calculates the coordinate of a given grid point in specific dimension.
+   * In contrast to HashGridPoint::getStandardCoordinate, this takes the BoundingBox and
+   * Stretching into account.
+   *
+   * @param point grid point
+   * @param d     dimension
+   * @return      coordinate of the point in dimension d
+   */
+  inline double getCoordinate(HashGridPoint point, size_t d) const {
+    const double x = point.getStandardCoordinate(d);
+
+    if ((boundingBox == nullptr) && (stretching == nullptr)) {
+      return x;
+    } else {
+      HashGridPoint::level_type level;
+      HashGridPoint::index_type index;
+
+      point.get(d, level, index);
+
+      if (bUseStretching) {
+        if (level == 0) {
+          return stretching->getIntervalWidth(d) * static_cast<double>(index) +
+              stretching->getIntervalOffset(d);
+        } else {
+          return stretching->getCoordinates(level, index, d);
+        }
+      } else {
+        return boundingBox->getIntervalWidth(d) * x + boundingBox->getIntervalOffset(d);
+      }
+    }
+  }
+
+  /**
+   * Calculates the coordinates of a given grid point.
+   * In contrast to HashGridPoint::getStandardCoordinates, this takes the BoundingBox and
+   * Stretching into account.
+   *
+   * @param       point         grid point
+   * @param[out]  coordinates   vector of coordinates
+   */
+  void getCoordinates(HashGridPoint point, DataVector& coordinates) const;
+
+  /**
+   * Calculates the coordinates of a given grid point.
+   * In contrast to HashGridPoint::getStandardCoordinates, this takes the BoundingBox and
+   * Stretching into account.
+   *
+   * @param   point   grid point
+   * @return          vector of coordinates
+   */
+  DataVector getCoordinates(HashGridPoint point) const;
+
  private:
   /// the dimension of the grid
   size_t dimension;
