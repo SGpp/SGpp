@@ -126,7 +126,7 @@ class OperationMakePositive(object):
         # is negtive, then add it with all its
         # hierarchical ancestors
         gs.left_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
             acc.append(HashGridPoint(gp))
 
@@ -138,7 +138,7 @@ class OperationMakePositive(object):
         # hierarchical ancestors
         gp.set(d, level, index)
         gs.right_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
             acc.append(HashGridPoint(gp))
 
@@ -214,7 +214,7 @@ class OperationMakePositive(object):
             toBeRemoved = IndexList()
             for gp in newGridPoints:
                 ix = gs.seq(gp)
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
                 if not hasChildren(grid, gp) and newAlpha[ix] < 0.:

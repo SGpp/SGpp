@@ -337,7 +337,7 @@ def writeGnuplotGrid(filename, grid):
         p = DataVector(dim)
         fout = file(filename, "w")
         for i in range(grid.getSize()):
-            grid.getStorage().get(i).getCoords(p)
+            grid.getStorage().get(i).getStandardCoordinates(p)
             fout.write("%f %f\n" % (p[0],p[1]))
     # can't plot anything else
     else:

@@ -184,8 +184,8 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =  myGrid->getStorage().getGridPoint(i).getCoordsStringBB(
-                            myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getGridPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {
@@ -215,8 +215,8 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =  myGrid->getStorage().getGridPoint(i).getCoordsStringBB(
-                            myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getGridPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {

@@ -112,14 +112,14 @@ public class tutorial {
      * The \c for loop iterates over all grid points: For each grid
      * point \c gp, the corresponding coefficient \f$\alpha_j\f$ is set to the
      * function value at the grid point's coordinates which are obtained by
-     * \c getCoord(dim).
+     * \c getStandardCoordinate(dim).
      * The current coefficient vector is then printed.
      */
     GridPoint gp = new GridPoint();
 
     for (int i = 0; i < gridStorage.getSize(); i++) {
       gp = gridStorage.get(i);
-      alpha.set(i, f(gp.getCoord(0), gp.getCoord(1)));
+      alpha.set(i, f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)));
     }
 
     System.out.println("alpha before hierarchization: " + alpha.toString());

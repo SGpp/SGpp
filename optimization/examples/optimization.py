@@ -110,9 +110,7 @@ for i in range(1, len(functionValues)):
         fX0 = functionValues[i]
         x0Index = i
 
-for t in range(d):
-    x0[t] = gridStorage.get(x0Index).getCoord(t)
-
+x0 = gridStorage.getCoordinates(gridStorage.get(x0Index));
 ftX0 = ft.eval(x0)
 
 print "x0 = {}".format(x0)

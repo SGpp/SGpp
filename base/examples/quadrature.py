@@ -50,7 +50,7 @@ print "number of grid points: {}".format(gridStorage.getSize())
 alpha = pysgpp.DataVector(gridStorage.getSize())
 for i in xrange(gridStorage.getSize()):
   gp = gridStorage.get(i)
-  alpha[i] = f((gp.getCoord(0), gp.getCoord(1)))
+  alpha[i] = f((gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)))
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 
 # direct quadrature

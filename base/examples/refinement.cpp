@@ -51,7 +51,7 @@ int main() {
     // set function values in alpha
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
       GridPoint& gp = gridStorage.getGridPoint(i);
-      alpha[i] = f(gp.getCoord(0), gp.getCoord(1));
+      alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
     }
 
     // hierarchize

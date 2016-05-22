@@ -66,7 +66,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
                 # define transformation function
                 T = LinearTransformation(xlow, xhigh)
                 for k in xrange(ngs.size()):
-                    x = ngs.get(k).getCoord(0)
+                    x = ngs.get(k).getStandardCoordinate(0)
                     x = T.unitToProbabilistic(x)
                     nodalValues[k] = basisi.eval(lid, iid, x) * \
                         basisj.eval(ljd, ijd, x)

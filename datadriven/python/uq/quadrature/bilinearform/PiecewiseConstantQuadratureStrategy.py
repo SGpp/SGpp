@@ -43,10 +43,10 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
 
         for i in xrange(gs.size()):
             gpi = gs.get(i)
-            gpi.getCoords(p)
+            gpi.getStandardCoordinates(p)
             for j in xrange(gs.size()):
                 gpj = gs.get(j)
-                gpj.getCoords(q)
+                gpj.getStandardCoordinates(q)
                 y = float(A.get(i, j) * self._U.pdf(p))
                 A.set(i, j, y)
                 A.set(j, i, y)

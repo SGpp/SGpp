@@ -59,7 +59,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
       const base::GridPoint& gp = gridStorage[i];
 
       for (size_t t = 0; t < d; t++) {
-        x[t] = gp.getCoord(t);
+        x[t] = gridStorage.getCoordinate(gp, t);
       }
 
       const double fx = curFPtr->eval(x);

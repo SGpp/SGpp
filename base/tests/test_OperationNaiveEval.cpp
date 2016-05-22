@@ -123,16 +123,6 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     DataVector alpha(n);
 
     for (size_t i = 0; i < n; i++) {
-      GridPoint& gp = grid.getStorage().getGridPoint(i);
-
-      // don't forget to set the point distribution to Clenshaw-Curtis
-      // if necessary (currently not done automatically)
-      if ((grid.getType() == GridType::BsplineClenshawCurtis) ||
-          (grid.getType() == GridType::ModBsplineClenshawCurtis) ||
-          (grid.getType() == GridType::LinearClenshawCurtis)) {
-        gp.setPointDistribution(GridPoint::PointDistribution::ClenshawCurtis);
-      }
-
       alpha[i] = normalDistribution(generator);
     }
 

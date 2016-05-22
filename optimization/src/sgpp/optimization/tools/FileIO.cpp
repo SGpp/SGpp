@@ -110,7 +110,7 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
     const base::GridPoint& gp = gridStorage[j];
 
     for (size_t t = 0; t < d; t++) {
-      const double x = gp.getCoord(t);
+      const double x = gridStorage.getCoordinate(gp, t);
       base::GridPoint::level_type l = gp.getLevel(t);
       base::GridPoint::index_type i = gp.getIndex(t);
 

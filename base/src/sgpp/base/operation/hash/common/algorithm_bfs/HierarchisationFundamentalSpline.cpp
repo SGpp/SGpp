@@ -58,7 +58,7 @@ void HierarchisationFundamentalSpline::operator()(
         GridPoint::level_type i;
         iterator.get(t, l, i);
 
-        const double val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getStandardCoordinate(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -116,7 +116,7 @@ void HierarchisationFundamentalSpline::operator()(
         GridPoint::level_type i;
         iterator.get(t, l, i);
 
-        const double val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getStandardCoordinate(t));
 
         if (val1d == 0.0) {
           value = 0.0;

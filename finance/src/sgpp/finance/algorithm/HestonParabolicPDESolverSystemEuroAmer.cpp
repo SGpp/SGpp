@@ -591,7 +591,7 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
         sgpp::base::GridPoint& curPoint = (*storage)[i];
 
         sgpp::base::DataVector pointCoords(storage->getDimension());
-        curPoint.getCoords(pointCoords);
+        curPoint.getStandardCoordinates(pointCoords);
 
         // Discount the boundary points
         if (!curPoint.isInnerPoint()) {

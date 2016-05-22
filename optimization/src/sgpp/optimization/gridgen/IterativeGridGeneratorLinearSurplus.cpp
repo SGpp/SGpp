@@ -76,15 +76,6 @@ void IterativeGridGeneratorLinearSurplus::setInitialLevel(base::level_t initialL
 bool IterativeGridGeneratorLinearSurplus::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
 
-  base::GridPoint::PointDistribution distr = base::GridPoint::PointDistribution::Normal;
-
-  if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
-      (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
-      (grid.getType() == base::GridType::LinearClenshawCurtis)) {
-    // Clenshaw-Curtis grid
-    distr = base::GridPoint::PointDistribution::ClenshawCurtis;
-  }
-
   std::unique_ptr<base::AbstractRefinement> abstractRefinement;
 
   if ((grid.getType() == base::GridType::BsplineBoundary) ||
@@ -125,11 +116,6 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
 
   fX.resize(std::max(N, currentN));
   fX.setAll(0.0);
-
-  for (size_t i = 0; i < currentN; i++) {
-    // set correct point distribution
-    gridStorage[i].setPointDistribution(distr);
-  }
 
   // parallel evaluation of f in the initial grid points
   evalFunction();
@@ -209,12 +195,6 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     }
 
     coeffs.resize(newN);
-
-    for (size_t i = currentN; i < newN; i++) {
-      // set point distribution accordingly to
-      // normal/Clenshaw-Curtis grids
-      gridStorage[i].setPointDistribution(distr);
-    }
 
     // evaluation of f in the new grid points
     evalFunction(currentN);

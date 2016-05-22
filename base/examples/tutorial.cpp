@@ -111,12 +111,12 @@ int main() {
    * The \c for loop iterates over all grid points: For each grid
    * point \c gp, the corresponding coefficient \f$\alpha_j\f$ is set to the
    * function value at the grid point's coordinates which are obtained by
-   * \c getCoord(dim).
+   * \c getStandardCoordinate(dim).
    * The current coefficient vector is then printed.
    */
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getGridPoint(i);
-    alpha[i] = f(gp.getCoord(0), gp.getCoord(1));
+    alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
   }
 
   std::cout << "alpha before hierarchization: " << alpha.toString() << std::endl;

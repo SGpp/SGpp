@@ -54,7 +54,7 @@ class GridImageFormatter(GridFormatter):
             points = zeros([storage.getSize(), storage.getDimension()])
             for i in xrange(storage.getSize()):
                 point = storage.get(i)
-                point.getCoords(coord_vector)
+                point.getStandardCoordinates(coord_vector)
                 points[i] = [j for j in coord_vector.array()]
             num_of_sublots = storage.getDimension()*(storage.getDimension()-1)/2
             rows = int(ceil(sqrt(num_of_sublots)))

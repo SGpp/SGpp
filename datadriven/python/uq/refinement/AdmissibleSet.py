@@ -104,5 +104,5 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             self.addChildren(grid, gp)
 
     def toString(self):
-        return str([[ngp.getCoord(d) for d in xrange(ngp.getDimension())]
+        return str([[ngp.getStandardCoordinate(d) for d in xrange(ngp.getDimension())]
                     for ngp in self.getAdmissibleSet()])

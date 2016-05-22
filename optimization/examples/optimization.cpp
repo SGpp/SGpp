@@ -156,9 +156,7 @@ int main(int argc, const char* argv[]) {
                                         functionValues.getPointer() +
                                         functionValues.getSize()));
 
-    for (size_t t = 0; t < d; t++) {
-      x0[t] = gridStorage[x0Index].getCoord(t);
-    }
+    x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
 
     fX0 = functionValues[x0Index];
     ftX0 = ft.eval(x0);

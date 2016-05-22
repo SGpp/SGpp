@@ -82,18 +82,10 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
   bool result = true;
-  base::GridPoint::PointDistribution distr = base::GridPoint::PointDistribution::Normal;
   base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
-
-  if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
-      grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
-      grid.getType() == base::GridType::LinearClenshawCurtis) {
-    // Clenshaw-Curtis grid
-    distr = base::GridPoint::PointDistribution::ClenshawCurtis;
-  }
 
   // generate initial grid
   grid.getGenerator().regular(initialLevel);
@@ -129,7 +121,6 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
   for (size_t i = 0; i < currentN; i++) {
     base::GridPoint& gp = gridStorage[i];
-    gp.setPointDistribution(distr);
     // prepare fXOrder and rank
     fXOrder[i] = i;
     rank[i] = i + 1;
@@ -284,8 +275,6 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
     for (size_t i = currentN; i < newN; i++) {
       base::GridPoint& gp = gridStorage[i];
-      // set point distribution accordingly to normal/Clenshaw-Curtis grids
-      gp.setPointDistribution(distr);
       refinementAlpha[i] = 0.0;
 
       // calculate sum of levels

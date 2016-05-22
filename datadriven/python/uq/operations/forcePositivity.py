@@ -18,7 +18,7 @@ def computeNodalValues(jgrid, grid, alpha):
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.size(), jgs.getDimension())
     for i in xrange(jgs.size()):
-        jgs.get(i).getCoords(p)
+        jgs.get(i).getStandardCoordinates(p)
         A.setRow(i, p)
 
     return evalSGFunctionMulti(grid, alpha, A)

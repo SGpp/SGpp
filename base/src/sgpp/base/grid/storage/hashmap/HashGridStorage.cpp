@@ -742,5 +742,23 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 }
 
+void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinates) const {
+  coordinates.resize(dimension);
+
+  for (size_t d = 0; d < dimension; d++) {
+    coordinates[d] = getCoordinate(point, d);
+  }
+}
+
+DataVector HashGridStorage::getCoordinates(HashGridPoint point) const {
+  DataVector coordinates(dimension);
+
+  for (size_t d = 0; d < dimension; d++) {
+    coordinates[d] = getCoordinate(point, d);
+  }
+
+  return coordinates;
+}
+
 }  // namespace base
 }  // namespace sgpp
