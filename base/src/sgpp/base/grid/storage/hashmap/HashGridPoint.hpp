@@ -202,7 +202,7 @@ class HashGridPoint {
    * "Standard" means no bounding box (i.e., the domain is the unit hypercube)
    * and no stretching (i.e., the points have the standard locations \f$i \cdot 2^{-\ell}\f$).
    *
-   * @param p the (result) DataVector p that should be overwritten
+   * @param coordinates the DataVector that should be overwritten with the coordinates
    */
   void getStandardCoordinates(DataVector& coordinates) const;
 

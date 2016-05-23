@@ -139,16 +139,16 @@ class BoundingBox {
   /**
    * Determines if the interval in the specified dimension has left Dirichlet boundary conditions.
    *
-   * @param dimension the dimension for which the left boundary condition should be determined
-   * @return true     if Dirichlet Boundary conditions, otherwise false
+   * @param d   the dimension for which the left boundary condition should be determined
+   * @return    true if Dirichlet Boundary conditions, otherwise false
    */
   bool hasDirichletBoundaryLeft(size_t d) const;
 
   /**
    * Determines if the interval in the specified dimension has right Dirichlet boundary conditions.
    *
-   * @param dimension the dimension for which the right boundary condition should be determined
-   * @return true     if Dirichlet Boundary conditions, otherwise false
+   * @param d   the dimension for which the right boundary condition should be determined
+   * @return    true if Dirichlet Boundary conditions, otherwise false
    */
   bool hasDirichletBoundaryRight(size_t d) const;
 
