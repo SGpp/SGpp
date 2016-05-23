@@ -7,10 +7,6 @@
 #define HASHGRIDPOINT_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-
-#include <sgpp/base/grid/common/BoundingBox.hpp>
-#include <sgpp/base/grid/common/Stretching.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sys/types.h>

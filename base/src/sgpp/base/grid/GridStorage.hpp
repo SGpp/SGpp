@@ -6,18 +6,15 @@
 #ifndef GRIDSTORAGE_HPP
 #define GRIDSTORAGE_HPP
 
+#include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
-
-typedef unsigned int level_t;
-typedef unsigned int index_t;
 
 /**
  * Main typedef for GridPoint
