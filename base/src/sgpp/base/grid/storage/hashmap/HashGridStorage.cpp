@@ -265,7 +265,7 @@ void HashGridStorage::serialize(std::ostream& ostream, int version) {
 
       ostream << std::endl;
       std::vector<double>* vec = stretching->getDiscreteVector(true);
-      std::vector<int> vecLevel = stretching->getDiscreteVectorLevel();
+      std::vector<level_t> vecLevel = stretching->getDiscreteVectorLevel();
 
       for (size_t i = 0; i < dimension; i++) {
         ostream << std::scientific << vecLevel[i] << std::endl;

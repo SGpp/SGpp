@@ -30,6 +30,8 @@ namespace std {
 %include "OpFactory.i"
 //%include "Operations.i"
 
+%include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
+
 %rename(operatorAssignment) sgpp::base::DataVector::operator=;
 %rename(operatorAssignment) sgpp::base::DataVectorSP::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrix::operator=;

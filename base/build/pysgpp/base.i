@@ -44,6 +44,8 @@ namespace std {
 %include "GridFactory.i"
 %include "OpFactory.i"
 
+%include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
+
 %ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
 %ignore sgpp::base::DataVectorSP::operator=;
 %ignore sgpp::base::DataVectorSP::operator[];

@@ -10,6 +10,7 @@
 #define LOOKUPMAX 11
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <time.h>
@@ -47,7 +48,7 @@ struct Stretching1D {
 class Stretching : public BoundingBox {
  private:
   std::vector<Stretching1D> stretching1Ds;
-  std::vector<int> discreteVectorLevel;
+  std::vector<index_t> discreteVectorLevel;
   std::string stretchingMode;
 
   /*
@@ -74,7 +75,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double stretchingXform(int level, int index, size_t d) const;
+  double stretchingXform(level_t level, index_t index, size_t d) const;
 
   /*
    * calculates the logarithm transform in the given dimension
@@ -93,7 +94,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double logXform(int level, int index, size_t d) const;
+  double logXform(level_t level, index_t index, size_t d) const;
 
   /*
    * calculates the leentvar transform in the given dimension
@@ -112,7 +113,7 @@ class Stretching : public BoundingBox {
    *
    * @param d describes in which dimension the Stretching occurs.
    */
-  double leentvaarXform(int level, int index, size_t d) const;
+  double leentvaarXform(level_t level, index_t index, size_t d) const;
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
@@ -130,7 +131,7 @@ class Stretching : public BoundingBox {
    * @param d dimension of the node
    *
    */
-  double noXform(int level, int index, size_t d) const;
+  double noXform(level_t level, index_t index, size_t d) const;
 
   /*
    * calculates the lookup table index
@@ -138,7 +139,7 @@ class Stretching : public BoundingBox {
    * @param level level of the point
    * @param index index of the point
    */
-  int calculateLookupIndex(int level, int index) const;
+  int calculateLookupIndex(level_t level, index_t index) const;
 
   /*
    * gets the discrete points that are stretched and creates a lookup table
@@ -150,7 +151,7 @@ class Stretching : public BoundingBox {
 
   void parseVectorToLookupTable(std::vector<double>& vec,
                                 Stretching1D& stretch1d,
-                                size_t d, int& discreteVectorLevel) const;
+                                size_t d, index_t& discreteVectorLevel) const;
 
   /*
    * calculates the left and right neighbor index and levels
@@ -161,8 +162,8 @@ class Stretching : public BoundingBox {
    * @param rightLevel right neighbor level
    * @param rightIndex right neighbor index
    */
-  void calculateNeighborSpecs(int level, int index, int& leftLevel,
-                              int& leftIndex, int& rightLevel, int& rightIndex) const;
+  void calculateNeighborSpecs(level_t level, index_t index, level_t& leftLevel,
+                              index_t& leftIndex, level_t& rightLevel, index_t& rightIndex) const;
 
  public:
   /**
@@ -195,7 +196,7 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double getCoordinate(int level, int index, size_t d) const;
+  double getCoordinate(level_t level, index_t index, size_t d) const;
 
   /*
    * Returns the type of the Stretching of the dimension given
@@ -220,7 +221,7 @@ class Stretching : public BoundingBox {
    * @param posl left point
    * @param posr right point
    */
-  void getAdjacentPositions(int level, int index, size_t d,
+  void getAdjacentPositions(level_t level, index_t index, size_t d,
                             double& posc, double& posl, double& posr) const;
 
   /*
@@ -237,9 +238,9 @@ class Stretching : public BoundingBox {
   /*
    * returns the discretevectorlevel array of size nDim
    */
-  std::vector<int> getDiscreteVectorLevel() const;
+  std::vector<level_t> getDiscreteVectorLevel() const;
 
-  void calculateNeighborLookup(int maxlevel) const;
+  void calculateNeighborLookup(level_t maxlevel) const;
 };
 
 }  // namespace base
