@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "friedman2_4d_300000_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "friedman2_4d_300000_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
@@ -492,7 +492,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "friedman1_10d_150000_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
@@ -540,7 +540,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "friedman1_10d_150000_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
@@ -684,7 +684,7 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "DR5_train_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
@@ -732,7 +732,7 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName = "DR5_train_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
-  std::string kernelName = "StreamingModOCLUnified";
+  std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
 
   size_t dotPosition = scenarioFileName.find('.');
