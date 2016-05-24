@@ -144,7 +144,40 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(1024000));
       }
 
+      // special case for intel:
+      // if "OPTIMIZATION_FLAGS" contains "-cl-strict-aliasing", the kernel cannot be build on
+      // intel,
+      // even though this is a standard flag
+      std::unique_ptr<TunableParameter> optimizationFlagsCopy;
+      if (platformName.compare("Intel(R) OpenCL") == 0) {
+        for (TunableParameter &parameter : tunableParameters) {
+          if (parameter.getName().compare("OPTIMIZATION_FLAGS") == 0) {
+            // save the old values
+            optimizationFlagsCopy = std::make_unique<TunableParameter>(parameter);
+            // change the new values
+            for (std::string &parameterValue : parameter.getValues()) {
+              size_t found = parameterValue.find("-cl-strict-aliasing");
+              if (found != std::string::npos) {
+                parameterValue.replace(found, 19, "");
+              }
+            }
+          }
+        }
+      }
+
       this->tuneParameters(scenario, platformName, deviceName, kernelName);
+
+      // replace the "OPTIMIZATION_FLAGS" values with the original ones for the intel platform
+      if (optimizationFlagsCopy.operator bool()) {
+        for (TunableParameter &parameter : tunableParameters) {
+          if (parameter.getName().compare("OPTIMIZATION_FLAGS") == 0) {
+            // reset to the old values
+            for (size_t i = 0; i < parameter.getValues().size(); i++) {
+              parameter.getValues()[i] = optimizationFlagsCopy->getValues()[i];
+            }
+          }
+        }
+      }
 
       if (collectStatistics) {
         std::string safePlatformName = platformName;
