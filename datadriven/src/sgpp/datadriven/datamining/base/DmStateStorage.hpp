@@ -24,11 +24,11 @@ class DmStateStorage {
   DmStateStorage();
   std::shared_ptr<Dataset> getDataset();
   void setDataset(std::shared_ptr<Dataset> dataset);
-  DmModel& getModel();
+  std::shared_ptr<DmModel> getModel();
 
  private:
   std::shared_ptr<Dataset> dataset;
-  DmModel model;
+  std::shared_ptr<DmModel> model;
 };
 
 } /* namespace datadriven */

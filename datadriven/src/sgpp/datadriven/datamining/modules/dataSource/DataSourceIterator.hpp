@@ -26,11 +26,11 @@ class DataSourceIterator {
  public:
   DataSourceIterator(DataSource& sampleProvider, size_t counter);
 
-  bool operator!=(DataSourceIterator& other);
+  bool operator!=(const DataSourceIterator& other);
 
-  DataSourceIterator& operator++();
+  const DataSourceIterator& operator++();
 
-  std::unique_ptr<Dataset> operator*();
+  std::unique_ptr<Dataset> operator*() const;
 
  private:
   DataSource& sampleProvider;

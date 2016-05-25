@@ -14,16 +14,23 @@
 #include <sgpp/datadriven/datamining/base/DmModule.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/datadriven/datamining/base/DmStateStorage.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+
 namespace sgpp {
 namespace datadriven {
 
 class SparseGridMiner : public DmModule {
  public:
   SparseGridMiner();
-  explicit SparseGridMiner(std::shared_ptr<DmModule> firstModule,
-                           std::shared_ptr<DmStateStorage> sharedState);
   virtual ~SparseGridMiner();
-  void run();
+  virtual void run();
+
+ private:
+  std::unique_ptr<DataSource> dataSource;
+  std::unique_ptr<ModelFittingBase> fitter;
+  std::shared_ptr<DmStateStorage> sharedState;
 };
 
 } /* namespace datadriven */

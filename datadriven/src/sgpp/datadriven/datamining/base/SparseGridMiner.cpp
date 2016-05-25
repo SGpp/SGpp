@@ -17,16 +17,27 @@
 //
 //#include <sgpp/datadriven/tools/Dataset.hpp>
 //
-//#include <memory>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
-
+SparseGridMiner::SparseGridMiner() {}
 SparseGridMiner::~SparseGridMiner() {}
 
 void SparseGridMiner::run() {
-  nextModule->run();
-  // void SparseGridMiner::run() {
+  // iterate over all sub-datasets
+  for (auto dataset : *dataSource) {
+  }
+  // TODO (lettrich): setup initial state
+
+  // TODO (lettrich): get dataset and setup state
+
+  // TODO (lettrich): scoring
+
+  // TODO (lettrich): fitting
+
+  // end iteration
+
   // 1. find lambda
   //  double threshold = config["scorer_threshold"].getDouble();
   //  uint64_t maxRefinenum = config["maxRefinenum"].getUInt();

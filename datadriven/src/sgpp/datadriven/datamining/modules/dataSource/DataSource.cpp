@@ -9,8 +9,8 @@
  *      Author: Michael Lettrich
  */
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/SampleProviderIterator.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 

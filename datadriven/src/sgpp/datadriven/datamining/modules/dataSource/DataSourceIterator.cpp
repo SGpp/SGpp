@@ -16,16 +16,18 @@ namespace datadriven {
 DataSourceIterator::DataSourceIterator(DataSource& sampleProvider, size_t counter)
     : sampleProvider(sampleProvider), counter(counter) {}
 
-bool DataSourceIterator::operator!=(DataSourceIterator& other) {
+bool DataSourceIterator::operator!=(const DataSourceIterator& other) {
   return (counter != other.counter);
 }
 
-DataSourceIterator& DataSourceIterator::operator++() {
+const DataSourceIterator& DataSourceIterator::operator++() {
   counter++;
   return *this;
 }
 
-std::unique_ptr<Dataset> DataSourceIterator::operator*() { return sampleProvider.getNextSamples(); }
+std::unique_ptr<Dataset> DataSourceIterator::operator*() const {
+  return sampleProvider.getNextSamples();
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */
