@@ -26,7 +26,7 @@ std::shared_ptr<Dataset> DmStateStorage::getDataset() { return dataset; }
 
 void DmStateStorage::setDataset(std::shared_ptr<Dataset> dataset) { this->dataset = dataset; }
 
-DmModel& DmStateStorage::getModel() { return model; }
+std::shared_ptr<DmModel> DmStateStorage::getModel() { return model; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */
