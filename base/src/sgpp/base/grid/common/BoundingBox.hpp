@@ -110,7 +110,9 @@ class BoundingBox {
    * @param d   the dimension in which the boundary should be read
    * @return    a BoundingBox1D object that contains the boundaries
    */
-  BoundingBox1D getBoundary(size_t d) const;
+  inline const BoundingBox1D& getBoundary(size_t d) const {
+    return boundingBox1Ds[d];
+  }
 
   /**
    * Returns the number of dimensions of this bounding box.
@@ -125,7 +127,9 @@ class BoundingBox {
    * @param d the dimension in which the width of the interval should be determined
    * @return  width of the interval
    */
-  double getIntervalWidth(size_t d) const;
+  inline double getIntervalWidth(size_t d) const {
+    return boundingBox1Ds[d].rightBoundary - boundingBox1Ds[d].leftBoundary;
+  }
 
   /**
    * Returns the offset in positive x-direction of the interval in one dimension.
@@ -133,7 +137,9 @@ class BoundingBox {
    * @param d dimension in which the offset of the interval should be determined
    * @return  offset in positive x-direction of the interval
    */
-  double getIntervalOffset(size_t d) const;
+  inline double getIntervalOffset(size_t d) const {
+    return boundingBox1Ds[d].leftBoundary;
+  }
 
   /**
    * Determine if this bounding box describes the unit cube \f$[0, 1]^d\f$.

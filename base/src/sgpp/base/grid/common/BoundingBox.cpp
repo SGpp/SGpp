@@ -31,20 +31,8 @@ void BoundingBox::setBoundary(size_t d, const BoundingBox1D& boundingBox1D) {
   boundingBox1Ds[d] = boundingBox1D;
 }
 
-BoundingBox1D BoundingBox::getBoundary(size_t d) const {
-  return boundingBox1Ds[d];
-}
-
 size_t BoundingBox::getDimensions() const {
   return dimension;
-}
-
-double BoundingBox::getIntervalWidth(size_t d) const {
-  return boundingBox1Ds[d].rightBoundary - boundingBox1Ds[d].leftBoundary;
-}
-
-double BoundingBox::getIntervalOffset(size_t d) const {
-  return boundingBox1Ds[d].leftBoundary;
 }
 
 bool BoundingBox::isUnitCube() const {
