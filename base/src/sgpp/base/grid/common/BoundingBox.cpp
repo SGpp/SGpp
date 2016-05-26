@@ -24,6 +24,9 @@ BoundingBox::BoundingBox(const std::vector<BoundingBox1D>& boundingBox1Ds) :
     boundingBox1Ds(boundingBox1Ds) {
 }
 
+BoundingBox::~BoundingBox() {
+}
+
 void BoundingBox::setBoundary(size_t d, const BoundingBox1D& boundingBox1D) {
   boundingBox1Ds[d] = boundingBox1D;
 }
@@ -61,6 +64,22 @@ bool BoundingBox::hasDirichletBoundaryLeft(size_t d) const {
 
 bool BoundingBox::hasDirichletBoundaryRight(size_t d) const {
   return boundingBox1Ds[d].bDirichletRight;
+}
+
+std::string BoundingBox::serialize(int version) const {
+  std::ostringstream ostream;
+  serialize(ostream, version);
+  return ostream.str();
+}
+
+void BoundingBox::serialize(std::ostream& ostream, int version) const {
+  for (size_t d = 0; d < dimension; d++) {
+    const BoundingBox1D& bb1D = boundingBox1Ds[d];
+    ostream << std::scientific << bb1D.leftBoundary << " " << bb1D.rightBoundary << " "
+            << bb1D.bDirichletLeft << " " << bb1D.bDirichletRight << " ";
+  }
+
+  ostream << std::endl;
 }
 
 void BoundingBox::toString(std::string& text) const {

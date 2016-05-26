@@ -332,6 +332,9 @@ Stretching::Stretching(size_t dimension, std::vector<double>* coordinates) :
   // as it is done in parseVectorToLookupTable
 }
 
+Stretching::~Stretching() {
+}
+
 void Stretching::generateLookupTable() {
   //  std::cout<<"Generate Lookup Table"<<std::endl;
   for (size_t d = 0; d < dimension; d++) {
@@ -809,6 +812,50 @@ void Stretching::calculateNeighborLookup(level_t maxlevel) const {
 
   outfile1.close();
   outfile2.close();
+}
+
+std::string Stretching::serialize(int version) const {
+  std::ostringstream ostream;
+  serialize(ostream, version);
+  return ostream.str();
+}
+
+void Stretching::serialize(std::ostream& ostream, int version) const {
+  BoundingBox::serialize(ostream, version);
+
+  // If analytic stretching, print the stretching type
+  if (stretchingMode == "analytic") {
+    for (size_t d = 0; d < dimension; d++) {
+      const Stretching1D& str1D = stretching1Ds[d];
+      int stretchingType = 0;
+
+      if (str1D.type == "id") {
+        stretchingType = 1;
+      } else if (str1D.type == "log") {
+        stretchingType = 2;
+      } else if (str1D.type == "sinh") {
+        stretchingType = 3;
+      } else if (str1D.type == "cc") {
+        stretchingType = 4;
+      }
+
+      ostream << std::scientific << stretchingType << " " << str1D.x_0 << " " << str1D.xsi
+              << std::endl;
+    }
+  // If discrete stretching, print the grid vector
+  } else if (stretchingMode == "discrete") {
+    std::unique_ptr<std::vector<double>[]> vec(getDiscreteVector(true));
+
+    for (size_t d = 0; d < dimension; d++) {
+      ostream << std::scientific << discreteVectorLevel[d] << std::endl;
+
+      for (size_t i = 0; i < vec[d].size(); i++) {
+        ostream << std::scientific << vec[d][i] << " ";
+      }
+
+      ostream << std::endl;
+    }
+  }
 }
 
 }  // namespace base

@@ -208,6 +208,11 @@ class Stretching : public BoundingBox {
    */
   Stretching(size_t dimension, std::vector<double>* coordinates);
 
+  /**
+   * Destructor.
+   */
+  ~Stretching() override;
+
   /*
    * Gets the node position defined in the input parameters
    *
@@ -260,6 +265,22 @@ class Stretching : public BoundingBox {
   std::vector<level_t> getDiscreteVectorLevel() const;
 
   void calculateNeighborLookup(level_t maxlevel) const;
+
+  /**
+   * Serialize the Stretching into a string.
+   *
+   * @param version the serialization version of the file
+   * @param string that contains all Stretching information
+   */
+  std::string serialize(int version = SERIALIZATION_VERSION) const override;
+
+  /**
+   * Serialize the Stretching into a stream.
+   *
+   * @param ostream reference to a stream into that all Stretching information is written
+   * @param version the serialization version of the file
+   */
+  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const override;
 };
 
 }  // namespace base
