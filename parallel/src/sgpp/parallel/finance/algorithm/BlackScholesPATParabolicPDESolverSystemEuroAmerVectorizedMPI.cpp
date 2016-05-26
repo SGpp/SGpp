@@ -277,13 +277,13 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
         sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
     size_t dim = this->BoundGrid->getStorage().getDimension();
-    sgpp::base::BoundingBox* myBB = new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
     double* coords_val = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
       std::vector<double> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage().getPoint(i).getStandardCoordinatesStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getCoordinates(
+          this->BoundGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       double tmp;
@@ -318,7 +318,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
     delete[] coords_val;
 
     myHierarchisation->doHierarchisation(*this->alpha_complete);
-    delete myBB;
   }
 }
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRefine(
