@@ -333,7 +333,7 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the left boundary
-            storage.getGridPoint(storage.find(&index)->second).setLeaf(Leaf);
+            storage.getPoint(storage.find(&index)->second).setLeaf(Leaf);
           }
         }
 
@@ -353,7 +353,7 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
             index.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the right boundary
-            storage.getGridPoint(storage.find(&index)->second).setLeaf(Leaf);
+            storage.getPoint(storage.find(&index)->second).setLeaf(Leaf);
           }
         }
 

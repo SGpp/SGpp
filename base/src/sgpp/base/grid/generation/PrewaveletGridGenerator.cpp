@@ -57,7 +57,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
   // Check if a gridpoint within the shadow storage
   // is now part of the actual grid!
   for (size_t i = start; i < end; i++) {
-    if (shadowstorage.find(&storage.getGridPoint(i)) != shadowstorage.end()) {
+    if (shadowstorage.find(&storage.getPoint(i)) != shadowstorage.end()) {
       consolidateShadow();
       break;
     }
@@ -65,7 +65,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
 
   // Now add all missing neigbours to the shadowStorage
   for (size_t i = start; i < end; i++) {
-    GridPoint& index = this->storage.getGridPoint(i);
+    GridPoint& index = this->storage.getPoint(i);
 
     level_t sum = 0;
 
@@ -78,7 +78,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
 
     GridStorage::grid_iterator iter(storage);
     GridStorage::grid_iterator shadowIter(shadowstorage);
-    addNeighbours(this->storage.getGridPoint(i), 0, sum, iter, shadowIter);
+    addNeighbours(this->storage.getPoint(i), 0, sum, iter, shadowIter);
   }
 }
 
@@ -100,7 +100,7 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 
     iter.up(d);
     shadowIter.up(d);
-    this->storage.getGridPoint(iter.seq()).setLeaf(false);
+    this->storage.getPoint(iter.seq()).setLeaf(false);
 
     // Ok, point is neither in storage, nor in shadowstorage ...
     if (storage.isValidSequenceNumber(iter.seq()) &&
@@ -225,14 +225,14 @@ void PrewaveletGridGenerator::consolidateShadow() {
   GridStorage temp(storage.getDimension());
 
   for (size_t i = 0; i < shadowstorage.getSize(); i++) {
-    temp.insert(shadowstorage.getGridPoint(i));
+    temp.insert(shadowstorage.getPoint(i));
   }
 
   shadowstorage.clear();
 
   for (size_t i = 0; i < temp.getSize(); i++) {
-    if (storage.find(&temp.getGridPoint(i)) == storage.end()) {
-      shadowstorage.insert(temp.getGridPoint(i));
+    if (storage.find(&temp.getPoint(i)) == storage.end()) {
+      shadowstorage.insert(temp.getPoint(i));
     }
   }
 }

@@ -264,7 +264,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridPoint::level_type lvl;
 
   for (size_t seq = 0; seq < storage.getSize(); seq++) {
-    storage.getGridPoint(seq).get(0, lvl, idx);
+    storage.getPoint(seq).get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<double>(lvl + 1)),
                       0.0);
   }
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridPoint::level_type lvl;
 
   for (size_t seq = 0; seq < storage.getSize(); seq++) {
-    storage.getGridPoint(seq).get(0, lvl, idx);
+    storage.getPoint(seq).get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<double>(lvl + 1)),
                       0.0);
   }

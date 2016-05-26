@@ -106,7 +106,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   myHWSolver->initGridWithPayoff(*alpha, dStrike, payoffType, sigma, a, t, T);
 
   // Gridpoints @Money
-  //  std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike,
+  //  std::cout << "Gridpoints @Money: " << myBSSolver->getPointsAtMoney(payoffType, dStrike,
   //  DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
   // Print the payoff function into a gnuplot file

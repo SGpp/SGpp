@@ -24,7 +24,7 @@ SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
 double SurplusVolumeRefinementFunctor::operator()(GridStorage& storage,
     size_t seq) const {
   return pow(2, static_cast<double>(
-               -(static_cast<int>(storage.getGridPoint(seq).getLevelSum())))) * fabs(alpha[seq]);
+               -(static_cast<int>(storage.getPoint(seq).getLevelSum())))) * fabs(alpha[seq]);
 }
 
 double SurplusVolumeRefinementFunctor::start() const {

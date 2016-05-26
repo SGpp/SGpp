@@ -209,7 +209,7 @@ void HashRefinement::refineGridpoint1D(GridStorage& storage, index_type& index,
 
 void HashRefinement::refineGridpoint1D(GridStorage& storage, size_t seq,
                                        size_t d) {
-  this->refineGridpoint1D(storage, storage.getGridPoint(seq), d);
+  this->refineGridpoint1D(storage, storage.getPoint(seq), d);
 }
 
 void HashRefinement::refineGridpoint(GridStorage& storage,

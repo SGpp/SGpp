@@ -300,7 +300,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     base::HashGridStorage::index_pointer gridPoint;
 
     for (size_t i = 0; i < gridSizeUnpadded; i++) {
-      gridPoint = storage.getGridPoint(i);
+      gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);

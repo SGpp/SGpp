@@ -243,7 +243,7 @@ class AbstractRefinement {
       index.setLeaf(saveLeaf);
     } else {
       // set stored index to false
-      storage.getGridPoint((storage.find(&index))->second).setLeaf(false);
+      storage.getPoint((storage.find(&index))->second).setLeaf(false);
     }
   }
 

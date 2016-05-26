@@ -34,9 +34,9 @@ void GridPrinter::printLevelIndexGrid(std::string tFilename) {
     fileout.open(tFilename.c_str());
 
     for (size_t i = 0; i < myGrid->getSize(); i++) {
-      for (size_t j = 0; j < myGrid->getStorage().getGridPoint(i).getDimension(); j++) {
-        fileout << myGrid->getStorage().getGridPoint(i).getLevel(j) << " "
-                << myGrid->getStorage().getGridPoint(i).getIndex(j) << " ";
+      for (size_t j = 0; j < myGrid->getStorage().getPoint(i).getDimension(); j++) {
+        fileout << myGrid->getStorage().getPoint(i).getLevel(j) << " "
+                << myGrid->getStorage().getPoint(i).getIndex(j) << " ";
       }
 
       fileout << std::endl;
@@ -185,7 +185,7 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename,
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
     std::string coords = myGrid->getStorage().getCoordinates(
-        myGrid->getStorage().getGridPoint(i)).toString();
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {
@@ -216,7 +216,7 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha,
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
     std::string coords = myGrid->getStorage().getCoordinates(
-        myGrid->getStorage().getGridPoint(i)).toString();
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {

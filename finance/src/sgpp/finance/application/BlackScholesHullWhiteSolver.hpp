@@ -200,7 +200,7 @@ class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
    * @param strike the option's strike
    * @param eps epsilon to determine the gridpoints, use if at the money is not exactly on grid
    */
-  size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * gets the number needed iterations to solve Black Scholes Equation

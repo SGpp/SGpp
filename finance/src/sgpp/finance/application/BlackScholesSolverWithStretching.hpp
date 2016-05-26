@@ -191,7 +191,7 @@ class BlackScholesSolverWithStretching : public BlackScholesSolver {
    * @param strike the option's strike
    * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
    */
-  virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  virtual size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * This is some kind of debug functionality. It writes a file,

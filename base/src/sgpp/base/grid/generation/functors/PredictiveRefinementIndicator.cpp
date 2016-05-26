@@ -113,7 +113,7 @@ double PredictiveRefinementIndicator::operator ()(
 
 double PredictiveRefinementIndicator::runOperator(GridStorage& storage,
     size_t seq) {
-  return (*this)(storage.getGridPoint(seq));
+  return (*this)(storage.getPoint(seq));
 }
 
 
