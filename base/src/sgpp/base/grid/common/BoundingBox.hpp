@@ -175,6 +175,22 @@ class BoundingBox {
   virtual void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const;
 
   /**
+   * Unserialize from a string.
+   *
+   * @param istr string which contains a serialized BoundingBox
+   * @param version the serialization version of the file
+   */
+  virtual void unserialize(const std::string& istr, int version);
+
+  /**
+   * Unserialize from a stream.
+   *
+   * @param istr stream which contains a serialized BoundingBox
+   * @param version the serialization version of the file
+   */
+  virtual void unserialize(std::istream& istr, int version);
+
+  /**
    * Converts the BoundingBox to a string.
    *
    * @param text string to which the data is written

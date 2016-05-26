@@ -527,7 +527,6 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
 void HashGridStorage::parseGridDescription(std::istream& istream) {
   int version;
   istream >> version;
-
   istream >> dimension;
 
   size_t num;
@@ -572,97 +571,24 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
 
     if (useStretching == 0) {
       // BoundingBox
-
-      // create a standard bounding box
       boundingBox = new BoundingBox(dimension);
-      stretching = NULL;
+      stretching = nullptr;
       bUseStretching = false;
-
-      // reads the boundary data
-      for (size_t i = 0; i < dimension; i++) {
-        istream >> tempBound.leftBoundary;
-        istream >> tempBound.rightBoundary;
-        istream >> tempBound.bDirichletLeft;
-        istream >> tempBound.bDirichletRight;
-
-        boundingBox->setBoundary(i, tempBound);
-      }
-    } else if (useStretching == 1) {
-      // Stretching with analytic mode
-      boundingBox = NULL;
-      bUseStretching = true;
-      std::vector<Stretching1D> str1ds(dimension, Stretching1D());
-      std::vector<BoundingBox1D> tempBounds(dimension, BoundingBox1D());
-
-      // reads the boundary data
-      for (size_t i = 0; i < dimension; i++) {
-        istream >> tempBounds[i].leftBoundary;
-        istream >> tempBounds[i].rightBoundary;
-        istream >> tempBounds[i].bDirichletLeft;
-        istream >> tempBounds[i].bDirichletRight;
-      }
-
-      int stretchingType = 0;
-
-      // Reads the 1D stretching data
-      for (size_t i = 0; i < dimension; i++) {
-        istream >> stretchingType;
-
-        switch (stretchingType) {
-          case 1:
-            str1ds[i].type.assign("id");
-            break;
-
-          case 2:
-            str1ds[i].type.assign("log");
-            break;
-
-          case 3:
-            str1ds[i].type.assign("sinh");
-            break;
-
-          default:
-            std::cout << "Stretching Type Unknown in parseGridDescription\n";
-            break;
-        }
-
-        istream >> str1ds[i].x_0;
-        istream >> str1ds[i].xsi;
-      }
-
-      stretching = new Stretching(tempBounds, str1ds);
-    } else if (useStretching == 2) {
-      // Stretching with discrete Mode
-
-      boundingBox = NULL;
-      bUseStretching = true;
-
-      // reads the boundary data, won't be used.
-      for (size_t i = 0; i < dimension; i++) {
-        istream >> tempBound.leftBoundary;
-        istream >> tempBound.rightBoundary;
-        istream >> tempBound.bDirichletLeft;
-        istream >> tempBound.bDirichletRight;
-      }
-
-      int discreteLevel = 0;
-      int vectorLength = 0;
-      std::vector<double>* vec = new std::vector<double>[dimension];
-
-      for (size_t i = 0; i < dimension; i++) {
-        istream >> discreteLevel;
-        vectorLength = static_cast<int>(pow(2.0, discreteLevel)) + 1;
-        vec[i] = std::vector<double>(vectorLength, 0);
-
-        for (int j = 0; j < vectorLength; j++) {
-          istream >> vec[i][j];
-        }
-      }
-
-      stretching = new Stretching(dimension, vec);
-      delete[] vec;
+      boundingBox->unserialize(istream, version);
     } else {
-      std::cout << "Unknown Container Id Given in parseGridDescription\n";
+      boundingBox = nullptr;
+      stretching = new Stretching(dimension);
+      bUseStretching = true;
+
+      if (useStretching == 1) {
+        // Stretching with analytic mode
+        stretching->unserialize(istream, "analytic", version);
+      } else if (useStretching == 2) {
+        // Stretching with discrete Mode
+        stretching->unserialize(istream, "discrete", version);
+      } else {
+        std::cout << "Unknown Container Id Given in parseGridDescription\n";
+      }
     }
   }
 

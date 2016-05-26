@@ -302,11 +302,19 @@ static int rightIdx[2047] = {
   1017, 508, 1018, 126, 1019, 509, 1020, 254, 1021, 510, 1022, -1
 };
 
+Stretching::Stretching(size_t dimension) :
+    BoundingBox(dimension),
+    stretching1Ds(dimension, Stretching1D()),
+    discreteVectorLevel(dimension, 0),
+    stretchingMode("analytic") {
+  generateLookupTable();
+}
+
 Stretching::Stretching(const std::vector<BoundingBox1D>& boundaries,
                       const std::vector<Stretching1D>& stretching1Ds) :
                           BoundingBox(boundaries),
                           stretching1Ds(stretching1Ds),
-                          discreteVectorLevel(dimension, -1),
+                          discreteVectorLevel(dimension, 0),
                           stretchingMode("analytic") {
   generateLookupTable();
 }
@@ -672,7 +680,7 @@ void Stretching::calculateNeighborSpecs(level_t level, index_t index, level_t& l
 }
 void Stretching::parseVectorToLookupTable(std::vector<double>& vec,
                                           Stretching1D& stretch1d,
-                                          size_t d, index_t& discreteVectorLevel) const {
+                                          size_t d, level_t& discreteVectorLevel) const {
   const level_t level = static_cast<level_t>(std::log2(static_cast<double>(vec.size() - 1)));
 
   if ((static_cast<size_t>(1) << level) + 1 != vec.size()) {
@@ -855,6 +863,76 @@ void Stretching::serialize(std::ostream& ostream, int version) const {
 
       ostream << std::endl;
     }
+  }
+}
+
+void Stretching::unserialize(const std::string& istr, const std::string& type, int version) {
+  std::istringstream istream;
+  istream.str(istr);
+  unserialize(istream, type, version);
+}
+
+void Stretching::unserialize(std::istream& istr, const std::string& type, int version) {
+  BoundingBox::unserialize(istr, version);
+
+  if (type == "analytic") {
+    // Stretching with analytic mode
+    stretchingMode = "analytic";
+    discreteVectorLevel = std::vector<level_t>(dimension, 0);
+
+    // Reads the 1D stretching data
+    for (size_t d = 0; d < dimension; d++) {
+      Stretching1D& str1D = stretching1Ds[d];
+      int stretchingType = 0;
+      istr >> stretchingType;
+
+      switch (stretchingType) {
+        case 1:
+          str1D.type = "id";
+          break;
+        case 2:
+          str1D.type = "log";
+          break;
+        case 3:
+          str1D.type = "sinh";
+          break;
+        case 4:
+          str1D.type = "cc";
+          break;
+        default:
+          std::cout << "Stretching type unknown in Stretching::unserialize\n";
+          break;
+      }
+
+      istr >> str1D.x_0;
+      istr >> str1D.xsi;
+    }
+
+    generateLookupTable();
+  } else if (type == "discrete") {
+    // Stretching with discrete Mode
+    stretchingMode = "discrete";
+    discreteVectorLevel = std::vector<level_t>(dimension, 0);
+
+    for (size_t d = 0; d < dimension; d++) {
+      int discreteLevel = 0;
+      istr >> discreteLevel;
+      int vectorLength = static_cast<int>(pow(2.0, discreteLevel)) + 1;
+      std::vector<double> vec(vectorLength, 0);
+
+      for (int i = 0; i < vectorLength; i++) {
+        istr >> vec[i];
+      }
+
+      boundingBox1Ds[d] = {vec[0], vec[vec.size() - 1], true, true};
+      parseVectorToLookupTable(vec, stretching1Ds[d], d, discreteVectorLevel[d]);
+      generateLeftRightArrays(stretching1Ds[d], d);
+    }
+
+    // No need to generate lookup table,
+    // as it is done in parseVectorToLookupTable
+  } else {
+    std::cout << "Unknown Stretching mode\n";
   }
 }
 

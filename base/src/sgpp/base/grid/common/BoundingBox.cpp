@@ -82,6 +82,23 @@ void BoundingBox::serialize(std::ostream& ostream, int version) const {
   ostream << std::endl;
 }
 
+void BoundingBox::unserialize(const std::string& istr, int version) {
+  std::istringstream istream;
+  istream.str(istr);
+  unserialize(istream, version);
+}
+
+void BoundingBox::unserialize(std::istream& istr, int version) {
+  for (size_t d = 0; d < dimension; d++) {
+    BoundingBox1D& bb1D = boundingBox1Ds[d];
+
+    istr >> bb1D.leftBoundary;
+    istr >> bb1D.rightBoundary;
+    istr >> bb1D.bDirichletLeft;
+    istr >> bb1D.bDirichletRight;
+  }
+}
+
 void BoundingBox::toString(std::string& text) const {
   std::stringstream str;
 
