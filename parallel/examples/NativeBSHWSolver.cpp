@@ -311,7 +311,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+            << myBSHWSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
             << std::endl
             << std::endl
             << std::endl;
@@ -590,7 +590,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+            << myBSHWSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
             << std::endl
             << std::endl
             << std::endl;

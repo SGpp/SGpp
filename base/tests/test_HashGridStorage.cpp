@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
   bool* srcLeaf = new bool[s.getSize()];
 
   for (unsigned int i = 0; i < s.getSize(); ++i) {
-    srcLeaf[i] = s.getGridPoint(i).isLeaf();
+    srcLeaf[i] = s.getPoint(i).isLeaf();
   }
 
   std::string str = s.serialize();
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
   BOOST_CHECK_EQUAL(s.getSize(), s2.getSize());
 
   for (unsigned int i = 0; i < s.getSize(); ++i) {
-    BOOST_CHECK_EQUAL(s2.getGridPoint(i).isLeaf(), srcLeaf[i]);
+    BOOST_CHECK_EQUAL(s2.getPoint(i).isLeaf(), srcLeaf[i]);
   }
 
   delete[] srcLeaf;

@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       for (size_t i = 0; i < n; i++) {
         // evaluate function by hand
-        GridPoint& gp = grid.getStorage().getGridPoint(i);
+        GridPoint& gp = grid.getStorage().getPoint(i);
         double val = alpha[i];
 
         for (size_t t = 0; t < d; t++) {

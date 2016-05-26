@@ -464,7 +464,7 @@ class BlackScholesSolver : public sgpp::pde::ParabolicPDESolver {
    * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
    * @return number of gridpoints at money
    */
-  virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  virtual size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * gets the number needed iterations to solve Black Scholes Equation

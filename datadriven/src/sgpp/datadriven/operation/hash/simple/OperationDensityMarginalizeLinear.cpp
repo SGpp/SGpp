@@ -32,7 +32,7 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   sgpp::base::GridPoint mgp(mgs->getDimension());
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    sgpp::base::GridPoint& gp = gs->getGridPoint(i);
+    sgpp::base::GridPoint& gp = gs->getPoint(i);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       // skip direction in which we marginalize
@@ -63,7 +63,7 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   size_t mseqNr;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    sgpp::base::GridPoint& gp = gs->getGridPoint(seqNr);
+    sgpp::base::GridPoint& gp = gs->getPoint(seqNr);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d == mdim)

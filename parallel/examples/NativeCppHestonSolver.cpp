@@ -444,7 +444,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myHestonSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+            << myHestonSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
             << std::endl
             << std::endl
             << std::endl;

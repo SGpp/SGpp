@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   double lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<double>(gS.getGridPoint(i).getLevelSum());
+    lSum = static_cast<double>(gS.getPoint(i).getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridPoint& gp = gS.getGridPoint(i);
+    HashGridPoint& gp = gS.getPoint(i);
     HashGridPoint::level_type lvl = gp.getLevel(0);
     HashGridPoint::index_type idx = gp.getIndex(0);
     double quadSGPP =
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridPoint& gp = gS.getGridPoint(i);
+    HashGridPoint& gp = gS.getPoint(i);
     HashGridPoint::level_type lvl = gp.getLevel(0);
     HashGridPoint::index_type idx = gp.getIndex(0);
     double quadSGPP =

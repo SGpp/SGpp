@@ -687,7 +687,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 
@@ -1193,7 +1193,7 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
 
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1479,7 +1479,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1986,7 +1986,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 

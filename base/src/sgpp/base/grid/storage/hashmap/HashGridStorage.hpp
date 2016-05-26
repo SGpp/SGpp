@@ -215,7 +215,7 @@ class HashGridStorage {
    *
    * @return gridpoint object (pointer)
    */
-  inline HashGridPoint& getGridPoint(size_t seq) const { return *list[seq]; }
+  inline HashGridPoint& getPoint(size_t seq) const { return *list[seq]; }
 
   /**
    * insert a new index into map

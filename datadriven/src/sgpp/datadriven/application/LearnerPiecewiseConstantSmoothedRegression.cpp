@@ -102,7 +102,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < gridStorage->getSize(); i++) {
-        gridStorage->getGridPoint(i).getStandardCoordinates(p);
+        gridStorage->getPoint(i).getStandardCoordinates(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 

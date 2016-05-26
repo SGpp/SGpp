@@ -268,7 +268,7 @@ void BlackScholesHullWhiteSolver::setEnableCoarseningData(
   this->numCoarsenPoints = numCoarsenPoints;
 }
 
-size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType, double strike,
+size_t BlackScholesHullWhiteSolver::getPointsAtMoney(std::string payoffType, double strike,
                                                          double eps) {
   size_t nPoints = 0;
 
@@ -277,7 +277,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->getCoordinates(this->myGridStorage->getGridPoint(i), coords);
+        this->myGridStorage->getCoordinates(this->myGridStorage->getPoint(i), coords);
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "GMIB") {
           for (size_t d = 0; d < this->dim; d++) {
@@ -288,7 +288,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
           }
         } else {
           throw base::application_exception(
-              "BlackScholesHullWhiteSolver::getGridPointsAtMoney : An unknown payoff-type was "
+              "BlackScholesHullWhiteSolver::getPointsAtMoney : An unknown payoff-type was "
               "specified!");
         }
 
@@ -298,7 +298,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
       }
     } else {
       throw base::application_exception(
-          "BlackScholesHullWhiteSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
+          "BlackScholesHullWhiteSolver::getPointsAtMoney : A grid wasn't constructed before!");
     }
   }
 
@@ -318,7 +318,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->getCoordinates(
-          this->myGridStorage->getGridPoint(i)).toString();
+          this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

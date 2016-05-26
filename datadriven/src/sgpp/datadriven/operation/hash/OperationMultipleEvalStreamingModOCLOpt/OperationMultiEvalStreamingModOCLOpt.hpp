@@ -333,7 +333,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage.getGridPoint(i).get(dim, curLevel, curIndex);
+        storage.getPoint(i).get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->levelMask[i * this->dims + dim] = 0.0;
@@ -425,7 +425,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     base::HashGridStorage::index_pointer gridPoint;
 
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.getGridPoint(i);
+      gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
         levelFast[i * dims + dim] = static_cast<T>(1 << curLevel);

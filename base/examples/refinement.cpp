@@ -50,7 +50,7 @@ int main() {
   for (int step = 0; step < 5; step++) {
     // set function values in alpha
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      GridPoint& gp = gridStorage.getGridPoint(i);
+      GridPoint& gp = gridStorage.getPoint(i);
       alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
     }
 

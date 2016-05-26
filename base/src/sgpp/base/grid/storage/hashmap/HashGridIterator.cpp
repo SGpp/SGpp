@@ -128,7 +128,7 @@ HashGridIterator::isInnerPoint() const {
 
 bool
 HashGridIterator::hint() const {
-  return storage.getGridPoint(this->seq_).isLeaf();
+  return storage.getPoint(this->seq_).isLeaf();
 }
 
 bool

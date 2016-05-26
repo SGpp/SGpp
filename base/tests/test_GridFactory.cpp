@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().getGridPoint(i).isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().getGridPoint(i).isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().getGridPoint(i).isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().getGridPoint(i).isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().getGridPoint(i).isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().getGridPoint(i).isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().getGridPoint(i).isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().getGridPoint(i).isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
