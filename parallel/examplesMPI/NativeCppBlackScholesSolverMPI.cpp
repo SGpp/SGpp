@@ -596,7 +596,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       }
 
       sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
-      delete[] myBoundaries;
 
       // Construct a grid
       myBSSolver->constructGrid(*myBoundingBox, level);
@@ -605,7 +604,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       // in first iteration -> calculate the evaluation points
       if (i == start_l) {
         size_t points = 0;
-        sgpp::base::BoundingBox1D* myEvalBoundaries = new sgpp::base::BoundingBox1D[dim];
+        std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
         if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
           return;
@@ -613,7 +612,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
         sgpp::base::BoundingBox* myEvalBoundingBox =
             new sgpp::base::BoundingBox(myEvalBoundaries);
-        delete[] myEvalBoundaries;
 
         sgpp::base::EvalCuboidGenerator* myEvalCuboidGen = new sgpp::base::EvalCuboidGenerator();
 
@@ -938,7 +936,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     }
 
     sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
-    delete[] myBoundaries;
 
     // init Screen Object
     myBSSolver->initScreen();

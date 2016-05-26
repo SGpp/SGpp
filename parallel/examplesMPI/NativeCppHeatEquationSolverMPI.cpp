@@ -312,7 +312,6 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
       }
 
       sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
-      delete[] myBoundaries;
 
       // in first iteration -> calculate the evaluation points
       if (l == start_level) {
@@ -475,7 +474,6 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
       }
 
       sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
-      delete[] myBoundaries;
 
 #ifndef __MIC__
 
@@ -637,7 +635,6 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
     }
 
     sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
-    delete[] myBoundaries;
 
     // init Screen Object
     myPoisSolver->initScreen();

@@ -541,13 +541,12 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
           sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
       size_t dim = this->BoundGrid->getStorage().getDimension();
-      sgpp::base::BoundingBox* myBB =
-          new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
       double* dblFuncValues = new double[dim];
 
       for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
-        std::string coords = this->BoundGrid->getStorage().getPoint(i).getStandardCoordinatesStringBB(*myBB);
+        std::string coords = this->BoundGrid->getStorage().getCoordinates(
+            this->BoundGrid->getStorage().getPoint(i)).toString();
         std::stringstream coordsStream(coords);
 
         double tmp;
@@ -583,7 +582,6 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
       delete[] dblFuncValues;
 
       myHierarchisation->doHierarchisation(*this->alpha_complete);
-      delete myBB;
     }
 
     // add number of Gridpoints
