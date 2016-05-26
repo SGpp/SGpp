@@ -50,7 +50,7 @@ struct Stretching1D {
 class Stretching : public BoundingBox {
  private:
   std::vector<Stretching1D> stretching1Ds;
-  std::vector<index_t> discreteVectorLevel;
+  std::vector<level_t> discreteVectorLevel;
   std::string stretchingMode;
 
   /*
@@ -158,7 +158,7 @@ class Stretching : public BoundingBox {
    * @param level level of the point
    * @param index index of the point
    */
-  int calculateLookupIndex(level_t level, index_t index) const;
+  size_t calculateLookupIndex(level_t level, index_t index) const;
 
   /*
    * gets the discrete points that are stretched and creates a lookup table
