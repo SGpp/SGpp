@@ -11,6 +11,7 @@
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
+#include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <time.h>
@@ -87,7 +88,69 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double stretchingXform(level_t level, index_t index, size_t d) const;
+  inline double stretchingXform(level_t level, index_t index, size_t d) const {
+    const std::string& type = stretching1Ds[d].type;
+
+    // refer to the lookup table
+    if (level <= LOOKUPMAX) {
+      return stretching1Ds[d].lookup[calculateLookupIndex(level, index)][0];
+    } else if (type == "cc") {
+      // calculate using the appropriate function
+      return clenshawCurtisXform(level, index, d);
+    } else if (type == "log") {
+      return logXform(level, index, d);
+    } else if (type == "sinh") {
+      return leentvaarXform(level, index, d);
+    } else if (type == "fitob") {
+      // level - LOOKUPMAX is guaranteed to be > 0
+      index_t pow2deltaL = static_cast<index_t>(1) << (level - LOOKUPMAX);
+      double dIndex = static_cast<double>(index) / static_cast<double>(pow2deltaL);
+      level_t leftLevel = LOOKUPMAX;
+      level_t rightLevel = LOOKUPMAX;
+      int leftIndex = static_cast<index_t>(std::floor(dIndex));
+      int rightIndex = static_cast<index_t>(std::ceil(dIndex));
+      bool leftContinue = (leftIndex % 2 == 0);
+      bool rightContinue = (rightIndex % 2 == 0);
+
+      while (leftContinue || rightContinue) {
+        if (leftContinue) {
+          leftIndex /= 2;
+          leftLevel--;
+
+          // if left index odd, or left level 0, stop calculating left part
+          if (((leftIndex % 2 != 0)) || (leftLevel == 0)) {
+            if (leftLevel == 0) {
+              leftIndex = 0;
+            }
+
+            leftContinue = false;
+          }
+        }
+
+        if (rightContinue) {
+          rightIndex /= 2;
+          rightLevel--;
+
+          // if right index odd, or right level 0, stop calculating right part
+          if (((rightIndex % 2) != 0) || (rightLevel == 0)) {
+            if (rightLevel == 0) {
+              rightIndex = 1;
+            }
+
+            rightContinue = false;
+          }
+        }
+      }
+
+      const double posl = getCoordinate(leftLevel, leftIndex, d);
+      const double posr = getCoordinate(rightLevel, rightIndex, d);
+      const double step = (posr - posl) / static_cast<double>(pow2deltaL);
+
+      return posl + step * (dIndex - std::floor(dIndex)) * pow2deltaL;
+    } else {
+      return noXform(level, index, d);
+    }
+  }
 
   /*
    * calculates the Clenshaw-Curtis points in the given dimension
@@ -104,7 +167,12 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double clenshawCurtisXform(level_t level, index_t index, size_t d) const;
+  inline double clenshawCurtisXform(level_t level, index_t index, size_t d) const {
+    const double bbLeft = boundingBox1Ds[d].leftBoundary;
+    const double bbWidth = boundingBox1Ds[d].rightBoundary - bbLeft;
+
+    return bbLeft + bbWidth * ClenshawCurtisTable::getInstance().getPoint(level, index);
+  }
 
   /*
    * calculates the logarithm transform in the given dimension
@@ -123,7 +191,14 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double logXform(level_t level, index_t index, size_t d) const;
+  inline double logXform(level_t level, index_t index, size_t d) const {
+    const double bbLeftTransformed = std::log(boundingBox1Ds[d].leftBoundary);
+    const double bbWidthTransformed = std::log(boundingBox1Ds[d].rightBoundary) - bbLeftTransformed;
+    const index_t hInv = static_cast<index_t>(1) << level;
+
+    return std::exp(bbLeftTransformed + bbWidthTransformed *
+                    static_cast<double>(index) / static_cast<double>(hInv));
+  }
 
   /*
    * calculates the leentvar transform in the given dimension
@@ -142,7 +217,22 @@ class Stretching : public BoundingBox {
    *
    * @param d describes in which dimension the Stretching occurs
    */
-  double leentvaarXform(level_t level, index_t index, size_t d) const;
+  inline double leentvaarXform(level_t level, index_t index, size_t d) const {
+    const double sinhArgumentLeft = ((boundingBox1Ds[d].leftBoundary -
+        stretching1Ds[d].x_0) * stretching1Ds[d].xsi);
+    const double sinhArgumentRight = ((boundingBox1Ds[d].rightBoundary -
+        stretching1Ds[d].x_0) * stretching1Ds[d].xsi);
+    const double bbLeftTransformed =
+        std::log(sinhArgumentLeft + std::sqrt(sinhArgumentLeft * sinhArgumentLeft + 1));
+    const double bbWidthTransformed =
+        std::log(sinhArgumentRight + std::sqrt(sinhArgumentRight * sinhArgumentRight + 1)) -
+        bbLeftTransformed;
+    const index_t hInv = static_cast<index_t>(1) << level;
+
+    return stretching1Ds[d].x_0 + 1.0 / stretching1Ds[d].xsi * std::sinh((
+        bbLeftTransformed + bbWidthTransformed *
+        static_cast<double>(index) / static_cast<double>(hInv)));
+  }
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
@@ -160,7 +250,13 @@ class Stretching : public BoundingBox {
    * @param d dimension of the node
    *
    */
-  double noXform(level_t level, index_t index, size_t d) const;
+  inline double noXform(level_t level, index_t index, size_t d) const {
+    const double bbLeft = boundingBox1Ds[d].leftBoundary;
+    const double bbWidth = boundingBox1Ds[d].rightBoundary - bbLeft;
+    const index_t hInv = static_cast<index_t>(1) << level;
+
+    return bbLeft + bbWidth * static_cast<double>(index) / static_cast<double>(hInv);
+  }
 
   /*
    * calculates the lookup table index
@@ -239,7 +335,17 @@ class Stretching : public BoundingBox {
    * @param index index of the node
    * @param d dimension of the node
    */
-  double getCoordinate(level_t level, index_t index, size_t d) const;
+  inline double getCoordinate(level_t level, index_t index, size_t d) const {
+    if (level == 0) {
+      if (index == 0) {
+        return boundingBox1Ds[d].leftBoundary;
+      } else {
+        return boundingBox1Ds[d].rightBoundary;
+      }
+    } else {
+      return stretchingXform(level, index, d);
+    }
+  }
 
   /*
    * Returns the type of the Stretching of the dimension given
