@@ -33,6 +33,16 @@ struct Stretching1D {
   // Index 1: left neighbor position
   // Index 2: right neighbor position
   double lookup[LOOKUPSIZE][3];
+
+  /**
+   * Default constructor initializing type = "id", x_0 = 0.0, and xsi = 1.0.
+   */
+  Stretching1D() : Stretching1D("id") {}
+
+  /**
+   * Constructor initializing x_0 = 0.0, and xsi = 1.0.
+   */
+  Stretching1D(const std::string& type) : type(type), x_0(0.0), xsi(1.0) {}
 };
 
 /**
@@ -170,7 +180,7 @@ class Stretching : public BoundingBox {
 
   void parseVectorToLookupTable(std::vector<double>& vec,
                                 Stretching1D& stretch1d,
-                                size_t d, index_t& discreteVectorLevel) const;
+                                size_t d, level_t& discreteVectorLevel) const;
 
   /*
    * calculates the left and right neighbor index and levels
@@ -185,6 +195,15 @@ class Stretching : public BoundingBox {
                               index_t& leftIndex, level_t& rightLevel, index_t& rightIndex) const;
 
  public:
+  /**
+   * Constructor for Stretching
+   *
+   * initializes the Stretching with using no stretching
+   *
+   * @param dimension number of the dimensions used with the grid
+   */
+  explicit Stretching(size_t dimension);
+
   /**
    * Constructor for Stretching
    *
@@ -281,6 +300,26 @@ class Stretching : public BoundingBox {
    * @param version the serialization version of the file
    */
   void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const override;
+
+  /**
+   * Unserialize from a string.
+   *
+   * @param istr string which contains a serialized Stretching
+   * @param mode stretching mode ("analytic" or "discrete")
+   * @param version the serialization version of the file
+   */
+  void unserialize(const std::string& istr, const std::string& type,
+                   int version = SERIALIZATION_VERSION);
+
+  /**
+   * Unserialize from a stream.
+   *
+   * @param istr stream which contains a serialized Stretching
+   * @param mode stretching mode ("analytic" or "discrete")
+   * @param version the serialization version of the file
+   */
+  void unserialize(std::istream& istr, const std::string& mode,
+                   int version = SERIALIZATION_VERSION);
 };
 
 }  // namespace base
