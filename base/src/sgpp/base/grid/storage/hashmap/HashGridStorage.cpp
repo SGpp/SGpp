@@ -190,15 +190,13 @@ void HashGridStorage::unserializeNoAlgoDims(std::string& istr) {
   //    }
 }
 
-std::string HashGridStorage::serialize(int version) {
+std::string HashGridStorage::serialize(int version) const {
   std::ostringstream ostream;
   this->serialize(ostream, version);
   return ostream.str();
 }
 
-void HashGridStorage::serialize(std::ostream& ostream, int version) {
-  BoundingBox1D tempBound;
-
+void HashGridStorage::serialize(std::ostream& ostream, int version) const {
   // Print version, dimensions and number of gridpoints
   ostream << version << " ";
   ostream << dimension << " ";
@@ -207,96 +205,36 @@ void HashGridStorage::serialize(std::ostream& ostream, int version) {
   // If BoundingBox used, write zero
   if (!bUseStretching) {
     ostream << std::scientific << 0 << std::endl;
-
-    // Print the bounding box
-    for (size_t i = 0; i < dimension; i++) {
-      tempBound = boundingBox->getBoundary(i);
-      ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " "
-              << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-    }
-
-    ostream << std::endl;
+    boundingBox->serialize(ostream, version);
   } else {
     // If analytic stretching, print the stretching type
     if (stretching->getStretchingMode() == "analytic") {
       ostream << std::scientific << 1 << std::endl;
-
-      // Print the bounding box
-      for (size_t i = 0; i < dimension; i++) {
-        tempBound = stretching->getBoundary(i);
-        ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary
-                << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-      }
-
-      ostream << std::endl;
-      Stretching1D str1d;
-      int stretchingType = 0;
-
-      /*
-       * Write stretching type if
-       * id: 1
-       * log: 2
-       * sinh:3
-       */
-      for (size_t i = 0; i < dimension; i++) {
-        str1d = stretching->getStretching1D(i);
-
-        if (str1d.type == "id") {
-          stretchingType = 1;
-        } else if (str1d.type == "log") {
-          stretchingType = 2;
-        } else if (str1d.type == "sinh") {
-          stretchingType = 3;
-        }
-
-        ostream << std::scientific << stretchingType << " " << str1d.x_0 << " " << str1d.xsi
-                << std::endl;
-      }
     } else if (stretching->getStretchingMode() == "discrete") {
       // If discrete stretching, print the grid vector
       ostream << std::scientific << 2 << std::endl;
-
-      // Print the bounding box
-      for (size_t i = 0; i < dimension; i++) {
-        tempBound = stretching->getBoundary(i);
-        ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary
-                << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-      }
-
-      ostream << std::endl;
-      std::vector<double>* vec = stretching->getDiscreteVector(true);
-      std::vector<level_t> vecLevel = stretching->getDiscreteVectorLevel();
-
-      for (size_t i = 0; i < dimension; i++) {
-        ostream << std::scientific << vecLevel[i] << std::endl;
-
-        for (size_t j = 0; j < vec[i].size(); j++) {
-          ostream << std::scientific << vec[i][j] << " ";
-        }
-
-        ostream << std::endl;
-      }
     }
+
+    stretching->serialize(ostream, version);
   }
 
   // print the coordinates of the grid points
-  for (grid_list_iterator iter = list.begin(); iter != list.end(); iter++) {
+  for (grid_list_const_iterator iter = list.begin(); iter != list.end(); iter++) {
     (*iter)->serialize(ostream, version);
   }
 }
 
-std::string HashGridStorage::toString() {
+std::string HashGridStorage::toString() const {
   std::ostringstream ostream;
   this->toString(ostream);
   return ostream.str();
 }
 
-void HashGridStorage::toString(std::ostream& stream) {
+void HashGridStorage::toString(std::ostream& stream) const {
   stream << "[";
   int i = 0;
-  grid_map_iterator iter;
 
-  for (iter = map.begin(); iter != map.end(); iter++, i++) {
+  for (grid_map_const_iterator iter = map.begin(); iter != map.end(); iter++, i++) {
     if (i != 0) {
       stream << ",";
     }

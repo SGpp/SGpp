@@ -7,6 +7,7 @@
 #define BOUNDINGBOX_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <cstddef>
 #include <string>
@@ -91,6 +92,11 @@ class BoundingBox {
   explicit BoundingBox(const std::vector<BoundingBox1D>& boundingBox1Ds);
 
   /**
+   * Destructor.
+   */
+  virtual ~BoundingBox();
+
+  /**
    * Sets left and right boundary for a specific dimension.
    *
    * @param d             the dimension in which the boundary should be changed
@@ -151,6 +157,22 @@ class BoundingBox {
    * @return    true if Dirichlet Boundary conditions, otherwise false
    */
   bool hasDirichletBoundaryRight(size_t d) const;
+
+  /**
+   * Serialize the BoundingBox into a string.
+   *
+   * @param version the serialization version of the file
+   * @param string that contains all BoundingBox information
+   */
+  virtual std::string serialize(int version = SERIALIZATION_VERSION) const;
+
+  /**
+   * Serialize the BoundingBox into a stream.
+   *
+   * @param ostream reference to a stream into that all BoundingBox information is written
+   * @param version the serialization version of the file
+   */
+  virtual void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const;
 
   /**
    * Converts the BoundingBox to a string.

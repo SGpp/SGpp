@@ -59,6 +59,8 @@ class HashGridStorage {
   typedef std::vector<index_pointer> grid_list;
   /// iterator of grid_list
   typedef grid_list::iterator grid_list_iterator;
+  /// const iterator of grid_list
+  typedef grid_list::const_iterator grid_list_const_iterator;
 
   /// iterator for grid points
   typedef HashGridIterator grid_iterator;
@@ -144,7 +146,7 @@ class HashGridStorage {
    * @param version the serialization version of the file
    * @return a string that contains all gridstorage information
    */
-  std::string serialize(int version = SERIALIZATION_VERSION);
+  std::string serialize(int version = SERIALIZATION_VERSION) const;
 
   /**
    * serialize the gridstorage into a stream
@@ -152,21 +154,21 @@ class HashGridStorage {
    * @param ostream reference to a stream into that all gridstorage information is written
    * @param version the serialization version of the file
    */
-  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION);
+  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const;
 
   /**
    * serialize the gridstorage's gridpoints into a stream
    *
    * @return returns the string that contains all gridpoint information
    */
-  std::string toString();
+  std::string toString() const;
 
   /**
    * serialize the gridstorage's gridpoints into a stream
    *
    * @param stream reference to a stream into that all gridpoint information is written
    */
-  void toString(std::ostream& stream);
+  void toString(std::ostream& stream) const;
 
   /**
    * gets the size of the hashmap
