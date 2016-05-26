@@ -42,7 +42,7 @@ struct Stretching1D {
   /**
    * Constructor initializing x_0 = 0.0, and xsi = 1.0.
    */
-  Stretching1D(const std::string& type) : type(type), x_0(0.0), xsi(1.0) {}
+  explicit Stretching1D(const std::string& type) : type(type), x_0(0.0), xsi(1.0) {}
 };
 
 /**
