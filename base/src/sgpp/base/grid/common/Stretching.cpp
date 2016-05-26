@@ -5,6 +5,7 @@
 
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <stdlib.h>
@@ -334,7 +335,9 @@ Stretching::Stretching(size_t dimension, std::vector<double>* coordinates) :
 void Stretching::generateLookupTable() {
   //  std::cout<<"Generate Lookup Table"<<std::endl;
   for (size_t d = 0; d < dimension; d++) {
-    if (stretching1Ds[d].type == "log") {
+    if (stretching1Ds[d].type == "cc") {
+      clenshawCurtisXform(stretching1Ds[d], d);
+    } else if (stretching1Ds[d].type == "log") {
       logXform(stretching1Ds[d], d);
     } else if (stretching1Ds[d].type == "sinh") {
       leentvaarXform(stretching1Ds[d], d);
@@ -396,8 +399,10 @@ double Stretching::stretchingXform(level_t level, index_t index, size_t d) const
   // refer to the lookup table
   if (level <= LOOKUPMAX) {
     temp = stretching1Ds[d].lookup[calculateLookupIndex(level, index)][0];
-  } else if (t == "log") {
+  } else if (t == "cc") {
     // calculate using the appropriate function
+    temp = clenshawCurtisXform(level, index, d);
+  } else if (t == "log") {
     temp = logXform(level, index, d);
   } else if (t == "sinh") {
     temp = leentvaarXform(level, index, d);
@@ -461,6 +466,28 @@ double Stretching::stretchingXform(level_t level, index_t index, size_t d) const
   }
 
   return temp;
+}
+
+void Stretching::clenshawCurtisXform(Stretching1D& str1D, size_t d) const {
+  size_t idx = 0;
+  const double bbLeft = boundingBox1Ds[d].leftBoundary;
+  const double bbWidth = boundingBox1Ds[d].rightBoundary - bbLeft;
+
+  for (level_t l = 1; l <= LOOKUPMAX; l++) {
+    const index_t hInv = static_cast<index_t>(1) << l;
+
+    for (index_t i = 1; i < hInv; i += 2) {
+      str1D.lookup[idx++][0] = bbLeft + bbWidth *
+          ClenshawCurtisTable::getInstance().getPoint(l, i, hInv);
+    }
+  }
+}
+
+double Stretching::clenshawCurtisXform(level_t level, index_t index, size_t d) const {
+  const double bbLeft = boundingBox1Ds[d].leftBoundary;
+  const double bbWidth = boundingBox1Ds[d].rightBoundary - bbLeft;
+
+  return bbLeft + bbWidth * ClenshawCurtisTable::getInstance().getPoint(level, index);
 }
 
 void Stretching::logXform(Stretching1D& str1D, size_t d) const {

@@ -37,12 +37,14 @@ struct Stretching1D {
 
 /**
  *
- * Stretching can be done in four different ways:
+ * Stretching can be done in different ways:
  *
  * 1. No Stretching operation is done
- * 2. Stretching is done via log/exp calculation
- * 3. Sinh Stretching
- * 4. Discrete Stretching (No function used, grid points are directly taken)
+ * 2. Clenshaw-Curtis Stretching
+ * 3. Stretching is done via log/exp calculation
+ * 4. Sinh Stretching
+ * 5. Fitob Stretching
+ * 6. Discrete Stretching (No function used, grid points are directly taken)
  */
 
 class Stretching : public BoundingBox {
@@ -70,7 +72,7 @@ class Stretching : public BoundingBox {
    * where f is the transformation function and [a,b] are the intervals the transformation is defined.
    *
    * Calculates the streched coordinate with respect to the given parameters
-   *Note to self: may take other than double, take care
+   * Note to self: may take other than double, take care
    * @param level level of the node
    * @param index index of the node
    * @param d dimension of the node
@@ -78,11 +80,28 @@ class Stretching : public BoundingBox {
   double stretchingXform(level_t level, index_t index, size_t d) const;
 
   /*
+   * calculates the Clenshaw-Curtis points in the given dimension
+   *
+   * @param d describes in which dimension the Stretching occurs
+   */
+  void clenshawCurtisXform(Stretching1D& str1D, size_t d) const;
+
+  /*
+   * overloaded
+   * calculates the logarithm transform for an arbitrary input
+   *
+   * @param level level of the node
+   * @param index index of the node
+   * @param d dimension of the node
+   */
+  double clenshawCurtisXform(level_t level, index_t index, size_t d) const;
+
+  /*
    * calculates the logarithm transform in the given dimension
    *
    * \f$ f = log(x) \text{and} f^{-1}=e^x \f$
    *
-   * @param d describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs
    */
   void logXform(Stretching1D& str1D, size_t d) const;
 
@@ -101,7 +120,7 @@ class Stretching : public BoundingBox {
    *
    * \f$ f= sinh_{-1}(\xi(x-x_0) \text{and} f^{-1}=frac{1}{\xi}sinh(y)+x_0\f$
    *
-   * @param d describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs
    */
   void leentvaarXform(Stretching1D& str1D, size_t d) const;
 
@@ -111,14 +130,14 @@ class Stretching : public BoundingBox {
    *
    * \f$ f= sinh_{-1}(\xi(x-x_0) \text{and} f^{-1}=frac{1}{\xi}sinh(y)+x_0\f$
    *
-   * @param d describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs
    */
   double leentvaarXform(level_t level, index_t index, size_t d) const;
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
    *
-   * @param d describes in which dimension the Stretching occurs.
+   * @param d describes in which dimension the Stretching occurs
    */
   void noXform(Stretching1D& str1D, size_t d) const;
 
