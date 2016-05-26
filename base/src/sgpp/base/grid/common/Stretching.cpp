@@ -753,10 +753,10 @@ void Stretching::unserialize(const std::string& istr, const std::string& type, i
   unserialize(istream, type, version);
 }
 
-void Stretching::unserialize(std::istream& istr, const std::string& type, int version) {
+void Stretching::unserialize(std::istream& istr, const std::string& mode, int version) {
   BoundingBox::unserialize(istr, version);
 
-  if (type == "analytic") {
+  if (mode == "analytic") {
     // Stretching with analytic mode
     stretchingMode = "analytic";
     discreteVectorLevel = std::vector<level_t>(dimension, 0);
@@ -790,7 +790,7 @@ void Stretching::unserialize(std::istream& istr, const std::string& type, int ve
     }
 
     generateLookupTable();
-  } else if (type == "discrete") {
+  } else if (mode == "discrete") {
     // Stretching with discrete Mode
     stretchingMode = "discrete";
     discreteVectorLevel = std::vector<level_t>(dimension, 0);

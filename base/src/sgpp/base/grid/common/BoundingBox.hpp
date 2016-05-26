@@ -162,7 +162,7 @@ class BoundingBox {
    * Serialize the BoundingBox into a string.
    *
    * @param version the serialization version of the file
-   * @param string that contains all BoundingBox information
+   * @return string that contains all BoundingBox information
    */
   virtual std::string serialize(int version = SERIALIZATION_VERSION) const;
 

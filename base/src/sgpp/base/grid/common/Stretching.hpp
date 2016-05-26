@@ -395,7 +395,7 @@ class Stretching : public BoundingBox {
    * Serialize the Stretching into a string.
    *
    * @param version the serialization version of the file
-   * @param string that contains all Stretching information
+   * @return string that contains all Stretching information
    */
   std::string serialize(int version = SERIALIZATION_VERSION) const override;
 
@@ -414,7 +414,7 @@ class Stretching : public BoundingBox {
    * @param mode stretching mode ("analytic" or "discrete")
    * @param version the serialization version of the file
    */
-  void unserialize(const std::string& istr, const std::string& type,
+  void unserialize(const std::string& istr, const std::string& mode,
                    int version = SERIALIZATION_VERSION);
 
   /**
