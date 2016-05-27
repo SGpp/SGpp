@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstring>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
@@ -93,10 +94,27 @@ int main(int argc, char **argv) {
       "DR5_train_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
       "DR5_train_ModLinear_float_StreamingModOCLMaskMultiPlatform_tuned.cfg"};
 
+  std::vector<bool> isDouble = {
+    true, false, true, false, true, false, true, false, true, false, true, false
+  };
+
   std::ofstream outFile("consistency.log");
   for (size_t i = 0; i < scenarios.size(); i++) {
+    
     std::string &scenarioFileName = scenarios[i];
     std::string &parameterFile = parameters[i];
+
+    std::cout << "scenario: " << scenarioFileName << std::endl;
+    std::cout << argv[0] << std::endl;
+    std::cout << argv[1] << std::endl;
+    
+    if (argc > 1 && strcmp(argv[1], "floatOnly") == 0) {
+      std::cout << "floatonly enabled!" << std::endl;
+      if (isDouble[i]) {
+	std::cout << "skipping..." << std::endl;
+	continue;
+      }
+    }
 
     outFile << scenarioFileName << std::endl;
 
