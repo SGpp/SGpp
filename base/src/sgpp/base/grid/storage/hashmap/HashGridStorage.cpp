@@ -34,7 +34,7 @@ HashGridStorage::HashGridStorage(size_t dimension)
 
 HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox)
     :  //  GridStorage(creationBoundingBox, creationBoundingBox.getDimensions()),
-      dimension(creationBoundingBox.getDimensions()),
+      dimension(creationBoundingBox.getDimension()),
       list(),
       map(),
       algoDims(),
@@ -49,7 +49,7 @@ HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox)
 
 HashGridStorage::HashGridStorage(Stretching& creationStretching)
     :  //  : GridStorage(creationStretching, creationStretching.getDimensions()),
-      dimension(creationStretching.getDimensions()),
+      dimension(creationStretching.getDimension()),
       list(),
       map(),
       algoDims(),

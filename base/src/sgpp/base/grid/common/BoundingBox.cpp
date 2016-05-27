@@ -31,7 +31,7 @@ void BoundingBox::setBoundary(size_t d, const BoundingBox1D& boundingBox1D) {
   boundingBox1Ds[d] = boundingBox1D;
 }
 
-size_t BoundingBox::getDimensions() const {
+size_t BoundingBox::getDimension() const {
   return dimension;
 }
 

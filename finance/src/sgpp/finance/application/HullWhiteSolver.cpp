@@ -57,7 +57,7 @@ HullWhiteSolver::~HullWhiteSolver() {
 }
 
 void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);

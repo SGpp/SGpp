@@ -94,7 +94,7 @@ void BlackScholesSolverWithStretching::getGridNormalDistribution(sgpp::base::Dat
 
 void BlackScholesSolverWithStretching::constructGridStretching(sgpp::base::Stretching& stretching,
                                                                int level) {
-  this->dim = stretching.getDimensions();
+  this->dim = stretching.getDimension();
   this->levels = level;
 
   this->myGrid = new sgpp::base::LinearStretchedBoundaryGrid(stretching);
@@ -297,7 +297,7 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
     sgpp::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike) {
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      if (this->myGrid->getStorage().getStretching()->getDimensions() == 2) {
+      if (this->myGrid->getStorage().getStretching()->getDimension() == 2) {
         if (numTestpoints < 2) numTestpoints = 2;
 
         double dInc = (2.0 * strike) / static_cast<double>(numTestpoints - 1);

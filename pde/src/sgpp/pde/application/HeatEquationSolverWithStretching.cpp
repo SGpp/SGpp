@@ -32,7 +32,7 @@ HeatEquationSolverWithStretching::~HeatEquationSolverWithStretching() {
 }
 
 void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretching, size_t level) {
-  this->dim = stretching.getDimensions();
+  this->dim = stretching.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearStretchedBoundaryGrid(stretching);

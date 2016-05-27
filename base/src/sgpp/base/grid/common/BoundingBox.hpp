@@ -119,7 +119,7 @@ class BoundingBox {
    *
    * @return number of dimensions
    */
-  size_t getDimensions() const;
+  size_t getDimension() const;
 
   /**
    * Calculates the width of the interval in one dimension.

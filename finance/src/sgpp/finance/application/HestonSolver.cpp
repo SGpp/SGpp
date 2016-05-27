@@ -85,7 +85,7 @@ HestonSolver::~HestonSolver() {
 }
 
 void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
 
   if ((dim % 2) != 0)
     throw base::application_exception(
