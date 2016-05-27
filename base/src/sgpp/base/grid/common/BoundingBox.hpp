@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cstddef>
 #include <string>
@@ -147,6 +148,28 @@ class BoundingBox {
    * @return true if this bounding box is the unit cube, otherwise false
    */
   bool isUnitCube() const;
+
+  /**
+   * Transform a point in the unit cube \f$[0, 1]^d\f$ to a point in the BoundingBox.
+   *
+   * @param[in,out] point point to be transformed in-place
+   */
+  inline void transformPointToBoundingBox(DataVector& point) const {
+    for (size_t d = 0; d < dimension; d++) {
+      point[d] = getIntervalOffset(d) + getIntervalWidth(d) * point[d];
+    }
+  }
+
+  /**
+   * Transform a point in the BoundingBox to a point in the unit cube \f$[0, 1]^d\f$.
+   *
+   * @param[in,out] point point to be transformed in-place
+   */
+  inline void transformPointToUnitCube(DataVector& point) const {
+    for (size_t d = 0; d < dimension; d++) {
+      point[d] = (point[d] - getIntervalOffset(d)) / getIntervalWidth(d);
+    }
+  }
 
   /**
    * Determines if the interval in the specified dimension has left Dirichlet boundary conditions.
