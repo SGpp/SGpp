@@ -342,29 +342,33 @@ void HashGridStorage::recalcLeafProperty() {
   }
 }
 
-BoundingBox* HashGridStorage::getBoundingBox() { return boundingBox; }
+BoundingBox* HashGridStorage::getBoundingBox() {
+  if (bUseStretching) {
+    return stretching;
+  } else {
+    return boundingBox;
+  }
+}
 
-Stretching* HashGridStorage::getStretching() { return stretching; }
+Stretching* HashGridStorage::getStretching() {
+  return stretching;
+}
 
 void HashGridStorage::setBoundingBox(BoundingBox& boundingBox) {
-  if (!bUseStretching) {
+  if (bUseStretching) {
+    delete stretching;
+  } else {
     delete this->boundingBox;
   }
 
-  if (bUseStretching) {
-    delete stretching;
-  }
-
-  this->boundingBox = new BoundingBox(boundingBox);
   bUseStretching = false;
+  this->boundingBox = new BoundingBox(boundingBox);
 }
 
 void HashGridStorage::setStretching(Stretching& stretching) {
   if (bUseStretching) {
     delete this->stretching;
-  }
-
-  if (!bUseStretching) {
+  } else {
     delete boundingBox;
   }
 
