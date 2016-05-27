@@ -16,6 +16,13 @@ double OperationNaiveEvalGradientFundamentalSpline::evalGradient(const DataVecto
   const size_t d = storage.getDimension();
   double result = 0.0;
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  for (size_t t = 0; t < d; t++) {
+    innerDerivative[t] = 1.0 / storage.getBoundingBox()->getIntervalWidth(t);
+  }
+
   gradient.resize(storage.getDimension());
   gradient.setAll(0.0);
 
@@ -27,9 +34,9 @@ double OperationNaiveEvalGradientFundamentalSpline::evalGradient(const DataVecto
     curGradient.setAll(alpha[i]);
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t),
-                                       point[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
 
       curValue *= val1d;
 
@@ -57,6 +64,13 @@ void OperationNaiveEvalGradientFundamentalSpline::evalGradient(const DataMatrix&
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  for (size_t t = 0; t < d; t++) {
+    innerDerivative[t] = 1.0 / storage.getBoundingBox()->getIntervalWidth(t);
+  }
+
   value.resize(m);
   value.setAll(0.0);
 
@@ -71,9 +85,9 @@ void OperationNaiveEvalGradientFundamentalSpline::evalGradient(const DataMatrix&
     curGradient.setAll(1.0);
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t),
-                                       point[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
 
       curValue *= val1d;
 

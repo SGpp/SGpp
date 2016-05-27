@@ -28,7 +28,8 @@ class OperationNaiveEvalPartialDerivativeWavelet :
    * @param storage   storage of the sparse grid
    */
   explicit OperationNaiveEvalPartialDerivativeWavelet(GridStorage& storage) :
-    storage(storage) {
+    storage(storage),
+    pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -65,6 +66,8 @@ class OperationNaiveEvalPartialDerivativeWavelet :
   GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

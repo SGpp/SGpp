@@ -28,10 +28,11 @@ class OperationNaiveEvalGradientBsplineClenshawCurtis :
    * @param storage       storage of the sparse grid
    * @param degree        B-spline degree
    */
-  OperationNaiveEvalGradientBsplineClenshawCurtis(
-    GridStorage& storage, size_t degree)
-    : storage(storage),
-      base(degree) {
+  OperationNaiveEvalGradientBsplineClenshawCurtis(GridStorage& storage, size_t degree) :
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -66,6 +67,10 @@ class OperationNaiveEvalGradientBsplineClenshawCurtis :
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineClenshawCurtisBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base
