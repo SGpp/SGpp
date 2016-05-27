@@ -142,7 +142,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
 }
 
 void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
@@ -1340,7 +1340,7 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
                                                          size_t numTestpoints, double strike) {
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      if (this->myGrid->getStorage().getBoundingBox()->getDimensions() == 2) {
+      if (this->myGrid->getStorage().getBoundingBox()->getDimension() == 2) {
         if (numTestpoints < 2) numTestpoints = 2;
 
         double dInc = (2.0 * strike) / static_cast<double>(numTestpoints - 1);

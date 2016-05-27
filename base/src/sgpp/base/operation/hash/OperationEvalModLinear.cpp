@@ -36,7 +36,7 @@ double OperationEvalModLinear::eval(const DataVector& alpha,
 
   // Get bounding box
   BoundingBox* bb = storage.getBoundingBox();
-  size_t dim = bb->getDimensions();
+  size_t dim = bb->getDimension();
 
   if (bb != NULL) {
     for (size_t d = 0; d < dim; ++d) {
