@@ -17,14 +17,19 @@ double OperationNaiveEvalPartialDerivativeModWavelet::evalPartialDerivative(
   const size_t d = storage.getDimension();
   double result = 0.0;
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  const double innerDerivative = 1.0 / storage.getBoundingBox()->getIntervalWidth(derivDim);
+
   for (size_t i = 0; i < n; i++) {
     const GridPoint& gp = storage[i];
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
       const double val1d = ((t == derivDim) ?
-                             base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]) :
-                             base.eval(gp.getLevel(t), gp.getIndex(t), point[t]));
+          base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) * innerDerivative :
+          base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]));
 
       if (val1d == 0.0) {
         curValue = 0.0;
@@ -49,6 +54,11 @@ void OperationNaiveEvalPartialDerivativeModWavelet::evalPartialDerivative(
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  const double innerDerivative = 1.0 / storage.getBoundingBox()->getIntervalWidth(derivDim);
+
   partialDerivative.resize(m);
   partialDerivative.setAll(0.0);
 
@@ -58,8 +68,8 @@ void OperationNaiveEvalPartialDerivativeModWavelet::evalPartialDerivative(
 
     for (size_t t = 0; t < d; t++) {
       const double val1d = ((t == derivDim) ?
-                             base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]) :
-                             base.eval(gp.getLevel(t), gp.getIndex(t), point[t]));
+          base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) * innerDerivative :
+          base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]));
 
       if (val1d == 0.0) {
         curValue = 0.0;

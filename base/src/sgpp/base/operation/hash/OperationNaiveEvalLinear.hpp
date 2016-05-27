@@ -22,7 +22,8 @@ class OperationNaiveEvalLinear : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalLinear(GridStorage& storage) : storage(storage) {
+  explicit OperationNaiveEvalLinear(GridStorage& storage) :
+    storage(storage), pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -51,6 +52,8 @@ class OperationNaiveEvalLinear : public OperationNaiveEval {
   GridStorage& storage;
   /// 1D linear basis
   SLinearBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

@@ -28,9 +28,10 @@ class OperationNaiveEvalPartialDerivativeBsplineBoundary :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalPartialDerivativeBsplineBoundary(GridStorage& storage,
-      size_t degree) :
-    storage(storage), base(degree) {
+  OperationNaiveEvalPartialDerivativeBsplineBoundary(GridStorage& storage, size_t degree) :
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -67,6 +68,8 @@ class OperationNaiveEvalPartialDerivativeBsplineBoundary :
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

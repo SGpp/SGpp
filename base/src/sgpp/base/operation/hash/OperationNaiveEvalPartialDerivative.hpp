@@ -66,6 +66,8 @@ class OperationNaiveEvalPartialDerivative {
       partialDerivative[j] = evalPartialDerivative(curAlpha, point, derivDim);
     }
   }
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base
