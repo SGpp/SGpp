@@ -276,7 +276,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
   for (size_t i = 0; i < valueIndices.size(); i++) {
     valueIndices[i] = 0;
     TunableParameter &parameter = tunableParameters[i];
-    kernelNode.replaceIDAttr(parameter.getName(), parameter.getValues()[0]);
+    kernelNode.replaceTextAttr(parameter.getName(), parameter.getValues()[0]);
   }
 
   if (verbose) {
