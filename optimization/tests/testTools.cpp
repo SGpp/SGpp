@@ -388,8 +388,7 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 
     for (size_t k = 0; k < mus.size(); k++) {
       for (size_t i = 0; i < N; i++) {
-        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(sigmas[k],
-                     mus[k]);
+        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(mus[k], sigmas[k]);
       }
 
       BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],
