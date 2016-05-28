@@ -12,17 +12,18 @@
 
 #include <zlib.h>
 
-#include <random>
+#include <chrono>
 #include <fstream>
 #include <iostream>
-#include <chrono>
 #include <map>
+#include <random>
 #include <string>
 #include <vector>
 
 #include "testsCommon.hpp"
 
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
+#include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 
 std::string scenarioBaseDir = "datadriven/performanceTests/scenarios/";
@@ -774,6 +775,61 @@ BOOST_AUTO_TEST_CASE(DR5_ModLinear_Double) {
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(AutoTuningPaperIntrinsicsComparison)
+
+BOOST_AUTO_TEST_CASE(StreamingIntrinsicsComparison) {
+  std::string baseFolder = "datadriven/performanceTests/scenarios/";
+  std::vector<std::string> scenarios = {
+      baseFolder + "friedman2_4d_300000_Linear_double.scenario",
+      baseFolder + "friedman2_4d_300000_Linear_float.scenario",
+      baseFolder + "friedman2_4d_300000_ModLinear_double.scenario",
+      baseFolder + "friedman2_4d_300000_ModLinear_float.scenario",
+      baseFolder + "friedman1_10d_150000_Linear_double.scenario",
+      baseFolder + "friedman1_10d_150000_Linear_float.scenario",
+      baseFolder + "friedman1_10d_150000_ModLinear_double.scenario",
+      baseFolder + "friedman1_10d_150000_ModLinear_float.scenario",
+      baseFolder + "DR5_train_Linear_double.scenario",
+      baseFolder + "DR5_train_Linear_float.scenario",
+      baseFolder + "DR5_train_ModLinear_double.scenario",
+      baseFolder + "DR5_train_ModLinear_float.scenario"};
+
+  std::ofstream outFile("statistics/intrinsics.csv");
+  for (size_t i = 0; i < scenarios.size(); i++) {
+    std::string &scenarioFileName = scenarios[i];
+
+    std::cout << "scenario: " << scenarioFileName << std::endl;
+
+    outFile << scenarioFileName << std::endl;
+
+    sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+        sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+        sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
+
+    bool verbose = true;
+    sgpp::datadriven::MetaLearner learner(
+        scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
+        scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(),
+        scenario.getLambda(), verbose);
+
+    std::string datasetFile = scenario.getDatasetFileName();
+    try {
+      learner.learn(configuration, datasetFile);
+      //  learner.learnAndCompare(configuration, datasetFile, 4);
+
+      sgpp::datadriven::LearnerTiming timing = learner.getLearnerTiming();
+      std::cout << "time complete: " << timing.timeComplete_ << std::endl;
+      outFile << timing.timeComplete_ << std::endl;
+    } catch (sgpp::base::operation_exception &e) {
+      std::cout << "exception caught: " << e.what() << std::endl;
+    }
+  }
+  outFile.close();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
