@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_CASE(StreamingIntrinsicsComparison) {
       baseFolder + "DR5_train_ModLinear_double.scenario",
       baseFolder + "DR5_train_ModLinear_float.scenario"};
 
-  std::ofstream outFile("statistics/intrinsics.csv");
+  std::ofstream outFile("statistics/intrinsics.log");
   for (size_t i = 0; i < scenarios.size(); i++) {
     std::string &scenarioFileName = scenarios[i];
 
