@@ -177,9 +177,9 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 #ifdef HEDGE
   sgpp::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
   sgpp::base::BoundingBox1D* myBoundaries =
-      new sgpp::base::BoundingBox1D[grid_bb->getDimensions()];
+      new sgpp::base::BoundingBox1D[grid_bb->getDimension()];
 
-  for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
+  for (size_t d = 0; d < grid_bb->getDimension(); d++) {
     if (bLogTransform == true) {
       double interval_width =
           exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
@@ -199,7 +199,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   }
 
   sgpp::base::BoundingBox* myHedgeBB =
-      new sgpp::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
+      new sgpp::base::BoundingBox(grid_bb->getDimension(), myBoundaries);
   // hedging
   myHedge = new sgpp::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
 
