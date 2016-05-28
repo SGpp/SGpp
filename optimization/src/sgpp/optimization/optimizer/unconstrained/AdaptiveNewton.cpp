@@ -15,12 +15,11 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian,
+AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
                                size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
-      fHessian(fHessian),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -28,15 +27,16 @@ AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessia
       rhoLambdaMinus(dampingDecreaseFactor),
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(defaultSleSolver) {}
+      sleSolver(defaultSleSolver) {
+  fHessian.clone(this->fHessian);
+}
 
-AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian,
+AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
                                size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy,
                                const sle_solver::SLESolver& sleSolver)
     : UnconstrainedOptimizer(f, maxItCount),
-      fHessian(fHessian),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -44,14 +44,29 @@ AdaptiveNewton::AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessia
       rhoLambdaMinus(dampingDecreaseFactor),
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(sleSolver) {}
+      sleSolver(sleSolver) {
+  fHessian.clone(this->fHessian);
+}
+
+AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
+    : UnconstrainedOptimizer(other),
+      theta(other.theta),
+      rhoAlphaPlus(other.rhoAlphaPlus),
+      rhoAlphaMinus(other.rhoAlphaMinus),
+      rhoLambdaPlus(other.rhoLambdaPlus),
+      rhoLambdaMinus(other.rhoLambdaMinus),
+      rhoLs(other.rhoLs),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(other.sleSolver) {
+  other.fHessian->clone(fHessian);
+}
 
 AdaptiveNewton::~AdaptiveNewton() {}
 
 void AdaptiveNewton::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -86,7 +101,7 @@ void AdaptiveNewton::optimize() {
 
   while (k < N) {
     // calculate gradient and Hessian
-    fx = fHessian.eval(x, gradFx, hessianFx);
+    fx = fHessian->eval(x, gradFx, hessianFx);
     k++;
 
     if (k == 1) {
@@ -148,7 +163,7 @@ void AdaptiveNewton::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f.eval(xNew) : INFINITY);
+    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
     k++;
 
     // inner product of gradient and search direction
@@ -190,7 +205,7 @@ void AdaptiveNewton::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? f.eval(xNew) : INFINITY);
+      fxNew = (inDomain ? f->eval(xNew) : INFINITY);
       k++;
     }
 
@@ -235,7 +250,7 @@ void AdaptiveNewton::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const { return fHessian; }
+ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const { return *fHessian; }
 
 double AdaptiveNewton::getTolerance() const { return theta; }
 

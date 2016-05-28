@@ -13,38 +13,53 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+LevenbergMarquardt::LevenbergMarquardt(const VectorFunction& phi,
+                                       const VectorFunctionGradient& phiGradient,
                                        size_t maxItCount, double tolerance, double initialDamping,
                                        double acceptanceThreshold, double effectivenessThreshold)
     : LeastSquaresOptimizer(phi, maxItCount),
-      phiGradient(phiGradient),
       tol(tolerance),
       mu0(initialDamping),
       beta0(acceptanceThreshold),
       beta1(effectivenessThreshold),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(defaultSleSolver) {}
+      sleSolver(defaultSleSolver) {
+  phiGradient.clone(this->phiGradient);
+}
 
-LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+LevenbergMarquardt::LevenbergMarquardt(const VectorFunction& phi,
+                                       const VectorFunctionGradient& phiGradient,
                                        size_t maxItCount, double tolerance, double damping,
                                        double acceptanceThreshold, double effectivenessThreshold,
                                        const sle_solver::SLESolver& sleSolver)
     : LeastSquaresOptimizer(phi, maxItCount),
-      phiGradient(phiGradient),
       tol(tolerance),
       mu0(damping),
       beta0(acceptanceThreshold),
       beta1(effectivenessThreshold),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(sleSolver) {}
+      sleSolver(sleSolver) {
+  phiGradient.clone(this->phiGradient);
+}
+
+LevenbergMarquardt::LevenbergMarquardt(const LevenbergMarquardt& other)
+    : LeastSquaresOptimizer(other),
+      tol(other.tol),
+      mu0(other.mu0),
+      beta0(other.beta0),
+      beta1(other.beta1),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(other.sleSolver) {
+  other.phiGradient->clone(phiGradient);
+}
 
 LevenbergMarquardt::~LevenbergMarquardt() {}
 
 void LevenbergMarquardt::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
 
-  const size_t d = phi.getNumberOfParameters();
-  const size_t m = phi.getNumberOfComponents();
+  const size_t d = phi->getNumberOfParameters();
+  const size_t m = phi->getNumberOfComponents();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -73,7 +88,7 @@ void LevenbergMarquardt::optimize() {
 
   while (k < N) {
     // calculate gradient of phi
-    phiGradient.eval(x, phix, gradPhix);
+    phiGradient->eval(x, phix, gradPhix);
     k++;
 
     // calculate f
@@ -151,7 +166,7 @@ void LevenbergMarquardt::optimize() {
       }
 
       // evaluate phi at new point
-      phi.eval(y, phiy);
+      phi->eval(y, phiy);
       k++;
 
       // evaluate f and linearized version of at new point
@@ -197,7 +212,7 @@ void LevenbergMarquardt::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return phiGradient; }
+VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return *phiGradient; }
 
 double LevenbergMarquardt::getTolerance() const { return tol; }
 

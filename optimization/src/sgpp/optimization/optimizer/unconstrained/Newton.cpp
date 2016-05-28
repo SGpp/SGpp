@@ -19,11 +19,10 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it_count,
+Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
                double beta, double gamma, double tolerance, double epsilon, double alpha1,
                double alpha2, double p)
     : UnconstrainedOptimizer(f, max_it_count),
-      fHessian(fHessian),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -32,13 +31,14 @@ Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it
       alpha2(alpha2),
       p(p),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(defaultSleSolver) {}
+      sleSolver(defaultSleSolver) {
+  fHessian.clone(this->fHessian);
+}
 
-Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it_count,
+Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
                double beta, double gamma, double tolerance, double epsilon, double alpha1,
                double alpha2, double p, const sle_solver::SLESolver& sleSolver)
     : UnconstrainedOptimizer(f, max_it_count),
-      fHessian(fHessian),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -47,14 +47,30 @@ Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it
       alpha2(alpha2),
       p(p),
       defaultSleSolver(sle_solver::GaussianElimination()),
-      sleSolver(sleSolver) {}
+      sleSolver(sleSolver) {
+  fHessian.clone(this->fHessian);
+}
+
+Newton::Newton(const Newton& other)
+    : UnconstrainedOptimizer(other),
+      beta(other.beta),
+      gamma(other.gamma),
+      tol(other.tol),
+      eps(other.eps),
+      alpha1(other.alpha1),
+      alpha2(other.alpha2),
+      p(other.p),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(other.sleSolver) {
+  other.fHessian->clone(fHessian);
+}
 
 Newton::~Newton() {}
 
 void Newton::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -76,7 +92,7 @@ void Newton::optimize() {
 
   while (k < N) {
     // calculate gradient, Hessian and gradient norm
-    fx = fHessian.eval(x, gradFx, hessianFx);
+    fx = fHessian->eval(x, gradFx, hessianFx);
     k++;
 
     if (k == 1) {
@@ -130,7 +146,7 @@ void Newton::optimize() {
                                              x.toString() + ", f(x) = " + std::to_string(fx));
 
     // line search
-    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
+    if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
       // line search failed ==> exit
       // (either a "real" error occured or the improvement
       // achieved is too small)
@@ -148,7 +164,7 @@ void Newton::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionHessian& Newton::getObjectiveHessian() const { return fHessian; }
+ScalarFunctionHessian& Newton::getObjectiveHessian() const { return *fHessian; }
 
 double Newton::getBeta() const { return beta; }
 
