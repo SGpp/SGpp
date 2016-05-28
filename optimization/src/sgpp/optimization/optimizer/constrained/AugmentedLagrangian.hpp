@@ -48,13 +48,23 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  AugmentedLagrangian(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-                      VectorFunctionGradient& gGradient, VectorFunction& h,
-                      VectorFunctionGradient& hGradient, size_t maxItCount = DEFAULT_N,
+  AugmentedLagrangian(const ScalarFunction& f,
+                      const ScalarFunctionGradient& fGradient,
+                      const VectorFunction& g,
+                      const VectorFunctionGradient& gGradient,
+                      const VectorFunction& h,
+                      const VectorFunctionGradient& hGradient,
+                      size_t maxItCount = DEFAULT_N,
                       double xTolerance = DEFAULT_X_TOLERANCE,
                       double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                       double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                       double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  AugmentedLagrangian(const AugmentedLagrangian& other);
 
   /**
    * Destructor.
@@ -149,11 +159,11 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// inequality constraint function gradient
-  VectorFunctionGradient& gGradient;
+  std::unique_ptr<VectorFunctionGradient> gGradient;
   /// equality constraint function gradient
-  VectorFunctionGradient& hGradient;
+  std::unique_ptr<VectorFunctionGradient> hGradient;
   /// point tolerance
   double theta;
   /// constraint tolerance

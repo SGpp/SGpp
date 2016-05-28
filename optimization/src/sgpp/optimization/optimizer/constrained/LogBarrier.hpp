@@ -43,11 +43,20 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-             VectorFunctionGradient& gGradient, size_t maxItCount = DEFAULT_N,
+  LogBarrier(const ScalarFunction& f,
+             const ScalarFunctionGradient& fGradient,
+             const VectorFunction& g,
+             const VectorFunctionGradient& gGradient,
+             size_t maxItCount = DEFAULT_N,
              double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
              double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  LogBarrier(const LogBarrier& other);
 
   /**
    * Destructor.
@@ -116,9 +125,9 @@ class LogBarrier : public ConstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// inequality constraint function gradient
-  VectorFunctionGradient& gGradient;
+  std::unique_ptr<VectorFunctionGradient> gGradient;
   /// tolerance
   double theta;
   /// barrier start value

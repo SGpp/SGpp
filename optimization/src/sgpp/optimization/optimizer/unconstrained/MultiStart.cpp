@@ -19,18 +19,25 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-MultiStart::MultiStart(ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
+MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
     : UnconstrainedOptimizer(f, maxFcnEvalCount),
-      defaultOptimizer(NelderMead(f)),
-      optimizer(defaultOptimizer) {
+      defaultOptimizer(NelderMead(f)) {
+  defaultOptimizer.clone(optimizer);
   initialize(populationSize);
 }
 
-MultiStart::MultiStart(UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
+MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
                        size_t populationSize)
     : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
-      defaultOptimizer(NelderMead(f)),
-      optimizer(optimizer) {
+      defaultOptimizer(NelderMead(*f)) {
+  optimizer.clone(this->optimizer);
+  initialize(populationSize);
+}
+
+MultiStart::MultiStart(const MultiStart& other)
+    : UnconstrainedOptimizer(other),
+      defaultOptimizer(NelderMead(*f)) {
+  other.optimizer->clone(optimizer);
   initialize(populationSize);
 }
 
@@ -39,13 +46,13 @@ MultiStart::~MultiStart() {}
 void MultiStart::initialize(size_t populationSize) {
   this->populationSize = (populationSize > 0)
                              ? populationSize
-                             : std::min(10 * f.getNumberOfParameters(), static_cast<size_t>(100));
+                             : std::min(10 * f->getNumberOfParameters(), static_cast<size_t>(100));
 }
 
 void MultiStart::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (multi-start)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -130,8 +137,8 @@ void MultiStart::optimize() {
   double fCurrentOpt = INFINITY;
 
   // temporarily save x0 and N (will be overwritten by the loop)
-  const base::DataVector tmpX0(optimizer.getStartingPoint());
-  const size_t tmpN = optimizer.getN();
+  const base::DataVector tmpX0(optimizer->getStartingPoint());
+  const size_t tmpN = optimizer->getN();
   const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
   if (statusPrintingEnabled) {
@@ -140,12 +147,12 @@ void MultiStart::optimize() {
 
 #pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) default(none)
   {
-    UnconstrainedOptimizer* curOptimizerPtr = &optimizer;
+    UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
     std::unique_ptr<UnconstrainedOptimizer> curOptimizer;
 
     if (omp_get_max_threads() > 1) {
-      optimizer.clone(curOptimizer);
+      optimizer->clone(curOptimizer);
       curOptimizerPtr = curOptimizer.get();
     }
 
@@ -195,8 +202,8 @@ void MultiStart::optimize() {
   }
 
   // set x0 and N to initial values
-  optimizer.setStartingPoint(tmpX0);
-  optimizer.setN(tmpN);
+  optimizer->setStartingPoint(tmpX0);
+  optimizer->setN(tmpN);
 
   xOpt.resize(d);
   xOpt = xCurrentOpt;
