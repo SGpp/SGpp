@@ -23,6 +23,12 @@ double RandomNumberGenerator::getUniformRN(double a, double b) {
   return distr(generator);
 }
 
+void RandomNumberGenerator::getUniformRV(base::DataVector& vector, double a, double b) {
+  for (size_t i = 0; i < vector.getSize(); i++) {
+    vector[i] = getUniformRN(a, b);
+  }
+}
+
 size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
   std::uniform_int_distribution<size_t> distr(0, size - 1);
   return distr(generator);
@@ -31,6 +37,12 @@ size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
 double RandomNumberGenerator::getGaussianRN(double mean, double stdDev) {
   std::normal_distribution<double> distr(mean, stdDev);
   return distr(generator);
+}
+
+void RandomNumberGenerator::getGaussianRV(base::DataVector& vector, double mean, double stdDev) {
+  for (size_t i = 0; i < vector.getSize(); i++) {
+    vector[i] = getGaussianRN(mean, stdDev);
+  }
 }
 
 RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const { return seed; }
