@@ -28,7 +28,7 @@ size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
   return distr(generator);
 }
 
-double RandomNumberGenerator::getGaussianRN(double stdDev, double mean) {
+double RandomNumberGenerator::getGaussianRN(double mean, double stdDev) {
   std::normal_distribution<double> distr(mean, stdDev);
   return distr(generator);
 }

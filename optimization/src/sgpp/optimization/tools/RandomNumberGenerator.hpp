@@ -47,11 +47,11 @@ class RandomNumberGenerator {
   /**
    * Generate a Gaussian pseudo-random number.
    *
-   * @param stdDev    standard deviation of the Gaussian distribution
    * @param mean      mean of the Gaussian distribution
+   * @param stdDev    standard deviation of the Gaussian distribution
    * @return          Gaussian pseudo-random number
    */
-  double getGaussianRN(double stdDev = 1.0, double mean = 0.0);
+  double getGaussianRN(double mean = 0.0, double stdDev = 1.0);
 
   /**
    * @return      seed
