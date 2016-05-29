@@ -111,6 +111,7 @@ void OperationNaiveEvalHessianBsplineClenshawCurtis::evalHessian(const DataMatri
 
   for (size_t j = 0; j < m; j++) {
     hessian[j].resize(d, d);
+    hessian[j].setAll(0.0);
   }
 
   DataVector curGradient(d);
