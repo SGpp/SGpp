@@ -10,6 +10,7 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include <mutex>
 
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
@@ -131,11 +132,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
                                         kernelConfiguration, queueLoadBalancerMultTranspose);
     }
 
-
-
     // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
-
   }
 
   ~OperationMultiEvalStreamingOCLMultiPlatform() {}
@@ -174,12 +172,25 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       std::cout << devices[i]->deviceName << std::endl;
     }
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->kernelDataset, alphaArray,
-                                       resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      try {
+        this->multKernels[threadId].mult(this->level, this->index, this->kernelDataset, alphaArray,
+                                         resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
@@ -225,14 +236,27 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     omp_set_num_threads(static_cast<int>(devices.size()));
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
 
-      this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo,
-          datasetFrom, datasetTo);
+      try {
+        this->multTransposeKernels[threadId].multTranspose(
+            this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom,
+            gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     if (verbose) {
