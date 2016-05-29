@@ -27,6 +27,11 @@ double OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
              iter->second);
   }
 
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  for (size_t d = 0; d < storage.getDimension(); d++) {
+    res *= storage.getBoundingBox()->getIntervalWidth(d);
+  }
+
   return res;
 }
 
