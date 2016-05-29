@@ -154,15 +154,16 @@ class KernelDensityMult {
     } else {
       globalworkrange[0] = chunksize / dataBlockingSize;
     }
-    globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
+    if (globalworkrange[0] % localSize != 0)
+      globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
 
     // Generate OpenCL source and build kernel if not already done
     if (this->kernelMult == nullptr) {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims,
-                                                                   globalworkrange[0] *
-                                                                   dataBlockingSize);
+      std::string program_src =
+          kernelSourceBuilder.generateSource(dims,
+                                             gridSize + (localSize - gridSize % localSize));
       if (verbose)
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
@@ -175,7 +176,10 @@ class KernelDensityMult {
     for (size_t i = 0; i < localSize - gridSize % localSize; i++)
       alpha.push_back(0.0);
     deviceAlpha.intializeTo(alpha, 1, 0, alpha.size());
-    deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
+    if (chunksize == 0)
+      deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
+    else
+      deviceResultData.initializeBuffer(globalworkrange[0] * dataBlockingSize);
     this->deviceTimingMult = 0.0;
     clFinish(device->commandQueue);
 
