@@ -47,62 +47,38 @@ class AlgorithmEvaluationTransposed {
    * @param alpha the coefficient of the regarded ansatzfunction
    * @param result vector that will contain the local support of the given ansatzfuction for all evaluations points
    */
-  void operator()(BASIS& basis, DataVector& point, double alpha,
-                  DataVector& result) {
+  void operator()(BASIS& basis, const DataVector& point, double alpha, DataVector& result) {
     GridStorage::grid_iterator working(storage);
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
-
-    size_t bits = sizeof(index_type) *
-                  8;  // how many levels can we store in a index_type?
-
-    size_t dim = storage.getDimension();
+    const size_t bits = sizeof(index_t) * 8;  // how many levels can we store in a index_type?
+    const size_t dim = storage.getDimension();
 
     // Check for bounding box
     BoundingBox* bb = storage.getBoundingBox();
+    DataVector newPoint(dim);
 
-    if ( bb != NULL ) {
-      bool inside = true;
-
-      for (size_t d = 0; d < dim; ++d) {
-        BoundingBox1D dimbb = bb->getBoundary(d);
-
-        if (!(dimbb.leftBoundary <= point[d] &&
-              point[d] <= dimbb.rightBoundary) ) {
-          inside = false;
-          break;
-        }
-      }
-
-      if ( !inside ) {
-        // nothing to change
+    for (size_t d = 0; d < dim; d++) {
+      if (!bb->isContainingPoint(d, point[d])) {
         return;
-      } else {
-        for (size_t d = 0; d < dim; ++d) {
-          BoundingBox1D dimbb = bb->getBoundary(d);
-
-          point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary -
-                     dimbb.leftBoundary);
-        }
       }
+
+      newPoint[d] = bb->transformPointToUnitCube(d, point[d]);
     }
 
-    index_type* source = new index_type[dim];
+    index_t* source = new index_t[dim];
 
-    for (size_t d = 0; d < dim; ++d) {
+    for (size_t d = 0; d < dim; d++) {
       // This does not really work on grids with borders.
-      double temp = floor(point[d] *
-                           static_cast<double>(1 << (bits - 2))) * 2;
+      const double temp = std::floor(newPoint[d] * static_cast<double>(1 << (bits - 2))) * 2.0;
 
-      if (point[d] == 1.0) {
-        source[d] = static_cast<index_type>(temp - 1);
+      if (newPoint[d] == 1.0) {
+        source[d] = static_cast<index_t>(temp - 1);
       } else {
-        source[d] = static_cast<index_type>(temp + 1);
+        source[d] = static_cast<index_t>(temp + 1);
       }
     }
 
-    rec(basis, point, 0, 1.0, working, source, alpha, result);
+    rec(basis, newPoint, 0, 1.0, working, source, alpha, result);
     delete[] source;
   }
 
@@ -127,37 +103,30 @@ class AlgorithmEvaluationTransposed {
            double value, GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source, double alpha,
            DataVector& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
-
     const unsigned int BITS_IN_BYTE = 8;
     // maximum possible level for the index type
-    const level_type max_level = static_cast<level_type> (
-                                   sizeof(index_type) * BITS_IN_BYTE - 1);
-    index_type src_index = source[current_dim];
+    const level_t max_level = static_cast<level_t>(sizeof(index_t) * BITS_IN_BYTE - 1);
+    const index_t src_index = source[current_dim];
 
-    level_type work_level = 1;
+    level_t work_level = 1;
 
     while (true) {
-      size_t seq = working.seq();
+      const size_t seq = working.seq();
 
       if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
-        index_type work_index;
-        level_type temp;
+        index_t work_index;
+        level_t temp;
 
         working.get(current_dim, temp, work_index);
 
-        double new_value = basis.eval(work_level, work_index,
-                                       point[current_dim]);
-        new_value *= value;
+        const double new_value = basis.eval(work_level, work_index, point[current_dim]) * value;
 
         if (current_dim == storage.getDimension() - 1) {
-          result[seq] += (alpha * new_value);
+          result[seq] += alpha * new_value;
         } else {
-          rec(basis, point, current_dim + 1, new_value,
-              working, source, alpha, result);
+          rec(basis, point, current_dim + 1, new_value, working, source, alpha, result);
         }
       }
 
@@ -169,8 +138,8 @@ class AlgorithmEvaluationTransposed {
       // the corresponding bit
       // the bits are coded from left to right starting with level 1
       // being in position max_level
-      bool right = (src_index & (1 << (max_level - work_level))) > 0;
-      ++work_level;
+      const bool right = (src_index & (1 << (max_level - work_level))) > 0;
+      work_level++;
 
       if (right) {
         working.rightChild(current_dim);
