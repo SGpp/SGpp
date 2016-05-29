@@ -22,6 +22,8 @@
 
 #include "BasisEval.hpp"
 
+using sgpp::base::BoundingBox;
+using sgpp::base::BoundingBox1D;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -106,7 +108,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     Grid& grid = *grids[k];
     SBasis& basis = *bases[k];
 
-    // don't test gradients for linear function
+    // only test gradients for bases with derivatives
     const bool hasGradients =
         (grid.getType() == GridType::Bspline) || (grid.getType() == GridType::BsplineBoundary) ||
         (grid.getType() == GridType::BsplineClenshawCurtis) ||
@@ -120,6 +122,21 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     // create regular sparse grid
     grid.getGenerator().regular(l);
     const size_t n = grid.getSize();
+
+    // set random bounding box
+    BoundingBox &boundingBox = grid.getBoundingBox();
+    DataVector innerDerivative(d);
+
+    for (size_t t = 0; t < d; t++) {
+      // ensure left < right
+      const double left = normalDistribution(generator);
+      const double right = left + std::abs(normalDistribution(generator));
+      BoundingBox1D boundingBox1D(left, right);
+      boundingBox.setBoundary(t, boundingBox1D);
+      innerDerivative[t] = 1.0 / (right - left);
+    }
+
+    // create coefficient vector
     DataVector alpha(n);
 
     for (size_t i = 0; i < n; i++) {
@@ -138,7 +155,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       opEvalPartialDerivative = sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid);
     }
 
-    DataVector x(d);
+    // x is in unit cube, y is in BoundingBox
+    DataVector x(d), y(d);
     DataVector fxGradient(d);
     DataMatrix fxHessian(d, d);
 
@@ -146,6 +164,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       // evaluate at random point
       for (size_t t = 0; t < d; t++) {
         x[t] = uniformDistribution(generator);
+        y[t] = boundingBox.getIntervalOffset(t) + boundingBox.getIntervalWidth(t) * x[t];
       }
 
       double fx = 0.0;
@@ -173,7 +192,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
           for (size_t t = 0; t < d; t++) {
             if (t == j) {
-              val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
+              val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
             } else {
               val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
             }
@@ -189,9 +208,11 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
             for (size_t t = 0; t < d; t++) {
               if ((t == j) && (t == k)) {
-                val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
+                val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                    innerDerivative[t] * innerDerivative[t];
               } else if ((t == j) || (t == k)) {
-                val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
+                val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                    innerDerivative[t];
               } else {
                 val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
               }
@@ -203,7 +224,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       }
 
       // test function evaluation
-      double fx2 = opEval->eval(alpha, x);
+      double fx2 = opEval->eval(alpha, y);
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
 
       if (!hasGradients) {
@@ -211,7 +232,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       }
 
       DataVector fxGradient2(d);
-      fx2 = opEvalGradient->evalGradient(alpha, x, fxGradient2);
+      fx2 = opEvalGradient->evalGradient(alpha, y, fxGradient2);
 
       // test function evaluation
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
@@ -221,13 +242,13 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
         BOOST_CHECK_CLOSE(fxGradient[t], fxGradient2[t], 1e-9);
 
         // test partial derivative evaluation
-        BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(alpha, x, t),
+        BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(alpha, y, t),
                           fxGradient[t], 1e-9);
       }
 
       fxGradient2.setAll(0.0);
       DataMatrix fxHessian2(d, d);
-      fx2 = opEvalHessian->evalHessian(alpha, x, fxGradient2, fxHessian2);
+      fx2 = opEvalHessian->evalHessian(alpha, y, fxGradient2, fxHessian2);
 
       // test function evaluation
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
