@@ -8,21 +8,21 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#include <limits>
-#include <tuple>
 #include <algorithm>
-#include <vector>
-#include <string>
+#include <limits>
 #include <sstream>
+#include <string>
+#include <tuple>
+#include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/application/StaticParameterTuner.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/Dataset.hpp"
+#include "sgpp/datadriven/application/MetaLearner.hpp"
+#include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/datadriven/tools/Dataset.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -190,9 +190,10 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
-      if (addedScheduleSize) {
-        deviceNode["KERNELS"][kernelName]["KERNEL_SCHEDULE_SIZE"].erase();
-      }
+      // keep the schedule size for now, makes other experiments easier
+      //      if (addedScheduleSize) {
+      //        deviceNode["KERNELS"][kernelName]["KERNEL_SCHEDULE_SIZE"].erase();
+      //      }
 
       if (addedCountLimit) {
         deviceNode["COUNT"].erase();
@@ -354,7 +355,8 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
   std::cout << "written parameters:" << std::endl;
   std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"]
-                                    [kernelName] << std::endl;
+                                    [kernelName]
+            << std::endl;
 }
 
 double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
