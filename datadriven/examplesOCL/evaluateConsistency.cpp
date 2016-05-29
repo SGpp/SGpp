@@ -3,18 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/base/datatypes/DataMatrix.hpp"
 #include "sgpp/base/datatypes/DataVector.hpp"
 #include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/datadriven/application/LearnerScenario.hpp"
+#include "sgpp/datadriven/application/MetaLearner.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
@@ -65,6 +66,20 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 }
 
 int main(int argc, char **argv) {
+  if (argc < 2 || argc > 3) {
+    throw;
+  }
+
+  bool floatOnly = false;
+  if (argc == 3) {
+    if (strcmp(argv[1], "floatOnly") == 0) {
+      std::cout << "float-only enabled!" << std::endl;
+      floatOnly = true;
+    } else {
+      throw;
+    }
+  }
+
   std::vector<std::string> scenarios = {
       baseFolder + "friedman2_4d_300000_Linear_double.scenario",
       baseFolder + "friedman2_4d_300000_Linear_float.scenario",
@@ -93,10 +108,21 @@ int main(int argc, char **argv) {
       "DR5_train_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
       "DR5_train_ModLinear_float_StreamingModOCLMaskMultiPlatform_tuned.cfg"};
 
-  std::ofstream outFile("consistency.log");
+  std::vector<bool> isDouble = {true, false, true, false, true, false,
+                                true, false, true, false, true, false};
+
+  std::ofstream outFile(std::string(argv[1]) + "_consistency.log");
   for (size_t i = 0; i < scenarios.size(); i++) {
     std::string &scenarioFileName = scenarios[i];
     std::string &parameterFile = parameters[i];
+
+    if (floatOnly && isDouble[i]) {
+      std::cout << "skipping..." << std::endl;
+    }
+
+    std::cout << "scenario: " << scenarioFileName << std::endl;
+    std::cout << argv[0] << std::endl;
+    std::cout << argv[1] << std::endl;
 
     outFile << scenarioFileName << std::endl;
 
