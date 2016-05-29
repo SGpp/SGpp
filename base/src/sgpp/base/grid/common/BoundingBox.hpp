@@ -156,8 +156,19 @@ class BoundingBox {
    */
   inline void transformPointToBoundingBox(DataVector& point) const {
     for (size_t d = 0; d < dimension; d++) {
-      point[d] = getIntervalOffset(d) + getIntervalWidth(d) * point[d];
+      point[d] = transformPointToBoundingBox(d, point[d]);
     }
+  }
+
+  /**
+   * Transform a point in the unit interval \f$[0, 1]\f$ to a point in the BoundingBox in 1D.
+   *
+   * @param d       dimension
+   * @param point   1D point in unit interval
+   * @return        transformed 1D point in the BoundingBox
+   */
+  inline double transformPointToBoundingBox(size_t d, double point) const {
+    return getIntervalOffset(d) + getIntervalWidth(d) * point;
   }
 
   /**
@@ -167,8 +178,46 @@ class BoundingBox {
    */
   inline void transformPointToUnitCube(DataVector& point) const {
     for (size_t d = 0; d < dimension; d++) {
-      point[d] = (point[d] - getIntervalOffset(d)) / getIntervalWidth(d);
+      point[d] = transformPointToUnitCube(d, point[d]);
     }
+  }
+
+  /**
+   * Transform a point in the BoundingBox to a point in the unit interval \f$[0, 1]\f$ in 1D.
+   *
+   * @param d       dimension
+   * @param point   1D point in the BoundingBox
+   * @return        transformed 1D point in the unit interval
+   */
+  inline double transformPointToUnitCube(size_t d, double point) const {
+    return (point - getIntervalOffset(d)) / getIntervalWidth(d);
+  }
+
+  /**
+   * Check whether the BoundingBox contains a given point.
+   *
+   * @param point   point to be checked
+   * @return        whether the point is contained in the BoundingBox
+   */
+  inline bool isContainingPoint(DataVector& point) const {
+    for (size_t d = 0; d < dimension; d++) {
+      if (!isContainingPoint(d, point[d])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check whether the BoundingBox contains a given point in a specific dimension.
+   *
+   * @param d       dimension to be checked
+   * @param point   1D point to be checked
+   * @return        whether the point is contained in the BoundingBox in the given dimension
+   */
+  inline bool isContainingPoint(size_t d, double point) const {
+    return (boundingBox1Ds[d].leftBoundary <= point) && (point <= boundingBox1Ds[d].rightBoundary);
   }
 
   /**
