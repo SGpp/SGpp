@@ -31,7 +31,7 @@ class MPIOperation {
   /// Constructor - creates all slave operations of the given name
   explicit MPIOperation(std::string slave_class_name);
   /// Constructor - does not create any slave operations
-  explicit MPIOperation();
+  MPIOperation();
   virtual ~MPIOperation(void);
   void start_slave_code(void);
   void release_slave_objects(void);
