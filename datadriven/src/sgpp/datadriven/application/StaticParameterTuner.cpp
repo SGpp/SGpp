@@ -355,8 +355,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
   std::cout << "written parameters:" << std::endl;
   std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"]
-                                    [kernelName]
-            << std::endl;
+                                    [kernelName] << std::endl;
 }
 
 double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
@@ -507,12 +506,18 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
 
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
-    std::string message("error: violated the expected error, mse: " + std::to_string(mse) +
-                        " (excepted: " + std::to_string(testsetConfiguration.expectedMSE) +
-                        ") largestDifference: " + std::to_string(largestDifference) +
-                        " (excepted: " +
-                        std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
-    throw base::application_exception(message.c_str());
+    std::stringstream errorStream;
+    errorStream << "error: violated the expected error, mse: " << mse;
+    errorStream << " (excepted: " << testsetConfiguration.expectedMSE;
+    errorStream << ") largestDifference: ";
+    errorStream << largestDifference;
+    errorStream << " (excepted: " << testsetConfiguration.expectedLargestDifference << ")";
+    //    std::string message("error: violated the expected error, mse: " + std::to_string(mse) +
+    //                        " (excepted: " + std::to_string(testsetConfiguration.expectedMSE) +
+    //                        ") largestDifference: " + std::to_string(largestDifference) +
+    //                        " (excepted: " +
+    //                        std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
+    throw base::application_exception(errorStream.str());
   } else {
     if (verbose) {
       std::cout << "verification passed (mse: " << mse

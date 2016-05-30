@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(AutoTuningPaper)
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_Linear_float.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_Linear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_Linear_double.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_Linear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_ModLinear_float.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_ModLinear_double.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinear_Double) {
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName =
-      "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_float.scenario";
+      "friedman2_4d_500000_StreamingModOCLFastMultiPlatform_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingModOCLFastMultiPlatform";
   bool collectStatistics = true;
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
   std::string scenarioFileName =
-      "friedman2_4d_300000_StreamingModOCLFastMultiPlatform_double.scenario";
+      "friedman2_4d_500000_StreamingModOCLFastMultiPlatform_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingModOCLFastMultiPlatform";
   bool collectStatistics = true;
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_StreamingModOCLOpt_double.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_StreamingModOCLOpt_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingModOCLOpt";
   bool collectStatistics = true;
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Double) {
 
 BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman2_4d_300000_StreamingModOCLOpt_float.scenario";
+  std::string scenarioFileName = "friedman2_4d_500000_StreamingModOCLOpt_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingModOCLOpt";
   bool collectStatistics = true;
@@ -395,7 +395,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearOpt_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman1_10d_150000_Linear_float.scenario";
+  std::string scenarioFileName = "friedman1_10d_500000_Linear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman1_10d_150000_Linear_double.scenario";
+  std::string scenarioFileName = "friedman1_10d_500000_Linear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingOCLMultiPlatform";
   bool collectStatistics = true;
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_Linear_Double) {
 
 BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinear_Float) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman1_10d_150000_ModLinear_float.scenario";
+  std::string scenarioFileName = "friedman1_10d_500000_ModLinear_float.scenario";
   std::string parameterConfigurationFileName = "platformFloat.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
@@ -539,7 +539,7 @@ BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinear_Float) {
 
 BOOST_AUTO_TEST_CASE(Friedman1_10d_ModLinear_Double) {
   // internal precision is specified by the scenario, the parameter configuration is overwritten
-  std::string scenarioFileName = "friedman1_10d_150000_ModLinear_double.scenario";
+  std::string scenarioFileName = "friedman1_10d_500000_ModLinear_double.scenario";
   std::string parameterConfigurationFileName = "platformDouble.cfg";
   std::string kernelName = "StreamingModOCLMaskMultiPlatform";
   bool collectStatistics = true;
@@ -784,14 +784,14 @@ BOOST_AUTO_TEST_SUITE(AutoTuningPaperIntrinsicsComparison)
 BOOST_AUTO_TEST_CASE(StreamingIntrinsicsComparison) {
   std::string baseFolder = "datadriven/performanceTests/scenarios/";
   std::vector<std::string> scenarios = {
-      baseFolder + "friedman2_4d_300000_Linear_double.scenario",
-      baseFolder + "friedman2_4d_300000_Linear_float.scenario",
-      baseFolder + "friedman2_4d_300000_ModLinear_double.scenario",
-      baseFolder + "friedman2_4d_300000_ModLinear_float.scenario",
-      baseFolder + "friedman1_10d_150000_Linear_double.scenario",
-      baseFolder + "friedman1_10d_150000_Linear_float.scenario",
-      baseFolder + "friedman1_10d_150000_ModLinear_double.scenario",
-      baseFolder + "friedman1_10d_150000_ModLinear_float.scenario",
+      baseFolder + "friedman2_4d_500000_Linear_double.scenario",
+      baseFolder + "friedman2_4d_500000_Linear_float.scenario",
+      baseFolder + "friedman2_4d_500000_ModLinear_double.scenario",
+      baseFolder + "friedman2_4d_500000_ModLinear_float.scenario",
+      baseFolder + "friedman1_10d_500000_Linear_double.scenario",
+      baseFolder + "friedman1_10d_500000_Linear_float.scenario",
+      baseFolder + "friedman1_10d_500000_ModLinear_double.scenario",
+      baseFolder + "friedman1_10d_500000_ModLinear_float.scenario",
       baseFolder + "DR5_train_Linear_double.scenario",
       baseFolder + "DR5_train_Linear_float.scenario",
       baseFolder + "DR5_train_ModLinear_double.scenario",

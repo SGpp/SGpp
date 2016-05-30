@@ -5,7 +5,7 @@
    "grid": {
       "boundaryLevel": 0,
       "dim": 0,
-      "level": 10,
+      "level": 9,
       "maxDegree": 30,
       "type": "ModLinear"
    },
@@ -30,8 +30,8 @@
    },
    "testset": {
       "hasTestDataset": true,
-      "testFileName": "datadriven/performanceTests/scenarios/DR5_train_ModLinear_double_AlphaReference.vec",
-      "expectedMSE": 0.000000000000001,
-      "expectedLargestDifference": 0.00000001
+      "testFileName": "DR5_train_ModLinear_double_AlphaReference.vec",
+      "expectedMSE": 1E-20,
+      "expectedLargestDifference": 10E-10
    }
 }
