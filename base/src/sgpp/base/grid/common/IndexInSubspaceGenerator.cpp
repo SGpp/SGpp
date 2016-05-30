@@ -14,12 +14,25 @@ IndexInSubspaceGenerator::IndexInSubspaceGenerator(const value_type&
   level_vector(level_vector),
   max_index_vector(level_vector.size()), val_(NULL), dim_(level_vector.size()) {
   for (size_t d = 0; d < dim_; d++) {
-    max_index_vector[d] = (2 << (level_vector[d] - 1)) - 1;
+    if (level_vector[d] > 0) {
+      max_index_vector[d] = (2 << (level_vector[d] - 1)) - 1;
+    } else {
+      max_index_vector[d] = 1;
+    }
   }
 }
 
 IndexInSubspaceGenerator::iterator IndexInSubspaceGenerator::begin() {
-  val_ = std::make_shared<value_type>(dim_, 1);
+  val_ = std::make_shared<value_type>(dim_);
+
+  for (size_t d = 0; d < dim_; d++) {
+    if (level_vector[d] > 0) {
+      (*val_)[d] = 1;
+    } else {
+      (*val_)[d] = 0;
+    }
+  }
+
   queue_value_type pair(val_, 0);
   queue_.push(pair);
   this->next_();
@@ -52,7 +65,12 @@ IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
 
   for (unsigned int d = start_dim; d < this->dim_; d++) {
     pointer_type new_index = pointer_type(new value_type(*val_));
-    (*new_index)[d] += 2;
+
+    if (level_vector[d] > 0) {
+      (*new_index)[d] += 2;
+    } else {
+      (*new_index)[d]++;
+    }
 
     if (compareVectors(*new_index, max_index_vector)) {
       queue_.push(std::make_pair(new_index, d));
