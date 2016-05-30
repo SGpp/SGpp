@@ -171,7 +171,11 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
         grid_index.set(d, level_vector[d], (*index_it)[d]);
       }
 
-      refineGridpoint(storage, storage.seq(&grid_index));
+      const size_t seq = storage.seq(&grid_index);
+
+      if (seq < storage.getSize()) {
+        refineGridpoint(storage, seq);
+      }
     }
   }
 }
