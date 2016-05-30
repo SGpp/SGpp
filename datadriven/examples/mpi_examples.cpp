@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   // Create Grid
   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(10);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(6);
+  gridGen.regular(5);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
   sgpp::solver::ConjugateGradients solver(1000, 0.001);
-  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 0.001);
+  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 0.001, 1280);
   //solver.solve(mult_op, alpha, rhs, false, true);
   double max = alpha.max();
   double min = alpha.min();

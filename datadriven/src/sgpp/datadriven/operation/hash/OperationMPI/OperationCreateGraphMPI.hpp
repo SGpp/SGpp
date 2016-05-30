@@ -21,17 +21,17 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
   static MPISlaveOperation* create_slave(void) {
     return new OperationCreateGraphSlave();
   }
-  OperationCreateGraphMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k)
-      : OperationGraphMethodMPI(data, dimensions, k,
-                                "OperationCreateGraphSlave") {
+  OperationCreateGraphMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k, int packagesize)
+      : OperationGraphMethodMPI(data, dimensions, k, "OperationCreateGraphSlave"),
+        packagesize(packagesize) {
   }
   std::vector<int> create_graph(void) {
     this->start_slave_code();
     std::vector<int> returngraph(datasize / dimensions *k);
 
     // Create packages and let the slaves solve them
-    int *partial_result = new int[2000 * k];
-    SimpleQueue<int> workitem_queue(datasize / dimensions, 2000);
+    int *partial_result = new int[packagesize * k];
+    SimpleQueue<int> workitem_queue(datasize / dimensions, packagesize);
     int chunkid = 0;
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
@@ -50,6 +50,7 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
   virtual ~OperationCreateGraphMPI() {}
 
  protected:
+  int packagesize;
   class OperationCreateGraphSlave : public OperationGraphMethodSlave {
    public:
     OperationCreateGraphSlave()
