@@ -137,9 +137,9 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
 
       // if there is no explicit specification, set schedule size to a very large value
       // this makes tuning easier, as kernels are running longer
-      bool addedScheduleSize = false;
+      //      bool addedScheduleSize = false;
       if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
-        addedScheduleSize = true;
+        //        addedScheduleSize = true;
         // TODO(pfandedd): improve, for now multiples of 1024 should run with any kernel
         deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(1024000));
       }
@@ -517,7 +517,8 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     //                        ") largestDifference: " + std::to_string(largestDifference) +
     //                        " (excepted: " +
     //                        std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
-    throw base::application_exception(errorStream.str());
+    std::string message(errorStream.str());
+    throw base::application_exception(message.c_str());
   } else {
     if (verbose) {
       std::cout << "verification passed (mse: " << mse
