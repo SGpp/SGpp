@@ -171,6 +171,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       result[i] = resultVector[i];
   }
 
+  /// Density Multiplication
   void mult(base::DataVector& alpha, base::DataVector& result) override {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(gridSize);

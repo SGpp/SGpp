@@ -21,9 +21,9 @@ namespace clusteringmpi {
 class OperationCreatePrunedGraph : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
   OperationCreatePrunedGraph(base::Grid& grid, base::DataVector &alpha, base::DataMatrix &data,
-                             size_t k)
+                             size_t k, int packagesize)
       : OperationGridMethod(grid, "OperationCreatePrunedGraphSlave"),
-        OperationGraphMethodMPI(data, grid.getDimension(), k) {
+        OperationGraphMethodMPI(data, grid.getDimension(), k), packagesize(packagesize) {
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(alpha.getPointer(), static_cast<int>(gridsize), MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
@@ -35,8 +35,8 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(&treshold, 1, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
 
-    int *partial_result = new int[2000 * k];
-    SimpleQueue<int> workitem_queue(datasize / dimensions, 2000);
+    int *partial_result = new int[packagesize * k];
+    SimpleQueue<int> workitem_queue(datasize / dimensions, packagesize);
     int chunkid = 0;
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
@@ -60,6 +60,7 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
   virtual ~OperationCreatePrunedGraph() {}
 
  private:
+  int packagesize;
   class OperationCreatePrunedGraphSlave  : public OperationGridMethodSlave,
                                            public OperationGraphMethodSlave {
    private:

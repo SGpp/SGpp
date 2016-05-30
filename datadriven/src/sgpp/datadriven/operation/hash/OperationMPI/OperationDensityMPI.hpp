@@ -18,8 +18,8 @@ namespace clusteringmpi {
 
 class OperationDensityMPI : public OperationGridMethod, public base::OperationMatrix {
  public:
-  OperationDensityMPI(base::Grid& grid, double lambda) :
-      OperationGridMethod(grid, "OperationDensitySlave") {
+  OperationDensityMPI(base::Grid& grid, double lambda, int packagesize) :
+      OperationGridMethod(grid, "OperationDensitySlave"), packagesize(packagesize) {
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
@@ -31,8 +31,8 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(alpha.getPointer(), static_cast<int>(gridsize), MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
     // Create packages and let the slaves solve them
-    double *partial_result = new double[1280];
-    SimpleQueue<double> workitem_queue(gridsize, 1280);
+    double *partial_result = new double[packagesize];
+    SimpleQueue<double> workitem_queue(gridsize, packagesize);
     int chunkid = 0;
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
@@ -54,6 +54,7 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
   }
 
  private:
+  int packagesize;
   class OperationDensitySlave : public OperationGridMethodSlave {
    private:
     double lambda;

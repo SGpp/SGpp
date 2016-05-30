@@ -17,9 +17,9 @@ namespace clusteringmpi {
 /// MPI operation for creating right hand side clustering vector
 class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
-  OperationRhsMPI(base::Grid& grid, size_t dimensions, base::DataMatrix &data)
+  OperationRhsMPI(base::Grid& grid, size_t dimensions, base::DataMatrix &data, int packagesize)
       : OperationGridMethod(grid, "OperationRhsSlave"),
-        OperationGraphMethodMPI(data, dimensions, 12) {
+        OperationGraphMethodMPI(data, dimensions, 12), packagesize(packagesize) {
   }
   base::DataVector create_rhs(void) {
     // Start slave operations
@@ -29,8 +29,8 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
     base::DataVector ret_rhs(gridsize);
 
     // Create packages and let the slaves solve them
-    double *partial_result = new double[2000];
-    SimpleQueue<double> workitem_queue(gridsize, 2000);
+    double *partial_result = new double[packagesize];
+    SimpleQueue<double> workitem_queue(gridsize, packagesize);
     int chunkid = 0;
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
@@ -53,6 +53,7 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
   }
 
  private:
+  int packagesize;
   class OperationRhsSlave : public OperationGridMethodSlave,
                             public OperationGraphMethodSlave {
    public:
