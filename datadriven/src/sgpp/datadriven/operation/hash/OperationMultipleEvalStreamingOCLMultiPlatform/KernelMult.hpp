@@ -79,7 +79,7 @@ class KernelMult {
         deviceTimingMult(0.0),
         kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMult(queueBalancerMult),
-	buildDuration(0.0) {
+        buildDuration(0.0) {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
@@ -130,7 +130,7 @@ class KernelMult {
     if (this->kernelMult == nullptr) {
       std::chrono::time_point<std::chrono::system_clock> start, end;
       start = std::chrono::system_clock::now();
-        
+
       std::string program_src = kernelSourceBuilder.generateSource();
       this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration, "multOCL");
 
@@ -319,9 +319,7 @@ class KernelMult {
     return this->deviceTimingMult;
   }
 
-  double getBuildDuration() {
-    return this->buildDuration;
-  }
+  double getBuildDuration() { return this->buildDuration; }
 
  private:
   void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha,

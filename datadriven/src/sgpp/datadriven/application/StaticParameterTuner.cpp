@@ -292,10 +292,14 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
   // evaluate initial parameter combination
   double shortestDuration;
+  double shortestDurationOperations;
+  double shortestDurationKernels;
   double highestGFlops;
-  evaluateSetup(scenario, fixedParameters, kernelName, shortestDuration, highestGFlops);
+  evaluateSetup(scenario, fixedParameters, kernelName, shortestDuration, shortestDurationOperations,
+                shortestDurationKernels, highestGFlops);
   if (collectStatistics) {
-    this->statistics.emplace_back(fixedParameters, shortestDuration, highestGFlops);
+    this->statistics.emplace_back(fixedParameters, shortestDuration, shortestDurationOperations,
+                                  shortestDurationKernels, highestGFlops);
   }
 
   std::unique_ptr<json::Node> bestParameters(kernelNode.clone());
@@ -329,8 +333,11 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 
       // evaluate current parameter combination
       double duration;
+      double durationOperations;
+      double durationKernels;
       double GFlops;
-      evaluateSetup(scenario, fixedParameters, kernelName, duration, GFlops);
+      evaluateSetup(scenario, fixedParameters, kernelName, duration, durationOperations,
+                    durationKernels, GFlops);
 
       if (duration < shortestDuration) {
         std::cout << "new best combination! old: " << shortestDuration << " new: " << duration
@@ -341,7 +348,8 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
         //        std::cout << *bestParameters << std::endl;
       }
       if (collectStatistics) {
-        this->statistics.emplace_back(fixedParameters, duration, GFlops);
+        this->statistics.emplace_back(fixedParameters, duration, durationOperations,
+                                      durationKernels, GFlops);
       }
     } else {
       parameterIndex += 1;
@@ -361,6 +369,7 @@ void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &sce
 double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
                                            sgpp::base::OCLOperationConfiguration &currentParameters,
                                            const std::string &kernelName, double &duration,
+                                           double &durationOperation, double &durationKernel,
                                            double &GFlops) {
   sgpp::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
@@ -402,6 +411,8 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
     LearnerTiming timing = learner.getLearnerTiming();
 
     duration = timing.timeComplete_;
+    durationOperation = timing.timeMultComplete_ + timing.timeMultTransComplete_;
+    durationKernel = timing.timeMultCompute_ + timing.timeMultTransCompute_;
 
     GFlops = timing.GFlop_ / timing.timeComplete_;
 
@@ -423,9 +434,9 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
 }
 
 bool StaticParameterTunerStatisticsTupleComparer(
-    std::tuple<sgpp::base::OCLOperationConfiguration, double, double> left,
-    std::tuple<sgpp::base::OCLOperationConfiguration, double, double> right) {
-  return std::get<1>(left) < std::get<1>(right);
+    std::tuple<sgpp::base::OCLOperationConfiguration, double, double, double, double> left,
+    std::tuple<sgpp::base::OCLOperationConfiguration, double, double, double, double> right) {
+  return std::get<4>(left) < std::get<4>(right);
 }
 
 void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName,
@@ -453,14 +464,16 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
   if (this->tunableParameters.size() > 0) {
     file << ", ";
   }
-  file << "duration, GFlops" << std::endl;
+  file << "duration, durationOperations, durationKernels, GFlops" << std::endl;
 
   for (auto &parameterDurationGFlopsTuple : this->statistics) {
     sgpp::base::OCLOperationConfiguration &parameter = std::get<0>(parameterDurationGFlopsTuple);
     json::Node &kernelNode =
         parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
     double duration = std::get<1>(parameterDurationGFlopsTuple);
-    double GFlops = std::get<2>(parameterDurationGFlopsTuple);
+    double durationOperations = std::get<2>(parameterDurationGFlopsTuple);
+    double durationKernels = std::get<3>(parameterDurationGFlopsTuple);
+    double GFlops = std::get<4>(parameterDurationGFlopsTuple);
 
     first = true;
     for (TunableParameter &columnParameter : this->tunableParameters) {
@@ -474,7 +487,8 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
     if (this->tunableParameters.size() > 0) {
       file << ", ";
     }
-    file << duration << ", " << GFlops << std::endl;
+    file << duration << ", " << durationOperations << ", " << durationKernels << ", " << GFlops
+         << std::endl;
   }
 }
 
