@@ -193,15 +193,19 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
-    if (verbose) {
-      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
-
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMult<T> &kernel : multKernels) {
+      this->duration -= kernel.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   void multTranspose(sgpp::base::DataVector &source, sgpp::base::DataVector &result) override {
@@ -258,15 +262,21 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    if (verbose) {
-      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T> &kernelTranspose :
+         multTransposeKernels) {
+      this->duration -= kernelTranspose.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   double getDuration() { return this->duration; }

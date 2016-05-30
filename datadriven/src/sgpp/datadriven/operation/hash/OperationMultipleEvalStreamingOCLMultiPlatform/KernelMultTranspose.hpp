@@ -81,8 +81,7 @@ class KernelMultTranspose {
         manager(manager),
         kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMultTranspose(queueBalancerMultTranpose),
-	buildDuration(0.0)
-  {
+        buildDuration(0.0) {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
@@ -132,15 +131,14 @@ class KernelMultTranspose {
     }
 
     if (this->kernelMultTranspose == nullptr) {
-
       std::chrono::time_point<std::chrono::system_clock> start, end;
       start = std::chrono::system_clock::now();
-      
+
       std::string program_src = kernelSourceBuilder.generateSource();
       this->kernelMultTranspose =
           manager->buildKernel(program_src, device, kernelConfiguration, "multTransOCL");
 
-            end = std::chrono::system_clock::now();
+      end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       this->buildDuration = elapsed_seconds.count();
     } else {
@@ -314,9 +312,7 @@ class KernelMultTranspose {
     return this->deviceTimingMultTranspose;
   }
 
-  double getBuildDuration() {
-    return this->buildDuration;
-  }
+  double getBuildDuration() { return this->buildDuration; }
 
  private:
   void initGridBuffersTranspose(std::vector<T> &level, std::vector<T> &index,
