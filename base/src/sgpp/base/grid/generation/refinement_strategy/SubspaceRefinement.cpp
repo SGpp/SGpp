@@ -144,10 +144,12 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
                    collection.begin() + refinements_num,
                    collection.end(), AbstractRefinement::compare_pairs);
 
-  // clear the collection and populated it only with those elements
-  // that will be refined
-  for (size_t diff = collection.size() - refinements_num; diff > 0; diff--) {
-    collection.pop_back();
+  if (collection.size() >= refinements_num) {
+    // clear the collection and populate it only with those elements
+    // that will be refined
+    for (size_t diff = collection.size() - refinements_num; diff > 0; diff--) {
+      collection.pop_back();
+    }
   }
 }
 
