@@ -163,9 +163,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     for (size_t i = 0; i < devices.size(); i++) {
@@ -191,18 +188,19 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       std::rethrow_exception(exceptionPtr);
     }
 
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-
-    if (verbose) {
-      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
-    }
-
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+    
+    for (StreamingOCLMultiPlatform::KernelMult<T> &kernel: multKernels) {
+      this->duration -= kernel.getBuildDuration();
+    }
+    
+    if (verbose) {
+      std::cout << "duration mult ocl: " << this->duration << std::endl;
+    }
   }
 
   void multTranspose(base::DataVector &source, base::DataVector &result) override {
@@ -231,9 +229,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     std::once_flag onceFlag;
@@ -257,17 +252,19 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       std::rethrow_exception(exceptionPtr);
     }
 
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    if (verbose) {
-      std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
-    }
-
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingOCLMultiPlatform::KernelMultTranspose<T> &kernelTranspose: multTransposeKernels) {
+      this->duration -= kernelTranspose.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration multTranspose ocl: " << duration << std::endl;
+    }
   }
 
   double getDuration() override { return this->duration; }

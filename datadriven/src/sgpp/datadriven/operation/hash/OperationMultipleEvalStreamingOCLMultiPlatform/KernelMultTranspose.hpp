@@ -10,6 +10,7 @@
 #include <string>
 #include <limits>
 #include <vector>
+#include <chrono>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
@@ -59,6 +60,8 @@ class KernelMultTranspose {
   size_t scheduleSize;
   size_t totalBlockSize;
 
+  double buildDuration;
+
  public:
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -77,7 +80,9 @@ class KernelMultTranspose {
         kernelSourceBuilder(device, kernelConfiguration, dims),
         manager(manager),
         kernelConfiguration(kernelConfiguration),
-        queueLoadBalancerMultTranspose(queueBalancerMultTranpose) {
+        queueLoadBalancerMultTranspose(queueBalancerMultTranpose),
+	buildDuration(0.0)
+  {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
@@ -127,9 +132,19 @@ class KernelMultTranspose {
     }
 
     if (this->kernelMultTranspose == nullptr) {
+
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      start = std::chrono::system_clock::now();
+      
       std::string program_src = kernelSourceBuilder.generateSource();
       this->kernelMultTranspose =
           manager->buildKernel(program_src, device, kernelConfiguration, "multTransOCL");
+
+            end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end - start;
+      this->buildDuration = elapsed_seconds.count();
+    } else {
+      buildDuration = 0.0;
     }
 
     this->deviceTimingMultTranspose = 0.0;
@@ -297,6 +312,10 @@ class KernelMultTranspose {
       }
     }
     return this->deviceTimingMultTranspose;
+  }
+
+  double getBuildDuration() {
+    return this->buildDuration;
   }
 
  private:

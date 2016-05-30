@@ -10,6 +10,7 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/globaldef.hpp"
@@ -57,6 +58,8 @@ class KernelMult {
   size_t scheduleSize;
   size_t totalBlockSize;
 
+  double buildDuration;
+
  public:
   KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
              std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -75,7 +78,8 @@ class KernelMult {
         manager(manager),
         deviceTimingMult(0.0),
         kernelConfiguration(kernelConfiguration),
-        queueLoadBalancerMult(queueBalancerMult) {
+        queueLoadBalancerMult(queueBalancerMult),
+	buildDuration(0.0) {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
@@ -124,8 +128,17 @@ class KernelMult {
     }
 
     if (this->kernelMult == nullptr) {
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      start = std::chrono::system_clock::now();
+        
       std::string program_src = kernelSourceBuilder.generateSource();
       this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration, "multOCL");
+
+      end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end - start;
+      this->buildDuration = elapsed_seconds.count();
+    } else {
+      buildDuration = 0.0;
     }
 
     initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
@@ -304,6 +317,10 @@ class KernelMult {
     }
 
     return this->deviceTimingMult;
+  }
+
+  double getBuildDuration() {
+    return this->buildDuration;
   }
 
  private:
