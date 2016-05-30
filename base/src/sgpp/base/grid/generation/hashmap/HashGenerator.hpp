@@ -15,6 +15,18 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
+
+#include <iterator>
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+  if (!v.empty()) {
+    out << '[';
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+    out << "\b\b]";
+  }
+  return out;
+}
 
 namespace sgpp {
 namespace base {
@@ -244,7 +256,6 @@ class HashGenerator {
         } else {
           idx_1d.push(0, l, i, false);
         }
-
         storage.insert(idx_1d);
       }
     }
@@ -261,14 +272,13 @@ class HashGenerator {
         bool first = true;
         index_type idx(*storage.get(g));
 
-        // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
         level_t level_max = idx.getLevelMax();
 
         // add remaining level-index pairs in current dimension d
-        // as mentioned before T adjusts the granularity of the grid
-        for (level_t l = 1; l + level_sum - (T * level_max) <=
-                                static_cast<double>(n + storage.getDimension() - 1) - (T * n);
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                                (std::max(l, level_max) <= n);
              l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
@@ -279,7 +289,6 @@ class HashGenerator {
               } else {
                 idx.push(d, l, i, false);
               }
-
               storage.insert(idx);
             } else {
               // is leaf?
@@ -288,7 +297,6 @@ class HashGenerator {
               } else {
                 idx.push(d, l, i, false);
               }
-
               storage.update(idx, g);
               first = false;
             }
@@ -298,8 +306,7 @@ class HashGenerator {
     }
   }
 
-  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size,
-                    double T = 0) {
+  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size, double T = 0) {
     if (storage.getDimension() == 0) return;
 
     index_type idx_1d(storage.getDimension());
@@ -357,8 +364,10 @@ class HashGenerator {
         level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
         // as mentioned before T adjusts the granularity of the grid
-        for (level_t l = 1; l + level_sum - (T * level_max) <=
-             static_cast<double>(n + storage.getDimension() - 1) - (T * n); l++) {
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                                (std::max(l, level_max) <= n);
+             l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
             if (first == false) {
@@ -529,9 +538,12 @@ class HashGenerator {
           upperBound = static_cast<double>(n + curDim - 1);
         }
         upperBound -= T * n;
-        level_t levelMax = idx.getLevelMax();
+        level_t level_max = idx.getLevelMax();
 
-        for (level_t l = 1; l + levelSum - (T * levelMax) <= upperBound; l++) {
+        for (level_t l = 1;
+             (static_cast<double>(l + levelSum) - (T * std::max(l, level_max)) <= upperBound) &&
+                 (std::max(l, level_max) <= n);
+             l++) {
           // generate inner basis functions
           for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
             if ((l + levelSum) == n + dim - 1) {
@@ -612,8 +624,10 @@ class HashGenerator {
         level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
         // as mentioned before T adjusts the granularity of the grid
-        for (level_t l = 1; l + level_sum - (T * level_max) <=
-             static_cast<double>(n + storage.getDimension() - 1) - (T * n); l++) {
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                                (std::max(l, level_max) <= n);
+             l++) {
           if (l == 1) {
             idx.push(d, 0, 0, false);
             storage.insert(idx);

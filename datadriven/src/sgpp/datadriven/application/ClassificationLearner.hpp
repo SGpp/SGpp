@@ -32,6 +32,8 @@ class ClassificationLearner {
 
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
   sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
+  std::pair<sgpp::base::DataVector, sgpp::base::DataVector> predictWithCertainty(
+      sgpp::base::DataMatrix& data);
   size_t getGridSize() const;
   double getAccuracy(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
 
@@ -47,6 +49,8 @@ class ClassificationLearner {
   std::vector<learner_t> learners;
   std::set<class_t> uniqueClasses;
 
+  std::vector<std::pair<class_t, sgpp::base::DataVector>> getPredictions(
+      sgpp::base::DataMatrix& data);
   sgpp::base::DataVector generateYOneVsAll(const sgpp::base::DataVector& oldY, class_t classValue);
   double getAccuracy(const sgpp::base::DataVector& y, const sgpp::base::DataVector yPrediction);
 };

@@ -5,6 +5,10 @@
 
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
 
+#include <set>
+#include <utility>
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -46,26 +50,13 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
   }
 }
 
-size_t ClassificationLearner::getGridSize() const {
-    return learners[0].second.getGridSize();
-}
-
+size_t ClassificationLearner::getGridSize() const { return learners[0].second.getGridSize(); }
 
 sgpp::base::DataVector ClassificationLearner::predict(sgpp::base::DataMatrix& data) {
-  const auto nPredictions = learners.size();
-  auto predictions = std::vector<std::pair<class_t, sgpp::base::DataVector>>();
-  predictions.reserve(nPredictions);
+  auto predictions = getPredictions(data);
 
   auto resultClasses = sgpp::base::DataVector(data.getNrows());
 
-  // We need a prediction for each learner. Remember: Each learner can only
-  // check wheter the data row belong to its class or not.
-  for (auto& learner : learners) {
-    const class_t uniqueClass = learner.first;
-    auto& regressionLearner = learner.second;
-    const auto prediction = regressionLearner.predict(data);
-    predictions.emplace_back(uniqueClass, prediction);
-  }
   // Find learner with highest output value and its class. This class is (hopefully) the correct
   // one.
   for (size_t i = 0; i < data.getNrows(); ++i) {
@@ -81,6 +72,49 @@ sgpp::base::DataVector ClassificationLearner::predict(sgpp::base::DataMatrix& da
     resultClasses[i] = bestClass;
   }
   return resultClasses;
+}
+
+std::pair<sgpp::base::DataVector, sgpp::base::DataVector>
+ClassificationLearner::predictWithCertainty(sgpp::base::DataMatrix& data) {
+  auto predictions = getPredictions(data);
+
+  auto resultClasses = sgpp::base::DataVector(data.getNrows());
+  auto resultCertainty = sgpp::base::DataVector(data.getNrows());
+
+  // Find learner with highest output value and its class. This class is (hopefully) the correct
+  // one.
+  for (size_t i = 0; i < data.getNrows(); ++i) {
+    class_t bestClass = 0;
+    double bestLearnerResult = 0.0;  // = worst case
+    for (const auto& prediction : predictions) {
+      const auto learnerResult = prediction.second[i];
+      if (learnerResult > bestLearnerResult) {
+        bestLearnerResult = learnerResult;
+        bestClass = prediction.first;
+      }
+    }
+    resultClasses[i] = bestClass;
+    resultCertainty[i] = bestLearnerResult;
+  }
+  return {resultClasses, resultCertainty};
+}
+
+std::vector<std::pair<ClassificationLearner::class_t, sgpp::base::DataVector>>
+ClassificationLearner::getPredictions(sgpp::base::DataMatrix& data) {
+  const auto nPredictions = learners.size();
+  auto predictions = std::vector<std::pair<class_t, sgpp::base::DataVector>>();
+  predictions.reserve(nPredictions);
+
+  // We need a prediction for each learner. Remember: Each learner can only
+  // check wheter the data row belong to its class or not.
+  for (auto& learner : learners) {
+    const class_t uniqueClass = learner.first;
+    auto& regressionLearner = learner.second;
+    const auto prediction = regressionLearner.predict(data);
+    predictions.emplace_back(uniqueClass, prediction);
+  }
+
+  return predictions;
 }
 
 double ClassificationLearner::getAccuracy(base::DataMatrix& data, const base::DataVector& y) {
