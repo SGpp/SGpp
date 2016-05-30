@@ -27,7 +27,6 @@ class OperationMakePositiveFast(object):
         self.grid = grid
         self.numDims = grid.getStorage().getDimension()
         self.maxLevel = grid.getStorage().getMaxLevel()
-        self.verbose = False
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
         if self.candidateSearchAlgorithm is None:
@@ -37,6 +36,8 @@ class OperationMakePositiveFast(object):
         self.addAllGridPointsOnNextLevel = True
 
         self.lastMinimumCandidateLevelSum = None
+
+        self.verbose = False
 
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
@@ -123,9 +124,8 @@ class OperationMakePositiveFast(object):
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
-                assert all([alpha[gs.seq(gp)] >= -1e-13 for gp in addedGridPoints])
+                assert all([alpha[gs.seq(gp)] > -1e-14 for gp in addedGridPoints])
         return alpha
-
     
 
     def computeBoundsOfOverlappingPatch(self, gpi, gpj):
@@ -230,7 +230,7 @@ class OperationMakePositiveFast(object):
         return addedGridPoints, minLevelSum, nextLevelCosts
 
 
-    def coarsening(self, grid, alpha):
+    def coarsening(self, grid, alpha, newGridPoints):
         """
         Removes all unnecessary grid points. A grid point is defined as
         unnecessary if it is a leaf node and its hierarchical coefficient is
@@ -247,11 +247,13 @@ class OperationMakePositiveFast(object):
 
             notAffectedGridPoints = []
             toBeRemoved = IndexList()
-            for ix in xrange(gs.getSize()):
+            for gp in newGridPoints:
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
-                if gs.get(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
-                    toBeRemoved.append(ix)
+                if gs.has_key(gp):
+                    ix = gs.seq(gp)
+                    if gs.get(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
+                        toBeRemoved.append(ix)
 
             # remove the identified grid points
             if toBeRemoved.size() > 0:
@@ -291,6 +293,7 @@ class OperationMakePositiveFast(object):
         newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
         newGs = newGrid.getStorage()
         numDims = newGs.getDimension()
+        newGridPoints = []
         addedGridPoints = {}
 
         numFullGridPoints = (2 ** self.maxLevel - 1) ** numDims
@@ -307,7 +310,6 @@ class OperationMakePositiveFast(object):
                 print "iteration             : %i" % self.candidateSearchAlgorithm.iteration
                 print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints, costs)
 
-            addedGridPoints = {}
             if len(candidates) > 0:
                 addedGridPoints, minLevelSum, nextLevelCosts = self.addFullGridPoints(newGrid, newAlpha, candidates)
                 currentCosts += nextLevelCosts
@@ -328,6 +330,9 @@ class OperationMakePositiveFast(object):
                                                                                            addedGridPoints)
                 else:
                     newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
+                    
+                # update list of new grid points
+                newGridPoints += addedGridPoints
 
 #                 if newGs.getDimension() == 2:
 #                     self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
@@ -335,11 +340,12 @@ class OperationMakePositiveFast(object):
                 break
 
         # coarsening: remove all new grid points with zero surplus
-        coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha)
+        coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
         if self.verbose:
-            print "# coarsed grid        : %i -> %i" % (newGrid.getSize(),
-                                                        coarsedGrid.getSize())
-            print "# full grid           :       %i" % (2 ** self.maxLevel - 1) ** self.numDims
+            print "# final grid          : %i <= %i <= %i <= %i" % (self.grid.getSize(),
+                                                                    coarsedGrid.getSize(),
+                                                                    newGrid.getSize(),
+                                                                    (2 ** self.maxLevel - 1) ** self.numDims)
 
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
@@ -354,5 +360,3 @@ class OperationMakePositiveFast(object):
 #                                                      yi)
 
         return coarsedGrid, coarsedAlpha
-
-

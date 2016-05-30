@@ -89,6 +89,7 @@ class LocalFullGridCandidates(CandidateSet):
 
         return comparisonCosts
 
+
     def findIntersections(self, gpsi, gpsj, grid):
         overlappingGridPoints = {}
         costs = 0
@@ -323,14 +324,14 @@ class LocalFullGridCandidates(CandidateSet):
                                                                                          costsIntersectionSearch)
             if self.verbose:
                 fullGridCosts = (2 ** self.maxLevel - 1) ** self.numDims
-                print "# compute local grids: predicted costs: %i <= %i :full grid costs" % (predictedLocalCosts,
-                                                                                             fullGridCosts)
-                print "-" * 60
+                print "# compute local grids :"
+                print "  predicted costs     : %i ? %i :full grid costs" % (predictedLocalCosts,
+                                                                            fullGridCosts)
 
             self.newCandidates, realLocalCosts = self.computeCandidates(sortedOverlap, localFullGridLevels, grid, alpha)
 
             if self.verbose:
-                print "# real costs for local grid: %i <= %i :predicted costs" % (realLocalCosts, predictedLocalCosts)
+                print "  real costs          : %i <= %i :predicted costs" % (realLocalCosts, predictedLocalCosts)
                 print "-" * 60
 
             self.costs = realLocalCosts
