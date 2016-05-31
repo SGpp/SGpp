@@ -30,7 +30,7 @@
    },
    "testset": {
       "hasTestDataset": true,
-      "testFileName": "friedman1_10d_500000_ModLinear_double_AlphaReference.vec",
+      "testFileName": "datadriven/performanceTests/scenarios/friedman1_10d_500000_ModLinear_double_AlphaReference.vec",
       "expectedMSE": 1E-20,
       "expectedLargestDifference": 10E-10
    }

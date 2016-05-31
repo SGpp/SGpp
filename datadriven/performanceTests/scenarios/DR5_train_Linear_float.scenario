@@ -30,7 +30,7 @@
    },
    "testset": {
       "hasTestDataset": true,
-      "testFileName": "DR5_train_Linear_float_AlphaReference.vec",
+      "testFileName": "datadriven/performanceTests/scenarios/DR5_train_Linear_float_AlphaReference.vec",
       "expectedMSE": 1E-20,
       "expectedLargestDifference": 10E-10
    }
