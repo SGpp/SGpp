@@ -31,7 +31,7 @@
    "testset": {
       "hasTestDataset": true,
       "testFileName": "datadriven/performanceTests/scenarios/friedman2_4d_500000_Linear_float_AlphaReference.vec",
-      "expectedMSE": 1E-20,
-      "expectedLargestDifference": 10E-10
+      "expectedMSE": 1E-10,
+      "expectedLargestDifference": 10E-3
    }
 }

@@ -31,7 +31,7 @@
    "testset": {
       "hasTestDataset": true,
       "testFileName": "datadriven/performanceTests/scenarios/DR5_train_ModLinear_float_AlphaReference.vec",
-      "expectedMSE": 1E-20,
-      "expectedLargestDifference": 10E-10
+      "expectedMSE": 1E-16,
+      "expectedLargestDifference": 10E-5
    }
 }

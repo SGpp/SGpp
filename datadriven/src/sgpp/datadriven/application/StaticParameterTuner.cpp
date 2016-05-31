@@ -521,6 +521,7 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
     std::stringstream errorStream;
+    errorStream << std::scientific;
     errorStream << "error: violated the expected error, mse: " << mse;
     errorStream << " (excepted: " << testsetConfiguration.expectedMSE;
     errorStream << ") largestDifference: ";
