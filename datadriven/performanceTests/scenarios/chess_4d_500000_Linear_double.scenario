@@ -31,7 +31,7 @@
    "testset": {
       "hasTestDataset": true,
       "testFileName": "datadriven/performanceTests/scenarios/chess_4d_500000_Linear_double_AlphaReference.vec",
-      "expectedMSE": 0,
-      "expectedLargestDifference": 0
+      "expectedMSE": 1E-30,
+      "expectedLargestDifference": 1E-12
    }
 }
