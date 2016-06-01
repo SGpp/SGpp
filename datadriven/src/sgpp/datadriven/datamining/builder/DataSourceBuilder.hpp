@@ -20,22 +20,16 @@ enum FileType { NONE, ARFF };
 
 namespace sgpp {
 namespace datadriven {
-
+// TODO(Michael Lettrich): parse filetype?
 class DataSourceBuilder {
  public:
   DataSourceBuilder();
   virtual ~DataSourceBuilder();
-  DataSourceBuilder& withFileType(std::string fileType);
-  DataSourceBuilder& withCompression(bool isCompressed);
-  DataSourceBuilder& withPath(std::string filePath);
   DataSourceBuilder& inBatches(size_t howMany);
   DataSourceBuilder& withBatchSize(size_t batchSize);
-  std::unique_ptr<DataSource> assemble();
+  virtual std::unique_ptr<DataSource> assemble() = 0;
 
- private:
-  FileType fileType;
-  std::string filePath;
-  bool isCompressed;
+ protected:
   size_t batchSize;
   size_t numBatches;
 };

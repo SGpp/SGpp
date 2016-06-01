@@ -20,58 +20,12 @@
 #include <algorithm>
 #include <string>
 
-const std::string arff = "ARFF";
-
 namespace sgpp {
 namespace datadriven {
 
-DataSourceBuilder::DataSourceBuilder()
-    : fileType(NONE), filePath(""), isCompressed(false), batchSize(0), numBatches(0) {}
+DataSourceBuilder::DataSourceBuilder() : batchSize(0), numBatches(0) {}
 
 DataSourceBuilder::~DataSourceBuilder() {}
-
-DataSourceBuilder& DataSourceBuilder::withFileType(std::string fileType) {
-  if (arff.compare(fileType) == 0) {
-    this->fileType = ARFF;
-  } else {
-    base::data_exception("Unknown file type");
-  }
-  return *this;
-}
-
-DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
-  this->isCompressed = isCompressed;
-  return *this;
-}
-
-DataSourceBuilder& DataSourceBuilder::withPath(std::string filePath) {
-  this->filePath = filePath;
-  return *this;
-}
-
-std::unique_ptr<DataSource> DataSourceBuilder::assemble() {
-  // TODO (Michael Lettrich): Think of a nicer way to do assembly
-  std::unique_ptr<SampleProvider> sampleProvider;
-  std::unique_ptr<FileSampleProvider> fileSampleProvider;
-  switch (fileType) {
-    case ARFF:
-      fileSampleProvider = std::make_unique<ArffFileSampleProvider>();
-      break;
-    case NONE:
-      break;
-    default:
-      base::data_exception("Unknown file type");
-      break;
-  }
-
-  if (isCompressed) {
-    fileSampleProvider = std::make_unique<GzipFileSampleDecorator>(std::move(fileSampleProvider));
-  }
-
-  auto state = std::make_shared<DataSourceState>(filePath, batchSize, numBatches);
-  sampleProvider = std::move(fileSampleProvider);
-  return std::make_unique<DataSource>(state, std::move(sampleProvider));
-}
 
 } /* namespace datadriven */
 } /* namespace sgpp */
