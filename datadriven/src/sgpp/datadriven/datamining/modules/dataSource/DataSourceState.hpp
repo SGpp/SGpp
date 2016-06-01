@@ -21,7 +21,7 @@ class DataSourceState {
   DataSourceState() : filePath(""), batchSize(0), numBatches(0), currentIteration(0) {}
   DataSourceState(std::string filePath, size_t numBatches = 1, size_t batchSize = 0)
       : filePath(filePath), batchSize(batchSize), numBatches(numBatches), currentIteration(0) {}
-  virtual ~DataSourceState();
+  virtual ~DataSourceState(){};
 
   size_t getBatchSize() const { return batchSize; }
 
