@@ -13,7 +13,8 @@ class EstimatedDist(Dist):
 
         self.trainData = None
         self.dim = 0
-
+        self.trans = None
+        
         if trainData is not None:
             if isList(trainData) or len(trainData.shape) == 1:
                 trainData = np.array([trainData]).reshape(len(trainData), 1)
@@ -21,10 +22,13 @@ class EstimatedDist(Dist):
             self.trainData = trainData
             self.dim = trainData.shape[1]
 
-        self.trans = None
-        if bounds is not None:
-            self.trans = self.computeLinearTransformation(bounds)
-            self.bounds = self.trans.getBounds()
+            if bounds is None:
+                # estimate bounds from data
+                self.bounds = np.vstack((np.min(trainData, axis=0), np.max(trainData, axis=0))).T
+            else:
+                self.bounds = bounds
+
+            self.trans = self.computeLinearTransformation(self.bounds)
         else:
             self.bounds = [[0, 1]] * self.dim
 

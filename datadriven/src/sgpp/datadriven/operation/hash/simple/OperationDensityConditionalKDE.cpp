@@ -17,21 +17,22 @@
 namespace sgpp {
 namespace datadriven {
 
-OperationDensityConditionalKDE::OperationDensityConditionalKDE(GaussianKDE& kde) : kde(&kde) {}
+OperationDensityConditionalKDE::OperationDensityConditionalKDE(KernelDensityEstimator& kde)
+    : kde(&kde) {}
 
 OperationDensityConditionalKDE::~OperationDensityConditionalKDE() {}
 
 // -------------------------------------------------------------------
 
 void OperationDensityConditionalKDE::doConditional(size_t mdim, double xbar,
-                                                   GaussianKDE& conditionalizedKDE) {
+                                                   KernelDensityEstimator& conditionalizedKDE) {
   throw base::algorithm_exception(
       "OperationDensityConditionalKDE::doConditional is not implemented");
 }
 
-void OperationDensityConditionalKDE::doConditional(std::vector<size_t>& mdims,
-                                                   base::DataVector& xbar,
-                                                   datadriven::GaussianKDE& conditionalizedKDE) {
+void OperationDensityConditionalKDE::doConditional(
+    std::vector<size_t>& mdims, base::DataVector& xbar,
+    datadriven::KernelDensityEstimator& conditionalizedKDE) {
   // compute the dimensions to conditionalize
   size_t ndim = kde->getDim();
   std::vector<size_t> condDims(ndim - 1);
@@ -68,8 +69,8 @@ void OperationDensityConditionalKDE::doConditional(std::vector<size_t>& mdims,
   conditionalizedKDE.setConditionalizationFactor(pcond);
 }
 
-void OperationDensityConditionalKDE::condToDimX(size_t mdim, base::DataVector& xbar,
-                                                datadriven::GaussianKDE& conditionalizedKDE) {
+void OperationDensityConditionalKDE::condToDimX(
+    size_t mdim, base::DataVector& xbar, datadriven::KernelDensityEstimator& conditionalizedKDE) {
   // compute the dimensions to conditionalize over
   size_t ndim = kde->getDim();
   std::vector<size_t> condDims(ndim - 1);
@@ -94,8 +95,9 @@ void OperationDensityConditionalKDE::condToDimX(size_t mdim, base::DataVector& x
   conditionalizedKDE.setConditionalizationFactor(pcond);
 }
 
-void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims, base::DataVector& xbar,
-                                                 datadriven::GaussianKDE& conditionalizedKDE) {
+void OperationDensityConditionalKDE::condToDimXs(
+    std::vector<size_t>& mdims, base::DataVector& xbar,
+    datadriven::KernelDensityEstimator& conditionalizedKDE) {
   throw base::algorithm_exception("OperationDensityConditionalKDE::condToDimXs is not implemented");
 }
 

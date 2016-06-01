@@ -29,7 +29,7 @@
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #endif
 

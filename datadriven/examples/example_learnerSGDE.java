@@ -108,7 +108,7 @@ public class example_learnerSGDE {
     LearnerSGDE learner = new LearnerSGDE(gridConfig, adaptConfig, solverConfig, regularizationConfig, learnerConfig);
     learner.initialize(samples);
 
-    GaussianKDE kde = new GaussianKDE(samples);
+    KernelDensityEstimator kde = new KernelDensityEstimator(samples);
     DataVector x = new DataVector(3);
 
     for (int i = 0; i < x.getSize(); i++) {

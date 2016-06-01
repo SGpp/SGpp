@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -25,6 +25,9 @@ using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
+
+using sgpp::datadriven::KernelDensityEstimator;
+using sgpp::datadriven::KernelType;
 
 double normal(DataVector& input, double mean = 0.5, double sigma = 0.1) {
   double result = 1.;
@@ -76,6 +79,24 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
   DataVector sample(ndim);
   for (size_t i = 0; i < nsamples; ++i) {
     randu(sample, generator);
+    rvar.setRow(i, sample);
+  }
+}
+
+void randn(DataVector& rvar, std::mt19937& generator) {
+  std::normal_distribution<double> distribution(0.5, 0.1);
+  for (size_t j = 0; j < rvar.getSize(); ++j) {
+    rvar[j] = distribution(generator);
+  }
+}
+
+void randn(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
+  size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
+
+  std::mt19937 generator(seedValue);
+  DataVector sample(ndim);
+  for (size_t i = 0; i < nsamples; ++i) {
+    randn(sample, generator);
     rvar.setRow(i, sample);
   }
 }
@@ -142,6 +163,42 @@ void testEqualityRosenblattInverseRosenblattDD(
   }
 }
 
+void testEqualityRosenblattInverseRosenblattKDE(
+    KernelDensityEstimator& kde, size_t numSamples = 1000, double tolerance = 1e-13,
+    std::uint64_t seedValue = std::mt19937_64::default_seed) {
+  size_t numDims = kde.getDim();
+  DataMatrix x_vars(numSamples, numDims);
+  DataMatrix u_vars(numSamples, numDims);
+  DataMatrix u_vars_transformed(numSamples, numDims);
+
+  // init samples to be transformed
+  randu(u_vars, seedValue);
+
+  auto opInvRos = sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(kde);
+  auto opRos = sgpp::op_factory::createOperationRosenblattTransformationKDE(kde);
+
+  // transform the u-space to x-space
+  opInvRos->doTransformation(u_vars, x_vars);
+  // transform them back to the u-space
+  opRos->doTransformation(x_vars, u_vars_transformed);
+
+  DataVector u_sample(numDims);
+  DataVector x_sample(numDims);
+  DataVector u_sample_transformed(numDims);
+
+  for (size_t isample = 0; isample < numSamples; isample++) {
+    u_vars.getRow(isample, u_sample);
+    x_vars.getRow(isample, x_sample);
+    u_vars_transformed.getRow(isample, u_sample_transformed);
+    for (size_t idim = 0; idim < numDims; idim++) {
+      // assert that x_vars and x_vars_transformed contain the same samples
+      double inversionError =
+          std::abs(u_sample[idim] - u_sample_transformed[idim]) / u_sample[idim];
+      BOOST_CHECK_SMALL(inversionError, tolerance);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_SUITE(testRosenblattTransformation)
 
 BOOST_AUTO_TEST_CASE(testRosenblattLinear1D) {
@@ -165,6 +222,44 @@ BOOST_AUTO_TEST_CASE(testRosenblattLinearDD) {
       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
       delete grid;
     }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testRosenblattKDE1D) {
+  std::uint32_t i = 1;
+  size_t numDims = 1;
+  while (i <= 10) {
+    std::uint32_t numSamples = 100 * i;
+    // load samples
+    DataMatrix samples(numSamples, numDims);
+    randn(samples);
+
+    // estimate density
+    KernelDensityEstimator kde(samples);
+
+    // do the test
+    testEqualityRosenblattInverseRosenblattKDE(kde, numSamples);
+
+    i += 2;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testRosenblattKDEDD) {
+  std::uint32_t i = 1;
+  size_t numDims = 5;
+  while (i <= 10) {
+    std::uint32_t numSamples = 100 * i;
+    // load samples
+    DataMatrix samples(numSamples, numDims);
+    randn(samples);
+
+    // estimate density
+    KernelDensityEstimator kde(samples);
+
+    // do the test
+    testEqualityRosenblattInverseRosenblattKDE(kde, numSamples);
+
+    i += 2;
   }
 }
 

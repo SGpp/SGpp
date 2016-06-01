@@ -12,7 +12,7 @@
 #include "sgpp/datadriven/application/LearnerSGDE.hpp"
 #include "sgpp/base/grid/Grid.hpp"
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/application/GaussianKDE.hpp"
+#include "sgpp/datadriven/application/KernelDensityEstimator.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 
 using sgpp::base::DataMatrix;
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
   learner.cov(covSgde);
   std::cout << covSgde.toString() << std::endl;
 
-  sgpp::datadriven::GaussianKDE kde(samples);
+  sgpp::datadriven::KernelDensityEstimator kde(samples);
   sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
   kde.cov(covKDE);
   std::cout << covKDE.toString() << std::endl;

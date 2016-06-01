@@ -211,25 +211,25 @@ createOperationInverseRosenblattTransformation1D(base::Grid& grid) {
 }
 
 std::unique_ptr<datadriven::OperationInverseRosenblattTransformationKDE>
-createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde) {
+createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde) {
   return std::unique_ptr<datadriven::OperationInverseRosenblattTransformationKDE>(
       new datadriven::OperationInverseRosenblattTransformationKDE(kde));
 }
 
 std::unique_ptr<datadriven::OperationRosenblattTransformationKDE>
-createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde) {
+createOperationRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde) {
   return std::unique_ptr<datadriven::OperationRosenblattTransformationKDE>(
       new datadriven::OperationRosenblattTransformationKDE(kde));
 }
 
 std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensityMarginalizeKDE(
-    datadriven::GaussianKDE& kde) {
+    datadriven::KernelDensityEstimator& kde) {
   return std::unique_ptr<datadriven::OperationDensityMarginalizeKDE>(
       new datadriven::OperationDensityMarginalizeKDE(kde));
 }
 
 std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensityConditionalKDE(
-    datadriven::GaussianKDE& kde) {
+    datadriven::KernelDensityEstimator& kde) {
   return std::unique_ptr<datadriven::OperationDensityConditionalKDE>(
       new datadriven::OperationDensityConditionalKDE(kde));
 }

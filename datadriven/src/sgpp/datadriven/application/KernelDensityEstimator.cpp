@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
@@ -26,29 +26,35 @@ namespace sgpp {
 namespace datadriven {
 
 // -------------------- constructors and desctructors --------------------
-GaussianKDE::GaussianKDE() : nsamples(0), ndim(0), bandwidths(0), norm(0), cond(0), sumCond(1.0) {}
+KernelDensityEstimator::KernelDensityEstimator(KernelType kernelType)
+    : nsamples(0), ndim(0), bandwidths(0), norm(0), cond(0), sumCond(1.0) {
+  initializeKernel(kernelType);
+}
 
-GaussianKDE::GaussianKDE(std::vector<std::shared_ptr<base::DataVector>>& samplesVec)
+KernelDensityEstimator::KernelDensityEstimator(
+    std::vector<std::shared_ptr<base::DataVector>>& samplesVec, KernelType kernelType)
     : nsamples(0.0),
       ndim(samplesVec.size()),
       bandwidths(samplesVec.size()),
       norm(samplesVec.size()),
       cond(0.0),
       sumCond(0.0) {
+  initializeKernel(kernelType);
   initialize(samplesVec);
 }
 
-GaussianKDE::GaussianKDE(base::DataMatrix& samples)
+KernelDensityEstimator::KernelDensityEstimator(base::DataMatrix& samples, KernelType kernelType)
     : nsamples(samples.getNrows()),
       ndim(samples.getNcols()),
       bandwidths(samples.getNcols()),
       norm(samples.getNcols()),
       cond(samples.getNrows()),
       sumCond(0.0) {
+  initializeKernel(kernelType);
   initialize(samples);
 }
 
-GaussianKDE::GaussianKDE(const GaussianKDE& kde) {
+KernelDensityEstimator::KernelDensityEstimator(const KernelDensityEstimator& kde) {
   samplesVec = kde.samplesVec;
   nsamples = kde.nsamples;
   ndim = kde.ndim;
@@ -56,12 +62,27 @@ GaussianKDE::GaussianKDE(const GaussianKDE& kde) {
   norm = base::DataVector(kde.norm);
   cond = base::DataVector(kde.cond);
   sumCond = kde.sumCond;
+
+  initializeKernel(kde.kernel->getType());
 }
 
-GaussianKDE::~GaussianKDE() {}
+KernelDensityEstimator::~KernelDensityEstimator() { delete kernel; }
 // ----------------------------------------------------------------------
 
-void GaussianKDE::initialize(base::DataMatrix& samples) {
+void KernelDensityEstimator::initializeKernel(KernelType kernelType) {
+  switch (kernelType) {
+    case KernelType::GAUSSIAN:
+      kernel = new GaussianKernel();
+      break;
+    case KernelType::EPANECHNIKOV:
+      kernel = new EpanechnikovKernel();
+      break;
+    default:
+      break;
+  }
+}
+
+void KernelDensityEstimator::initialize(base::DataMatrix& samples) {
   ndim = samples.getNcols();
   nsamples = samples.getNrows();
 
@@ -86,7 +107,7 @@ void GaussianKDE::initialize(base::DataMatrix& samples) {
       norm.resize(ndim);
 
       for (size_t d = 0; d < ndim; d++) {
-        norm[d] = 1. / (bandwidths[d] * M_SQRT2PI);
+        norm[d] = kernel->norm() / bandwidths[d];
       }
 
       // initialize conditionalization factor
@@ -95,16 +116,18 @@ void GaussianKDE::initialize(base::DataMatrix& samples) {
       sumCond = static_cast<double>(nsamples);
     } else {
       throw base::data_exception(
-          "GaussianKDE::GaussianKDE: KDE needs at least two samples to estimate the bandwidth");
+          "KernelDensityEstimator::KernelDensityEstimator: KDE needs at least two samples to "
+          "estimate the bandwidth");
     }
   } else {
-    throw base::data_exception("GaussianKDE::GaussianKDE: KDE needs at least one dimensional data");
+    throw base::data_exception(
+        "KernelDensityEstimator::KernelDensityEstimator: KDE needs at least one dimensional data");
   }
 
   samples.transpose();
 }
 
-void GaussianKDE::initialize(std::vector<std::shared_ptr<base::DataVector>>& samples) {
+void KernelDensityEstimator::initialize(std::vector<std::shared_ptr<base::DataVector>>& samples) {
   ndim = samples.size();
 
   if (ndim > 0) {
@@ -126,7 +149,7 @@ void GaussianKDE::initialize(std::vector<std::shared_ptr<base::DataVector>>& sam
       norm.resize(ndim);
 
       for (size_t d = 0; d < ndim; d++) {
-        norm[d] = 1. / (bandwidths[d] * M_SQRT2PI);
+        norm[d] = kernel->norm() / bandwidths[d];
       }
 
       // initialize conditionalization factors
@@ -135,19 +158,20 @@ void GaussianKDE::initialize(std::vector<std::shared_ptr<base::DataVector>>& sam
       sumCond = static_cast<double>(nsamples);
     } else {
       throw base::data_exception(
-          "GaussianKDE::GaussianKDE : KDE needs at least two samples to estimate the bandwidth");
+          "KernelDensityEstimator::KernelDensityEstimator : KDE needs at least two samples to "
+          "estimate the bandwidth");
     }
   } else {
     throw base::data_exception(
-        "GaussianKDE::GaussianKDE : KDE needs at least one dimensional data");
+        "KernelDensityEstimator::KernelDensityEstimator : KDE needs at least one dimensional data");
   }
 }
 
-size_t GaussianKDE::getDim() { return ndim; }
+size_t KernelDensityEstimator::getDim() { return ndim; }
 
-size_t GaussianKDE::getNsamples() { return nsamples; }
+size_t KernelDensityEstimator::getNsamples() { return nsamples; }
 
-std::shared_ptr<base::DataMatrix> GaussianKDE::getSamples() {
+std::shared_ptr<base::DataMatrix> KernelDensityEstimator::getSamples() {
   std::shared_ptr<base::DataMatrix> ans = std::make_shared<base::DataMatrix>(ndim, nsamples);
 
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -158,15 +182,15 @@ std::shared_ptr<base::DataMatrix> GaussianKDE::getSamples() {
   return ans;
 }
 
-std::shared_ptr<base::DataVector> GaussianKDE::getSamples(size_t dim) {
+std::shared_ptr<base::DataVector> KernelDensityEstimator::getSamples(size_t dim) {
   if (dim >= samplesVec.size()) {
-    throw base::data_exception("GaussianKDE::getSamples : dim out of range");
+    throw base::data_exception("KernelDensityEstimator::getSamples : dim out of range");
   }
 
   return samplesVec[dim];
 }
 
-void GaussianKDE::getBandwidths(base::DataVector& sigma) {
+void KernelDensityEstimator::getBandwidths(base::DataVector& sigma) {
   // copy
   sigma.resize(bandwidths.getSize());
 
@@ -175,7 +199,7 @@ void GaussianKDE::getBandwidths(base::DataVector& sigma) {
   }
 }
 
-void GaussianKDE::pdf(base::DataMatrix& data, base::DataVector& res) {
+void KernelDensityEstimator::pdf(base::DataMatrix& data, base::DataVector& res) {
   // init variables
   base::DataVector x(ndim);
 
@@ -194,7 +218,7 @@ void GaussianKDE::pdf(base::DataMatrix& data, base::DataVector& res) {
   }
 }
 
-double GaussianKDE::pdf(base::DataVector& x) {
+double KernelDensityEstimator::pdf(base::DataVector& x) {
   // init variables
   double res = 0.0;
   double kern = 0, y = 0.0;
@@ -207,7 +231,7 @@ double GaussianKDE::pdf(base::DataVector& x) {
       // normalize x
       y = (x[idim] - samplesVec[idim]->get(isample)) / bandwidths[idim];
       // evaluate kernel
-      kern *= norm[idim] * std::exp(-(y * y) / 2.);
+      kern *= norm[idim] * kernel->eval(y);
     }
 
     res += cond[isample] * kern;
@@ -216,10 +240,11 @@ double GaussianKDE::pdf(base::DataVector& x) {
   return res / sumCond;
 }
 
-void GaussianKDE::cov(base::DataMatrix& cov) {
+void KernelDensityEstimator::cov(base::DataMatrix& cov) {
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
     // throw error -> covariance matrix has wrong size
-    throw base::data_exception("GaussianKDE::cov : covariance matrix has the wrong size");
+    throw base::data_exception(
+        "KernelDensityEstimator::cov : covariance matrix has the wrong size");
   }
 
   // prepare covariance marix
@@ -231,7 +256,7 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
 
   std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg =
       op_factory::createOperationDensityMarginalizeKDE(*this);
-  GaussianKDE kdeMarginalized;
+  KernelDensityEstimator kdeMarginalized;
 
   for (size_t idim = 0; idim < ndim; idim++) {
     opMarg->margToDimX(idim, kdeMarginalized);
@@ -244,7 +269,7 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
   std::vector<size_t> mdims(2);
   double covij = 0.0;
 
-  GaussianKDE kdeijdim;
+  KernelDensityEstimator kdeijdim;
 
   for (size_t idim = 0; idim < ndim; idim++) {
     // diagonal is equal to the variance of the marginalized densities
@@ -265,7 +290,7 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
   }
 }
 
-double GaussianKDE::mean() {
+double KernelDensityEstimator::mean() {
   double res = 0, kernelMean = 1.;
 
   for (size_t isample = 0; isample < nsamples; isample++) {
@@ -281,7 +306,7 @@ double GaussianKDE::mean() {
   return res / static_cast<double>(nsamples);
 }
 
-double GaussianKDE::variance() {
+double KernelDensityEstimator::variance() {
   double meansquared = 0, kernelVariance = 1., x = 0.0, sigma = 0.0;
 
   for (size_t isample = 0; isample < nsamples; isample++) {
@@ -304,9 +329,10 @@ double GaussianKDE::variance() {
   return var;
 }
 
-void GaussianKDE::computeOptKDEbdwth() {
+void KernelDensityEstimator::computeOptKDEbdwth() {
   if (ndim != bandwidths.getSize()) {
-    throw base::data_exception("GaussianKDE::computeOptKDEbdwth : KDEBdwth dimension error");
+    throw base::data_exception(
+        "KernelDensityEstimator::computeOptKDEbdwth : KDEBdwth dimension error");
   }
 
   base::DataVector flag(ndim);
@@ -353,7 +379,7 @@ void GaussianKDE::computeOptKDEbdwth() {
   return;
 }
 
-double GaussianKDE::getSampleMean(base::DataVector& data) {
+double KernelDensityEstimator::getSampleMean(base::DataVector& data) {
   double res = 0.;
   size_t n = data.getSize();
 
@@ -364,7 +390,7 @@ double GaussianKDE::getSampleMean(base::DataVector& data) {
   return res / static_cast<double>(n);
 }
 
-double GaussianKDE::getSampleVariance(base::DataVector& data) {
+double KernelDensityEstimator::getSampleVariance(base::DataVector& data) {
   double mean = getSampleMean(data);
   double diff1 = 0.0;
   double diff2 = 0.0;
@@ -379,13 +405,13 @@ double GaussianKDE::getSampleVariance(base::DataVector& data) {
   return 1. / (static_cast<double>(n) - 1.) * (diff1 - 1. / static_cast<double>(n) * diff2 * diff2);
 }
 
-double GaussianKDE::getSampleStd(base::DataVector& data) {
+double KernelDensityEstimator::getSampleStd(base::DataVector& data) {
   return std::sqrt(getSampleVariance(data));
 }
 
 // ------------------------- additional operations ---------------------------
 
-void GaussianKDE::getConditionalizationFactor(base::DataVector& pcond) {
+void KernelDensityEstimator::getConditionalizationFactor(base::DataVector& pcond) {
   pcond.resize(nsamples);
 
   for (size_t isample = 0; isample < nsamples; isample++) {
@@ -393,7 +419,7 @@ void GaussianKDE::getConditionalizationFactor(base::DataVector& pcond) {
   }
 }
 
-void GaussianKDE::setConditionalizationFactor(base::DataVector& pcond) {
+void KernelDensityEstimator::setConditionalizationFactor(base::DataVector& pcond) {
   sumCond = 0.0;
 
   for (size_t isample = 0; isample < nsamples; isample++) {
@@ -402,8 +428,9 @@ void GaussianKDE::setConditionalizationFactor(base::DataVector& pcond) {
   }
 }
 
-void GaussianKDE::updateConditionalizationFactors(base::DataVector& x, std::vector<size_t>& dims,
-                                                  base::DataVector& pcond) {
+void KernelDensityEstimator::updateConditionalizationFactors(base::DataVector& x,
+                                                             std::vector<size_t>& dims,
+                                                             base::DataVector& pcond) {
   // run over all samples and evaluate the kernels in each dimension
   // that should be conditionalized
   size_t idim = 0;
@@ -415,15 +442,18 @@ void GaussianKDE::updateConditionalizationFactors(base::DataVector& x, std::vect
     if (idim < ndim) {
       for (size_t isample = 0; isample < nsamples; isample++) {
         xi = (x[idim] - samplesVec[idim]->get(isample)) / bandwidths[idim];
-        pcond[isample] *= norm[idim] * std::exp(-(xi * xi) / 2.);
+        pcond[isample] *= norm[idim] * kernel->eval(xi);
       }
     } else {
       throw base::data_exception(
-          "GaussianKDE::updateConditionalizationFactors : can not conditionalize in non existing "
+          "KernelDensityEstimator::updateConditionalizationFactors : can not conditionalize in non "
+          "existing "
           "dimension");
     }
   }
 }
+
+Kernel& KernelDensityEstimator::getKernel() { return *kernel; }
 
 }  // namespace datadriven
 }  // namespace sgpp

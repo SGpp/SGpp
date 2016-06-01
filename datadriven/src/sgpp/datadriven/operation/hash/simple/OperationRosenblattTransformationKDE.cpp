@@ -28,7 +28,8 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
-OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(GaussianKDE& density)
+OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(
+    KernelDensityEstimator& density)
     : kde(&density),
       bandwidths(density.getDim()),
       ndim(density.getDim()),
@@ -41,36 +42,38 @@ OperationRosenblattTransformationKDE::~OperationRosenblattTransformationKDE() {}
 
 void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCdf,
                                                             DataMatrix& pointsUniform) {
-  // Work arrays
-  DataVector unif(ndim);
-  DataVector cdf(ndim);
-  DataVector kern(nsamples);
-  std::shared_ptr<base::DataVector> samples1d;
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
+    for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
+      // Work arrays
+      DataVector unif(ndim);
+      DataVector cdf(ndim);
+      DataVector kern(nsamples);
+      std::shared_ptr<base::DataVector> samples1d;
 
-  double xi = 0;
+      kern.setAll(1.0);
+      pointsCdf.getRow(idata, cdf);
 
-  for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
-    kern.setAll(1.0);
-    pointsCdf.getRow(idata, cdf);
+      for (size_t idim = 0; idim < ndim; idim++) {
+        // get samples in current dimension
+        samples1d = kde->getSamples(idim);
 
-    for (size_t idim = 0; idim < ndim; idim++) {
-      // get samples in current dimension
-      samples1d = kde->getSamples(idim);
+        // transform the point in the current dimension
+        unif[idim] = doTransformation1D(cdf[idim], *samples1d, bandwidths[idim], kern);
 
-      // transform the point in the current dimension
-      unif[idim] = doTransformation1D(cdf[idim], *samples1d, bandwidths[idim], kern);
-
-      // Update the kernel for the next dimension
-      for (size_t isamples = 0; isamples < nsamples; isamples++) {
-        xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= std::exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
+        // Update the kernel for the next dimension
+        for (size_t isamples = 0; isamples < nsamples; isamples++) {
+          double xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
+          kern[isamples] *=
+              kde->getKernel().eval(xi);  // std::exp(-(xi * xi) / 2.);  (bw*sqrt(2*PI)) cancels;
+        }
       }
+
+      // write them to the output
+      pointsUniform.setRow(idata, unif);
     }
-
-    // write them to the output
-    pointsUniform.setRow(idata, unif);
   }
-
   return;
 }
 
@@ -107,7 +110,8 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
       // Update the kernel for the next dimension
       for (size_t isamples = 0; isamples < nsamples; isamples++) {
         xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= std::exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
+        kern[isamples] *=
+            kde->getKernel().eval(xi);  // std::exp(-(xi * xi) / 2.); (bw*sqrt(2*PI)) cancels;
       }
     }
 
@@ -119,7 +123,7 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
 }
 
 double OperationRosenblattTransformationKDE::doTransformation1D(double x, DataVector& samples1d,
-                                                                 double sigma, DataVector& kern) {
+                                                                double sigma, DataVector& kern) {
   // helper variables
   double cdfNormal = 0.0;
   double cdfConditionalized = 0.0;
@@ -130,7 +134,7 @@ double OperationRosenblattTransformationKDE::doTransformation1D(double x, DataVe
 
   for (size_t isample = 0; isample < nsamples; isample++) {
     xi = (x - samples1d[isample]) / sigma;
-    cdfNormal = 0.5 + 0.5 * std::erf(xi / M_SQRT2);
+    cdfNormal = kde->getKernel().cdf(xi);             // 0.5 + 0.5 * std::erf(xi / M_SQRT2);
     cdfConditionalized += kern[isample] * cdfNormal;  // (xx > xi(id,is));
     denom += kern[isample];
 

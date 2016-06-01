@@ -1,6 +1,7 @@
 from Dist import Dist
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
-from pysgpp import (DataVector, DataMatrix, GaussianKDE,
+from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
+                    KernelType_GAUSSIAN,
                     createOperationRosenblattTransformationKDE,
                     createOperationInverseRosenblattTransformationKDE)
 import numpy as np
@@ -8,18 +9,20 @@ import numpy as np
 from EstimatedDist import EstimatedDist
 
 
-class GaussianKDEDist(EstimatedDist):
+class KDEDist(EstimatedDist):
     """
-    Gaussian KDE using SG++ implementation
+    KDE using SG++ implementation
     """
 
     def __init__(self,
                  trainData,
+                 kernelType=KernelType_GAUSSIAN,
                  bounds=None):
-        super(GaussianKDEDist, self).__init__(trainData, bounds)
+        super(KDEDist, self).__init__(trainData, bounds)
 
         trainData_matrix = DataMatrix(self.trainData)
-        self.dist = GaussianKDE(trainData_matrix)
+        self.dist = KernelDensityEstimator(trainData_matrix, kernelType)
+
 
     def pdf(self, x):
         # transform the samples to the unit hypercube
