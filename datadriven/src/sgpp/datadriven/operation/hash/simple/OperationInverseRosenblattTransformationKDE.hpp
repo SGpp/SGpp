@@ -10,7 +10,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -22,7 +22,7 @@ namespace datadriven {
  */
 class OperationInverseRosenblattTransformationKDE {
  public:
-  OperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde,
+  OperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde,
                                               double sigmaFactor = 6.0,
                                               double inversionEpsilon = 1e-10);
   virtual ~OperationInverseRosenblattTransformationKDE();
@@ -53,14 +53,13 @@ class OperationInverseRosenblattTransformationKDE {
    * @return error of inversion
    */
   double doTransformation1D(double y, base::DataVector& samples1d, double sigma, double xlower,
-                             double xupper, double ylower, double yupper,
-                             base::DataVector& kern);
+                            double xupper, double ylower, double yupper, base::DataVector& kern);
 
   /// get the maximum error made during inversion
   double getMaxInversionError();
 
  private:
-  datadriven::GaussianKDE* kde;
+  datadriven::KernelDensityEstimator* kde;
   base::DataVector bandwidths;
 
   base::DataMatrix xlimits;
@@ -91,9 +90,9 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  double bisection(double y, double& x, double& xlower, double& xupper,
-                    base::DataVector& samples1d, double sigma, base::DataVector& kern,
-                    double denom, double xacc = 1e-8, size_t maxIterations = 1000);
+  double bisection(double y, double& x, double& xlower, double& xupper, base::DataVector& samples1d,
+                   double sigma, base::DataVector& kern, double denom, double xacc = 1e-8,
+                   size_t maxIterations = 1000);
 
   /**
    * Root finding using newton's algorithm for inverse CDF of KDE
@@ -107,23 +106,8 @@ class OperationInverseRosenblattTransformationKDE {
    * @param maxIterations maximum number of iterations
    */
   double newton(double y, double& x, base::DataVector& samples1d, double sigma,
-                 base::DataVector& kern, double denom, double xacc = 1e-10,
-                 size_t maxIterations = 20);
-
-  /**
-   * Root finding using halley's algorithm for inverse CDF of KDE
-   * @param y point where the CDF should be inverted
-   * @param x root
-   * @param samples1d samples in current dimension
-   * @param sigma bandwidth for KDE
-   * @param kern kernel evaluations for already processed dimensions
-   * @param denom denominator for conditionalization of pdf
-   * @param xacc accuracy
-   * @param maxIterations maximum number of iterations
-   */
-  double halley(double y, double& x, base::DataVector& samples1d, double sigma,
-                 base::DataVector& kern, double denom, double xacc = 1e-10,
-                 size_t maxIterations = 20);
+                base::DataVector& kern, double denom, double xacc = 1e-10,
+                size_t maxIterations = 20);
 };
 }  // namespace datadriven
 }  // namespace sgpp

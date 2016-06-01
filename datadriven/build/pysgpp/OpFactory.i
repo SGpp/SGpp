@@ -28,13 +28,13 @@
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformation1D(
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityMarginalizeKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityConditionalKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
@@ -102,22 +102,22 @@ createOperationInverseRosenblattTransformation1D(sgpp::base::Grid& grid) {
 }
 
 sgpp::datadriven::OperationRosenblattTransformationKDE*
-createOperationRosenblattTransformationKDE(sgpp::datadriven::GaussianKDE& kde) {
+createOperationRosenblattTransformationKDE(sgpp::datadriven::KernelDensityEstimator& kde) {
     return sgpp::op_factory::createOperationRosenblattTransformationKDE(kde).release();
 }
 
 sgpp::datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(sgpp::datadriven::GaussianKDE& kde) {
+createOperationInverseRosenblattTransformationKDE(sgpp::datadriven::KernelDensityEstimator& kde) {
     return sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(kde).release();
 }
 
 sgpp::datadriven::OperationDensityMarginalizeKDE*
-createOperationDensityMarginalizeKDE(sgpp::datadriven::GaussianKDE& kde) {
+createOperationDensityMarginalizeKDE(sgpp::datadriven::KernelDensityEstimator& kde) {
     return sgpp::op_factory::createOperationDensityMarginalizeKDE(kde).release();
 }
 
 sgpp::datadriven::OperationDensityConditionalKDE*
-createOperationDensityConditionalKDE(sgpp::datadriven::GaussianKDE& kde) {
+createOperationDensityConditionalKDE(sgpp::datadriven::KernelDensityEstimator& kde) {
     return sgpp::op_factory::createOperationDensityConditionalKDE(kde).release();
 }
 
@@ -155,14 +155,14 @@ createOperationInverseRosenblattTransformation(
 sgpp::datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
     sgpp::base::Grid& grid);
 sgpp::datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 sgpp::datadriven::OperationInverseRosenblattTransformationKDE*
 createOperationInverseRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 sgpp::datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 sgpp::datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 sgpp::base::OperationMultipleEval* createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);

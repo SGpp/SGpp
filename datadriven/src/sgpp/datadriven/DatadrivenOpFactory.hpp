@@ -146,20 +146,21 @@ createOperationInverseRosenblattTransformation1D(base::Grid& grid);
 /**
  * Factory method, returning an OperationRosenblattTransformationKDE for the kde.
  *
- * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
+ * @param kde KernelDensityEstimator for which the Rosenblatt transformation should be computed
  * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
 std::unique_ptr<datadriven::OperationRosenblattTransformationKDE>
-createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
+createOperationRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformationKDE for the kde.
  *
- * @param kde GaussianKDE for which the inverse Rosenblatt transformation should be computed
+ * @param kde KernelDensityEstimator for which the inverse Rosenblatt transformation should be
+ * computed
  * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
 std::unique_ptr<datadriven::OperationInverseRosenblattTransformationKDE>
-createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
+createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationDensityMarginalizeKDE for the kernel density.
@@ -168,7 +169,7 @@ createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
  * @return Pointer to new OperationDensityMarginalizeKDE
  */
 std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensityMarginalizeKDE(
-    datadriven::GaussianKDE& kde);
+    datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationDensityConditionalKDE for the kernel density.
@@ -177,7 +178,7 @@ std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensi
  * @return Pointer to new OperationDensityConditionalKDE
  */
 std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensityConditionalKDE(
-    datadriven::GaussianKDE& kde);
+    datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
