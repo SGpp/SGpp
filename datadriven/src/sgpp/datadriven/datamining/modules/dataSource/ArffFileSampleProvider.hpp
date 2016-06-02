@@ -35,9 +35,9 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   // size_t getNumClasses();
 
-  void readFile(const std::string& fileName);
+  virtual void readFile(const std::string& fileName);
 
-  void readString(const std::string& input);
+  virtual void readString(const std::string& input);
 
  private:
   Dataset dataset;

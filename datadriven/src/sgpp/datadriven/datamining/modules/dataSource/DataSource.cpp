@@ -9,27 +9,31 @@
  *      Author: Michael Lettrich
  */
 
+#include "DataSource.hpp"
+
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 #include <limits>
 #include <memory>
-#include "DataSource.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-DataSource::DataSource(std::shared_ptr<DataSourceState> state,
-                       std::unique_ptr<SampleProvider> sampleProvider)
-    : state(state), sampleProvider(std::move(sampleProvider)) {
+DataSource::DataSource(std::shared_ptr<DataSourceState> state, std::unique_ptr<SampleProvider> sp)
+    : state(state), sampleProvider(std::move(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
   if (!state->getFilePath().empty()) {
     FileSampleProvider* fileProvider = dynamic_cast<FileSampleProvider*>(sampleProvider.get());
     fileProvider->readFile(state->getFilePath());
   }
 }
+
+DataSource::DataSource(DataSource&& ds)
+    : state(ds.state), sampleProvider(std::move(ds.sampleProvider)) {}
 
 DataSource::~DataSource() {}
 

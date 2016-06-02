@@ -29,6 +29,7 @@ class DataSource {
  public:
   DataSource(std::shared_ptr<DataSourceState> state,
              std::unique_ptr<SampleProvider> sampleProvider);
+  DataSource(DataSource&& ds);
   virtual ~DataSource();
 
   std::unique_ptr<Dataset> getNextSamples();
