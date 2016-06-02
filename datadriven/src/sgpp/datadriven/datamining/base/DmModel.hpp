@@ -29,6 +29,7 @@ using base::DataVector;
 class DmModel {
  public:
   DmModel();
+  DmModel(DmModel&& model);
   virtual ~DmModel();
 
   std::shared_ptr<Grid> getGrid();

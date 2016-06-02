@@ -31,6 +31,8 @@ using base::OperationMultipleEval;
 
 DmModel::DmModel() : grid(nullptr), alpha(nullptr), lambda(0) {}
 
+DmModel::DmModel(DmModel&& model) : grid(model.grid), alpha(model.alpha), lambda(model.lambda) {}
+
 DmModel::~DmModel() {}
 
 std::shared_ptr<Grid> DmModel::getGrid() { return this->grid; }
