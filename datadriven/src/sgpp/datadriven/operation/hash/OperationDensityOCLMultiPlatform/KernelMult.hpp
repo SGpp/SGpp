@@ -63,7 +63,7 @@ class KernelDensityMult {
       kernelSourceBuilder(kernelConfiguration), manager(manager),
       deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), use_level_cache(false),
       use_less(false), do_not_use_ternary(false) {
-    this->verbose = true;
+    this->verbose = false;
     gridSize = points.size()/(2*dims);
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
         && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {

@@ -165,15 +165,15 @@ class KernelDensityB {
 
     cl_event clTiming = nullptr;
 
-    // enqueue kernel
-    if (verbose)
-      std::cout << "Starting the kernel" << std::endl;
     size_t globalworkrange[1];
     if (chunksize == 0) {
       globalworkrange[0] = gridSize;
     } else {
       globalworkrange[0] = chunksize;
     }
+    // enqueue kernel
+    if (verbose)
+      std::cout << "Starting the kernel with " << globalworkrange[0] << " workitems" << std::endl;
 
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange,
                                  NULL, 0, nullptr, &clTiming);

@@ -106,7 +106,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       secondKernelConfig(secondKernelConfig),
       devices(manager->getDevices()),
       manager(manager), lambda(lambda) {
-    verbose = true;
+    verbose = false;
     for (int i = 0; i < gridSize; i++) {
       for (int d = 0; d < dims; d++) {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d]);

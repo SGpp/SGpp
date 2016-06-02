@@ -31,11 +31,12 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
     // Create packages and let the slaves solve them
     double *partial_result = new double[packagesize];
     SimpleQueue<double> workitem_queue(gridsize, packagesize);
+    std::cout << "Gridsize " << gridsize << std::endl;
     int chunkid = 0;
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
-      std::cerr << messagesize << std::endl;
+      std::cerr << messagesize << "/" << packagesize << std::endl;
       for (size_t i = 0; i < messagesize; i++) {
         ret_rhs[chunkid + i] = partial_result[i];
       }
@@ -82,7 +83,7 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
         } else {
           if (verbose) {
             std::cout << "Node " << MPIEnviroment::get_node_rank()
-                      << ": Received work package" << std::endl;
+                      << ": Received work package of size " << datainfo[1] << std::endl;
           }
           // Create partial graph
           base::DataVector partial_rhs(datainfo[1]);
