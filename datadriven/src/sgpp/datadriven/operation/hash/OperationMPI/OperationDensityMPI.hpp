@@ -37,7 +37,6 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
     size_t messagesize = workitem_queue.receive_result(chunkid, partial_result);
     while (messagesize > 0) {
       // Store result
-      std::cerr << messagesize << std::endl;
       for (size_t i = 0; i < messagesize; i++) {
         result[chunkid + i] = partial_result[i];
       }
@@ -73,6 +72,7 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
       op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                   (2 * grid_dimensions), grid_dimensions,
                                                    lambda, "MyOCLConf.cfg", 0, 0);
+      verbose = false;
     }
     virtual ~OperationDensitySlave() {
       delete op;
@@ -104,8 +104,9 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
         MPI_Recv(datainfo, 2, MPI_INT, 0, stat.MPI_TAG, MPI_COMM_WORLD, &stat);
         // Check for exit
         if (datainfo[0] == -2 && datainfo[1] == -2) {
-          std::cerr << "Node" << MPIEnviroment::get_node_rank()
-                    << " received exit signal" << std::endl;
+          if (verbose)
+            std::cerr << "Node" << MPIEnviroment::get_node_rank()
+                      << " received exit signal" << std::endl;
           break;
         } else {
           if (verbose) {

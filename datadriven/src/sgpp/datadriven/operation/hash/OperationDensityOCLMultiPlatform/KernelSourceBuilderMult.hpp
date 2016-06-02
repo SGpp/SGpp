@@ -317,7 +317,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
                    <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
       sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
-                   <<" + " << block << "] += alpha[get_global_id(0) * "<< dataBlockSize
+                   <<" + " << block << "] += alpha[gridindex * "<< dataBlockSize
                    <<" + " << block << "]*" << "lambda;" << std::endl;
     }
 
@@ -325,7 +325,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
 
     if (kernelConfiguration.contains("WRITE_SOURCE")) {
       if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-        this->writeSource("DensityOCLMultiPlatform_mult.cl", sourceStream.str());
+        this->writeSource("DensityMultiplication.cl", sourceStream.str());
       }
     }
     return sourceStream.str();
