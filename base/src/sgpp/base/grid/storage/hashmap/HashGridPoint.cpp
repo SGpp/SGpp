@@ -78,7 +78,7 @@ HashGridPoint::HashGridPoint(std::istream& istream, int version) :
   }
 
   // PointDistribution was introduced in version 6 and removed in version 9;
-  // this information is now stored Stretching globally for all grid points
+  // this information is now stored in Stretching globally for all grid points
   if ((version >= 6) && (version <= 8)) {
     size_t temp_distr;
     istream >> temp_distr;
@@ -117,7 +117,7 @@ void HashGridPoint::serialize(std::ostream& ostream, int version) {
   ostream << leaf << std::endl;
 
   // PointDistribution was introduced in version 6 and removed in version 9;
-  // this information is now stored Stretching globally for all grid points
+  // this information is now stored in Stretching globally for all grid points
   if ((version >= 6) && (version <= 8)) {
     ostream << "Normal" << std::endl;
   }
