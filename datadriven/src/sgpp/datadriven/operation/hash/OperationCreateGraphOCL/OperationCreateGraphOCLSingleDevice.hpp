@@ -29,7 +29,6 @@ template<typename T>
 class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
  private:
   size_t dims;
-  json::Node &configuration;
   KernelCreateGraph<T> *graph_kernel;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
@@ -38,10 +37,10 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
 
  public:
   OperationCreateGraphOCLSingleDevice(base::DataMatrix& data, size_t dimensions,
-                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                       json::Node &configuration, size_t k, size_t platform_id,
-                                       size_t device_id) :
-      OperationCreateGraphOCL(), dims(dimensions), configuration(configuration),
+                                      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                                      sgpp::base::OCLOperationConfiguration *parameters,
+                                      size_t k, size_t platform_id, size_t device_id) :
+      OperationCreateGraphOCL(), dims(dimensions),
       devices(manager->getDevices()), manager(manager), dataVector(data.getSize()) {
     verbose = true;
     // put data into an vector with chosen precision
@@ -68,6 +67,9 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
         graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
                                                 manager, configuration);
         success = true;
@@ -85,10 +87,11 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
     }
   }
   OperationCreateGraphOCLSingleDevice(double *dataset, size_t datasize, size_t dimensions,
-                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                       json::Node &configuration, size_t k, size_t platform_id,
+                                      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                                      sgpp::base::OCLOperationConfiguration *parameters,
+                                      size_t k, size_t platform_id,
                                        size_t device_id) :
-      OperationCreateGraphOCL(), dims(dimensions), configuration(configuration),
+      OperationCreateGraphOCL(), dims(dimensions),
       devices(manager->getDevices()), manager(manager), dataVector(datasize) {
     verbose = true;
     // put data into an vector with chosen precision
@@ -114,8 +117,11 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
-    graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
-                                            manager, configuration);
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
+        graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
+                                                manager, configuration);
         success = true;
         break;
       }

@@ -74,7 +74,7 @@ int main() {
   for (size_t i = 0; i < gridsize; i++)
   alpha[i] = alpha[i]*1.0/(max-min);
 
-  /*std::cout << "Starting graph creation..." << std::endl;
+  std::cout << "Starting graph creation..." << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
       sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
                                                              "MyOCLConf.cfg");
@@ -88,7 +88,7 @@ int main() {
     }
     out1 << std::endl;
   }
-  out1.close();*/
+  out1.close();
 
 
 
@@ -109,5 +109,5 @@ int main() {
   // cleanup
   delete operation_mult;
   delete solver;*/
-  //delete operation_graph;
+  delete operation_graph;
 }

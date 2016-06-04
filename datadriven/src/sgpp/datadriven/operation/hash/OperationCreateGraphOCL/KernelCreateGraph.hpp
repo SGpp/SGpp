@@ -53,7 +53,7 @@ class KernelCreateGraph {
       kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
       deviceTimingMult(0.0),
       kernelConfiguration(kernelConfiguration), data(data) {
-    this->verbose = true;  // kernelConfiguration["VERBOSE"].getBool();
+    this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
         && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
