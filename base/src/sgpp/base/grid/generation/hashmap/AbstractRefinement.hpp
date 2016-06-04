@@ -175,7 +175,7 @@ class AbstractRefinement {
   /**
    * Check if the grid point is refinable
    * @param storage hashmap that stores the grid points
-   * @param gridPoint grid point
+   * @param point grid point
    */
   bool isRefinable(GridStorage& storage, GridPoint& point);
 
@@ -212,7 +212,7 @@ class AbstractRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param gridPoint The point that should be inserted
+   * @param point The point that should be inserted
    */
   virtual void createGridpoint(GridStorage& storage, GridPoint& point) = 0;
 
@@ -221,7 +221,7 @@ class AbstractRefinement {
    * Subroutine for grid point creation.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param gridPoint The point that should be inserted
+   * @param point The point that should be inserted
    */
   virtual void createGridpointSubroutine(GridStorage& storage,
                                          GridPoint& point) {
@@ -244,7 +244,7 @@ class AbstractRefinement {
   /**
    * Creates children grid points along single direction
    *
-   * @param gridPoint The point that should be refined
+   * @param point The point that should be refined
    * @param d direction
    * @param storage hashmap that stores the gridpoints
    * @param source_index index value in the dimension d
