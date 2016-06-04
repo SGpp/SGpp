@@ -208,8 +208,14 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                << std::endl;
       }
     }
+    // Mutliply with corresponding alpha value
+    if (useLocalMemory) {
     output << this->indent[2] << "gesamtint_block" << block
            <<" += zellenintegral*alpha_local[i];" << std::endl;
+    } else {
+      output << this->indent[2] << "gesamtint_block" << block
+           <<" += zellenintegral*alpha[i];" << std::endl;
+    }
     return output.str();
   }
 
@@ -305,13 +311,19 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
                    << "; i++) {" << std::endl
                    << this->indent[2] << "__private " << this->floatType();
+    } else {
+      sourceStream << this->indent[1] << "for (int i = 0 ; i < " << problemsize
+                   << "; i++) {" << std::endl
+                   << this->indent[2] << "__private " << this->floatType();
     }
 
     // Generate body for each element in the block
     for (size_t block = 0; block < dataBlockSize; block++) {
       sourceStream << calculate_matrix_entry(block, dimensions) << std::endl;
     }
-    sourceStream << this->indent[1] << "}" << std::endl;
+    //Close group loop
+    if (useLocalMemory)
+      sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
     for (auto block = 0; block < dataBlockSize; ++block) {
       sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
