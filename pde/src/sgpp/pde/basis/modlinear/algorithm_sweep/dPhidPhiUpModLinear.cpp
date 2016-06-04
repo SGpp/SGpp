@@ -24,8 +24,8 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
                               grid_iterator& index, size_t dim, double& f) {
   size_t seq = index.seq();
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
 
   index.get(dim, l, i);
 

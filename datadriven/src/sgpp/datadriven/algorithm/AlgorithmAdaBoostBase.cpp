@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
-    size_t gridType, base::HashGenerator::level_t gridLevel,
+    size_t gridType, base::level_t gridLevel,
     base::DataMatrix& trainData, base::DataVector& trainDataClass,
     size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final,
     double eps_final, double firstLabel, double secondLabel,
@@ -43,7 +43,7 @@ AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
   this->grid = &SparseGrid;
   this->type = gridType;
   this->gridPoint = gridStorage->getSize();
-  this->level = static_cast<base::HashGenerator::level_t>(gridLevel);
+  this->level = static_cast<base::level_t>(gridLevel);
   this->lamb = lambda;
   this->data = &trainData;
   this->classes = &trainDataClass;

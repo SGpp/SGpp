@@ -31,8 +31,8 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
   if (q != 1.0) {
     // traverse all basis function by sequence number
     for (size_t i = 0; i < storage->getSize(); i++) {
-      sgpp::base::GridStorage::index_type::level_type level;
-      sgpp::base::GridStorage::index_type::index_type index;
+      sgpp::base::level_t level;
+      sgpp::base::index_t index;
       (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
@@ -50,8 +50,8 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(sgpp::base::DataVe
   } else {
     // traverse all basis function by sequence number
     for (size_t i = 0; i < storage->getSize(); i++) {
-      sgpp::base::GridStorage::index_type::level_type level;
-      sgpp::base::GridStorage::index_type::index_type index;
+      sgpp::base::level_t level;
+      sgpp::base::index_t index;
       (*storage)[i].get(dim, level, index);
 
       if (level == 0) {

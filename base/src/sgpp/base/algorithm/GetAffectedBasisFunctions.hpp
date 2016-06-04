@@ -78,8 +78,8 @@ class GetAffectedBasisFunctions {
                   std::pair<size_t, double> > & result) {
     GridStorage::grid_iterator working(storage);
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
@@ -133,10 +133,10 @@ class GetAffectedBasisFunctions {
    */
   void rec(BASIS& basis, const DataVector& point, size_t current_dim,
            double value, GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector < std::pair <size_t, double > >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     const unsigned int BITS_IN_BYTE = 8;
     // maximum possible level for the index type
@@ -209,8 +209,8 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
                   std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator working(storage);
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
@@ -243,10 +243,10 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
   void rec(SWaveletModifiedBase& basis, const DataVector& point,
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector < std::pair <size_t, double > >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     // size_t i;
     double tmpValue;
     size_t tmpSeq;
@@ -398,8 +398,8 @@ class GetAffectedBasisFunctions <
     GridStorage::grid_iterator working(storage);
 
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // who many levels can we store in a index_type?
@@ -432,10 +432,10 @@ class GetAffectedBasisFunctions <
   void rec(SBsplineModifiedBase& base, const DataVector& point,
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     // size_t i;
     double tmpValue;
     size_t tmpSeq;
@@ -605,8 +605,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -708,8 +708,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -853,8 +853,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     double posl = 0, posr = 0, posc = 0;
 
     level_type work_level = 0;
@@ -1038,8 +1038,8 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
 
  protected:
   GridStorage& storage;
-  typedef GridStorage::index_type::level_type level_type;
-  typedef GridStorage::index_type::index_type index_type;
+  typedef level_t level_type;
+  typedef index_t index_type;
 
   /**
    * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
@@ -1146,8 +1146,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -1275,8 +1275,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim,
            double value, GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -1379,8 +1379,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 

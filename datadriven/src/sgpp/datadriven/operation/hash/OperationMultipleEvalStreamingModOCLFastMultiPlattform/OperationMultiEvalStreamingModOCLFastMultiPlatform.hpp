@@ -297,7 +297,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     base::HashGridPoint::index_type curIndex;
 
     /// pointer to index_type
-    base::HashGridStorage::index_pointer gridPoint;
+    base::HashGridStorage::point_pointer gridPoint;
 
     for (size_t i = 0; i < gridSizeUnpadded; i++) {
       gridPoint = storage.getPoint(i);

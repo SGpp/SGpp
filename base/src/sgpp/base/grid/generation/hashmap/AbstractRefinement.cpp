@@ -33,21 +33,21 @@ size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array,
 }
 
 
-void AbstractRefinement::createGridpoint1D(index_type& index,
+void AbstractRefinement::createGridpoint1D(GridPoint& point,
     size_t d, GridStorage& storage, index_t& source_index,
     level_t& source_level) {
-  index.get(d, source_level, source_index);
+  point.get(d, source_level, source_index);
 
   if (source_level > 1) {
     if (((source_index + 1) / 2) % 2 == 1) {
-      index.set(d, source_level - 1, (source_index + 1) / 2);
+      point.set(d, source_level - 1, (source_index + 1) / 2);
     } else {
-      index.set(d, source_level - 1, (source_index - 1) / 2);
+      point.set(d, source_level - 1, (source_index - 1) / 2);
     }
 
-    createGridpointSubroutine(storage, index);
+    createGridpointSubroutine(storage, point);
     // restore values
-    index.set(d, source_level, source_index);
+    point.set(d, source_level, source_index);
   }
 }
 
@@ -63,19 +63,19 @@ void AbstractRefinement::refineGridpoint1D(GridStorage& storage, size_t seq,
     refinement_strategy.refine(storage, this);
 }*/
 
-bool AbstractRefinement::isRefinable(GridStorage& storage, index_type& index) {
+bool AbstractRefinement::isRefinable(GridStorage& storage, GridPoint& point) {
   GridStorage::grid_map_iterator child_iter;
 
-  if (index.isLeaf()) return true;
+  if (point.isLeaf()) return true;
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
-    index.get(d, source_level, source_index);
+    point.get(d, source_level, source_index);
 
     // test existence of left child
-    index.set(d, source_level + 1, 2 * source_index - 1);
-    child_iter = storage.find(&index);
+    point.set(d, source_level + 1, 2 * source_index - 1);
+    child_iter = storage.find(&point);
 
     // if there no more grid points --> test if we should refine the grid
     if (child_iter == storage.end()) {
@@ -83,15 +83,15 @@ bool AbstractRefinement::isRefinable(GridStorage& storage, index_type& index) {
     }
 
     // test existance of right child
-    index.set(d, source_level + 1, 2 * source_index + 1);
-    child_iter = storage.find(&index);
+    point.set(d, source_level + 1, 2 * source_index + 1);
+    child_iter = storage.find(&point);
 
     if (child_iter == storage.end()) {
       return true;
     }
 
     // reset current grid point in dimension d
-    index.set(d, source_level, source_index);
+    point.set(d, source_level, source_index);
   }
 
   return false;

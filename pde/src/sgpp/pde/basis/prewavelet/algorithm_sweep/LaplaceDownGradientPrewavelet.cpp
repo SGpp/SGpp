@@ -21,8 +21,8 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
   size_t _seql2, _seql1, _seq, _seqr1, _seqr2 = 0;
   double _vall2, _vall1, _val, _valr1, _valr2 = 0;
 
-  sgpp::base::GridStorage::index_type::level_type l, l_old, max_level;
-  sgpp::base::GridStorage::index_type::index_type i, i_old;
+  sgpp::base::level_t l, l_old, max_level;
+  sgpp::base::index_t i, i_old;
 
   double h;
 

@@ -62,7 +62,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    * @param mode the adaboost type to choose
    */
   AlgorithmAdaBoostIdentity(base::Grid& SparseGrid, size_t gridType,
-                            base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
+                            base::level_t gridLevel, base::DataMatrix& trainData,
                             base::DataVector& trainDataClass, size_t NUM, double lambda,
                             size_t IMAX, double eps, size_t IMAX_final, double eps_final,
                             double firstLabel, double secondLabel, double threshold,

@@ -53,8 +53,8 @@ class HashGridStorageConverter {
       sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& level,
       sgpp::base::DataMatrix& index, sgpp::parallel::VectorizationType vectorizationType,
       size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
@@ -103,8 +103,8 @@ class HashGridStorageConverter {
                                               sgpp::base::DataMatrix& level,
                                               sgpp::parallel::VectorizationType vectorizationType,
                                               size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);

@@ -38,10 +38,6 @@ namespace base {
  */
 class HashGenerator {
  public:
-  typedef GridStorage::index_type index_type;
-  typedef index_type::index_type index_t;
-  typedef index_type::level_type level_t;
-
   /**
    * Generates a regular sparse grid of level levels, without boundaries
    *
@@ -125,7 +121,7 @@ class HashGenerator {
       throw generation_exception("storage not empty");
     }
 
-    index_type index(storage.getDimension());
+    GridPoint point(storage.getDimension());
 
     if (boundaryLevel >= 1) {
       this->regular_boundary_truncated_iter(storage, level,
@@ -137,10 +133,10 @@ class HashGenerator {
        * |l| <= n
        */
       for (size_t d = 0; d < storage.getDimension(); d++) {
-        index.push(d, 0, 0, false);
+        point.push(d, 0, 0, false);
       }
 
-      this->boundaries_rec(storage, index, storage.getDimension() - 1, 0, level);
+      this->boundaries_rec(storage, point, storage.getDimension() - 1, 0, level);
     }
   }
 
@@ -156,7 +152,7 @@ class HashGenerator {
       throw generation_exception("storage not empty");
     }
 
-    index_type index(storage.getDimension());
+    GridPoint point(storage.getDimension());
 
     if (level == 0) {
       throw generation_exception(
@@ -179,10 +175,10 @@ class HashGenerator {
       throw generation_exception("storage not empty");
     }
 
-    index_type index(storage.getDimension());
+    GridPoint point(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      index.push(d, 0, 0, false);
+      point.push(d, 0, 0, false);
     }
 
     /**
@@ -191,7 +187,7 @@ class HashGenerator {
      * if (level%2==0) level--;
      * */
     int small_level = level / 2;
-    this->square_rec(storage, index, storage.getDimension() - 1,
+    this->square_rec(storage, point, storage.getDimension() - 1,
                      level, small_level, false,
                      0);
   }
@@ -208,16 +204,16 @@ class HashGenerator {
       throw generation_exception("storage not empty");
     }
 
-    index_type index(storage.getDimension());
+    GridPoint point(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      index.push(d, 0, 0, false);
+      point.push(d, 0, 0, false);
     }
 
     size_t mydim = storage.getDimension();
 
-    index.setLeaf(true);
-    trunc_rec(storage, index, (mydim - 1), static_cast<level_t>(mydim) * k,
+    point.setLeaf(true);
+    trunc_rec(storage, point, (mydim - 1), static_cast<level_t>(mydim) * k,
               level + k * (static_cast<level_t>(mydim) - 1), k);
   }
 
@@ -233,7 +229,7 @@ class HashGenerator {
     if (storage.getDimension() == 0)
       return;
 
-    index_type idx_1d(storage.getDimension());
+    GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
@@ -262,7 +258,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
 
         // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
@@ -302,7 +298,7 @@ class HashGenerator {
     if (storage.getDimension() == 0)
       return;
 
-    index_type idx_1d(storage.getDimension());
+    GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
@@ -333,7 +329,7 @@ class HashGenerator {
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
         bool skip = false;
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
 
         // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
@@ -433,7 +429,7 @@ class HashGenerator {
       return;
     }
 
-    index_type idx_1d(dim);
+    GridPoint idx_1d(dim);
 
     for (size_t d = 0; d < dim; d++) {
       idx_1d.push(d, 1, 1, false);
@@ -475,7 +471,7 @@ class HashGenerator {
       for (size_t g = 0; g < gridSize; g++) {
               level_t levelSum = 0;
               level_t numberOfZeroLevels = 0;
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
         bool firstPoint = true;
 
               // calculate level sum and count number of zero levels
@@ -558,7 +554,7 @@ class HashGenerator {
     if (storage.getDimension() == 0)
       return;
 
-    index_type idx_1d(storage.getDimension());
+    GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
@@ -593,7 +589,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
 
         // Calculate level-sum
         level_t level_sum = idx.getLevelSum() - 1;
@@ -652,7 +648,7 @@ class HashGenerator {
     if (storage.getDimension() == 0)
       return;
 
-    index_type idx_1d(storage.getDimension());
+    GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
@@ -681,7 +677,7 @@ class HashGenerator {
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
 
         // add remaining level-index pairs in current dimension d
         for (level_t l = 1; l <= n; l++) {
@@ -727,7 +723,7 @@ class HashGenerator {
     if (storage.getDimension() == 0)
       return;
 
-    index_type idx_1d(storage.getDimension());
+    GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
@@ -764,7 +760,7 @@ class HashGenerator {
 
       // loop over all current grid points
       for (size_t g = 0; g < grid_size; g++) {
-        index_type idx(storage.getPoint(g));
+        GridPoint idx(storage.getPoint(g));
 
         // add remaining level-index pairs in current dimension d
         for (level_t l = 1; l <= n; l++) {
@@ -807,7 +803,7 @@ class HashGenerator {
   //   * @param current_level current level in this construction step
   //   * @param level maximum level of the sparse grid
   //   */
-  //  void regular_rec(GridStorage& storage, index_type& index,
+  //  void regular_rec(GridStorage& storage, GridPoint& index,
   //  size_t current_dim, level_t current_level, level_t level)
   //  {
   //    if(current_dim == 0)
@@ -862,7 +858,7 @@ class HashGenerator {
   //   * @param current_level current level of the grid generation
   //   * @param level maximum level of grid
   //   */
-  //  void regular_rec_1d(GridStorage& storage, index_type& index,
+  //  void regular_rec_1d(GridStorage& storage, GridPoint& index,
   //  level_t current_level, level_t level)
   //  {
   //        for(level_t l = 1; l <= level-current_level + 1; l++)
@@ -898,7 +894,7 @@ class HashGenerator {
    * @param level maximum level of the sparse grid
    * @param bLevelZero specifies if the current index has a level zero component
    */
-  void boundaries_truncated_rec(GridStorage& storage, index_type& index,
+  void boundaries_truncated_rec(GridStorage& storage, GridPoint& index,
                                 size_t current_dim, level_t current_level,
                                 level_t level, bool bLevelZero) {
     if (current_dim == 0) {
@@ -967,7 +963,7 @@ class HashGenerator {
    * @param level maximum level of grid
    * @param bLevelZero specifies if the current index has a level zero component
    */
-  void boundaries_Truncated_rec_1d(GridStorage& storage, index_type& index,
+  void boundaries_Truncated_rec_1d(GridStorage& storage, GridPoint& index,
                                    level_t current_level, level_t level,
                                    bool bLevelZero) {
     bool bLevelGreaterZero = !bLevelZero;
@@ -1014,7 +1010,7 @@ class HashGenerator {
    * @param current_level current level in this construction step
    * @param level maximum level of the sparse grid
    */
-  void boundaries_rec(GridStorage& storage, index_type& index,
+  void boundaries_rec(GridStorage& storage, GridPoint& index,
                       size_t current_dim,
                       level_t current_level, level_t level) {
     index_t source_index;
@@ -1098,7 +1094,7 @@ class HashGenerator {
    * @param tail true if there is a level of the index>level/2
    * @param sum sum of all levels
    */
-  void square_rec(GridStorage& storage, index_type& index,
+  void square_rec(GridStorage& storage, GridPoint& index,
                   size_t current_dim, level_t level, level_t small_level,
                   bool tail, size_t sum) {
     index_t source_index;
@@ -1192,7 +1188,7 @@ class HashGenerator {
    * @param level the maximum level of the gridpoint
    * @param minlevel the level limit given by the user(tells us which fullgrids won't be present in the construction of the sparse grid)
    */
-  void trunc_rec(GridStorage& storage, index_type& index,
+  void trunc_rec(GridStorage& storage, GridPoint& index,
                  size_t current_dim, level_t current_level,
                  level_t level, level_t minlevel) {
     index_t source_index;

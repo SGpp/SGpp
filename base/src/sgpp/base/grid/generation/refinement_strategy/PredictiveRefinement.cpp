@@ -61,38 +61,38 @@ AbstractRefinement::refinement_list_type PredictiveRefinement::getIndicator(
     dynamic_cast<const PredictiveRefinementIndicator&>(functor);
   refinement_key_type* key;
 
-  index_type& index = *(iter->first);
+  GridPoint& point = *(iter->first);
   GridStorage::grid_map_iterator child_iter;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
-    index.get(d, source_level, source_index);
+    point.get(d, source_level, source_index);
     double error = errorIndicator.start();
     // errorIndicator->setActiveDim(d);
 
     // test existence of left child
-    index.set(d, source_level + 1, 2 * source_index - 1);
-    child_iter = storage.find(&index);
+    point.set(d, source_level + 1, 2 * source_index - 1);
+    child_iter = storage.find(&point);
 
     if (child_iter == end_iter) {
       // use the predictive error indicator
-      error += errorIndicator(index);
+      error += errorIndicator(point);
     }
 
     // test existance of right child
-    index.set(d, source_level + 1, 2 * source_index + 1);
-    child_iter = storage.find(&index);
+    point.set(d, source_level + 1, 2 * source_index + 1);
+    child_iter = storage.find(&point);
 
     if (child_iter == end_iter) {
       // use predictive refinement indicator
       // use the predictive error indicator
-      error += errorIndicator(index);
+      error += errorIndicator(point);
     }
 
     // reset current grid point in dimension d
-    index.set(d, source_level, source_index);
+    point.set(d, source_level, source_index);
 
     if (error > iThreshold_) {
       key = new refinement_key_type(*(iter->first),
@@ -112,7 +112,7 @@ void PredictiveRefinement::collectRefinablePoints(
   AbstractRefinement::refinement_container_type& collection) {
   size_t refinements_num = functor.getRefinementsNum();
 
-  index_type index;
+  GridPoint index;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   // start iterating over whole grid
@@ -140,8 +140,8 @@ void PredictiveRefinement::refineGridpointsCollection(
     key = dynamic_cast<refinement_key_type*>(pair.first.get());
 
     if (pair.second > functor.start() && pair.second >= threshold) {
-      this->refineGridpoint1D(storage, key->getIndex(), key->getDim());
-      key->getIndex().setLeaf(false);
+      this->refineGridpoint1D(storage, key->getPoint(), key->getDim());
+      key->getPoint().setLeaf(false);
     }
 
     // delete key;

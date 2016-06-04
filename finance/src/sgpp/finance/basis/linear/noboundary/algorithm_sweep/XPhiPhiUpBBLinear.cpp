@@ -45,8 +45,8 @@ void XPhiPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVect
   double fml = 0.0;
   double fmr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -92,8 +92,8 @@ void XPhiPhiUpBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVe
   double fml = 0.0;
   double fmr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);

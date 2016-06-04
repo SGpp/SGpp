@@ -37,8 +37,7 @@ PredictiveRefinementIndicator::PredictiveRefinementIndicator(Grid& grid,
   this->threshold = threshold;
 }
 
-double PredictiveRefinementIndicator::operator ()(
-  AbstractRefinement::index_type& gridPoint) const {
+double PredictiveRefinementIndicator::operator()(GridPoint& point) const {
   // the actual value of the errorIndicator
   double errorIndicator = 0.0;
   double denominator = 0.0;
@@ -58,8 +57,8 @@ double PredictiveRefinementIndicator::operator ()(
 
   for (size_t row = 0; row < dataSet.getNrows(); ++row) {
     // level, index and evaulation of a gridPoint in dimension d
-    AbstractRefinement::level_t level = 0;
-    AbstractRefinement::index_t index = 0;
+    level_t level = 0;
+    index_t index = 0;
     double valueInDim;
     // if on the support of the grid point in all dim
     // if(isOnSupport(&floorMask,&ceilingMask,row))
@@ -69,9 +68,9 @@ double PredictiveRefinementIndicator::operator ()(
     double funcval = 1.0;
 
     // calculate error Indicator
-    for (size_t dim = 0; dim < gridPoint.getDimension() && funcval != 0; ++dim) {
-      level = gridPoint.getLevel(dim);
-      index = gridPoint.getIndex(dim);
+    for (size_t dim = 0; dim < point.getDimension() && funcval != 0; ++dim) {
+      level = point.getLevel(dim);
+      index = point.getIndex(dim);
 
       valueInDim = dataSet.get(row, dim);
 
@@ -90,7 +89,7 @@ double PredictiveRefinementIndicator::operator ()(
     // }
   }
 
-  AbstractRefinement::index_type idx(gridPoint);
+  GridPoint idx(point);
 
   if (denominator != 0 && counter >= minSupportPoints_) {
     // to match with OnlineRefDim, use this:

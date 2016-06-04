@@ -140,8 +140,8 @@ void LaplaceEnhancedUpBBLinear::rec(double& fl, double& fr, size_t dim, grid_ite
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -217,8 +217,8 @@ void LaplaceEnhancedUpBBLinear::rec_LL(double& fl, double& fr, double& fl2, doub
   fl = fr = fl2 = fr2 = 0.0;
 #endif
 #endif
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -330,8 +330,8 @@ void LaplaceEnhancedUpBBLinear::rec_GL(double& fl, double& fr, size_t dim, grid_
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -371,8 +371,8 @@ void LaplaceEnhancedUpBBLinear::rec_LG(double& fl, double& fr, size_t dim, grid_
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -435,8 +435,8 @@ void LaplaceEnhancedUpBBLinear::recBB(double& fl, double& fr, size_t dim, grid_i
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -479,8 +479,8 @@ void LaplaceEnhancedUpBBLinear::recBB_LL(double& fl, double& fr, double& fl2, do
   double fmr2 = 0.0;
   fl = fr = fl2 = fr2 = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -527,8 +527,8 @@ void LaplaceEnhancedUpBBLinear::recBB_GL(double& fl, double& fr, size_t dim,
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
@@ -569,8 +569,8 @@ void LaplaceEnhancedUpBBLinear::recBB_LG(double& fl, double& fr, size_t dim,
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
