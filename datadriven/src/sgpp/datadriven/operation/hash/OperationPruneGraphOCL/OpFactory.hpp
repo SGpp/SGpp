@@ -14,10 +14,15 @@ namespace datadriven {
 sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
                                     base::DataMatrix &data, double treshold, size_t k,
-                                    std::string opencl_conf);
+                                    std::string opencl_conf, size_t platformid, size_t deviceid);
 sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions,
                                     double *alpha, base::DataMatrix &data, double treshold,
-                                    size_t k, std::string opencl_conf);
+                                    size_t k, std::string opencl_conf, size_t platformid,
+                                    size_t deviceid);
+sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
+pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
+                                    base::DataMatrix &data, double treshold, size_t k,
+                                    std::string opencl_conf);
 }  // namespace datadriven
 }  // namespace sgpp

@@ -16,7 +16,7 @@ namespace datadriven {
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
                                     base::DataMatrix &data, double treshold, size_t k,
-                                    std::string opencl_conf) {
+                                    std::string opencl_conf, size_t platformid, size_t deviceid) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -41,23 +41,17 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[0];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstDeviceConfig = deviceNode["KERNELS"]["removeEdges"];
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
         OperationPruneGraphOCLMultiPlatform<float>(grid, alpha, data, dimensions, manager,
-                                                   firstDeviceConfig,
-                                                   static_cast<float>(treshold), k);
+                                                   parameters,
+                                                   static_cast<float>(treshold), k,
+                                                   platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new DensityOCLMultiPlatform::
         OperationPruneGraphOCLMultiPlatform<double>(grid, alpha, data, dimensions, manager,
-                                                    firstDeviceConfig, treshold, k);
+                                                    parameters, treshold, k, platformid,
+                                                    deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"OperationPruneGraphOCL\": "
@@ -67,7 +61,56 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   return NULL;
 }
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
-pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions, double *alpha,
+pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions,
+                                    double *alpha, base::DataMatrix &data,
+                                    double treshold, size_t k, std::string opencl_conf,
+                                    size_t platformid, size_t deviceid) {
+  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+
+  std::cout << "Using configuration file " << opencl_conf << std::endl;
+  sgpp::base::OCLOperationConfiguration *parameters =
+      new sgpp::base::OCLOperationConfiguration(opencl_conf);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  parameters->serialize("MyOCLConfDebug.cfg");
+  if (parameters->contains("INTERNAL_PRECISION") == false) {
+    std::cout << "Warning! No internal precision setting detected."
+              << " Using double precision from now on!" << std::endl;
+    parameters->addIDAttr("INTERNAL_PRECISION", "float");
+  }
+  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    DensityOCLMultiPlatform::KernelPruneGraph<float>::augmentDefaultParameters(*parameters);
+  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    DensityOCLMultiPlatform::KernelPruneGraph<double>::augmentDefaultParameters(*parameters);
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
+                << " invalid value for parameter \"INTERNAL_PRECISION\"";
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  parameters->serialize("MyOCLConf.cfg");
+
+  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationPruneGraphOCLMultiPlatform<float>(gridpoints, gridsize, dimensions, alpha, data,
+                                                   manager, parameters,
+                                                   static_cast<float>(treshold), k,
+                                                   platformid, deviceid);
+  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationPruneGraphOCLMultiPlatform<double>(gridpoints, gridsize, dimensions, alpha, data,
+                                                    manager, parameters, treshold, k, platformid,
+                                                    deviceid);
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
+                << " invalid value for parameter \"INTERNAL_PRECISION\"";
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  return NULL;
+}
+
+DensityOCLMultiPlatform::OperationPruneGraphOCL*
+pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
                                     base::DataMatrix &data, double treshold, size_t k,
                                     std::string opencl_conf) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
@@ -94,25 +137,40 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[0];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstDeviceConfig = deviceNode["KERNELS"]["removeEdges"];
+  size_t platformid = 0;
+  if (parameters->contains("USE_PLATFORM") == true) {
+    platformid = (*parameters)["USE_PLATFORM"].getInt();
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
+                << "There is no given information about which opencl platform (ID) to use!"
+                << " Add \"USE_PLATFORM\": platform_id to your configuration file "
+                << "or use a different factory method." << std::endl;
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  size_t deviceid = 0;
+  if (parameters->contains("USE_DEVICE") == true) {
+    deviceid = (*parameters)["USE_DEVICE"].getInt();
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
+                << "There is no given information about which opencl device (ID) to use!"
+                << " Add \"USE_DEVICE\": device_id to your configuration file "
+                << "or use a different factory method." << std::endl;
+    throw base::factory_exception(errorString.str().c_str());
+  }
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
-        OperationPruneGraphOCLMultiPlatform<float>(gridpoints, gridsize, dimensions, alpha, data,
-                                                   manager,
-                                                   firstDeviceConfig,
-                                                   static_cast<float>(treshold), k);
+        OperationPruneGraphOCLMultiPlatform<float>(grid, alpha, data, dimensions, manager,
+                                                   parameters,
+                                                   static_cast<float>(treshold), k,
+                                                   platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new DensityOCLMultiPlatform::
-        OperationPruneGraphOCLMultiPlatform<double>(gridpoints, gridsize, dimensions, alpha, data,
-                                                    manager,
-                                                    firstDeviceConfig, treshold, k);
+        OperationPruneGraphOCLMultiPlatform<double>(grid, alpha, data, dimensions, manager,
+                                                    parameters, treshold, k,
+                                                    platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"OperationPruneGraphOCL\": "
