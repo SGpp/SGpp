@@ -41,23 +41,15 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[platformid];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[deviceid];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<float>(dataset, dimensions, manager,
-                                                   firstDeviceConfig, k, platformid,
+                                                   parameters, k, platformid,
                                                    deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<double>(dataset, dimensions, manager,
-                                                    firstDeviceConfig, k, platformid,
+                                                    parameters, k, platformid,
                                                     deviceid);
   } else {
     std::stringstream errorString;
@@ -96,22 +88,14 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[platformid];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[deviceid];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<float>(dataset, dataset_size, dimensions, manager,
-                                                   firstDeviceConfig, k, platformid, deviceid);
+                                                   parameters, k, platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<double>(dataset, dataset_size, dimensions, manager,
-                                                    firstDeviceConfig, k, platformid,
+                                                    parameters, k, platformid,
                                                     deviceid);
   } else {
     std::stringstream errorString;
@@ -171,23 +155,16 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
                 << "or use a different factory method." << std::endl;
     throw base::factory_exception(errorString.str().c_str());
   }
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[platformid];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[deviceid];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<float>(dataset, dimensions, manager,
-                                                   firstDeviceConfig, k, platformid,
+                                                   parameters, k, platformid,
                                                    deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new DensityOCLMultiPlatform::
         OperationCreateGraphOCLSingleDevice<double>(dataset, dimensions, manager,
-                                                    firstDeviceConfig, k, platformid,
+                                                    parameters, k, platformid,
                                                     deviceid);
   } else {
     std::stringstream errorString;
