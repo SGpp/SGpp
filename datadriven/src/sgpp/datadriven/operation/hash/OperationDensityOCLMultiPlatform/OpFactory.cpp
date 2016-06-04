@@ -43,25 +43,15 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[0];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
-  json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
-        OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, firstKernelConfig,
-                                                secondKernelConfig, static_cast<float>(lambda),
+        OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, parameters,
+                                                static_cast<float>(lambda),
                                                 platform_id, device_id);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
-        OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, firstKernelConfig,
-                                                 secondKernelConfig, lambda,
-                                                 platform_id, device_id);
+        OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, parameters,
+                                                 lambda, platform_id, device_id);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
@@ -100,27 +90,15 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
   }
   parameters->serialize("MyOCLConf.cfg");
 
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[0];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
-  json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<float>(gridpoints, gridsize, dimension, manager,
-                                                firstKernelConfig,
-                                                secondKernelConfig, static_cast<float>(lambda),
+                                                parameters, static_cast<float>(lambda),
                                                  platform_id, device_id);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<double>(gridpoints, gridsize, dimension, manager,
-                                                 firstKernelConfig,
-                                                 secondKernelConfig, lambda,
-                                                 platform_id, device_id);
+                                                 parameters, lambda, platform_id, device_id);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
@@ -180,24 +158,16 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                 << "or use a different factory method." << std::endl;
     throw base::factory_exception(errorString.str().c_str());
   }
-  std::string &firstPlatformName =
-      (*parameters)["PLATFORMS"].keys()[0];
-  std::string &firstDeviceName =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-  json::Node &deviceNode =
-      (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-  json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
-  json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
-        OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, firstKernelConfig,
-                                                secondKernelConfig, static_cast<float>(lambda),
+        OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, parameters,
+                                                static_cast<float>(lambda),
                                                 platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
-        OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, firstKernelConfig,
-                                                 secondKernelConfig, lambda,
+        OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, parameters,
+                                                 lambda,
                                                 platformid, deviceid);
   } else {
     std::stringstream errorString;

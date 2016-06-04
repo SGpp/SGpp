@@ -32,8 +32,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
  private:
   size_t dims;
   size_t gridSize;
-  json::Node &firstKernelConfig;
-  json::Node &secondKernelConfig;
   sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
   sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityB<T> *bKernel;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
@@ -45,12 +43,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
  public:
   OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                   json::Node &firstKernelConfig, json::Node &secondKernelConfig,
+                                   sgpp::base::OCLOperationConfiguration *parameters,
                                    T lambda, size_t platform_id, size_t device_id)
       : OperationDensityOCL(), dims(dimensions),
         gridSize(grid.getStorage().getSize()),
-        firstKernelConfig(firstKernelConfig),
-        secondKernelConfig(secondKernelConfig),
         devices(manager->getDevices()),
         manager(manager), lambda(lambda) {
     verbose = true;
@@ -88,6 +84,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
+        json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
         bKernel = new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig,
                                         points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
@@ -108,12 +108,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
   }
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                   json::Node &firstKernelConfig, json::Node &secondKernelConfig,
+                                   sgpp::base::OCLOperationConfiguration *parameters,
                                    T lambda, size_t platform_id, size_t device_id) :
       OperationDensityOCL(), dims(dimensions),
       gridSize(gridsize),
-      firstKernelConfig(firstKernelConfig),
-      secondKernelConfig(secondKernelConfig),
       devices(manager->getDevices()),
       manager(manager), lambda(lambda) {
     verbose = false;
@@ -142,9 +140,13 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
-        bKernel = new KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
+        json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
+        bKernel = new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig,
                                         points);
-        multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
+        multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
         success = true;
         break;

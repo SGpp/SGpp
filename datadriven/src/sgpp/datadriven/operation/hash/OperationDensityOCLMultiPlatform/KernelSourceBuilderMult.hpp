@@ -321,7 +321,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     for (size_t block = 0; block < dataBlockSize; block++) {
       sourceStream << calculate_matrix_entry(block, dimensions) << std::endl;
     }
-    //Close group loop
+    // Close group loop
     if (useLocalMemory)
       sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
