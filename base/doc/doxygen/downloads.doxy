@@ -17,14 +17,22 @@ http://sgpp.sparsegrids.org.
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.0.0.tar.gz">
   sgpp_2.0.0.tar.gz</a>
 
-As we have retructured (and significantly improved) several of the interfaces, we switched to a new, major version. As we don't provide backwards compatibility, we list here the most Important changes:
-- Corrected syntax for getter and setter functions, e.g. sgpp::base::Grid::getDimension()
-- 
+As we have retructured (and significantly improved) several of the interfaces,
+we switched to a new, major version. As we don't provide backwards compatibility,
+we list here the most important changes:
 
-New features:
-- Improved Scons support
-- Bug fixes in Scons script for incompatible versions of icc and gcc
+- Massive interface change in `sgpp::base` from plain pointers to smart pointers and references
+  (e.g., sgpp::base::Grid::createLinearGrid(), sgpp::base::Grid::getGenerator(), …)
+- Consistent renaming of key functions in `Grid`, `GridStorage`, and `GridIndex`
+  (e.g., sgpp::base::Grid::getDimension())
+- Name change of global namespace from `SGPP` to `sgpp`
+- Major redesign of SCons scripts, change of SCons parameters, better diagnostic output
+- Add support for Clang 3.8
+- Overall improvement of the code quality due to fixed Clang warnings
+- Removal of single precision support and of float_t
+- Removal of MSVC++ support
 - More unit tests
+- Small changes and bug fixes in code and documentation
 
 @subsection downloads_history_110 Version 1.1.0, 2016/02/24
 - Download:
