@@ -75,6 +75,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::string currentplatformName = devices[0]->platformName;
     std::string currentdeviceName = devices[0]->deviceName;
     size_t counter = 0;
+    bool success = false;
     for (auto device : devices) {
       if (devices[counter]->platformName != currentplatformName) {
         platformcounter++;
@@ -91,9 +92,18 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
+        success = true;
         break;
       }
       counter++;
+    }
+    // Check whether a kernel was created or not
+    if (!success) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Platform with index " << platform_id
+                  << " and the device with index " << device_id << std::endl
+                  << " not found! Please check your OpenCL installation!" << std::endl;
+      throw base::operation_exception(errorString.str());
     }
   }
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
@@ -119,6 +129,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::string currentplatformName = devices[0]->platformName;
     std::string currentdeviceName = devices[0]->deviceName;
     size_t counter = 0;
+    bool success = false;
     for (auto device : devices) {
       if (devices[counter]->platformName != currentplatformName) {
         platformcounter++;
@@ -135,9 +146,18 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[0], dims, manager, firstKernelConfig,
                                               points, lambda);
+        success = true;
         break;
       }
       counter++;
+    }
+    // Check whether a kernel was created or not
+    if (!success) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Platform with index " << platform_id
+                  << " and the device with index " << device_id << std::endl
+                  << " not found! Please check your OpenCL installation!" << std::endl;
+      throw base::operation_exception(errorString.str());
     }
   }
 
