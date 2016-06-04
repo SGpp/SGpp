@@ -353,7 +353,9 @@ class Stretching : public BoundingBox {
    * @param d dimension index of the type array
    *
    */
-  Stretching1D getStretching1D(size_t d) const;
+  inline const Stretching1D& getStretching1D(size_t d) const {
+    return stretching1Ds[d];
+  }
 
   /*
    * Prints the lookup table generated. Used for debugging
@@ -414,8 +416,7 @@ class Stretching : public BoundingBox {
    * @param mode stretching mode ("analytic" or "discrete")
    * @param version the serialization version of the file
    */
-  void unserialize(const std::string& istr, const std::string& mode,
-                   int version = SERIALIZATION_VERSION);
+  void unserialize(const std::string& istr, const std::string& mode, int version);
 
   /**
    * Unserialize from a stream.
@@ -424,8 +425,7 @@ class Stretching : public BoundingBox {
    * @param mode stretching mode ("analytic" or "discrete")
    * @param version the serialization version of the file
    */
-  void unserialize(std::istream& istr, const std::string& mode,
-                   int version = SERIALIZATION_VERSION);
+  void unserialize(std::istream& istr, const std::string& mode, int version);
 };
 
 }  // namespace base

@@ -473,10 +473,6 @@ size_t Stretching::calculateLookupIndex(level_t level, index_t index) const {
   return static_cast<size_t>((static_cast<index_t>(1) << (level - 1)) - 1 + (index - 1) / 2);
 }
 
-Stretching1D Stretching::getStretching1D(size_t d) const {
-  return stretching1Ds[d];
-}
-
 void Stretching::printLookupTable() const {
   for (size_t d = 0; d < dimension; d++) {
     std::cout << std::endl << "dim" << d << std::endl;
