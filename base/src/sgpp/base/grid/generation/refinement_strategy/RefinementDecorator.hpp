@@ -60,16 +60,6 @@ class RefinementDecorator: public AbstractRefinement {
    */
   virtual size_t getNumberOfRefinablePoints(GridStorage& storage);
 
-
-  /**
-   * Refine grid points using a specified strategy
-   * @param storage hashmap that stores the grid points
-   * @param index point to refine
-   * @param d direction
-   */
-  // virtual void strategy_refine(GridStorage& storage,
-  // RefinementStrategy& refinement_strategy);
-
   /**
    * Refine one grid point along a single direction
    * @param storage hashmap that stores the grid points
