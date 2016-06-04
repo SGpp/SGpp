@@ -26,7 +26,7 @@ def computeCoefficients(jgrid, grid, alpha, f):
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.getSize(), jgs.getDimension())
     for i in xrange(jgs.getSize()):
-        jgs.get(i).getStandardCoordinates(p)
+        jgs.getPoint(i).getStandardCoordinates(p)
         A.setRow(i, p)
 
     nodalValues = evalSGFunctionMulti(grid, alpha, A.array())
@@ -103,7 +103,7 @@ def estimateL2error(grid1, grid2, alpha2):
     gs2 = grid2.getStorage()
     ans = 0
     for i in xrange(gs2.getSize()):
-        gp = gs2.get(i)
+        gp = gs2.getPoint(i)
         if not gs1.has_key(gp):
             ans += abs(alpha2[i])
 
@@ -148,7 +148,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
     p = DataVector(dim)
     nodalValues = DataVector(gs.getSize())
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         # transform to the right space
         q = T.unitToProbabilistic(p.array())
         # apply the given function

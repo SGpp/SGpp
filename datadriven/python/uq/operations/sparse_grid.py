@@ -49,7 +49,7 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     ps = np.ndarray((gsResult.getSize(), gsResult.getDimension()))
     p = DataVector(gsResult.getDimension())
     for i in xrange(gsResult.getSize()):
-        gsResult.get(i).getStandardCoordinates(p)
+        gsResult.getPoint(i).getStandardCoordinates(p)
         ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
     return nodalValues
@@ -65,7 +65,7 @@ def copyGrid(grid, level=0, deg=1):
     newGs = newGrid.getStorage()
     # insert grid points
     for i in xrange(gs.getSize()):
-        gp = gs.get(i)
+        gp = gs.getPoint(i)
 
         # insert grid point
         if not newGs.has_key(gp):
@@ -468,7 +468,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
         # compute starting points by level sum
         ixs = {}
         for i in xrange(gs.getSize()):
-            accLevel = gs.get(i).getLevel(d)
+            accLevel = gs.getPoint(i).getLevel(d)
             if accLevel in ixs:
                 ixs[accLevel].append(i)
             else:
@@ -482,7 +482,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
         while len(starting_points) > 0:
             # get next starting node
             ix = starting_points.pop(0)
-            gp = gs.get(ix)
+            gp = gs.getPoint(ix)
 
             # append left and right child
             gpl = HashGridPoint(gp)
@@ -541,7 +541,7 @@ def dehierarchize(grid, alpha):
     nodalValues = DataVector(gs.getSize())
     A = DataMatrix(gs.getSize(), gs.getDimension())
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         A.setRow(i, p)
     opEval = createOperationMultipleEval(grid, A)
     alphaVec = DataVector(alpha)
@@ -570,7 +570,7 @@ def dehierarchizeList(grid, alpha, gps):
 def balance(grid):
     gs = grid.getStorage()
     newgps = []
-    gps = [gs.get(i) for i in xrange(gs.getSize())]
+    gps = [gs.getPoint(i) for i in xrange(gs.getSize())]
 
     while len(gps) > 0:
         gp = gps.pop()
@@ -793,10 +793,10 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                      "rel err".rjust(spacing),
                      "abs err".rjust(spacing))
                 head = False
-            gs.get(i).getStandardCoordinates(p)
+            gs.getPoint(i).getStandardCoordinates(p)
             print "%s | %s | %s | %s | %s | %s | %s" % \
                 (("%i" % i).rjust(spacing),
-                    ("%i" % gs.get(i).getLevelSum()).rjust(spacing),
+                    ("%i" % gs.getPoint(i).getLevelSum()).rjust(spacing),
                     ("%g" % alpha[i]).rjust(spacing),
                     ("%g" % nodal).rjust(spacing),
                     ("%g" % value).rjust(spacing),
@@ -817,7 +817,7 @@ def checkPositivity(grid, alpha):
     A = np.ndarray((fullHashGridStorage.getSize(), fullHashGridStorage.getDimension()))
     p = DataVector(gs.getDimension())
     for i in xrange(fullHashGridStorage.getSize()):
-        fullHashGridStorage.get(i).getStandardCoordinates(p)
+        fullHashGridStorage.getPoint(i).getStandardCoordinates(p)
         A[i, :] = p.array()
 
     negativeGridPoints = {}
@@ -826,7 +826,7 @@ def checkPositivity(grid, alpha):
     for i, yi in enumerate(res):
         if yi < -1e-11:
             cnt += 1
-            negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.get(i))
+            negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.getPoint(i))
             ymin = min(ymin, yi)
             ymax = max(ymax, yi)
 #             print "  %s = %g" % (A[i, :], yi)

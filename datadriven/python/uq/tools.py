@@ -174,7 +174,7 @@ def eval_fullGrid(level, dim, border=True):
     p = DataVector(dim)
 
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         ans.setRow(i, p)
 
     return ans.array()

@@ -118,7 +118,7 @@ public class tutorial {
     GridPoint gp = new GridPoint();
 
     for (int i = 0; i < gridStorage.getSize(); i++) {
-      gp = gridStorage.get(i);
+      gp = gridStorage.getPoint(i);
       alpha.set(i, f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)));
     }
 

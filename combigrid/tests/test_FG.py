@@ -50,7 +50,7 @@ def testFG(obj, grid, level, function):
     # generate the node_values vector
     node_values = DataVector(storage.getSize())
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getStandardCoordinatesString().split()
+        points = storage.getPoint(n).getStandardCoordinatesString().split()
         node_values[n] = evalFunction(function, points)        
     fgs = FullGridSet(dim,level, grid.getType())   
     beta = DataVector(storage.getSize())

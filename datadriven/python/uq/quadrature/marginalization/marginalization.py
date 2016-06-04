@@ -24,7 +24,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     # insert grid points
     n_gp = HashGridPoint(n_dim)
     for i in xrange(gs.getSize()):
-        gp = gs.get(i)
+        gp = gs.getPoint(i)
         for d in range(dim):
             if d == dd:
                 # omit marginalization direction
@@ -47,7 +47,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     basis = getBasis(grid)
     # set function values for n_alpha
     for i in xrange(gs.getSize()):
-        gp = gs.get(i)
+        gp = gs.getPoint(i)
 
         for d in range(dim):
             if d == dd:

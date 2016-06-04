@@ -98,7 +98,7 @@ class VarianceOptRanking(Ranking):
         gs = grid.getStorage()
         gpsj = [None] * gs.size()
         for i in xrange(gs.size()):
-            gpsj[i] = gs.get(i)
+            gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)
@@ -188,7 +188,7 @@ class VarianceBFRanking(Ranking):
         gs = grid.getStorage()
         gpsj = [None] * gs.size()
         for i in xrange(gs.size()):
-            gpsj[i] = gs.get(i)
+            gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)

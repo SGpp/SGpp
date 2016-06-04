@@ -42,10 +42,10 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         q = DataVector(gs.getDimension())
 
         for i in xrange(gs.size()):
-            gpi = gs.get(i)
+            gpi = gs.getPoint(i)
             gpi.getStandardCoordinates(p)
             for j in xrange(gs.size()):
-                gpj = gs.get(j)
+                gpj = gs.getPoint(j)
                 gpj.getStandardCoordinates(q)
                 y = float(A.get(i, j) * self._U.pdf(p))
                 A.set(i, j, y)

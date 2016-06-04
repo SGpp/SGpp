@@ -144,7 +144,7 @@ class GridDescriptor(object):
 
                 # insert grid points
                 for i in xrange(copygs.size()):
-                    gp = copygs.get(i)
+                    gp = copygs.getPoint(i)
                     # insert grid point
                     if not gs.has_key(gp):
                         gs.insert(HashGridPoint(gp))

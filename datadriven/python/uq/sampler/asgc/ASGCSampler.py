@@ -62,7 +62,7 @@ class ASGCSampler(Sampler):
         ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
-            gs.get(i).getStandardCoordinates(p)
+            gs.getPoint(i).getStandardCoordinates(p)
             ps[i, :] = p.array()
 
         return ps

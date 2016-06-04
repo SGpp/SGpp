@@ -68,7 +68,7 @@ yCoordsOld = []
 opEval = createOperationEval(grid)
 for i in xrange(HashGridStorage.getSize()):
         gridPointCoordinates = DataVector(dim)
-        HashGridStorage.get(i).getStandardCoordinates(gridPointCoordinates)
+        HashGridStorage.getPoint(i).getStandardCoordinates(gridPointCoordinates)
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
 
@@ -76,7 +76,7 @@ for i in xrange(HashGridStorage.getSize()):
 for refnum in range(20):
     # set function values in alpha
     for i in xrange(HashGridStorage.getSize()):
-        gp = HashGridStorage.get(i)
+        gp = HashGridStorage.getPoint(i)
         alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
     # hierarchize
@@ -95,7 +95,7 @@ for refnum in range(20):
 
     for i in xrange(HashGridStorage.getSize()):
         gridPointCoordinates = DataVector(dim)
-        HashGridStorage.get(i).getStandardCoordinates(gridPointCoordinates)
+        HashGridStorage.getPoint(i).getStandardCoordinates(gridPointCoordinates)
         xCoordinates.append(gridPointCoordinates[0])
         yCoordinates.append(gridPointCoordinates[1])
         bla = opEval.eval(alpha,gridPointCoordinates)

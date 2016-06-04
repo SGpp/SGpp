@@ -73,14 +73,14 @@ class OperationMakePositive(object):
             # compute starting points by level sum
             anchors = []
             for i in xrange(gs.getSize()):
-                accLevel = gs.get(i).getLevel(d)
+                accLevel = gs.getPoint(i).getLevel(d)
                 if accLevel == 1:
                     anchors.append(i)
 
             while len(anchors) > 0:
                 # get next starting node
                 ix = anchors.pop(0)
-                gp = gs.get(ix)
+                gp = gs.getPoint(ix)
                 acc = []
                 self.findCandidatesSweep1d(d, gp, alpha, grid, acc, False)
                 # store candidates
@@ -98,7 +98,7 @@ class OperationMakePositive(object):
 #
 #         # run over all grid points...
 #         for i in xrange(gs.getSize()):
-#             gp = gs.get(i)
+#             gp = gs.getPoint(i)
 #             # ... and check if they are leaf nodes
 #             if not hasAllChildren(grid, gp):
 #                 # load all hierarchical ancestors
@@ -234,7 +234,7 @@ class OperationMakePositive(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.get(i))]
+                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
 
                 grid, gs, alpha = newGrid, newGs, newAlpha
                 iteration += 1
@@ -293,7 +293,7 @@ class OperationMakePositive(object):
             forceToBePositive = []
             newGs = newGrid.getStorage()
             for i in xrange(newGs.getSize()):
-                gp = newGs.get(i)
+                gp = newGs.getPoint(i)
                 if newNodalValues[newGs.seq(gp)] < 0.:
                     forceToBePositive.append(gp)
 

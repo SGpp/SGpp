@@ -84,7 +84,7 @@ print "length of alpha vector: {}".format(len(alpha))
 ## \c getStandardCoordinate(dim).
 ## The current coefficient vector is then printed.
 for i in xrange(gridStorage.getSize()):
-  gp = gridStorage.get(i)
+  gp = gridStorage.getPoint(i)
   alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
 print "alpha before hierarchization: {}".format(alpha)

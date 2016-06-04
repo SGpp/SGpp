@@ -49,7 +49,7 @@ print "number of grid points: {}".format(gridStorage.getSize())
 # create coefficient vector
 alpha = pysgpp.DataVector(gridStorage.getSize())
 for i in xrange(gridStorage.getSize()):
-  gp = gridStorage.get(i)
+  gp = gridStorage.getPoint(i)
   alpha[i] = f((gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)))
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 

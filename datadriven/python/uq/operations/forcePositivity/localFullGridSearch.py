@@ -104,7 +104,7 @@ class LocalFullGridCandidates(CandidateSet):
         ans = {}
         for i in xrange(gs.getSize()):
             if alpha[i] < 0.0:
-                ans[i] = gs.get(i)
+                ans[i] = gs.getPoint(i)
 
         return ans
 

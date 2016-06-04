@@ -84,7 +84,7 @@ fprintf('length of alpha vector: %u\n', alpha.getSize());
 %% \c getStandardCoordinate(dim).
 %% The current coefficient vector is then printed.
 for i = 0:gridStorage.getSize()-1
-    gp = gridStorage.get(i);
+    gp = gridStorage.getPoint(i);
     alpha.set(i, f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)));
 end
 
