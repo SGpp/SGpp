@@ -18,7 +18,6 @@ namespace DensityOCLMultiPlatform {
 template<typename real_type>
 class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
  private:
-  std::shared_ptr<base::OCLDevice> device;
   json::Node &kernelConfiguration;
   size_t dims;
   size_t localWorkgroupSize;
@@ -221,7 +220,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
 
 
  public:
-  SourceBuilderMult(json::Node &kernelConfiguration) :
+  explicit SourceBuilderMult(json::Node &kernelConfiguration) :
       kernelConfiguration(kernelConfiguration), dataBlockSize(1),
       use_level_cache(false), use_less(true), do_not_use_ternary(false),
       use_implicit_zero(true) {

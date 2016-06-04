@@ -7,7 +7,6 @@
 
 #include <CL/cl.h>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
@@ -67,7 +66,7 @@ class KernelPruneGraph {
       device(dev), dims(dims), treshold(treshold), k(k), err(CL_SUCCESS), devicePoints(device),
       deviceAlpha(device),
       deviceData(device), deviceGraph(device), kernel(nullptr),
-      kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
+      kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
       deviceTimingMult(0.0),
       kernelConfiguration(kernelConfiguration) {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();

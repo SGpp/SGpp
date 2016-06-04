@@ -17,8 +17,6 @@ namespace DensityOCLMultiPlatform {
 template<typename real_type>
 class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
  private:
-  std::shared_ptr<base::OCLDevice> device;
-
   json::Node &kernelConfiguration;
 
   size_t dims;
@@ -46,9 +44,9 @@ class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
   }
 
  public:
-  SourceBuilderB(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
+  SourceBuilderB(json::Node &kernelConfiguration,
                  size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+      kernelConfiguration(kernelConfiguration), dims(dims) {
   }
 
   std::string generateSource(size_t dimensions, size_t datapoints) {

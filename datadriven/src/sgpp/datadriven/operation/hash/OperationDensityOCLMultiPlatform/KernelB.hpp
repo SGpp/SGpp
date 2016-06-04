@@ -5,7 +5,6 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
@@ -62,7 +61,7 @@ class KernelDensityB {
                  std::vector<int> &points) :
       device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
       deviceData(device), deviceResultData(device), kernelB(nullptr),
-      kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
+      kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
       deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration) {
     gridSize = points.size()/(2*dims);
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
