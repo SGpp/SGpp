@@ -46,7 +46,7 @@ print "length of alpha vector:           {}".format(alpha.getSize())
 for refnum in range(5):
     # set function values in alpha
     for i in xrange(gridStorage.getSize()):
-        gp = gridStorage.get(i)
+        gp = gridStorage.getPoint(i)
         alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
     # hierarchize

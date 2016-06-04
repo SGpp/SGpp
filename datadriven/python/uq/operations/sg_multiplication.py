@@ -13,7 +13,7 @@
 #     ps = DataMatrix(n_gs.size(), n_gs.getDimension())
 #     p = DataVector(n_gs.getDimension())
 #     for i in xrange(n_gs.size()):
-#         n_gs.get(i).getStandardCoordinates(p)
+#         n_gs.getPoint(i).getStandardCoordinates(p)
 #         ps.setRow(i, p)
 #
 #     nodalValues = evalSGFunctionMulti(grid, basis_alpha, ps)
@@ -39,7 +39,7 @@
 #         # # check if interpolation property is given
 #         # p = DataVector(n_gs.getDimension())
 #         # for i in xrange(n_gs.size()):
-#         #     gp = n_gs.get(i)
+#         #     gp = n_gs.getPoint(i)
 #         #     gp.getStandardCoordinates(p)
 #         #     y1 = nodalValues[i]
 #         #     y2 = evalSGFunction(n_grid, n_alpha, p)

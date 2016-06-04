@@ -45,13 +45,13 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.freeRefineSubspace(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 17)
         
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[2] >= 3)
      
@@ -69,13 +69,13 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.freeRefineSubspace(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 15)
         
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4)           
             
@@ -92,13 +92,13 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.freeRefineSubspace(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 15)
         
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4 or levelIndex[2] >= 3)
 

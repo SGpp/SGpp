@@ -37,8 +37,8 @@ def plotSGDE2d(U, n=100):
     y = [0.0] * gs.size()
 
     for i in xrange(gs.size()):
-        x[i] = gs.get(i).getStandardCoordinate(0)
-        y[i] = gs.get(i).getStandardCoordinate(1)
+        x[i] = gs.getPoint(i).getStandardCoordinate(0)
+        y[i] = gs.getPoint(i).getStandardCoordinate(1)
 
     neg_x = []
     neg_y = []
@@ -117,14 +117,14 @@ def plotSG2d(grid, alpha, addContour=True, n=50,
 
     for i in xrange(gs.getSize()):
         if alpha[i] > 1e-14:
-            gpxp.append(gs.get(i).getStandardCoordinate(0))
-            gpyp.append(gs.get(i).getStandardCoordinate(1))
+            gpxp.append(gs.getPoint(i).getStandardCoordinate(0))
+            gpyp.append(gs.getPoint(i).getStandardCoordinate(1))
         elif alpha[i] < -1e-14:
-            gpxn.append(gs.get(i).getStandardCoordinate(0))
-            gpyn.append(gs.get(i).getStandardCoordinate(1))
+            gpxn.append(gs.getPoint(i).getStandardCoordinate(0))
+            gpyn.append(gs.getPoint(i).getStandardCoordinate(1))
         else:
-            gpxz.append(gs.get(i).getStandardCoordinate(0))
-            gpyz.append(gs.get(i).getStandardCoordinate(1))
+            gpxz.append(gs.getPoint(i).getStandardCoordinate(0))
+            gpyz.append(gs.getPoint(i).getStandardCoordinate(1))
 
     x = np.linspace(0, 1, n)
     y = np.linspace(0, 1, n)
@@ -183,7 +183,7 @@ def plotGrid2d(grid, alpha=None):
            'n': np.zeros([0, 2])}
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         if alpha is None or alpha[i] >= 0:
             gps['p'] = np.vstack((gps['p'], p.array()))
         else:

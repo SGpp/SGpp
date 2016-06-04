@@ -24,7 +24,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         gs = grid.getStorage()
         p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
-            gs.get(i).getStandardCoordinates(p)
+            gs.getPoint(i).getStandardCoordinates(p)
             res[i] *= W.pdf(T.unitToProbabilistic(p))
 
         # calc moment
@@ -48,7 +48,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         gs = grid.getStorage()
         p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
-            gs.get(i).getStandardCoordinates(p)
+            gs.getPoint(i).getStandardCoordinates(p)
             res[i] *= (res[i] - mean) * W.pdf(T.unitToProbabilistic(p))
 
         # calc sample variance

@@ -34,7 +34,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
         # run over all columns
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
@@ -189,7 +189,7 @@ def computeBF(grid, U, admissibleSet):
         # run over all columns
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
@@ -212,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # define transformation function
                     T = LinearTransformation(lb, ub)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).getStandardCoordinate(0)
+                        x = ngs.getPoint(k).getStandardCoordinate(0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
                             basis.eval(ljd, ijd, x)
@@ -264,7 +264,7 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
         i = gs.seq(gpi)
         gpi.getStandardCoordinates(p)
         for j in xrange(gs.size()):
-            gs.get(j).getStandardCoordinates(q)
+            gs.getPoint(j).getStandardCoordinates(q)
 #             for d in xrange(gs.getDimension()):
 #                 # get level index
 #                 xlow = max(p[0], q[0])

@@ -44,7 +44,7 @@ class OperationMakePositiveFast(object):
         for n, ((i, j), (gpi, gpj)) in enumerate(overlappingGridPoints.items()):
             fig = plt.figure()
             for k in xrange(gs.getSize()):
-                gp = gs.get(k)
+                gp = gs.getPoint(k)
                 x, y = gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)
                 if alpha[k] < 0.0:
                     plt.plot(x, y, "v ", color="red")
@@ -245,7 +245,7 @@ class OperationMakePositiveFast(object):
             for ix in xrange(gs.getSize()):
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
-                if gs.get(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
+                if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
                     toBeRemoved.append(ix)
 
             # remove the identified grid points
@@ -258,7 +258,7 @@ class OperationMakePositiveFast(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.get(i))]
+                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha
                 iteration += 1

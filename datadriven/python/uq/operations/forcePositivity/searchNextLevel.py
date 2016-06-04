@@ -52,7 +52,7 @@ class SearchLevelWiseForCandidates(CandidateSet):
             candidates = []
             for i in xrange(numGridPoints):
                 self.costs += 1
-                gp = gs.get(i)
+                gp = gs.getPoint(i)
                 if alpha[i] < 0.0:
                     candidates.append(HashGridPoint(gp))
                     self.minLevelSum = min(self.minLevelSum, gp.getLevelSum())

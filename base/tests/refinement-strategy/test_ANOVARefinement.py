@@ -34,7 +34,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         point_to_refine_idx = None
         point = None
         for i in xrange(17):
-            point = self.grid_storage.get(i)
+            point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
                 point_to_refine_idx = i
@@ -94,7 +94,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
         for i in xrange(17):
-            point = self.grid_storage.get(i)
+            point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
                 point_to_refine = point
@@ -133,7 +133,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
         for i in xrange(17):
-            point = self.grid_storage.get(i)
+            point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
                 point_to_refine = point
@@ -173,7 +173,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
         for i in xrange(17):
-            point = self.grid_storage.get(i)
+            point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 3 and point.getIndex(0) == 7 \
                 and point.getLevel(1) == 1 and point.getIndex(1) == 1:
                 point_to_refine = point
@@ -217,7 +217,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
         for i in xrange(17):
-            point = self.grid_storage.get(i)
+            point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 3 and point.getIndex(0) == 7 \
                 and point.getLevel(1) == 1 and point.getIndex(1) == 1:
                 point_to_refine = point

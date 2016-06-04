@@ -76,7 +76,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         for j in xrange(gridSize):
 
-            HashGridPoint = storage.get(j)
+            HashGridPoint = storage.getPoint(j)
             HashGridPoint.setLeaf(False)
                 
             print "Point: ", j, " (", HashGridPoint.toString(), ")"

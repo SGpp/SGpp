@@ -187,7 +187,7 @@ class SGDEdist(EstimatedDist):
             first_moment = 0.0
             gs = self.grid.getStorage()
             for i in xrange(gs.getSize()):
-                gp = gs.get(i)
+                gp = gs.getPoint(i)
                 p = 1.0
                 for idim in xrange(gs.getDimension()):
                     a, b = self.trans.getTransformations()[idim].getBounds()
@@ -206,7 +206,7 @@ class SGDEdist(EstimatedDist):
             second_moment = 0.0
             gs = self.grid.getStorage()
             for i in xrange(gs.getSize()):
-                gp = gs.get(i)
+                gp = gs.getPoint(i)
                 p = 1.0
                 for idim in xrange(gs.getDimension()):
                     a, b = self.trans.getTransformations()[idim].getBounds()

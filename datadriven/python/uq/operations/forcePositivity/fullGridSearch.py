@@ -28,6 +28,6 @@ class FullGridCandidates(CandidateSet):
         
         opEval = createOperationEval(grid)
         for i in xrange(fullGridStorage.getSize()):
-            gp = fullGridStorage.get(i)
+            gp = fullGridStorage.getPoint(i)
             if not gs.has_key(gp):
                 self.candidates.append(HashGridPoint(gp))

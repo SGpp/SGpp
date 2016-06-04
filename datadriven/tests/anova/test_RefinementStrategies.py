@@ -106,7 +106,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
     def process_grid_statistics(self, storage):
         grid_statistics = {}
         for i in xrange(storage.getSize()):
-            point = storage.get(i)
+            point = storage.getPoint(i)
             key = (point.getLevel(0),point.getLevel(1))
             if grid_statistics.has_key(key):
                 grid_statistics[key] += 1

@@ -39,13 +39,13 @@ class Test_SubspaceANOVA(unittest.TestCase):
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 33)
         
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4)
             
@@ -63,13 +63,13 @@ class Test_SubspaceANOVA(unittest.TestCase):
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 33)
         
         for i in xrange(self.grid.getSize()):
-            HashGridPoint = self.HashGridStorage.get(i)
+            HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4 or levelIndex[2] == 4)
 

@@ -24,7 +24,7 @@ class InterpolateFunction(InterpolationAlgorithm):
         nodalValues = np.ndarray(gs.getSize())
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
-            gs.get(i).getStandardCoordinates(p)
+            gs.getPoint(i).getStandardCoordinates(p)
             nodalValues[i] = self.func(p.array())
 
         return hierarchize(grid, nodalValues)

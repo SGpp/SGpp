@@ -54,7 +54,7 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         gps[i, :] = p.array()
 
     ax.plot_wireframe(xv, yv, Z)
@@ -100,7 +100,7 @@ def plotSGNodal3d(grid, alpha):
 
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.get(i).getStandardCoordinates(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         A[i, 0] = p[0]
         A[i, 1] = p[1]
         A[i, 2] = evalSGFunction(grid, alpha, p)

@@ -279,7 +279,7 @@ class RefinementManager(object):
 
             # nps = []
             # for i in xrange(gs.getSize()):
-            #     if not oldgs.has_key(gs.get(i)):
+            #     if not oldgs.has_key(gs.getPoint(i)):
             #         nps.append(i)
 
             # check there have been added some new points
@@ -311,7 +311,7 @@ class RefinementManager(object):
 #                          linestyle='', color='green')
 #
 #             for i in xrange(gs.getSize()):
-#                 gs.get(i).getStandardCoordinates(p)
+#                 gs.getPoint(i).getStandardCoordinates(p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='blue')
 #

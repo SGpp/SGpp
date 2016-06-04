@@ -39,7 +39,7 @@ class Interpolant(Learner):
         p = DataVector(gs.getDimension())
         cnt = 0
         for i in xrange(gs.getSize()):
-            gp = gs.get(i)
+            gp = gs.getPoint(i)
             gp.getStandardCoordinates(p)
             x = tuple(p.array())
             if x not in points:
@@ -47,7 +47,7 @@ class Interpolant(Learner):
                 # q = DataVector(gs.getDimension())
                 # l = np.array([])
                 # for j in xrange(gs.getSize()):
-                #     gs.get(j).getStandardCoordinates(q)
+                #     gs.getPoint(j).getStandardCoordinates(q)
                 #     q.sub(p)
                 #     l = np.append(l, q.l2Norm())
 

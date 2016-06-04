@@ -31,7 +31,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         err = 0.
         # run over all rows
         for i in xrange(gs.size()):
-            gpi = gs.get(i)
+            gpi = gs.getPoint(i)
             # compute bilinear form for one entry
             v[i], erri = self.getLinearFormEntry(gpi, basis)
             err += erri
