@@ -50,7 +50,7 @@ class KernelCreateGraph {
                     json::Node &kernelConfiguration) :
       device(dev), dims(dims), k(k), err(CL_SUCCESS),
       deviceData(device), deviceResultData(device), kernel(nullptr),
-      kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager),
+      kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
       deviceTimingMult(0.0),
       kernelConfiguration(kernelConfiguration), data(data) {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();

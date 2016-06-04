@@ -18,8 +18,6 @@ namespace DensityOCLMultiPlatform {
 template<typename real_type>
 class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> {
  private:
-  std::shared_ptr<base::OCLDevice> device;
-
   json::Node &kernelConfiguration;
 
   size_t dims;
@@ -114,9 +112,8 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
   }
 
  public:
-  SourceBuilderCreateGraph(std::shared_ptr<base::OCLDevice> device,
-                           json::Node &kernelConfiguration, size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims), use_select(false),
+  SourceBuilderCreateGraph(json::Node &kernelConfiguration, size_t dims) :
+      kernelConfiguration(kernelConfiguration), dims(dims), use_select(false),
       use_approx(false) {
     localWorkgroupSize = 128;
     if (kernelConfiguration.contains("LOCAL_SIZE"))

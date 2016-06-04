@@ -18,8 +18,6 @@ namespace DensityOCLMultiPlatform {
 template<typename real_type>
 class SourceBuilderPruneGraph: public base::KernelSourceBuilderBase<real_type> {
  private:
-  std::shared_ptr<base::OCLDevice> device;
-
   json::Node &kernelConfiguration;
 
   size_t dims;
@@ -47,9 +45,8 @@ class SourceBuilderPruneGraph: public base::KernelSourceBuilderBase<real_type> {
   }
 
  public:
-  SourceBuilderPruneGraph(std::shared_ptr<base::OCLDevice> device,
-                          json::Node &kernelConfiguration, size_t dims) :
-      device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+  SourceBuilderPruneGraph(json::Node &kernelConfiguration, size_t dims) :
+      kernelConfiguration(kernelConfiguration), dims(dims) {
   }
 
   std::string generateSource(size_t dimensions, size_t gridSize, size_t k, real_type treshold) {
