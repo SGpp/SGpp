@@ -18,6 +18,7 @@
 
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "OperationPruneGraphOCL.hpp"
 #include "KernelPruneGraph.hpp"
@@ -32,7 +33,6 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
   size_t dims;
   size_t gridSize;
   size_t dataSize;
-  json::Node &configuration;
   sgpp::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T> *graph_kernel;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
@@ -49,9 +49,11 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
   OperationPruneGraphOCLMultiPlatform(base::Grid& grid, base::DataVector& alpha,
                                       base::DataMatrix &data, size_t dims,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                      json::Node &configuration, T treshold, size_t k) :
+                                      sgpp::base::OCLOperationConfiguration *parameters,
+                                      T treshold, size_t k, size_t platform_id,
+                                      size_t device_id) :
       OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage().getSize()),
-      dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()),
+      dataSize(data.getSize()),  devices(manager->getDevices()),
       manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
@@ -73,16 +75,54 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     double *data_raw = data.getPointer();
     for (size_t i = 0; i < data.getSize(); i++)
       dataVector[i] = static_cast<T>(data_raw[i]);
-    graph_kernel = new KernelPruneGraph<T>(devices[0], dims, treshold, k, manager,
-                                           configuration, pointsVector, alphaVector,
-                                           dataVector);
+    // look for the chosen platform and device and create kernel with it
+    size_t platformcounter = 0;
+    size_t devicecounter = 0;
+    std::string currentplatformName = devices[0]->platformName;
+    std::string currentdeviceName = devices[0]->deviceName;
+    size_t counter = 0;
+    bool success = false;
+    for (auto device : devices) {
+      if (devices[counter]->platformName != currentplatformName) {
+        platformcounter++;
+        currentplatformName = devices[counter]->platformName;
+        devicecounter = 0;
+        currentdeviceName = devices[counter]->deviceName;
+      } else if (devices[counter]->deviceName != currentdeviceName) {
+        devicecounter++;
+        currentdeviceName = devices[counter]->deviceName;
+      }
+      if (platformcounter == platform_id &&
+          devicecounter == device_id) {
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &configuration = deviceNode["KERNELS"]["removeEdges"];
+        graph_kernel = new KernelPruneGraph<T>(devices[counter], dims, treshold, k, manager,
+                                               configuration, pointsVector, alphaVector,
+                                               dataVector);
+        success = true;
+        break;
+      }
+      counter++;
+    }
+
+    // Check whether a kernel was created or not
+    if (!success) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Platform with index " << platform_id
+                  << " and the device with index " << device_id << std::endl
+                  << " not found! Please check your OpenCL installation!" << std::endl;
+      throw base::operation_exception(errorString.str());
+    }
   }
   OperationPruneGraphOCLMultiPlatform(int *gridpoints, size_t gridSize, size_t dimensions,
                                       double *alpha, base::DataMatrix &data,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                      json::Node &configuration, T treshold, size_t k) :
+                                      sgpp::base::OCLOperationConfiguration *parameters,
+                                      T treshold, size_t k, size_t platform_id,
+                                      size_t device_id) :
       OperationPruneGraphOCL(), dims(dimensions), gridSize(gridSize),
-      dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()),
+      dataSize(data.getSize()),  devices(manager->getDevices()),
       manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
     verbose = true;
     // Store Grid in a opencl compatible buffer
@@ -102,11 +142,48 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     for (size_t i = 0; i < data.getSize(); i++)
       dataVector[i] = static_cast<T>(data_raw[i]);
     if (verbose)
-      std::cout << "Daa stored into float array! Number of datapoints: "
+      std::cout << "Data stored into float array! Number of datapoints: "
                 << data.getSize() << std::endl;
-    graph_kernel = new KernelPruneGraph<T>(devices[0], dims, treshold, k, manager,
-                                           configuration, points, alphaVector,
-                                           dataVector);
+
+    // look for the chosen platform and device and create kernel with it
+    size_t platformcounter = 0;
+    size_t devicecounter = 0;
+    std::string currentplatformName = devices[0]->platformName;
+    std::string currentdeviceName = devices[0]->deviceName;
+    size_t counter = 0;
+    bool success = false;
+    for (auto device : devices) {
+      if (devices[counter]->platformName != currentplatformName) {
+        platformcounter++;
+        currentplatformName = devices[counter]->platformName;
+        devicecounter = 0;
+        currentdeviceName = devices[counter]->deviceName;
+      } else if (devices[counter]->deviceName != currentdeviceName) {
+        devicecounter++;
+        currentdeviceName = devices[counter]->deviceName;
+      }
+      if (platformcounter == platform_id &&
+          devicecounter == device_id) {
+        json::Node &deviceNode =
+            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+        json::Node &configuration = deviceNode["KERNELS"]["removeEdges"];
+        graph_kernel = new KernelPruneGraph<T>(devices[counter], dims, treshold, k, manager,
+                                               configuration, points, alphaVector,
+                                               dataVector);
+        success = true;
+        break;
+      }
+      counter++;
+    }
+
+    // Check whether a kernel was created or not
+    if (!success) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Platform with index " << platform_id
+                  << " and the device with index " << device_id << std::endl
+                  << " not found! Please check your OpenCL installation!" << std::endl;
+      throw base::operation_exception(errorString.str());
+    }
   }
 
   ~OperationPruneGraphOCLMultiPlatform() {

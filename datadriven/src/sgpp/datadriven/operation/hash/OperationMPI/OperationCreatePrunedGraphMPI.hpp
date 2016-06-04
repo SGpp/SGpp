@@ -106,7 +106,7 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
                                                                 (2 * grid_dimensions),
                                                                 grid_dimensions, alpha,
                                                                 data_matrix, treshold, k,
-                                                                "MyOCLConf.cfg");
+                                                                "MyOCLConf.cfg", 0, 0);
       int datainfo[2];
       do {
         MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);

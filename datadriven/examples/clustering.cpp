@@ -92,7 +92,7 @@ int main() {
 
 
 
-  /*std::cout << "Starting graph pruning" << std::endl;
+  std::cout << "Starting graph pruning" << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
       sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
                                                             treshold, k, "MyOCLConf.cfg");
@@ -108,6 +108,6 @@ int main() {
   }
   // cleanup
   delete operation_mult;
-  delete solver;*/
+  delete solver;
   delete operation_graph;
 }
