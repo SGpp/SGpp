@@ -132,7 +132,7 @@ void HashGridStorage::clear() {
 }
 
 std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoints) {
-  index_pointer curPoint;
+  point_pointer curPoint;
   std::vector<size_t> remainingPoints;
   size_t delCounter = 0;
 
@@ -261,27 +261,27 @@ size_t HashGridStorage::getNumberOfInnerPoints() const {
 
 size_t HashGridStorage::getDimension() const { return dimension; }
 
-size_t HashGridStorage::insert(index_type& index) {
-  index_pointer insert = new HashGridPoint(index);
+size_t HashGridStorage::insert(point_type& index) {
+  point_pointer insert = new HashGridPoint(index);
   list.push_back(insert);
   return (map[insert] = list.size() - 1);
 }
 
-void HashGridStorage::update(index_type& index, size_t pos) {
+void HashGridStorage::update(point_type& index, size_t pos) {
   if (pos < list.size()) {
     // Remove old element at pos
-    index_pointer del = list[pos];
+    point_pointer del = list[pos];
     map.erase(del);
     delete del;
     // Insert update
-    index_pointer insert = new HashGridPoint(index);
+    point_pointer insert = new HashGridPoint(index);
     list[pos] = insert;
     map[insert] = pos;
   }
 }
 
 void HashGridStorage::deleteLast() {
-  index_pointer del = list.back();
+  point_pointer del = list.back();
   map.erase(del);
   list.pop_back();
   delete del;
@@ -301,11 +301,11 @@ void HashGridStorage::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) 
 }
 
 void HashGridStorage::recalcLeafProperty() {
-  index_pointer point;
+  point_pointer point;
   grid_map_iterator iter;
   size_t current_dim;
-  index_type::level_type l;
-  index_type::level_type i;
+  point_type::level_type l;
+  point_type::level_type i;
   bool isLeaf = true;
 
   // iterate through the grid
@@ -377,8 +377,8 @@ void HashGridStorage::setStretching(Stretching& stretching) {
 }
 
 void HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& index) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
@@ -396,8 +396,8 @@ void HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& 
 }
 
 void HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
@@ -415,8 +415,8 @@ void HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrix
 }
 
 void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
@@ -433,9 +433,9 @@ void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
 }
 
 size_t HashGridStorage::getMaxLevel() const {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
-  index_type::level_type maxLevel;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
+  point_type::level_type maxLevel;
 
   maxLevel = 0;
 
@@ -454,8 +454,8 @@ size_t HashGridStorage::getMaxLevel() const {
 
 void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index,
                                                         DataMatrix& mask, DataMatrix& offset) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   for (size_t i = 0; i < list.size(); i++) {
     for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
@@ -473,7 +473,7 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
         uint64_t intmask = 0x0000000000000000;
         mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<double>(1 << curLevel));
         index.set(i, current_dim, static_cast<double>(curIndex));
         uint64_t intmask = 0x0000000000000000;
@@ -492,8 +492,8 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
 
 void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
                                                         DataMatrixSP& mask, DataMatrixSP& offset) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   for (size_t i = 0; i < list.size(); i++) {
     for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
@@ -511,7 +511,7 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
         uint32_t intmask = 0x00000000;
         mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<float>(1 << curLevel));
         index.set(i, current_dim, static_cast<float>(curIndex));
         uint32_t intmask = 0x00000000;
@@ -597,7 +597,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 
   for (size_t i = 0; i < num; i++) {
-    index_pointer index = new HashGridPoint(istream, version);
+    point_pointer index = new HashGridPoint(istream, version);
     list.push_back(index);
     map[index] = i;
   }

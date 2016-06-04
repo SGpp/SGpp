@@ -17,7 +17,7 @@ double OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
   double tmp;
   int nr_boundaries = 0;  // nr. of boundaries a point touches
   int cur_ind, cur_lev;
-  GridStorage::index_type index;
+  GridStorage::point_type index;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;

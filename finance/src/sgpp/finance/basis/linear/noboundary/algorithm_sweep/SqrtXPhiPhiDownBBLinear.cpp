@@ -40,8 +40,8 @@ void SqrtXPhiPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::Da
 
   double alpha_value = source[seq];
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i_idx;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i_idx;
 
   index.get(dim, l, i_idx);
 
@@ -105,8 +105,8 @@ void SqrtXPhiPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::
 
   double alpha_value = source[seq];
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i_idx;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i_idx;
 
   index.get(dim, l, i_idx);
 

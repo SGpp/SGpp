@@ -57,8 +57,8 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
   }
 
   // hierarchisation
-  GridStorage::index_type::level_type current_level;
-  GridStorage::index_type::index_type current_index;
+  level_t current_level;
+  index_t current_index;
   index.get(dim, current_level, current_index);
 
   double posl = 0, posr = 0, posc = 0;

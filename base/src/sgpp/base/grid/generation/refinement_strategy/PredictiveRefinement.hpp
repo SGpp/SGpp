@@ -28,13 +28,12 @@ class PredictiveRefinement_refinement_key : public
   /**
    * Constructor
    *
-   * @param index grid point
+   * @param point grid point
    * @param seq sequence number in the hash grid storage
    * @param dim dimensionality
    */
-  PredictiveRefinement_refinement_key(const AbstractRefinement::index_type&
-                                      index, size_t seq, size_t dim):
-    AbstractRefinement_refinement_key(index, seq), dim(dim) {}
+  PredictiveRefinement_refinement_key(const GridPoint& point, size_t seq, size_t dim):
+    AbstractRefinement_refinement_key(point, seq), dim(dim) {}
 
   /**
    * Returns dimensionality

@@ -141,8 +141,8 @@ void LaplaceEnhancedDownBBLinear::operator()(sgpp::base::DataMatrix& source,
 
 void LaplaceEnhancedDownBBLinear::rec(double fl, double fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -175,8 +175,8 @@ void LaplaceEnhancedDownBBLinear::rec(double fl, double fr, size_t dim, grid_ite
 
 void LaplaceEnhancedDownBBLinear::rec_grad(size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -219,8 +219,8 @@ void LaplaceEnhancedDownBBLinear::rec_LL(double fl, double fr, double fl2, doubl
 #endif
 {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   // mesh-width
@@ -318,8 +318,8 @@ void LaplaceEnhancedDownBBLinear::rec_LL(double fl, double fr, double fl2, doubl
 
 void LaplaceEnhancedDownBBLinear::rec_LG(double fl, double fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -357,8 +357,8 @@ void LaplaceEnhancedDownBBLinear::rec_LG(double fl, double fr, size_t dim, grid_
 
 void LaplaceEnhancedDownBBLinear::rec_GL(double fl, double fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -397,8 +397,8 @@ void LaplaceEnhancedDownBBLinear::rec_GL(double fl, double fr, size_t dim, grid_
 
 void LaplaceEnhancedDownBBLinear::recBB(double fl, double fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -432,8 +432,8 @@ void LaplaceEnhancedDownBBLinear::recBB(double fl, double fr, size_t dim, grid_i
 void LaplaceEnhancedDownBBLinear::recBB_LL(double fl, double fr, double fl2, double fr2,
                                            size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -472,8 +472,8 @@ void LaplaceEnhancedDownBBLinear::recBB_LL(double fl, double fr, double fl2, dou
 void LaplaceEnhancedDownBBLinear::recBB_LG(double fl, double fr, size_t dim,
                                            grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -512,8 +512,8 @@ void LaplaceEnhancedDownBBLinear::recBB_LG(double fl, double fr, size_t dim,
 void LaplaceEnhancedDownBBLinear::recBB_GL(double fl, double fr, size_t dim,
                                            grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -550,8 +550,8 @@ void LaplaceEnhancedDownBBLinear::recBB_GL(double fl, double fr, size_t dim,
 
 void LaplaceEnhancedDownBBLinear::recBB_grad(size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
   index.get(cur_algo_dim_, l, i);
 
   double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];

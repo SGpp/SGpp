@@ -29,8 +29,8 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
       sgpp::base::GridPoint& curPoint = grid.getStorage().getPoint(g);
 
       for (size_t h = 0; h < nDim; h++) {
-        sgpp::base::GridStorage::index_type::level_type level;
-        sgpp::base::GridStorage::index_type::index_type index;
+        sgpp::base::level_t level;
+        sgpp::base::index_t index;
 
         curPoint.get(h, level, index);
 
@@ -41,8 +41,8 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
           result.GByte_ += 1e-9 * 4.0 * static_cast<double>(numIterations) *
                            static_cast<double>(sizeDatatype) * static_cast<double>(numInstances);
         } else if (index ==
-                   static_cast<sgpp::base::GridStorage::index_type::index_type>(
-                       (1 << static_cast<sgpp::base::GridStorage::index_type::index_type>(level)) -
+                   static_cast<sgpp::base::index_t>(
+                       (1 << static_cast<sgpp::base::index_t>(level)) -
                        1)) {
           result.GFlop_ +=
               1e-9 * 10.0 * static_cast<double>(numIterations) * static_cast<double>(numInstances);

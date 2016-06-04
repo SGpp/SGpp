@@ -18,11 +18,11 @@ LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {}
 void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
                                              sgpp::base::DataVector& result, grid_iterator& index,
                                              size_t dim) {
-  sgpp::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l = index.getGridDepth(dim);
+  sgpp::base::index_t i;
 
-  sgpp::base::GridStorage::index_type::level_type l_old;
-  sgpp::base::GridStorage::index_type::index_type i_old;
+  sgpp::base::level_t l_old;
+  sgpp::base::index_t i_old;
 
   index.get(dim, l_old, i_old);
 

@@ -101,7 +101,7 @@ class AlgorithmEvaluationTransposed {
    */
   void rec(BASIS& basis, DataVector& point, size_t current_dim,
            double value, GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source, double alpha,
+           index_t* source, double alpha,
            DataVector& result) {
     const unsigned int BITS_IN_BYTE = 8;
     // maximum possible level for the index type

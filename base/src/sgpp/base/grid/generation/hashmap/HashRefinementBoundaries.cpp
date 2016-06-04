@@ -58,25 +58,25 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
     AbstractRefinement::refinement_container_type& collection) {
 
   size_t refinements_num = functor.getRefinementsNum();
-  index_type index;
+  GridPoint point;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
-    index = *(iter->first);
+    point = *(iter->first);
 
     GridStorage::grid_map_iterator child_iter;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
-      index.get(d, source_level, source_index);
+      point.get(d, source_level, source_index);
 
       if (source_level == 0) {
         // we only have one child on level 1
-        index.set(d, 1, 1);
-        child_iter = storage.find(&index);
+        point.set(d, 1, 1);
+        child_iter = storage.find(&point);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -88,8 +88,8 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
         }
       } else {
         // left child
-        index.set(d, source_level + 1, 2 * source_index - 1);
-        child_iter = storage.find(&index);
+        point.set(d, source_level + 1, 2 * source_index - 1);
+        child_iter = storage.find(&point);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -101,8 +101,8 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
         }
 
         // right child
-        index.set(d, source_level + 1, 2 * source_index + 1);
-        child_iter = storage.find(&index);
+        point.set(d, source_level + 1, 2 * source_index + 1);
+        child_iter = storage.find(&point);
 
         if (child_iter == end_iter) {
           AbstractRefinement::refinement_list_type current_value_list =
@@ -113,7 +113,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
         }
       }
 
-      index.set(d, source_level, source_index);
+      point.set(d, source_level, source_index);
     }
   }
 }
@@ -152,25 +152,25 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
     throw generation_exception("storage empty");
   }
 
-  index_type index;
+  GridPoint point;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
-    index = *(iter->first);
+    point = *(iter->first);
 
     GridStorage::grid_map_iterator child_iter;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
-      index.get(d, source_level, source_index);
+      point.get(d, source_level, source_index);
 
       if (source_level == 0) {
         // level 1
-        index.set(d, 1, 1);
-        child_iter = storage.find(&index);
+        point.set(d, 1, 1);
+        child_iter = storage.find(&point);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -179,8 +179,8 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
         }
       } else {
         // left child
-        index.set(d, source_level + 1, 2 * source_index - 1);
-        child_iter = storage.find(&index);
+        point.set(d, source_level + 1, 2 * source_index - 1);
+        child_iter = storage.find(&point);
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
@@ -189,8 +189,8 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
         }
 
         // right child
-        index.set(d, source_level + 1, 2 * source_index + 1);
-        child_iter = storage.find(&index);
+        point.set(d, source_level + 1, 2 * source_index + 1);
+        child_iter = storage.find(&point);
 
         if (child_iter == end_iter) {
           counter++;
@@ -198,7 +198,7 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
         }
       }
 
-      index.set(d, source_level, source_index);
+      point.set(d, source_level, source_index);
     }
   }
 
@@ -207,67 +207,67 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
 
 
 void HashRefinementBoundaries::refineGridpoint1D(GridStorage& storage,
-    index_type& index, size_t d) {
+    GridPoint& point, size_t d) {
   index_t source_index;
   level_t source_level;
-  index.get(d, source_level, source_index);
+  point.get(d, source_level, source_index);
 
   if (source_level == 0) {
     // we only have one child on level 1
-    index.set(d, 1, 1);
+    point.set(d, 1, 1);
 
-    if (!storage.isContaining(index)) {
-      index.setLeaf(true);
-      createGridpoint(storage, index);
+    if (!storage.isContaining(point)) {
+      point.setLeaf(true);
+      createGridpoint(storage, point);
     }
   } else {
     // generate left child, if necessary
-    index.set(d, source_level + 1, 2 * source_index - 1);
+    point.set(d, source_level + 1, 2 * source_index - 1);
 
-    if (!storage.isContaining(index)) {
-      index.setLeaf(true);
-      createGridpoint(storage, index);
+    if (!storage.isContaining(point)) {
+      point.setLeaf(true);
+      createGridpoint(storage, point);
     }
 
     // generate right child, if necessary
-    index.set(d, source_level + 1, 2 * source_index + 1);
+    point.set(d, source_level + 1, 2 * source_index + 1);
 
-    if (!storage.isContaining(index)) {
-      index.setLeaf(true);
-      createGridpoint(storage, index);
+    if (!storage.isContaining(point)) {
+      point.setLeaf(true);
+      createGridpoint(storage, point);
     }
   }
 
-  index.set(d, source_level, source_index);
+  point.set(d, source_level, source_index);
 }
 
 
 void HashRefinementBoundaries::refineGridpoint(GridStorage& storage,
     size_t refine_index) {
-  index_type index(storage[refine_index]);
+  GridPoint point(storage[refine_index]);
 
   // Sets leaf property of index, which is refined to false
   storage[refine_index].setLeaf(false);
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
-    refineGridpoint1D(storage, index, d);
+    refineGridpoint1D(storage, point, d);
   }
 }
 
 
 
 void HashRefinementBoundaries::createGridpoint(GridStorage& storage,
-    index_type& index) {
+    GridPoint& point) {
   // create grid with its needed childern and parents
-  createGridpointGeneral(storage, index);
+  createGridpointGeneral(storage, point);
   // create all missing points an level zero
-  createGridpointLevelZeroConsistency(storage, index);
+  createGridpointLevelZeroConsistency(storage, point);
 }
 
-void HashRefinementBoundaries::createGridpoint1D(index_type& index,
+void HashRefinementBoundaries::createGridpoint1D(GridPoint& point,
     size_t d, GridStorage& storage, index_t& source_index,
     level_t& source_level) {
-  index.get(d, source_level, source_index);
+  point.get(d, source_level, source_index);
 
   if (source_level == 1) {
     // check if we need some additional points on the boundaries,
@@ -275,41 +275,41 @@ void HashRefinementBoundaries::createGridpoint1D(index_type& index,
     if (storage.getDimension() > 1) {
       // test if there are boundaries in every dimension for this grid point
       // left boundary
-      index.set(d, 0, 0);
-      createGridpointSubroutine(storage, index);
+      point.set(d, 0, 0);
+      createGridpointSubroutine(storage, point);
 
       // right boundary
-      index.set(d, 0, 1);
-      createGridpointSubroutine(storage, index);
+      point.set(d, 0, 1);
+      createGridpointSubroutine(storage, point);
 
       // restore values
-      index.set(d, source_level, source_index);
+      point.set(d, source_level, source_index);
     }
   }
 
-  AbstractRefinement::createGridpoint1D(index, d, storage, source_index,
+  AbstractRefinement::createGridpoint1D(point, d, storage, source_index,
                                         source_level);
 }
 
 void HashRefinementBoundaries::createGridpointGeneral(GridStorage& storage,
-    index_type& index) {
+    GridPoint& point) {
   index_t source_index;
   level_t source_level;
 
   for (size_t d = 0; d < storage.getDimension(); d++) {
-    createGridpoint1D(index, d, storage, source_index, source_level);
+    createGridpoint1D(point, d, storage, source_index, source_level);
   }
 
-  storage.insert(index);
+  storage.insert(point);
 }
 
 
 void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
-  GridStorage& storage, index_type& index) {
+  GridStorage& storage, GridPoint& point) {
   for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
-    index.get(d, source_level, source_index);
+    point.get(d, source_level, source_index);
 
     // Assure that we have always a consistent grid with both functions
     // 0,0 and 0,1 on level zero
@@ -318,47 +318,47 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
       // only needed on a N dim grid
       if (storage.getDimension() > 1) {
         // if we have already a left boundary...
-        index.set(d, 0, 0);
+        point.set(d, 0, 0);
 
-        if (storage.isContaining(index)) {
+        if (storage.isContaining(point)) {
           // ... we have to read leaf property
-          bool Leaf = index.isLeaf();
+          bool Leaf = point.isLeaf();
           // ... we have to generate the correspondending right boundary
-          index.set(d, 0, 1);
+          point.set(d, 0, 1);
 
-          if (!storage.isContaining(index)) {
-            bool saveLeaf = index.isLeaf();
-            index.setLeaf(Leaf);
-            createGridpoint(storage, index);
-            index.setLeaf(saveLeaf);
+          if (!storage.isContaining(point)) {
+            bool saveLeaf = point.isLeaf();
+            point.setLeaf(Leaf);
+            createGridpoint(storage, point);
+            point.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the left boundary
-            storage.getPoint(storage.find(&index)->second).setLeaf(Leaf);
+            storage.getPoint(storage.find(&point)->second).setLeaf(Leaf);
           }
         }
 
         // if we have already a right boundary...
-        index.set(d, 0, 1);
+        point.set(d, 0, 1);
 
-        if (storage.isContaining(index)) {
+        if (storage.isContaining(point)) {
           // ... we have to read leaf property
-          bool Leaf = index.isLeaf();
+          bool Leaf = point.isLeaf();
           // ... we have to generate the correspondending right boundary
-          index.set(d, 0, 0);
+          point.set(d, 0, 0);
 
-          if (!storage.isContaining(index)) {
-            bool saveLeaf = index.isLeaf();
-            index.setLeaf(Leaf);
-            createGridpoint(storage, index);
-            index.setLeaf(saveLeaf);
+          if (!storage.isContaining(point)) {
+            bool saveLeaf = point.isLeaf();
+            point.setLeaf(Leaf);
+            createGridpoint(storage, point);
+            point.setLeaf(saveLeaf);
           } else {
             // set stored index to Leaf from the right boundary
-            storage.getPoint(storage.find(&index)->second).setLeaf(Leaf);
+            storage.getPoint(storage.find(&point)->second).setLeaf(Leaf);
           }
         }
 
         // restore values
-        index.set(d, source_level, source_index);
+        point.set(d, source_level, source_index);
       }
     }
   }

@@ -130,7 +130,7 @@ class AlgorithmEvaluation {
    */
   void rec(BASIS& basis, const DataVector& point, size_t current_dim,
            double value, GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source, const DataVector& alpha,
+           index_t* source, const DataVector& alpha,
            double& result) {
     const unsigned int BITS_IN_BYTE = 8;
     // maximum possible level for the index type

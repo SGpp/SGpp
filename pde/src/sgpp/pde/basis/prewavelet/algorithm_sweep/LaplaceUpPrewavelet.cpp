@@ -16,11 +16,11 @@ LaplaceUpPrewavelet::~LaplaceUpPrewavelet() {}
 void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                      grid_iterator& index, size_t dim) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
-  sgpp::base::GridStorage::index_type::level_type l_old;
-  sgpp::base::GridStorage::index_type::index_type i_old;
-  sgpp::base::GridStorage::index_type::index_type last_index;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
+  sgpp::base::level_t l_old;
+  sgpp::base::index_t i_old;
+  sgpp::base::index_t last_index;
   size_t _seq;
   size_t _seql1;
   size_t _seqr1;
@@ -28,7 +28,7 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
   double _val, _vall1, _vall2, _valr1, _valr2;
   double h;
   bool hasChilds = false;
-  // GridStorage::index_type::level_type max_level = getGridDepth(index, dim);
+  // level_t max_level = getGridDepth(index, dim);
 
   index.get(dim, l, i);
   index.get(dim, l_old, i_old);

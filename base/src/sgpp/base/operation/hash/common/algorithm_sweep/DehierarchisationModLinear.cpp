@@ -41,8 +41,8 @@ void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
   fm += ((fl + fr) / 2.0);
   result[seq] = fm;
 
-  GridStorage::index_type::level_type l;
-  GridStorage::index_type::index_type i;
+  level_t l;
+  index_t i;
 
   index.get(dim, l, i);
 

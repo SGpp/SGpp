@@ -271,8 +271,8 @@ class sweep {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
-      typedef GridStorage::index_type::level_type level_type;
-      typedef GridStorage::index_type::index_type index_type;
+      typedef level_t level_type;
+      typedef index_t index_type;
 
       level_type current_level;
       index_type current_index;
@@ -342,8 +342,8 @@ class sweep {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
-      typedef GridStorage::index_type::level_type level_type;
-      typedef GridStorage::index_type::index_type index_type;
+      typedef level_t level_type;
+      typedef index_t index_type;
 
       level_type current_level;
       index_type current_index;

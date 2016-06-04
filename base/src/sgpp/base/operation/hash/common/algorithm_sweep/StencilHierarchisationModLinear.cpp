@@ -38,8 +38,8 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
   // current position on the grid
   int seqm = static_cast<int>(index.seq());
 
-  GridStorage::index_type::level_type l;
-  GridStorage::index_type::index_type i;
+  level_t l;
+  index_t i;
 
   index.get(dim, l, i);
 

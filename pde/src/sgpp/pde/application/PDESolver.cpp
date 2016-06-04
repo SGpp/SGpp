@@ -163,7 +163,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(sgpp::base::DataVector& alpha,
 
 void PDESolver::refineInitialGridSurplusToMaxLevel(
     sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::GridStorage::index_type::level_type maxLevel) {
+    sgpp::base::level_t maxLevel) {
   if (bGridConstructed) {
     size_t nRefinements =
         myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
@@ -180,7 +180,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
 
 void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu,
+    sgpp::base::level_t maxLevel, std::vector<double>& norm_mu,
     std::vector<double>& norm_sigma) {
   if (bGridConstructed) {
     size_t nRefinements =

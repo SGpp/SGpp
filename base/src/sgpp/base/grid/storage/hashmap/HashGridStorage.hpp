@@ -37,18 +37,18 @@ namespace base {
 class HashGridIterator;
 
 /**
- * Generic hash table based index storage.
+ * Generic hash table based storage of grid points.
  */
 class HashGridStorage {
  public:
   /// type of grid points
-  typedef HashGridPoint index_type;
+  typedef HashGridPoint point_type;
   /// pointer to index_type
-  typedef HashGridPoint* index_pointer;
+  typedef HashGridPoint* point_pointer;
   /// pointer to constant index_type
   typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
-  typedef std::unordered_map<index_pointer, size_t, HashGridPointPointerHashFunctor,
+  typedef std::unordered_map<point_pointer, size_t, HashGridPointPointerHashFunctor,
                              HashGridPointPointerEqualityFunctor> grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
@@ -56,7 +56,7 @@ class HashGridStorage {
   typedef grid_map::const_iterator grid_map_const_iterator;
 
   /// vector of index_pointers
-  typedef std::vector<index_pointer> grid_list;
+  typedef std::vector<point_pointer> grid_list;
   /// iterator of grid_list
   typedef grid_list::iterator grid_list_iterator;
   /// const iterator of grid_list
@@ -224,7 +224,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(index_type& index);
+  size_t insert(point_type& index);
 
   /**
    * updates an already stored index
@@ -232,7 +232,7 @@ class HashGridStorage {
    * @param index reference to the index that should be updated
    * @param pos position where the index should be stored
    */
-  void update(index_type& index, size_t pos);
+  void update(point_type& index, size_t pos);
 
   /**
    * This methods removes the gridpoint added last. Use with coution, only needed for
@@ -250,14 +250,14 @@ class HashGridStorage {
    *
    * @return pointer to new index object
    */
-  index_pointer create(index_type& index);
+  point_pointer create(point_type& index);
 
   /**
    * removes an index from gridstorage
    *
    * @param index pointer to index that should be removed
    */
-  void destroy(index_pointer index);
+  void destroy(point_pointer index);
 
   /**
    * stores a given index in the hashmap
@@ -266,7 +266,7 @@ class HashGridStorage {
    *
    * @return sequence number
    */
-  unsigned int store(index_pointer index);
+  unsigned int store(point_pointer index);
 
   /**
    * sets the iterator to a given index
@@ -274,7 +274,7 @@ class HashGridStorage {
    * @param index the index to which the cursor should be moved
    * @return iterator pointing to the index
    */
-  grid_map_iterator find(index_pointer index);
+  grid_map_iterator find(point_pointer index);
 
   /**
    * set iterator to the first position in the map
@@ -502,19 +502,19 @@ class HashGridStorage {
   void parseGridDescription(std::istream& istream);
 };
 
-HashGridStorage::index_pointer inline HashGridStorage::create(index_type& index) {
-  index_pointer insert = new HashGridPoint(index);
+HashGridStorage::point_pointer inline HashGridStorage::create(point_type& index) {
+  point_pointer insert = new HashGridPoint(index);
   return insert;
 }
 
-void inline HashGridStorage::destroy(index_pointer index) { delete index; }
+void inline HashGridStorage::destroy(point_pointer index) { delete index; }
 
-unsigned int inline HashGridStorage::store(index_pointer index) {
+unsigned int inline HashGridStorage::store(point_pointer index) {
   list.push_back(index);
   return static_cast<unsigned int>(map[index] = static_cast<unsigned int>(list.size() - 1));
 }
 
-HashGridStorage::grid_map_iterator inline HashGridStorage::find(index_pointer index) {
+HashGridStorage::grid_map_iterator inline HashGridStorage::find(point_pointer index) {
   return map.find(index);
 }
 
