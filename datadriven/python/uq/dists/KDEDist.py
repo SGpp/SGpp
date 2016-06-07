@@ -16,12 +16,16 @@ class KDEDist(EstimatedDist):
 
     def __init__(self,
                  trainData,
+                 kde=None,
                  kernelType=KernelType_GAUSSIAN,
                  bounds=None):
         super(KDEDist, self).__init__(trainData, bounds)
 
         trainData_matrix = DataMatrix(self.trainData)
-        self.dist = KernelDensityEstimator(trainData_matrix, kernelType)
+        if kde is None:
+            self.dist = KernelDensityEstimator(trainData_matrix, kernelType)
+        else:
+            self.dist = kde
 
 
     def pdf(self, x):

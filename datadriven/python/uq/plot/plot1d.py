@@ -21,11 +21,21 @@ def plotSGDE1d(U, n=1000):
     plt.plot(x, y)
 
 
+def plotGrid1d(grid, f=lambda x: x):
+    gs = grid.getStorage()
+    x = np.zeros(gs.getSize())
+    nodalValues = np.zeros(gs.getSize())
+    for i in xrange(gs.getSize()):
+        x[i] = f(gs.get(i).getCoord(0))
+
+    plt.scatter(x, nodalValues, marker="o")
+
+
 def plotNodal1d(grid, alpha):
     gs = grid.getStorage()
-    x = np.zeros(gs.size())
-    nodalValues = np.zeros(gs.size())
-    for i in xrange(gs.size()):
+    x = np.zeros(gs.getSize())
+    nodalValues = np.zeros(gs.getSize())
+    for i in xrange(gs.getSize()):
         x[i] = gs.get(i).getCoord(0)
         nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
 
