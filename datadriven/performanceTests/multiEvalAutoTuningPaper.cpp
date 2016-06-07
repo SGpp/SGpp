@@ -968,6 +968,10 @@ BOOST_AUTO_TEST_SUITE(AutoTuningPaperIntrinsicsComparison)
 BOOST_AUTO_TEST_CASE(StreamingIntrinsicsComparison) {
   std::string baseFolder = "datadriven/performanceTests/scenarios/";
   std::vector<std::string> scenarios = {
+      baseFolder + "chess_4d_500000_Linear_double.scenario",
+      baseFolder + "chess_4d_500000_Linear_float.scenario",
+      baseFolder + "chess_4d_500000_ModLinear_double.scenario",
+      baseFolder + "chess_4d_500000_ModLinear_float.scenario",
       baseFolder + "friedman2_4d_500000_Linear_double.scenario",
       baseFolder + "friedman2_4d_500000_Linear_float.scenario",
       baseFolder + "friedman2_4d_500000_ModLinear_double.scenario",
