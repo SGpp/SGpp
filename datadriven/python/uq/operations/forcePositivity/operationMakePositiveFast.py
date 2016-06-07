@@ -37,7 +37,7 @@ class OperationMakePositiveFast(object):
 
         self.lastMinimumCandidateLevelSum = None
 
-        self.verbose = False
+        self.verbose = True
 
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
@@ -342,16 +342,17 @@ class OperationMakePositiveFast(object):
         # coarsening: remove all new grid points with zero surplus
         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
         if self.verbose:
-            print "# final grid          : %i <= %i <= %i <= %i" % (self.grid.getSize(),
-                                                                    coarsedGrid.getSize(),
-                                                                    newGrid.getSize(),
-                                                                    (2 ** self.maxLevel - 1) ** self.numDims)
+            print "# final grid          : %i <= %i <= %i <= %i <= %i" % (self.grid.getSize(),
+                                                                          coarsedGrid.getSize(),
+                                                                          newGrid.getSize(),
+                                                                          self.grid.getSize() + len(candidates),
+                                                                          (2 ** self.maxLevel - 1) ** self.numDims)
 
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
         
-        if len(neg) > 0:
-            raise AttributeError("the sparse grid function is not positive")
+#         if len(neg) > 0:
+#             raise AttributeError("the sparse grid function is not positive")
             # check at which grid points the function is negative
 #             for i, (yi, gp) in neg.items():
 #                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],

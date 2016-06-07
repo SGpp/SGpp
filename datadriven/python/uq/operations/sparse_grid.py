@@ -170,14 +170,21 @@ def getHierarchicalAncestors(grid, gp):
 
 
 def isHierarchicalAncestor(grid, gpi, gpj):
-    ancestors = getHierarchicalAncestors(grid, gpj)
-    gs = grid.getStorage()
-    ix = gs.seq(gpi)
-    if len(ancestors) > 0:
-        jxs = [gs.seq(gpk) for _, gpk in ancestors]
-        return ix in jxs
-    else:
+    if gpi == gpj:
         return False
+    else:
+        idim = 0
+        numDims = gpi.getDimension()
+        isAncestor = True
+        while isAncestor and idim < numDims:
+            li, lj = gpi.getLevel(idim), gpj.getLevel(idim)
+            if lj < li:
+                isAncestor = False
+            else:
+                ii, ij = gpi.getIndex(idim), gpj.getIndex(idim)
+                isAncestor = ii == 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+            idim += 1
+        return isAncestor
 
 
 def getNonExistingHierarchicalAncestors(grid, gp):
@@ -275,7 +282,7 @@ def hasChildren(grid, gp):
 
 def getLevel(gp):
     numDims = gp.getDimension()
-    level = np.ndarray(numDims)
+    level = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         level[i] = gp.getLevel(i)
 
@@ -283,7 +290,7 @@ def getLevel(gp):
 
 def getIndex(gp):
     numDims = gp.getDimension()
-    index = np.ndarray(numDims)
+    index = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         index[i] = gp.getIndex(i)
 

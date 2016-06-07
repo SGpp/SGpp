@@ -21,35 +21,47 @@
 #include <cmath>
 #include <random>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 
 // -------------------- constructors and desctructors --------------------
-KernelDensityEstimator::KernelDensityEstimator(KernelType kernelType)
-    : nsamples(0), ndim(0), bandwidths(0), norm(0), cond(0), sumCond(1.0) {
+KernelDensityEstimator::KernelDensityEstimator(KernelType kernelType,
+                                               BandwidthOptimizationType bandwidthOptimizationType)
+    : nsamples(0),
+      ndim(0),
+      bandwidths(0),
+      norm(0),
+      cond(0),
+      sumCond(1.0),
+      bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
 }
 
 KernelDensityEstimator::KernelDensityEstimator(
-    std::vector<std::shared_ptr<base::DataVector>>& samplesVec, KernelType kernelType)
+    std::vector<std::shared_ptr<base::DataVector>>& samplesVec, KernelType kernelType,
+    BandwidthOptimizationType bandwidthOptimizationType)
     : nsamples(0.0),
       ndim(samplesVec.size()),
       bandwidths(samplesVec.size()),
       norm(samplesVec.size()),
       cond(0.0),
-      sumCond(0.0) {
+      sumCond(0.0),
+      bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
   initialize(samplesVec);
 }
 
-KernelDensityEstimator::KernelDensityEstimator(base::DataMatrix& samples, KernelType kernelType)
+KernelDensityEstimator::KernelDensityEstimator(base::DataMatrix& samples, KernelType kernelType,
+                                               BandwidthOptimizationType bandwidthOptimizationType)
     : nsamples(samples.getNrows()),
       ndim(samples.getNcols()),
       bandwidths(samples.getNcols()),
       norm(samples.getNcols()),
       cond(samples.getNrows()),
-      sumCond(0.0) {
+      sumCond(0.0),
+      bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
   initialize(samples);
 }
@@ -62,6 +74,7 @@ KernelDensityEstimator::KernelDensityEstimator(const KernelDensityEstimator& kde
   norm = base::DataVector(kde.norm);
   cond = base::DataVector(kde.cond);
   sumCond = kde.sumCond;
+  bandwidthOptimizationType = kde.bandwidthOptimizationType;
 
   initializeKernel(kde.kernel->getType());
 }
@@ -190,12 +203,25 @@ std::shared_ptr<base::DataVector> KernelDensityEstimator::getSamples(size_t dim)
   return samplesVec[dim];
 }
 
+void KernelDensityEstimator::getSample(size_t isample, base::DataVector& sample) {
+  for (size_t idim = 0; idim < ndim; idim++) {
+    sample[idim] = samplesVec[idim]->get(isample);
+  }
+}
+
 void KernelDensityEstimator::getBandwidths(base::DataVector& sigma) {
   // copy
   sigma.resize(bandwidths.getSize());
 
   for (size_t i = 0; i < bandwidths.getSize(); i++) {
     sigma[i] = bandwidths[i];
+  }
+}
+
+void KernelDensityEstimator::setBandwidths(const base::DataVector& sigma) {
+  for (size_t i = 0; i < sigma.getSize(); i++) {
+    bandwidths[i] = sigma[i];
+    norm[i] = kernel->norm() / bandwidths[i];
   }
 }
 
@@ -221,23 +247,48 @@ void KernelDensityEstimator::pdf(base::DataMatrix& data, base::DataVector& res) 
 double KernelDensityEstimator::pdf(base::DataVector& x) {
   // init variables
   double res = 0.0;
-  double kern = 0, y = 0.0;
 
   // run over all data points
   for (size_t isample = 0; isample < nsamples; isample++) {
-    kern = 1.;
-
-    for (size_t idim = 0; idim < ndim; idim++) {
-      // normalize x
-      y = (x[idim] - samplesVec[idim]->get(isample)) / bandwidths[idim];
-      // evaluate kernel
-      kern *= norm[idim] * kernel->eval(y);
-    }
-
-    res += cond[isample] * kern;
+    res += evalKernel(x, isample);
   }
 
   return res / sumCond;
+}
+
+double KernelDensityEstimator::evalSubset(base::DataVector& x, std::vector<size_t> skipElements) {
+  // init variables
+  double res = 0.0;
+
+  // sort the elements to be skipped
+  std::sort(skipElements.begin(), skipElements.end());
+  size_t isample = 0, j = 0;
+
+  // just add those kernels which are not in the skipElements list
+  while (isample < nsamples) {
+    if (isample < skipElements[j]) {
+      res += evalKernel(x, isample);
+    } else {
+      j++;
+    }
+    isample++;
+  }
+
+  return res / static_cast<double>(nsamples - skipElements.size());
+}
+
+double KernelDensityEstimator::evalKernel(base::DataVector& x, size_t i) {
+  double res = 1.0;
+  double y = 0.0;
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    // normalize x
+    y = (x[idim] - samplesVec[idim]->get(i)) / bandwidths[idim];
+    // evaluate kernel
+    res *= norm[idim] * kernel->eval(y);
+  }
+
+  return cond[i] * res;
 }
 
 void KernelDensityEstimator::cov(base::DataMatrix& cov) {
@@ -330,83 +381,16 @@ double KernelDensityEstimator::variance() {
 }
 
 void KernelDensityEstimator::computeOptKDEbdwth() {
-  if (ndim != bandwidths.getSize()) {
-    throw base::data_exception(
-        "KernelDensityEstimator::computeOptKDEbdwth : KDEBdwth dimension error");
+  switch (bandwidthOptimizationType) {
+    case BandwidthOptimizationType::RULEOFTHUMB:
+      RuleOfThumb::optimizeBandwidths(this, bandwidths);
+      break;
+    case BandwidthOptimizationType::MLCV:
+      MaximumLikelihoodCrossValidation::optimizeBandwidths(this, bandwidths);
+      break;
+    default:
+      break;
   }
-
-  base::DataVector flag(ndim);
-  flag.setAll(1.);
-
-  // get min and max in each direction
-  double datamin = 0.0;
-  double datamax = 0.0;
-  std::shared_ptr<base::DataVector> samples1d;
-
-  double stdd;
-
-  for (size_t idim = 0; idim < ndim; idim++) {
-    size_t numBorder = 0;
-    samples1d = samplesVec[idim];
-    // search for maximum in current dimension
-    datamin = samples1d->min();
-    datamax = samples1d->max();
-
-    double nearBorder = (datamax - datamin) / 20.;
-
-    // count how many values are close to the border
-    for (size_t isample = 0; isample < nsamples; isample++) {
-      if (samples1d->get(isample) - datamin < nearBorder ||
-          datamax - samples1d->get(isample) < nearBorder) {
-        numBorder++;
-      }
-    }
-
-    if (numBorder > static_cast<double>(nsamples) / 20.) {
-      flag[idim] = 0.5;
-    }
-
-    // compute the standard deviation
-    stdd = getSampleStd(*samples1d);
-
-    // compute the bandwidth in dimension idim
-    bandwidths[idim] =
-        flag[idim] *
-        std::pow(4. / (static_cast<double>(ndim) + 2), 1. / (static_cast<double>(ndim) + 4.)) *
-        stdd * std::pow(static_cast<double>(nsamples), -1. / (static_cast<double>(ndim) + 4.));
-  }
-
-  return;
-}
-
-double KernelDensityEstimator::getSampleMean(base::DataVector& data) {
-  double res = 0.;
-  size_t n = data.getSize();
-
-  for (size_t i = 0; i < n; i++) {
-    res += data[i];
-  }
-
-  return res / static_cast<double>(n);
-}
-
-double KernelDensityEstimator::getSampleVariance(base::DataVector& data) {
-  double mean = getSampleMean(data);
-  double diff1 = 0.0;
-  double diff2 = 0.0;
-
-  size_t n = data.getSize();
-
-  for (size_t i = 0; i < n; i++) {
-    diff1 += (data[i] - mean) * (data[i] - mean);
-    diff2 += (data[i] - mean);
-  }
-
-  return 1. / (static_cast<double>(n) - 1.) * (diff1 - 1. / static_cast<double>(n) * diff2 * diff2);
-}
-
-double KernelDensityEstimator::getSampleStd(base::DataVector& data) {
-  return std::sqrt(getSampleVariance(data));
 }
 
 // ------------------------- additional operations ---------------------------
@@ -454,6 +438,139 @@ void KernelDensityEstimator::updateConditionalizationFactors(base::DataVector& x
 }
 
 Kernel& KernelDensityEstimator::getKernel() { return *kernel; }
+
+// ----------------------------------------------------------------------------------
+// kernels
+
+Kernel::~Kernel() {}
+
+GaussianKernel::~GaussianKernel() {}
+double GaussianKernel::eval(double x) { return std::exp(-(x * x) / 2.); }
+double GaussianKernel::cdf(double x) { return 0.5 + 0.5 * std::erf(x / M_SQRT2); }
+double GaussianKernel::derivative(double x) { return x * eval(x); }
+double GaussianKernel::norm() { return 1. / M_SQRT2PI; }
+KernelType GaussianKernel::getType() { return KernelType::GAUSSIAN; }
+
+EpanechnikovKernel::~EpanechnikovKernel() {}
+
+double EpanechnikovKernel::eval(double x) {
+  if (x > -1 && x < 1.) {
+    return 1. - x * x;
+  } else {
+    return 0.0;
+  }
+}
+
+double EpanechnikovKernel::cdf(double x) {
+  if (x < -1) {
+    return 0.0;
+  } else if (x < 1.) {
+    return 0.75 * x * (1.0 - x * x / 3.) + 0.5;
+  } else {
+    return 1.0;
+  }
+}
+
+double EpanechnikovKernel::derivative(double x) {
+  if (x > -1 && x < 1.) {
+    return 1.5 * x;
+  } else {
+    return 0.0;
+  }
+}
+
+double EpanechnikovKernel::norm() { return 0.75; }
+
+KernelType EpanechnikovKernel::getType() { return KernelType::EPANECHNIKOV; }
+
+// ----------------------------------------------------------------------------------
+// bandwidth optimizers
+
+RuleOfThumb::~RuleOfThumb() {}
+
+double RuleOfThumb::getSampleMean(base::DataVector& data) {
+  double res = 0.;
+  size_t n = data.getSize();
+
+  for (size_t i = 0; i < n; i++) {
+    res += data[i];
+  }
+
+  return res / static_cast<double>(n);
+}
+
+double RuleOfThumb::getSampleVariance(base::DataVector& data) {
+  double mean = getSampleMean(data);
+  double diff1 = 0.0;
+  double diff2 = 0.0;
+
+  size_t n = data.getSize();
+
+  for (size_t i = 0; i < n; i++) {
+    diff1 += (data[i] - mean) * (data[i] - mean);
+    diff2 += (data[i] - mean);
+  }
+
+  return 1. / (static_cast<double>(n) - 1.) * (diff1 - 1. / static_cast<double>(n) * diff2 * diff2);
+}
+
+double RuleOfThumb::getSampleStd(base::DataVector& data) {
+  return std::sqrt(getSampleVariance(data));
+}
+
+void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths) {
+  size_t numDims = kde->getDim();
+  bandwidths.resize(numDims);
+
+  base::DataVector flag(numDims);
+  flag.setAll(1.);
+
+  // get min and max in each direction
+  double datamin = 0.0;
+  double datamax = 0.0;
+  std::shared_ptr<base::DataVector> samples1d;
+
+  double stdd;
+
+  for (size_t idim = 0; idim < numDims; idim++) {
+    size_t numBorder = 0;
+    samples1d = kde->getSamples(idim);
+    size_t numSamples = samples1d->getSize();
+
+    // search for maximum in current dimension
+    datamin = samples1d->min();
+    datamax = samples1d->max();
+
+    double nearBorder = (datamax - datamin) / 20.;
+
+    // count how many values are close to the border
+    for (size_t isample = 0; isample < numSamples; isample++) {
+      if (samples1d->get(isample) - datamin < nearBorder ||
+          datamax - samples1d->get(isample) < nearBorder) {
+        numBorder++;
+      }
+    }
+
+    if (numBorder > static_cast<double>(numSamples) / 20.) {
+      flag[idim] = 0.5;
+    }
+
+    // compute the standard deviation
+    stdd = getSampleStd(*samples1d);
+
+    // compute the bandwidth in dimension idim
+    bandwidths[idim] =
+        flag[idim] * std::pow(4. / (static_cast<double>(numDims) + 2),
+                              1. / (static_cast<double>(numDims) + 4.)) *
+        stdd * std::pow(static_cast<double>(numSamples), -1. / (static_cast<double>(numDims) + 4.));
+  }
+}
+
+MaximumLikelihoodCrossValidation::~MaximumLikelihoodCrossValidation() {}
+void MaximumLikelihoodCrossValidation::optimizeBandwidths(KernelDensityEstimator* kde,
+                                                          base::DataVector& bandwidths) {
+  bandwidths.setAll(1.0);
+}
 
 }  // namespace datadriven
 }  // namespace sgpp
