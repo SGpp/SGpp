@@ -302,6 +302,7 @@ class OperationMakePositiveFast(object):
         maxLevelSum = self.numDims * self.maxLevel
         totalCosts = 0
         currentCosts = 0
+        candidates = []
         while minLevelSum < maxLevelSum and self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
             candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
             totalCosts += costs
@@ -353,8 +354,8 @@ class OperationMakePositiveFast(object):
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
         
-#         if len(neg) > 0:
-#             raise AttributeError("the sparse grid function is not positive")
+        if len(neg) > 0:
+            raise AttributeError("the sparse grid function is not positive")
             # check at which grid points the function is negative
 #             for i, (yi, gp) in neg.items():
 #                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
