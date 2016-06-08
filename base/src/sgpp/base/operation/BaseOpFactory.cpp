@@ -42,6 +42,7 @@
 #include <sgpp/base/operation/hash/OperationQuadratureLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureBspline.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
@@ -198,8 +199,12 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+  } else if (grid.getType() == base::GridType::Bspline) {
+
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBspline(
+        grid.getStorage(), dynamic_cast<base::BsplineGrid*>(&grid)->getDegree()));
   } else {
-    throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
+    throw base::factory_exception("111OperationQuadrature is not implemented for this grid type.");
   }
 }
 
