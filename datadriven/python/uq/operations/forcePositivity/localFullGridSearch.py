@@ -239,7 +239,8 @@ class LocalFullGridCandidates(CandidateSet):
             # search for children
             # as long as the corresponding grid point exist in the grid
             gp.set(idim, 1, 1)
-            print " %i: root (%i) = %s" % (dup, idim, (tuple(getLevel(gp)), tuple(getIndex(gp)), tuple([gp.getCoord(i) for i in xrange(self.numDims)])))
+            if self.verbose:
+                print " %i: root (%i) = %s" % (dup, idim, (tuple(getLevel(gp)), tuple(getIndex(gp)), tuple([gp.getCoord(i) for i in xrange(self.numDims)])))
 
             currentgp = HashGridIndex(gp)
             diffLevels[idim] = self.getMaxLevelOfChildrenUpToMaxLevel(currentgp, grid, idim)
@@ -269,25 +270,30 @@ class LocalFullGridCandidates(CandidateSet):
     def getLocalFullGridLevel(self, levels, indices, gpk, gpl, gpInnerIntersectionkl, grid):
         localMaxLevels = np.zeros(self.numDims, dtype="int")
 
-        levelouter, indexouter = self.findOuterIntersection(gpk, gpl)
+        if False and self.plot:
+            levelouter, indexouter = self.findOuterIntersection(gpk, gpl)
 
-        print "-" * 60
-        print "gpinner:", levelouter, indexouter, [2 ** -level * index for level, index in zip(levelouter, indexouter)]
+            fig = plt.figure()
+            plotGrid2d(grid)
+            plt.plot(gpk.getCoord(0), gpk.getCoord(1), "v", color="orange")
+            plt.plot(gpl.getCoord(0), gpl.getCoord(1), "v", color="orange")
+            plt.plot(gpInnerIntersectionkl.getCoord(0), gpInnerIntersectionkl.getCoord(1), "^ ", color="yellow")
+            plt.plot(2 ** -levelouter[0] * indexouter[0], 2 ** -levelouter[1] * indexouter[1], "o ", color="yellow")
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            fig.show()
+
 
         gpInnerIntersection = HashGridIndex(self.numDims)
         gpi = HashGridIndex(self.numDims)
         gpj = HashGridIndex(self.numDims)
         gs = grid.getStorage()
 
-#         plt.figure()
-
         for idim, jdim in combinations(range(self.numDims), 2):
             # find neighbors in direction idim
             iright, ileft = self.getGridPointsOnBoundary(levels[idim], indices[idim])
             # find neighbors in direction idim
             jright, jleft = self.getGridPointsOnBoundary(levels[jdim], indices[jdim])
-
-            print (ileft, iright), (jleft, jright)
 
             for left, right in product((iright, ileft), (jright, jleft)):
                 if left is not None and right is not None:
@@ -308,36 +314,34 @@ class LocalFullGridCandidates(CandidateSet):
                     # compute inner intersection
                     levelInner, indexInner = self.findInnerIntersection(gpi, gpj)
                     for i in xrange(self.numDims):
-                        gpInnerIntersection.set(i, levelInner[idim], indexInner[i])
+                        gpInnerIntersection.set(i, levelInner[i], indexInner[i])
 
-#                     print "gpi    :", getLevel(gpi), getIndex(gpi), [gpi.getCoord(i) for i in xrange(self.numDims)]
-#                     print "gpj    :", getLevel(gpj), getIndex(gpj), [gpj.getCoord(i) for i in xrange(self.numDims)]
-#                     print "gpinner:", getLevel(gpInnerIntersection), getIndex(gpInnerIntersection), [gpInnerIntersection.getCoord(i) for i in xrange(self.numDims)]
-
-                    # plot result
-#                     plt.figure()
-#                     plt.plot(gpl.getCoord(0), gpk.getCoord(1), "v", color="orange")
-#                     plt.plot(gpk.getCoord(0), gpl.getCoord(1), "v", color="orange")
-#                     plt.plot(gpInnerIntersectionkl.getCoord(0), gpInnerIntersectionkl.getCoord(1), "^ ", color="yellow")
-#                     plt.xlim(0, 1)
-#                     plt.ylim(0, 1)
-
-#                     plt.plot(gpi.getCoord(0), gpi.getCoord(1), "^", color="green")
-#                     plt.plot(gpj.getCoord(0), gpj.getCoord(1), "^", color="green")
-#                     plt.plot(gpInnerIntersection.getCoord(0), gpInnerIntersection.getCoord(1), "v ", color="red")
-
-                    if gs.has_key(gpInnerIntersection):
+                    if gs.has_key(gpj):
                         localMaxLevels[idim] = max(localMaxLevels[idim], self.getMaxLevelOfChildrenUpToMaxLevel(gpj, grid, idim))
+                    if gs.has_key(gpi):
                         localMaxLevels[jdim] = max(localMaxLevels[jdim], self.getMaxLevelOfChildrenUpToMaxLevel(gpi, grid, jdim))
+                    if gs.has_key(gpInnerIntersection):
                         xdim = np.array([i for i in xrange(self.numDims) if i != idim and i != jdim], dtype="int")
                         for i in xdim:
                             localMaxLevels[i] = max(localMaxLevels[i], self.getMaxLevelOfChildrenUpToMaxLevel(gpInnerIntersection, grid, i))
 
-                        print idim, jdim, localMaxLevels
+                    # plot result
+                    if False and self.plot:
+                        levelouter, indexouter = self.findOuterIntersection(gpi, gpj)
+                        fig = plt.figure()
+                        plotGrid2d(grid)
 
-#         plt.xlim(0, 1)
-#         plt.ylim(0, 1)
-#         plt.show()
+                        plt.plot(gpi.getCoord(0), gpi.getCoord(1), "v", color="orange")
+                        plt.plot(gpj.getCoord(0), gpj.getCoord(1), "v", color="orange")
+                        plt.plot(gpInnerIntersection.getCoord(0), gpInnerIntersection.getCoord(1), "v ", color="red")
+                        plt.plot(2 ** -levelouter[0] * indexouter[0], 2 ** -levelouter[1] * indexouter[1], "o ", color="yellow")
+                        plt.xlim(0, 1)
+                        plt.ylim(0, 1)
+                        plt.title(localMaxLevels)
+                        fig.show()
+
+        if False and self.plot:
+            plt.show()
 
         return tuple(localMaxLevels + 1)
 
@@ -421,38 +425,38 @@ class LocalFullGridCandidates(CandidateSet):
             #          then there exists an ancestor in the list of intersections.
             #          Check first if there are ancestors available and if yes,
             #          remove the successor node from the intersection list
-#             if (levels, indices) not in ans:
-            globalGrid = self.computeAnisotropicFullGrid(levels, indices, localFullGridLevels[levels, indices])
-            costs += len(globalGrid)
-            assert numLocalGridPoints == len(globalGrid)
+            if (levels, indices) not in ans:
+                globalGrid = self.computeAnisotropicFullGrid(levels, indices, localFullGridLevels[levels, indices])
+                costs += len(globalGrid)
+                assert numLocalGridPoints == len(globalGrid)
 
-            # 1. set the root node of the local grid
-            localRoot = {'level': levels,
-                         'index': indices}
+                # 1. set the root node of the local grid
+                localRoot = {'level': levels,
+                             'index': indices}
 
-            # 2. shift and scale the global grid to the local one
-            localGrid = {}
-            for levelsGlobal, indicesGlobal in globalGrid.keys():
-                gpdd = HashGridIndex(self.numDims)
-                for idim in xrange(self.numDims):
-                    lg, ig = levelsGlobal[idim], indicesGlobal[idim]
-                    llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
+                # 2. shift and scale the global grid to the local one
+                localGrid = {}
+                for levelsGlobal, indicesGlobal in globalGrid.keys():
+                    gpdd = HashGridIndex(self.numDims)
+                    for idim in xrange(self.numDims):
+                        lg, ig = levelsGlobal[idim], indicesGlobal[idim]
+                        llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
 
-                    # compute level and index of local grid
-                    # 1 -> level index of global root node, always the same
-                    locallevels[idim] = int(lg + (llroot - 1))
-                    localindices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
-                    gpdd.set(idim, locallevels[idim], localindices[idim])
+                        # compute level and index of local grid
+                        # 1 -> level index of global root node, always the same
+                        locallevels[idim] = int(lg + (llroot - 1))
+                        localindices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
+                        gpdd.set(idim, locallevels[idim], localindices[idim])
 
-                localGrid[(tuple(locallevels), tuple(localindices))] = gpdd
+                    localGrid[(tuple(locallevels), tuple(localindices))] = gpdd
 
-            if self.plot and self.numDims == 2:
-                self.plotDebug(grid, alpha, localGrid, gpi, gpj, gpInnerIntersection, gpOuterIntersection, ans)
+                if self.plot and self.numDims == 2:
+                    self.plotDebug(grid, alpha, localGrid, gpi, gpj, gpInnerIntersection, gpOuterIntersection, ans)
 
-            assert len(localGrid) > 0
-            oldSize = len(ans)
-            ans.update(localGrid)
-#             assert len(ans) > oldSize
+                assert len(localGrid) > 0
+                oldSize = len(ans)
+                ans.update(localGrid)
+    #             assert len(ans) > oldSize
 
         return ans.values(), costs
 
@@ -468,7 +472,7 @@ class LocalFullGridCandidates(CandidateSet):
                 print "# negative candidates : %i/%i" % (len(self.A1), len(self.A0))
 
             overlappingGridPoints, costsIntersectionSearch = self.findIntersections(self.A0, self.A0.copy(), grid)
-            overlappingNonAncestors = self.coarseIntersections(grid, overlappingGridPoints)
+            overlappingNonAncestors = overlappingGridPoints  # self.coarseIntersections(grid, overlappingGridPoints)
             sortedOverlap, localFullGridLevels, predictedLocalCosts = self.estimateCosts(overlappingNonAncestors, grid)
 
             if self.verbose:

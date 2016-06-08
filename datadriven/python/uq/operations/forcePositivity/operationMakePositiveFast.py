@@ -125,6 +125,7 @@ class OperationMakePositiveFast(object):
             if addedGridPoints is not None:
                 gs = grid.getStorage()
                 assert all([alpha[gs.seq(gp)] > -1e-13 for gp in addedGridPoints])
+
         return alpha
     
 
@@ -342,6 +343,7 @@ class OperationMakePositiveFast(object):
         # coarsening: remove all new grid points with zero surplus
         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
         if self.verbose:
+            print "                        old | coarsed | new | max | full"
             print "# final grid          : %i <= %i <= %i <= %i <= %i" % (self.grid.getSize(),
                                                                           coarsedGrid.getSize(),
                                                                           newGrid.getSize(),
