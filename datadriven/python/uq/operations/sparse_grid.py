@@ -76,16 +76,7 @@ def copyGrid(grid, level=0, deg=1):
 
 
 def getBasis(grid):
-    if grid.getType() == GridType_Linear:
-        return SLinearBase()
-    elif grid.getType() == GridType_LinearBoundary:
-        return SLinearBoundaryBase()
-    elif grid.getType() == GridType_Poly:
-        return SPolyBase(grid.getDegree())
-    elif grid.getType() == GridType_PolyBoundary:
-        return SPolyBoundaryBase(grid.getDegree())
-    else:
-        raise AttributeError('unsupported grid type %s' % grid.getType())
+    return grid.getBasis()
 
 
 def getDegree(grid):
@@ -299,8 +290,8 @@ def getIndex(gp):
 
 def getLevelIndex(gp):
     numDims = gp.getDimension()
-    level = np.ndarray(numDims)
-    index = np.ndarray(numDims)
+    level = np.ndarray(numDims, dtype="int")
+    index = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         level[i] = gp.getLevel(i)
         index[i] = gp.getIndex(i)
