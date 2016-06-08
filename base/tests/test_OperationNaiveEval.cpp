@@ -284,7 +284,9 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
         // test partial derivative evaluation
         for (size_t t = 0; t < d; t++) {
-          const double partDeriv2 = opEvalPartialDerivative->evalPartialDerivative(alpha, y, t);
+          double partDeriv2;
+          fx2 = opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, partDeriv2);
+          checkClose(fx, fx2);
           checkClose(fxGradient[t], partDeriv2);
         }
 
@@ -404,9 +406,11 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
           DataVector fxPartDeriv(m);
           fxGradient.getColumn(t, fxPartDeriv);
 
+          fx2.setAll(0.0);
           DataVector fxPartDeriv2(m);
-          opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, fxPartDeriv2);
+          opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, fx2, fxPartDeriv2);
 
+          checkClose(fx, fx2);
           checkClose(fxPartDeriv, fxPartDeriv2);
         }
 
