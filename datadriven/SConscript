@@ -7,7 +7,7 @@ import ModuleHelper
 
 Import("*")
 
-moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
+moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
 if env["USE_OCL"]:
