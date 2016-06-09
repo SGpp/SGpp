@@ -131,7 +131,7 @@ class KernelDensityEstimator : public DensityEstimator {
   /// bandwith optimization type
   BandwidthOptimizationType bandwidthOptimizationType;
 
-  void computeOptKDEbdwth();
+  void computeAndSetOptKDEbdwth();
   void computeNormalizationFactors();
 };
 
