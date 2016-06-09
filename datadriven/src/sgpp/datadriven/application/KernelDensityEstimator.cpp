@@ -113,21 +113,17 @@ void KernelDensityEstimator::initialize(base::DataMatrix& samples) {
         samples.getRow(idim, *(samplesVec[idim]));
       }
 
-      // init the bandwidths
-      bandwidths.resize(ndim);
-      computeOptKDEbdwth();
-
-      // initialize normalization factors
-      norm.resize(ndim);
-
-      for (size_t d = 0; d < ndim; d++) {
-        norm[d] = kernel->norm() / bandwidths[d];
-      }
-
       // initialize conditionalization factor
       cond.resize(nsamples);
       cond.setAll(1.0);
       sumCond = static_cast<double>(nsamples);
+
+      // initialize normalization factors
+      norm.resize(ndim);
+
+      // init the bandwidths
+      bandwidths.resize(ndim);
+      computeAndSetOptKDEbdwth();
     } else {
       throw base::data_exception(
           "KernelDensityEstimator::KernelDensityEstimator: KDE needs at least two samples to "
@@ -155,21 +151,17 @@ void KernelDensityEstimator::initialize(std::vector<std::shared_ptr<base::DataVe
         samplesVec[idim] = std::make_shared<base::DataVector>(*(samples[idim]));  // copy
       }
 
-      // init the bandwidths
-      bandwidths.resize(ndim);
-      computeOptKDEbdwth();
-
-      // initialize normalization factors
-      norm.resize(ndim);
-
-      for (size_t d = 0; d < ndim; d++) {
-        norm[d] = kernel->norm() / bandwidths[d];
-      }
-
       // initialize conditionalization factors
       cond.resize(nsamples);
       cond.setAll(1.0);
       sumCond = static_cast<double>(nsamples);
+
+      // initialize normalization factors
+      norm.resize(ndim);
+
+      // init the bandwidths
+      bandwidths.resize(ndim);
+      computeAndSetOptKDEbdwth();
     } else {
       throw base::data_exception(
           "KernelDensityEstimator::KernelDensityEstimator : KDE needs at least two samples to "
@@ -381,17 +373,22 @@ double KernelDensityEstimator::variance() {
   return var;
 }
 
-void KernelDensityEstimator::computeOptKDEbdwth() {
+void KernelDensityEstimator::computeAndSetOptKDEbdwth() {
+  base::DataVector sigma(ndim);
+
   switch (bandwidthOptimizationType) {
     case BandwidthOptimizationType::RULEOFTHUMB:
-      RuleOfThumb::optimizeBandwidths(this, bandwidths);
+      RuleOfThumb::optimizeBandwidths(this, sigma);
       break;
     case BandwidthOptimizationType::MAXIMUMLIKELIHOOD:
-      MaximumLikelihoodCrossValidation::optimizeBandwidths(this, bandwidths);
+      MaximumLikelihoodCrossValidation::optimizeBandwidths(this, sigma);
       break;
     default:
       break;
   }
+
+  // set the current bandwidth
+  setBandwidths(sigma);
 }
 
 // ------------------------- additional operations ---------------------------
@@ -585,24 +582,12 @@ double KDEMaximumLikelihoodCrossValidation::eval(const base::DataVector& x) {
   // set the new bandwidths
   kde.setBandwidths(x);
 
-  // evaluate the likelihood function
-  double res = 0.0;
-  base::DataVector sample(kde.getDim());
-  std::vector<size_t> skipElements(1);
-  double value = 0.0;
-  std::uint32_t count = 0;
-  for (size_t i = 0; i < kde.getNsamples(); i++) {
-    skipElements[0] = i;
-    kde.getSample(i, sample);
-    value = kde.evalSubset(sample, skipElements);
-    if (value > 1e-13) {
-      res += std::log(value);
-      count += 1;
-    }
-  }
+  // evaluate the log-likelihood
+  double logLikelihood = kde.crossEntropy(*kde.getSamples());
 
-  // we want to maximize this value -> multiply it with -1
-  return -1.0 * res / static_cast<double>(count);
+  std::cout << x.toString() << " -> " << logLikelihood << std::endl;
+
+  return logLikelihood;
 }
 
 }  // namespace datadriven

@@ -4,10 +4,12 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -42,6 +44,25 @@ void DensityEstimator::corrcoef(base::DataMatrix& corr) {
 
     // set the diagonal element
     corr.set(idim, idim, 1.0);
+  }
+}
+
+double DensityEstimator::crossEntropy(sgpp::base::DataMatrix& samples) {
+  size_t numSamples = samples.getNrows();
+  size_t numDims = samples.getNcols();
+
+  if (numSamples > 0) {
+    base::DataVector sample(numDims);
+    double sum = 0.0;
+    for (size_t i = 0; i < numSamples; i++) {
+      samples.getRow(i, sample);
+      sum += std::log2(std::max(1e-10, pdf(sample)));
+    }
+
+    return -1.0 * sum / static_cast<double>(numSamples);
+  } else {
+    throw sgpp::base::algorithm_exception(
+        "DensityEstimator::crossEntropy - size of test samples is zero");
   }
 }
 

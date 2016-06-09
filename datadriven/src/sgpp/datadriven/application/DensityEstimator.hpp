@@ -37,6 +37,8 @@ class DensityEstimator {
 
   virtual size_t getDim() = 0;
   virtual size_t getNsamples() = 0;
+
+  double crossEntropy(sgpp::base::DataMatrix& samples);
 };
 
 }  // namespace datadriven
