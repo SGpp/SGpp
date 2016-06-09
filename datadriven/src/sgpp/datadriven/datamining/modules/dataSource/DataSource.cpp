@@ -26,9 +26,9 @@ namespace datadriven {
 DataSource::DataSource(std::shared_ptr<DataSourceState> state, std::unique_ptr<SampleProvider> sp)
     : state(state), sampleProvider(std::move(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
-  if (!state->getFilePath().empty()) {
+  if (!this->state->getFilePath().empty()) {
     FileSampleProvider* fileProvider = dynamic_cast<FileSampleProvider*>(sampleProvider.get());
-    fileProvider->readFile(state->getFilePath());
+    fileProvider->readFile(this->state->getFilePath());
   }
 }
 
@@ -43,7 +43,7 @@ DataSourceIterator DataSource::end() { return DataSourceIterator(*this, state->g
 
 std::unique_ptr<Dataset> DataSource::getNextSamples() {
   // only one iteration: we want all samples
-  if (state->getNumBatches() == 1 && state->getBatchSize() != 0) {
+  if (state->getNumBatches() == 1 && state->getBatchSize() == 0) {
     state->incrementCurrentIteration();
     return sampleProvider->getAllSamples();
   } else {
