@@ -53,18 +53,21 @@ void verifyLearned(sgpp::datadriven::TestsetConfiguration &testsetConfiguration,
 
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
-	  std::stringstream errorStream;
-    errorStream << "error: violated the expected error, mse: " << mse <<
-                        " (excepted: " << testsetConfiguration.expectedMSE <<
-                        ") largestDifference: " << largestDifference << " (excepted: "  <<
-                        testsetConfiguration.expectedLargestDifference << ")";
+    std::stringstream errorStream;
+    errorStream << "error: violated the expected error, mse: " << mse
+                << " (excepted: " << testsetConfiguration.expectedMSE
+                << ") largestDifference: " << largestDifference
+                << " (excepted: " << testsetConfiguration.expectedLargestDifference << ")";
     std::string message = errorStream.str();
     throw sgpp::base::application_exception(message.c_str());
   } else {
-	std::stringstream messageStream;
-	messageStream << std::scientific;
-    messageStream << "mse: " << mse << " ok! (excepted: " << testsetConfiguration.expectedMSE << ")";
-    messageStream << " largestDifference: " << largestDifference << " ok! (expected: " << testsetConfiguration.expectedLargestDifference << ")" << std::endl;
+    std::stringstream messageStream;
+    messageStream << std::scientific;
+    messageStream << "mse: " << mse << " ok! (excepted: " << testsetConfiguration.expectedMSE
+                  << ")";
+    messageStream << " largestDifference: " << largestDifference
+                  << " ok! (expected: " << testsetConfiguration.expectedLargestDifference << ")"
+                  << std::endl;
     std::cout << messageStream.str();
   }
 }
@@ -112,9 +115,8 @@ int main(int argc, char **argv) {
       "DR5_train_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
       "DR5_train_ModLinear_float_StreamingModOCLMaskMultiPlatform_tuned.cfg"};
 
-  std::vector<bool> isDouble = {
-		  true, false, true, false, true, false,
-          true, false, true, false, true, false};
+  std::vector<bool> isDouble = {true, false, true, false, true, false,
+                                true, false, true, false, true, false};
 
   std::ofstream outFile(std::string(argv[1]) + "_consistency.log");
   for (size_t i = 0; i < scenarios.size(); i++) {
@@ -146,7 +148,7 @@ int main(int argc, char **argv) {
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
         sgpp::datadriven::OperationMultipleEvalType::STREAMING, subType, parameters);
 
-    for (size_t repeat = 0; repeat < 1; repeat++) {
+    for (size_t repeat = 0; repeat < 10; repeat++) {
       std::cout << "repeat: " << repeat << std::endl;
       bool verbose = true;
       sgpp::datadriven::MetaLearner learner(
