@@ -70,8 +70,8 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -80,7 +80,7 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(
       maxIndex[d] = 1 << curLevel;
     }
 
-    this->setSurplus(level, maxIndex, index, surplusVector.get(gridIndex));
+    this->setSurplus(level, maxIndex, index, surplusVector.get(gridPoint));
   }
 }
 
@@ -93,8 +93,8 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector& result) {
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
+  for (size_t gridPoint = 0; gridPoint < this->storage->getSize(); gridPoint++) {
+    sgpp::base::GridPoint* point = this->storage->getPoint(gridPoint);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -107,7 +107,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector& result) {
     bool isVirtual;
     this->getSurplus(level, maxIndex, index, surplus, isVirtual);
 
-    result.set(gridIndex, surplus);
+    result.set(gridPoint, surplus);
   }
 }
 

@@ -35,8 +35,8 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
   // current position on the grid
   int seqm = static_cast<int>(index.seq());
 
-  GridStorage::index_type::level_type l;
-  GridStorage::index_type::index_type i;
+  level_t l;
+  index_t i;
 
   index.get(dim, l, i);
 
@@ -54,7 +54,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
     // descend left
     index.leftChild(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       // pass down the parent in the parameter for the left neighbor
       rec(source, result, index, dim, seql, seqm);
     }
@@ -62,7 +62,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
     // descend right
     index.stepRight(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       // pass down the parent in the parameter for the right neighbor
       rec(source, result, index, dim, seqm, seqr);
     }
@@ -93,7 +93,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // descend left
       index.leftChild(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         // special boundary treatment:
         // pass down the parent in the parameter for the left neighbor
         rec(source, result, index, dim, seqr, seqm);
@@ -102,7 +102,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // descend right
       index.stepRight(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, seqm, seqr);
       }
 
@@ -134,14 +134,14 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // descend left
       index.leftChild(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, seql, seqm);
       }
 
       // descend right
       index.stepRight(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         // special boundary treatment:
         // pass down the parent in the parameter for the right neighbor
         rec(source, result, index, dim, seqm, seql);
@@ -167,14 +167,14 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // descend left
       index.leftChild(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, seql, seqm);
       }
 
       // descend right
       index.stepRight(dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, seqm, seqr);
       }
 

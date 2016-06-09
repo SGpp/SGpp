@@ -78,8 +78,8 @@ class GetAffectedBasisFunctions {
                   std::pair<size_t, double> > & result) {
     GridStorage::grid_iterator working(storage);
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
@@ -133,10 +133,10 @@ class GetAffectedBasisFunctions {
    */
   void rec(BASIS& basis, const DataVector& point, size_t current_dim,
            double value, GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector < std::pair <size_t, double > >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     const unsigned int BITS_IN_BYTE = 8;
     // maximum possible level for the index type
@@ -149,7 +149,7 @@ class GetAffectedBasisFunctions {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -209,8 +209,8 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
                   std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator working(storage);
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
@@ -243,10 +243,10 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
   void rec(SWaveletModifiedBase& basis, const DataVector& point,
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector < std::pair <size_t, double > >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     // size_t i;
     double tmpValue;
     size_t tmpSeq;
@@ -262,7 +262,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         // std::cout << "Grid not found or dim exceed breaking..Grid: " <<
         // seq<<" dim "<<current_dim<<std::endl;
         break;
@@ -293,7 +293,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           working.stepRight(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -315,7 +315,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           working.stepLeft(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -398,8 +398,8 @@ class GetAffectedBasisFunctions <
     GridStorage::grid_iterator working(storage);
 
 
-    // typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    // typedef level_t level_type;
+    typedef index_t index_type;
 
     size_t bits = sizeof(index_type) *
                   8;  // who many levels can we store in a index_type?
@@ -432,10 +432,10 @@ class GetAffectedBasisFunctions <
   void rec(SBsplineModifiedBase& base, const DataVector& point,
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source,
+           index_t* source,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     // size_t i;
     double tmpValue;
     size_t tmpSeq;
@@ -451,7 +451,7 @@ class GetAffectedBasisFunctions <
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         // std::cout << "Grid not found or dim exceed breaking..Grid: " <<
         // seq<<" dim "<<current_dim<<std::endl;
         break;
@@ -482,7 +482,7 @@ class GetAffectedBasisFunctions <
           working.stepRight(current_dim);
           tmpSeq = working.seq();
 
-          if ( !(storage.end(tmpSeq)) ) {
+          if ( !(storage.isValidSequenceNumber(tmpSeq)) ) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -502,7 +502,7 @@ class GetAffectedBasisFunctions <
           working.stepLeft(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage.end(tmpSeq))) {
+          if (!(storage.isValidSequenceNumber(tmpSeq))) {
             // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -581,7 +581,7 @@ class GetAffectedBasisFunctions <
     bool useBB = false;
 
     // Check for special bounding box
-    if (!this->BB->isTrivialCube()) {
+    if (!this->BB->isUnitCube()) {
       useBB = true;
     }
 
@@ -605,8 +605,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -615,7 +615,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -708,8 +708,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -718,7 +718,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -853,8 +853,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
     double posl = 0, posr = 0, posc = 0;
 
     level_type work_level = 0;
@@ -864,7 +864,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -879,7 +879,7 @@ class GetAffectedBasisFunctions <
         if (work_level > 0) {
           // stretch->getAdjacentPositions(static_cast<int>(temp),
           // static_cast<int>(work_index), current_dim,posl,posr);
-          // posc=stretch->getCoordinates(static_cast<int>(temp),
+          // posc=stretch->getCoordinate(static_cast<int>(temp),
           // static_cast<int>(work_index), current_dim);
           stretch->getAdjacentPositions(static_cast<int>(temp),
                                         static_cast<int>(work_index),
@@ -965,7 +965,7 @@ class GetAffectedBasisFunctions <
         // hat = (stretch->getIntervalWidth(current_dim)*((
         // 1.0/static_cast<double>(h))*static_cast<double>(
         // global_work_index))) + stretch->getIntervalOffset(current_dim);
-        hat = stretch->getCoordinates(static_cast<int>(work_level),
+        hat = stretch->getCoordinate(static_cast<int>(work_level),
                                       static_cast<int>(global_work_index),
                                       current_dim);
 
@@ -984,8 +984,8 @@ class GetAffectedBasisFunctions <
         // BB->getIntervalOffset(current_dim)))
         // break;
 
-        if ((point[current_dim] == stretch->getCoordinates(0, 0, current_dim))
-            || (point[current_dim] == stretch->getCoordinates(0, 1,
+        if ((point[current_dim] == stretch->getCoordinate(0, 0, current_dim))
+            || (point[current_dim] == stretch->getCoordinate(0, 1,
                 current_dim))) {
           break;
         }
@@ -1038,8 +1038,8 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
 
  protected:
   GridStorage& storage;
-  typedef GridStorage::index_type::level_type level_type;
-  typedef GridStorage::index_type::index_type index_type;
+  typedef level_t level_type;
+  typedef index_t index_type;
 
   /**
    * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
@@ -1146,8 +1146,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -1156,7 +1156,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1251,7 +1251,7 @@ class GetAffectedBasisFunctions <
     bool useBB = false;
 
     // Check for special bounding box
-    if (!this->BB->isTrivialCube()) {
+    if (!this->BB->isUnitCube()) {
       useBB = true;
     }
 
@@ -1275,8 +1275,8 @@ class GetAffectedBasisFunctions <
            size_t current_dim,
            double value, GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -1285,7 +1285,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1379,8 +1379,8 @@ class GetAffectedBasisFunctions <
              size_t current_dim, double value,
              GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, double> >& result) {
-    typedef GridStorage::index_type::level_type level_type;
-    typedef GridStorage::index_type::index_type index_type;
+    typedef level_t level_type;
+    typedef index_t index_type;
 
     level_type work_level = 0;
 
@@ -1389,7 +1389,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.end(seq)) {
+      if (storage.isValidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;

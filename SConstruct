@@ -14,11 +14,16 @@ import textwrap
 import SCons
 from SCons.Script.SConscript import SConsEnvironment
 
+import DoxygenHelper
 import Helper
 import SGppConfigure
 
+# detour stdout and stderr to file
 sys.stdout = Helper.Logger(sys.stdout)
 sys.stderr = Helper.Logger(sys.stderr)
+
+# object responsible for printing a final message depending on success or error
+# with additional instructions
 finalMessagePrinter = Helper.FinalMessagePrinter()
 atexit.register(finalMessagePrinter.printMessage)
 
@@ -82,7 +87,6 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
-vars.Add(BoolVariable("DOC", "Build the doxygen documentation", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
@@ -178,9 +182,9 @@ env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
 
-# don't create the Doxyfile if we're cleaning:
-if not env.GetOption("clean"):
-  Helper.prepareDoxyfile(moduleFolders)
+# don't create the Doxyfile if building Doxygen:
+if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
+  DoxygenHelper.prepareDoxygen(moduleFolders)
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
@@ -259,11 +263,6 @@ else:
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
-
-# add C++ defines for all modules
-for module in moduleNames:
-  if env[module]:
-    env["CPPDEFINES"][module] = "1"
 
 # environement setup finished, export environment
 Export("env")
@@ -473,29 +472,6 @@ env.Depends(exampleTargetList, finalStepDependencies)
 finalStepDependencies.append(exampleTargetList)
 env.SideEffect("sideEffectFinalSteps", exampleTargetList)
 
-# Final output
-#########################################################################
-
-def printInstructions(target, source, env):
-  import string
-  if env["PLATFORM"] in ["cygwin", "win32"]:
-    filename = "INSTRUCTIONS_WINDOWS"
-  elif env["PLATFORM"] == "darwin" :
-    filename = "INSTRUCTIONS_MAC"
-  else:
-    filename = "INSTRUCTIONS"
-
-  with open(filename) as f:
-    instructionsTemplate = string.Template(f.read())
-    print
-    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-
-if env["PRINT_INSTRUCTIONS"]:
-    printInstructionsTarget = env.Command("printInstructions", [], printInstructions)
-    env.Depends(printInstructionsTarget, finalStepDependencies)
-    finalStepDependencies.append(printInstructionsTarget)
-
 # System-wide installation
 #########################################################################
 
@@ -515,12 +491,12 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 # Doxygen
 #########################################################################
 
-if env["DOC"]:
-    doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
-    env.Alias("doxygen", doxygen)
-    # SCons doesn't know the *.doxy dependencies of the doxygen target
-    # ==> always consider out-of-date with AlwaysBuild
-    env.AlwaysBuild(doxygen)
+doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
+env.AddPostAction(doxygen, DoxygenHelper.patchNavtree)
+env.Alias("doxygen", doxygen)
+# SCons doesn't know the *.doxy dependencies of the doxygen target
+# ==> always consider out-of-date with AlwaysBuild
+env.AlwaysBuild(doxygen)
 
 # Things to be cleaned
 #########################################################################
@@ -529,7 +505,7 @@ if env["DOC"]:
 env.Clean("clean", ["lib/", "jsgpp/java/", "config.log", "build.log"])
 # Doxygen stuff
 env.Clean("clean", ["Doxyfile", "doxygen_warnings.log", "doc/html/", "doc/xml/",
-                    "base/doc/doxygen/examples.doxy", "base/doc/doxygen/modules.doxy"])
+                    "base/doc/doxygen/modules.doxy"])
 
 for module in moduleFolders:
   # PYDOC stuff
@@ -542,7 +518,7 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
-if not GetOption("clean"):
+if not env.GetOption("clean"):
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
     finalMessagePrinter.disable()

@@ -31,9 +31,11 @@ class OperationNaiveEvalHessianModFundamentalSpline : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalHessianModFundamentalSpline(GridStorage& storage,
-      size_t degree) :
-    storage(storage), base(degree) {
+  OperationNaiveEvalHessianModFundamentalSpline(GridStorage& storage, size_t degree) :
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -72,6 +74,10 @@ class OperationNaiveEvalHessianModFundamentalSpline : public
   GridStorage& storage;
   /// 1D B-spline basis
   SFundamentalSplineModifiedBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base

@@ -53,12 +53,12 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       for (int t = 2; t < (1 << level); t = t + 2) {
         index.set(dim, level, t - 1);
         _seq = index.seq();
-        _val = storage.end(_seq) ? 0.0 : source[_seq];
+        _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
         temp_current[t] = -0.6 * _val;
 
         index.set(dim, level, t + 1);
         _seq = index.seq();
-        _val = storage.end(_seq) ? 0.0 : source[_seq];
+        _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
         temp_current[t] = temp_current[t] - 0.6 * _val;
       }
     } else {
@@ -69,12 +69,12 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       for (int t = 2; t < (1 << level); t = t + 2) {
         index.set(dim, level, t - 1);
         _seq = index.seq();
-        _val = storage.end(_seq) ? 0.0 : source[_seq];
+        _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
         temp_current[t] = -0.6 * _val + temp_old[t * 2];
 
         index.set(dim, level, t + 1);
         _seq = index.seq();
-        _val = storage.end(_seq) ? 0.0 : source[_seq];
+        _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
         temp_current[t] = temp_current[t] - 0.6 * _val;
       }
     }
@@ -82,18 +82,18 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
     // Special treatment for first index
     index.set(dim, level, 1);
     _seq = index.seq();
-    _val = storage.end(_seq) ? 0.0 : source[_seq];
+    _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
     double current_value = _val;
     double left_value = 0;
 
-    if (!storage.end(_seq))
+    if (!storage.isValidSequenceNumber(_seq))
       result[_seq] = 0.9 * current_value;
 
     index.set(dim, level, 3);
     _seq_temp = index.seq();
-    _val = storage.end(_seq_temp) ? 0.0 : source[_seq_temp];
+    _val = storage.isValidSequenceNumber(_seq_temp) ? 0.0 : source[_seq_temp];
 
-    if (!storage.end(_seq)) {
+    if (!storage.isValidSequenceNumber(_seq)) {
       result[_seq] += 0.1 * _val;
       result[_seq] += temp_old[2] - 0.5 * temp_current[2];
     }
@@ -106,12 +106,12 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       _seq_temp = index.seq();
 
       left_value = current_value;
-      _val = storage.end(_seq) ? 0.0 : source[_seq];
+      _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
       current_value = _val;
 
-      _val = storage.end(_seq_temp) ? 0.0 : source[_seq_temp];
+      _val = storage.isValidSequenceNumber(_seq_temp) ? 0.0 : source[_seq_temp];
 
-      if (!storage.end(_seq)) {
+      if (!storage.isValidSequenceNumber(_seq)) {
         result[_seq] = current_value + 0.1 * left_value + 0.1
                        * _val;
 
@@ -124,9 +124,9 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
     index_type last = (1 << static_cast<index_type>(level)) - 1;
     index.set(dim, level, last);
     _seq = index.seq();
-    _val = storage.end(_seq) ? 0.0 : source[_seq];
+    _val = storage.isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
 
-    if (!storage.end(_seq)) {
+    if (!storage.isValidSequenceNumber(_seq)) {
       result[_seq] = 0.9 * _val + 0.1 * current_value;
 
       result[_seq] += temp_old[last * 2] - 0.5 * temp_current[last

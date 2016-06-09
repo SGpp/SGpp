@@ -36,8 +36,8 @@ void GridPrinterForStretching::printGridDomain(DataVector& alpha,
 
 void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
     std::string tFilename, Stretching& GridArea, size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -83,8 +83,8 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
 
 void GridPrinterForStretching::printGrid(DataVector& alpha,
     std::string tFilename, size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -165,9 +165,8 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =
-      myGrid->getStorage().get(i)->getCoordsStringStretching(
-        myGrid->getStretching());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {
@@ -197,9 +196,8 @@ void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =
-      myGrid->getStorage().get(i)->getCoordsStringStretching(
-        myGrid->getStretching());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {

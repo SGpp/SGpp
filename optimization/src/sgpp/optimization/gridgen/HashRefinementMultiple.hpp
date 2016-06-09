@@ -61,14 +61,14 @@ class HashRefinementMultiple : public base::HashRefinement {
    * This creates exactly two new grid points.
    *
    * @param storage   grid storage
-   * @param index     index of the grid point
+   * @param point     point of the grid point
    * @param t         dimension in which the refinement should take place
    */
-  void refineGridpoint1D(base::GridStorage& storage, index_type& index, size_t t) override {
-    index_t sourceIndex, childIndex;
-    level_t sourceLevel, childLevel;
+  void refineGridpoint1D(base::GridStorage& storage, base::GridPoint& point, size_t t) override {
+    base::index_t sourceIndex, childIndex;
+    base::level_t sourceLevel, childLevel;
 
-    index.get(t, sourceLevel, sourceIndex);
+    point.get(t, sourceLevel, sourceIndex);
 
     // don't generate the left child,
     // if the "source" has level 0, index 0 (x = 0)
@@ -77,16 +77,16 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage.has_key(&index)) {
+      while (storage.isContaining(point)) {
         childIndex *= 2;
         childLevel++;
-        index.set(t, childLevel, childIndex - 1);
+        point.set(t, childLevel, childIndex - 1);
       }
 
-      index.setLeaf(true);
+      point.setLeaf(true);
       // instead of "createGridpoint(storage, index);"
-      storage.insert(index);
-      index.set(t, sourceLevel, sourceIndex);
+      storage.insert(point);
+      point.set(t, sourceLevel, sourceIndex);
     }
 
     // don't generate the right child,
@@ -96,16 +96,16 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage.has_key(&index)) {
+      while (storage.isContaining(point)) {
         childIndex *= 2;
         childLevel++;
-        index.set(t, childLevel, childIndex + 1);
+        point.set(t, childLevel, childIndex + 1);
       }
 
-      index.setLeaf(true);
+      point.setLeaf(true);
       // instead of "createGridpoint(storage, index);"
-      storage.insert(index);
-      index.set(t, sourceLevel, sourceIndex);
+      storage.insert(point);
+      point.set(t, sourceLevel, sourceIndex);
     }
   }
 
@@ -128,8 +128,6 @@ class HashRefinementMultiple : public base::HashRefinement {
     size_t refinements_num = functor.getRefinementsNum();
 
     // max value equals min value
-
-    index_type index;
     base::GridStorage::grid_map_iterator end_iter = storage.end();
 
     // start iterating over whole grid

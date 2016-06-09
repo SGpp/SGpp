@@ -95,7 +95,7 @@ class DirichletUpdateVector {
    * the multiplyBoundary method.
    */
   void multiply(DataVector& updateVector, double value,
-                bool (*predicate)(GridIndex*, GridStorage&));
+                bool (*predicate)(GridPoint*, GridStorage&));
 };
 
 }  // namespace base

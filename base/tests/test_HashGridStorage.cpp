@@ -6,7 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -18,7 +18,7 @@
 
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;
-using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridPoint;
 using sgpp::base::HashGridStorage;
 using sgpp::base::HashRefinement;
 using sgpp::base::HashRefinementBoundaries;
@@ -27,14 +27,14 @@ using sgpp::base::SurplusRefinementFunctor;
 BOOST_AUTO_TEST_SUITE(TestHashGridStorage)
 
 BOOST_AUTO_TEST_CASE(testCreateDestroy) {
-  HashGridIndex i(1);
+  HashGridPoint i(1);
   HashGridStorage s(1);
 
   i.set(0, 1, 1);
-  HashGridIndex* i2 = s.create(i);
+  HashGridPoint* i2 = s.create(i);
 
-  HashGridIndex::level_type l, l2;
-  HashGridIndex::index_type ind, ind2;
+  HashGridPoint::level_type l, l2;
+  HashGridPoint::index_type ind, ind2;
 
   i.get(0, l, ind);
   i2->get(0, l2, ind2);
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
   bool* srcLeaf = new bool[s.getSize()];
 
   for (unsigned int i = 0; i < s.getSize(); ++i) {
-    srcLeaf[i] = s.get(i)->isLeaf();
+    srcLeaf[i] = s.getPoint(i).isLeaf();
   }
 
   std::string str = s.serialize();
@@ -82,14 +82,14 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
   BOOST_CHECK_EQUAL(s.getSize(), s2.getSize());
 
   for (unsigned int i = 0; i < s.getSize(); ++i) {
-    BOOST_CHECK_EQUAL(s2.get(i)->isLeaf(), srcLeaf[i]);
+    BOOST_CHECK_EQUAL(s2.getPoint(i).isLeaf(), srcLeaf[i]);
   }
 
   delete[] srcLeaf;
 }
 
 BOOST_AUTO_TEST_CASE(testInsert) {
-  HashGridIndex i(1);
+  HashGridPoint i(1);
   HashGridStorage s(1);
 
   i.set(0, 1, 1);
@@ -105,20 +105,20 @@ BOOST_AUTO_TEST_CASE(testChilds) {
 
   g.regular(s, 2);
 
-  HashGridIndex i(1);
+  HashGridPoint i(1);
 
   i.set(0, 1, 1);
-  s.left_child(&i, 0);
+  i.getLeftChild(0);
 
-  HashGridIndex::level_type l, l2 = 2;
-  HashGridIndex::index_type ind, ind2 = 1;
+  HashGridPoint::level_type l, l2 = 2;
+  HashGridPoint::index_type ind, ind2 = 1;
 
   i.get(0, l, ind);
   BOOST_CHECK_EQUAL(l, l2);
   BOOST_CHECK_EQUAL(ind, ind2);
 
   i.set(0, 1, 1);
-  s.right_child(&i, 0);
+  i.getRightChild(0);
   l2 = 2;
   ind2 = 3;
   i.get(0, l, ind);
@@ -132,13 +132,13 @@ BOOST_AUTO_TEST_CASE(testLevelZero) {
 
   g.regular(s, 2);
 
-  HashGridIndex i(1);
+  HashGridPoint i(1);
 
   i.set(0, 1, 1);
-  s.left_levelzero(&i, 0);
+  i.getLeftLevelZero(0);
 
-  HashGridIndex::level_type l, l2 = 0;
-  HashGridIndex::index_type ind, ind2 = 0;
+  HashGridPoint::level_type l, l2 = 0;
+  HashGridPoint::index_type ind, ind2 = 0;
 
   i.get(0, l, ind);
   BOOST_CHECK_EQUAL(l, l2);
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(testLevelZero) {
 
   ind2 = 1;
   i.set(0, 1, 1);
-  s.right_levelzero(&i, 0);
+  i.getRightLevelZero(0);
   i.get(0, l, ind);
   BOOST_CHECK_EQUAL(l, l2);
   BOOST_CHECK_EQUAL(ind, ind2);
@@ -158,15 +158,15 @@ BOOST_AUTO_TEST_CASE(testTop) {
 
   g.regular(s, 2);
 
-  HashGridIndex i(1);
+  HashGridPoint i(1);
 
   i.set(0, 1, 1);
-  s.left_child(&i, 0);
+  i.getLeftChild(0);
 
-  s.top(&i, 0);
+  i.getRoot(0);
 
-  HashGridIndex::level_type l, l2 = 1;
-  HashGridIndex::index_type ind, ind2 = 1;
+  HashGridPoint::level_type l, l2 = 1;
+  HashGridPoint::index_type ind, ind2 = 1;
   i.get(0, l, ind);
 
   BOOST_CHECK_EQUAL(l, l2);
@@ -179,18 +179,18 @@ BOOST_AUTO_TEST_CASE(testSeq) {
 
   g.regular(s, 2);
 
-  HashGridIndex i(1);
+  HashGridPoint i(1);
 
   i.set(0, 1, 1);
-  s.left_child(&i, 0);
+  i.getLeftChild(0);
 
-  size_t seq = s.seq(&i);
-  BOOST_CHECK(!(s.end(seq)));
+  size_t seq = s.getSequenceNumber(i);
+  BOOST_CHECK(!(s.isValidSequenceNumber(seq)));
 
-  s.left_child(&i, 0);
+  i.getLeftChild(0);
 
-  seq = s.seq(&i);
-  BOOST_CHECK(s.end(seq));
+  seq = s.getSequenceNumber(i);
+  BOOST_CHECK(s.isValidSequenceNumber(seq));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -218,41 +218,41 @@ BOOST_AUTO_TEST_CASE(testPeriodic2D) {
   g.regularWithPeriodicBoundaries(s2, 3);
   BOOST_CHECK_EQUAL(s2.getSize(), 32U);
 
-  HashGridIndex i(2);
+  HashGridPoint i(2);
   i.set(0, 0, 0);
   i.set(1, 0, 0);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.has_key(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 1, 1);
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.has_key(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testPeriodic3D) {
@@ -286,23 +286,23 @@ BOOST_AUTO_TEST_CASE(testRegular2D) {
 
   BOOST_CHECK_EQUAL(s2.getSize(), 17U);
 
-  HashGridIndex i(2);
+  HashGridPoint i(2);
   i.set(0, 1, 1);
   i.set(1, 1, 1);
 
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.has_key(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testRegular3D) {
@@ -336,29 +336,29 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
 
   BOOST_CHECK_EQUAL(s2.getSize(), 49U);
 
-  HashGridIndex i(2);
+  HashGridPoint i(2);
   i.set(0, 1, 1);
   i.set(1, 1, 1);
 
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 2, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 2, 3);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 3, 5);
-  BOOST_CHECK(!(s2.has_key(&i)));
+  BOOST_CHECK(!(s2.isContaining(i)));
 
   i.set(1, 1, 1);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(1, 0, 0);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 
   i.set(0, 0, 0);
-  BOOST_CHECK(s2.has_key(&i));
+  BOOST_CHECK(s2.isContaining(i));
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {

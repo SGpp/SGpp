@@ -25,7 +25,7 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
    * @param degree    polynomial degree
    */
   OperationNaiveEvalPolyBoundary(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree) {
+    storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {
   }
 
   ~OperationNaiveEvalPolyBoundary() override {
@@ -51,6 +51,8 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
   GridStorage& storage;
   /// 1D B-spline basis
   SPolyBoundaryBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

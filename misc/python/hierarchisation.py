@@ -98,7 +98,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -156,7 +156,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -214,7 +214,7 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -272,7 +272,7 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -329,7 +329,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -379,7 +379,7 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         
@@ -429,7 +429,7 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
     node_values = DataVector(storage.getSize(), 1)
     
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
         

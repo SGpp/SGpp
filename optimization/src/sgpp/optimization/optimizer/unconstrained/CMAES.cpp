@@ -18,15 +18,19 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-CMAES::CMAES(ScalarFunction& f, size_t maxFcnEvalCount)
+CMAES::CMAES(const ScalarFunction& f, size_t maxFcnEvalCount)
     : UnconstrainedOptimizer(f, maxFcnEvalCount) {}
+
+CMAES::CMAES(const CMAES& other)
+    : UnconstrainedOptimizer(other) {
+}
 
 CMAES::~CMAES() {}
 
 void CMAES::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (CMA-ES)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -126,7 +130,7 @@ void CMAES::optimize() {
           }
         }
 
-        fX[j] = (inDomain ? f.eval(x) : INFINITY);
+        fX[j] = (inDomain ? f->eval(x) : INFINITY);
         fXOrder[j] = j;
       }
     }

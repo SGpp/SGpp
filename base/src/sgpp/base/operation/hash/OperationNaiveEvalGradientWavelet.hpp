@@ -25,8 +25,10 @@ class OperationNaiveEvalGradientWavelet : public OperationNaiveEvalGradient {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalGradientWavelet(GridStorage& storage) : storage(
-      storage) {
+  explicit OperationNaiveEvalGradientWavelet(GridStorage& storage) :
+    storage(storage),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -61,6 +63,10 @@ class OperationNaiveEvalGradientWavelet : public OperationNaiveEvalGradient {
   GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base
