@@ -54,6 +54,7 @@ struct State {
   std::array<double, 10> testValues;
 };
 
+// TODO(Michael Lettrich): Test with other configurations like different batch sizes
 BOOST_FIXTURE_TEST_SUITE(dataSourceGetNextSamplesAllTest, State)
 
 BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
@@ -91,7 +92,23 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
   }
 }
 
-// TODO(Michael Lettrich): Test with other configurations like different batch sizes and  test the
-// iterator,
+BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
+  auto sampleProvider = std::unique_ptr<SampleProvider>(
+      new GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>())));
+  auto state = std::make_shared<DataSourceState>(path);
+
+  DataSource dataSource = DataSource(state, std::move(sampleProvider));
+
+  for (auto dataset : dataSource) {
+    DataVector& classes = dataset->getTargets();
+    DataMatrix& data = dataset->getData();
+
+    // Check if all dimensions agree
+    BOOST_CHECK_EQUAL(10, classes.getSize());
+    BOOST_CHECK_EQUAL(10, data.getNrows());
+    BOOST_CHECK_EQUAL(3, data.getNcols());
+  }
+  BOOST_CHECK_EQUAL(1, state->getCurrentIteration());
+}
 
 BOOST_AUTO_TEST_SUITE_END()
