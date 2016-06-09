@@ -69,7 +69,7 @@ std::unique_ptr<DataSource> FileBasedDataSourceBuilder::assemble() {
     fileSampleProvider = std::make_unique<GzipFileSampleDecorator>(std::move(fileSampleProvider));
   }
 
-  auto state = std::make_shared<DataSourceState>(filePath, batchSize, numBatches);
+  auto state = std::make_shared<DataSourceState>(filePath, numBatches, batchSize);
   std::unique_ptr<SampleProvider> sampleProvider = std::move(fileSampleProvider);
   return std::make_unique<DataSource>(state, std::move(sampleProvider));
 }
@@ -82,7 +82,7 @@ void FileBasedDataSourceBuilder::grabTypeInfoFromFilePath() {
   tokenize(filePath, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
-    // TODO (Michael Lettrich): test if this works with umlauts
+    // TODO(Michael Lettrich): test if this works with umlauts
     std::transform(t.begin(), t.end(), t.begin(), ::tolower);
   }
   // check if there is gz compression
@@ -96,7 +96,7 @@ void FileBasedDataSourceBuilder::grabTypeInfoFromFilePath() {
   }
 }
 
-// TODO (Michael Lettrich): move to own class
+// TODO(Michael Lettrich): move to own class
 void FileBasedDataSourceBuilder::tokenize(const std::string& s, const char* delim,
                                           std::vector<std::string>& v) {
   // to avoid modifying original string

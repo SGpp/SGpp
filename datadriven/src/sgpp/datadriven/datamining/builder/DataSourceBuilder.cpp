@@ -22,9 +22,19 @@
 namespace sgpp {
 namespace datadriven {
 
-DataSourceBuilder::DataSourceBuilder() : batchSize(0), numBatches(0) {}
+DataSourceBuilder::DataSourceBuilder() : numBatches(1), batchSize(0) {}
 
 DataSourceBuilder::~DataSourceBuilder() {}
+
+DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
+  numBatches = howMany;
+  return *this;
+}
+
+DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
+  this->batchSize = batchSize;
+  return *this;
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */
