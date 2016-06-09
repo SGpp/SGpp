@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -385,7 +386,7 @@ void KernelDensityEstimator::computeOptKDEbdwth() {
     case BandwidthOptimizationType::RULEOFTHUMB:
       RuleOfThumb::optimizeBandwidths(this, bandwidths);
       break;
-    case BandwidthOptimizationType::MLCV:
+    case BandwidthOptimizationType::MAXIMUMLIKELIHOOD:
       MaximumLikelihoodCrossValidation::optimizeBandwidths(this, bandwidths);
       break;
     default:
@@ -569,7 +570,39 @@ void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVect
 MaximumLikelihoodCrossValidation::~MaximumLikelihoodCrossValidation() {}
 void MaximumLikelihoodCrossValidation::optimizeBandwidths(KernelDensityEstimator* kde,
                                                           base::DataVector& bandwidths) {
-  bandwidths.setAll(1.0);
+  KDEMaximumLikelihoodCrossValidation f(*kde);
+  sgpp::optimization::optimizer::NelderMead nelderMead(f, 100);
+  nelderMead.optimize();
+  base::DataVector xOptNM = nelderMead.getOptimalPoint();
+
+  // copy result to bandwidhts
+  for (size_t i = 0; i < xOptNM.getSize(); i++) {
+    bandwidths[i] = xOptNM[i];
+  }
+}
+
+double KDEMaximumLikelihoodCrossValidation::eval(const base::DataVector& x) {
+  // set the new bandwidths
+  kde.setBandwidths(x);
+
+  // evaluate the likelihood function
+  double res = 0.0;
+  base::DataVector sample(kde.getDim());
+  std::vector<size_t> skipElements(1);
+  double value = 0.0;
+  std::uint32_t count = 0;
+  for (size_t i = 0; i < kde.getNsamples(); i++) {
+    skipElements[0] = i;
+    kde.getSample(i, sample);
+    value = kde.evalSubset(sample, skipElements);
+    if (value > 1e-13) {
+      res += std::log(value);
+      count += 1;
+    }
+  }
+
+  // we want to maximize this value -> multiply it with -1
+  return -1.0 * res / static_cast<double>(count);
 }
 
 }  // namespace datadriven

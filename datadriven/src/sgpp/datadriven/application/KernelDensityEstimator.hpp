@@ -8,6 +8,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,10 +20,7 @@ namespace datadriven {
 // --------------------------------------------------------------------------------
 enum class KernelType { GAUSSIAN, EPANECHNIKOV };
 
-enum class BandwidthOptimizationType {
-  RULEOFTHUMB,
-  MLCV  // maximum likelihood cross-validation
-};
+enum class BandwidthOptimizationType { RULEOFTHUMB, MAXIMUMLIKELIHOOD };
 
 #ifndef M_SQRT2PI
 #define M_SQRT2PI 2.506628274631000241612355239340 /* sqrt(2*pi) */
@@ -135,6 +133,29 @@ class KernelDensityEstimator : public DensityEstimator {
 
   void computeOptKDEbdwth();
   void computeNormalizationFactors();
+};
+
+// --------------------------------------------------------------------------------
+class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFunction {
+ public:
+  /**
+   * Constructor.
+   */
+  explicit KDEMaximumLikelihoodCrossValidation(KernelDensityEstimator& kde)
+      : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde) {}
+
+  double eval(const sgpp::base::DataVector& x);
+
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
+        new KDEMaximumLikelihoodCrossValidation(*this));
+  }
+
+ private:
+  KernelDensityEstimator& kde;
 };
 
 // --------------------------------------------------------------------------------
