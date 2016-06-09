@@ -5,16 +5,19 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 // TODO(lettrich): use the system matrix with flexible regularization
+
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 namespace sgpp {
 namespace datadriven {
@@ -48,7 +51,9 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
   grid.reset();
   systemMatrix.reset();
 
-  //  InitializeGrid(GridConfig);
+  initializeGrid(configuration.getGridConfig());
+  alpha = std::make_shared<DataVector>(grid->getSize());
+  alpha->setAll(0);
 
   // create DMSystem
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
@@ -68,7 +73,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
         "chosen!");
   }
 
-  sgpp::base::DataVector b(alpha->getSize());
+  DataVector b(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), b);
 
   if (configuration.getRefinementConfig().numRefinements_ == 0) {
@@ -76,7 +81,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
     solver->setEpsilon(configuration.getSolverFinalConfig().eps_);
   }
 
-  solver->solve(*systemMatrix, *alpha, b, true, false, 0.0);
+  solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
 
   //  double tmp1, tmp2, tmp3, tmp4;
   //  systemMatrix->getTimers(tmp1, tmp2, tmp3, tmp4);
