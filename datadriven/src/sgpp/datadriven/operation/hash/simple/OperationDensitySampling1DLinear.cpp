@@ -42,7 +42,7 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    coord[0] = gs->get(i)->getCoord(0);
+    coord[0] = gs->getPoint(i).getStandardCoordinate(0);
     coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }

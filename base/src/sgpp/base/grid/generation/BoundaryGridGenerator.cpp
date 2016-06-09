@@ -36,9 +36,7 @@ void BoundaryGridGenerator::setBoundaryLevel(level_t boundaryLevel) {
 
 void BoundaryGridGenerator::regular(size_t level) {
   HashGenerator gen;
-  gen.regularWithBoundaries(this->storage,
-                            static_cast<HashGenerator::level_t>(level),
-                            boundaryLevel);
+  gen.regularWithBoundaries(this->storage, static_cast<level_t>(level), boundaryLevel);
 }
 
 void BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
@@ -47,8 +45,7 @@ void BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
 
 void BoundaryGridGenerator::full(size_t level) {
   HashGenerator gen;
-  gen.fullWithBoundary(this->storage,
-                       static_cast<HashGenerator::level_t>(level));
+  gen.fullWithBoundary(this->storage, static_cast<level_t>(level));
 }
 
 void BoundaryGridGenerator::refine(RefinementFunctor& func) {
@@ -82,15 +79,14 @@ size_t BoundaryGridGenerator::getNumberOfRemovablePoints() {
 void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
     size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
-  refine.refineToMaxLevel(this->storage, func,
-                          static_cast<HashGenerator::level_t>(maxLevel));
+  refine.refineToMaxLevel(this->storage, func, static_cast<level_t>(maxLevel));
 }
 
 size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
   size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   return refine.getNumberOfRefinablePointsToMaxLevel(
-           this->storage, static_cast<HashGenerator::level_t>(maxLevel));
+           this->storage, static_cast<level_t>(maxLevel));
 }
 
 }  // namespace base

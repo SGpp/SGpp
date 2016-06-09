@@ -34,6 +34,7 @@
 
 #include <vector>
 
+#include "CheckEqualFunction.hpp"
 #include "GridCreator.hpp"
 #include "ObjectiveFunctions.hpp"
 
@@ -74,8 +75,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::GradientDescent gradientDescent(f, fGradient, N);
 
-    BOOST_CHECK_EQUAL(&gradientDescent.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&gradientDescent.getObjectiveGradient(), &fGradient);
+    checkEqualFunction(gradientDescent.getObjectiveFunction(), f);
+    checkEqualFunction(gradientDescent.getObjectiveGradient(), fGradient);
 
     const double beta = 0.42;
     gradientDescent.setBeta(beta);
@@ -97,8 +98,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::NLCG nlcg(f, fGradient, N);
 
-    BOOST_CHECK_EQUAL(&nlcg.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&nlcg.getObjectiveGradient(), &fGradient);
+    checkEqualFunction(nlcg.getObjectiveFunction(), f);
+    checkEqualFunction(nlcg.getObjectiveGradient(), fGradient);
 
     const double beta = 0.42;
     nlcg.setBeta(beta);
@@ -124,8 +125,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::Newton newton(f, fHessian, N);
 
-    BOOST_CHECK_EQUAL(&newton.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&newton.getObjectiveHessian(), &fHessian);
+    checkEqualFunction(newton.getObjectiveFunction(), f);
+    checkEqualFunction(newton.getObjectiveHessian(), fHessian);
 
     const double beta = 0.42;
     newton.setBeta(beta);
@@ -159,9 +160,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::AdaptiveGradientDescent adaptiveGradientDescent(f, fGradient, N);
 
-    BOOST_CHECK_EQUAL(&adaptiveGradientDescent.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&adaptiveGradientDescent.getObjectiveGradient(),
-                      &fGradient);
+    checkEqualFunction(adaptiveGradientDescent.getObjectiveFunction(), f);
+    checkEqualFunction(adaptiveGradientDescent.getObjectiveGradient(), fGradient);
 
     const double tolerance = 1e-2;
     adaptiveGradientDescent.setTolerance(tolerance);
@@ -186,8 +186,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::AdaptiveNewton adaptiveNewton(f, fHessian, N);
 
-    BOOST_CHECK_EQUAL(&adaptiveNewton.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&adaptiveNewton.getObjectiveHessian(), &fHessian);
+    checkEqualFunction(adaptiveNewton.getObjectiveFunction(), f);
+    checkEqualFunction(adaptiveNewton.getObjectiveHessian(), fHessian);
 
     const double tolerance = 1e-2;
     adaptiveNewton.setTolerance(tolerance);
@@ -222,8 +222,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::BFGS bfgs(f, fGradient, N);
 
-    BOOST_CHECK_EQUAL(&bfgs.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&bfgs.getObjectiveGradient(), &fGradient);
+    checkEqualFunction(bfgs.getObjectiveFunction(), f);
+    checkEqualFunction(bfgs.getObjectiveGradient(), fGradient);
 
     const double tolerance = 1e-2;
     bfgs.setTolerance(tolerance);
@@ -245,8 +245,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::Rprop rprop(f, fGradient, N);
 
-    BOOST_CHECK_EQUAL(&rprop.getObjectiveFunction(), &f);
-    BOOST_CHECK_EQUAL(&rprop.getObjectiveGradient(), &fGradient);
+    checkEqualFunction(rprop.getObjectiveFunction(), f);
+    checkEqualFunction(rprop.getObjectiveGradient(), fGradient);
 
     const double tolerance = 1e-2;
     rprop.setTolerance(tolerance);
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::NelderMead nelderMead(f, N);
 
-    BOOST_CHECK_EQUAL(&nelderMead.getObjectiveFunction(), &f);
+    checkEqualFunction(nelderMead.getObjectiveFunction(), f);
 
     const double alpha = 0.42;
     nelderMead.setAlpha(alpha);
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::MultiStart multiStart(f, N);
 
-    BOOST_CHECK_EQUAL(&multiStart.getObjectiveFunction(), &f);
+    checkEqualFunction(multiStart.getObjectiveFunction(), f);
 
     const size_t populationSize = 42;
     multiStart.setPopulationSize(populationSize);
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::DifferentialEvolution differentialEvolution(f, N);
 
-    BOOST_CHECK_EQUAL(&differentialEvolution.getObjectiveFunction(), &f);
+    checkEqualFunction(differentialEvolution.getObjectiveFunction(), f);
 
     const size_t populationSize = 42;
     differentialEvolution.setPopulationSize(populationSize);
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   {
     sgpp::optimization::optimizer::CMAES cmaes(f, N);
 
-    BOOST_CHECK_EQUAL(&cmaes.getObjectiveFunction(), &f);
+    checkEqualFunction(cmaes.getObjectiveFunction(), f);
   }
 
   for (size_t k = 0; k < 2; k++) {
@@ -405,8 +405,8 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
   {
     sgpp::optimization::optimizer::LevenbergMarquardt levenbergMarquardt(phi, phiGradient, N);
 
-    BOOST_CHECK_EQUAL(&levenbergMarquardt.getPhiFunction(), &phi);
-    BOOST_CHECK_EQUAL(&levenbergMarquardt.getPhiGradient(), &phiGradient);
+    checkEqualFunction(levenbergMarquardt.getPhiFunction(), phi);
+    checkEqualFunction(levenbergMarquardt.getPhiGradient(), phiGradient);
 
     const double tolerance = 0.42;
     levenbergMarquardt.setTolerance(tolerance);
@@ -544,12 +544,9 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       sgpp::optimization::optimizer::SquaredPenalty squaredPenalty(
         *f, *fGradient, *g, *gGradient, *h, *hGradient, N);
 
-      BOOST_CHECK_EQUAL(&squaredPenalty.getObjectiveGradient(),
-                        fGradient.get());
-      BOOST_CHECK_EQUAL(&squaredPenalty.getInequalityConstraintGradient(),
-                        gGradient.get());
-      BOOST_CHECK_EQUAL(&squaredPenalty.getEqualityConstraintGradient(),
-                        hGradient.get());
+      checkEqualFunction(squaredPenalty.getObjectiveGradient(), *fGradient);
+      checkEqualFunction(squaredPenalty.getInequalityConstraintGradient(), *gGradient);
+      checkEqualFunction(squaredPenalty.getEqualityConstraintGradient(), *hGradient);
 
       const double xTolerance = 1e-2;
       squaredPenalty.setXTolerance(xTolerance);
@@ -575,10 +572,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       sgpp::optimization::optimizer::LogBarrier logBarrier(
         *f, *fGradient, *g, *gGradient, N);
 
-      BOOST_CHECK_EQUAL(&logBarrier.getObjectiveGradient(),
-                        fGradient.get());
-      BOOST_CHECK_EQUAL(&logBarrier.getInequalityConstraintGradient(),
-                        gGradient.get());
+      checkEqualFunction(logBarrier.getObjectiveGradient(), *fGradient);
+      checkEqualFunction(logBarrier.getInequalityConstraintGradient(), *gGradient);
 
       const double tolerance = 1e-2;
       logBarrier.setTolerance(tolerance);
@@ -599,12 +594,9 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       sgpp::optimization::optimizer::AugmentedLagrangian augmentedLagrangian(
         *f, *fGradient, *g, *gGradient, *h, *hGradient, N);
 
-      BOOST_CHECK_EQUAL(&augmentedLagrangian.getObjectiveGradient(),
-                        fGradient.get());
-      BOOST_CHECK_EQUAL(&augmentedLagrangian.getInequalityConstraintGradient(),
-                        gGradient.get());
-      BOOST_CHECK_EQUAL(&augmentedLagrangian.getEqualityConstraintGradient(),
-                        hGradient.get());
+      checkEqualFunction(augmentedLagrangian.getObjectiveGradient(), *fGradient);
+      checkEqualFunction(augmentedLagrangian.getInequalityConstraintGradient(), *gGradient);
+      checkEqualFunction(augmentedLagrangian.getEqualityConstraintGradient(), *hGradient);
 
       const double xTolerance = 1e-2;
       augmentedLagrangian.setXTolerance(xTolerance);

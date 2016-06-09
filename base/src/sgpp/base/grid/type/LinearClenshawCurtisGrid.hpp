@@ -34,17 +34,6 @@ class LinearClenshawCurtisGrid : public Grid {
   explicit LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
-   * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
-   *
-   * @param BB the BoundingBox of the grid
-   * @param boundaryLevel 1 + how much levels the boundary is coarser than
-   *                      the main axes, 0 means one level finer,
-   *                      1 means same level,
-   *                      2 means one level coarser, etc.
-   */
-  explicit LinearClenshawCurtisGrid(BoundingBox& BB, level_t boundaryLevel = 1);
-
-  /**
    * Destructor
    */
   ~LinearClenshawCurtisGrid() override;

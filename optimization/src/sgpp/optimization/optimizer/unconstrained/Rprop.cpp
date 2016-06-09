@@ -12,22 +12,32 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Rprop::Rprop(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
+Rprop::Rprop(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
              double tolerance, double initialStepSize, double stepSizeIncreaseFactor,
              double stepSizeDecreaseFactor)
     : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
       theta(tolerance),
       initialAlpha(initialStepSize),
       rhoAlphaPlus(stepSizeIncreaseFactor),
-      rhoAlphaMinus(stepSizeDecreaseFactor) {}
+      rhoAlphaMinus(stepSizeDecreaseFactor) {
+  fGradient.clone(this->fGradient);
+}
+
+Rprop::Rprop(const Rprop& other)
+    : UnconstrainedOptimizer(other),
+      theta(other.theta),
+      initialAlpha(other.initialAlpha),
+      rhoAlphaPlus(other.rhoAlphaPlus),
+      rhoAlphaMinus(other.rhoAlphaMinus) {
+  other.fGradient->clone(fGradient);
+}
 
 Rprop::~Rprop() {}
 
 void Rprop::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -49,7 +59,7 @@ void Rprop::optimize() {
 
   for (k = 0; k < N; k++) {
     // calculate gradient and norm
-    fx = fGradient.eval(x, gradFx);
+    fx = fGradient->eval(x, gradFx);
     xOld = x;
 
     if (k == 0) {
@@ -121,11 +131,11 @@ void Rprop::optimize() {
 
   xOpt.resize(d);
   xOpt = x;
-  fOpt = f.eval(x);
+  fOpt = f->eval(x);
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return *fGradient; }
 
 double Rprop::getTolerance() const { return theta; }
 

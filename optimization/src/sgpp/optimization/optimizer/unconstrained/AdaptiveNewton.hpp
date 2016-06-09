@@ -54,7 +54,8 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    * @param dampingDecreaseFactor     damping decrease factor
    * @param lineSearchAccuracy        line search accuracy
    */
-  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
+  AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
+                 size_t maxItCount = DEFAULT_N,
                  double tolerance = DEFAULT_TOLERANCE,
                  double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                  double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
@@ -80,10 +81,17 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    *                                  solving the linear systems
    *                                  (Hessian as coefficient matrix)
    */
-  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount,
+  AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t maxItCount,
                  double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
                  double dampingIncreaseFactor, double dampingDecreaseFactor,
                  double lineSearchAccuracy, const sle_solver::SLESolver& sleSolver);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  AdaptiveNewton(const AdaptiveNewton& other);
 
   /**
    * Destructor.
@@ -164,7 +172,7 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
 
  protected:
   /// objective function Hessian
-  ScalarFunctionHessian& fHessian;
+  std::unique_ptr<ScalarFunctionHessian> fHessian;
   /// tolerance
   double theta;
   /// step size increase factor

@@ -9,111 +9,96 @@
 
 #include <sstream>
 #include <string>
-
+#include <vector>
 
 namespace sgpp {
 namespace base {
 
-BoundingBox::BoundingBox(size_t dim) {
-  nDim = dim;
-  dimensionBoundaries = new DimensionBoundary[nDim];
-
-  for (size_t i = 0; i < nDim; i++) {
-    dimensionBoundaries[i].leftBoundary = 0.0;
-    dimensionBoundaries[i].rightBoundary = 1.0;
-    dimensionBoundaries[i].bDirichletLeft = false;
-    dimensionBoundaries[i].bDirichletRight = false;
-  }
-
-  bTrivialCube = true;
+BoundingBox::BoundingBox(size_t dimension) :
+    dimension(dimension),
+    boundingBox1Ds(dimension, {0.0, 1.0}) {
 }
 
-BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries) {
-  bTrivialCube = true;
-  nDim = dim;
-  dimensionBoundaries = new DimensionBoundary[nDim];
-
-  for (size_t i = 0; i < nDim; i++) {
-    dimensionBoundaries[i] = boundaries[i];
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-  }
-}
-
-BoundingBox::BoundingBox(BoundingBox& copyBoundingBox) {
-  bTrivialCube = true;
-  nDim = copyBoundingBox.getDimensions();
-  dimensionBoundaries = new DimensionBoundary[nDim];
-
-  for (size_t i = 0; i < nDim; i++) {
-    dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
-
-    if (dimensionBoundaries[i].leftBoundary != 0.0
-        || dimensionBoundaries[i].rightBoundary != 1.0) {
-      bTrivialCube = false;
-    }
-  }
+BoundingBox::BoundingBox(const std::vector<BoundingBox1D>& boundingBox1Ds) :
+    dimension(boundingBox1Ds.size()),
+    boundingBox1Ds(boundingBox1Ds) {
 }
 
 BoundingBox::~BoundingBox() {
-  delete[] dimensionBoundaries;
 }
 
-void BoundingBox::setBoundary(size_t dimension,
-                              DimensionBoundary& newBoundaries) {
-  dimensionBoundaries[dimension] = newBoundaries;
+void BoundingBox::setBoundary(size_t d, const BoundingBox1D& boundingBox1D) {
+  boundingBox1Ds[d] = boundingBox1D;
+}
 
-  if (dimensionBoundaries[dimension].leftBoundary != 0.0
-      || dimensionBoundaries[dimension].rightBoundary != 1.0) {
-    bTrivialCube = false;
+size_t BoundingBox::getDimension() const {
+  return dimension;
+}
+
+bool BoundingBox::isUnitCube() const {
+  for (size_t d = 0; d < dimension; d++) {
+    if ((boundingBox1Ds[d].leftBoundary != 0.0) ||
+        (boundingBox1Ds[d].rightBoundary != 1.0)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool BoundingBox::hasDirichletBoundaryLeft(size_t d) const {
+  return boundingBox1Ds[d].bDirichletLeft;
+}
+
+bool BoundingBox::hasDirichletBoundaryRight(size_t d) const {
+  return boundingBox1Ds[d].bDirichletRight;
+}
+
+std::string BoundingBox::serialize(int version) const {
+  std::ostringstream ostream;
+  serialize(ostream, version);
+  return ostream.str();
+}
+
+void BoundingBox::serialize(std::ostream& ostream, int version) const {
+  for (size_t d = 0; d < dimension; d++) {
+    const BoundingBox1D& bb1D = boundingBox1Ds[d];
+    ostream << std::scientific << bb1D.leftBoundary << " " << bb1D.rightBoundary << " "
+            << bb1D.bDirichletLeft << " " << bb1D.bDirichletRight << " ";
+  }
+
+  ostream << std::endl;
+}
+
+void BoundingBox::unserialize(const std::string& istr, int version) {
+  std::istringstream istream;
+  istream.str(istr);
+  unserialize(istream, version);
+}
+
+void BoundingBox::unserialize(std::istream& istr, int version) {
+  for (size_t d = 0; d < dimension; d++) {
+    BoundingBox1D& bb1D = boundingBox1Ds[d];
+
+    istr >> bb1D.leftBoundary;
+    istr >> bb1D.rightBoundary;
+    istr >> bb1D.bDirichletLeft;
+    istr >> bb1D.bDirichletRight;
   }
 }
 
-DimensionBoundary BoundingBox::getBoundary(size_t dimension) {
-  return dimensionBoundaries[dimension];
-}
-
-size_t BoundingBox::getDimensions() {
-  return nDim;
-}
-
-double BoundingBox::getIntervalWidth(size_t dimension) {
-  return dimensionBoundaries[dimension].rightBoundary -
-         dimensionBoundaries[dimension].leftBoundary;
-}
-
-double BoundingBox::getIntervalOffset(size_t dimension) {
-  return dimensionBoundaries[dimension].leftBoundary;
-}
-
-bool BoundingBox::isTrivialCube() {
-  return bTrivialCube;
-}
-
-bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension) {
-  return dimensionBoundaries[dimension].bDirichletLeft;
-}
-
-bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) {
-  return dimensionBoundaries[dimension].bDirichletRight;
-}
-
-
-void BoundingBox::toString(std::string& text) {
+void BoundingBox::toString(std::string& text) const {
   std::stringstream str;
 
-  for (size_t d = 0; d < nDim; d++) {
-    str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
-        << "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
+  for (size_t d = 0; d < dimension; d++) {
+    str << "Dimensions " << d << "(" << boundingBox1Ds[d].leftBoundary
+        << "," <<  boundingBox1Ds[d].rightBoundary << ")\n";
   }
 
   text = str.str();
 }
 
-std::string BoundingBox::toString() {
+std::string BoundingBox::toString() const {
   std::string str;
   toString(str);
   return str;

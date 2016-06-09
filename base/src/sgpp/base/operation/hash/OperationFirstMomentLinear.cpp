@@ -15,7 +15,7 @@ namespace base {
 double OperationFirstMomentLinear::doQuadrature(const DataVector& alpha) {
   double res = 0;
   double tmpres = 1;
-  GridStorage::index_type index;
+  GridStorage::point_type index;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;

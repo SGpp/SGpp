@@ -87,7 +87,7 @@ class BreadthFirstSearch {
       index = queue.front();
       queue.pop();
 
-      const GridIndex& point = *storage[index];
+      const GridPoint& point = storage[index];
       iterator.set(point);
       functor(source, result, iterator);
 

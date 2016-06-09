@@ -60,26 +60,16 @@ class RefinementDecorator: public AbstractRefinement {
    */
   virtual size_t getNumberOfRefinablePoints(GridStorage& storage);
 
-
-  /**
-   * Refine grid points using a specified strategy
-   * @param storage hashmap that stores the grid points
-   * @param index point to refine
-   * @param d direction
-   */
-  // virtual void strategy_refine(GridStorage& storage,
-  // RefinementStrategy& refinement_strategy);
-
   /**
    * Refine one grid point along a single direction
    * @param storage hashmap that stores the grid points
-   * @param index point to refine
+   * @param point point to refine
    * @param d direction
    */
-  virtual void refineGridpoint1D(GridStorage& storage, index_type& index,
+  virtual void refineGridpoint1D(GridStorage& storage, GridPoint& point,
                                  size_t d);
 
-  bool checkAdmissibility(GridStorage& storage, index_type& subspace);
+  bool checkAdmissibility(GridStorage& storage, GridPoint& subspace);
 
  protected:
   /**
@@ -112,9 +102,9 @@ class RefinementDecorator: public AbstractRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param index The point that should be inserted
+   * @param point The point that should be inserted
    */
-  virtual void createGridpoint(GridStorage& storage, index_type& index);
+  virtual void createGridpoint(GridStorage& storage, GridPoint& point);
 
   /**
   * Examines the grid points and stores the indices those that can be refined

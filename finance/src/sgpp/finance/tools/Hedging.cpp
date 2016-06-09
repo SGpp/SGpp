@@ -24,7 +24,7 @@ Hedging::Hedging(sgpp::base::BoundingBox& hedge_area, size_t resolution, double 
                  bool is_log_transformed)
     : m_res(resolution),
       m_eps(eps),
-      m_hedge_points(new sgpp::base::DataMatrix(1, hedge_area.getDimensions())),
+      m_hedge_points(new sgpp::base::DataMatrix(1, hedge_area.getDimension())),
       m_is_log_transformed(is_log_transformed) {
   sgpp::base::EvalCuboidGenerator* myEval = new sgpp::base::EvalCuboidGenerator();
   myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
