@@ -10,15 +10,15 @@
  *      Author: Michael Lettrich
  */
 
-#include <iostream>
-#include <memory>
-#include <string>
-
 #include <sgpp/datadriven/datamining/builder/FileBasedDataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
+#include <memory>
+#include <string>
 
 using sgpp::datadriven::FileBasedDataSourceBuilder;
 using sgpp::datadriven::Dataset;
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
   auto dataSource =
       FileBasedDataSourceBuilder()
           .withPath(
-              "/Users/michael/git/SGpp_dev/datasets/bupa_liver/liver-disorders_normalized.arff.gz")
+              "/home/michael/Projects/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz")
           .assemble();
   std::cout << "reading input file: "
             << "liver-disorders_normalized.arff.gz" << std::endl;
@@ -39,6 +39,11 @@ int main(int argc, char **argv) {
 
   // regression
   DataMiningConfigurationLeastSquares config;
+
+  auto gridConfig = config.getGridConfig();
+  gridConfig.dim_ = dataset->getDimension();
+  config.setGridConfig(gridConfig);
+
   auto fitter = std::make_unique<ModelFittingLeastSquares>(config);
   fitter->fit(*(dataset.get()));
   std::cout << "fitting model" << std::endl;
