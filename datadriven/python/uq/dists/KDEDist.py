@@ -7,6 +7,7 @@ from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
 import numpy as np
 
 from EstimatedDist import EstimatedDist
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_RULEOFTHUMB
 
 
 class KDEDist(EstimatedDist):
@@ -18,12 +19,13 @@ class KDEDist(EstimatedDist):
                  trainData,
                  kde=None,
                  kernelType=KernelType_GAUSSIAN,
+                 bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
                  bounds=None):
         super(KDEDist, self).__init__(trainData, bounds)
 
         trainData_matrix = DataMatrix(self.trainData)
         if kde is None:
-            self.dist = KernelDensityEstimator(trainData_matrix, kernelType)
+            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, bandwidthOptimizationType)
         else:
             self.dist = kde
 
@@ -97,6 +99,11 @@ class KDEDist(EstimatedDist):
         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
         self.dist.corrcoef(corrMatrix)
         return corrMatrix.array()
+
+    def getBandwidths(self):
+        bandwidths = DataVector(self.getDim())
+        self.dist.getBandwidths(bandwidths)
+        return bandwidths.array()
 
     def __str__(self):
         return "GaussianKDEDist"

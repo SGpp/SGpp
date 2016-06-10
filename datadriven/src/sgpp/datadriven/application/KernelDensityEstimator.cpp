@@ -582,12 +582,27 @@ double KDEMaximumLikelihoodCrossValidation::eval(const base::DataVector& x) {
   // set the new bandwidths
   kde.setBandwidths(x);
 
-  // evaluate the log-likelihood
-  double logLikelihood = kde.crossEntropy(*kde.getSamples());
+  // evaluate the likelihood function
+  double res = 0.0;
+  base::DataVector sample(kde.getDim());
+  std::vector<size_t> skipElements(1);
+  double value = 0.0;
+  std::uint32_t count = 0;
+  for (size_t i = 0; i < kde.getNsamples(); i++) {
+    skipElements[0] = i;
+    kde.getSample(i, sample);
+    value = kde.evalSubset(sample, skipElements);
+    if (value > 1e-10) {
+      res += std::log2(value);
+      count += 1;
+    }
+  }
 
-  std::cout << x.toString() << " -> " << logLikelihood << std::endl;
+  // we want to maximize this value -> multiply it with -1
+  return -1.0 * res / static_cast<double>(count);
 
-  return logLikelihood;
+  //  // evaluate the log-likelihood
+  //  return kde.crossEntropy(*kde.getSamples());
 }
 
 }  // namespace datadriven

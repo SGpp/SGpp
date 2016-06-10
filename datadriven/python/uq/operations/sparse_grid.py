@@ -173,7 +173,7 @@ def isHierarchicalAncestor(grid, gpi, gpj):
                 isAncestor = False
             else:
                 ii, ij = gpi.getIndex(idim), gpj.getIndex(idim)
-                isAncestor = ii == 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+                isAncestor = ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
             idim += 1
         return isAncestor
 
