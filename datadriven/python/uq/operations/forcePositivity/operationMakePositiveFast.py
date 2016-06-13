@@ -124,7 +124,7 @@ class OperationMakePositiveFast(object):
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
-                assert all([alpha[gs.seq(gp)] > -1e-13 for gp in addedGridPoints])
+#                 assert all([alpha[gs.seq(gp)] > -1e-13 for gp in addedGridPoints])
 
         return alpha
     
