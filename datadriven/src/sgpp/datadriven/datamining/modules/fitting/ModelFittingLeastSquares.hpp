@@ -28,28 +28,13 @@ namespace datadriven {
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
 class ModelFittingLeastSquares : public ModelFittingBase {
- private:
-  base::OperationMultipleEval* kernel = nullptr;
-
-  datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
-
-  DataMiningConfigurationLeastSquares configuration;
-
-  std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
-
-  std::shared_ptr<solver::SLESolver> solver;
-
- protected:
-  virtual datadriven::DMSystemMatrixBase* createSystemMatrix(base::DataMatrix& trainDataset,
-                                                             double lambda);
-
  public:
   /**
    * Constructor
    *
    * @param config configuration
    */
-  ModelFittingLeastSquares(sgpp::datadriven::DataMiningConfigurationLeastSquares config);
+  ModelFittingLeastSquares(std::shared_ptr<DataMiningConfigurationLeastSquares> config);
 
   /**
    * Destructor
@@ -57,7 +42,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   virtual ~ModelFittingLeastSquares();
 
   // new grid and new dataset
-  void fit(datadriven::Dataset& dataset) override;
+  void fit(Dataset& dataset) override;
 
   // reuse grid and assume old dataset
   // for grid refinement steps
@@ -66,10 +51,19 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   // reuse grid and new dataset
   // for online learning
   void update(datadriven::Dataset& dataset) override;
+  //
+  //  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration)
+  //  {
+  //    this->implementationConfiguration = operationConfiguration;
+  //  }
 
-  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
-    this->implementationConfiguration = operationConfiguration;
-  }
+ protected:
+  virtual DMSystemMatrixBase* createSystemMatrix(base::DataMatrix& trainDataset, double lambda);
+
+ private:
+  std::shared_ptr<DataMiningConfigurationLeastSquares> config;
+  std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
+  std::unique_ptr<solver::SLESolver> solver;
 };
 }
 }
