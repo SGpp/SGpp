@@ -90,17 +90,6 @@ class KernelMultTranspose {
 
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
-        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
-      std::stringstream errorString;
-      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
-                     "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
-      errorString << " to be greater than the dimension of the data set, was set to"
-                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \""
-                  << device->deviceName << "\")" << std::endl;
-      throw base::operation_exception(errorString.str());
-    }
-
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     gridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
@@ -220,19 +209,19 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &sourceSize);
+        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_int), &sourceSize);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &kernelStartData);
+        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_int), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_int), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -263,9 +252,6 @@ class KernelMultTranspose {
 
         std::vector<T> &deviceResultGridTransposeHost = deviceResultGridTranspose.getHostPointer();
         for (size_t i = 0; i < rangeSize; i++) {
-          if (kernelStartGrid + i >= end_index_grid) {
-            break;
-          }
           result[kernelStartGrid + i] = deviceResultGridTransposeHost[i];
         }
 
@@ -314,18 +300,6 @@ class KernelMultTranspose {
   }
 
  private:
-  //  void releaseGridBuffersTranspose() {
-  //    this->deviceLevelTranspose.freeBuffer();
-  //    this->deviceIndexTranspose.freeBuffer();
-  //  }
-
-  //  void releaseDataBuffersTranspose() {
-  //    this->deviceSourceTranspose.freeBuffer();
-  //    this->deviceDataTranspose.freeBuffer();
-  //  }
-  //
-  //  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
-
   void initGridBuffersTranspose(std::vector<T> &level, std::vector<T> &index,
                                 size_t kernelStartGrid, size_t kernelEndGrid) {
     deviceLevelTranspose.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);

@@ -32,13 +32,13 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(
         "DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
   }
 
-  this->dataset_ = new sgpp::base::DataMatrix(trainData);
-  this->numTrainingInstances_ = this->dataset_->getNrows();
+  //  this->dataset_ = new sgpp::base::DataMatrix(trainData);
+  this->numTrainingInstances_ = this->dataset_.getNrows();
   this->numPatchedTrainingInstances_ =
-      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(this->dataset_, vecMode_);
 
   if (this->vecMode_ != ArBB) {
-    this->dataset_->transpose();
+    this->dataset_.transpose();
   }
 
   size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
@@ -58,14 +58,14 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(
       sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
   this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorized(
-      m_grid, this->vecMode_, this->dataset_, _mpi_grid_offsets[mpi_rank],
+      m_grid, this->vecMode_, &this->dataset_, _mpi_grid_offsets[mpi_rank],
       _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank], _mpi_data_offsets[mpi_rank],
       _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]);
   waitting_time = 0.0;
 }
 
 DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI() {
-  delete this->dataset_;
+  //  delete this->dataset_;
 
   delete[] this->_mpi_grid_sizes;
   delete[] this->_mpi_grid_offsets;

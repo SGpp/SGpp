@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 namespace sgpp {
 namespace base {
@@ -94,12 +95,22 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       state = PARSER_STATE::VALUE;
       i += 1;
     } else if (state == PARSER_STATE::VALUE) {
-//      size_t next;
-      double value = std::atof(&(serializedVector[i]));
+      //      size_t next;
+      //      double value = std::atof(&(serializedVector[i]));
+      size_t endNumber = i;
+      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') endNumber++;
+      std::stringstream stream;
+      for (size_t j = i; j < endNumber; j++) {
+        stream << serializedVector[j];
+      }
+      std::string shortString(stream.str());
+      //      double value = std::atof(shortString.c_str());
+      double value = std::stod(shortString);
       v.append(value);
       state = PARSER_STATE::COMMAEND;
       //      i += next;
-      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      i = endNumber;
 
     } else if (state == PARSER_STATE::COMMAEND) {
       if (c == ',') {
@@ -187,6 +198,29 @@ void DataVector::resizeZero(size_t size) {
   // set new elements to zero
   for (size_t i = std::min(this->size, size); i < size; i++) {
     newdata[i] = 0.0;
+  }
+
+  delete[] this->data;
+
+  this->data = newdata;
+  this->size = size;
+  this->unused = 0;
+}
+
+void DataVector::resize(size_t size, double value) {
+  // don't do anyhing, if vector already has the correct size
+  if (size == this->size) {
+    return;
+  }
+
+  // create new vector
+  double* newdata = new double[size];
+  // copy entries of old vector
+  std::memcpy(newdata, this->data, std::min(this->size, size) * sizeof(double));
+
+  // set new elements to zero
+  for (size_t i = std::min(this->size, size); i < size; i++) {
+    newdata[i] = value;
   }
 
   delete[] this->data;
@@ -462,11 +496,18 @@ void DataVector::normalize(double border) {
 void DataVector::toString(std::string& text) const {
   std::stringstream str;
 
+  str << std::scientific;
+  str.precision(20);
+
   str << "[";
 
   for (size_t i = 0; i < size; i++) {
     if (i != 0) {
       str << ", ";
+      // add linebreaks for readability
+      if (i % 20 == 0) {
+        str << std::endl;
+      }
     }
 
     str << data[i];

@@ -1,5 +1,10 @@
 from operationMakePositive import OperationMakePositive
+from operationMakePositiveFast import OperationMakePositiveFast
+
+
 from interpolateParents import InterpolateParents
+from interpolateFunction import InterpolateFunction
 from estimateDensity import EstimateDensityAlgorithm
 from interpolationAlgorithm import InterpolationAlgorithm
 from setGridPointsToZero import SetGridPointsToZero
+

@@ -164,7 +164,7 @@ inline double COMBIGRID_DMIN(double v1, double v2) { return (v1 > v2) ? v2 : v1;
 inline int COMBIGRID_IMIN(int v1, int v2) { return (v1 > v2) ? v2 : v1; }
 
 /** the function C_{N}^K , combination of N,K*/
-static int combination(int n, int k) {
+static inline int combination(int n, int k) {
   if ((k == 0) || (n == k))
     return 1;
   else if ((k == 1) || (n == k + 1))

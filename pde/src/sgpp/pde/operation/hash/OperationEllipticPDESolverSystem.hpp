@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONELLITPICPDESOLVERSYSTEM_HPP
+#ifndef OPERATIONELLIPTICPDESOLVERSYSTEM_HPP
 #define OPERATIONELLIPTICPDESOLVERSYSTEM_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -83,4 +83,4 @@ class OperationEllipticPDESolverSystem : public sgpp::base::OperationMatrix {
 }  // namespace pde
 }  // namespace sgpp
 
-#endif /* OPERATIONELLITPICPDESOLVERMATRIX_HPP */
+#endif /* OPERATIONELLIPTICPDESOLVERSYSTEM_HPP */

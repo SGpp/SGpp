@@ -88,17 +88,6 @@ class KernelMult {
 
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
-        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
-      std::stringstream errorString;
-      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
-                     "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
-      errorString << " to be greater than the dimension of the data set, was set to "
-                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << " (device: \""
-                  << device->deviceName << "\")" << std::endl;
-      throw base::operation_exception(errorString.str());
-    }
-
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
@@ -117,10 +106,10 @@ class KernelMult {
     //    releaseGridBuffers();
   }
 
-  double mult(std::vector<T> &level, std::vector<T> &index, size_t gridSize,
-              std::vector<T> &dataset, size_t datasetSize, std::vector<T> &alpha,
-              std::vector<T> &result, const size_t start_index_grid, const size_t end_index_grid,
-              const size_t start_index_data, const size_t end_index_data) {
+  double mult(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
+              std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid,
+              const size_t end_index_grid, const size_t start_index_data,
+              const size_t end_index_data) {
     if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
       {
@@ -139,9 +128,7 @@ class KernelMult {
       this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration, "multOCL");
     }
 
-    if (!deviceLevel.isInitialized()) {
-      initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
-    }
+    initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
 
     this->deviceTimingMult = 0.0;
 
@@ -215,20 +202,20 @@ class KernelMult {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint),
+        err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_int),
                              &rangeSize);  // resultsize == number of entries in dataset
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_uint), &kernelStartGrid);
+        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_int), &kernelStartGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint), &kernelEndGrid);
+        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_int), &kernelEndGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -280,9 +267,6 @@ class KernelMult {
         std::vector<T> &hostTemp = deviceResultData.getHostPointer();
         size_t deviceIndex = 0;
         for (size_t i = 0; i < rangeSize; i++) {
-          if (kernelStartData + i >= datasetSize) {
-            break;
-          }
           result[kernelStartData + i] = hostTemp[deviceIndex];
           deviceIndex += 1;
         }

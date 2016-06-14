@@ -31,14 +31,16 @@ class LearnerVectorizedIdentity : public sgpp::datadriven::LearnerBase {
 
   MPIType mpiType_;
 
-  virtual sgpp::datadriven::DMSystemMatrixBase* createDMSystem(sgpp::base::DataMatrix& trainDataset,
-                                                               double lambda);
+  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
+      sgpp::base::DataMatrix& trainDataset, double lambda) override;
 
-  virtual void postProcessing(const sgpp::base::DataMatrix& trainDataset,
-                              const sgpp::solver::SLESolverType& solver,
-                              const size_t numNeededIterations);
+  void postProcessing(const sgpp::base::DataMatrix& trainDataset,
+                      const sgpp::solver::SLESolverType& solver,
+                      const size_t numNeededIterations) override;
 
  public:
+  using LearnerBase::predict;
+
   /**
    * Constructor
    *

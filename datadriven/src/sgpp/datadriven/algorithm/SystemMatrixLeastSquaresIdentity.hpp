@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 // #include <AbstractOperationMultipleEval.hpp>
@@ -19,7 +19,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <string>
-
 
 namespace sgpp {
 namespace datadriven {
@@ -33,7 +32,7 @@ namespace datadriven {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
+class SystemMatrixLeastSquaresIdentity : public datadriven::DMSystemMatrixBase {
  private:
   /// vectorization mode
   // ComputeKernelType kernelType;
@@ -43,12 +42,11 @@ class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
   size_t paddedInstances;
   /// OperationB for calculating the data matrix
   // AbstractOperationMultipleEval* B;
-  base::OperationMultipleEval* B;
+  std::unique_ptr<base::OperationMultipleEval> B;
 
   base::Grid& grid;
 
-  datadriven::OperationMultipleEvalConfiguration
-  implementationConfiguration;
+  datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 
  public:
   /**
@@ -58,28 +56,21 @@ class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
    * @param trainData reference to base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    */
-  SystemMatrixLeastSquaresIdentity(base::Grid& SparseGrid,
-                                   base::DataMatrix& trainData, double lambda);
+  SystemMatrixLeastSquaresIdentity(base::Grid& SparseGrid, base::DataMatrix& trainData,
+                                   double lambda);
 
   /**
    * Std-Destructor
    */
   virtual ~SystemMatrixLeastSquaresIdentity();
 
-  virtual void mult(base::DataVector& alpha,
-                    base::DataVector& result);
+  virtual void mult(base::DataVector& alpha, base::DataVector& result);
 
-  virtual void generateb(base::DataVector& classes,
-                         base::DataVector& b);
+  virtual void generateb(base::DataVector& classes, base::DataVector& b);
 
   virtual void prepareGrid();
 
-  void setImplementation(datadriven::OperationMultipleEvalConfiguration
-                         operationConfiguration) {
-    this->implementationConfiguration = operationConfiguration;
-    this->B = op_factory::createOperationMultipleEval(this->grid,
-              *(this->dataset_), this->implementationConfiguration).release();
-  }
+  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration);
 };
 
 }  // namespace datadriven

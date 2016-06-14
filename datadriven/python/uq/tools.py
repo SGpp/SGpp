@@ -164,20 +164,20 @@ def eval_linear(ppd, dim, norm_offset=0.0):
 
 def eval_fullGrid(level, dim, border=True):
     if border:
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 1)
     else:
         grid = Grid.createLinearGrid(dim)
 
     grid.getGenerator().full(level)
     gs = grid.getStorage()
-    ans = DataMatrix(gs.size(), dim)
+    ans = DataMatrix(gs.getSize(), dim)
     p = DataVector(dim)
 
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         gs.get(i).getCoords(p)
         ans.setRow(i, p)
 
-    return ans
+    return ans.array()
 
 
 def writeCSV(filename, samples, delim=' '):

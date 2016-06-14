@@ -86,6 +86,7 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalModFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPoly.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPolyBoundary.hpp>
 
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientBsplineBoundary.hpp>
@@ -129,64 +130,57 @@ namespace sgpp {
 
 namespace op_factory {
 
-std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(
-  base::Grid& grid) {
+std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationHierarchisation>(
         new base::OperationHierarchisationLinear(grid.getStorage()));
   } else if (grid.getType() == base::GridType::LinearStencil) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationStencilHierarchisationLinear(
-             grid.getStorage()));
+        new base::OperationStencilHierarchisationLinear(grid.getStorage()));
   } else if (grid.getType() == base::GridType::ModLinearStencil) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationStencilHierarchisationModLinear(
-             grid.getStorage()));
+        new base::OperationStencilHierarchisationModLinear(grid.getStorage()));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return std::unique_ptr<base::OperationHierarchisation>(
         new base::OperationHierarchisationModLinear(grid.getStorage()));
-  } else if (grid.getType() == base::GridType::LinearL0Boundary
-             || grid.getType() == base::GridType::LinearBoundary
-             || grid.getType() == base::GridType::LinearTruncatedBoundary
-             || grid.getType() == base::GridType::SquareRoot) {
+  } else if (grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearTruncatedBoundary ||
+             grid.getType() == base::GridType::SquareRoot) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationLinearBoundary(
-             grid.getStorage()));
+        new base::OperationHierarchisationLinearBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::LinearStretched) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationLinearStretched(
-             grid.getStorage()));
+        new base::OperationHierarchisationLinearStretched(grid.getStorage()));
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationLinearStretchedBoundary(
-             grid.getStorage()));
+        new base::OperationHierarchisationLinearStretchedBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationPoly(grid.getStorage(),
-           dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationHierarchisation>(new base::OperationHierarchisationPoly(
+        grid.getStorage(), dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationPolyBoundary(grid.getStorage(),
-           dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+        new base::OperationHierarchisationPolyBoundary(
+            grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModPoly) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationModPoly(grid.getStorage(),
-           dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
+        new base::OperationHierarchisationModPoly(
+            grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return std::unique_ptr<base::OperationHierarchisation>(
-        new base::OperationHierarchisationPrewavelet(grid.getStorage(),
-           dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage()));
+        new base::OperationHierarchisationPrewavelet(
+            grid.getStorage(), dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return std::unique_ptr<base::OperationHierarchisation>(
         new base::OperationHierarchisationFundamentalSpline(
-             dynamic_cast<base::FundamentalSplineGrid*>(&grid)));
+            dynamic_cast<base::FundamentalSplineGrid*>(&grid)));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return std::unique_ptr<base::OperationHierarchisation>(
         new base::OperationHierarchisationModFundamentalSpline(
-             dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)));
+            dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)));
   } else {
     throw base::factory_exception(
-      "OperationHierarchisation is not implemented for this grid type.");
+        "OperationHierarchisation is not implemented for this grid type.");
   }
 }
 
@@ -194,21 +188,18 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationQuadrature>(
         new base::OperationQuadratureLinear(grid.getStorage()));
-  } else if (grid.getType() == base::GridType::LinearL0Boundary
-             || grid.getType() == base::GridType::LinearBoundary) {
+  } else if (grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearBoundary) {
     return std::unique_ptr<base::OperationQuadrature>(
         new base::OperationQuadratureLinearBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<base::OperationQuadrature>(
-        new base::OperationQuadraturePoly(grid.getStorage(),
-           dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadraturePoly(
+        grid.getStorage(), dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return std::unique_ptr<base::OperationQuadrature>(
-        new base::OperationQuadraturePolyBoundary(grid.getStorage(),
-           dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadraturePolyBoundary(
+        grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
   } else {
-    throw base::factory_exception(
-      "OperationQuadrature is not implemented for this grid type.");
+    throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
   }
 }
 
@@ -217,8 +208,7 @@ std::unique_ptr<base::OperationFirstMoment> createOperationFirstMoment(base::Gri
     return std::unique_ptr<base::OperationFirstMoment>(
         new base::OperationFirstMomentLinear(grid.getStorage()));
   } else {
-    throw base::factory_exception(
-      "OperationFirstMoment is not implemented for this grid type.");
+    throw base::factory_exception("OperationFirstMoment is not implemented for this grid type.");
   }
 }
 
@@ -227,58 +217,47 @@ std::unique_ptr<base::OperationSecondMoment> createOperationSecondMoment(base::G
     return std::unique_ptr<base::OperationSecondMoment>(
         new base::OperationSecondMomentLinear(grid.getStorage()));
   } else {
-    throw base::factory_exception(
-      "OperationSecondMoment is not implemented for this grid type.");
+    throw base::factory_exception("OperationSecondMoment is not implemented for this grid type.");
   }
 }
 
 std::unique_ptr<base::OperationConvert> createOperationConvert(base::Grid& grid) {
   if (grid.getType() == base::GridType::Prewavelet) {
-    return std::unique_ptr<base::OperationConvert>(
-        new base::OperationConvertPrewavelet(grid.getStorage(),
-           ((base::PrewaveletGrid*) &grid)->getShadowStorage()));
+    return std::unique_ptr<base::OperationConvert>(new base::OperationConvertPrewavelet(
+        grid.getStorage(), ((base::PrewaveletGrid*)&grid)->getShadowStorage()));
   } else {
-    throw base::factory_exception(
-      "OperationConvert is not implemented for this grid type.");
+    throw base::factory_exception("OperationConvert is not implemented for this grid type.");
   }
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationIdentity(base::Grid& grid) {
-  return std::unique_ptr<base::OperationMatrix>(
-        new base::OperationIdentity());
+  return std::unique_ptr<base::OperationMatrix>(new base::OperationIdentity());
 }
 
 std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalLinear(grid.getStorage()));
-  } else if (grid.getType() == base::GridType::LinearL0Boundary
-             || grid.getType() == base::GridType::LinearBoundary
-             || grid.getType() == base::GridType::LinearTruncatedBoundary
-             || grid.getType() == base::GridType::SquareRoot) {
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalLinear(grid.getStorage()));
+  } else if (grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearTruncatedBoundary ||
+             grid.getType() == base::GridType::SquareRoot) {
     return std::unique_ptr<base::OperationEval>(
         new base::OperationEvalLinearBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return std::unique_ptr<base::OperationEval>(
         new base::OperationEvalModLinear(grid.getStorage()));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalPoly(
-             grid.getStorage(),
-             dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalPoly(
+        grid.getStorage(), dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalPolyBoundary(grid.getStorage(),
-           dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalPolyBoundary(
+        grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModPoly) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalModPoly(
-             grid.getStorage(),
-             dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalModPoly(
+        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalModBspline(grid.getStorage(),
-           dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalModBspline(
+        grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return std::unique_ptr<base::OperationEval>(
         new base::OperationEvalModWavelet(grid.getStorage()));
@@ -292,44 +271,36 @@ std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid) {
     return std::unique_ptr<base::OperationEval>(
         new base::OperationEvalLinearStretchedBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::Periodic) {
-    return std::unique_ptr<base::OperationEval>(
-        new base::OperationEvalPeriodic(grid.getStorage()));
+    return std::unique_ptr<base::OperationEval>(new base::OperationEvalPeriodic(grid.getStorage()));
   } else {
-    throw base::factory_exception(
-      "OperationEval is not implemented for this grid type.");
+    throw base::factory_exception("OperationEval is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::Grid& grid,
-    base::DataMatrix& dataset) {
+std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
+    base::Grid& grid, base::DataMatrix& dataset) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationMultipleEval>(
         new base::OperationMultipleEvalLinear(grid, dataset));
-  } else if (grid.getType() == base::GridType::LinearL0Boundary
-             || grid.getType() == base::GridType::LinearBoundary) {
+  } else if (grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearBoundary) {
     return std::unique_ptr<base::OperationMultipleEval>(
         new base::OperationMultipleEvalLinearBoundary(grid, dataset));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return std::unique_ptr<base::OperationMultipleEval>(
         new base::OperationMultipleEvalModLinear(grid, dataset));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<base::OperationMultipleEval>(
-        new base::OperationMultipleEvalPoly(grid,
-           dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), dataset));
+    return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalPoly(
+        grid, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), dataset));
   } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return std::unique_ptr<base::OperationMultipleEval>(
-        new base::OperationMultipleEvalPolyBoundary(grid,
-           dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree(),
-           dataset));
+    return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalPolyBoundary(
+        grid, dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree(), dataset));
   } else if (grid.getType() == base::GridType::ModPoly) {
-    return std::unique_ptr<base::OperationMultipleEval>(
-        new base::OperationMultipleEvalModPoly(grid,
-           dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree(), dataset));
+    return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalModPoly(
+        grid, dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree(), dataset));
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<base::OperationMultipleEval>(
-        new base::OperationMultipleEvalModBspline(grid,
-           dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(),
-           dataset));
+    return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalModBspline(
+        grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset));
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return std::unique_ptr<base::OperationMultipleEval>(
         new base::OperationMultipleEvalModWavelet(grid, dataset));
@@ -341,14 +312,12 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::G
         new base::OperationMultipleEvalLinearStretched(grid, dataset));
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
     return std::unique_ptr<base::OperationMultipleEval>(
-        new base::OperationMultipleEvalLinearStretchedBoundary(grid,
-           dataset));
+        new base::OperationMultipleEvalLinearStretchedBoundary(grid, dataset));
   } else if (grid.getType() == base::GridType::Periodic) {
     return std::unique_ptr<base::OperationMultipleEval>(
         new base::OperationMultipleEvalPeriodic(grid, dataset));
   } else {
-    throw base::factory_exception(
-      "OperationMultipleEval is not implemented for this grid type.");
+    throw base::factory_exception("OperationMultipleEval is not implemented for this grid type.");
   }
 }
 
@@ -364,31 +333,25 @@ std::unique_ptr<base::OperationNaiveEval> createOperationNaiveEval(base::Grid& g
         new base::OperationNaiveEvalLinearBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalLinearClenshawCurtis(
-             grid.getStorage()));
+        new base::OperationNaiveEvalLinearClenshawCurtis(grid.getStorage()));
   } else if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalBspline(grid.getStorage(),
-           dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalBspline(
+        grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalModBspline(grid.getStorage(),
-           dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalModBspline(
+        grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEval>(
         new base::OperationNaiveEvalModBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(
-               grid).getDegree()));
+            grid.getStorage(),
+            dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalBsplineBoundary(grid.getStorage(),
-           dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalBsplineBoundary(
+        grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEval>(
         new base::OperationNaiveEvalBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::Wavelet) {
     return std::unique_ptr<base::OperationNaiveEval>(
         new base::OperationNaiveEvalWavelet(grid.getStorage()));
@@ -399,55 +362,49 @@ std::unique_ptr<base::OperationNaiveEval> createOperationNaiveEval(base::Grid& g
     return std::unique_ptr<base::OperationNaiveEval>(
         new base::OperationNaiveEvalWaveletBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalFundamentalSpline(grid.getStorage(),
-           dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEval>(
         new base::OperationNaiveEvalModFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::Poly) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalPoly(
-             grid.getStorage(),
-             dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalPoly(
+        grid.getStorage(), dynamic_cast<base::PolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return std::unique_ptr<base::OperationNaiveEval>(
-        new base::OperationNaiveEvalPolyBoundary(grid.getStorage(),
-           dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalPolyBoundary(
+        grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return std::unique_ptr<base::OperationNaiveEval>(new base::OperationNaiveEvalModPoly(
+        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
   } else {
-    throw base::factory_exception(
-      "OperationNaiveEval is not implemented for this grid type.");
+    throw base::factory_exception("OperationNaiveEval is not implemented for this grid type.");
   }
 }
 
 std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradient(
-  base::Grid& grid) {
+    base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
-        new base::OperationNaiveEvalGradientBspline(grid.getStorage(),
-           dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
+        new base::OperationNaiveEvalGradientBspline(
+            grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBspline) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
-        new base::OperationNaiveEvalGradientModBspline(grid.getStorage(),
-           dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
+        new base::OperationNaiveEvalGradientModBspline(
+            grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientModBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(
-               grid).getDegree()));
+            grid.getStorage(),
+            dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientBsplineBoundary(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::Wavelet) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientWavelet(grid.getStorage()));
@@ -456,50 +413,43 @@ std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradie
         new base::OperationNaiveEvalGradientModWavelet(grid.getStorage()));
   } else if (grid.getType() == base::GridType::WaveletBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
-        new base::OperationNaiveEvalGradientWaveletBoundary(
-             grid.getStorage()));
+        new base::OperationNaiveEvalGradientWaveletBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalGradient>(
         new base::OperationNaiveEvalGradientModFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
   } else {
     throw base::factory_exception(
-      "OperationNaiveEvalGradient is not implemented for this grid type.");
+        "OperationNaiveEvalGradient is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian(
-  base::Grid& grid) {
+std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
-        new base::OperationNaiveEvalHessianBspline(grid.getStorage(),
-           dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
+        new base::OperationNaiveEvalHessianBspline(
+            grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBspline) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
-        new base::OperationNaiveEvalHessianModBspline(grid.getStorage(),
-           dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
+        new base::OperationNaiveEvalHessianModBspline(
+            grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianModBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(
-               grid).getDegree()));
+            grid.getStorage(),
+            dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianBsplineBoundary(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::Wavelet) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianWavelet(grid.getStorage()));
@@ -508,80 +458,65 @@ std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian
         new base::OperationNaiveEvalHessianModWavelet(grid.getStorage()));
   } else if (grid.getType() == base::GridType::WaveletBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
-        new base::OperationNaiveEvalHessianWaveletBoundary(
-             grid.getStorage()));
+        new base::OperationNaiveEvalHessianWaveletBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalHessian>(
         new base::OperationNaiveEvalHessianModFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
   } else {
     throw base::factory_exception(
-      "OperationNaiveEvalHessian is not implemented for this grid type.");
+        "OperationNaiveEvalHessian is not implemented for this grid type.");
   }
 }
 
 std::unique_ptr<base::OperationNaiveEvalPartialDerivative>
-createOperationNaiveEvalPartialDerivative(
-  base::Grid& grid) {
+createOperationNaiveEvalPartialDerivative(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeBspline(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBspline) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeModBspline(
-             grid.getStorage(),
-             dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
-        new
-           base::OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(
-               grid).getDegree()));
+        new base::OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
+            grid.getStorage(),
+            dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeBsplineBoundary(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(
-             grid.getStorage(),
-             dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::Wavelet) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
-        new base::OperationNaiveEvalPartialDerivativeWavelet(
-             grid.getStorage()));
+        new base::OperationNaiveEvalPartialDerivativeWavelet(grid.getStorage()));
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
-        new base::OperationNaiveEvalPartialDerivativeModWavelet(
-             grid.getStorage()));
+        new base::OperationNaiveEvalPartialDerivativeModWavelet(grid.getStorage()));
   } else if (grid.getType() == base::GridType::WaveletBoundary) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
-        new base::OperationNaiveEvalPartialDerivativeWaveletBoundary(
-             grid.getStorage()));
+        new base::OperationNaiveEvalPartialDerivativeWaveletBoundary(grid.getStorage()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return std::unique_ptr<base::OperationNaiveEvalPartialDerivative>(
         new base::OperationNaiveEvalPartialDerivativeModFundamentalSpline(
-             grid.getStorage(),
-             dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
+            grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
   } else {
     throw base::factory_exception(
-      "OperationNaiveEvalPartialDerivative is not implemented for "
-      "this grid type.");
+        "OperationNaiveEvalPartialDerivative is not implemented for "
+        "this grid type.");
   }
 }
 

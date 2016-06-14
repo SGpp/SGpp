@@ -81,13 +81,23 @@ class KernelMultTranspose {
         manager(manager),
         kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMultTranspose(queueBalancerMultTranpose) {
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
+      std::stringstream errorString;
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
+                     "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
+                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
+                  << std::endl;
+      throw sgpp::base::operation_exception(errorString.str());
+    }
+
     // initialize with same timing to enforce equal problem sizes in the
     // beginning
     this->deviceTimingMultTranspose = 1.0;
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    transGridBlockingSize = kernelConfiguration["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    transGridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = localSize * transGridBlockingSize;
   }
@@ -140,9 +150,21 @@ class KernelMultTranspose {
 
       size_t rangeSizeUnblocked = kernelEndGrid - kernelStartGrid;
 
+      //      if (verbose) {
+      //        std::cout << "device: " << device->platformId << " kernel from: " << kernelStartGrid
+      //                  << " to: " << kernelEndGrid << " -> range: " << rangeSizeUnblocked <<
+      //                  std::endl;
+      //      }
+
       if (verbose) {
-        std::cout << "device: " << device->platformId << " kernel from: " << kernelStartGrid
-                  << " to: " << kernelEndGrid << " -> range: " << rangeSizeUnblocked << std::endl;
+#pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
+        {
+          std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
+                    << " kernel from: " << kernelStartGrid << " to: " << kernelEndGrid
+                    << " -> range: " << rangeSizeUnblocked
+                    << " (with blocking: " << (rangeSizeUnblocked / this->transGridBlockingSize)
+                    << ")" << std::endl;
+        }
       }
 
       initGridBuffersTranspose(level, index, mask, offset, kernelStartGrid, kernelEndGrid);
@@ -206,13 +228,13 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_int), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_uint), &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_int), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -222,10 +244,8 @@ class KernelMultTranspose {
         cl_event clTiming;
 
         // enqueue kernels
-        size_t local = kernelConfiguration["LOCAL_SIZE"].getUInt();
-
         err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, 0,
-                                     &rangeSizeBlocked, &local, 0, nullptr, &clTiming);
+                                     &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
