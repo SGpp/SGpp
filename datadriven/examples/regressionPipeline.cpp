@@ -28,13 +28,16 @@ using sgpp::datadriven::DataMiningConfigurationLeastSquares;
 
 int main(int argc, char **argv) {
   // input
-  auto dataSource =
-      FileBasedDataSourceBuilder()
-          .withPath(
-              "/home/michael/Projects/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz")
-          .assemble();
-  std::cout << "reading input file: "
-            << "liver-disorders_normalized.arff.gz" << std::endl;
+  std::string path;
+  if (argc != 2) {
+    std::cout << "No or bad path given, aborting" << std::endl;
+    exit(-1);
+  } else {
+    path = std::string(argv[1]);
+  }
+
+  auto dataSource = FileBasedDataSourceBuilder().withPath(path).assemble();
+  std::cout << "reading input file: " << path << std::endl;
   auto dataset = dataSource->getNextSamples();
 
   // regression
