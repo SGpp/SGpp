@@ -71,7 +71,7 @@ class PDESolver {
    * @param myBoundingBox reference to a bounding box that describes the grid
    * @param level number of the regular's grid levels
    */
-  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level) = 0;
+  virtual void constructGrid(sgpp::base::BoundingBox& myBoundingBox, size_t level) = 0;
 
   /**
    * Sets the grid used in this BlackScholes Solver by an given serialized string
@@ -210,7 +210,7 @@ class PDESolver {
    * @param PointesPerDimension the distance between evaluation points
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  virtual void printGrid(sgpp::base::DataVector& alpha, double PointesPerDimension,
+  virtual void printGrid(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                          std::string tfilename) const;
 
   /**
@@ -224,7 +224,7 @@ class PDESolver {
    * @param GridArea the area in which the function should be plotted
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  virtual void printGridDomain(sgpp::base::DataVector& alpha, double PointesPerDimension,
+  virtual void printGridDomain(sgpp::base::DataVector& alpha, size_t PointesPerDimension,
                                sgpp::base::BoundingBox& GridArea, std::string tfilename) const;
 
   /**

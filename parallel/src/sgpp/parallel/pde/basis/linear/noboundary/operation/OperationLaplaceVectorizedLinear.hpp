@@ -98,6 +98,10 @@ class OperationLaplaceVectorizedLinear : public sgpp::base::OperationMatrix {
    */
   virtual ~OperationLaplaceVectorizedLinear();
 
+#if defined(__MIC__)
+  void mic_mult(size_t process_i_start, size_t process_i_end, sgpp::base::DataVector& result);
+#endif
+
   virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   virtual void reset();

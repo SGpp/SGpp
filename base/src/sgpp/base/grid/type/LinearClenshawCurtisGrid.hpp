@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -58,7 +57,7 @@ class LinearClenshawCurtisGrid : public Grid {
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
-  void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
  protected:
   /// grid generator

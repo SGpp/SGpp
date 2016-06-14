@@ -39,13 +39,11 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
 
   double operator()(GridStorage& storage, size_t seq) const override;
 
-
   double start() const override;
 
+  size_t getRefinementsNum() const override;
 
-  size_t getRefinementsNum() const;
-
-  double getRefinementThreshold() const;
+  double getRefinementThreshold() const override;
 
  protected:
   /// pointer to the vector that stores the alpha values

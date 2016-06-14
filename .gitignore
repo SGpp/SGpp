@@ -56,3 +56,9 @@ doc/xml
 #ignoring code coverage files
 coverage.info
 coverage
+
+# ignoring orig files
+*.orig
+
+# ignoring uq tests
+datadriven/tests/uq/

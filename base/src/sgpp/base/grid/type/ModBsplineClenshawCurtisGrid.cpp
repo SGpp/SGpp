@@ -10,48 +10,37 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
-ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage),
-  degree(1 << 16) {
+ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr)
+    : Grid(istr), generator(storage), degree(1 << 16) {
   istr >> degree;
   basis_.reset(new SBsplineModifiedClenshawCurtisBase(degree));
 }
 
+ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim, size_t degree)
+    : Grid(dim),
+      generator(storage),
+      degree(degree),
+      basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {}
 
-ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
-    size_t degree) :
-  Grid(dim),
-  generator(storage),
-  degree(degree),
-  basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {
-}
-
-ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {
-}
+ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {}
 
 sgpp::base::GridType ModBsplineClenshawCurtisGrid::getType() {
   return sgpp::base::GridType::ModBsplineClenshawCurtis;
 }
 
-const SBasis& ModBsplineClenshawCurtisGrid::getBasis() {
-  return *basis_;
-}
+const SBasis& ModBsplineClenshawCurtisGrid::getBasis() { return *basis_; }
 
-size_t ModBsplineClenshawCurtisGrid::getDegree() {
-  return this->degree;
-}
+size_t ModBsplineClenshawCurtisGrid::getDegree() { return this->degree; }
 
 std::unique_ptr<Grid> ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(istr));
 }
 
-void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << degree << std::endl;
 }
 
@@ -59,9 +48,7 @@ void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& ModBsplineClenshawCurtisGrid::getGenerator() {
-  return generator;
-}
+GridGenerator& ModBsplineClenshawCurtisGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp

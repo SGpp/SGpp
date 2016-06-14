@@ -27,6 +27,12 @@ class OCLPlatformWrapper {
                      const std::vector<cl_device_id> &deviceIds,
                      const std::vector<std::string> &deviceName);
 
+  OCLPlatformWrapper(const OCLPlatformWrapper &original);
+
+  OCLPlatformWrapper &operator=(const OCLPlatformWrapper &other) = delete;
+
+  ~OCLPlatformWrapper();
+
   size_t getDeviceCount();
 };
 }  // namespace base

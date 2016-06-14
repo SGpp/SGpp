@@ -72,16 +72,20 @@ class HDMRAnalytic(object):
         self.__estimation = AnalyticEstimationStrategy()
 
     def __computeMean(self):
-        print "estimate mean:",
+        if self._verbose:
+            print "estimate mean: ",
         self.__E, _ = self.__estimation.mean(self.__grid, self.__alpha,
                                              self.__U, self.__T)
-        print "done"
+        if self._verbose:
+            print self.__E
 
     def __computeVariance(self):
-        print "estimate variance:",
+        if self._verbose:
+            print "estimate variance: ",
         self.__V, _ = self.__estimation.var(self.__grid, self.__alpha,
                                             self.__U, self.__T, self.__E)
-        print "done"
+        if self._verbose:
+            print self.__V
 
     def getSortedPermutations(self, keys):
         """
@@ -120,7 +124,7 @@ class HDMRAnalytic(object):
                 dd = [d for d in self.__U.getTupleIndices() if d not in perm]
 
                 if self._verbose:
-                    print "Explore %s, Integrate: %s" % (perm, dd),
+                    print "explore %s, Integrate: %s" % (perm, dd),
 
                 # -----------------------------------------------
                 # Make sure that perm and dd are disjoint sets
@@ -211,7 +215,7 @@ class HDMRAnalytic(object):
         # higher order terms terms
         for sign, pperm in fi['var']:
             grid, alpha = self.__expectation_funcs[pperm]
-            p = DataVector([x[ix] for ix in pperm])
+            p = np.array([x[ix] for ix in pperm])
             val = evalSGFunction(grid, alpha, p)
             s += sign * val
 
@@ -293,7 +297,7 @@ class HDMRAnalytic(object):
             vis[perm] = vi
 
             if self._verbose:
-                print "Estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
+                print "estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
 
             # add lower order components
             fi = self.__anova_components[perm]

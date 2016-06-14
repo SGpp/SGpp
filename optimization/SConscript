@@ -3,164 +3,44 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import os
-import fnmatch
-import subprocess
+import Helper
+import ModuleHelper
 
-Import("env")
-Import("BUILD_DIR")
-Import("PYSGPP_BUILD_PATH")
-Import("moduleName")
-Import("libraryTargetList")
-Import("installTargetList")
-Import("exampleTargetList")
-Import("config")
-Import('headerSourceList')
-Import('headerDestList')
-Import('lintAction')
+def checkForLibrary(name, flag, headers, libraries):
+  if type(headers) is str: headers = [headers]
+  if type(libraries) is str: libraries = [libraries]
+  if libraries is None: libraries = []
+  
+  if (flag not in config.env) or (not config.env[flag]):
+    Helper.printInfo("sgpp::optimization will be compiled without {} (flag not set).".format(name))
+  elif not config.CheckHeader(headers, language="C++"):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary headers {} were not found.".format(headers))
+  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary libraries {} were not found.".format(libraries))
+  else:
+    Helper.printInfo("sgpp::optimization will be compiled with {}.".format(name))
+    additionalDependencies.extend(libraries)
+    env["CPPDEFINES"][flag] = "1"
+
+Import("*")
 
 moduleDependencies = ["sgppbase"]
-Export('moduleDependencies')
+additionalDependencies = []
 
-libname = "sgpp%s" % moduleName
-if env['USE_STATICLIB']:
-    libname += "static"
-    for i, _ in enumerate(moduleDependencies):
-        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
-Export('libname')
-#config = env.Configure()
+checkForLibrary("UMFPACK",   "USE_UMFPACK",   "suitesparse/umfpack.h", "umfpack")
+checkForLibrary("Eigen",     "USE_EIGEN",     "eigen3/Eigen/Dense",    None)
+checkForLibrary("Armadillo", "USE_ARMADILLO", "armadillo",             "armadillo")
+checkForLibrary("Gmm++",     "USE_GMMPP",     "gmm/gmm.h",             None)
 
-if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
-    if config.CheckHeader("suitesparse/umfpack.h", language="C++") and \
-            config.CheckLib("umfpack", language="C++"):
-        moduleDependencies.append("umfpack")
-        env["CPPDEFINES"]["USE_UMFPACK"] = "1"
-        print "sgpp::optimization will be compiled with UMFPACK."
-    else:
-        env["CPPDEFINES"]["DONT_USE_UMFPACK"] = "1"
-        print "sgpp::optimization will be compiled without UMFPACK (not found)."
-else:
-    print "sgpp::optimization will be compiled without UMFPACK."
+module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
-if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
-    if config.CheckHeader("eigen3/Eigen/Dense", language="C++"):
-        env["CPPDEFINES"]["USE_EIGEN"] = "1"
-        print "sgpp::optimization will be compiled with Eigen."
-    else:
-        env["CPPDEFINES"]["DONT_USE_EIGEN"] = "1"
-        print "sgpp::optimization will be compiled without Eigen (not found)."
-else:
-    print "sgpp::optimization will be compiled without Eigen."
-
-if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
-    if config.CheckHeader("armadillo", language="C++") and \
-            config.CheckLib("armadillo", language="C++"):
-        moduleDependencies.append("armadillo")
-        env["CPPDEFINES"]["USE_ARMADILLO"] = "1"
-        print "sgpp::optimization will be compiled with Armadillo."
-    else:
-        env["CPPDEFINES"]["DONT_USE_ARMADILLO"] = "1"
-        print "sgpp::optimization will be compiled without Armadillo (not found)."
-else:
-    print "sgpp::optimization will be compiled without Armadillo."
-
-if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
-    if config.CheckHeader("gmm/gmm.h", language="C++"):
-        env["CPPDEFINES"]["USE_GMMPP"] = "1"
-        print "sgpp::optimization will be compiled with Gmm++."
-    else:
-        env["CPPDEFINES"]["DONT_USE_GMMPP"] = "1"
-        print "sgpp::optimization will be compiled without Gmm++ (not found)."
-else:
-    print "sgpp::optimization will be compiled without Gmm++."
-
-
-
-dependencies = ["base"]
-
-cpps = []
-hpps = []
-objs = []
-
-for currentFolder, subdirNames, fileNames in os.walk("src"):
-    for fileName in fnmatch.filter(fileNames, "*.cpp"):
-        cpp = os.path.join(currentFolder, fileName)
-        cpps.append(cpp)
-        objs.append(env.SharedObject(cpp))
-    if currentFolder != 'src':
-      for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        hpp = os.path.join(currentFolder, fileName)
-        hpps.append(hpp)
-        headerSourceList.append(os.path.join(moduleName, hpp))
-        headerDestList.append(hpp.split(os.sep, 1)[1])
-
-if env['USE_STATICLIB']:
-    libsuffix = env['LIBSUFFIX']
-    # building static libraries is the same for unix and windows platforms
-    lib = env.StaticLibrary(target=libname,
-                            source=objs,
-                            LIBPATH=BUILD_DIR,
-                            LIBS=moduleDependencies)
-else:
-    # building of shared libraries differs
-    libsuffix = env['SHLIBSUFFIX']
-    lib = env.SharedLibrary(target=libname,
-                            source=objs,
-                            LIBPATH=BUILD_DIR,
-                            LIBS=moduleDependencies)
-
-for lib_str in moduleDependencies:
-    if lib_str.startswith("sgpp"):
-        env.Depends(lib, os.path.join("#", BUILD_DIR.path,
-                                      "%s%s%s" % (env["LIBPREFIX"],
-                                                  lib_str,
-                                                  libsuffix)))
-
-libInstall = env.Install(BUILD_DIR, lib)
-
-# build examples
+module.scanSource()
+module.buildLibrary()
+module.generatePythonDocstrings()
 if env["ARCH"] != "mic":
-    example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
-    for fileName in os.listdir("examples"):
-        if fnmatch.fnmatch(fileName, "*.cpp"):
-            cpp = os.path.join("examples", fileName)
-            cpps.append(cpp)
-            example = example_env.Program(source=cpp)
-            example_env.Requires(example, libInstall)
-            exampleTargetList.append(example)
-        elif fnmatch.fnmatch(fileName, "*.hpp"):
-            hpp = os.path.join("examples", fileName)
-            hpps.append(hpp)
-
-# build unit tests
-if env['COMPILE_BOOST_TESTS']:
-    Import('boostTestTargetList')
-    test_env = env.Clone()
-    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework"])
-    testObjects = []
-    for fileName in os.listdir("tests"):
-        if fnmatch.fnmatch(fileName, "*.cpp"):
-            cpp = os.path.join("tests", fileName)
-            cpps.append(cpp)
-            testObjects += [test_env.Object(source=cpp)]
-        elif fnmatch.fnmatch(fileName, "*.hpp"):
-            hpp = os.path.join("tests", fileName)
-            hpps.append(hpp)
-    if len(testObjects) > 0:
-        fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
-                (".exe" if env['PLATFORM'] == 'win32' else '')
-        test = test_env.Program(fileName, testObjects)
-        test_env.Requires(test, libInstall)
-        if env['RUN_BOOST_TESTS']:
-            testRun = test_env.BoostTest(fileName + "_run", source=fileName)
-            boostTestTargetList.append(testRun)
-
-# run cpplint
-if env['RUN_CPPLINT']:
-    for path in cpps + hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(lib, lintCommand)
-
-libraryTargetList.append(lib)
-installTargetList.append(libInstall)
+  module.buildExamples()
+module.buildBoostTests()
+module.runBoostTests()
+module.runCpplint()

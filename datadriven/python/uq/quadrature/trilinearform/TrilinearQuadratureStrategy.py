@@ -36,7 +36,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @return: DataMatrix
         """
         print "# evals: %i^2 * %i = %i" % (len(gpsi), len(gpsk), len(gpsi) ** 2 * len(gpsk))
-        A = DataMatrix(len(gpsi), len(gpsj))
+        A = np.ndarray((len(gpsi), len(gpsj)))
         err = 0.
         # run over all rows
         for i, gpi in enumerate(gpsi):
@@ -47,8 +47,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
                                                          gpi, basisi,
                                                          gpj, basisj)
                 # get the overall contribution in the current dimension
-                value = alphak.dotProduct(b)
-                A.set(i, j, value)
+                A[i, j] = alphak.array().dot(b)
 
                 # error statistics
                 err += erri
@@ -67,10 +66,9 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @param basisi: SG++ Basis for grid indices i
         @param gpj: HashGridIndex
         @param basisj: SG++ Basis for grid indices j
-        @return DataVector
+        @return numpy array
         """
-        b = DataVector(len(gpsk))
-        b.setAll(1.0)
+        b = np.ones(len(gpsk))
         err = 0.
         # run over all entries
         for k, gpk in enumerate(gpsk):

@@ -9,50 +9,36 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage),
-  degree(1 << 16) {
+FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr)
+    : Grid(istr), generator(storage), degree(1 << 16) {
   istr >> degree;
   basis_.reset(new SFundamentalSplineBase(degree));
 }
 
+FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree)
+    : Grid(dim), generator(storage), degree(degree), basis_(new SFundamentalSplineBase(degree)) {}
 
-FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
-  Grid(dim),
-  generator(storage),
-  degree(degree),
-  basis_(new SFundamentalSplineBase(degree)) {
-}
-
-FundamentalSplineGrid::~FundamentalSplineGrid() {
-}
+FundamentalSplineGrid::~FundamentalSplineGrid() {}
 
 sgpp::base::GridType FundamentalSplineGrid::getType() {
   return sgpp::base::GridType::FundamentalSpline;
 }
 
-const SBasis& FundamentalSplineGrid::getBasis() {
-  return *basis_;
-}
+const SBasis& FundamentalSplineGrid::getBasis() { return *basis_; }
 
-size_t FundamentalSplineGrid::getDegree() {
-  return this->degree;
-}
+size_t FundamentalSplineGrid::getDegree() { return this->degree; }
 
 std::unique_ptr<Grid> FundamentalSplineGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new FundamentalSplineGrid(istr));
 }
 
-void FundamentalSplineGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void FundamentalSplineGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << degree << std::endl;
 }
 
@@ -60,9 +46,7 @@ void FundamentalSplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& FundamentalSplineGrid::getGenerator() {
-  return generator;
-}
+GridGenerator& FundamentalSplineGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp

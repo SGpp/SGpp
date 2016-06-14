@@ -8,36 +8,24 @@
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
-
 namespace sgpp {
 namespace base {
 
-LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) :
-  Grid(istr),
-  generator(storage, boundaryLevel),
-  boundaryLevel(0) {
+LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr)
+    : Grid(istr), generator(storage), boundaryLevel(0) {
   istr >> boundaryLevel;
+  generator.setBoundaryLevel(boundaryLevel);
 }
 
-LinearBoundaryGrid::LinearBoundaryGrid(size_t dim, level_t boundaryLevel) :
-  Grid(dim),
-  generator(storage, boundaryLevel),
-  boundaryLevel(boundaryLevel) {
-}
+LinearBoundaryGrid::LinearBoundaryGrid(size_t dim, level_t boundaryLevel)
+    : Grid(dim), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {}
 
-LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB,
-                                       level_t boundaryLevel) :
-  Grid(BB),
-  generator(storage, boundaryLevel),
-  boundaryLevel(boundaryLevel) {
-}
+LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel)
+    : Grid(BB), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {}
 
-LinearBoundaryGrid::~LinearBoundaryGrid() {
-}
+LinearBoundaryGrid::~LinearBoundaryGrid() {}
 
-sgpp::base::GridType LinearBoundaryGrid::getType() {
-  return sgpp::base::GridType::LinearBoundary;
-}
+sgpp::base::GridType LinearBoundaryGrid::getType() { return sgpp::base::GridType::LinearBoundary; }
 
 const SBasis& LinearBoundaryGrid::getBasis() {
   static SLinearBoundaryBase basis;
@@ -48,8 +36,8 @@ std::unique_ptr<Grid> LinearBoundaryGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new LinearBoundaryGrid(istr));
 }
 
-void LinearBoundaryGrid::serialize(std::ostream& ostr) {
-  this->Grid::serialize(ostr);
+void LinearBoundaryGrid::serialize(std::ostream& ostr, int version) {
+  this->Grid::serialize(ostr, version);
   ostr << boundaryLevel << std::endl;
 }
 
@@ -57,10 +45,7 @@ void LinearBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator& LinearBoundaryGrid::getGenerator() {
-  return generator;
-}
-
+GridGenerator& LinearBoundaryGrid::getGenerator() { return generator; }
 
 }  // namespace base
 }  // namespace sgpp

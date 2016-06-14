@@ -84,7 +84,7 @@ HestonSolver::~HestonSolver() {
   }
 }
 
-void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
+void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
   this->dim = BoundingBox.getDimensions();
 
   if ((dim % 2) != 0)
@@ -94,7 +94,7 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
         "grid must be divisible by two.");
 
   this->numAssets = this->dim / 2;
-  this->levels = level;
+  this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
@@ -296,7 +296,7 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize,
     numIESteps = NumImEul;
 
     solver::Euler* myEuler =
-        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, this->myScreen);
     solver::CrankNicolson* myCN =
         new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
@@ -385,15 +385,15 @@ double HestonSolver::get1DEuroCallPayoffValue(double assetValue, double strike) 
 
 void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
                                       size_t maxCGIterations, double epsilonCG,
-                                      base::DataVector& alpha, bool verbose, bool generateAnimation,
-                                      size_t numEvalsAnimation) {
+                                      base::DataVector& alpha, bool verbose,
+                                      bool generateAnimation) {
   throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
                                       size_t maxCGIterations, double epsilonCG,
-                                      base::DataVector& alpha, bool verbose, bool generateAnimation,
-                                      size_t numEvalsAnimation) {
+                                      base::DataVector& alpha, bool verbose,
+                                      bool generateAnimation) {
   throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
@@ -920,7 +920,7 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, double ma
     alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], dblFuncValues[1], this->volvols->get(0),
                                         this->thetas->get(0), this->kappas->get(0),
                                         this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
@@ -955,7 +955,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, double
     alpha[i] = EvaluateHestonPriceExactPut(
         dblFuncValues[0], dblFuncValues[1], this->volvols->get(0), this->thetas->get(0),
         this->kappas->get(0), this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
@@ -1003,7 +1003,7 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v) {
 
   this->myGrid = gridTemp;
 
-  delete boundaries1d;
+  delete[] boundaries1d;
   delete grid1d;
   delete alphaHeston;
   delete alphaBS;
@@ -1024,7 +1024,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
     alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], v, this->volvols->get(0),
                                         this->thetas->get(0), this->kappas->get(0),
                                         this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
@@ -1046,7 +1046,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
 
     alpha[i] = myBSSolver->getAnalyticSolution1D(dblFuncValues[0], true, maturity, sigma, this->r,
                                                  this->dStrike);
-    delete dblFuncValues;
+    delete[] dblFuncValues;
   }
 
   op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);

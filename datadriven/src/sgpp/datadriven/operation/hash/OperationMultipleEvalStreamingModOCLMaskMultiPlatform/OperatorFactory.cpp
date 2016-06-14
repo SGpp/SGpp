@@ -6,7 +6,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include "Configuration.hpp"
 #include "OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
 

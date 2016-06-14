@@ -71,7 +71,7 @@ want to contribute to SG++ or who are involved in its
 development. There, the styleguide can be found, references to useful
 tools and utilities are provided, and a few current issues are gathered.
 
-You can find these pages and more in the menu to the left.
+You can find these pages and more in the <b>menu to the left</b>.
 If you do not see a menu, JavaScript is deactivated. 
 
 Though we do not guarantee for anything, and though we do not have the
@@ -96,14 +96,15 @@ Please cite one of the corresponding publications (BibTeX snippets below):
 - For a general reference to SG++:
   - D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 - For spatially adaptive refinement:
-  - D. Pfl&uuml;ger, Spatially Adaptive Refinement. In J. Garcke and M. Griebel (ed.), Sparse Grids and Applications of Lecture Notes in Computational Science and Engineering, p. 243–262. Springer, Berlin Heidelberg, October 2012.
+  - D. Pfl&uuml;ger, Spatially Adaptive Refinement. In J. Garcke and M. Griebel (ed.), Sparse Grids and Applications of Lecture Notes in Computational Science and Engineering, p. 243&ndash;262. Springer, Berlin Heidelberg, October 2012.
 - For data mining:
-  - D. Pflüger, B. Peherstorfer and H.-J. Bungartz: Spatially adaptive sparse grids for high-dimensional data-driven problems. In Journal of Complexity, Volume 26(5), p. 508––522. Academic Press, Inc., Orlando, FL, USA, October 2010. published online April 2010.
+  - D. Pfl&uuml;ger, B. Peherstorfer and H.-J. Bungartz: Spatially adaptive sparse grids for high-dimensional data-driven problems. In Journal of Complexity, Volume 26(5), p. 508&ndash;522. Academic Press, Inc., Orlando, FL, USA, October 2010. Published online April 2010.
 - For clustering:
-  - B. Peherstorfer, D. Pflüger and H.-J. Bungartz: Clustering Based on Density Estimation with Sparse Grids. In KI 2012: Advances in Artificial Intelligence, Volume 7526 of Lecture Notes in Computer Science. Springer, October 2012.
+  - B. Peherstorfer, D. Pfl&uuml;ger and H.-J. Bungartz: Clustering Based on Density Estimation with Sparse Grids. In KI 2012: Advances in Artificial Intelligence, Volume 7526 of Lecture Notes in Computer Science. Springer, October 2012.
 - For parallelization:
-  - A. Heinecke and D. Pflüger: Multi- and Many-Core Data Mining with Adaptive Sparse Grids. In Proceedings of the 8th ACM International Conference on Computing Frontiers, p. 29:1–29:10. ACM, New York, USA, May 2011.
-
+  - A. Heinecke and D. Pfl&uuml;ger: Multi- and Many-Core Data Mining with Adaptive Sparse Grids. In Proceedings of the 8th ACM International Conference on Computing Frontiers, p. 29:1&ndash;29:10. ACM, New York, USA, May 2011.
+- For B-splines or optimization:
+  - J. Valentin and D. Pfl&uuml;ger: Hierarchical Gradient-Based Optimization with B-Splines on Sparse Grids. In J. Garcke, D. Pfl&uuml;ger (ed.), Sparse Grids and Applications &ndash; Stuttgart 2014, Volume 109 of Lecture Notes in Computational Science and Engineering, pp. 315&ndash;336. Springer, March 2016.
 @subsection mainpage_bibtex BibTeX
 @verbatim
 @book{pflueger10spatially,
@@ -164,6 +165,17 @@ Please cite one of the corresponding publications (BibTeX snippets below):
     title = {Multi- and Many-Core Data Mining with Adaptive Sparse Grids},
     year = {2011},
     ISBN = {9781450306980}
+}
+@inproceedings{valentin16hierarchical,
+    author = {Valentin, Julian and Pfl{\"{u}}ger, Dirk},
+    title = {Hierarchical Gradient-Based Optimization with B-Splines on Sparse Grids},
+    editor = {Garcke, Jochen and Pfl{\"{u}}ger, Dirk},
+    booktitle = {Sparse Grids and Applications -- Stuttgart 2014},
+    series = {Lecture Notes in Computational Science and Engineering},
+    volume = {109},
+    publisher = {Springer},
+    year = {2016},
+    pages = {315--336}
 }
 @endverbatim
 */

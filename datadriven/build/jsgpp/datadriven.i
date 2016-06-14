@@ -7,6 +7,9 @@
 #include <sgpp/solver/TypesSolver.hpp>
 %}
 
+// base class is not exported from the configuration
+%warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -26,7 +29,8 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+// TODO(valentjn): can only include if issue #7 is fixed
+//%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #endif
 
 //%apply std::string *INPUT { std::string& istr };

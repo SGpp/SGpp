@@ -34,7 +34,7 @@ class TestsetConfiguration {
 
 class LearnerScenario : public json::JSON {
  private:
-  bool isInitialized;
+  bool initialized;
   //
   //  // variables for the scenario
   //  double lambda;
@@ -62,6 +62,8 @@ class LearnerScenario : public json::JSON {
                   solver::SLESolverConfiguration SLESolverConfigFinal,
                   base::AdpativityConfiguration adaptConfig,
                   datadriven::TestsetConfiguration testsetConfiguration);
+
+  bool isInitialized() const;
 
   void setDatasetFileName(std::string datasetFileName);
 

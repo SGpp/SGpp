@@ -3,6 +3,7 @@ from scipy.stats import lognorm
 from Dist import Dist
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 
 class Lognormal(Dist):
@@ -19,6 +20,8 @@ class Lognormal(Dist):
 
         self.__a = a
         self.__b = b
+        self.__linearTrans = LinearTransformation(self._dist.cdf(self.__a),
+                                                  self._dist.cdf(self.__b))
 
     @classmethod
     def by_range(cls, *args, **kws):
@@ -42,13 +45,24 @@ class Lognormal(Dist):
         return cls(mu, sigma, a=a, b=b, *args, **kws)
 
     def pdf(self, x):
-        return self._dist.pdf(x)
+        if self.__a <= x <= self.__b:
+            return self._dist.pdf(x)
+        else:
+            return 0.0;
 
     def cdf(self, x):
-        return self._dist.cdf(x)
+        if self.__a <= x <= self.__b:
+            x_unit = self._dist.cdf(x)
+            return self.__linearTrans.probabilisticToUnit(value)
+        else:
+            raise AttributeError("logNormal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
 
     def ppf(self, x):
-        return self._dist.ppf(x)
+        if 0.0 <= x <= 1.0:
+            x_unit = self.__linearTrans.unitToProbabilistic(x)
+            return self._dist.ppf(x_unit)
+        else:
+            raise AttributeError("logNormal: ppf - x out of range [%g, %g]" % (self.__a, self.__b))
 
     def mean(self):
         return self._dist.mean()
