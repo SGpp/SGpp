@@ -369,6 +369,10 @@ class KernelDensityMult {
         if (kernelNode.contains("USE_IMPLICIT") == false) {
           kernelNode.addIDAttr("USE_IMPLICIT", true);
         }
+
+        if (kernelNode.contains("USE_FABS") == false) {
+          kernelNode.addIDAttr("USE_FABS", true);
+        }
       }
     }
   }
