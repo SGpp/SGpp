@@ -192,6 +192,32 @@ def getNonExistingHierarchicalAncestors(grid, gp):
     return ans
 
 
+def haveOverlappingSupport(gpi, gpj):
+    idim = 0
+    numDims = gpi.getDimension()
+
+    while idim < numDims:
+        # get level index
+        lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
+        ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
+
+        # check if they have overlapping support
+        xlowi, xhighi = getBoundsOfSupport(lid, iid)
+        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
+
+        xlow = max(xlowi, xlowj)
+        xhigh = min(xhighi, xhighj)
+
+        # different level but not ancestors
+        if xlow >= xhigh:
+            break
+
+        idim += 1
+
+    # check whether the supports are overlapping
+    # in all dimensions
+    return idim == numDims
+
 
 # def insertHierarchicalAncestors(grid, gp):
 #     """

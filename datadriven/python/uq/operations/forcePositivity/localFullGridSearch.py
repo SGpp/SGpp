@@ -5,9 +5,161 @@ import numpy as np
 from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
-    isHierarchicalAncestor
+    isHierarchicalAncestor, haveOverlappingSupport
 from itertools import product, combinations, permutations
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotGrid2d
+
+
+class LocalFullGrid(object):
+    
+    def __init__(self, grid, gp, fullGridLevels):
+        self.grid = grid
+        self.gp = gp
+        self.level = getLevel(gp)
+        self.index = getIndex(gp)
+        self.fullGridLevels = fullGridLevels
+        self.numDims = gp.getDimension()
+
+        self.fullGrid = None
+
+        self.updateNumLocalGridPoints()
+
+    @staticmethod
+    def copy(localFullGrid):
+        numDims = localFullGrid.numDims
+        gp = HashGridIndex(numDims)
+        for idim in xrange(numDims):
+            gp.set(idim,
+                   localFullGrid.level[idim],
+                   localFullGrid.index[idim])
+        
+        fullGrid = LocalFullGrid(localFullGrid.grid, gp, np.array(localFullGrid.fullGridLevels))
+        
+        return fullGrid
+
+    def getLevelIndex(self):
+        return tuple(self.level), tuple(self.index)
+
+        
+    def decrementLevel(self, idim, offset=1):
+        self.fullGridLevels[idim] -= offset
+        self.updateNumLocalGridPoints()
+
+    def setFullGridLevel(self, idim, value):
+        self.fullGridLevels[idim] = value
+        self.updateNumLocalGridPoints()
+
+    def updateNumLocalGridPoints(self):
+        self.numLocalGridPoints = np.prod([2 ** ilevel - 1 for ilevel in self.fullGridLevels])
+
+    def contains(self, gpj):
+        # to contain the local grid point we need to check two things
+        # 1. they need to have a hierarchical dependency gpi < gpj
+        # 2. the local levels of gpi in the overlapping region
+        #    must be at least the same as the ones of gpj in the same region 
+        
+        return isHierarchicalAncestor(self.grid, self.gp, gpj.gp) and \
+            np.all(gpj.level + gpj.fullGridLevels <= self.level + self.fullGridLevels)
+
+    
+    def overlap(self, gpj):
+        if haveOverlappingSupport(self.gp, gpj.gp):
+            # compute outer intersection
+            levelOuter = np.vstack((self.level, gpj.level)).max(axis=0)
+            return np.all(levelOuter <= self.level + self.fullGridLevels - 1) and \
+                np.all(levelOuter <= gpj.level + gpj.fullGridLevels - 1)
+        else:
+            return False
+
+
+    def split(self, idim):
+        # split the current grid up into three new ones
+        gs = self.grid.getStorage()
+        
+        # central grid
+        centralFullGrid = LocalFullGrid.copy(self)
+        centralFullGrid.setFullGridLevel(idim, 1)
+        
+        # left grid
+        gpLeft = HashGridIndex(self.gp)
+        gs.left_child(gpLeft, idim)
+        fullGridLevels = np.array(self.fullGridLevels)
+        fullGridLevels[idim] -= 1
+        leftFullGrid = LocalFullGrid(self.grid, gpLeft, fullGridLevels)
+        
+        # right grid
+        gpRight = HashGridIndex(self.gp)
+        gs.right_child(gpRight, idim)
+        fullGridLevels = np.array(self.fullGridLevels)
+        fullGridLevels[idim] -= 1
+        rightFullGrid = LocalFullGrid(self.grid, gpRight, fullGridLevels)
+        
+        return centralFullGrid, leftFullGrid, rightFullGrid
+
+
+    def computeAnisotropicFullGrid(self):
+        if self.fullGrid is None:
+            globalGrid = self.computeGlobalFullGrid()
+            self.fullGrid = self.transformToReferenceGrid(globalGrid)
+
+        return self.fullGrid
+
+
+    def computeGlobalFullGrid(self):
+        # list 1d grid points
+        candidates = {}
+        for idim in xrange(self.numDims):
+            candidates[idim] = []
+
+        # Generate 1D grids
+        for idim in xrange(self.numDims):
+            for level in xrange(1, self.fullGridLevels[idim] + 1):
+                for index in xrange(1, 2 ** level + 1, 2):
+                    candidates[idim].append((level, index))
+
+        # iterate over cross product
+        globalGrid = {}
+        levels = np.ndarray(self.numDims)
+        indices = np.ndarray(self.numDims)
+        for values in product(*candidates.values()):
+            for idim, (level, index) in enumerate(values):
+                levels[idim] = level
+                indices[idim] = index
+            gp = tuple(levels), tuple(indices)
+            if gp not in globalGrid:
+                globalGrid[gp] = True
+        
+        return globalGrid
+    
+
+    def transformToReferenceGrid(self, globalGrid):
+        assert self.numLocalGridPoints == len(globalGrid)
+
+        # 1. set the root node of the local grid
+        localRoot = {'level': self.level,
+                     'index': self.index}
+
+        # 2. shift and scale the global grid to the local one
+        localGrid = {}
+
+        locallevels = np.ndarray(self.numDims, dtype="int")
+        localindices = np.ndarray(self.numDims, dtype="int")
+
+        for levelsGlobal, indicesGlobal in globalGrid.keys():
+            gpdd = HashGridIndex(self.numDims)
+            for idim in xrange(self.numDims):
+                lg, ig = levelsGlobal[idim], indicesGlobal[idim]
+                llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
+
+                # compute level and index of local grid
+                # 1 -> level index of global root node, always the same
+                locallevels[idim] = int(lg + (llroot - 1))
+                localindices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
+                gpdd.set(idim, locallevels[idim], localindices[idim])
+
+            localGrid[(tuple(locallevels), tuple(localindices))] = gpdd
+
+        return localGrid
 
 
 class LocalFullGridCandidates(CandidateSet):
@@ -24,17 +176,16 @@ class LocalFullGridCandidates(CandidateSet):
 
         self.globalGrids = {}
         self.verbose = True
-        self.plot = True
+        self.plot = False
         self.plotSubtract = False
-
+        self.reduceLocalGrids = False
 
     def findInnerIntersection(self, gpi, gpj):
         # find maximum level
-        numDims = gpi.getDimension()
-        level = np.zeros(numDims, dtype="int")
-        index = np.zeros(numDims, dtype="int")
+        level = np.zeros(self.numDims, dtype="int")
+        index = np.zeros(self.numDims, dtype="int")
 
-        for d in xrange(numDims):
+        for d in xrange(self.numDims):
             if gpi.getLevel(d) < gpj.getLevel(d):
                 level[d] = gpi.getLevel(d)
                 index[d] = gpi.getIndex(d)
@@ -44,13 +195,13 @@ class LocalFullGridCandidates(CandidateSet):
 
         return tuple(level), tuple(index)
 
+
     def findOuterIntersection(self, gpi, gpj):
         # find maximum level
-        numDims = gpi.getDimension()
-        level = np.zeros(numDims, dtype="int")
-        index = np.zeros(numDims, dtype="int")
+        level = np.zeros(self.numDims, dtype="int")
+        index = np.zeros(self.numDims, dtype="int")
 
-        for d in xrange(numDims):
+        for d in xrange(self.numDims):
             if gpi.getLevel(d) > gpj.getLevel(d):
                 level[d] = gpi.getLevel(d)
                 index[d] = gpi.getIndex(d)
@@ -60,30 +211,6 @@ class LocalFullGridCandidates(CandidateSet):
 
         return tuple(level), tuple(index)
 
-
-    def haveOverlappingSupport(self, gpi, gpj):
-        idim = 0
-        while idim < self.numDims:
-            # get level index
-            lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
-            ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
-
-            # check if they have overlapping support
-            xlowi, xhighi = getBoundsOfSupport(lid, iid)
-            xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-            xlow = max(xlowi, xlowj)
-            xhigh = min(xhighi, xhighj)
-
-            # different level but not ancestors
-            if xlow >= xhigh:
-                break
-
-            idim += 1
-
-        # check whether the supports are overlapping
-        # in all dimensions
-        return idim == self.numDims
 
 #     @profile
     def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, gpi, gpsj, overlap, grid):
@@ -95,7 +222,7 @@ class LocalFullGridCandidates(CandidateSet):
         for j, gpj in gpsj.items():
             if not isHierarchicalAncestor(grid, gpi, gpj):
                 comparisonCosts += 1
-                if self.haveOverlappingSupport(gpi, gpj):
+                if haveOverlappingSupport(gpi, gpj):
                     levelOuter, indexOuter = self.findOuterIntersection(gpi, gpj)
                     if (levelOuter, indexOuter) not in overlap:
                         gpOuterIntersection = HashGridIndex(self.numDims)
@@ -118,165 +245,150 @@ class LocalFullGridCandidates(CandidateSet):
         return overlappingGridPoints, costs
 
 
-    def coarseIntersections(self, grid, sortedIntersections, localFullGridLevels):
+    def coarseIntersections(self, grid, sortedIntersections):
         ans = []
         costs = 0
-        for i, (numLocalGridPoints, levell, indexl, (gpi, gpj, gplOuterIntersection)) in enumerate(sortedIntersections[::-1]):
+        for i, iLocalFullGrid in enumerate(sortedIntersections[::-1]):
             add = True
-            localLevell = localFullGridLevels[levell, indexl]
-            for (_, levelk, indexk, (_, _, gpkOuterIntersection)) in sortedIntersections:
-                localLevelk = localFullGridLevels[levelk, indexk]
-
+            for j, jLocalFullGrid in enumerate(sortedIntersections):
                 # this part here is crucial: in order to neglect an intersection
                 # which is fully considered already by another grid point
                 # we need to make sure that
                 #   1. the other grid point is an ancestor
                 #   2. the local level we consider for the ancestor is everywhere
                 #      larger than the local level of the current grid point
-                if np.all(localLevell < localLevelk) and isHierarchicalAncestor(grid, gpkOuterIntersection, gplOuterIntersection):
+                if jLocalFullGrid.contains(iLocalFullGrid):
                     add = False
                     break
+
             if add:
-                ans.append((numLocalGridPoints, levell, indexl, (gpi, gpj, gplOuterIntersection)))
-                costs += numLocalGridPoints
+                ans.append(iLocalFullGrid)
+                costs += iLocalFullGrid.numLocalGridPoints
         
         ans = ans[::-1]
         return ans, costs
-    
 
-    def splitIntersections(self, sortedCoarsedOverlap, localFullGridLevels, grid):
-        subtractOverlap = {}
-        ans = {}
 
-        gs = grid.getStorage()
-        numDims = gs.getDimension()
+    def mergeLocalGrids(self, gpChild, levelChild, indexChild, localLevel, localFullGridLevels):
+        currentLocalLevel = localFullGridLevels[levelChild, indexChild]
+        for i in xrange(len(currentLocalLevel)):
+            if localLevel[i] > currentLocalLevel[i]:
+                currentLocalLevel[i] = localLevel[i]
+        localFullGridLevels[levelChild, indexChild] = currentLocalLevel
 
-        costs = 0
-        p = DataVector(self.numDims)
+
+    def splitIntersections(self, sortedCoarsedOverlap):
+        subtractOverlap = []
+        nonOverlappingGrids = {}
+
+        costsSubtractSearch = 0
         # ---------------------------------------------------------------------
         # split the grid points in the ones which do not overlap with any other
         # grid point and the ones which do
-        for i, (_, leveli, indexi, (_, _, gpi)) in enumerate(sortedCoarsedOverlap):
-            # remove the first element -> it is equal to the ith element
-            localFullGridLeveli = localFullGridLevels[leveli, indexi]
-            isSolo = True
+        for i, iLocalFullGrid in enumerate(sortedCoarsedOverlap):
+            add = True
             # find all possible intersections of grid points
             for j in xrange(i + 1, len(sortedCoarsedOverlap)):
-                _, levelj, indexj, (_, _, gpj) = sortedCoarsedOverlap[j]
-                costs += 1
-                if not isHierarchicalAncestor(grid, gpi, gpj) and self.haveOverlappingSupport(gpi, gpj):
-                    # check if the sub grids overlap by checking the local level
-                    localFullGridLevelj = localFullGridLevels[levelj, indexj]
-                    levelOuter, indexOuter = self.findOuterIntersection(gpi, gpj)
-                    diffi = np.array(levelOuter, dtype="int") - np.array(leveli, dtype="int")
-                    diffj = np.array(levelOuter, dtype="int") - np.array(levelj, dtype="int")
-                    idim = np.where(diffi > 0)[0][0]
-                    jdim = np.where(diffj > 0)[0][0]
-                    if localFullGridLeveli[idim] > 1 and localFullGridLevelj[jdim] > 1:
-                        if (leveli, indexi, levelj, indexj) not in subtractOverlap:
-                            subtractOverlap[leveli, indexi, levelj, indexj] = (gpi, idim, levelOuter, indexOuter, gpj)
-                            isSolo = False
+                jLocalFullGrid = sortedCoarsedOverlap[j]
+                costsSubtractSearch += 1
+                
+                if jLocalFullGrid.contains(iLocalFullGrid):
+                    add = False
+                    break
+                
+                if jLocalFullGrid.overlap(iLocalFullGrid):
+                    subtractOverlap.append((iLocalFullGrid, jLocalFullGrid))
+                    add = False
 
             # copy the input list
-            if isSolo:
-                ans[leveli, indexi] = sortedCoarsedOverlap[i]
+            if add:
+                nonOverlappingGrids[iLocalFullGrid.getLevelIndex()] = iLocalFullGrid
 
-        if self.verbose:
-            print "# check intersections: %i" % len(subtractOverlap)
+        return nonOverlappingGrids.values(), subtractOverlap, costsSubtractSearch
 
-        # ---------------------------------------------------------------------
-        gpLeft = HashGridIndex(self.numDims)
-        gpRight = HashGridIndex(self.numDims)
-        for (leveli, indexi, levelj, indexj), (gpi, idim, levelouter, indexouter, gpj) in subtractOverlap.items():
-            # levels of local grid
-            localLeveli = localFullGridLevels[leveli, indexi]
 
-            l = [(gpi, idim, leveli, indexi, localLeveli)]
+    def splitLocalFullGrids(self, subtractOverlap):
+        ans = {}
+        p = DataVector(self.numDims)
+        costs = 0
+
+        for k, (iFullGrid, jFullGrid) in enumerate(subtractOverlap):
+            l = [(iFullGrid, jFullGrid)]
 
             if self.numDims == 2 and self.plotSubtract:
                 fig = plt.figure()
-                gpi.getCoords(p)
-                plt.plot(p[0], p[1], "o", color="green")
-                gpj.getCoords(p)
-                plt.plot(p[0], p[1], "o", color="green")
+                for gp in jFullGrid.computeAnisotropicFullGrid().values():
+                    gp.getCoords(p)
+                    plt.plot(p[0], p[1], "o", color="green")
+                jFullGrid.gp.getCoords(p)
+                plt.plot(p[0], p[1], "^", color="orange")
+
+                for gp in iFullGrid.computeAnisotropicFullGrid().values():
+                    gp.getCoords(p)
+                    plt.plot(p[0], p[1], "v", color="red")
+
+                iFullGrid.gp.getCoords(p)
+                plt.plot(p[0], p[1], "^", color="orange")
+
                 plt.xlim(0, 1)
                 plt.ylim(0, 1)
+                plt.title("i = 0")
+                fig.show()
+
+            localGrids = {}
 
             while len(l) > 0:
                 costs += 1
-                gpk, kdim, levelk, indexk, localLevelk = l.pop()
+                iFullGrid, jFullGrid = l.pop()
 
-#                 print levelk, indexk
-#                 if levelk == (2, 1, 2) and indexk == (1, 1, 3):
-#                     import pdb; pdb.set_trace()
+                # find the direction where we have to split the local grids
+                levelOuter, indexOuter = self.findOuterIntersection(iFullGrid.gp, jFullGrid.gp)
+                levelOuter = np.array(levelOuter, dtype="int")
+                idim = np.where(levelOuter - iFullGrid.level > 0)[0]
+                jdim = np.where(levelOuter - jFullGrid.level > 0)[0]
 
-                # add it to the current candidate set
-                ans[levelk, indexk] = (np.prod(localLevelk),
-                                       levelk,
-                                       indexk,
-                                       (gpk, gpk, gpk))
+                for kdim in idim:
+                    # split the local grid into three subgrids
+                    if iFullGrid.fullGridLevels[kdim] > 1:
+                        centralFullGrid, leftFullGrid, rightFullGrid = iFullGrid.split(kdim)
 
-                localFullGridLevels[levelk, indexk] = localLevelk
+                        # ---------------------------------------------------------
+                        # add the central grid to the candidate set
+                        localGrids[centralFullGrid.getLevelIndex()] = centralFullGrid
 
-                if self.numDims == 2 and self.plotSubtract:
-                    gpk.getCoords(p)
-                    plt.plot(p[0], p[1], "x", color="red")
-                    plt.plot(p[0], p[1], "+", color="red")
+                        # check whether the new grids still overlap or not
+                        for childGrid in [leftFullGrid, rightFullGrid]:
+                            if childGrid.overlap(jFullGrid):
+                                if not jFullGrid.contains(childGrid):
+                                    l.append((childGrid, jFullGrid))
+                            else:
+                                localGrids[childGrid.getLevelIndex()] = childGrid
 
-                if localLevelk[kdim] > 0:
-                    # split the selected grid point
-                    gpLeft = HashGridIndex(gpk)
-                    gs.left_child(gpLeft, kdim)
-                    gpRight = HashGridIndex(gpk)
-                    gs.right_child(gpRight, kdim)
-
-                    if self.numDims == 2 and self.plotSubtract:
-                        gpLeft.getCoords(p)
-                        plt.plot(p[0], p[1], "x", color="red")
-                        gpRight.getCoords(p)
-                        plt.plot(p[0], p[1], "x", color="red")
-
-                    # reduce the local level in the current dimension
-                    localLevelk = list(localLevelk)
-                    localLevelk[kdim] = localLevelk[kdim] - 1
-                    localLevelk = tuple(localLevelk)
-
-                    for gpChild in [gpLeft, gpRight]:
-                        levelChild, indexChild = tuple(getLevel(gpChild)), tuple(getIndex(gpChild))
-                        if self.haveOverlappingSupport(gpChild, gpj):
-                            if not isHierarchicalAncestor(grid, gpj, gpChild):
-                                l.append((gpChild, kdim, levelChild, indexChild, localLevelk))
-                        else:
-                            if (levelChild, indexChild) not in ans:
-                                # their supports do not overlap
-                                # we need to consider the child node
-                                ans[levelChild, indexChild] = (np.prod(localLevelk),
-                                                               levelChild,
-                                                               indexChild,
-                                                               (gpk, gpj, gpChild))
-
-                                # add the current full grid levels of the new node
-                                localFullGridLevels[levelChild, indexChild] = localLevelk
-
-                                # update the full grid levels of father node
-                                mylevel = list(localFullGridLevels[levelk, indexk])
-                                mylevel[kdim] = 1
-                                localFullGridLevels[levelk, indexk] = tuple(mylevel)
-
-                            if self.numDims == 2 and self.plotSubtract:
-                                gpChild.getCoords(p)
-                                plt.plot(p[0], p[1], "+", color="red")
+            # update result
+            ans.update(localGrids)
 
             if self.numDims == 2 and self.plotSubtract:
-                plt.title("(%i, %i): %s <-> %s" % (idim, jdim,
-                                                   [gpi.getCoord(i) for i in xrange(self.numDims)],
-                                                   [gpj.getCoord(i) for i in xrange(self.numDims)]))
+                fig = plt.figure()
+                for gp in jFullGrid.computeAnisotropicFullGrid().values():
+                    gp.getCoords(p)
+                    plt.plot(p[0], p[1], "o", color="green")
+
+                jFullGrid.gp.getCoords(p)
+                plt.plot(p[0], p[1], "^", color="orange")
+                for fullGrid in localGrids.values():
+                    for gp in fullGrid.computeAnisotropicFullGrid().values():
+                        gp.getCoords(p)
+                        plt.plot(p[0], p[1], "v", color="red")
+
+                    fullGrid.gp.getCoords(p)
+                    plt.plot(p[0], p[1], "^", color="orange")
+
+                plt.title("%i/%i: %s + %s = %s <-> %s + %s = %s" % (k + 1, len(subtractOverlap),
+                                                                    iFullGrid.level, iFullGrid.fullGridLevels, iFullGrid.level + iFullGrid.fullGridLevels,
+                                                                    jFullGrid.level, jFullGrid.fullGridLevels, jFullGrid.level + jFullGrid.fullGridLevels))
                 plt.xlim(0, 1)
                 plt.ylim(0, 1)
                 plt.show()
-
-        # sort the grid points by number of local full grid points
-
 
         return ans.values(), costs
 
@@ -300,7 +412,7 @@ class LocalFullGridCandidates(CandidateSet):
         plt.ylim(0, 1)
 
 
-    def plotDebug(self, grid, alpha, candidates, gpi, gpj, ans, (currentCnt, allCnt)):
+    def plotDebug(self, grid, alpha, candidates, localFullGrid, ans, (currentCnt, allCnt)):
         # -----------------------------------------------------------------
         # plot result
         fig = plt.figure()
@@ -310,33 +422,12 @@ class LocalFullGridCandidates(CandidateSet):
         for gp in candidates.values():
             p = DataVector(gp.getDimension())
             gp.getCoords(p)
-            plt.plot(p[0], p[1], "x ", color="green")
+            plt.plot(p[0], p[1], "o ", color="lightgreen")
 
         for gp in ans.values():
             p = DataVector(gp.getDimension())
             gp.getCoords(p)
-            plt.plot(p[0], p[1], "o ", color="green")
-
-        gpInnerIntersection = HashGridIndex(self.numDims)
-        gpOuterIntersection = HashGridIndex(self.numDims)
-
-        levelInner, indexInner = self.findInnerIntersection(gpi, gpj)
-        for idim in xrange(self.numDims):
-            gpInnerIntersection.set(idim, levelInner[idim], indexInner[idim])
-
-        levelOuter, indexOuter = self.findOuterIntersection(gpi, gpj)
-        for idim in xrange(self.numDims):
-            gpOuterIntersection.set(idim, levelOuter[idim], indexOuter[idim])
-
-        p = DataVector(grid.getStorage().getDimension())
-        gpi.getCoords(p)
-        plt.plot(p[0], p[1], "^ ", color="orange")
-        gpj.getCoords(p)
-        plt.plot(p[0], p[1], "^ ", color="orange")
-        gpInnerIntersection.getCoords(p)
-        plt.plot(p[0], p[1], "^ ", color="yellow")
-        gpOuterIntersection.getCoords(p)
-        plt.plot(p[0], p[1], "v ", color="yellow")
+            plt.plot(p[0], p[1], "o ", color="yellow")
 
         plt.xlim(0, 1)
         plt.ylim(0, 1)
@@ -370,7 +461,6 @@ class LocalFullGridCandidates(CandidateSet):
 
         return maxSteps
 
-
     def getLocalMaxLevel(self, dup, levels, indices, grid):
         gp = HashGridIndex(self.numDims)
         for idim, (level, index) in enumerate(zip(levels, indices)):
@@ -389,7 +479,6 @@ class LocalFullGridCandidates(CandidateSet):
             diffLevels[idim] = self.getMaxLevelOfChildrenUpToMaxLevel(currentgp, grid, idim)
 
         return diffLevels
-
 
     def getGridPointsOnBoundary(self, level, index):
         # find left boundary
@@ -486,72 +575,39 @@ class LocalFullGridCandidates(CandidateSet):
         if False and self.plot:
             plt.show()
 
-        return tuple(localMaxLevels + 1)
-
-#     @profile
-    def computeAnisotropicFullGrid(self, levels, indices, localFullGridLevels):
-        if localFullGridLevels in self.globalGrids:
-            return self.globalGrids[localFullGridLevels]
-        else:
-            # list 1d grid points
-            candidates = {}
-            for idim in xrange(self.numDims):
-                candidates[idim] = []
-
-            # Generate 1D grids
-            for idim in xrange(self.numDims):
-                for level in xrange(1, localFullGridLevels[idim] + 1):
-                    for index in xrange(1, 2 ** level + 1, 2):
-                        candidates[idim].append((level, index))
-
-            # iterate over cross product
-            globalGrid = {}
-            levels = np.ndarray(self.numDims)
-            indices = np.ndarray(self.numDims)
-            for values in product(*candidates.values()):
-                for idim, (level, index) in enumerate(values):
-                    levels[idim] = level
-                    indices[idim] = index
-                gp = tuple(levels), tuple(indices)
-                if gp not in globalGrid:
-                    globalGrid[gp] = True
-
-            # update internal hashmap
-            self.globalGrids[localFullGridLevels] = globalGrid
-
-            return globalGrid
+        return localMaxLevels + 1
 
 #     @profile
     def estimateCosts(self, overlap, grid):
         # sort the overlapping grid points by products of levels
         sortedOverlapHashMap = {}
-        localFullGridLevels = {}
         costs = 0
 
         # compute levels of local grids and number of
         # local grid points on a corresponding full grid
         for (levels, indices), (gpi, gpj, gpOuterIntersection) in overlap.items():
-            localFullGridLevels[levels, indices] = self.getLocalFullGridLevel(levels, indices, gpi, gpj, grid)
-            numLocalGridPoints = np.prod([2 ** ilevel - 1 for ilevel in localFullGridLevels[levels, indices]])
-
+            localFullGridLevels= self.getLocalFullGridLevel(levels, indices, gpi, gpj, grid)
+            localFullGrid = LocalFullGrid(grid, gpOuterIntersection, localFullGridLevels)
+            numLocalGridPoints = localFullGrid.numLocalGridPoints
+            
             costs += numLocalGridPoints
 
             if numLocalGridPoints not in sortedOverlapHashMap:
-                sortedOverlapHashMap[numLocalGridPoints] = [(levels, indices, (gpi, gpj, gpOuterIntersection))]
+                sortedOverlapHashMap[numLocalGridPoints] = [localFullGrid]
             else:
-                sortedOverlapHashMap[numLocalGridPoints].append((levels, indices, (gpi, gpj, gpOuterIntersection)))
+                sortedOverlapHashMap[numLocalGridPoints].append(localFullGrid)
 
         # sort the grid points by number of local full grid points
         sortedOverlap = []
         for numLocalGridPoints in sorted(sortedOverlapHashMap.keys()):
-            for level, index, values in sortedOverlapHashMap[numLocalGridPoints]:
-                sortedOverlap.append((numLocalGridPoints, level, index, values))
+            for localFullGrid in sortedOverlapHashMap[numLocalGridPoints]:
+                sortedOverlap.append(localFullGrid)
 
         return sortedOverlap, localFullGridLevels, costs
 
 
 #     @profile
-    def computeCandidates(self, sortedOverlap, localFullGridLevels, grid, alpha):
+    def computeCandidates(self, sortedOverlap, grid, alpha):
         # create full grid locally
         gs = grid.getStorage()
         maxLevel = gs.getMaxLevel()
@@ -559,66 +615,38 @@ class LocalFullGridCandidates(CandidateSet):
         cnt = 0
         allCnt = len(sortedOverlap)
         costs = 0
-        locallevels = [None] * self.numDims
-        localindices = [None] * self.numDims
 
         while len(sortedOverlap) > 0:
-            numLocalGridPoints, levels, indices, (gpi, gpj, _) = sortedOverlap.pop()
-            # do not consider intersection if it is already part of the local grid
-            # -> TODO: if an intersection is already part of some other local grid
-            #          then there exists an ancestor in the list of intersections.
-            #          Check first if there are ancestors available and if yes,
-            #          remove the successor node from the intersection list
-            levelInner, indexInner = self.findInnerIntersection(gpi, gpj)
-            if (levels, indices) not in ans:
+            localFullGrid = sortedOverlap.pop()
+            tlevel, tindex = tuple(localFullGrid.level), tuple(localFullGrid.index)
+            if (tlevel, tindex) not in ans:
                 cnt += 1
-                globalGrid = self.computeAnisotropicFullGrid(levels, indices, localFullGridLevels[levels, indices])
-                costs += len(globalGrid)
-    #             assert numLocalGridPoints == len(globalGrid)
-
-                # 1. set the root node of the local grid
-                localRoot = {'level': levels,
-                             'index': indices}
-
-                # 2. shift and scale the global grid to the local one
-                localGrid = {}
-                for levelsGlobal, indicesGlobal in globalGrid.keys():
-                    gpdd = HashGridIndex(self.numDims)
-                    for idim in xrange(self.numDims):
-                        lg, ig = levelsGlobal[idim], indicesGlobal[idim]
-                        llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
-
-                        # compute level and index of local grid
-                        # 1 -> level index of global root node, always the same
-                        locallevels[idim] = int(lg + (llroot - 1))
-                        localindices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
-                        gpdd.set(idim, locallevels[idim], localindices[idim])
-
-                    localGrid[(tuple(locallevels), tuple(localindices))] = gpdd
-
+                fullGrid = localFullGrid.computeAnisotropicFullGrid()
+                costs += len(fullGrid)
                 if self.plot and self.numDims == 2:
-                    self.plotDebug(grid, alpha, localGrid, gpi, gpj, ans, (cnt, allCnt))
+                    self.plotDebug(grid, alpha, fullGrid, localFullGrid, ans, (cnt, allCnt))
 
-#                 assert len(localGrid) > 0
+                assert len(fullGrid) > 0
                 oldSize = len(ans)
                 oldAns = ans.copy()
-                ans.update(localGrid)
+                ans.update(fullGrid)
 #                 assert len(ans) > oldSize
-                if self.verbose:
-                    print "=" * 60
-                    for myk, (mylevel, myindex) in enumerate(localGrid.keys()):
-                        if (mylevel, myindex) in oldAns:
-                            print "%i: old: %s -> %s, %s, l=%s, i=%s" % (myk,
-                                                              [2 ** -levels[k] * indices[k] for k in xrange(len(levels))],
-                                                              [2 ** -mylevel[k] * myindex[k] for k in xrange(len(mylevel))],
-                                                              localFullGridLevels[levels, indices],
-                                                              levels, indices)
-                        else:
-                            print "%i: new: %s -> %s , %s, l=%s, i=%s" % (myk,
-                                                              [2 ** -levels[k] * indices[k] for k in xrange(len(levels))],
-                                                              [2 ** -mylevel[k] * myindex[k] for k in xrange(len(mylevel))],
-                                                              localFullGridLevels[levels, indices],
-                                                              levels, indices)
+
+#                 if self.verbose:
+#                     print "=" * 60
+#                     for myk, (mylevel, myindex) in enumerate(localGrid.keys()):
+#                         if (mylevel, myindex) in oldAns:
+#                             print "%i: old: %s -> %s, %s, l=%s, i=%s" % (myk,
+#                                                               [2 ** -levels[k] * indices[k] for k in xrange(len(levels))],
+#                                                               [2 ** -mylevel[k] * myindex[k] for k in xrange(len(mylevel))],
+#                                                               localFullGridLevels[levels, indices],
+#                                                               levels, indices)
+#                         else:
+#                             print "%i: new: %s -> %s , %s, l=%s, i=%s" % (myk,
+#                                                               [2 ** -levels[k] * indices[k] for k in xrange(len(levels))],
+#                                                               [2 ** -mylevel[k] * myindex[k] for k in xrange(len(mylevel))],
+#                                                               localFullGridLevels[levels, indices],
+#                                                               levels, indices)
         return ans.values(), costs, cnt
 
 
@@ -642,28 +670,63 @@ class LocalFullGridCandidates(CandidateSet):
             if self.verbose:
                 print "# coarsed intersection:",
 
-            sortedCoarsedOverlap, newlyPredictedLocalCosts = self.coarseIntersections(grid, sortedOverlap, localFullGridLevels)
+            sortedCoarsedOverlap, newlyPredictedLocalCosts = self.coarseIntersections(grid, sortedOverlap)
 
             if self.verbose:
                 print "%i/%i" % (len(sortedCoarsedOverlap), len(sortedOverlap))
 
             # -------------------------------------------------------------------------------------------------
             # get all the local intersections which one can subtract from the ones
-            if self.verbose:
-                print "*" * 60
+            if self.reduceLocalGrids:
+                if self.verbose:
+                    print "*" * 60
 
-            subtractPoints, costsSubtractSearch = self.splitIntersections(sortedCoarsedOverlap, localFullGridLevels, grid)
-            subtractPoints, _ = self.coarseIntersections(grid, subtractPoints, localFullGridLevels)
-#             subtractPoints, costsSubtractSearch = sortedCoarsedOverlap, 0
+                hasSizeChanged = True
+                subtractPoints = sortedCoarsedOverlap[:]
+                iteration = 0
+                while hasSizeChanged:
+                    numIntersections = len(subtractPoints)
 
-            if self.verbose:
-                print "# sub intersections   : %i -> costs: %i <= %i : predicted costs" % (len(subtractPoints),
-                                                                                           costsSubtractSearch,
-                                                                                           len(sortedCoarsedOverlap) * (len(sortedCoarsedOverlap) - 1) / 2.)
-                print "*" * 60
+                    if self.verbose:
+                        print "iteration = %i" % iteration
+
+                    nonOverlappingGrids, overlappingGrids, costsSubtractSearch = self.splitIntersections(subtractPoints)
+
+                    if self.verbose:
+                        print "# non overlapping fg  : %i <= %i" % (len(nonOverlappingGrids), len(subtractPoints))
+                        print "# overlapping interse : %i : costs = %i" % (len(overlappingGrids), costsSubtractSearch)
+
+                    nonOverlappingIntersections, costsSplitFullGrids = self.splitLocalFullGrids(overlappingGrids)
+
+                    if self.verbose:
+                        print "# non overlapping int : %i : costs = %i" % (len(nonOverlappingIntersections), costsSplitFullGrids)
+
+                    # join the non overlapping grids and the non overlapping intersections
+                    subtractPoints = nonOverlappingGrids + nonOverlappingIntersections
+                    costSubtractSearch = costsSubtractSearch + costsSplitFullGrids
+
+                    subtractPoints, _ = self.coarseIntersections(grid, subtractPoints)
+
+                    if self.verbose:
+                        print "# sub intersections   : %i -> costs: %i <= %i : predicted costs" % (len(subtractPoints),
+                                                                                                   costsSubtractSearch,
+                                                                                                   len(sortedCoarsedOverlap) * (len(sortedCoarsedOverlap) - 1) / 2.)
+                        print "-" * 60
+
+                    iteration += 1
+                    hasSizeChanged = numIntersections < len(subtractPoints)
+
+
+                if self.verbose:
+                    print "# sub intersections   : %i -> costs: %i <= %i : predicted costs" % (len(subtractPoints),
+                                                                                               costsSubtractSearch,
+                                                                                               len(sortedCoarsedOverlap) * (len(sortedCoarsedOverlap) - 1) / 2.)
+                    print "*" * 60
+            else:
+                subtractPoints = sortedCoarsedOverlap
             # -------------------------------------------------------------------------------------------------
 
-            self.newCandidates, realLocalCosts, numAccountedIntersections = self.computeCandidates(subtractPoints, localFullGridLevels, grid, alpha)
+            self.newCandidates, realLocalCosts, numAccountedIntersections = self.computeCandidates(subtractPoints, grid, alpha)
 
             if self.verbose:
                 print "  real costs          : %i <= %i :predicted costs" % (realLocalCosts, newlyPredictedLocalCosts)
