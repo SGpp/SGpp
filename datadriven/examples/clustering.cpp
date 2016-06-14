@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -20,10 +21,11 @@
 #include <memory>
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
+
 int main() {
-  size_t dimension = 10, tiefe = 10, k = 12;
+  size_t dimension = 10, tiefe = 6, k = 12;
   double lambda = 0.001, treshold = 0.7;
-  std::string filename = "dataset2_dim2.arff";
+  std::string filename = "dataset3_dim10.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
@@ -60,7 +62,12 @@ int main() {
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
       "MyOCLConf.cfg");
 
-  std::cout << "Creating rhs" << std::endl;
+  operation_mult->mult(alpha, result);
+  for (auto i = 0; i < 100; ++i) {
+    std::cout << result[i] << " ";
+  }
+
+  /*std::cout << "Creating rhs" << std::endl;
   sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
   for (size_t i = 0; i < 300; i++)
@@ -105,9 +112,9 @@ int main() {
       out << graph[i * 12 + j] << " ";
     }
     out << std::endl;
-  }
+    }*/
   // cleanup
   delete operation_mult;
   delete solver;
-  delete operation_graph;
+  //delete operation_graph;
 }

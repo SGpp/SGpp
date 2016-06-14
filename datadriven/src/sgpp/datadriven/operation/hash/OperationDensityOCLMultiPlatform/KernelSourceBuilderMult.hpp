@@ -30,6 +30,8 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   bool use_less;
   bool do_not_use_ternary;
   bool use_implicit_zero;
+  bool use_fabs_instead_of_fmax;
+
 
   /// Generate the opencl code to save the fixed gridpoint of a workitem to the local memory
   std::string save_from_global_to_private(size_t dimensions) {
@@ -116,7 +118,10 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                << ") - " << index_func1 << ";" << std::endl;
         output << this->indent[3] << "umid = fabs(umid);" << std::endl;
         output << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-        output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        if (!use_fabs_instead_of_fmax)
+          output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        else
+          output << this->indent[3] << "umid = (umid + fabs(umid));" << std::endl;
         // Add integral to result sum
         if (i == 0)
           output << this->indent[3] << "sum = h*(umid);" << std::endl;
@@ -128,17 +133,26 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                << ") - " << index_func1 << ";" << std::endl;
         output << this->indent[3] << "umid = fabs(umid);" << std::endl;
         output << this->indent[3] << "umid = 1.0-umid;" << std::endl;
-        output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        if (!use_fabs_instead_of_fmax)
+          output << this->indent[3] << "umid = fmax(umid,0.0);" << std::endl;
+        else
+          output << this->indent[3] << "umid = (umid + fabs(umid));" << std::endl;
         output << this->indent[3] << "uright = u*h*(" << index_func2 << " + 1) - "
                << index_func1 << ";" << std::endl;
         output << this->indent[3] << "uright = fabs(uright);" << std::endl;
         output << this->indent[3] << "uright = 1.0-uright;" << std::endl;
-        output << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
+        if (!use_fabs_instead_of_fmax)
+          output << this->indent[3] << "uright = fmax(uright,0.0);" << std::endl;
+        else
+          output << this->indent[3] << "uright = (uright + fabs(uright));" << std::endl;
         output << this->indent[3] << "uleft = u*h*(" << index_func2 << " - 1) - "
                << index_func1 << ";" << std::endl;
         output << this->indent[3] << "uleft = fabs(uleft);" << std::endl;
         output << this->indent[3] << "uleft = 1.0-uleft;" << std::endl;
-        output << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
+        if (!use_fabs_instead_of_fmax)
+          output << this->indent[3] << "uleft = fmax(uleft,0.0);" << std::endl;
+        else
+          output << this->indent[3] << "uleft = (uleft + fabs(uleft));" << std::endl;
         // Add integral to result sum
         if (i == 0)
           output << this->indent[3] << "sum = h/3.0*(umid + uleft + uright);" << std::endl;
@@ -223,7 +237,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   explicit SourceBuilderMult(json::Node &kernelConfiguration) :
       kernelConfiguration(kernelConfiguration), dataBlockSize(1),
       use_level_cache(false), use_less(true), do_not_use_ternary(false),
-      use_implicit_zero(true) {
+      use_implicit_zero(true), use_fabs_instead_of_fmax(false) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
@@ -238,6 +252,8 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       do_not_use_ternary = kernelConfiguration["DO_NOT_USE_TERNARY"].getBool();
     if (kernelConfiguration.contains("USE_IMPLICIT"))
       use_implicit_zero = kernelConfiguration["USE_IMPLICIT"].getBool();
+    if (kernelConfiguration.contains("USE_FABS"))
+      use_fabs_instead_of_fmax = kernelConfiguration["USE_FABS"].getBool();
   }
 
   /// Generates the opencl source code for the density matrix-vector multiplication
@@ -325,8 +341,13 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
     for (auto block = 0; block < dataBlockSize; ++block) {
-      sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
-                   <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
+      if (!use_fabs_instead_of_fmax)
+        sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
+                     <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
+      else
+        sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
+                     <<" + " << block << "] = gesamtint_block" << block << " / "
+                     << (1 << dimensions) << ";" << std::endl;
       sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
                    <<" + " << block << "] += alpha[gridindex * "<< dataBlockSize
                    <<" + " << block << "]*" << "lambda;" << std::endl;
