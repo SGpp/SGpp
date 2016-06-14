@@ -5,6 +5,7 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
@@ -18,102 +19,74 @@
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::SurplusRefinementFunctor;
 
 namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
-    sgpp::datadriven::DataMiningConfigurationLeastSquares config)
-    : datadriven::ModelFittingBase(), configuration(config) {}
+    std::shared_ptr<sgpp::datadriven::DataMiningConfigurationLeastSquares> config)
+    : datadriven::ModelFittingBase(), config(config) {}
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
 
-datadriven::DMSystemMatrixBase* ModelFittingLeastSquares::createSystemMatrix(
-    base::DataMatrix& trainDataset, double lambda) {
-  datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
-      new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid), trainDataset, lambda);
-  systemMatrix->setImplementation(this->implementationConfiguration);
-  return systemMatrix;
-}
-
 void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
-  //  LearnerTiming result;
-  //  result.timeComplete_ = 0.0;
-  //  result.timeMultComplete_ = 0.0;
-  //  result.timeMultCompute_ = 0.0;
-  //  result.timeMultTransComplete_ = 0.0;
-  //  result.timeMultTransCompute_ = 0.0;
-  //  result.timeRegularization_ = 0.0;
-  //  result.GFlop_ = 0.0;
-  //  result.GByte_ = 0.0;
-
+  // clear model
   alpha.reset();
   grid.reset();
   systemMatrix.reset();
 
-  initializeGrid(configuration.getGridConfig());
+  // rebuild grid
+  initializeGrid(config->getGridConfig());
+  // rebuild surplus vector
   alpha = std::make_shared<DataVector>(grid->getSize());
-  alpha->setAll(0);
 
-  // create DMSystem
+  // create sytem matrix
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
-      createSystemMatrix(dataset.getData(), configuration.getLambda()));
+      createSystemMatrix(dataset.getData(), config->getLambda()));
 
-  if (configuration.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::CG) {
+  // create right hand side and system matrix
+  DataVector b(grid->getSize());
+  systemMatrix->generateb(dataset.getTargets(), b);
+
+  if (config.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::CG) {
     solver = std::make_shared<solver::ConjugateGradients>(
-        configuration.getSolverRefineConfig().maxIterations_,
-        configuration.getSolverRefineConfig().eps_);
-  } else if (configuration.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
-    solver =
-        std::make_shared<solver::BiCGStab>(configuration.getSolverRefineConfig().maxIterations_,
-                                           configuration.getSolverRefineConfig().eps_);
+        config.getSolverRefineConfig().maxIterations_, config.getSolverRefineConfig().eps_);
+  } else if (config.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
+    solver = std::make_shared<solver::BiCGStab>(config.getSolverRefineConfig().maxIterations_,
+                                                config.getSolverRefineConfig().eps_);
   } else {
     throw base::application_exception(
         "LearnerBase::train: An unsupported SLE solver type was "
         "chosen!");
   }
 
-  DataVector b(grid->getSize());
-  systemMatrix->generateb(dataset.getTargets(), b);
-
-  if (configuration.getRefinementConfig().numRefinements_ == 0) {
-    solver->setMaxIterations(configuration.getSolverFinalConfig().maxIterations_);
-    solver->setEpsilon(configuration.getSolverFinalConfig().eps_);
+  if (config.getRefinementConfig().numRefinements_ == 0) {
+    solver->setMaxIterations(config.getSolverFinalConfig().maxIterations_);
+    solver->setEpsilon(config.getSolverFinalConfig().eps_);
   }
 
   solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
-
-  //  double tmp1, tmp2, tmp3, tmp4;
-  //  systemMatrix->getTimers(tmp1, tmp2, tmp3, tmp4);
-  //  result.timeComplete_ = execTime_;
-  //  result.timeMultComplete_ = tmp1;
-  //  result.timeMultCompute_ = tmp2;
-  //  result.timeMultTransComplete_ = tmp3;
-  //  result.timeMultTransCompute_ = tmp4;
-  //  result.timeRegularization_ = 0.0;
-  //  result.GFlop_ = GFlop_;
-  //  result.GByte_ = GByte_;
 }
 
 void ModelFittingLeastSquares::refine() {
-  //  // disable refinement here!
-  //  auto refinementFunctor =
-  //  std::make_shared<base::SurplusRefinementFunctor>(alpha,
-  //          configuration.adaptivityConfig.noPoints_,
-  //          configuration.adaptivityConfig.threshold_);
-  //  std::unique_ptr<base::GridGenerator>(grid->createGridGenerator())->refine(
-  //          refinementFunctor.get());
-  //
-  //  // tell the SLE manager that the grid changed (for interal data
-  //  structures)
-  //  systemMatrix->prepareGrid();
-  //
-  //  alpha->resizeZero(grid->getSize());
-  //
-  //  if (i == configuration.adaptivityConfig.numRefinements_) {
-  //    myCG->setMaxIterations(configuration.getSolverFinalConfig().maxIterations_);
-  //    myCG->setEpsilon(configuration.getSolverFinalConfig().eps_);
-  //  }
+  // create refinement functor
+  SurplusRefinementFunctor refinementFunctor(*alpha, config.getRefinementConfig().noPoints_,
+                                             config.getRefinementConfig().threshold_);
+  // refine grid
+  grid->getGenerator().refine(refinementFunctor);
+
+  // tell the SLE manager that the grid changed (for interal data structures)
+  systemMatrix->prepareGrid();
+  alpha->resizeZero(grid->getSize());
+
+  // if (i == configuration.adaptivityConfig.numRefinements_) {
+  solver->setMaxIterations(config.getSolverFinalConfig().maxIterations_);
+  solver->setEpsilon(config.getSolverFinalConfig().eps_);
+  DataVector b(grid->getSize());
+  systemMatrix->generateb(dataset.getTargets(), b);
+  solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  //}
 }
 
 void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
@@ -135,6 +108,14 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   //    myCG->setMaxIterations(configuration.getSolverFinalConfig().maxIterations_);
   //    myCG->setEpsilon(configuration.getSolverFinalConfig().eps_);
   //  }
+}
+
+datadriven::DMSystemMatrixBase* ModelFittingLeastSquares::createSystemMatrix(
+    base::DataMatrix& trainDataset, double lambda) {
+  datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
+      new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid), trainDataset, lambda);
+  systemMatrix->setImplementation(this->implementationConfiguration);
+  return systemMatrix;
 }
 }  // namespace datadriven
 }  // namespace sgpp

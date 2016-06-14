@@ -14,6 +14,9 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -22,9 +25,11 @@
 
 using sgpp::datadriven::FileBasedDataSourceBuilder;
 using sgpp::datadriven::Dataset;
-
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
+using sgpp::datadriven::Metric;
+using sgpp::datadriven::MSE;
+using sgpp::datadriven::SimpleSplittingScorer;
 
 int main(int argc, char **argv) {
   // input
@@ -40,20 +45,37 @@ int main(int argc, char **argv) {
   std::cout << "reading input file: " << path << std::endl;
   auto dataset = dataSource->getNextSamples();
 
+  double threshold = 0;
+  size_t maxRefinenum = 4;
+
   // regression
   DataMiningConfigurationLeastSquares config;
+  config.addIDAttr("trainPortion", 0.5);
+  size_t seed = 42;
+  config.addIDAttr("seed", seed);
 
   auto gridConfig = config.getGridConfig();
   gridConfig.dim_ = dataset->getDimension();
   config.setGridConfig(gridConfig);
 
-  auto fitter = std::make_unique<ModelFittingLeastSquares>(config);
-  fitter->fit(*(dataset.get()));
   std::cout << "fitting model" << std::endl;
+  auto fitter = std::make_shared<ModelFittingLeastSquares>(config);
+  fitter->fit(*dataset);
 
-  auto surplusses = fitter->getSurpluses();
+  // 4. load simple splitting scorer
+  std::shared_ptr<Metric> metric = std::make_shared<MSE>();
+  SimpleSplittingScorer scorer(metric, fitter, config);
 
-  std::cout << "surplusses are: " << surplusses->toString();
-
+  double score = scorer.getScore(*dataset);
+  std::cout << "MSE is " << score << std::endl;
+  size_t iter = 0;
+  while (score > threshold && iter < maxRefinenum) {
+    std::cout << "refining grid" << std::endl;
+    fitter->refine();
+    fitter->fit(*dataset);
+    score = scorer.getScore(*dataset);
+    std::cout << "MSE of refined grid is " << score << std::endl;
+    iter++;
+  }
   return 0;
 }
