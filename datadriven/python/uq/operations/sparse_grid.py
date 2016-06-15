@@ -160,6 +160,15 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
+def isHierarchicalAncestorDimx(grid, gpi, gpj, idim):
+    li, lj = gpi.getLevel(idim), gpj.getLevel(idim)
+    if lj < li:
+        return False
+    else:
+        ii, ij = gpi.getIndex(idim), gpj.getIndex(idim)
+        return ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+
+
 def isHierarchicalAncestor(grid, gpi, gpj):
     if gpi == gpj:
         return False
@@ -168,12 +177,7 @@ def isHierarchicalAncestor(grid, gpi, gpj):
         numDims = gpi.getDimension()
         isAncestor = True
         while isAncestor and idim < numDims:
-            li, lj = gpi.getLevel(idim), gpj.getLevel(idim)
-            if lj < li:
-                isAncestor = False
-            else:
-                ii, ij = gpi.getIndex(idim), gpj.getIndex(idim)
-                isAncestor = ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+            isAncestor &= isHierarchicalAncestorDimx(grid, gpi, gpj, idim)
             idim += 1
         return isAncestor
 
@@ -192,26 +196,30 @@ def getNonExistingHierarchicalAncestors(grid, gp):
     return ans
 
 
+def haveOverlappingSupportDimx(gpi, gpj, idim):
+    # get level index
+    lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
+    ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
+
+    if lid == ljd and iid == ijd:
+        return True
+
+    # check if they have overlapping support
+    xlowi, xhighi = getBoundsOfSupport(lid, iid)
+    xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
+
+    xlow = max(xlowi, xlowj)
+    xhigh = min(xhighi, xhighj)
+
+    # different level but not ancestors
+    return xlow < xhigh
+
+
 def haveOverlappingSupport(gpi, gpj):
     idim = 0
     numDims = gpi.getDimension()
 
-    while idim < numDims:
-        # get level index
-        lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
-        ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
-
-        # check if they have overlapping support
-        xlowi, xhighi = getBoundsOfSupport(lid, iid)
-        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-        xlow = max(xlowi, xlowj)
-        xhigh = min(xhighi, xhighj)
-
-        # different level but not ancestors
-        if xlow >= xhigh:
-            break
-
+    while idim < numDims and haveOverlappingSupportDimx(gpi, gpj, idim):
         idim += 1
 
     # check whether the supports are overlapping
