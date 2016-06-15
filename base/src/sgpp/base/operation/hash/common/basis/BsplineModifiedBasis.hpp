@@ -1270,8 +1270,8 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           // 1081/720 + 0.581944 + 0.0819444 + 7/80
         return 2.252777289 / hInvDbl;
       case 7:
-        // 20243/13440 + 2495/4032 + 479/4032 + 83/13440 + 1/40320
-        return 90719.0/40320.0 / hInvDbl; // = 2 - 1/40320
+        // 20243/13440 + 2495/4032 + 479/4032 + 83/13440   (last part is 1/40320 but it's outside)
+        return 90718.0/40320.0 / hInvDbl; // = 2.25 - 2/40320
       default:
         break;
         // not implemented exception

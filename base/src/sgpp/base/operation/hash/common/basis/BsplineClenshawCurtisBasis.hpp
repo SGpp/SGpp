@@ -9,6 +9,7 @@
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -79,10 +80,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of derivative of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline double nonUniformBSplineDx(
-    double x, size_t p, size_t k) const {
-    if (p == 0) {
-      return 0.0;
+  inline double nonUniformBSplineDx(double x, size_t p, size_t k) const {if (p == 0) {return 0.0;
     } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
       return 0.0;
     } else {
@@ -254,6 +252,32 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    */
   inline size_t getDegree() const {
     return bsplineBasis.getDegree();
+  }
+
+  double getIntegral(LT l, IT i){
+    size_t degree = bsplineBasis.getDegree();
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
+    size_t letzter_abschnitt = std::min(degree, (1 << l) + (degree+1)/2 - i - 1 );
+    sgpp::base::DataVector coordinates;
+    sgpp::base::DataVector weights;
+    sgpp::base::GaussLegendreQuadRule1D gauss;
+    size_t quadLevel = (degree + 1)/2;
+    gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
+
+    constructKnots(l, i);
+    double res = 0.0;
+    for(size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
+      double h = xi[j + 1] - xi[j];
+      double temp_res = 0.0;
+      for (size_t c = 0; c < quadLevel; c++){
+        double x = (h * coordinates[c]) + xi[j];
+        // temp_res += eval(l, i, x);
+        temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
+      }
+      res += h * temp_res;
+    }
+    return res;
+
   }
 
  protected:
