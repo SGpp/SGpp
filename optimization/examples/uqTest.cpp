@@ -1,5 +1,4 @@
 #include "sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
-#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include "sgpp/optimization/operation/OptimizationOpFactory.hpp"
 #include <sgpp_base.hpp>
 #include <sgpp/globaldef.hpp>
@@ -102,11 +101,6 @@ double u(double x1, double x2){
 
 int main(int argc, char **argv) {
   // create a two-dimensional piecewise bi-linear grid
-  for(int l = 1; l <  7; l++){
-    for(int i = 1; i < pow(2,l); i++){
-      bsplineQuadTest(7, l, i);
-    }
-  }
   int dim = 2;
   // std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   // std::unique_ptr<Grid> grid = Grid::createBsplineGrid(dim, 3);
@@ -143,9 +137,12 @@ int main(int argc, char **argv) {
 
   sgpp::base::SBasis& base = const_cast<sgpp::base::SBasis&>(grid->getBasis());
 
-  std::unique_ptr<sgpp::base::SBsplineBoundaryBase> bbase;
-  bbase.reset(new sgpp::base::SBsplineBoundaryBase(3));
+  std::unique_ptr<sgpp::base::SBsplineClenshawCurtisBase> bbase;
+  bbase.reset(new sgpp::base::SBsplineClenshawCurtisBase(3));
 
+  std::cout << bbase->getIntegral(1,1) << std::endl;
+  std::cout << bbase->getIntegral(2,3) << std::endl;
+  std::cout << bbase->getIntegral(3,5) << std::endl;
   double res = 0.0;
   int in = 0;
   int le = 0;
@@ -154,16 +151,14 @@ int main(int argc, char **argv) {
   // std::unique_ptr<Grid> int_grid = Grid::createLinearGrid(1);
   int_grid->getGenerator().regular(1);
 
-  sgpp::base::SBasis& base_test = const_cast<sgpp::base::SBasis&>(int_grid->getBasis());
-
-  double a = 0.0;
-  double x_1 = 0.0;
-  for (size_t j = 0; j < quadLevel; j++){
-    x_1 = (1/4.0) * (coordinates[j] + 3.0);
-    a += base_test.eval(2,3, x_1)*weights[j];
-  }
-  a /= 4;
-  std::cout << a << std::endl;
+  // a = base_test.getIntegral(2,1);
+  // double x_1 = 0.0;
+  // for (size_t j = 0; j < quadLevel; j++){
+  //   x_1 = (1/4.0) * (coordinates[j] + 3.0);
+  //   a += base_test.eval(2,3, x_1)*weights[j];
+  // }
+  // a /= 4;
+  // std::cout << a << std::endl;
 
 
 

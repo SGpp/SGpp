@@ -40,7 +40,7 @@ class OperationQuadratureModBspline : public OperationQuadrature {
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage& stora;
+  GridStorage& storage;
   /// Bspline Boundary Basis object
   SBsplineModifiedBase base;
 };

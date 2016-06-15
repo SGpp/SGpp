@@ -1648,7 +1648,7 @@ class BsplineBasis: public Basis<LT, IT> {
 
   inline double getIntegral(LT level, IT index) {
     size_t erster_abschnitt = std::max(0, -static_cast<int>(index-(degree+1)/2));
-    size_t letzter_abschnitt = std::min(degree, degree - (index + (degree+1)/2 - (1 << level) ));
+    size_t letzter_abschnitt = std::min(degree, (1 << level) + (degree+1)/2 - index - 1 );
     double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
       switch(degree){
