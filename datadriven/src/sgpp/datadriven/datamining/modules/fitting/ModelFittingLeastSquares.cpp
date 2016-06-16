@@ -43,7 +43,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
 
   // create sytem matrix
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
-      createSystemMatrix(dataset.getData(), config->getLambda()));
+      buildSystemMatrix(dataset.getData(), config->getLambda()));
 
   // create right hand side and system matrix
   DataVector b(grid->getSize());
@@ -90,7 +90,7 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   // create sytem matrix
   systemMatrix.reset();
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
-      createSystemMatrix(dataset.getData(), config->getLambda()));
+      buildSystemMatrix(dataset.getData(), config->getLambda()));
 
   DataVector b(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), b);
@@ -98,11 +98,12 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
-datadriven::DMSystemMatrixBase* ModelFittingLeastSquares::createSystemMatrix(
+std::unique_ptr<DMSystemMatrixBase> ModelFittingLeastSquares::buildSystemMatrix(
     base::DataMatrix& trainDataset, double lambda) {
-  datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
-      new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid), trainDataset, lambda);
-  systemMatrix->setImplementation(implementationConfig);
+  auto tmp = std::make_unique<SystemMatrixLeastSquaresIdentity>(*grid, trainDataset, lambda);
+  tmp->setImplementation(implementationConfig);
+  std::unique_ptr<DMSystemMatrixBase> systemMatrix = std::move(tmp);
+
   return systemMatrix;
 }
 }  // namespace datadriven

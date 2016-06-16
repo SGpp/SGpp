@@ -58,7 +58,8 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   //  }
 
  protected:
-  virtual DMSystemMatrixBase* createSystemMatrix(base::DataMatrix& trainDataset, double lambda);
+  virtual std::unique_ptr<DMSystemMatrixBase> buildSystemMatrix(base::DataMatrix& trainDataset,
+                                                                double lambda);
 
  private:
   std::shared_ptr<DataMiningConfigurationLeastSquares> config;
