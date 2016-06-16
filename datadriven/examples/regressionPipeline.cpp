@@ -49,14 +49,14 @@ int main(int argc, char **argv) {
   size_t maxRefinenum = 4;
 
   // regression
-  DataMiningConfigurationLeastSquares config;
-  config.addIDAttr("trainPortion", 0.5);
+  auto config = std::make_shared<DataMiningConfigurationLeastSquares>();
+  config->addIDAttr("trainPortion", 0.5);
   size_t seed = 42;
-  config.addIDAttr("seed", seed);
+  config->addIDAttr("seed", seed);
 
-  auto gridConfig = config.getGridConfig();
+  auto gridConfig = config->getGridConfig();
   gridConfig.dim_ = dataset->getDimension();
-  config.setGridConfig(gridConfig);
+  config->setGridConfig(gridConfig);
 
   std::cout << "fitting model" << std::endl;
   auto fitter = std::make_shared<ModelFittingLeastSquares>(config);
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
   // 4. load simple splitting scorer
   std::shared_ptr<Metric> metric = std::make_shared<MSE>();
-  SimpleSplittingScorer scorer(metric, fitter, config);
+  SimpleSplittingScorer scorer(metric, fitter, *config);
 
   double score = scorer.getScore(*dataset);
   std::cout << "MSE is " << score << std::endl;
@@ -72,7 +72,8 @@ int main(int argc, char **argv) {
   while (score > threshold && iter < maxRefinenum) {
     std::cout << "refining grid" << std::endl;
     fitter->refine();
-    fitter->fit(*dataset);
+    std::cout << "updating grid" << std::endl;
+    fitter->update(*dataset);
     score = scorer.getScore(*dataset);
     std::cout << "MSE of refined grid is " << score << std::endl;
     iter++;
