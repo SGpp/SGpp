@@ -64,6 +64,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   std::shared_ptr<DataMiningConfigurationLeastSquares> config;
   std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
   std::unique_ptr<solver::SLESolver> solver;
+  OperationMultipleEvalConfiguration implementationConfig;
 };
 }
 }
