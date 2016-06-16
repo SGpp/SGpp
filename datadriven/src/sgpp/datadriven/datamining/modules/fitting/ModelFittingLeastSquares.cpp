@@ -5,15 +5,23 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
-#include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
+#include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+
+#include <sgpp/globaldef.hpp>
 
 // TODO(lettrich): use the system matrix with flexible regularization
 
@@ -21,16 +29,23 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::SurplusRefinementFunctor;
 
+using sgpp::base::application_exception;
+
+using sgpp::solver::SLESolver;
+using sgpp::solver::ConjugateGradients;
+using sgpp::solver::BiCGStab;
+using sgpp::solver::SLESolverType;
+
 namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
-    std::shared_ptr<sgpp::datadriven::DataMiningConfigurationLeastSquares> config)
+    std::shared_ptr<DataMiningConfigurationLeastSquares> config)
     : datadriven::ModelFittingBase(), config(config) {}
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
 
-void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
+void ModelFittingLeastSquares::fit(Dataset& dataset) {
   // clear model
   alpha.reset();
   grid.reset();
@@ -42,21 +57,21 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
   alpha = std::make_shared<DataVector>(grid->getSize());
 
   // create sytem matrix
-  systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
+  systemMatrix = std::shared_ptr<DMSystemMatrixBase>(
       buildSystemMatrix(dataset.getData(), config->getLambda()));
 
   // create right hand side and system matrix
   auto b = std::make_unique<DataVector>(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), *b);
 
-  if (config->getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::CG) {
-    solver = std::make_unique<solver::ConjugateGradients>(
-        config->getSolverRefineConfig().maxIterations_, config->getSolverRefineConfig().eps_);
-  } else if (config->getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
-    solver = std::make_unique<solver::BiCGStab>(config->getSolverRefineConfig().maxIterations_,
-                                                config->getSolverRefineConfig().eps_);
+  if (config->getSolverRefineConfig().type_ == SLESolverType::CG) {
+    solver = std::make_unique<ConjugateGradients>(config->getSolverRefineConfig().maxIterations_,
+                                                  config->getSolverRefineConfig().eps_);
+  } else if (config->getSolverRefineConfig().type_ == SLESolverType::BiCGSTAB) {
+    solver = std::make_unique<BiCGStab>(config->getSolverRefineConfig().maxIterations_,
+                                        config->getSolverRefineConfig().eps_);
   } else {
-    throw base::application_exception(
+    throw application_exception(
         "LearnerBase::train: An unsupported SLE solver type was "
         "chosen!");
   }
@@ -86,10 +101,10 @@ void ModelFittingLeastSquares::refine() {
   //}
 }
 
-void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
+void ModelFittingLeastSquares::update(Dataset& dataset) {
   // create sytem matrix
   systemMatrix.reset();
-  systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
+  systemMatrix = std::shared_ptr<DMSystemMatrixBase>(
       buildSystemMatrix(dataset.getData(), config->getLambda()));
 
   auto b = std::make_unique<DataVector>(grid->getSize());
@@ -99,7 +114,7 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
 }
 
 std::unique_ptr<DMSystemMatrixBase> ModelFittingLeastSquares::buildSystemMatrix(
-    base::DataMatrix& trainDataset, double lambda) {
+    DataMatrix& trainDataset, double lambda) {
   auto tmp = std::make_unique<SystemMatrixLeastSquaresIdentity>(*grid, trainDataset, lambda);
   tmp->setImplementation(implementationConfig);
   std::unique_ptr<DMSystemMatrixBase> systemMatrix = std::move(tmp);
