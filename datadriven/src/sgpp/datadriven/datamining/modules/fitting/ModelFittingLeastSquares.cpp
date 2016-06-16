@@ -23,7 +23,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-// TODO(lettrich): use the system matrix with flexible regularization
+// TODO(lettrich): allow different regularization types
+// TODO(lettrich): allow different refinement types
+// TODO(lettrich): allow different refinement criteria
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -74,32 +76,37 @@ void ModelFittingLeastSquares::fit(Dataset& dataset) {
 }
 
 void ModelFittingLeastSquares::refine() {
-  // create refinement functor
-  SurplusRefinementFunctor refinementFunctor(*alpha, config->getRefinementConfig().noPoints_,
-                                             config->getRefinementConfig().threshold_);
-  // refine grid
-  grid->getGenerator().refine(refinementFunctor);
+  if (grid != nullptr) {
+    // create refinement functor
+    SurplusRefinementFunctor refinementFunctor(*alpha, config->getRefinementConfig().noPoints_,
+                                               config->getRefinementConfig().threshold_);
+    // refine grid
+    grid->getGenerator().refine(refinementFunctor);
 
-  // tell the SLE manager that the grid changed (for interal data structures)
-  // systemMatrix->prepareGrid(); -> empty statement!
-  alpha->resizeZero(grid->getSize());
+    // tell the SLE manager that the grid changed (for interal data structures)
+    // systemMatrix->prepareGrid(); -> empty statement!
+    alpha->resizeZero(grid->getSize());
 
-  // if (i == configuration.adaptivityConfig.numRefinements_) {
-  solver->setMaxIterations(config->getSolverFinalConfig().maxIterations_);
-  solver->setEpsilon(config->getSolverFinalConfig().eps_);
-  //}
+  } else {
+    throw application_exception(
+        "ModelFittingLeastSquares: Can't refine before initial grid is created");
+  }
 }
 
 void ModelFittingLeastSquares::update(Dataset& dataset) {
-  // create sytem matrix
-  systemMatrix.reset();
-  systemMatrix = buildSystemMatrix(dataset.getData(), config->getLambda());
+  if (grid != nullptr) {
+    // create sytem matrix
+    systemMatrix.reset();
+    systemMatrix = buildSystemMatrix(dataset.getData(), config->getLambda());
 
-  auto b = std::make_unique<DataVector>(grid->getSize());
-  systemMatrix->generateb(dataset.getTargets(), *b);
+    auto b = std::make_unique<DataVector>(grid->getSize());
+    systemMatrix->generateb(dataset.getTargets(), *b);
 
-  configureSolver(*config, *solver, FittingSolverState::refine);
-  solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+    configureSolver(*config, *solver, FittingSolverState::refine);
+    solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+  } else {
+    fit(dataset);
+  }
 }
 
 std::unique_ptr<DMSystemMatrixBase> ModelFittingLeastSquares::buildSystemMatrix(
