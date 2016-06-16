@@ -46,8 +46,8 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
       buildSystemMatrix(dataset.getData(), config->getLambda()));
 
   // create right hand side and system matrix
-  DataVector b(grid->getSize());
-  systemMatrix->generateb(dataset.getTargets(), b);
+  auto b = std::make_unique<DataVector>(grid->getSize());
+  systemMatrix->generateb(dataset.getTargets(), *b);
 
   if (config->getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::CG) {
     solver = std::make_unique<solver::ConjugateGradients>(
@@ -66,7 +66,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
     solver->setEpsilon(config->getSolverFinalConfig().eps_);
   }
 
-  solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
 void ModelFittingLeastSquares::refine() {
@@ -92,10 +92,10 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
       buildSystemMatrix(dataset.getData(), config->getLambda()));
 
-  DataVector b(grid->getSize());
-  systemMatrix->generateb(dataset.getTargets(), b);
+  auto b = std::make_unique<DataVector>(grid->getSize());
+  systemMatrix->generateb(dataset.getTargets(), *b);
 
-  solver->solve(*systemMatrix, *alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
 std::unique_ptr<DMSystemMatrixBase> ModelFittingLeastSquares::buildSystemMatrix(
