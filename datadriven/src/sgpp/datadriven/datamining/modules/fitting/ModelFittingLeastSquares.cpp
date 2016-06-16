@@ -41,7 +41,13 @@ namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
     std::shared_ptr<DataMiningConfigurationLeastSquares> config)
-    : datadriven::ModelFittingBase(), config(config) {}
+    : datadriven::ModelFittingBase(),
+      config(config),
+      systemMatrix(nullptr),
+      solver(nullptr),
+      implementationConfig(OperationMultipleEvalConfiguration()) {
+  solver = buildSolver(*this->config);
+}
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
 
@@ -57,30 +63,13 @@ void ModelFittingLeastSquares::fit(Dataset& dataset) {
   alpha = std::make_shared<DataVector>(grid->getSize());
 
   // create sytem matrix
-  systemMatrix = std::shared_ptr<DMSystemMatrixBase>(
-      buildSystemMatrix(dataset.getData(), config->getLambda()));
+  systemMatrix = buildSystemMatrix(dataset.getData(), config->getLambda());
 
   // create right hand side and system matrix
   auto b = std::make_unique<DataVector>(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), *b);
 
-  if (config->getSolverRefineConfig().type_ == SLESolverType::CG) {
-    solver = std::make_unique<ConjugateGradients>(config->getSolverRefineConfig().maxIterations_,
-                                                  config->getSolverRefineConfig().eps_);
-  } else if (config->getSolverRefineConfig().type_ == SLESolverType::BiCGSTAB) {
-    solver = std::make_unique<BiCGStab>(config->getSolverRefineConfig().maxIterations_,
-                                        config->getSolverRefineConfig().eps_);
-  } else {
-    throw application_exception(
-        "LearnerBase::train: An unsupported SLE solver type was "
-        "chosen!");
-  }
-
-  if (config->getRefinementConfig().numRefinements_ == 0) {
-    solver->setMaxIterations(config->getSolverFinalConfig().maxIterations_);
-    solver->setEpsilon(config->getSolverFinalConfig().eps_);
-  }
-
+  configureSolver(*config, *solver, FittingSolverState::solve);
   solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
@@ -104,12 +93,12 @@ void ModelFittingLeastSquares::refine() {
 void ModelFittingLeastSquares::update(Dataset& dataset) {
   // create sytem matrix
   systemMatrix.reset();
-  systemMatrix = std::shared_ptr<DMSystemMatrixBase>(
-      buildSystemMatrix(dataset.getData(), config->getLambda()));
+  systemMatrix = buildSystemMatrix(dataset.getData(), config->getLambda());
 
   auto b = std::make_unique<DataVector>(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), *b);
 
+  configureSolver(*config, *solver, FittingSolverState::refine);
   solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
@@ -121,5 +110,42 @@ std::unique_ptr<DMSystemMatrixBase> ModelFittingLeastSquares::buildSystemMatrix(
 
   return systemMatrix;
 }
+
+std::unique_ptr<SLESolver> ModelFittingLeastSquares::buildSolver(
+    DataMiningConfigurationLeastSquares& config) {
+  std::unique_ptr<SLESolver> solver;
+
+  if (config.getSolverRefineConfig().type_ == SLESolverType::CG) {
+    solver = std::make_unique<ConjugateGradients>(config.getSolverFinalConfig().maxIterations_,
+                                                  config.getSolverFinalConfig().eps_);
+  } else if (config.getSolverRefineConfig().type_ == SLESolverType::BiCGSTAB) {
+    solver = std::make_unique<BiCGStab>(config.getSolverFinalConfig().maxIterations_,
+                                        config.getSolverFinalConfig().eps_);
+  } else {
+    throw application_exception(
+        "ModelFittingLeastSquares: An unsupported SLE solver type was "
+        "chosen!");
+  }
+  return solver;
+}
+
+void ModelFittingLeastSquares::configureSolver(DataMiningConfigurationLeastSquares& config,
+                                               SLESolver& solver, FittingSolverState solverState) {
+  switch (solverState) {
+    case FittingSolverState::solve:
+      solver.setMaxIterations(config.getSolverFinalConfig().maxIterations_);
+      solver.setEpsilon(config.getSolverFinalConfig().eps_);
+      break;
+    case FittingSolverState::refine:
+      solver.setMaxIterations(config.getSolverRefineConfig().maxIterations_);
+      solver.setEpsilon(config.getSolverRefineConfig().eps_);
+      break;
+    default:
+      solver.setMaxIterations(config.getSolverFinalConfig().maxIterations_);
+      solver.setEpsilon(config.getSolverFinalConfig().eps_);
+      break;
+  }
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

@@ -16,6 +16,8 @@
 namespace sgpp {
 namespace datadriven {
 
+enum class FittingSolverState { refine, solve };
+
 class ModelFittingBase {
  public:
   ModelFittingBase();

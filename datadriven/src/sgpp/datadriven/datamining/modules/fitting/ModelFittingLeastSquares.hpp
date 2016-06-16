@@ -17,6 +17,9 @@
 
 #include <sgpp/solver/SLESolver.hpp>
 
+using sgpp::solver::SLESolver;
+using sgpp::base::DataMatrix;
+
 namespace sgpp {
 namespace datadriven {
 
@@ -50,7 +53,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
 
   // reuse grid and new dataset
   // for online learning
-  void update(datadriven::Dataset& dataset) override;
+  void update(Dataset& dataset) override;
   //
   //  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration)
   //  {
@@ -58,13 +61,18 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   //  }
 
  protected:
-  virtual std::unique_ptr<DMSystemMatrixBase> buildSystemMatrix(base::DataMatrix& trainDataset,
+  virtual std::unique_ptr<DMSystemMatrixBase> buildSystemMatrix(DataMatrix& trainDataset,
                                                                 double lambda);
+
+  virtual std::unique_ptr<SLESolver> buildSolver(DataMiningConfigurationLeastSquares& config);
+
+  void configureSolver(DataMiningConfigurationLeastSquares& config, SLESolver& solver,
+                       FittingSolverState solverState);
 
  private:
   std::shared_ptr<DataMiningConfigurationLeastSquares> config;
-  std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
-  std::unique_ptr<solver::SLESolver> solver;
+  std::unique_ptr<DMSystemMatrixBase> systemMatrix;
+  std::unique_ptr<SLESolver> solver;
   OperationMultipleEvalConfiguration implementationConfig;
 };
 }
