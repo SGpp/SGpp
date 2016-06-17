@@ -24,7 +24,7 @@
 
 int main() {
   size_t dimension = 10, tiefe = 6, k = 12;
-  double lambda = 0.001, treshold = 0.7;
+  double lambda = 0.000, treshold = 0.7;
   std::string filename = "dataset3_dim10.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
@@ -63,7 +63,7 @@ int main() {
       "MyOCLConf.cfg");
 
   operation_mult->mult(alpha, result);
-  for (auto i = 0; i < 100; ++i) {
+  for (auto i = 0; i < 500; ++i) {
     std::cout << result[i] << " ";
   }
 

@@ -373,6 +373,9 @@ class KernelDensityMult {
         if (kernelNode.contains("USE_FABS") == false) {
           kernelNode.addIDAttr("USE_FABS", true);
         }
+        if (kernelNode.contains("PREPROCESS_POSITIONS") == false) {
+          kernelNode.addIDAttr("PREPROCESS_POSITIONS", true);
+        }
       }
     }
   }
