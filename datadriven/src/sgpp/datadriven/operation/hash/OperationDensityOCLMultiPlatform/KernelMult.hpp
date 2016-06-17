@@ -36,6 +36,9 @@ class KernelDensityMult {
   base::OCLBufferWrapperSD<T> deviceResultData;
   base::OCLBufferWrapperSD<T> deviceLevels;
   base::OCLBufferWrapperSD<T> deviceDivisors;
+  base::OCLBufferWrapperSD<int> devicehInverse;
+  base::OCLBufferWrapperSD<T> devicehs;
+  base::OCLBufferWrapperSD<T> devicePositions;
 
   cl_kernel kernelMult;
   SourceBuilderMult<T> kernelSourceBuilder;
@@ -52,6 +55,7 @@ class KernelDensityMult {
   bool use_level_cache;
   bool use_less;
   bool do_not_use_ternary;
+  bool preprocess_positions;
 
  public:
   KernelDensityMult(std::shared_ptr<base::OCLDevice> dev, size_t dims,
@@ -59,10 +63,10 @@ class KernelDensityMult {
                     json::Node &kernelConfiguration, std::vector<int> &points, T lambda) :
       device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
       deviceAlpha(device), deviceResultData(device), deviceLevels(device),
-      deviceDivisors(device), kernelMult(nullptr),
-      kernelSourceBuilder(kernelConfiguration), manager(manager),
+      deviceDivisors(device), devicehInverse(device), devicehs(device), devicePositions(device),
+      kernelMult(nullptr), kernelSourceBuilder(kernelConfiguration), manager(manager),
       deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), use_level_cache(false),
-      use_less(false), do_not_use_ternary(false) {
+      use_less(false), do_not_use_ternary(false), preprocess_positions(false) {
     this->verbose = use_level_cache = kernelConfiguration["VERBOSE"].getBool();
     gridSize = points.size()/(2*dims);
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
@@ -82,8 +86,10 @@ class KernelDensityMult {
     dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = dataBlockingSize * localSize;
-    for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++)
+    for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++) {
       points.push_back(0);
+    }
+    gridSize = points.size()/(2*dims);
     devicePoints.intializeTo(points, 1, 0, points.size());
 
     // Check whether to calculate h_n on the host side (true) or in the opencl kernel (false)
@@ -124,6 +130,27 @@ class KernelDensityMult {
         divisor /= static_cast<T>(3.0);
       }
       deviceDivisors.intializeTo(divisors, 1, 0, dims + 1);
+    }
+
+    // Check whether to use prepocessed positions or not
+    if (kernelConfiguration.contains("PREPROCESS_POSITIONS")) {
+      preprocess_positions = kernelConfiguration["PREPROCESS_POSITIONS"].getBool();
+    }
+    if (preprocess_positions) {
+      std::vector<T> positions;
+      std::vector<T> hs;
+      std::vector<int> hs_inverse;
+      for (size_t i = 0; i < gridSize; ++i) {
+        for (size_t dim = 0; dim < dims; ++dim) {
+          hs_inverse.push_back(1 << points[i*2*dims + 2*dim + 1]);
+          hs.push_back(1.0 / (1 << points[i*2*dims + 2*dim + 1]));
+          positions.push_back(static_cast<double>(points[i*2*dims + 2*dim]) /
+                              static_cast<double>(1 << points[i*2*dims + 2*dim + 1]));
+          devicehInverse.intializeTo(hs_inverse, 1, 0, gridSize * dims);
+          devicehs.intializeTo(hs, 1, 0, gridSize * dims);
+          devicePositions.intializeTo(positions, 1, 0, gridSize * dims);
+        }
+      }
     }
 
     // Finish writing all buffers
@@ -184,46 +211,79 @@ class KernelDensityMult {
     clFinish(device->commandQueue);
 
     // Set mandatory kernel arguments
-    err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem),
-                         this->devicePoints.getBuffer());
-    if (err != CL_SUCCESS) {
-      std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-      throw base::operation_exception(errorString.str());
+    int argument_counter = 0;
+    if (!preprocess_positions) {
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           this->devicePoints.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
+      argument_counter++;
+    } else {
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           devicehInverse.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
+      argument_counter++;
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           devicehs.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
+      argument_counter++;
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
+                           devicePositions.getBuffer());
+      if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        throw base::operation_exception(errorString.str());
+      }
+      argument_counter++;
     }
-    err = clSetKernelArg(this->kernelMult, 1, sizeof(cl_mem),
+    err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
                          this->deviceAlpha.getBuffer());
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem),
+    argument_counter++;
+    err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
                          this->deviceResultData.getBuffer());
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
+    argument_counter++;
     if (std::is_same<T, float>::value) {
-      err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_float), &lambda);
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_float), &lambda);
     } else {
-      err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_double), &lambda);
+      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_double), &lambda);
     }
+    argument_counter++;
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
-    err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_uint), &startid);
+    argument_counter++;
+    err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_uint), &startid);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
+    argument_counter++;
 
     // Set optional kernel arguments
-    int argument_counter = 5;
     if (use_level_cache) {
       err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
                            this->deviceLevels.getBuffer());
