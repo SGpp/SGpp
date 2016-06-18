@@ -63,17 +63,15 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
         for (size_t i = 0; i < dimensions; i++) {
           // calculate inverses
           output << this->indent[1] << "point_hinverses_block" << block
-                 << "[" << i << "] = (1 << starting_points[(gridindex * "
-                 << dataBlockSize << " + " << block << ") * "
-                 << dimensions << " * 2 + 2 * " << i << " + 1]);" << std::endl;
+                 << "[" << i << "] = hs_inverses[gridindex * "
+                 << dimensions << " + " << i << "];" << std::endl;
           // calculate hs
           output << this->indent[1] << "point_hs_block" << block
-                 << "[" << i << "] = 1.0 / point_hinverses_block" << block << "[" << i << "];" << std::endl;
+                 << "[" << i << "] = hs[gridindex * "
+                 << dimensions << " + " << i << "];" << std::endl;
           // calculate positions
           output << this->indent[1] << "point_positions_block" << block << "[" << i
-                 << "] = point_hs_block"
-                 << block << "[" << i << "]*starting_points[(gridindex * " << dataBlockSize << " + "
-                 << block << ") * " << dimensions << " * 2 + 2 * " << i << "];" << std::endl;
+                 << "] = positions[gridindex * " << dimensions << " + " << i << "];" << std::endl;
         }
       }
     }
@@ -382,17 +380,17 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[2] << "hinverses_local[local_id * " << dimensions
                    << " + j] = hs_inverses[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
-                   << " + j];;" << std::endl;
+                   << " + j];" << std::endl;
       // calculate hs
       sourceStream << this->indent[2] << "hs_local[local_id * " << dimensions
                    << " + j] = hs[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
-                   << " + j];;" << std::endl;
+                   << " + j];" << std::endl;
       // calculate positions
       sourceStream << this->indent[2] << "positions_local[local_id * " << dimensions
                    << " + j] = positions[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
-                   << " + j];;" << std::endl;
+                   << " + j];" << std::endl;
       sourceStream << "}"
                    << this->indent[1] << "alpha_local[local_id] = alpha[group * "
                    << localWorkgroupSize << "  + local_id ];" << std::endl
