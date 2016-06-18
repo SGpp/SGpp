@@ -89,7 +89,6 @@ class KernelDensityMult {
     for (size_t i = 0; i < (localSize - (gridSize % localSize)) * 2 * dims; i++) {
       points.push_back(0);
     }
-    gridSize = points.size()/(2*dims);
     devicePoints.intializeTo(points, 1, 0, points.size());
 
     // Check whether to calculate h_n on the host side (true) or in the opencl kernel (false)
@@ -140,17 +139,18 @@ class KernelDensityMult {
       std::vector<T> positions;
       std::vector<T> hs;
       std::vector<int> hs_inverse;
-      for (size_t i = 0; i < gridSize; ++i) {
+      for (size_t i = 0; i < points.size()/(2*dims); ++i) {
         for (size_t dim = 0; dim < dims; ++dim) {
           hs_inverse.push_back(1 << points[i*2*dims + 2*dim + 1]);
           hs.push_back(1.0 / (1 << points[i*2*dims + 2*dim + 1]));
           positions.push_back(static_cast<double>(points[i*2*dims + 2*dim]) /
                               static_cast<double>(1 << points[i*2*dims + 2*dim + 1]));
-          devicehInverse.intializeTo(hs_inverse, 1, 0, gridSize * dims);
-          devicehs.intializeTo(hs, 1, 0, gridSize * dims);
-          devicePositions.intializeTo(positions, 1, 0, gridSize * dims);
         }
       }
+      devicehInverse.intializeTo(hs_inverse, 1, 0, points.size()/2);
+      devicehs.intializeTo(hs, 1, 0, points.size()/2);
+      devicePositions.intializeTo(positions, 1, 0, points.size()/2);
+      std::cout << positions.size() << "\n";
     }
 
     // Finish writing all buffers
@@ -217,7 +217,8 @@ class KernelDensityMult {
                            this->devicePoints.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -226,7 +227,8 @@ class KernelDensityMult {
                            devicehInverse.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -234,7 +236,8 @@ class KernelDensityMult {
                            devicehs.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -242,7 +245,8 @@ class KernelDensityMult {
                            devicePositions.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -251,7 +255,8 @@ class KernelDensityMult {
                          this->deviceAlpha.getBuffer());
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                  << ") for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
     argument_counter++;
@@ -259,7 +264,8 @@ class KernelDensityMult {
                          this->deviceResultData.getBuffer());
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                  << ") for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
     argument_counter++;
@@ -268,17 +274,18 @@ class KernelDensityMult {
     } else {
       err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_double), &lambda);
     }
-    argument_counter++;
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                  << ") for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
     argument_counter++;
     err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_uint), &startid);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+      errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                  << ") for device " << std::endl;
       throw base::operation_exception(errorString.str());
     }
     argument_counter++;
@@ -289,7 +296,8 @@ class KernelDensityMult {
                            this->deviceLevels.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -299,7 +307,8 @@ class KernelDensityMult {
                            this->deviceDivisors.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
     }
