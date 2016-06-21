@@ -10,7 +10,7 @@
  *      Author: Michael Lettrich
  */
 
-#include <sgpp/datadriven/datamining/builder/FileBasedDataSourceBuilder.hpp>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-using sgpp::datadriven::FileBasedDataSourceBuilder;
+using sgpp::datadriven::DataSourceBuilder;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     path = std::string(argv[1]);
   }
 
-  auto dataSource = FileBasedDataSourceBuilder().withPath(path).assemble();
+  auto dataSource = DataSourceBuilder().withPath(path).assemble();
   std::cout << "reading input file: " << path << std::endl;
   auto dataset = dataSource->getNextSamples();
 
