@@ -5,8 +5,7 @@
  *      Author: perun
  */
 
-#ifndef SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
-#define SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -26,5 +25,3 @@ class MSE : public Metric {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_ */

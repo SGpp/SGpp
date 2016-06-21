@@ -5,12 +5,11 @@
  *      Author: perun
  */
 
-#ifndef SCORER_HPP_
-#define SCORER_HPP_
+#pragma once
 
-#include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <memory>
 
@@ -26,7 +25,7 @@ class Scorer {
  public:
   Scorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter)
       : metric(metric), fitter(fitter){};
-  virtual ~Scorer();
+  virtual ~Scorer(){};
   virtual double getScore(Dataset& dataset) = 0;
 
  protected:
@@ -36,5 +35,3 @@ class Scorer {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* SCORER_HPP_ */
