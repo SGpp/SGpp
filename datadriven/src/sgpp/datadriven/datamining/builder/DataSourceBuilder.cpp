@@ -12,6 +12,7 @@
 #include "DataSourceBuilder.hpp"
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
@@ -90,7 +91,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   std::vector<std::string> tokens;
 
   // split the string
-  tokenize(config.filePath, ".", tokens);
+  StringTokenizer::tokenize(config.filePath, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
     // TODO(Michael Lettrich): test if this works with umlauts
@@ -105,22 +106,6 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   if (std::find(tokens.begin(), tokens.end(), arff) != tokens.end()) {
     fileType = ARFF;
   }
-}
-
-// TODO(Michael Lettrich): move to own class
-void DataSourceBuilder::tokenize(const std::string& s, const char* delim,
-                                 std::vector<std::string>& v) {
-  // to avoid modifying original string
-  // first duplicate the original string and return a char pointer then free the memory
-  char* dup = strdup(s.c_str());
-  char* token = strtok(dup, delim);
-  while (token != NULL) {
-    v.push_back(std::string(token));
-    // the call is treated as a subsequent calls to strtok:
-    // the function continues from where it left in previous invocation
-    token = strtok(NULL, delim);
-  }
-  free(dup);
 }
 
 } /* namespace datadriven */
