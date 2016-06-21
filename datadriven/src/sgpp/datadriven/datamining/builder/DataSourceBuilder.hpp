@@ -36,7 +36,6 @@ class DataSourceBuilder {
 
  private:
   void grabTypeInfoFromFilePath();
-  void tokenize(const std::string& s, const char* delim, std::vector<std::string>& v);
 
   DataSourceStateConfig config;
   FileType fileType;
