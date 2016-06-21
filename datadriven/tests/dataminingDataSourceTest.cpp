@@ -31,6 +31,7 @@ using sgpp::datadriven::SampleProvider;
 using sgpp::datadriven::GzipFileSampleDecorator;
 using sgpp::datadriven::ArffFileSampleProvider;
 using sgpp::datadriven::DataSourceState;
+using sgpp::datadriven::DataSourceStateConfig;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
@@ -60,7 +61,10 @@ BOOST_FIXTURE_TEST_SUITE(dataSourceGetNextSamplesAllTest, State)
 BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
   auto sampleProvider = std::unique_ptr<SampleProvider>(
       new GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>())));
-  auto state = std::make_shared<DataSourceState>(path);
+  DataSourceStateConfig config;
+  config.filePath = path;
+  config.numBatches = 1;
+  auto state = std::make_shared<DataSourceState>(config);
 
   DataSource dataSource = DataSource(state, std::move(sampleProvider));
 
@@ -95,7 +99,10 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
   auto sampleProvider = std::unique_ptr<SampleProvider>(
       new GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>())));
-  auto state = std::make_shared<DataSourceState>(path);
+  DataSourceStateConfig config;
+  config.filePath = path;
+  config.numBatches = 1;
+  auto state = std::make_shared<DataSourceState>(config);
 
   DataSource dataSource = DataSource(state, std::move(sampleProvider));
 
