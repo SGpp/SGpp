@@ -28,8 +28,9 @@ const std::string gz = "gz";
 namespace sgpp {
 namespace datadriven {
 
-DataSourceBuilder::DataSourceBuilder()
-    : fileType(NONE), filePath(""), isCompressed(false), batchSize(0), numBatches(1) {}
+DataSourceBuilder::DataSourceBuilder() : config(), fileType(NONE), isCompressed(false) {
+  config.numBatches = 1;
+}
 
 DataSourceBuilder::~DataSourceBuilder() {}
 
@@ -43,12 +44,12 @@ DataSourceBuilder& DataSourceBuilder::withFileType(std::string fileType) {
 }
 
 DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
-  numBatches = howMany;
+  config.numBatches = howMany;
   return *this;
 }
 
 DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
-  this->batchSize = batchSize;
+  config.batchSize = batchSize;
   return *this;
 }
 
@@ -58,7 +59,7 @@ DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
 }
 
 DataSourceBuilder& DataSourceBuilder::withPath(std::string filePath) {
-  this->filePath = filePath;
+  config.filePath = filePath;
   grabTypeInfoFromFilePath();
   return *this;
 }
@@ -79,7 +80,7 @@ std::unique_ptr<DataSource> DataSourceBuilder::assemble() {
     fileSampleProvider = std::make_unique<GzipFileSampleDecorator>(std::move(fileSampleProvider));
   }
 
-  auto state = std::make_shared<DataSourceState>(filePath, numBatches, batchSize);
+  auto state = std::make_shared<DataSourceState>(config);
   std::unique_ptr<SampleProvider> sampleProvider = std::move(fileSampleProvider);
   return std::make_unique<DataSource>(state, std::move(sampleProvider));
 }
@@ -89,7 +90,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   std::vector<std::string> tokens;
 
   // split the string
-  tokenize(filePath, ".", tokens);
+  tokenize(config.filePath, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
     // TODO(Michael Lettrich): test if this works with umlauts
@@ -108,7 +109,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
 
 // TODO(Michael Lettrich): move to own class
 void DataSourceBuilder::tokenize(const std::string& s, const char* delim,
-                                          std::vector<std::string>& v) {
+                                 std::vector<std::string>& v) {
   // to avoid modifying original string
   // first duplicate the original string and return a char pointer then free the memory
   char* dup = strdup(s.c_str());

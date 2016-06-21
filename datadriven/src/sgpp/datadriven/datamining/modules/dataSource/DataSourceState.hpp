@@ -16,11 +16,20 @@
 namespace sgpp {
 namespace datadriven {
 
+struct DataSourceStateConfig {
+  std::string filePath = "";
+  size_t batchSize = 0;
+  size_t numBatches = 0;
+};
+
 class DataSourceState {
  public:
   DataSourceState() : filePath(""), batchSize(0), numBatches(0), currentIteration(0) {}
-  DataSourceState(std::string filePath, size_t numBatches = 1, size_t batchSize = 0)
-      : filePath(filePath), batchSize(batchSize), numBatches(numBatches), currentIteration(0) {}
+  DataSourceState(const DataSourceStateConfig& config)
+      : filePath(config.filePath),
+        batchSize(config.batchSize),
+        numBatches(config.numBatches),
+        currentIteration(0) {}
   virtual ~DataSourceState(){};
 
   size_t getBatchSize() const { return batchSize; }

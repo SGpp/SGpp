@@ -12,6 +12,7 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
 
 #include <memory.h>
 #include <string>
@@ -37,11 +38,9 @@ class DataSourceBuilder {
   void grabTypeInfoFromFilePath();
   void tokenize(const std::string& s, const char* delim, std::vector<std::string>& v);
 
+  DataSourceStateConfig config;
   FileType fileType;
-  std::string filePath;
   bool isCompressed;
-  size_t batchSize;
-  size_t numBatches;
 };
 
 } /* namespace datadriven */
