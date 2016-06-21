@@ -10,13 +10,9 @@
 namespace sgpp {
 namespace datadriven {
 
-MSE::MSE() {
-  // TODO(valeriy) Auto-generated constructor stub
-}
+MSE::MSE() {}
 
-MSE::~MSE() {
-  // TODO(valeriy) Auto-generated destructor stub
-}
+MSE::~MSE() {}
 
 double MSE::operator()(const DataVector& predictedValues, const DataVector& trueValues) {
   DataVector tmp(predictedValues);

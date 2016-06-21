@@ -5,8 +5,7 @@
  *      Author: perun
  */
 
-#ifndef METRIC_HPP_
-#define METRIC_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -32,5 +31,3 @@ class Metric {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* METRIC_HPP_ */
