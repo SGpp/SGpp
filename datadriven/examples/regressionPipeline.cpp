@@ -51,8 +51,7 @@ int main(int argc, char **argv) {
   // regression
   auto config = std::make_shared<DataMiningConfigurationLeastSquares>();
   config->addIDAttr("trainPortion", 0.5);
-  size_t seed = 42;
-  config->addIDAttr("seed", seed);
+  config->addIDAttr("seed", static_cast<uint64_t>(42));
 
   auto gridConfig = config->getGridConfig();
   gridConfig.dim_ = dataset->getDimension();
