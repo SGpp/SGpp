@@ -3,9 +3,9 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * FileSampleProviderBuilder.hpp
+ * FileBasedDataSourceBuilder.hpp
  *
- *  Created on: 16.05.2016
+ *  Created on: 01.06.2016
  *      Author: Michael Lettrich
  */
 
@@ -13,23 +13,33 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 
-#include <memory>
+#include <memory.h>
 #include <string>
-
-enum FileType { NONE, ARFF };
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
-// TODO(Michael Lettrich): parse filetype?
+
+enum FileType { NONE, ARFF };
+
 class DataSourceBuilder {
  public:
   DataSourceBuilder();
   virtual ~DataSourceBuilder();
+  DataSourceBuilder& withPath(std::string filePath);
+  DataSourceBuilder& withCompression(bool isCompressed);
+  DataSourceBuilder& withFileType(std::string fileType);
   DataSourceBuilder& inBatches(size_t howMany);
   DataSourceBuilder& withBatchSize(size_t batchSize);
-  virtual std::unique_ptr<DataSource> assemble() = 0;
+  virtual std::unique_ptr<DataSource> assemble();
 
- protected:
+ private:
+  void grabTypeInfoFromFilePath();
+  void tokenize(const std::string& s, const char* delim, std::vector<std::string>& v);
+
+  FileType fileType;
+  std::string filePath;
+  bool isCompressed;
   size_t batchSize;
   size_t numBatches;
 };
