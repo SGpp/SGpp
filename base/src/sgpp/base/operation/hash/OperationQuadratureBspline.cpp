@@ -22,7 +22,6 @@ double OperationQuadratureBspline::doQuadrature(DataVector& alpha) {
     for (size_t d = 0; d < storage.getDimension(); d++) {
       tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
     }
-
     res += alpha[i] * tmpres;
   }
 
