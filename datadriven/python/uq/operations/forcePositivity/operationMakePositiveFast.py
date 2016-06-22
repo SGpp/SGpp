@@ -37,7 +37,7 @@ class OperationMakePositiveFast(object):
 
         self.lastMinimumCandidateLevelSum = None
 
-        self.verbose = True
+        self.verbose = False
 
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
