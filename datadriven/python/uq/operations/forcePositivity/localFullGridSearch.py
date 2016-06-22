@@ -198,12 +198,12 @@ class LocalFullGridCandidates(CandidateSet):
         self.newCandidates = []
 
         self.globalGrids = {}
-        self.verbose = True
+        self.verbose = False
         self.plot = True
-        self.plotSubgrids = True
-        self.plotSubtract = True
-        self.debug = False
-        self.reduceLocalGrids = False
+        self.plotSubgrids = False
+        self.plotSubtract = False
+        self.debug = True
+        self.reduceLocalGrids = True
 
     def findInnerIntersection(self, gpi, gpj):
         # find maximum level
@@ -237,7 +237,7 @@ class LocalFullGridCandidates(CandidateSet):
         return tuple(level), tuple(index)
 
 
-#     @profile
+#     #@profile
     def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, gpi, gpsj, overlap, grid):
         numDims = gpi.getDimension()
         gs = grid.getStorage()
@@ -316,18 +316,18 @@ class LocalFullGridCandidates(CandidateSet):
         for iSplittedGrids in iGridList:
             for levelindex, iSplittedGrid in iSplittedGrids.items():
                 if levelindex in jGridList:
-                    if not np.all(jGridList[levelindex].fullGridLevels >= iSplittedGrid.fullGridLevels):
-                        print jGridList[levelindex].level, jGridList[levelindex].fullGridLevels
-                        print iSplittedGrid.level, iSplittedGrid.fullGridLevels
-                        import pdb; pdb.set_trace()
-#                     assert np.all(jGridList[levelindex].fullGridLevels >= iSplittedGrid.fullGridLevels)
+#                     assert np.all(iSplittedGrid.fullGridLevels >= jGridList[levelindex].fullGridLevels)
+
+#                     print "merge:", iSplittedGrid.fullGridLevels, jGridList[levelindex].fullGridLevels,
                     self.mergeLocalGrids(iSplittedGrid,
                                          jGridList[levelindex],
-                                         update="min")
+                                         update="max")
+#                     print "->", jGridList[levelindex].fullGridLevels
                 else:
                     jGridList[levelindex] = iSplittedGrid
 
 
+    # @profile
     def splitIntersections(self, sortedCoarsedOverlap):
         overlappingGrids = []
 
@@ -342,22 +342,22 @@ class LocalFullGridCandidates(CandidateSet):
             # find all possible intersections of grid points which have
             # not yet been considered
             iSubtractOverlap = []
-            print "%i, %s ->" % (i, iFullGrid.getLevelIndex()),
+#             print "%i, %s ->" % (i, iFullGrid.getLevelIndex()),
             for j, jFullGrid in enumerate(sortedCoarsedOverlap[:i:-1]):
                 costsSubtractSearch += 1
-                print "%i," % (len(sortedCoarsedOverlap) - j - 1,),
+#                 print "%i," % (len(sortedCoarsedOverlap) - j - 1,),
                 if jFullGrid.overlap(iFullGrid):
                     iSubtractOverlap.append(jFullGrid.getLevelIndex())
                     overlapping = True
-                    print iSubtractOverlap[-1],
+#                     print iSubtractOverlap[-1],
 
                 assert not jFullGrid.contains(iFullGrid)
             # copy the input list
             if overlapping:
-                print "-> #overlap = %i" % (len(iSubtractOverlap),)
+#                 print "-> #overlap = %i" % (len(iSubtractOverlap),)
                 overlappingGrids.append((iFullGrid.getLevelIndex(), iSubtractOverlap))
-            else:
-                print "-> #overlap = 0"
+#             else:
+#                 print "-> #overlap = 0"
 
         return overlappingGrids, costsSubtractSearch
 
@@ -398,7 +398,7 @@ class LocalFullGridCandidates(CandidateSet):
         return splittedGrids, kFullGrid, done
 
 
-
+    # @profile
     def splitFullGrids(self, overlappingGrids, sortedCoarsedOverlap):
         p = DataVector(self.numDims)
         costs = 0
@@ -408,42 +408,43 @@ class LocalFullGridCandidates(CandidateSet):
         for iFullGrid in sortedCoarsedOverlap:
             gridDict[iFullGrid.getLevelIndex()] = {iFullGrid.getLevelIndex(): iFullGrid}
 
-
         for k, (levelindexi, dependentGrids) in enumerate(overlappingGrids):
-            print "%i: #overlap = %i: change i grid -> %s" % (k, len(dependentGrids), levelindexi,)
+#             print "%i: #overlap = %i: change i grid -> %s" % (k, len(dependentGrids), levelindexi,)
+            if self.debug:
+                # -------------------------------------------------------
+                # check if grid points have been lost
+                uniqueGridPoints = {}
+                for levelindexj in dependentGrids:
+                    for (level, index), gp in gridDict[levelindexj].values()[0].computeAnisotropicFullGrid().items():
+                        if (level, index) not in uniqueGridPoints:
+                            uniqueGridPoints[level, index] = gp
+
+                for fullGrid in gridDict[levelindexi].values():
+                    for (level, index), gp in fullGrid.computeAnisotropicFullGrid().items():
+                        if (level, index) not in uniqueGridPoints:
+                            uniqueGridPoints[level, index] = gp
+                # -------------------------------------------------------
+
             for l, levelindexj in enumerate(dependentGrids):
                 # load the current grid
-                iFullGrids = gridDict[levelindexi].values()
                 jFullGrids = gridDict[levelindexj].values()
 
                 # run over all grids which we have to make non overlapping
                 # with respect to the iNewGrids
                 while len(jFullGrids) > 0:
-                    # get the next grid to compare with
+                    # get the next grids to compare with
+                    iFullGrids = gridDict[levelindexi].values()
                     jFullGrid = jFullGrids.pop()
-                    print "  %i/%i/%i: check j grid -> %s" % (l + 1,
-                                                              len(jFullGrids),
-                                                              len(dependentGrids),
-                                                              jFullGrid.getLevelIndex(),)
+                    del gridDict[levelindexj][jFullGrid.getLevelIndex()]
+#                     print "  %i/%i/%i: check j grid -> %s" % (l + 1,
+#                                                               len(jFullGrids),
+#                                                               len(dependentGrids),
+#                                                               jFullGrid.getLevelIndex(),)
 
                     # these list collects the splitted jFullGrid
                     iNewGrids = []
                     jNewGrids = []
 
-                    if self.debug:
-                        # -------------------------------------------------------
-                        # check if grid points have been lost
-                        uniqueGridPoints = {}
-                        for (level, index), gp in jFullGrid.computeAnisotropicFullGrid().items():
-                            if (level, index) not in uniqueGridPoints:
-                                uniqueGridPoints[level, index] = gp
-
-                        for fullGrid in iFullGrids:
-                            for (level, index), gp in fullGrid.computeAnisotropicFullGrid().items():
-                                if (level, index) not in uniqueGridPoints:
-                                    uniqueGridPoints[level, index] = gp
-                        # -------------------------------------------------------
-                    
                     # run over all currently available grids
                     for iFullGrid in iFullGrids:
                         costs += 1
@@ -466,31 +467,32 @@ class LocalFullGridCandidates(CandidateSet):
                             jNewGrids.append({jFullGrid.getLevelIndex(): jFullGrid})
 
                     # update the grid list
+                    # replace the i grid
                     gridDict[levelindexi] = {}
-                    gridDict[levelindexj] = {}
                     self.updateLocalGridLists(iNewGrids, gridDict[levelindexi])
+                    # update the j grid
                     self.updateLocalGridLists(jNewGrids, gridDict[levelindexj])
 
                     if self.debug:
                         # -------------------------------------------------------
                         # check if grid points have been lost
                         newUniqueGridPoints = {}
-
-                        for grid in [gridDict[levelindexi], gridDict[levelindexj]]:
-                            for fullGrid in grid.values():
+                        for levelindex in dependentGrids:
+                            for fullGrid in gridDict[levelindex].values():
                                 for (level, index), gp in fullGrid.computeAnisotropicFullGrid().items():
                                     if (level, index) not in newUniqueGridPoints:
                                         newUniqueGridPoints[level, index] = gp
 
-                        cntMissing = 0
-                        for (level, index), gp in uniqueGridPoints.items():
-                            if (level, index) not in newUniqueGridPoints:
-                                cntMissing += 1
+                        for fullGrid in gridDict[levelindexi].values():
+                            for (level, index), gp in fullGrid.computeAnisotropicFullGrid().items():
+                                if (level, index) not in newUniqueGridPoints:
+                                    newUniqueGridPoints[level, index] = gp
+                        # -------------------------------------------------------
 
-                        if cntMissing > 0:
+                        if len(uniqueGridPoints) - len(newUniqueGridPoints) > 0:
                             print "%i < %i: %i of old grid points are missing after merge" % (len(newUniqueGridPoints),
                                                                                               len(uniqueGridPoints),
-                                                                                              cntMissing)
+                                                                                              len(uniqueGridPoints) - len(newUniqueGridPoints))
                         # -------------------------------------------------------
 
         # update the resulting local grids
@@ -499,8 +501,8 @@ class LocalFullGridCandidates(CandidateSet):
             for levelindex, localGrid in localGrids.items():
                 if levelindex in ans:
                     # merge local grids
-                    self.mergeLocalGrids(localGrid, ans[levelindex], update="max")
                     print "merging"
+                    self.mergeLocalGrids(localGrid, ans[levelindex], update="max")
                 else:
                     ans[levelindex] = localGrid
 
@@ -538,6 +540,7 @@ class LocalFullGridCandidates(CandidateSet):
         levelOuter = np.array(levelOuter, dtype="int")
         idims = np.where(levelOuter - iFullGrid.level > 0)[0]
         jdims = np.where(levelOuter - jFullGrid.level > 0)[0]
+#         kdims = np.array([i for i in xrange(self.numDims) if i not in idims and i not in jdims], dtype="int")
 
         if self.debug:
             # -------------------------------------------------------
@@ -760,7 +763,7 @@ class LocalFullGridCandidates(CandidateSet):
         return (left, right)
                 
 
-#     @profile
+#     #@profile
     def getLocalFullGridLevel(self, levels, indices, gpk, gpl, grid):
         localMaxLevels = np.zeros(self.numDims, dtype="int")  # + self.maxLevel - levels + 1
         if False and self.numDims == 2 and self.plot:
@@ -838,7 +841,7 @@ class LocalFullGridCandidates(CandidateSet):
 
         return localMaxLevels + 1
 
-#     @profile
+#     #@profile
     def estimateCosts(self, overlap, grid):
         # sort the overlapping grid points by products of levels
         sortedOverlapHashMap = {}
@@ -867,7 +870,7 @@ class LocalFullGridCandidates(CandidateSet):
         return sortedOverlap, localFullGridLevels, costs
 
 
-#     @profile
+#     #@profile
     def computeCandidates(self, sortedOverlap, grid, alpha):
         # create full grid locally
         gs = grid.getStorage()
@@ -917,7 +920,7 @@ class LocalFullGridCandidates(CandidateSet):
         return ans.values(), costs, cnt
 
 
-#     @profile
+    # @profile
     def findCandidates(self, grid, alpha, addedGridPoints):
         if self.iteration == 0:
             self.A0 = self.findNodesWithNegativeCoefficients(grid, alpha)
@@ -966,6 +969,9 @@ class LocalFullGridCandidates(CandidateSet):
             # -------------------------------------------------------------------------------------------------
 
             self.newCandidates, realLocalCosts, numAccountedIntersections = self.computeCandidates(nonOverlappingGrids, grid, alpha)
+
+            if self.reduceLocalGrids:
+                assert len(self.newCandidates) == realLocalCosts
 
             if self.verbose:
                 print "  real costs          : %i <= %i :predicted costs" % (realLocalCosts, newlyPredictedLocalCosts)
