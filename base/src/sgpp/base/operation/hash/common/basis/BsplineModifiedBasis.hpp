@@ -1267,11 +1267,15 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
       case 3:
         return (25.0/12.0) / hInvDbl;
       case 5:
-          // 1081/720 + 0.581944 + 0.0819444 + 7/80
-        return 2.252777289 / hInvDbl;
+          // 1081/720 + 0.581944 + 0.0819444 + 1/720 = 
+        return (2.0 + 1.0/6.0) / hInvDbl;
       case 7:
-        // 20243/13440 + 2495/4032 + 479/4032 + 83/13440   (last part is 1/40320 but it's outside)
-        return 90718.0/40320.0 / hInvDbl; // = 2.25 - 2/40320
+        // 20243/13440 + 2495/4032 + 479/4032 + 83/13440 + 1/40320 (last part is cut off on level 2)
+        if(l == 2){
+          return 90718.0/40320.0 / hInvDbl; // = 2.25 - 2/40320
+        } else {
+          return 90719.0/40320.0 / hInvDbl; // = 2.25 - 1/4032
+        }
       default:
         break;
         // not implemented exception

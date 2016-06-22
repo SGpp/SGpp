@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <vector>
+#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -258,12 +259,12 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
     size_t degree = bsplineBasis.getDegree();
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
     size_t letzter_abschnitt = std::min(degree, (1 << l) + (degree+1)/2 - i - 1 );
-    sgpp::base::DataVector coordinates;
-    sgpp::base::DataVector weights;
-    sgpp::base::GaussLegendreQuadRule1D gauss;
     size_t quadLevel = (degree + 1)/2;
-    gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
-
+    if(!integrationInitialized){
+      sgpp::base::GaussLegendreQuadRule1D gauss;
+      gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
+      integrationInitialized = true;
+    }
     constructKnots(l, i);
     double res = 0.0;
     for(size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
@@ -271,7 +272,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++){
         double x = (h * coordinates[c]) + xi[j];
-        // temp_res += eval(l, i, x);
+        std::cout << "x:" << x << " non:" << nonUniformBSpline(x, degree, 0) << std::endl;
         temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;
@@ -287,6 +288,9 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   std::vector<double> xi;
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;
+  DataVector coordinates;
+  DataVector weights;
+  bool integrationInitialized = false;
 };
 
 // default type-def (unsigned int for level and index)

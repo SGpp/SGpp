@@ -45,6 +45,7 @@
 #include <sgpp/base/operation/hash/OperationQuadratureBspline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureBsplineClenshawCurtis.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
@@ -207,9 +208,12 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
   } else if (grid.getType() == base::GridType::ModBspline) {
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModBspline(
         grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree()));
-  } else if (grid.getType() == base::GridType::ModBspline) {
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineBoundary(
         grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree()));
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree()));
   } else {
     throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
   }
