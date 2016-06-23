@@ -142,7 +142,7 @@ class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFun
    * Constructor.
    */
   explicit KDEMaximumLikelihoodCrossValidation(
-      KernelDensityEstimator& kde, size_t kfold = 10, double trainDataPercentage = 0.9,
+      KernelDensityEstimator& kde, size_t kfold = 10,
       std::uint64_t seedValue = std::mt19937_64::default_seed);
 
   double eval(const sgpp::base::DataVector& x);
