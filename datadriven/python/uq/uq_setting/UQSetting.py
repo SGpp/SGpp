@@ -1149,7 +1149,7 @@ class UQSetting(object):
         #             stats_preprocessor[p] = q
 
         #             # check whether an error occured
-        #             if stats_preprocessor_reversed.has_key(q):
+        #             if stats_preprocessor_reversed.isContaining(q):
         #                 raise AttributeError('Internal error when the parameters are transformed to new parameter setting')
         #             stats_preprocessor_reversed[q] = p
 
@@ -1323,7 +1323,7 @@ class UQSetting(object):
             # print "-"*60
             # cnt_broken, cnt_unbroken = 0, 0
             # for p, item in d.items():
-            #     if item.has_key('_'):
+            #     if item.isContaining('_'):
             #         a = item['_'][0]['post']
             #         if not os.path.exists(a):
             #             continue #print 'file missing', a
@@ -1356,7 +1356,7 @@ class UQSetting(object):
             #         break
             # print "-"*60
             # print cnt_unbroken, "+", cnt_broken, "=", (cnt_broken + cnt_unbroken)
-            # #if d[d.keys()[0]].has_key('_'):
+            # #if d[d.keys()[0]].isContaining('_'):
             # --------------------------------------------------
             # setting.setPostprocessorStats(dd)
 

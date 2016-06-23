@@ -25,7 +25,7 @@ class LocalFullGrid(object):
     @staticmethod
     def copy(localFullGrid):
         numDims = localFullGrid.numDims
-        gp = HashGridIndex(numDims)
+        gp = HashGridPoint(numDims)
         for idim in xrange(numDims):
             gp.set(idim,
                    localFullGrid.level[idim],
@@ -92,15 +92,15 @@ class LocalFullGrid(object):
         centralFullGrid.fullGridLevels[idim] = 1
         
         # left grid
-        gpLeft = HashGridIndex(self.gp)
-        gs.left_child(gpLeft, idim)
+        gpLeft = HashGridPoint(self.gp)
+        gpLeft.getLeftChild(idim)
         fullGridLevels = np.array(self.fullGridLevels)
         fullGridLevels[idim] -= 1
         leftFullGrid = LocalFullGrid(self.grid, gpLeft, fullGridLevels)
         
         # right grid
-        gpRight = HashGridIndex(self.gp)
-        gs.right_child(gpRight, idim)
+        gpRight = HashGridPoint(self.gp)
+        gpRight.getRightChild(idim)
         fullGridLevels = np.array(self.fullGridLevels)
         fullGridLevels[idim] -= 1
         rightFullGrid = LocalFullGrid(self.grid, gpRight, fullGridLevels)
@@ -157,7 +157,7 @@ class LocalFullGrid(object):
         localindices = np.ndarray(self.numDims, dtype="int")
 
         for levelsGlobal, indicesGlobal in globalGrid.keys():
-            gpdd = HashGridIndex(self.numDims)
+            gpdd = HashGridPoint(self.numDims)
             for idim in xrange(self.numDims):
                 lg, ig = levelsGlobal[idim], indicesGlobal[idim]
                 llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
@@ -251,7 +251,7 @@ class LocalFullGridCandidates(CandidateSet):
                 if haveOverlappingSupport(gpi, gpj):
                     levelOuter, indexOuter = self.findOuterIntersection(gpi, gpj)
                     if (levelOuter, indexOuter) not in overlap:
-                        gpOuterIntersection = HashGridIndex(self.numDims)
+                        gpOuterIntersection = HashGridPoint(self.numDims)
                         for idim in xrange(self.numDims):
                             gpOuterIntersection.set(idim, levelOuter[idim], indexOuter[idim])
 
@@ -526,15 +526,15 @@ class LocalFullGridCandidates(CandidateSet):
             fig = plt.figure()
 
             for gp in iFullGrid.computeAnisotropicFullGrid().values():
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 plt.plot(p[0], p[1], "o", color="green")
-            iFullGrid.gp.getCoords(p)
+            iFullGrid.gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "^", color="orange")
 
             for gp in jFullGrid.computeAnisotropicFullGrid().values():
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 plt.plot(p[0], p[1], "v", color="red")
-            jFullGrid.gp.getCoords(p)
+            jFullGrid.gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "^", color="orange")
 
             plt.xlim(0, 1)
@@ -588,16 +588,16 @@ class LocalFullGridCandidates(CandidateSet):
 
                 for iGrid in iSplittedGrids.values():
                     for gp in iGrid.computeAnisotropicFullGrid().values():
-                        gp.getCoords(p)
+                        gp.getStandardCoordinates(p)
                         plt.plot(p[0], p[1], "o", color="green")
-                    iGrid.gp.getCoords(p)
+                    iGrid.gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "^", color="orange")
 
                 for jGrid in jSplittedGrids.values():
                     for gp in jGrid.computeAnisotropicFullGrid().values():
-                        gp.getCoords(p)
+                        gp.getStandardCoordinates(p)
                         plt.plot(p[0], p[1], "v", color="red")
-                    jGrid.gp.getCoords(p)
+                    jGrid.gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "^", color="orange")
 
                 plt.xlim(0, 1)
@@ -677,16 +677,16 @@ class LocalFullGridCandidates(CandidateSet):
 
             for iFullGrid in iSplittedGrids.values():
                 for gp in iFullGrid.computeAnisotropicFullGrid().values():
-                    gp.getCoords(p)
+                    gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "o", color="green")
-                iFullGrid.gp.getCoords(p)
+                iFullGrid.gp.getStandardCoordinates(p)
                 plt.plot(p[0], p[1], "^", color="orange")
 
             for jFullGrid in jSplittedGrids.values():
                 for gp in jFullGrid.computeAnisotropicFullGrid().values():
-                    gp.getCoords(p)
+                    gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "v", color="red")
-                jFullGrid.gp.getCoords(p)
+                jFullGrid.gp.getStandardCoordinates(p)
                 plt.plot(p[0], p[1], "^", color="orange")
 
             plt.xlim(0, 1)
@@ -704,7 +704,7 @@ class LocalFullGridCandidates(CandidateSet):
         ans = {}
         for i in xrange(gs.getSize()):
             if alpha[i] < 0.0:
-                ans[i] = gs.get(i)
+                ans[i] = gs.getPoint(i)
 
         return ans
 
@@ -712,7 +712,7 @@ class LocalFullGridCandidates(CandidateSet):
     def plotCandidates(self, candidates):
         for gp in candidates:
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "x ", color="green")
         plt.xlim(0, 1)
         plt.ylim(0, 1)
@@ -727,12 +727,12 @@ class LocalFullGridCandidates(CandidateSet):
 
         for gp in candidates.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "o ", color="lightgreen")
 
         for gp in ans.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "o ", color="yellow")
 
         plt.xlim(0, 1)
@@ -754,21 +754,21 @@ class LocalFullGridCandidates(CandidateSet):
             if maxSteps < currentSteps:
                 maxSteps = currentSteps
 
-            gpl = HashGridIndex(currentgp)
-            gs.left_child(gpl, idim)
-            if gs.has_key(gpl):
+            gpl = HashGridPoint(currentgp)
+            gpl.getLeftChild(idim)
+            if gs.isContaining(gpl):
                 gps.append((currentSteps + 1, gpl))
 
             # get right child
-            gpr = HashGridIndex(currentgp)
-            gs.right_child(gpr, idim)
-            if gs.has_key(gpr):
+            gpr = HashGridPoint(currentgp)
+            gpr.getRightChild(idim)
+            if gs.isContaining(gpr):
                 gps.append((currentSteps + 1, gpr))
 
         return maxSteps
 
     def getLocalMaxLevel(self, dup, levels, indices, grid):
-        gp = HashGridIndex(self.numDims)
+        gp = HashGridPoint(self.numDims)
         for idim, (level, index) in enumerate(zip(levels, indices)):
             gp.set(idim, level, index)
 
@@ -781,7 +781,7 @@ class LocalFullGridCandidates(CandidateSet):
             if self.verbose:
                 print " %i: root (%i) = %s" % (dup, idim, (tuple(getLevel(gp)), tuple(getIndex(gp)), tuple([gp.getCoord(i) for i in xrange(self.numDims)])))
 
-            currentgp = HashGridIndex(gp)
+            currentgp = HashGridPoint(gp)
             diffLevels[idim] = self.getMaxLevelOfChildrenUpToMaxLevel(currentgp, grid, idim)
 
         return diffLevels
@@ -824,9 +824,9 @@ class LocalFullGridCandidates(CandidateSet):
             fig.show()
 
 
-        gpInnerIntersection = HashGridIndex(self.numDims)
-        gpi = HashGridIndex(self.numDims)
-        gpj = HashGridIndex(self.numDims)
+        gpInnerIntersection = HashGridPoint(self.numDims)
+        gpi = HashGridPoint(self.numDims)
+        gpj = HashGridPoint(self.numDims)
         gs = grid.getStorage()
 
         for idim, jdim in combinations(range(self.numDims), 2):
@@ -856,11 +856,11 @@ class LocalFullGridCandidates(CandidateSet):
                     for i in xrange(self.numDims):
                         gpInnerIntersection.set(i, levelInner[i], indexInner[i])
 
-                    if gs.has_key(gpj):
+                    if gs.isContaining(gpj):
                         localMaxLevels[idim] = max(localMaxLevels[idim], self.getMaxLevelOfChildrenUpToMaxLevel(gpj, grid, idim))
-                    if gs.has_key(gpi):
+                    if gs.isContaining(gpi):
                         localMaxLevels[jdim] = max(localMaxLevels[jdim], self.getMaxLevelOfChildrenUpToMaxLevel(gpi, grid, jdim))
-                    if gs.has_key(gpInnerIntersection):
+                    if gs.isContaining(gpInnerIntersection):
                         xdim = np.array([i for i in xrange(self.numDims) if i != idim and i != jdim], dtype="int")
                         for i in xdim:
                             localMaxLevels[i] = max(localMaxLevels[i], self.getMaxLevelOfChildrenUpToMaxLevel(gpInnerIntersection, grid, i))

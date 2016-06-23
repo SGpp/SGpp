@@ -119,7 +119,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # # p = DataVector(gs.getDimension())
         # # for i in xrange(gs.size()):
         # #     gp = gs.getPoint(i)
-        # #     if bordergs.has_key(gp):
+        # #     if bordergs.isContaining(gp):
         # #         gp.getStandardCoordinates(p)
         # #         res1 = evalSGFunction(grid, alpha, p)
         # #         res2 = evalSGFunction(grid, nalpha, p) + evalSGFunction(borderGrid, borderAlpha, p)

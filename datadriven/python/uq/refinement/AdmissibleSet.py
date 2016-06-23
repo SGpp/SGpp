@@ -69,7 +69,7 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             gs = grid.getStorage()
             gps = getHierarchicalAncestors(grid, gp)
             for _, p in gps:
-                if not gs.has_key(p):
+                if not gs.isContaining(p):
                     self.insertPoint(p)
 
     def addChildren(self, grid, gp):
@@ -77,15 +77,15 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
         for d in xrange(gs.getDimension()):
             # check left child in d
             gpl = HashGridPoint(gp)
-            gs.left_child(gpl, d)
-            if not gs.has_key(gpl) and isValid(grid, gpl) and \
+            gpr.getLeftChild(d)
+            if not gs.isContaining(gpl) and isValid(grid, gpl) and \
                     self.checkRange(gpl, self.maxLevel):
                 self.addCollocationNode(grid, gpl)
 
             # check right child in d
             gpr = HashGridPoint(gp)
-            gs.right_child(gpr, d)
-            if not gs.has_key(gpr) and isValid(grid, gpr) and \
+            gpr.getRightChild(d)
+            if not gs.isContaining(gpr) and isValid(grid, gpr) and \
                     self.checkRange(gpr, self.maxLevel):
                 self.addCollocationNode(grid, gpr)
 

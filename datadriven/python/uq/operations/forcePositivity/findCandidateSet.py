@@ -31,7 +31,7 @@ class CandidateSet(object):
 
     def removeAlreadyExistingGridPoints(self, grid, intersections):
         gs = grid.getStorage()
-        return [gp for gp in intersections if not gs.has_key(gp)]
+        return [gp for gp in intersections if not gs.isContaining(gp)]
 
     
     def findCandidates(self, grid, alpha, addedGridPoints):

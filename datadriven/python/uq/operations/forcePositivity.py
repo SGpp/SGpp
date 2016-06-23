@@ -54,7 +54,7 @@ def makePositive(grid, alpha):
         values = computeNodalValues(fg, grid, alpha)
         for i in xrange(len(values)):
             gp = fgs.getPoint(i)
-            if values[i] < 0 and not jgs.has_key(gp):
+            if values[i] < 0 and not jgs.isContaining(gp):
                 gps += insertPoint(jgrid, gp)
                 gps += insertHierarchicalAncestors(jgrid, gp)
 
@@ -65,7 +65,7 @@ def makePositive(grid, alpha):
         # 2. set the new ones to zero
         jgs = jgrid.getStorage()
         for gp in gps:
-            jnodalValues[jgs.seq(gp)] = 0.
+            jnodalValues[jgs.getSequenceNumber(gp)] = 0.
         # 3. hierarchize
         jalpha = hierarchize(jgrid, jnodalValues)
         # stop loop if no points have been added

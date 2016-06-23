@@ -272,14 +272,14 @@ class RefinementManager(object):
             # oldgs = HashGridStorage(gs)
             # alpha = DataVector(gs.getSize())
             # alpha.setAll(0.0)
-            # alpha[gs.seq(gp)] = 2.0
+            # alpha[gs.getSequenceNumber(gp)] = 2.0
             # refFunc = SurplusRefinementFunctor(alpha, 1, 1)
             # ## TODO: try refineMaxLevel(refFunc, maxLevel)
             # grid.getGenerator().refine(refFunc)
 
             # nps = []
             # for i in xrange(gs.getSize()):
-            #     if not oldgs.has_key(gs.getPoint(i)):
+            #     if not oldgs.isContaining(gs.getPoint(i)):
             #         nps.append(i)
 
             # check there have been added some new points

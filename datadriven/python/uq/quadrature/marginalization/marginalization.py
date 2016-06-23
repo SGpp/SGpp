@@ -35,7 +35,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
                 n_gp.set(d - 1, gp.getLevel(d), gp.getIndex(d))
 
         # insert grid point
-        if not n_gs.has_key(n_gp):
+        if not n_gs.isContaining(n_gp):
             n_gs.insert(n_gp)
 
     n_gs.recalcLeafProperty()
@@ -58,7 +58,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
             else:
                 n_gp.set(d - 1, gp.getLevel(d), gp.getIndex(d))
 
-        if not n_gs.has_key(n_gp):
+        if not n_gs.isContaining(n_gp):
             raise Exception("This should not happen!")
 
         # compute the integral of the given basis
@@ -74,7 +74,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
             err *= trans.vol()
 
         # search for the corresponding index
-        j = n_gs.seq(n_gp)
+        j = n_gs.getSequenceNumber(n_gp)
         n_alpha[j] += alpha[i] * q
 
     return n_grid, n_alpha, err

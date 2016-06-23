@@ -104,7 +104,7 @@ def estimateL2error(grid1, grid2, alpha2):
     ans = 0
     for i in xrange(gs2.getSize()):
         gp = gs2.getPoint(i)
-        if not gs1.has_key(gp):
+        if not gs1.isContaining(gp):
             ans += abs(alpha2[i])
 
     return ans

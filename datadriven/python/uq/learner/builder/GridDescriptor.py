@@ -146,7 +146,7 @@ class GridDescriptor(object):
                 for i in xrange(copygs.size()):
                     gp = copygs.getPoint(i)
                     # insert grid point
-                    if not gs.has_key(gp):
+                    if not gs.isContaining(gp):
                         gs.insert(HashGridPoint(gp))
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                         insertTruncatedBorder(grid, gp)

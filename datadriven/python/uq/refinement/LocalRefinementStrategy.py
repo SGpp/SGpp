@@ -31,7 +31,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
         gs = grid.getStorage()
         for d in xrange(gs.getDimension()):
             gpl = HashGridPoint(gp)
-            gs.left_child(gpl, d)
+            gpl.getLeftChild(d)
             if isValid(grid, gpl):
                 ans += insertPoint(grid, gpl)
                 ans += insertHierarchicalAncestors(grid, gpl)
@@ -39,7 +39,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
                     ans += insertTruncatedBorder(grid, gpl)
 
             gpr = HashGridPoint(gp)
-            gs.right_child(gpr, d)
+            gpr.getRightChild(d)
             if isValid(grid, gpr):
                 ans += insertPoint(grid, gpr)
                 ans += insertHierarchicalAncestors(grid, gpr)
