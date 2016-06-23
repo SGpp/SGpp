@@ -20,7 +20,7 @@ namespace datadriven {
 // --------------------------------------------------------------------------------
 enum class KernelType { GAUSSIAN, EPANECHNIKOV };
 
-enum class BandwidthOptimizationType { RULEOFTHUMB, MAXIMUMLIKELIHOOD };
+enum class BandwidthOptimizationType { NONE, RULEOFTHUMB, MAXIMUMLIKELIHOOD };
 
 #ifndef M_SQRT2PI
 #define M_SQRT2PI 2.506628274631000241612355239340 /* sqrt(2*pi) */
@@ -141,8 +141,9 @@ class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFun
   /**
    * Constructor.
    */
-  explicit KDEMaximumLikelihoodCrossValidation(KernelDensityEstimator& kde)
-      : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde) {}
+  explicit KDEMaximumLikelihoodCrossValidation(
+      KernelDensityEstimator& kde, size_t kfold = 10, double trainDataPercentage = 0.9,
+      std::uint64_t seedValue = std::mt19937_64::default_seed);
 
   double eval(const sgpp::base::DataVector& x);
 
@@ -156,6 +157,8 @@ class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFun
 
  private:
   KernelDensityEstimator& kde;
+  std::vector<std::shared_ptr<base::DataMatrix>> strain;
+  std::vector<std::shared_ptr<base::DataMatrix>> stest;
 };
 
 // --------------------------------------------------------------------------------
