@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <vector>
 
 /**
  * Testapplication for the Intel VTune Profiling Tool
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
   grid_selection.assign(argv[7]);
   lmb = atoi(argv[8]);
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -60,8 +61,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
-  delete[] myBoundaries;
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   // Generate lambda for test if needed
   sgpp::base::DataVector lambda(dim);

@@ -14,7 +14,7 @@ namespace sgpp {
 namespace datadriven {
 
 AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(sgpp::base::Grid&
-    SparseGrid, size_t gridType, sgpp::base::HashGenerator::level_t gridLevel,
+    SparseGrid, size_t gridType, sgpp::base::level_t gridLevel,
     sgpp::base::DataMatrix& trainData, sgpp::base::DataVector& trainDataClass,
     size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final,
     double eps_final, double firstLabel, double secondLabel, double threshold,

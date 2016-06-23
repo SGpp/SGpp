@@ -199,13 +199,13 @@ class sweep {
 
       index.leftChild(current_dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
       }
 
       index.stepRight(current_dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
       }
 
@@ -239,13 +239,13 @@ class sweep {
 
       index.leftChild(current_dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
       }
 
       index.stepRight(current_dim);
 
-      if (!storage.end(index.seq())) {
+      if (!storage.isValidSequenceNumber(index.seq())) {
         sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
       }
 
@@ -271,8 +271,8 @@ class sweep {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
-      typedef GridStorage::index_type::level_type level_type;
-      typedef GridStorage::index_type::index_type index_type;
+      typedef level_t level_type;
+      typedef index_t index_type;
 
       level_type current_level;
       index_type current_index;
@@ -288,14 +288,14 @@ class sweep {
         if (!index.hint()) {
           index.leftChild(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }
 
           index.stepRight(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }
@@ -313,7 +313,7 @@ class sweep {
         if (!index.hint()) {
           index.resetToLevelOne(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }
@@ -342,8 +342,8 @@ class sweep {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
-      typedef GridStorage::index_type::level_type level_type;
-      typedef GridStorage::index_type::index_type index_type;
+      typedef level_t level_type;
+      typedef index_t index_type;
 
       level_type current_level;
       index_type current_index;
@@ -359,14 +359,14 @@ class sweep {
         if (!index.hint()) {
           index.leftChild(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }
 
           index.stepRight(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }
@@ -384,7 +384,7 @@ class sweep {
         if (!index.hint()) {
           index.resetToLevelOne(dim_list[dim_rem - 1]);
 
-          if (!storage.end(index.seq())) {
+          if (!storage.isValidSequenceNumber(index.seq())) {
             sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
                                dim_sweep);
           }

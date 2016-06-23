@@ -189,7 +189,7 @@ class HestonParabolicPDESolverSystemEuroAmer
   std::string refineMode;
 
   /// MaxLevel max. Level of refinement
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
 
   /// The algorithmic dimensions used in this system
   std::vector<size_t> HestonAlgoDims;
@@ -382,7 +382,7 @@ class HestonParabolicPDESolverSystemEuroAmer
       std::string option_type, bool bLogTransform = false, bool useCoarsen = false,
       double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
       int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
-      sgpp::base::GridIndex::level_type refineMaxLevel = 0);
+      sgpp::base::GridPoint::level_type refineMaxLevel = 0);
 
   /**
    * Destructor. Just does the usual...releases all allocated memory.

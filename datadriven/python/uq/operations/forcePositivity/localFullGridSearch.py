@@ -1,8 +1,7 @@
-from pysgpp import Grid, DataVector, createOperationEval, HashGridIndex
+from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from findCandidateSet import CandidateSet
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
     isHierarchicalAncestor, haveOverlappingSupport, haveOverlappingSupportDimx, isHierarchicalAncestorDimx

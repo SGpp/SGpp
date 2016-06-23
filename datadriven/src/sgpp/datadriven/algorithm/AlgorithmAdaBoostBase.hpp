@@ -70,7 +70,7 @@ class AlgorithmAdaBoostBase {
   /// Number of the sum grid points used in the algorithm
   base::DataVector* sumGridPoint;
   /// grid level
-  base::HashGenerator::level_t level;
+  base::level_t level;
   /// Parameter for CG solver(during the refinement)
   size_t imax;
   /// Parameter for CG solver(during the refinement)
@@ -147,7 +147,7 @@ class AlgorithmAdaBoostBase {
   * @param mode the adaboost type to choose
    */
   AlgorithmAdaBoostBase(base::Grid& SparseGrid, size_t gridType,
-                        base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
+                        base::level_t gridLevel, base::DataMatrix& trainData,
                         base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX,
                         double eps, size_t IMAX_final, double eps_final, double firstLabel,
                         double secondLabel, double threshold, double maxLambda,

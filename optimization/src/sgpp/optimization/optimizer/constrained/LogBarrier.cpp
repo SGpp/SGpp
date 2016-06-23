@@ -122,24 +122,39 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
 };
 }  // namespace
 
-LogBarrier::LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-                       VectorFunctionGradient& gGradient, size_t maxItCount, double tolerance,
+LogBarrier::LogBarrier(const ScalarFunction& f,
+                       const ScalarFunctionGradient& fGradient,
+                       const VectorFunction& g,
+                       const VectorFunctionGradient& gGradient,
+                       size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
     : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(), maxItCount),
-      fGradient(fGradient),
-      gGradient(gGradient),
       theta(tolerance),
       mu0(barrierStartValue),
       rhoMuMinus(barrierDecreaseFactor),
       xHistInner(0, 0),
-      kHistInner() {}
+      kHistInner() {
+  fGradient.clone(this->fGradient);
+  gGradient.clone(this->gGradient);
+}
+
+LogBarrier::LogBarrier(const LogBarrier& other)
+    : ConstrainedOptimizer(other),
+      theta(other.theta),
+      mu0(other.mu0),
+      rhoMuMinus(other.rhoMuMinus),
+      xHistInner(other.xHistInner),
+      kHistInner(other.kHistInner) {
+  other.fGradient->clone(fGradient);
+  other.gGradient->clone(gGradient);
+}
 
 LogBarrier::~LogBarrier() {}
 
 void LogBarrier::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -149,14 +164,14 @@ void LogBarrier::optimize() {
   kHistInner.clear();
 
   base::DataVector x(x0);
-  double fx = f.eval(x);
+  double fx = f->eval(x);
 
   xHist.appendRow(x);
   fHist.append(fx);
 
   base::DataVector xNew(d);
 
-  base::DataVector gx(g.getNumberOfComponents());
+  base::DataVector gx(g->getNumberOfComponents());
 
   double mu = mu0;
 
@@ -166,8 +181,8 @@ void LogBarrier::optimize() {
 
   const size_t unconstrainedN = N / 20;
 
-  PenalizedObjectiveFunction fPenalized(f, g, mu);
-  PenalizedObjectiveGradient fPenalizedGradient(fGradient, gGradient, mu);
+  PenalizedObjectiveFunction fPenalized(*f, *g, mu);
+  PenalizedObjectiveGradient fPenalizedGradient(*fGradient, *gGradient, mu);
 
   while (k < N) {
     fPenalized.setMu(mu);
@@ -184,8 +199,8 @@ void LogBarrier::optimize() {
     k += numberInnerIterations;
 
     x = xNew;
-    fx = f.eval(x);
-    g.eval(x, gx);
+    fx = f->eval(x);
+    g->eval(x, gx);
     k++;
 
     xHist.appendRow(x);
@@ -226,9 +241,9 @@ void LogBarrier::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const { return *fGradient; }
 
-VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const { return gGradient; }
+VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const { return *gGradient; }
 
 double LogBarrier::getTolerance() const { return theta; }
 

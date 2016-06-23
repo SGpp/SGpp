@@ -16,11 +16,11 @@ LaplaceUpPrewavelet::~LaplaceUpPrewavelet() {}
 void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                      grid_iterator& index, size_t dim) {
   size_t seq = index.seq();
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
-  sgpp::base::GridStorage::index_type::level_type l_old;
-  sgpp::base::GridStorage::index_type::index_type i_old;
-  sgpp::base::GridStorage::index_type::index_type last_index;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
+  sgpp::base::level_t l_old;
+  sgpp::base::index_t i_old;
+  sgpp::base::index_t last_index;
   size_t _seq;
   size_t _seql1;
   size_t _seqr1;
@@ -28,7 +28,7 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
   double _val, _vall1, _vall2, _valr1, _valr2;
   double h;
   bool hasChilds = false;
-  // GridStorage::index_type::level_type max_level = getGridDepth(index, dim);
+  // level_t max_level = getGridDepth(index, dim);
 
   index.get(dim, l, i);
   index.get(dim, l_old, i_old);
@@ -49,18 +49,20 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
   if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
   _seql1 = index.seq();
-  _vall1 = storage->end(_seql1) ? 0.0 : source[_seql1];
+  _vall1 = storage->isValidSequenceNumber(_seql1) ? 0.0 : source[_seql1];
 
   index.set(dim, 2, 3);
 
   if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
   _seqr1 = index.seq();
-  _valr1 = storage->end(_seqr1) ? 0.0 : source[_seqr1];
+  _valr1 = storage->isValidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
 
-  if (!storage->end(_seql1)) result[_seql1] = 11.0 / 75.0 * _vall1 + 1.0 / 25.0 * _valr1;
+  if (!storage->isValidSequenceNumber(_seql1))
+    result[_seql1] = 11.0 / 75.0 * _vall1 + 1.0 / 25.0 * _valr1;
 
-  if (!storage->end(_seqr1)) result[_seqr1] = 11.0 / 75.0 * _valr1 + 1.0 / 25.0 * _vall1;
+  if (!storage->isValidSequenceNumber(_seqr1))
+    result[_seqr1] = 11.0 / 75.0 * _valr1 + 1.0 / 25.0 * _vall1;
 
   //
   //    result[_seql1] = 11.0 / 75.0 * source[_seql1];
@@ -83,23 +85,23 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
     if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
     _seq = index.seq();
-    _val = storage->end(_seq) ? 0.0 : source[_seq];
+    _val = storage->isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
 
     index.set(dim, l, 3);
 
     if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
     _seqr1 = index.seq();
-    _valr1 = storage->end(_seqr1) ? 0.0 : source[_seqr1];
+    _valr1 = storage->isValidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
 
     index.set(dim, l, 5);
 
     if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
     _seqr2 = index.seq();
-    _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
+    _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] = 44.0 / 75.0 * h * _val      //
                      + 11.0 / 75.0 * h * _valr1  //
                      - 1.0 / 75.0 * h * _valr2;  //
@@ -115,9 +117,9 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
     if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
     _seqr2 = index.seq();
-    _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
+    _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] = 11.0 / 75.0 * h * _vall1    //
                      + 18.0 / 25.0 * h * _val    //
                      + 2.0 / 15.0 * h * _valr1   //
@@ -138,9 +140,9 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
       if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
 
       _seqr2 = index.seq();
-      _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
+      _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
 
-      if (!storage->end(_seq))
+      if (!storage->isValidSequenceNumber(_seq))
         result[_seq] = -1.0 / 75.0 * h * _vall2    //
                        + 2.0 / 15.0 * h * _vall1   //
                        + 18.0 / 25.0 * h * _val    //
@@ -158,7 +160,7 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
     _val = _valr1;
     _valr1 = _valr2;
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] = 11.0 / 75.0 * h * _valr1    //
                      + 18.0 / 25.0 * h * _val    //
                      + 2.0 / 15.0 * h * _vall1   //
@@ -170,7 +172,7 @@ void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base:
     _vall1 = _val;
     _val = _valr1;
 
-    if (!storage->end(_seq))
+    if (!storage->isValidSequenceNumber(_seq))
       result[_seq] = 44.0 / 75.0 * h * _val      //
                      + 11.0 / 75.0 * h * _vall1  //
                      - 1.0 / 75.0 * h * _vall2;  //
