@@ -377,6 +377,8 @@ void KernelDensityEstimator::computeAndSetOptKDEbdwth() {
   base::DataVector sigma(ndim);
 
   switch (bandwidthOptimizationType) {
+    case BandwidthOptimizationType::NONE:
+      break;
     case BandwidthOptimizationType::RULEOFTHUMB:
       RuleOfThumb::optimizeBandwidths(this, sigma);
       break;
@@ -564,11 +566,60 @@ void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVect
   }
 }
 
+KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
+    KernelDensityEstimator& kde, size_t kfold, double trainDataPercentage, std::uint64_t seedValue)
+    : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
+  // split the data set
+  auto samples = kde.getSamples();
+  size_t numSamples = samples->getNrows();
+  size_t numDims = samples->getNcols();
+
+  // choose randomly indices to get the training data set
+  std::mt19937_64 gen(seedValue);
+  std::uniform_int_distribution<size_t> dist(0, numSamples);
+
+  base::DataVector p(numDims);
+  base::DataVector tmp(numDims);
+
+  std::vector<size_t> s(kfold);        // size of partition
+  std::vector<size_t> ind(kfold + 1);  // index of partition
+
+  ind[0] = 0;
+  for (size_t i = 0; i < kfold - 1; i++) {
+    s[i] = numSamples / kfold;
+    ind[i + 1] = ind[i] + s[i];
+  }
+  ind[kfold] = numSamples;
+  s[kfold - 1] = numSamples - (kfold - 1) * (numSamples / kfold);
+
+  // fill data
+  for (size_t i = 0; i < kfold; i++) {
+    // allocate memory
+    strain[i] = std::make_shared<base::DataMatrix>(numSamples - s[i], numDims);
+    stest[i] = std::make_shared<base::DataMatrix>(s[i], numDims);
+
+    size_t localTest = 0;
+    size_t localTrain = 0;
+
+    for (size_t j = 0; j < numSamples; j++) {
+      samples->getRow(j, p);
+
+      if (ind[i] <= j && j < ind[i + 1]) {
+        stest[i]->setRow(localTest, p);
+        localTest++;
+      } else {
+        strain[i]->setRow(localTrain, p);
+        localTrain++;
+      }
+    }
+  }
+}
+
 MaximumLikelihoodCrossValidation::~MaximumLikelihoodCrossValidation() {}
 void MaximumLikelihoodCrossValidation::optimizeBandwidths(KernelDensityEstimator* kde,
                                                           base::DataVector& bandwidths) {
   KDEMaximumLikelihoodCrossValidation f(*kde);
-  sgpp::optimization::optimizer::NelderMead nelderMead(f, 100);
+  sgpp::optimization::optimizer::NelderMead nelderMead(f, 200);
   nelderMead.optimize();
   base::DataVector xOptNM = nelderMead.getOptimalPoint();
 
@@ -579,30 +630,41 @@ void MaximumLikelihoodCrossValidation::optimizeBandwidths(KernelDensityEstimator
 }
 
 double KDEMaximumLikelihoodCrossValidation::eval(const base::DataVector& x) {
-  // set the new bandwidths
-  kde.setBandwidths(x);
+  double result = 0.0;
+  // do the k-fold cross validation
+  for (size_t k = 0; k < strain.size(); k++) {
+    // load the data set
+    auto trainSamples = strain[k];
+    auto testSamples = stest[k];
 
-  // evaluate the likelihood function
-  double res = 0.0;
-  base::DataVector sample(kde.getDim());
-  std::vector<size_t> skipElements(1);
-  double value = 0.0;
-  std::uint32_t count = 0;
-  for (size_t i = 0; i < kde.getNsamples(); i++) {
-    skipElements[0] = i;
-    kde.getSample(i, sample);
-    value = kde.evalSubset(sample, skipElements);
-    if (value > 1e-10) {
-      res += std::log2(value);
-      count += 1;
-    }
+    KernelDensityEstimator localKDE(*trainSamples, kde.getKernel().getType(),
+                                    BandwidthOptimizationType::NONE);
+    localKDE.setBandwidths(x);
+
+    // compute the cross entropy
+    result += localKDE.crossEntropy(*testSamples);
   }
 
-  // we want to maximize this value -> multiply it with -1
-  return -1.0 * res / static_cast<double>(count);
+  return result / static_cast<double>(strain.size());
 
-  //  // evaluate the log-likelihood
-  //  return kde.crossEntropy(*kde.getSamples());
+  //  // evaluate the likelihood function
+  //  double res = 0.0;
+  //  base::DataVector sample(kde.getDim());
+  //  std::vector<size_t> skipElements(1);
+  //  double value = 0.0;
+  //  std::uint32_t count = 0;
+  //  for (size_t i = 0; i < kde.getNsamples(); i++) {
+  //    skipElements[0] = i;
+  //    kde.getSample(i, sample);
+  //    value = kde.evalSubset(sample, skipElements);
+  //    if (value > 1e-10) {
+  //      res += std::log2(value);
+  //      count += 1;
+  //    }
+  //  }
+  //
+  //  // we want to maximize this value -> multiply it with -1
+  //  return -1.0 * res / static_cast<double>(count);
 }
 
 }  // namespace datadriven
