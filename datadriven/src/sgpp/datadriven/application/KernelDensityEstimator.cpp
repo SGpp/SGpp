@@ -567,7 +567,7 @@ void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVect
 }
 
 KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
-    KernelDensityEstimator& kde, size_t kfold, double trainDataPercentage, std::uint64_t seedValue)
+    KernelDensityEstimator& kde, size_t kfold, std::uint64_t seedValue)
     : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
   // split the data set
   auto samples = kde.getSamples();
@@ -584,6 +584,7 @@ KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
   std::vector<size_t> s(kfold);        // size of partition
   std::vector<size_t> ind(kfold + 1);  // index of partition
 
+  // set size of partitions
   ind[0] = 0;
   for (size_t i = 0; i < kfold - 1; i++) {
     s[i] = numSamples / kfold;
