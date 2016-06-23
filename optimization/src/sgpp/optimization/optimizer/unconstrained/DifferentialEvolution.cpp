@@ -19,7 +19,7 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-DifferentialEvolution::DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount,
+DifferentialEvolution::DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount,
                                              size_t populationSize, double crossoverProbability,
                                              double scalingFactor, size_t idleGenerationsCount,
                                              double avgImprovementThreshold,
@@ -32,12 +32,22 @@ DifferentialEvolution::DifferentialEvolution(ScalarFunction& f, size_t maxFcnEva
       avgImprovementThreshold(avgImprovementThreshold),
       maxDistanceThreshold(maxDistanceThreshold) {}
 
+DifferentialEvolution::DifferentialEvolution(const DifferentialEvolution& other)
+    : UnconstrainedOptimizer(other),
+      populationSize(other.populationSize),
+      crossoverProbability(other.crossoverProbability),
+      scalingFactor(other.scalingFactor),
+      idleGenerationsCount(other.idleGenerationsCount),
+      avgImprovementThreshold(other.avgImprovementThreshold),
+      maxDistanceThreshold(other.maxDistanceThreshold) {
+}
+
 DifferentialEvolution::~DifferentialEvolution() {}
 
 void DifferentialEvolution::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -63,7 +73,7 @@ void DifferentialEvolution::optimize() {
       (*xOld)[i][t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
-    fx[i] = f.eval((*xOld)[i]);
+    fx[i] = f->eval((*xOld)[i]);
   }
 
   // smallest function value in the population
@@ -123,12 +133,12 @@ void DifferentialEvolution::optimize() {
                             xNew) default(none)
     {  // NOLINT(whitespace/braces)
       base::DataVector y(d);
-      ScalarFunction* curFPtr = &f;
+      ScalarFunction* curFPtr = f.get();
 #ifdef _OPENMP
       std::unique_ptr<ScalarFunction> curF;
 
       if (omp_get_max_threads() > 1) {
-        f.clone(curF);
+        f->clone(curF);
         curFPtr = curF.get();
       }
 

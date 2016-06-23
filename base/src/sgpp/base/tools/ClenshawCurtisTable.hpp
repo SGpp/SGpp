@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 
 #include <cmath>
 #include <cstddef>
@@ -23,8 +23,8 @@ namespace base {
  */
 class ClenshawCurtisTable {
  public:
-  typedef HashGridIndex::level_type level_type;
-  typedef HashGridIndex::index_type index_type;
+  typedef HashGridPoint::level_type level_type;
+  typedef HashGridPoint::index_type index_type;
 
   /// default number of intervals
   static const level_type DEFAULT_MAX_LEVEL = 16;

@@ -362,29 +362,46 @@ class AuxiliaryConstraintGradient : public VectorFunctionGradient {
 };
 }  // namespace
 
-AugmentedLagrangian::AugmentedLagrangian(ScalarFunction& f, ScalarFunctionGradient& fGradient,
-                                         VectorFunction& g, VectorFunctionGradient& gGradient,
-                                         VectorFunction& h, VectorFunctionGradient& hGradient,
+AugmentedLagrangian::AugmentedLagrangian(const ScalarFunction& f,
+                                         const ScalarFunctionGradient& fGradient,
+                                         const VectorFunction& g,
+                                         const VectorFunctionGradient& gGradient,
+                                         const VectorFunction& h,
+                                         const VectorFunctionGradient& hGradient,
                                          size_t maxItCount, double xTolerance,
                                          double constraintTolerance, double penaltyStartValue,
                                          double penaltyIncreaseFactor)
     : ConstrainedOptimizer(f, g, h, maxItCount),
-      fGradient(fGradient),
-      gGradient(gGradient),
-      hGradient(hGradient),
       theta(xTolerance),
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
       xHistInner(0, 0),
-      kHistInner() {}
+      kHistInner() {
+  fGradient.clone(this->fGradient);
+  gGradient.clone(this->gGradient);
+  hGradient.clone(this->hGradient);
+}
+
+AugmentedLagrangian::AugmentedLagrangian(const AugmentedLagrangian& other)
+    : ConstrainedOptimizer(other),
+      theta(other.theta),
+      epsilon(other.epsilon),
+      mu0(other.mu0),
+      rhoMuPlus(other.rhoMuPlus),
+      xHistInner(other.xHistInner),
+      kHistInner(other.kHistInner) {
+  other.fGradient->clone(fGradient);
+  other.gGradient->clone(gGradient);
+  other.hGradient->clone(hGradient);
+}
 
 AugmentedLagrangian::~AugmentedLagrangian() {}
 
 void AugmentedLagrangian::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -393,11 +410,11 @@ void AugmentedLagrangian::optimize() {
   xHistInner.resize(0, d);
   kHistInner.clear();
 
-  const size_t mG = g.getNumberOfComponents();
-  const size_t mH = h.getNumberOfComponents();
+  const size_t mG = g->getNumberOfComponents();
+  const size_t mH = h->getNumberOfComponents();
 
   base::DataVector x(x0);
-  double fx = f.eval(x);
+  double fx = f->eval(x);
 
   xHist.appendRow(x);
   fHist.append(fx);
@@ -416,8 +433,8 @@ void AugmentedLagrangian::optimize() {
 
   const size_t unconstrainedN = N / 20;
 
-  PenalizedObjectiveFunction fPenalized(f, g, h, mu, lambda);
-  PenalizedObjectiveGradient fPenalizedGradient(fGradient, gGradient, hGradient, mu, lambda);
+  PenalizedObjectiveFunction fPenalized(*f, *g, *h, mu, lambda);
+  PenalizedObjectiveGradient fPenalizedGradient(*fGradient, *gGradient, *hGradient, mu, lambda);
 
   while (k < N) {
     fPenalized.setMu(mu);
@@ -434,9 +451,9 @@ void AugmentedLagrangian::optimize() {
     k += numberInnerIterations;
 
     x = xNew;
-    fx = f.eval(x);
-    g.eval(x, gx);
-    h.eval(x, hx);
+    fx = f->eval(x);
+    g->eval(x, gx);
+    h->eval(x, hx);
     k++;
 
     xHist.appendRow(x);
@@ -486,15 +503,15 @@ void AugmentedLagrangian::optimize() {
 }
 
 base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
-  const size_t d = f.getNumberOfParameters();
-  const size_t mG = g.getNumberOfComponents();
-  const size_t mH = h.getNumberOfComponents();
+  const size_t d = f->getNumberOfParameters();
+  const size_t mG = g->getNumberOfComponents();
+  const size_t mH = h->getNumberOfComponents();
   base::DataVector x(d, 0.5);
   base::DataVector gx(mG);
   base::DataVector hx(mH);
 
-  g.eval(x, gx);
-  h.eval(x, hx);
+  g->eval(x, gx);
+  h->eval(x, hx);
   const double s0 = 1.1 * std::max(gx.max(), hx.maxNorm());
 
   if (s0 == 0.0) {
@@ -506,8 +523,8 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
 
   AuxiliaryObjectiveFunction auxObjFun(d, sMin, sMax);
   AuxiliaryObjectiveGradient auxObjGrad(d, sMin, sMax);
-  AuxiliaryConstraintFunction auxConstrFun(d, g, h, sMin, sMax);
-  AuxiliaryConstraintGradient auxConstrGrad(d, gGradient, hGradient, sMin, sMax);
+  AuxiliaryConstraintFunction auxConstrFun(d, *g, *h, sMin, sMax);
+  AuxiliaryConstraintGradient auxConstrGrad(d, *gGradient, *hGradient, sMin, sMax);
 
   base::DataVector auxX(d + 1);
 
@@ -531,14 +548,14 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
   return x;
 }
 
-ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const { return *fGradient; }
 
 VectorFunctionGradient& AugmentedLagrangian::getInequalityConstraintGradient() const {
-  return gGradient;
+  return *gGradient;
 }
 
 VectorFunctionGradient& AugmentedLagrangian::getEqualityConstraintGradient() const {
-  return hGradient;
+  return *hGradient;
 }
 
 double AugmentedLagrangian::getXTolerance() const { return theta; }

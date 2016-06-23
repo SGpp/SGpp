@@ -14,7 +14,7 @@ namespace base {
 
 double OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
   double res = 0;
-  GridStorage::index_type index;
+  GridStorage::point_type index;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
@@ -25,6 +25,11 @@ double OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
     //    std::endl;
     res += pow(2.0, -static_cast<double>(iter->first->getLevelSum())) * alpha.get(
              iter->second);
+  }
+
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  for (size_t d = 0; d < storage.getDimension(); d++) {
+    res *= storage.getBoundingBox()->getIntervalWidth(d);
   }
 
   return res;

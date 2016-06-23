@@ -19,6 +19,13 @@ double OperationNaiveEvalHessianFundamentalSpline::evalHessian(const DataVector&
   const size_t d = storage.getDimension();
   double result = 0.0;
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  for (size_t t = 0; t < d; t++) {
+    innerDerivative[t] = 1.0 / storage.getBoundingBox()->getIntervalWidth(t);
+  }
+
   gradient.resize(d);
   gradient.setAll(0.0);
 
@@ -29,15 +36,17 @@ double OperationNaiveEvalHessianFundamentalSpline::evalHessian(const DataVector&
   DataMatrix curHessian(d, d);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridPoint& gp = storage[i];
     double curValue = 1.0;
     curGradient.setAll(alpha[i]);
     curHessian.setAll(alpha[i]);
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dxdx1d = base.evalDxDx(gp.getLevel(t), gp.getIndex(t), point[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
+      const double dxdx1d = base.evalDxDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t] * innerDerivative[t];
 
       curValue *= val1d;
 
@@ -83,6 +92,13 @@ void OperationNaiveEvalHessianFundamentalSpline::evalHessian(const DataMatrix& a
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();
 
+  pointInUnitCube = point;
+  storage.getBoundingBox()->transformPointToUnitCube(pointInUnitCube);
+
+  for (size_t t = 0; t < d; t++) {
+    innerDerivative[t] = 1.0 / storage.getBoundingBox()->getIntervalWidth(t);
+  }
+
   value.resize(m);
   value.setAll(0.0);
 
@@ -95,21 +111,24 @@ void OperationNaiveEvalHessianFundamentalSpline::evalHessian(const DataMatrix& a
 
   for (size_t j = 0; j < m; j++) {
     hessian[j].resize(d, d);
+    hessian[j].setAll(0.0);
   }
 
   DataVector curGradient(d);
   DataMatrix curHessian(d, d);
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *storage[i];
+    const GridPoint& gp = storage[i];
     double curValue = 1.0;
     curGradient.setAll(1.0);
     curHessian.setAll(1.0);
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const double dxdx1d = base.evalDxDx(gp.getLevel(t), gp.getIndex(t), point[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
+      const double dxdx1d = base.evalDxDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t] * innerDerivative[t];
 
       curValue *= val1d;
 

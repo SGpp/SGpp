@@ -61,9 +61,9 @@ bool IndexInSubspaceGenerator::compareVectors(value_type& vec1,
 IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
   queue_value_type pair = queue_.front();
   val_ = pair.first;
-  unsigned int start_dim = pair.second;
+  const size_t startDim = pair.second;
 
-  for (unsigned int d = start_dim; d < this->dim_; d++) {
+  for (size_t d = startDim; d < this->dim_; d++) {
     pointer_type new_index = pointer_type(new value_type(*val_));
 
     if (level_vector[d] > 0) {

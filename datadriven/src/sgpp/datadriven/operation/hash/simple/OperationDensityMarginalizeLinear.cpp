@@ -29,11 +29,10 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
-  sgpp::base::GridIndex* gp;
-  sgpp::base::GridIndex mgp(mgs->getDimension());
+  sgpp::base::GridPoint mgp(mgs->getDimension());
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    gp = gs->get(i);
+    sgpp::base::GridPoint& gp = gs->getPoint(i);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       // skip direction in which we marginalize
@@ -41,14 +40,14 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
         continue;
       } else {
         if (d < mdim) {
-          mgp.set(d, gp->getLevel(d), gp->getIndex(d));
+          mgp.set(d, gp.getLevel(d), gp.getIndex(d));
         } else {
-          mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
+          mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
         }
       }
     }
 
-    if (!mgs->has_key(&mgp)) mgs->insert(mgp);
+    if (!mgs->isContaining(mgp)) mgs->insert(mgp);
   }
 
   mgs->recalcLeafProperty();
@@ -64,23 +63,23 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   size_t mseqNr;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
-    gp = gs->get(seqNr);
+    sgpp::base::GridPoint& gp = gs->getPoint(seqNr);
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d == mdim)
-        mdimLevel = gp->getLevel(d);
+        mdimLevel = gp.getLevel(d);
       else if (d < mdim)
-        mgp.set(d, gp->getLevel(d), gp->getIndex(d));
+        mgp.set(d, gp.getLevel(d), gp.getIndex(d));
       else
-        mgp.set(d - 1, gp->getLevel(d), gp->getIndex(d));
+        mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
     }
 
-    if (!mgs->has_key(&mgp))
+    if (!mgs->isContaining(mgp))
       throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
-    mseqNr = mgs->seq(&mgp);
+    mseqNr = mgs->getSequenceNumber(mgp);
     /**
      * Attention:
      * The integral of one basis functions changes for if another

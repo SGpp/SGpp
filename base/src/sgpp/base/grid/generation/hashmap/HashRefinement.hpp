@@ -44,10 +44,10 @@ class HashRefinement: public AbstractRefinement {
   /**
    * Refine one grid point along a single direction
    * @param storage hashmap that stores the grid points
-   * @param index point to refine
+   * @param point point to refine
    * @param d direction
    */
-  void refineGridpoint1D(GridStorage& storage, index_type& index, size_t d) override;
+  void refineGridpoint1D(GridStorage& storage, GridPoint& point, size_t d) override;
   void refineGridpoint1D(GridStorage& storage, size_t seq, size_t d) override;
 
   virtual ~HashRefinement() {}
@@ -68,9 +68,9 @@ class HashRefinement: public AbstractRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param index The point that should be inserted
+   * @param point The point that should be inserted
    */
-  void createGridpoint(GridStorage& storage, index_type& index) override;
+  void createGridpoint(GridStorage& storage, GridPoint& point) override;
 
   /**
   * Examines the grid points and stores the indices those that can be refined

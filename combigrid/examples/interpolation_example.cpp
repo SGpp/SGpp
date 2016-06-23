@@ -82,7 +82,7 @@ int main() {
 
     for (int j = 0; j < fg->getNrElements(); j++) {
       // compute the position of the grid point in the domain
-      fg->getCoords(j, coord);
+      fg->getStandardCoordinates(j, coord);
       // fill the fullgrid with the data at the position
       fg->getElementVector()[j] = func(coord);
     }

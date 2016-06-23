@@ -32,7 +32,7 @@ HeatEquationSolverWithStretching::~HeatEquationSolverWithStretching() {
 }
 
 void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretching, size_t level) {
-  this->dim = stretching.getDimensions();
+  this->dim = stretching.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearStretchedBoundaryGrid(stretching);
@@ -193,8 +193,8 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
     double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords =
-          this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

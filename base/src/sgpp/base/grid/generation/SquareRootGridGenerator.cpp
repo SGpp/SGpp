@@ -23,7 +23,7 @@ SquareRootGridGenerator::~SquareRootGridGenerator() {
 
 void SquareRootGridGenerator::regular(size_t level) {
   HashGenerator gen;
-  gen.squareRoot(this->storage, static_cast<HashGenerator::level_t>(level));
+  gen.squareRoot(this->storage, static_cast<level_t>(level));
 }
 
 void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {

@@ -30,9 +30,9 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
   if (q != 1.0) {
     // traverse all basis function by sequence number
     for (size_t i = 0; i < storage->getSize(); i++) {
-      sgpp::base::GridStorage::index_type::level_type level;
-      sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      sgpp::base::level_t level;
+      sgpp::base::index_t index;
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         if (index == 0) {
@@ -42,11 +42,11 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = *(*storage)[i];
+              sgpp::base::GridPoint index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                result[storage->seq(&index_one)] += ((-1.0 * Qqout) * alpha[i]);
+                result[storage->getSequenceNumber(index_one)] += ((-1.0 * Qqout) * alpha[i]);
               }
             }
           }
@@ -66,9 +66,9 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
   } else {
     // traverse all basis function by sequence number
     for (size_t i = 0; i < storage->getSize(); i++) {
-      sgpp::base::GridStorage::index_type::level_type level;
-      sgpp::base::GridStorage::index_type::index_type index;
-      (*storage)[i]->get(dim, level, index);
+      sgpp::base::level_t level;
+      sgpp::base::index_t index;
+      (*storage)[i].get(dim, level, index);
 
       if (level == 0) {
         if (index == 0) {
@@ -78,11 +78,11 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sgpp::base::DataVector& a
 
             // down
             if (index == 0) {
-              sgpp::base::GridIndex index_one = *(*storage)[i];
+              sgpp::base::GridPoint index_one = (*storage)[i];
               index_one.set(dim, 0, 1);
 
               if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                result[storage->seq(&index_one)] += ((-1.0) * alpha[i]);
+                result[storage->getSequenceNumber(index_one)] += ((-1.0) * alpha[i]);
               }
             }
           }

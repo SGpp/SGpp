@@ -29,8 +29,10 @@ class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalHessianModWavelet(GridStorage& storage) : storage(
-      storage) {
+  explicit OperationNaiveEvalHessianModWavelet(GridStorage& storage) :
+    storage(storage),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -69,6 +71,10 @@ class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
   GridStorage& storage;
   /// 1D wavelet basis
   SWaveletModifiedBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base

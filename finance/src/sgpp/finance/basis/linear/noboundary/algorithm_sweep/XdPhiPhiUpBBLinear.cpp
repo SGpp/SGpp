@@ -45,19 +45,19 @@ void XdPhiPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVec
   double fml = 0.0;
   double fmr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fml);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fmr, fr);
     }
 
@@ -89,19 +89,19 @@ void XdPhiPhiUpBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataV
   double fml = 0.0;
   double fmr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fl, fml, q, t);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fmr, fr, q, t);
     }
 

@@ -6,7 +6,7 @@ Created on Apr 19, 2016
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList
+from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
@@ -47,16 +47,16 @@ class OperationMakePositiveFast(object):
         for n, ((i, j), (gpi, gpj)) in enumerate(overlappingGridPoints.items()):
             fig = plt.figure()
             for k in xrange(gs.getSize()):
-                gp = gs.get(k)
-                x, y = gp.getCoord(0), gp.getCoord(1)
+                gp = gs.getPoint(k)
+                x, y = gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)
                 if alpha[k] < 0.0:
                     plt.plot(x, y, "v ", color="red")
                 else:
                     plt.plot(x, y, "^ ", color="white")
 
             # annotate the
-            plt.annotate(str(i), (gpi.getCoord(0), gpi.getCoord(1)))
-            plt.annotate(str(j), (gpj.getCoord(0), gpj.getCoord(1)))
+            plt.annotate(str(i), (gpi.getStandardCoordinate(0), gpi.getStandardCoordinate(1)))
+            plt.annotate(str(j), (gpj.getStandardCoordinate(0), gpj.getStandardCoordinate(1)))
 
             # draw support
             # get level index
@@ -76,7 +76,7 @@ class OperationMakePositiveFast(object):
                                             facecolor="gray", alpha=0.9))
 
             gp = self.findIntersection(gpi, gpj)
-            plt.plot(gp.getCoord(0), gp.getCoord(1), "o ", color="black")
+            plt.plot(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1), "o ", color="black")
 
             plt.title("%i/%i" % (n + 1, len(overlappingGridPoints)))
             plt.xlim(0, 1)
@@ -94,11 +94,11 @@ class OperationMakePositiveFast(object):
         
         p = DataVector(grid.getStorage().getDimension())
         for gp in candidates:
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "o ", color="green")
 
         for gp in addedGridPoints:
-            gp.getCoords(p)
+            gp.getStandardCoordinates(p)
             plt.plot(p[0], p[1], "o ", color="yellow")
 
         fig.show()
@@ -266,7 +266,7 @@ class OperationMakePositiveFast(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.get(i))]
+                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha
                 iteration += 1

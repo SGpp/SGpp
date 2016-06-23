@@ -6,7 +6,7 @@ Created on Feb 6, 2015
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
+from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList, \
     createOperationQuadrature, GridType_LinearBoundary, GridType_PolyBoundary
 import warnings
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
@@ -73,21 +73,21 @@ class OperationMakePositive(object):
             # compute starting points by level sum
             anchors = []
             for i in xrange(gs.getSize()):
-                accLevel = gs.get(i).getLevel(d)
+                accLevel = gs.getPoint(i).getLevel(d)
                 if accLevel == 1:
                     anchors.append(i)
 
             while len(anchors) > 0:
                 # get next starting node
                 ix = anchors.pop(0)
-                gp = gs.get(ix)
+                gp = gs.getPoint(ix)
                 acc = []
                 self.findCandidatesSweep1d(d, gp, alpha, grid, acc, False)
                 # store candidates
                 for gp in acc:
                     ix = gs.seq(gp)
                     if ix not in candidates:
-                        candidates[ix] = HashGridIndex(gp)
+                        candidates[ix] = HashGridPoint(gp)
 
         return candidates.values()
 
@@ -98,7 +98,7 @@ class OperationMakePositive(object):
 #
 #         # run over all grid points...
 #         for i in xrange(gs.getSize()):
-#             gp = gs.get(i)
+#             gp = gs.getPoint(i)
 #             # ... and check if they are leaf nodes
 #             if not hasAllChildren(grid, gp):
 #                 # load all hierarchical ancestors
@@ -126,9 +126,9 @@ class OperationMakePositive(object):
         # is negtive, then add it with all its
         # hierarchical ancestors
         gs.left_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         if level + 1 < maxLevel:
             self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p, opEval, maxLevel, acc)
@@ -138,9 +138,9 @@ class OperationMakePositive(object):
         # hierarchical ancestors
         gp.set(d, level, index)
         gs.right_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         # store them for next round
         if level + 1 < maxLevel:
@@ -214,7 +214,7 @@ class OperationMakePositive(object):
             toBeRemoved = IndexList()
             for gp in newGridPoints:
                 ix = gs.seq(gp)
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
                 if not hasChildren(grid, gp) and newAlpha[ix] < 0.:
@@ -234,7 +234,7 @@ class OperationMakePositive(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.get(i))]
+                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
 
                 grid, gs, alpha = newGrid, newGs, newAlpha
                 iteration += 1
@@ -293,7 +293,7 @@ class OperationMakePositive(object):
             forceToBePositive = []
             newGs = newGrid.getStorage()
             for i in xrange(newGs.getSize()):
-                gp = newGs.get(i)
+                gp = newGs.getPoint(i)
                 if newNodalValues[newGs.seq(gp)] < 0.:
                     forceToBePositive.append(gp)
 

@@ -21,8 +21,8 @@
 #include "BasisEval.hpp"
 
 using sgpp::base::DataVector;
-using sgpp::base::DimensionBoundary;
-using sgpp::base::GridIndex;
+using sgpp::base::BoundingBox1D;
+using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::index_t;
 using sgpp::base::level_t;
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(TestWaveletModifiedBasis) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   sgpp::base::SLinearBase b;
 
@@ -448,7 +448,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsBoundary) {
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   sgpp::base::SLinearBoundaryBase b;
 
@@ -481,12 +481,12 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
   str1d.x_0 = 1;
   str1d.xsi = 10;
 
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
-  GridIndex i(1);
+  GridPoint i(1);
   GridStorage s(1);
   s.setStretching(stretch);
 

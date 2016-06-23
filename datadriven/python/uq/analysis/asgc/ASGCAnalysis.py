@@ -646,8 +646,8 @@ class ASGCAnalysis(Analysis):
             data = np.ndarray((gs.getSize(), dim))
 
             for i in xrange(gs.getSize()):
-                gp = gs.get(i)
-                data[i, :] = np.array([gp.getCoord(j) for j in xrange(dim)])
+                gp = gs.getPoint(i)
+                data[i, :] = np.array([gp.getStandardCoordinate(j) for j in xrange(dim)])
 
             # write results
             writeDataARFF({'filename': "%s.t%f.gridpoints.arff" % (filename, t),
@@ -705,7 +705,7 @@ class ASGCAnalysis(Analysis):
 
         res = {}
         for i in xrange(gs.getSize()):
-            s = gs.get(i).getLevelSum()
+            s = gs.getPoint(i).getLevelSum()
             if s not in res:
                 res[s] = [alpha[i]]
             else:

@@ -38,7 +38,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
  public:
   typedef std::pair<size_t, double> value_type;
 
-  typedef AbstractRefinement::index_type counter_key_type;
+  typedef GridPoint counter_key_type;
   typedef uint64_t counter_value_type;
 
   /**
@@ -71,10 +71,10 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * This should be returning a refinement indicator for the specified grid point
    * The point with the highest value will be refined first.
    *
-   * @param gridPoint for which to calculate an indicator value
+   * @param point for which to calculate an indicator value
    * @return refinement value
    */
-  virtual double operator()(AbstractRefinement::index_type& gridPoint) const;
+  virtual double operator()(GridPoint& point) const;
 
   double runOperator(GridStorage& storage, size_t seq);
 
@@ -144,22 +144,19 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param value represents the x value on which the grid should be evaluated
    * @return basis function of grid type evaluated at "value" on level "level" and index "index".
    */
-  double basisFunctionEvalHelper(AbstractRefinement::level_t level,
-                                  AbstractRefinement::index_t index,
-                                  double value);
+  double basisFunctionEvalHelper(level_t level, index_t index, double value);
 
  private:
   /*
    * Each grid point has a support, that is constructed via a tensor product approach.
    * This function is a helper method for the operator()(index_type*), determining min(supp(basisFunction(level,index))) and max(supp(BasisFunction(level,index))) of the basis function associated with the grid type
-   * @param gridPoint for which to calculate the support Vector
+   * @param point for which to calculate the support Vector
    * @param dataVector in the dimensions of the grid Point, where each row of the data vector represents the minimum of the
    * support in the dimension of the grid point
    * @param dataVector in the dimensions of the grid Point, where each row of the data vector represents the maximum of the
    * support in the dimension of the grid point.
    */
-  void buildGPSupportMask(AbstractRefinement::index_type& gridPoint,
-                          DataVector& floorMask, DataVector& ceilingMask);
+  void buildGPSupportMask(GridPoint& point, DataVector& floorMask, DataVector& ceilingMask);
 
   /*
    * Figures out if an data point from the data set is on the support of the basis function associated with a grid point. Helper method for the operator()(index_type*)
