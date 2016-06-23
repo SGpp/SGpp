@@ -37,11 +37,11 @@ class DeterministicParameter(Parameter):
     #     """
     #     # restore surplusses
     #     key = '_name'
-    #     if jsonObject.has_key(key):
+    #     if jsonObject.isContaining(key):
     #         name = jsonObject[key]
 
     #     key = '_value'
-    #     if jsonObject.has_key(key):
+    #     if jsonObject.isContaining(key):
     #         value = jsonObject[key]
 
     #     return DeterministicParameter(name, value)

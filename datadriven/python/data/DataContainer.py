@@ -102,7 +102,7 @@ class DataContainer(object):
     # @return: DataContainer only with requested data set 
     # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
-        if self.points.has_key(category) and self.values.has_key(category):
+        if category in self.points and category in self.values:
             result = DataContainer(points=DataMatrix(self.points[category]),
                                    values=DataVector(self.values[category]),
                                    name=category)
@@ -171,7 +171,7 @@ class DataContainer(object):
         if kwargs is None:
             raise Exception("Argument list is empty")
         try:
-            if kwargs.has_key('adapter'): #takes (adapter: DataAdapter)
+            if 'adapter' in kwargs:  # takes (adapter: DataAdapter)
                 adapter = kwargs['adapter']
                 container = adapter.loadData()
                 self.points = container.points
@@ -181,7 +181,7 @@ class DataContainer(object):
                 self.specifications = container.specifications
                 self.name = container.name
             else:
-                if kwargs.has_key('size') and kwargs.has_key('dim'): #takes (size: int, dim: int, name="train")
+                if 'size' in kwargs and 'dim' in kwargs:  # takes (size: int, dim: int, name="train")
                     self.name = kwargs.get('name', self.TRAIN_CATEGORY)
                         
                     self.size = kwargs['size']
@@ -193,7 +193,7 @@ class DataContainer(object):
                     specification.createNumericAttributes(self.dim)
                     self.specifications[self.name] = specification
                     
-                elif kwargs.has_key('points') and kwargs.has_key('values'): #takes (points: DataVector, values: DataVector, name="train", filename=None)
+                elif 'points' in kwargs and 'values' in kwargs:  # takes (points: DataVector, values: DataVector, name="train", filename=None)
                     
                     self.name = kwargs.get('name', self.TRAIN_CATEGORY)
                     if isinstance(kwargs['points'], DataMatrix):

@@ -34,7 +34,7 @@ class SurplusRanking(Ranking):
         super(SurplusRanking, self).__init__()
 
     def rank(self, grid, gp, alphas, *args, **kws):
-        return abs(alphas[grid.getStorage().seq(gp)])
+        return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
 
 
 class SquaredSurplusRanking(Ranking):
@@ -44,7 +44,7 @@ class SquaredSurplusRanking(Ranking):
         self._dtype = KnowledgeTypes.SQUARED
 
     def rank(self, grid, gp, alphas, *args, **kws):
-        return abs(alphas[grid.getStorage().seq(gp)])
+        return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
 
 
 class SurplusRatioRanking(Ranking):
@@ -73,7 +73,7 @@ class ExpectationValueOptRanking(Ranking):
         q = T.unitToProbabilistic(p)
 
         # scale surplus by probability density
-        ix = gs.seq(gp)
+        ix = gs.getSequenceNumber(gp)
 
         # get area of basis function
         A = 1.0

@@ -77,8 +77,8 @@ class IntersectionCandidates(CandidateSet):
 
         for gp in gps:
             if not hasAllChildren(grid, gp):
-#                 if gs.has_key(gp):
-#                     if alpha[gs.seq(gp)] < 0.0:
+#                 if gs.isContaining(gp):
+#                     if alpha[gs.getSequenceNumber(gp)] < 0.0:
 #                         refinementCandidates.append(gp)
 #                 else:
                 refinementCandidates.append(gp)
@@ -105,7 +105,7 @@ class IntersectionCandidates(CandidateSet):
                     intersection.set(idim, level[idim], index[idim])
 
                 # check if the current grid point already exists
-                if not gs.has_key(intersection):
+                if not gs.isContaining(intersection):
                     costs += 1
 
                     idim = 0
@@ -201,5 +201,5 @@ class IntersectionCandidates(CandidateSet):
 
 #         if self.iteration > 0:
 #             for gp in self.candidates_history[self.iteration - 1]:
-#                 if not gs.has_key(gp) and gp not in self.candidates:
+#                 if not gs.isContaining(gp) and gp not in self.candidates:
 #                     self.candidates.append(gp)

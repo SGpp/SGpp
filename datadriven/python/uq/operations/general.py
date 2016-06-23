@@ -29,15 +29,15 @@ def insert_children(grid, gp, d):
 
     # left child in dimension dim
     gpl = HashGridPoint(gp)
-    gs.left_child(gpl, d)
-    if not gs.has_key(gpl) and isValid(grid, gpl):
+    gpl.getLeftChild(d)
+    if not gs.isContaining(gpl) and isValid(grid, gpl):
         success = gs.insert(gpl) > -1
         cnt += 1 if success else 0
 
     # right child in dimension dim
     gpr = HashGridPoint(gp)
-    gs.right_child(gpr, d)
-    if not gs.has_key(gpr) and isValid(grid, gpr):
+    gpr.getRightChild(d)
+    if not gs.isContaining(gpr) and isValid(grid, gpr):
         success = gs.insert(gpr) > -1
         cnt += 1 if success else 0
 
@@ -153,7 +153,7 @@ def join(grid1, grid2, *args, **kws):
         gp = gs1.getPoint(i)
 
         # insert grid point
-        if not gs2.has_key(gp):
+        if not gs2.isContaining(gp):
             gs2.insert(gp)
 
     gs2.recalcLeafProperty()

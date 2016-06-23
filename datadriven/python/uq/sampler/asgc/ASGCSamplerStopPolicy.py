@@ -106,13 +106,13 @@ class ASGCSamplerStopPolicy(object):
     @classmethod
     def fromJson(cls, jsonObject):
         policy = SamplerStopPolicy()
-        if jsonObject.has_key('_SamplerStopPolicy__adaptiveIterationLimit'):
+        if jsonObject.isContaining('_SamplerStopPolicy__adaptiveIterationLimit'):
             policy.setAdaptiveIterationLimit(jsonObject['_SamplerStopPolicy__adaptiveIterationLimit'])
-        if jsonObject.has_key('_SamplerStopPolicy__accuracyLimit'):
+        if jsonObject.isContaining('_SamplerStopPolicy__accuracyLimit'):
             policy.setAccuracyLimit(jsonObject['_SamplerStopPolicy__accuracyLimit'])
-        if jsonObject.has_key('_SamplerStopPolicy__gridSize'):
+        if jsonObject.isContaining('_SamplerStopPolicy__gridSize'):
             policy.setGridSizeLimit(jsonObject['_SamplerStopPolicy__gridSize'])
-        if jsonObject.has_key('_SamplerStopPolicy__oldGridSize'):
+        if jsonObject.isContaining('_SamplerStopPolicy__oldGridSize'):
             policy.__oldGridSize = jsonObject['_SamplerStopPolicy__oldGridSize']
         return policy
 

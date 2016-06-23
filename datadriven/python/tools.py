@@ -1091,7 +1091,7 @@ class Matrix:
             gi = GridPoint(gridStorage.getDimension())
             for d in range(gridStorage.getDimension()):
                 gi.set(d, 1, 1)
-            i = gridStorage.seq(gi)
+            i = gridStorage.getSequenceNumber(gi)
             result[i] = result[i] - M*self.l*alpha[i]
             
 #        elif self.CMode == "levelsum":

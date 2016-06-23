@@ -1,8 +1,7 @@
-from pysgpp import Grid, DataVector, createOperationEval, HashGridIndex
+from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from findCandidateSet import CandidateSet
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp.pysgpp_swig import HashGridIndex
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
     isHierarchicalAncestor
@@ -47,7 +46,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
     def findIntersectionsOfOverlappingSuppportsForOneGridPoint(self, i, gpi, gpsj, overlap, grid, alpha):
         numDims = gpi.getDimension()
         gs = grid.getStorage()
-        gpintersection = HashGridIndex(self.numDims)
+        gpintersection = HashGridPoint(self.numDims)
 
         # find all possible intersections of grid points
         comparisonCosts = fullGridCosts = 0
@@ -82,11 +81,11 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                 for _, ancestor_gpj in ancestors_gpj:
                     fullGridCosts += 1
                     level, index = self.findIntersection(gpi, ancestor_gpj)
-                    gpintersection = HashGridIndex(self.numDims)
+                    gpintersection = HashGridPoint(self.numDims)
                     for idim in xrange(self.numDims):
                         gpintersection.set(idim, level[idim], index[idim])
 
-                    if not gs.has_key(gpintersection):
+                    if not gs.isContaining(gpintersection):
 
                         if self.plot and self.numDims == 2:
                             self.plotDebug(grid, alpha, {1: gpintersection}, gpi, gpj, overlap)
@@ -127,19 +126,19 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
         for gp in candidates.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoords(p)
             plt.plot(p[0], p[1], "x ", color="green")
 
         for gp in ans.values():
             p = DataVector(gp.getDimension())
-            gp.getCoords(p)
+            gp.getStandardCoords(p)
             plt.plot(p[0], p[1], "o ", color="green")
 
 
         p = DataVector(grid.getStorage().getDimension())
-        gpi.getCoords(p)
+        gpi.getStandardCoords(p)
         plt.plot(p[0], p[1], "^ ", color="orange")
-        gpj.getCoords(p)
+        gpj.getStandardCoords(p)
         plt.plot(p[0], p[1], "^ ", color="orange")
 
         plt.xlim(0, 1)
@@ -158,22 +157,22 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
             currentgp = gps.pop()
             children.append(getLevel(currentgp))
             if currentgp.getLevel(idim) < self.maxLevel:
-                gpl = HashGridIndex(currentgp)
-                gs.left_child(gpl, idim)
-                if gs.has_key(gpl):
+                gpl = HashGridPoint(currentgp)
+                gpl.getLeftChild(idim)
+                if gs.isContaining(gpl):
                     gps.append(gpl)
 
                 # get right child
-                gpr = HashGridIndex(currentgp)
+                gpr = HashGridPoint(currentgp)
                 gs.right_child(gpr, idim)
-                if gs.has_key(gpr):
+                if gs.isContaining(gpr):
                     gps.append(gpr)
 
         return children
 
 
     def getLocalMaxLevel(self, dup, levels, indices, grid):
-        gp = HashGridIndex(self.numDims)
+        gp = HashGridPoint(self.numDims)
         for idim, (level, index) in enumerate(zip(levels, indices)):
             gp.set(idim, level, index)
 
@@ -288,7 +287,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                 levels = [None] * self.numDims
                 indices = [None] * self.numDims
                 for levelsGlobal, indicesGlobal in globalGrid.keys():
-                    gpdd = HashGridIndex(self.numDims)
+                    gpdd = HashGridPoint(self.numDims)
                     for idim in xrange(self.numDims):
                         lg, ig = levelsGlobal[idim], indicesGlobal[idim]
                         llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
@@ -299,7 +298,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                         indices[idim] = int(ig + (ilroot - 1) * 2 ** (lg - 1))
                         gpdd.set(idim, levels[idim], indices[idim])
 
-                    if not gs.has_key(gpdd):
+                    if not gs.isContaining(gpdd):
                         localGrid[(tuple(levels), tuple(indices))] = gpdd
 
                 if self.plot and self.numDims == 2:

@@ -25,7 +25,7 @@ class InterpolateParents(InterpolationAlgorithm):
             # run over all grid points of current level
             newGp.getStandardCoordinates(p)
             pp = DataVector(p)
-            i = newGs.seq(newGp)
+            i = newGs.getSequenceNumber(newGp)
             newNodalValues[i] = 0.
             for d in xrange(gs.getDimension()):
                 # get current index

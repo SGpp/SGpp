@@ -26,7 +26,7 @@ def plotGrid1d(grid, f=lambda x: x):
     x = np.zeros(gs.getSize())
     nodalValues = np.zeros(gs.getSize())
     for i in xrange(gs.getSize()):
-        x[i] = f(gs.get(i).getCoord(0))
+        x[i] = f(gs.get(i).getStandardCoordinate(0))
 
     plt.scatter(x, nodalValues, marker="o")
 

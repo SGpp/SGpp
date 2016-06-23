@@ -62,7 +62,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
                     s[d], _ = quad(f, xlow, xhigh, epsabs=1e-8)
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
-            if gs.seq(gpi) == j:
+            if gs.getSequenceNumber(gpi) == j:
                 b[i] = A.get(i, j)
     return A, b
 
@@ -243,7 +243,7 @@ def computeBF(grid, U, admissibleSet):
                     # compute the integral of it
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
-            if gs.seq(gpi) == j:
+            if gs.getSequenceNumber(gpi) == j:
                 b[i] = A.get(i, j)
     return A, b
 
@@ -261,7 +261,7 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
     b = DataVector(admissibleSet.getSize())
 #     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
-        i = gs.seq(gpi)
+        i = gs.getSequenceNumber(gpi)
         gpi.getStandardCoordinates(p)
         for j in xrange(gs.size()):
             gs.getPoint(j).getStandardCoordinates(q)

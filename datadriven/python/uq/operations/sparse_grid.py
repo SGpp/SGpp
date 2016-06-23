@@ -68,7 +68,7 @@ def copyGrid(grid, level=0, deg=1):
         gp = gs.getPoint(i)
 
         # insert grid point
-        if not newGs.has_key(gp):
+        if not newGs.isContaining(gp):
             newGs.insert(HashGridPoint(gp))
 
     newGs.recalcLeafProperty()
@@ -189,7 +189,7 @@ def getNonExistingHierarchicalAncestors(grid, gp):
 
     while len(gps) > 0:
         d, p = gps.pop()
-        if isValid(grid, p) and not gs.has_key(p):
+        if isValid(grid, p) and not gs.isContaining(p):
             ans.append((d, p))
             gps += parents(grid, p)
 
@@ -250,7 +250,7 @@ def haveOverlappingSupport(gpi, gpj):
 #
 #                 gpc.set(dim, level, index)
 #
-#                 if not gs.has_key(gpc):
+#                 if not gs.isContaining(gpc):
 #                     newGridPoints.append(HashGridPoint(gpc))
 #                 else:
 #                     break
@@ -290,14 +290,14 @@ def hasChildren(grid, gp):
         # load level index
         level, index = gp.getLevel(d), gp.getIndex(d)
         # check left child in d
-        gs.left_child(gp, d)
-        if gs.has_key(gpn):
+        gp.getLeftChild(d)
+        if gs.isContaining(gpn):
             return True
 
         # check right child in d
         gp.set(d, level, index)
-        gs.right_child(gp, d)
-        if gs.has_key(gpn):
+        gp.getRightChild(d)
+        if gs.isContaining(gpn):
             return True
 
         gpn.set(d, level, index)
@@ -342,13 +342,13 @@ def hasAllChildren(grid, gp):
         level, index = gp.getLevel(dim), gp.getIndex(dim)
 
         # check left child in dimension dim
-        gs.left_child(gp, dim)
-        cnt = gs.has_key(gp)
+        gp.getLeftChild(dim)
+        cnt = gs.isContaining(gp)
 
         # check right child in dimension dim
         gp.set(dim, level, index)
-        gs.right_child(gp, dim)
-        cnt += gs.has_key(gp)
+        gp.getRightChild(dim)
+        cnt += gs.isContaining(gp)
 
         # reset grid point
         gp.set(dim, level, index)
@@ -380,7 +380,7 @@ def insertTruncatedBorder(grid, gp):
             rgp = HashGridPoint(gp)
             gs.right_levelzero(rgp, d)
             # insert the point
-            if not gs.has_key(rgp):
+            if not gs.isContaining(rgp):
                 added_grid_points = insertPoint(grid, rgp)
                 if len(added_grid_points) > 0:
                     ans += added_grid_points
@@ -390,7 +390,7 @@ def insertTruncatedBorder(grid, gp):
             lgp = HashGridPoint(gp)
             gs.left_levelzero(lgp, d)
             # insert the point
-            if not gs.has_key(lgp):
+            if not gs.isContaining(lgp):
                 added_grid_points = insertPoint(grid, lgp)
                 if len(added_grid_points) > 0:
                     ans += added_grid_points
@@ -405,7 +405,7 @@ def insertPoint(grid, gp):
     """
     gs = grid.getStorage()
 
-    if gs.has_key(gp) or not isValid(grid, gp):
+    if gs.isContaining(gp) or not isValid(grid, gp):
         return []
 
     success = gs.insert(HashGridPoint(gp)) > -1
@@ -420,14 +420,14 @@ def isRefineable(grid, gp):
     for d in xrange(gs.getDimension()):
         # left child in dimension dim
         gpl = HashGridPoint(gp)
-        gs.left_child(gpl, d)
-        if not gs.has_key(gpl) and isValid(grid, gpl):
+        gpl.getLeftChild(d)
+        if not gs.isContaining(gpl) and isValid(grid, gpl):
             return True
 
         # right child in dimension dim
         gpr = HashGridPoint(gp)
-        gs.right_child(gpr, d)
-        if not gs.has_key(gpr) and isValid(grid, gpr):
+        gpr.getRightChild(d)
+        if not gs.isContaining(gpr) and isValid(grid, gpr):
             return True
 
     return False
@@ -474,7 +474,7 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
     ans = 0.
     # print "======== evalHierToTop (%i, %i) ========" % (gp.getLevel(0), gp.getIndex(0))
     while gpa is not None:
-        ix = gs.seq(gpa)
+        ix = gs.getSequenceNumber(gpa)
         accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.getStandardCoordinate(d)
         b = basis.eval(accLevel, i, p)
 #         print "%i, %i, %.20f: %.20f * %.20f = %.20f (%.20f)" % \
@@ -518,19 +518,19 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 
             # append left and right child
             gpl = HashGridPoint(gp)
-            gs.left_child(gpl, d)
+            gpl.getLeftChild(d)
             gpr = HashGridPoint(gp)
-            gs.right_child(gpr, d)
+            gpr.getRightChild(d)
 
             gps = []
-            if gs.has_key(gpr):
+            if gs.isContaining(gpr):
                 gps.append(gpr)
-            if gs.has_key(gpl):
+            if gs.isContaining(gpl):
                 gps.append(gpl)
 
             while len(gps) > 0:
                 gpc = gps.pop()
-                ix = gs.seq(gpc)
+                ix = gs.getSequenceNumber(gpc)
                 # removeSample point from possible starting points
                 starting_points.remove(ix)
                 diff = evalHierToTop(basis, grid, alpha, gpc, d)
@@ -539,13 +539,13 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 
                 # append left and right child
                 gpl = HashGridPoint(gpc)
-                gs.left_child(gpl, d)
+                gpl.getLeftChild(d)
                 gpr = HashGridPoint(gpc)
-                gs.right_child(gpr, d)
+                gpr.getRightChild(d)
 
-                if gs.has_key(gpr):
+                if gs.isContaining(gpr):
                     gps.append(gpr)
-                if gs.has_key(gpl):
+                if gs.isContaining(gpl):
                     gps.append(gpl)
 
     return alpha
@@ -609,15 +609,15 @@ def balance(grid):
         for dim in xrange(gs.getDimension()):
             # left child in dimension dim
             lgp = HashGridPoint(gp)
-            gs.left_child(lgp, dim)
+            lgp.getLeftChild(dim)
 
             # right child in dimension dim
             rgp = HashGridPoint(gp)
-            gs.right_child(rgp, dim)
+            rgp.getRightChild(dim)
 
-            if gs.has_key(lgp) and not gs.has_key(rgp):
+            if gs.isContaining(lgp) and not gs.isContaining(rgp):
                 inserted = insertPoint(grid, rgp)
-            elif gs.has_key(rgp) and not gs.has_key(lgp):
+            elif gs.isContaining(rgp) and not gs.isContaining(lgp):
                 inserted = insertPoint(grid, lgp)
             else:
                 inserted = []
@@ -659,7 +659,7 @@ def addConst(grid, alpha, c):
 #########################################################
 # def estimateSurplus(grid, gp, v):
 #     gs = grid.getStorage()
-#     ix = gs.seq(gp)
+#     ix = gs.getSequenceNumber(gp)
 #
 #     # surplus is already known
 #     if ix < len(v):
@@ -668,16 +668,16 @@ def addConst(grid, alpha, c):
 #
 #     vgp = []
 #     # get all available parents
-#     myParents = [(d, pgp) for (d, pgp) in parents(grid, gp) if gs.has_key(pgp)]
+#     myParents = [(d, pgp) for (d, pgp) in parents(grid, gp) if gs.isContaining(pgp)]
 #     vparents = np.ndarray(len(myParents), dtype='float32')
 #     for i, (dp, p) in enumerate(myParents):
-#         ipar = gs.seq(p)
+#         ipar = gs.getSequenceNumber(p)
 #         vparents[i] = v[ipar]
 #         # get all grand parents = parents of parents
 #         for dgrp, grp in parents(grid, p):
 #             # use a linear extrapolation through parent and grandparent
 #             # to estimate the surplus of the current collocation node
-#             igrandpar = gs.seq(grp)
+#             igrandpar = gs.getSequenceNumber(grp)
 #             xpar = p.getStandardCoordinate(dgrp)
 #             xgrandpar = grp.getStandardCoordinate(dgrp)
 #             xgp = p.getStandardCoordinate(dgrp) + 2 ** -gp.getLevel(dp)
@@ -733,7 +733,7 @@ def estimateSurplus(grid, gp, v):
     @return: float, estimated surplus for gp
     """
     gs = grid.getStorage()
-    ix = gs.seq(gp)
+    ix = gs.getSequenceNumber(gp)
 
     # surplus is already known
     if ix < len(v):
@@ -741,16 +741,16 @@ def estimateSurplus(grid, gp, v):
 
     vgp = []
     # get all available parents
-    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.has_key(pgp)]
+    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
     vparents = np.ndarray(len(myParents), dtype='float32')
     for i, (_, p) in enumerate(myParents):
-        ipar = gs.seq(p)
+        ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]
         # get all grand parents = parents of parents
         for _, grp in parents(grid, p):
             # use a linear extrapolation through parent and grandparent
             # to estimate the surplus of the current collocation node
-            igrandpar = gs.seq(grp)
+            igrandpar = gs.getSequenceNumber(grp)
             if abs(v[igrandpar]) > 1e-13:
                 vgp.append(v[ipar] * v[ipar] / v[igrandpar])
 
@@ -765,7 +765,7 @@ def estimateSurplus(grid, gp, v):
 
 def estimateConvergence(grid, gp, v):
     gs = grid.getStorage()
-    ix = gs.seq(gp)
+    ix = gs.getSequenceNumber(gp)
 
     # surplus is already known
     if ix < len(v):
@@ -773,16 +773,16 @@ def estimateConvergence(grid, gp, v):
 
     vgp = []
     # get all available parents
-    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.has_key(pgp)]
+    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
     vparents = np.ndarray(len(myParents), dtype='float32')
     for i, (_, p) in enumerate(myParents):
-        ipar = gs.seq(p)
+        ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]
         # get all grand parents = parents of parents
         for _, grp in parents(grid, p):
             # use a linear extrapolation through parent and grandparent
             # to estimate the surplus of the current collocation node
-            igrandpar = gs.seq(grp)
+            igrandpar = gs.getSequenceNumber(grp)
             if v[igrandpar] < -1e-10 or v[igrandpar] > 1e-10:
                 vgp.append(v[ipar] / v[igrandpar])
 

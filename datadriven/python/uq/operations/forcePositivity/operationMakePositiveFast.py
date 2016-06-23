@@ -124,7 +124,7 @@ class OperationMakePositiveFast(object):
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
-#                 assert all([alpha[gs.seq(gp)] > -1e-13 for gp in addedGridPoints])
+#                 assert all([alpha[gs.getSequenceNumber(gp)] > -1e-13 for gp in addedGridPoints])
 
         return alpha
     
@@ -168,7 +168,7 @@ class OperationMakePositiveFast(object):
         """
         # remove all the already existing candidates
         gs = grid.getStorage()
-        nonExistingCandidates = [gp for gp in candidates if not gs.has_key(gp)]
+        nonExistingCandidates = [gp for gp in candidates if not gs.isContaining(gp)]
 
         # sort the non existing grid points by level
         finalCandidates = self.sortCandidatesByLevelSum(nonExistingCandidates)
@@ -205,7 +205,7 @@ class OperationMakePositiveFast(object):
             samples = np.ndarray((len(currentCandidates), self.numDims))
             p = DataVector(self.numDims)
             for j, gp in enumerate(currentCandidates):
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 samples[j, :] = p.array()
             eval = evalSGFunctionMulti(grid, alpha, samples)
 
@@ -251,9 +251,9 @@ class OperationMakePositiveFast(object):
             for gp in newGridPoints:
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
-                if gs.has_key(gp):
-                    ix = gs.seq(gp)
-                    if gs.get(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
+                if gs.isContaining(gp):
+                    ix = gs.getSequenceNumber(gp)
+                    if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
                         toBeRemoved.append(ix)
 
             # remove the identified grid points
@@ -266,7 +266,7 @@ class OperationMakePositiveFast(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
+                    newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha
                 iteration += 1
@@ -344,12 +344,13 @@ class OperationMakePositiveFast(object):
         # coarsening: remove all new grid points with zero surplus
         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
         if self.verbose:
-            print "                        old | coarsed | new | max | full"
-            print "# final grid          : %i <= %i <= %i <= %i <= %i" % (self.grid.getSize(),
-                                                                          coarsedGrid.getSize(),
-                                                                          newGrid.getSize(),
-                                                                          self.grid.getSize() + len(candidates),
-                                                                          (2 ** self.maxLevel - 1) ** self.numDims)
+            print "                        old | coarsed | new | max (cand) | full"
+            print "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(),
+                                                                               coarsedGrid.getSize(),
+                                                                               newGrid.getSize(),
+                                                                               self.grid.getSize() + len(candidates),
+                                                                               len(candidates),
+                                                                               (2 ** self.maxLevel - 1) ** self.numDims)
 
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
