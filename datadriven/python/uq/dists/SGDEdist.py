@@ -38,11 +38,12 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, grid, alpha, trainData=None, bounds=None):
+    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None):
         super(SGDEdist, self).__init__(trainData, bounds)
 
         self.grid = grid
         self.alpha = DataVector(alpha)
+        self.config = config
 
         if trainData is None:
             self.dim = grid.getStorage().getDimension()
@@ -90,7 +91,31 @@ class SGDEdist(EstimatedDist):
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)
 
-        return cls(learner.getGrid(), learner.getSurpluses(), samples, bounds)
+        return cls(learner.getGrid(), learner.getSurpluses(), samples, bounds, config)
+
+
+    @classmethod
+    def byFiles(cls, gridfile, alphafile, samplesfile, bounds=None, config=None):
+        if os.path.exists(gridFile):
+            grid = readGrid(gridFile)
+        else:
+            raise Exception('The grid file "%s" does not exist' % gridFile)
+
+        if os.path.exists(alphaFile):
+            alpha = readAlphaARFF(alphaFile)
+        else:
+            raise Exception('The alpha file "%s" does not exist' % alphaFile)
+
+        trainData = None
+        if trainDataFile is not None:
+            if os.path.exists(trainDataFile):
+                trainData = readDataTrivial(trainDataFile, delim=' ',
+                                            hasclass=False)['data']
+            else:
+                raise Exception('The data file "%s" does not exist' % trainDataFile)
+
+        return cls(grid, alpha, trainData, bounds, config)
+        
 
     def pdf(self, x):
         # convert the parameter to the right format

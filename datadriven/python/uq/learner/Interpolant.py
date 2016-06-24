@@ -142,13 +142,24 @@ class Interpolant(Learner):
         @param alpha: DataVector hierarchical coefficients
         @return: mean squared error
         """
-        points = data.getPoints().array()
-        values_model = data.getValues().array()
-        if points.shape[1] == 0:
+        # check if points are in [0, 1]^d
+        allPoints = data.getPoints().array()
+        allModelValues = data.getValues().array()
+
+        points = np.ndarray((0, data.dim))
+        modelValues = np.array([])
+        for i, point in enumerate(allPoints):
+            if np.all(point >= 0) and np.all(point <= 1):
+                points = np.vstack((points, point))
+                modelValues = np.append(modelValues, allModelValues[i])
+
+        if allPoints.shape[1] == 0:
             return np.array([])
-        values_surrogate = evalSGFunctionMulti(self.grid, alpha, points)
+
+        surrogateValues = evalSGFunctionMulti(self.grid, alpha, points)
+
         # compute L2 error
-        return np.sqrt((values_surrogate - values_model) ** 2)
+        return np.sqrt((surrogateValues - modelValues) ** 2)
 
     def getSize(self, dtype="train"):
         if dtype == "train":

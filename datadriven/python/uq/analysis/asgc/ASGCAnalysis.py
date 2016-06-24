@@ -74,7 +74,6 @@ class ASGCAnalysis(Analysis):
         qoi = self.__uqManager.getQoI()
         return self.__knowledge.getAlpha(qoi=qoi)
 
-
     def setVerbose(self, verbose):
         self.__verbose = verbose
 

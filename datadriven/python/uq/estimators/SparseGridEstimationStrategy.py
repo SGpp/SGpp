@@ -1,4 +1,4 @@
-from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp.extensions.datadriven.uq.transformation import RosenblattTransformation
 from pysgpp.extensions.datadriven.uq.dists import Uniform, J
 
 
@@ -10,7 +10,7 @@ class SparseGridEstimationStrategy(object):
         # check if importance sampling has been used for some parameters
         for i, trans in enumerate(T.getTransformations()):
             # if this is the case replace them by a uniform distribution
-            if isinstance(trans, InverseCDFTransformation):
+            if isinstance(trans, RosenblattTransformation):
                 dists[i] = Uniform(0, 1)
             else:
                 vol *= trans.vol()

@@ -648,24 +648,40 @@ double KDEMaximumLikelihoodCrossValidation::eval(const base::DataVector& x) {
 
   return result / static_cast<double>(strain.size());
 
-  //  // evaluate the likelihood function
-  //  double res = 0.0;
+  //  // MLCV
+  //  double result = 0.0;
+  //
+  //  // do the k-fold cross validation
   //  base::DataVector sample(kde.getDim());
   //  std::vector<size_t> skipElements(1);
-  //  double value = 0.0;
-  //  std::uint32_t count = 0;
-  //  for (size_t i = 0; i < kde.getNsamples(); i++) {
-  //    skipElements[0] = i;
-  //    kde.getSample(i, sample);
-  //    value = kde.evalSubset(sample, skipElements);
-  //    if (value > 1e-10) {
-  //      res += std::log2(value);
-  //      count += 1;
+  //  for (size_t k = 0; k < strain.size(); k++) {
+  //    // load the data set
+  //    auto trainSamples = strain[k];
+  //    auto testSamples = stest[k];
+  //
+  //    KernelDensityEstimator localKDE(*trainSamples, kde.getKernel().getType(),
+  //                                    BandwidthOptimizationType::NONE);
+  //    localKDE.setBandwidths(x);
+  //
+  //    // compute the cross entropy
+  //    double mlcv = 0.0;
+  //    double value = 0.0;
+  //    std::uint32_t count = 0;
+  //    for (size_t i = 0; i < trainSamples->getNrows(); i++) {
+  //      skipElements[0] = i;
+  //      trainSamples->getRow(i, sample);
+  //      value = kde.evalSubset(sample, skipElements);
+  //      if (value > 1e-10) {
+  //        mlcv -= std::log2(value);
+  //        count += 1;
+  //      }
   //    }
+  //
+  //    // update the result
+  //    result += mlcv / static_cast<double>(count);
   //  }
   //
-  //  // we want to maximize this value -> multiply it with -1
-  //  return -1.0 * res / static_cast<double>(count);
+  //  return result / static_cast<double>(strain.size());
 }
 
 }  // namespace datadriven

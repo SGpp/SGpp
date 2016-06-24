@@ -21,9 +21,9 @@ class AdmissibleSetGenerator(object):
             if self.refineInnerNodes:
                 levels = [gp.getLevel(d) > 0 for d in xrange(gp.getDimension())]
                 if all(levels):
-                    self.admissibleSet[gp.hash()] = gp
+                    self.admissibleSet[gp.getHash()] = gp
             else:
-                self.admissibleSet[gp.hash()] = gp
+                self.admissibleSet[gp.getHash()] = gp
 
     def getSize(self):
         return len(self.admissibleSet)
