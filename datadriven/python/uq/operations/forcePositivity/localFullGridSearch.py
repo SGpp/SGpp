@@ -296,7 +296,7 @@ class LocalFullGridCandidates(CandidateSet):
         return ans, gridCosts, searchCosts
 
 
-    def mergeLocalGrids(self, iFullGrid, jFullGrid, idims=None, update="max"):
+    def mergeLocalGrids(self, iFullGrid, jFullGrid, idims=None):
         if idims is None:
             idims = np.array(range(self.numDims), dtype="int")
 
@@ -305,12 +305,7 @@ class LocalFullGridCandidates(CandidateSet):
 
         fullGridLevels = np.vstack((iFullGrid.fullGridLevels[idims],
                                     jFullGrid.fullGridLevels[idims]))
-        if update == "max":
-            jFullGrid.fullGridLevels[idims] = fullGridLevels.max(axis=0)
-        elif update == "min":
-            jFullGrid.fullGridLevels[idims] = fullGridLevels.min(axis=0)
-        else:
-            raise AttributeError("mergeLocalGrids: update '%s' is unknown" % update)
+        jFullGrid.fullGridLevels[idims] = fullGridLevels.max(axis=0)
 
 
     def updateLocalGridLists(self, iGridList, jGridList):
@@ -323,8 +318,7 @@ class LocalFullGridCandidates(CandidateSet):
 #                     print "merge:", iSplittedGrid.fullGridLevels, jGridList[levelindex].fullGridLevels,
                     nonOverlapping &= not np.any(jGridList[levelindex].fullGridLevels != iSplittedGrid.fullGridLevels)
                     self.mergeLocalGrids(iSplittedGrid,
-                                         jGridList[levelindex],
-                                         update="max")
+                                         jGridList[levelindex])
 #                     print "->", jGridList[levelindex].fullGridLevels
                 else:
                     jGridList[levelindex] = iSplittedGrid
@@ -443,7 +437,9 @@ class LocalFullGridCandidates(CandidateSet):
                     # get the next grids to compare with
                     iFullGrids = gridDict[levelindexi].values()
                     jFullGrid = jFullGrids.pop()
-                    del gridDict[levelindexj][jFullGrid.getLevelIndex()]
+                    if self.multipleSplittingScheme:
+                        del gridDict[levelindexj][jFullGrid.getLevelIndex()]
+
 #                     print "  %i/%i/%i: check j grid -> %s" % (l + 1,
 #                                                               len(jFullGrids),
 #                                                               len(dependentGrids),
@@ -480,8 +476,8 @@ class LocalFullGridCandidates(CandidateSet):
                     gridDict[levelindexi] = {}
                     nonOverlapping &= self.updateLocalGridLists(iNewGrids, gridDict[levelindexi])
                     # update the j grid
-                    # if self.multipleSplittingScheme:
-                    nonOverlapping &= self.updateLocalGridLists(jNewGrids, gridDict[levelindexj])
+                    if self.multipleSplittingScheme:
+                        nonOverlapping &= self.updateLocalGridLists(jNewGrids, gridDict[levelindexj])
 
                     if self.debug:
                         # -------------------------------------------------------
@@ -512,7 +508,7 @@ class LocalFullGridCandidates(CandidateSet):
                 if levelindex in ans:
                     # merge local grids
                     nonOverlapping &= not np.any(ans[levelindex].fullGridLevels != localGrid.fullGridLevels)
-                    self.mergeLocalGrids(localGrid, ans[levelindex], update="max")
+                    self.mergeLocalGrids(localGrid, ans[levelindex])
                 else:
                     ans[levelindex] = localGrid
 
@@ -579,6 +575,7 @@ class LocalFullGridCandidates(CandidateSet):
                 splittedGrids, iFullGrid, done = self.splitLocalFullGridDimx(iFullGrid, jFullGrid, levelOuter, kdim)
                 iSplittedGrids.update(splittedGrids)
             elif kdim in jdims:
+                assert self.multipleSplittingScheme
                 splittedGrids, jFullGrid, done = self.splitLocalFullGridDimx(jFullGrid, iFullGrid, levelOuter, kdim)
                 jSplittedGrids.update(splittedGrids)
 
@@ -679,13 +676,17 @@ class LocalFullGridCandidates(CandidateSet):
                 for gp in iFullGrid.computeAnisotropicFullGrid().values():
                     gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "o", color="green")
-                iFullGrid.gp.getStandardCoordinates(p)
-                plt.plot(p[0], p[1], "^", color="orange")
 
             for jFullGrid in jSplittedGrids.values():
                 for gp in jFullGrid.computeAnisotropicFullGrid().values():
                     gp.getStandardCoordinates(p)
                     plt.plot(p[0], p[1], "v", color="red")
+
+            for iFullGrid in iSplittedGrids.values():
+                iFullGrid.gp.getStandardCoordinates(p)
+                plt.plot(p[0], p[1], "^", color="orange")
+
+            for jFullGrid in jSplittedGrids.values():
                 jFullGrid.gp.getStandardCoordinates(p)
                 plt.plot(p[0], p[1], "^", color="orange")
 
@@ -927,22 +928,22 @@ class LocalFullGridCandidates(CandidateSet):
         for i, localFullGrid in enumerate(sortedOverlap):
             tlevel, tindex = localFullGrid.getLevelIndex()
 
-            if (tlevel, tindex) not in ans:
-                cnt += 1
-                fullGrid = localFullGrid.computeAnisotropicFullGrid()
-                costs += len(fullGrid)
-                if self.plotSubgrids and self.numDims == 2:
-                    self.plotDebug(grid, alpha, fullGrid, localFullGrid, ans, (cnt, allCnt))
+#             if (tlevel, tindex) not in ans:
+            cnt += 1
+            fullGrid = localFullGrid.computeAnisotropicFullGrid()
+            costs += len(fullGrid)
+            if self.plotSubgrids and self.numDims == 2:
+                self.plotDebug(grid, alpha, fullGrid, localFullGrid, ans, (cnt, allCnt))
 
-                assert len(fullGrid) > 0
-                oldSize = len(ans)
-                ans.update(fullGrid)
-                
-                if self.reduceLocalGrids and oldSize + len(fullGrid) > len(ans):
+            assert len(fullGrid) > 0
+            oldSize = len(ans)
+            ans.update(fullGrid)
+
+            if self.reduceLocalGrids and oldSize + len(fullGrid) > len(ans):
 #                     if self.verbose:
 #                         print "# duplicates %i in %s, %s" % (oldSize + len(fullGrid) - len(ans), tlevel, tindex)
-                    assert not nonOverlapping
-                    
+                assert not nonOverlapping
+
 
 #                 if self.verbose:
 #                     print "=" * 60
@@ -1012,6 +1013,7 @@ class LocalFullGridCandidates(CandidateSet):
                 nonOverlappingGrids = nonOverlappingGrids.values()
             else:
                 nonOverlappingGrids = sortedCoarsedOverlap
+                nonOverlapping = False
             # -------------------------------------------------------------------------------------------------
 
             self.newCandidates, realLocalCosts, numAccountedIntersections = self.computeCandidates(nonOverlappingGrids, grid, alpha, nonOverlapping)
