@@ -12,9 +12,10 @@ import bisect
 
 class LocalFullGrid(object):
     
-    def __init__(self, grid, gp, fullGridLevels):
+    def __init__(self, grid, gp, fullGridLevels, parents=None):
         self.grid = grid
         self.gp = gp
+        self.parents = parents
         self.level = getLevel(gp)
         self.index = getIndex(gp)
         self.fullGridLevels = fullGridLevels
@@ -198,13 +199,14 @@ class LocalFullGridCandidates(CandidateSet):
 
         self.globalGrids = {}
         self.verbose = True
-        self.plot = False
+        self.plot = True
         self.plotSubgrids = False
         self.plotSubtract = False
         self.debug = False
 
         self.reduceLocalGrids = True
         self.multipleSplittingScheme = False
+
 
     def findInnerIntersection(self, gpi, gpj):
         # find maximum level
@@ -255,7 +257,8 @@ class LocalFullGridCandidates(CandidateSet):
                         for idim in xrange(self.numDims):
                             gpOuterIntersection.set(idim, levelOuter[idim], indexOuter[idim])
 
-                        overlap[levelOuter, indexOuter] = gpi, gpj, gpOuterIntersection
+                        if not gs.isContaining(gpOuterIntersection):
+                            overlap[levelOuter, indexOuter] = gpi, gpj, gpOuterIntersection
 
         return comparisonCosts
 
@@ -896,7 +899,8 @@ class LocalFullGridCandidates(CandidateSet):
         # local grid points on a corresponding full grid
         for (levels, indices), (gpi, gpj, gpOuterIntersection) in overlap.items():
             localFullGridLevels = self.getLocalFullGridLevel(levels, indices, grid, gpi, gpj)
-            localFullGrid = LocalFullGrid(grid, gpOuterIntersection, localFullGridLevels)
+            localFullGrid = LocalFullGrid(grid, gpOuterIntersection, localFullGridLevels,
+                                          parents=(gpi, gpj))
             numLocalGridPoints = localFullGrid.getNumLocalGridPoints()
             
             costs += numLocalGridPoints
@@ -912,7 +916,7 @@ class LocalFullGridCandidates(CandidateSet):
             for localFullGrid in sortedOverlapHashMap[numLocalGridPoints]:
                 sortedOverlap.append(localFullGrid)
 
-        return sortedOverlap, localFullGridLevels, costs
+        return sortedOverlap, costs
 
 
 #     #@profile
@@ -983,7 +987,8 @@ class LocalFullGridCandidates(CandidateSet):
                                                                                            costsIntersectionSearch,
                                                                                            len(self.A0) * (len(self.A0) - 1) / 2.)
 
-            sortedOverlap, localFullGridLevels, predictedLocalCosts = self.estimateCosts(overlappingGridPoints, grid)
+            sortedOverlap, predictedLocalCosts = self.estimateCosts(overlappingGridPoints, grid)
+
             if self.verbose:
                 print "# coarsed intersection: predicted costs = %i" % (len(sortedOverlap) * len(sortedOverlap),),
 
@@ -994,6 +999,8 @@ class LocalFullGridCandidates(CandidateSet):
                 print "                        %i/%i" % (len(sortedCoarsedOverlap),
                                                          len(sortedOverlap))
 
+            nonOverlapping = False
+            nonOverlappingGrids = sortedCoarsedOverlap
             # -------------------------------------------------------------------------------------------------
             # get all the local intersections which one can subtract from the ones
             if self.reduceLocalGrids:
@@ -1011,9 +1018,6 @@ class LocalFullGridCandidates(CandidateSet):
                 # split the local grids
                 nonOverlappingGrids, newlyPredictedLocalCosts, nonOverlapping = self.splitFullGrids(overlappingGrids, sortedCoarsedOverlap, grid)
                 nonOverlappingGrids = nonOverlappingGrids.values()
-            else:
-                nonOverlappingGrids = sortedCoarsedOverlap
-                nonOverlapping = False
             # -------------------------------------------------------------------------------------------------
 
             self.newCandidates, realLocalCosts, numAccountedIntersections = self.computeCandidates(nonOverlappingGrids, grid, alpha, nonOverlapping)
