@@ -7,7 +7,8 @@ from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
 import numpy as np
 
 from EstimatedDist import EstimatedDist
-from pysgpp.pysgpp_swig import BandwidthOptimizationType_RULEOFTHUMB
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_RULEOFTHUMB, \
+    KernelType_EPANECHNIKOV
 
 
 class KDEDist(EstimatedDist):
@@ -106,4 +107,12 @@ class KDEDist(EstimatedDist):
         return bandwidths.array()
 
     def __str__(self):
-        return "GaussianKDEDist"
+        ans = "KDE - %s"
+
+        if self.dist.getKernel().getType() == KernelType_GAUSSIAN:
+            ans = ans % "Gaussian"
+        elif self.dist.getKernel().getType() == KernelType_EPANECHNIKOV:
+            ans = ans % "Epanechnikov"
+        else:
+            ans = ans % "unknown kernel"
+        return ans

@@ -138,7 +138,7 @@ class NatafDist(Dist):
         return [self]
 
     def __str__(self):
-        return "GaussianKDEDist"
+        return "NatafDist"
 
 #     def toJson(self):
 #         """

@@ -16,6 +16,7 @@ from matplotlib.patches import Rectangle
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation, \
     JointTransformation
 from pysgpp.extensions.datadriven.uq.operations.forcePositivity.fullGridSearch import FullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSearch import LocalFullGridCandidates
 
 
 class OperationMakePositiveFast(object):
@@ -30,7 +31,7 @@ class OperationMakePositiveFast(object):
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
         if self.candidateSearchAlgorithm is None:
-            self.candidateSearchAlgorithm = FullGridCandidates(grid)
+            self.candidateSearchAlgorithm = LocalFullGridCandidates(grid)
 
         self.maxNewGridPoints = 10
         self.addAllGridPointsOnNextLevel = True
@@ -124,7 +125,7 @@ class OperationMakePositiveFast(object):
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
-#                 assert all([alpha[gs.getSequenceNumber(gp)] > -1e-13 for gp in addedGridPoints])
+                assert all([alpha[gs.getSequenceNumber(gp)] > -1e-13 for gp in addedGridPoints])
 
         return alpha
     
@@ -354,7 +355,7 @@ class OperationMakePositiveFast(object):
 
         # security check for positiveness
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
-        
+
         if len(neg) > 0:
             raise AttributeError("the sparse grid function is not positive")
             # check at which grid points the function is negative

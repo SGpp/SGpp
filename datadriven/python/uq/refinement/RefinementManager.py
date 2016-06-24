@@ -2,8 +2,11 @@ from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridPoint,
                     SurplusRefinementFunctor,
                     HashGridStorage,
-                    Linear, LinearL0Boundary, LinearBoundary,
-                    ModLinear, Poly, PolyBoundary)
+                    GridType_Linear, GridType_LinearL0Boundary,
+                    GridType_LinearBoundary,
+                    GridType_ModLinear,
+                    GridType_Poly,
+                    GridType_PolyBoundary)
 
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
@@ -114,12 +117,12 @@ class RefinementManager(object):
 
     def refineGrid(self, grid, knowledge, params, qoi="_", refinets=[0]):
         # check if this method is used in the right context
-        if grid.getType() not in (Linear,
-                                  LinearL0Boundary,
-                                  LinearBoundary,
-                                  ModLinear,
-                                  Poly,
-                                  PolyBoundary):
+        if grid.getType() not in (GridType_Linear,
+                                  GridType_LinearL0Boundary,
+                                  GridType_LinearBoundary,
+                                  GridType_ModLinear,
+                                  GridType_Poly,
+                                  GridType_PolyBoundary):
                 raise AttributeError('Grid type %s is not supported' %
                                      grid.getType())
 

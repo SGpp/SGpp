@@ -16,8 +16,6 @@ from AdmissibleSet import (AdmissibleSetGenerator,
 from LocalRefinementStrategy import (CreateAllChildrenRefinement,
                                      ANOVARefinement,
                                      AddNode)
-from Refinement import (Refinement)
-from RefinementDescriptor import RefinementDescriptor
 from RefinementStrategy import (Ranking,
                                 SurplusRanking,
                                 SquaredSurplusRanking,
