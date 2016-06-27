@@ -16,10 +16,12 @@ ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
     sgpp::base::AdpativityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
+    sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
+      finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig) {}
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
@@ -43,7 +45,8 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
   for (const auto uniqueClass : uniqueClasses) {
     auto newY = generateYOneVsAll(classes, uniqueClass);
     auto learner =
-        RegressionLearner(gridConfig, adaptivityConfig, solverConfig, regularizationConfig);
+        RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
+                          regularizationConfig);
     std::cout << "Created learner for class " << uniqueClass << std::endl;
     learner.train(trainDataset, newY);
     learners.emplace_back(uniqueClass, std::move(learner));

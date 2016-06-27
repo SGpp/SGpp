@@ -28,6 +28,7 @@ class ClassificationLearner {
   ClassificationLearner(sgpp::base::RegularGridConfiguration gridConfig,
                         sgpp::base::AdpativityConfiguration adaptivityConfig,
                         sgpp::solver::SLESolverConfiguration solverConfig,
+                        sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig);
 
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
@@ -44,6 +45,7 @@ class ClassificationLearner {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::solver::SLESolverConfiguration finalSolverConfig;
   RegularizationConfiguration regularizationConfig;
 
   std::vector<learner_t> learners;

@@ -33,7 +33,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   solverConfig.eps_ = 1e-8;
 
   return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
-                                             regularizationConfig);
+                                             solverConfig, regularizationConfig);
 }
 
 std::string showRegularizationConfiguration(

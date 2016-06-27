@@ -26,16 +26,18 @@ class RegressionLearner {
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
                     sgpp::base::AdpativityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
+                    sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     sgpp::datadriven::RegularizationConfiguration regularizationConfig);
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
   sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
   size_t getGridSize() const;
   double getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
-
+  void initializeWeights();
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::solver::SLESolverConfiguration finalSolverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
 
   /// sparse grid object
@@ -50,9 +52,11 @@ class RegressionLearner {
 
   void fit(sgpp::datadriven::DMSystemMatrixBase& DMSystem, sgpp::solver::SLESolver& solver,
            sgpp::base::DataVector& classes);
-  void refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem);
+  void refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem, sgpp::base::DataMatrix& data,
+              sgpp::base::DataVector& classes);
 
   double getMSE(const sgpp::base::DataVector& y, sgpp::base::DataVector yPrediction);
+
 };
 
 }  // namespace datadriven

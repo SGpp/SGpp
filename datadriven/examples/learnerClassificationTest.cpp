@@ -37,7 +37,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   regularizationConfig.exponentBase_ = 0.25;
 
   return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig, solverConfig,
-                                                 regularizationConfig);
+                                                 solverConfig, regularizationConfig);
 }
 
 int main(int argc, char** argv) {
