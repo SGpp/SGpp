@@ -18,6 +18,7 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 
 #include <limits>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
@@ -26,10 +27,12 @@ RegressionLearner::RegressionLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
     sgpp::base::AdpativityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
+    sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
+      finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig) {
   initializeGrid(gridConfig);
 }
@@ -42,35 +45,21 @@ void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
         "dataset!");
   }
   const auto DMSystem = createDMSystem(trainDataset);
-  std::unique_ptr<sgpp::solver::SLESolver> solver;
-  solver = createSolver();
 
-  double bestMSE = std::numeric_limits<double>::max();
 
-  for (size_t curStep = 0; curStep < adaptivityConfig.numRefinements_ + 1; ++curStep) {
+
+  for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
-      refine(*DMSystem);
+      refine(*DMSystem, trainDataset, classes);
     }
     if (curStep == adaptivityConfig.numRefinements_) {
-      // change the configuration of the solver for this last step
-      solver->setMaxIterations(solverConfig.maxIterations_);
-      solver->setEpsilon(solverConfig.eps_);
+      solverConfig = finalSolverConfig; // TODO(krenzls): Add final solver!
     }
-
+    auto solver = createSolver();
     fit(*DMSystem, *solver, classes);
-
-    // if we don't do any refinements we can safely skip this step
-    if (adaptivityConfig.numRefinements_ > 0) {
-      const double curMSE = getMSE(trainDataset, classes);
-      if (curMSE < bestMSE) {
-        bestMSE = curMSE;
-      } else {
-        // The grid got worse, we need to stop now.
-        break;
-      }
-    }
   }
 }
+
 
 sgpp::base::DataVector RegressionLearner::predict(sgpp::base::DataMatrix& data) {
   auto prediction = sgpp::base::DataVector(data.getNrows());
@@ -91,8 +80,21 @@ void RegressionLearner::fit(sgpp::datadriven::DMSystemMatrixBase& DMSystem,
   solver.solve(DMSystem, weights, b, true, false, 0.0);
 }
 
-void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem) {
-  auto refineFunctor = sgpp::base::SurplusRefinementFunctor(weights, adaptivityConfig.noPoints_,
+void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem, sgpp::base::DataMatrix& data,
+                               sgpp::base::DataVector& classes) {
+  // First calculate the training errors for the dataset.
+  auto error = predict(data);
+  error.sub(classes);
+  error.sqr();
+
+  // Calculate the weighted errors per basis function.
+  auto multOp = sgpp::op_factory::createOperationMultipleEval(*grid, data);
+  auto errors = sgpp::base::DataVector(weights.getSize());
+  multOp->multTranspose(error, errors);
+  errors.componentwise_mult(weights);
+
+  // Refine the grid using the weighted errors.
+  auto refineFunctor = sgpp::base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
                                                             adaptivityConfig.threshold_);
   grid->getGenerator().refine(refineFunctor);
 
@@ -104,6 +106,28 @@ void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem) {
 
 size_t RegressionLearner::getGridSize() const {
     return grid->getSize();
+}
+
+void RegressionLearner::initializeWeights() {
+    const size_t size = grid->getSize();
+    const size_t dimensions = grid->getDimension();
+
+    weights = sgpp::base::DataVector(size);
+    auto& gridStorage = grid->getStorage();
+
+    std::mt19937_64 gen(42);
+
+    const double exponentBase = 0.25;
+    for(size_t i = 0; i < size; ++i) {
+
+        sgpp::base::GridStorage::index_pointer gridIndex = gridStorage.get(i);
+        sgpp::base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
+        const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
+        const double multiplicator = std::pow(exponentBase, exponent);
+
+        std::normal_distribution<> dist(0, multiplicator);
+        weights[i] = dist(gen);
+    }
 }
 
 double RegressionLearner::getMSE(const sgpp::base::DataVector& y,
