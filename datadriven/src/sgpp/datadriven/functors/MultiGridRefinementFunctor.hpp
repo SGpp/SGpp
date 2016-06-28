@@ -12,31 +12,30 @@
 
 namespace sgpp {
 namespace datadriven {
+/**
+ * Abstract super-class for refinement functors operating on multiple
+ * grids.
+ */
+class MultiGridRefinementFunctor : public base::RefinementFunctor {
+ public:
   /**
-   * Abstract super-class for refinement functors operating on multiple
-   * grids.
+   * Sets the index (into the vector of grids) of the grid to be refined
+   *
+   * @param grid_index The index of the grid to be refined
    */
-  class MultiGridRefinementFunctor : public base::RefinementFunctor {
-    public:
-      /**
-       * Sets the index (into the vector of grids) of the grid to be refined
-       *
-       * @param grid_index The index of the grid to be refined
-       */
-      virtual void setGridIndex(size_t grid_index) = 0;
+  virtual void setGridIndex(size_t grid_index) = 0;
 
-      virtual size_t getNumGrids() = 0;
+  virtual size_t getNumGrids() = 0;
 
-      /**
-       * Used if expensive computations (eg. grid evaluations)
-       * are cached, usually for one refinement step.
-       */
-      virtual void preComputeEvaluations() { }
+  /**
+   * Used if expensive computations (eg. grid evaluations)
+   * are cached, usually for one refinement step.
+   */
+  virtual void preComputeEvaluations() { }
 
-      virtual ~MultiGridRefinementFunctor() { }
-  };
-} // namespace datadriven
-} // namespace sgpp
-
+  virtual ~MultiGridRefinementFunctor() { }
+};
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif

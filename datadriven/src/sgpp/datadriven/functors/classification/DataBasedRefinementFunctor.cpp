@@ -155,5 +155,5 @@ namespace datadriven {
     return h.at(index);
   }
 
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

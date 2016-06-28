@@ -241,7 +241,7 @@ namespace datadriven {
       if (left) {
         new_i -= 1;
       } else {
-	new_i += 1;
+        new_i += 1;
       }
       child.set(d, new_l, new_i);
     }
@@ -259,5 +259,5 @@ namespace datadriven {
       par.set(d, new_l, new_i);
     }
 
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp
