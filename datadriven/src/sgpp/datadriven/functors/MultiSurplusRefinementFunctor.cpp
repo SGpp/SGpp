@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -77,5 +78,5 @@ namespace datadriven {
     return this->grids.size();
   }
 
-}
-}
+} // namespace datadriven
+} // namespace sgpp

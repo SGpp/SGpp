@@ -18,13 +18,12 @@
 
 
 namespace sgpp {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Wrapper of SurplusRefinementFunctor for multi grid scenarios.
-     */
-    class MultiSurplusRefinementFunctor : public MultiGridRefinementFunctor {
-
+  /**
+   * Wrapper of SurplusRefinementFunctor for multi grid scenarios.
+   */
+  class MultiSurplusRefinementFunctor : public MultiGridRefinementFunctor {
     public:
       /**
        * Constructor.
@@ -36,13 +35,13 @@ namespace sgpp {
        * @param threshold Threshold for refinement scores
        */
       MultiSurplusRefinementFunctor(std::vector<base::Grid*> grids,
-				    std::vector<base::DataVector*> alphas,
-				    size_t refinements_num = 1,
-				    bool level_penalize = false,
-				    double threshold = 0.0);
+                                    std::vector<base::DataVector*> alphas,
+                                    size_t refinements_num = 1,
+                                    bool level_penalize = false,
+                                    double threshold = 0.0);
 
       double operator()(base::GridStorage& storage,
-			size_t seq) const override;
+                        size_t seq) const override;
       double start() const override;
       size_t getRefinementsNum() const override;
       double getRefinementThreshold() const override;
@@ -61,10 +60,8 @@ namespace sgpp {
 
       size_t current_grid_index;
       bool level_penalize;
-
     };
-
-  }  // namespace base
+}  // namespace base
 }  // namespace sgpp
 
 #endif /* ZEROCROSSINGFUNCTOR_HPP */

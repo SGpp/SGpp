@@ -11,6 +11,10 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <utility>
+#include <vector>
+#include <map>
+#include <string>
 
 
 namespace sgpp {
@@ -122,5 +126,5 @@ namespace datadriven {
     return this->grids.size();
   }
 
-}
-}
+} // namespace datadriven
+} // namespace sgpp

@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 
 
 namespace sgpp {
@@ -154,5 +155,5 @@ namespace datadriven {
     return h.at(index);
   }
 
-} /* namesp */
-} /* namesp */
+} // namespace datadriven
+} // namespace sgpp

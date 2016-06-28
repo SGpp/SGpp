@@ -17,18 +17,17 @@
 
 
 namespace sgpp {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Data based refinement uses data points to find refinement candidates.
-     * For the given data sets class-intersection sets H_k are computed. A
-     * grid points is included in H_k if for at least on class l
-     * PDF_k(point) > coeff_a_k * mu_k AND PDF_l(point) > coeff_a_l * mu_l.
-     * To determine the score of a grid point, the number of data points
-     * from H_k within the support of this grid point is taken
-     */
-    class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
-
+  /**
+   * Data based refinement uses data points to find refinement candidates.
+   * For the given data sets class-intersection sets H_k are computed. A
+   * grid points is included in H_k if for at least on class l
+   * PDF_k(point) > coeff_a_k * mu_k AND PDF_l(point) > coeff_a_l * mu_l.
+   * To determine the score of a grid point, the number of data points
+   * from H_k within the support of this grid point is taken
+   */
+  class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
     public:
       /**
        * Constructor.
@@ -43,21 +42,21 @@ namespace sgpp {
        * @param threshold Threshold for refinement scores
        */
       DataBasedRefinementFunctor(std::vector<base::Grid*> grids,
-				 std::vector<base::DataVector*> alphas,
-				 base::DataMatrix* data,
-				 base::DataVector* targets,
-				 size_t refinements_num = 1,
-				 bool level_penalize = false,
-				 std::vector<double> coeff_a =
-				 std::vector<double>(),
-				 double threshold = 0.0);
+                                 std::vector<base::DataVector*> alphas,
+                                 base::DataMatrix* data,
+                                 base::DataVector* targets,
+                                 size_t refinements_num = 1,
+                                 bool level_penalize = false,
+                                 std::vector<double> coeff_a =
+                                 std::vector<double>(),
+                                 double threshold = 0.0);
 
       double operator()(base::GridStorage& storage,
-			size_t seq) const override;
+                        size_t seq) const override;
       double start() const override;
       size_t getRefinementsNum() const override;
       double getRefinementThreshold() const override;
-      virtual ~DataBasedRefinementFunctor() {};
+      virtual ~DataBasedRefinementFunctor() {}
 
       void setGridIndex(size_t grid_index) override;
       size_t getNumGrids() override;
@@ -97,14 +96,13 @@ namespace sgpp {
 
       // cl_indx is a index into classes rather than the label itself
       void computeHkl(base::DataMatrix& inters,
-		      size_t cl_ind1,
-		      size_t cl_ind2);
+                      size_t cl_ind1,
+                      size_t cl_ind2);
       bool isWithinSupport(base::HashGridPoint& gp,
-			   base::DataVector& point) const;
-
+                           base::DataVector& point) const;
     };
 
-  }  // namespace base
+}  // namespace base
 }  // namespace sgpp
 
 #endif /* DATABASEDREFINEMENTFUNCTOR_HPP */
