@@ -188,8 +188,8 @@ namespace sgpp {
 	getChild(gp, gp, d, left);
 	goDown(gp, down, d, left);
       } else {
-	size_t l = gp.getLevel(d);
-	size_t i = gp.getIndex(d);
+        unsigned int l = gp.getLevel(d);
+        unsigned int i = gp.getIndex(d);
 	down.set(d, l, i);
       }
     }
@@ -227,10 +227,10 @@ namespace sgpp {
 						 size_t d,
 						 bool left) const
     {
-      size_t i = gp.getIndex(d);
-      size_t l = gp.getLevel(d);
-      size_t new_l = l + 1;
-      size_t new_i = i * 2;
+      unsigned int i = gp.getIndex(d);
+      unsigned int l = gp.getLevel(d);
+      unsigned int new_l = l + 1;
+      unsigned int new_i = i * 2;
       if(left) new_i -= 1;
       else new_i += 1;
       child.set(d, new_l, new_i);
@@ -240,10 +240,10 @@ namespace sgpp {
 						  base::HashGridPoint& par,
 						  size_t d) const
     {
-      size_t i = gp.getIndex(d);
-      size_t l = gp.getLevel(d);
-      size_t new_l = l - 1;
-      size_t new_i = (i + 1) / 2;
+      unsigned int i = gp.getIndex(d);
+      unsigned int l = gp.getLevel(d);
+      unsigned int new_l = l - 1;
+      unsigned int new_i = (i + 1) / 2;
       if(new_i % 2 == 0) new_i -= 1;
       par.set(d, new_l, new_i);
     }
