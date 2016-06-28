@@ -78,5 +78,5 @@ namespace datadriven {
     return this->grids.size();
   }
 
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

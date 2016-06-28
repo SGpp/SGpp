@@ -20,48 +20,48 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Wrapper of SurplusRefinementFunctor for multi grid scenarios.
+ */
+class MultiSurplusRefinementFunctor : public MultiGridRefinementFunctor {
+ public:
   /**
-   * Wrapper of SurplusRefinementFunctor for multi grid scenarios.
+   * Constructor.
+   *
+   * @param grids Vector of grids. current_grid_index specifies the grid to be refined
+   * @param alphas Vector of surpluses related to the grids
+   * @param refinements_num Maximum number of refinements done
+   * @param level_penalize If a level penalizing is multiplied to the score. Here, it determines whether surplus or volume refinement is used
+   * @param threshold Threshold for refinement scores
    */
-  class MultiSurplusRefinementFunctor : public MultiGridRefinementFunctor {
-    public:
-      /**
-       * Constructor.
-       *
-       * @param grids Vector of grids. current_grid_index specifies the grid to be refined
-       * @param alphas Vector of surpluses related to the grids
-       * @param refinements_num Maximum number of refinements done
-       * @param level_penalize If a level penalizing is multiplied to the score. Here, it determines whether surplus or volume refinement is used
-       * @param threshold Threshold for refinement scores
-       */
-      MultiSurplusRefinementFunctor(std::vector<base::Grid*> grids,
-                                    std::vector<base::DataVector*> alphas,
-                                    size_t refinements_num = 1,
-                                    bool level_penalize = false,
-                                    double threshold = 0.0);
+  MultiSurplusRefinementFunctor(std::vector<base::Grid*> grids,
+                                std::vector<base::DataVector*> alphas,
+                                size_t refinements_num = 1,
+                                bool level_penalize = false,
+                                double threshold = 0.0);
 
-      double operator()(base::GridStorage& storage,
-                        size_t seq) const override;
-      double start() const override;
-      size_t getRefinementsNum() const override;
-      double getRefinementThreshold() const override;
-      virtual ~MultiSurplusRefinementFunctor() {};
+  double operator()(base::GridStorage& storage,
+                    size_t seq) const override;
+  double start() const override;
+  size_t getRefinementsNum() const override;
+  double getRefinementThreshold() const override;
+  virtual ~MultiSurplusRefinementFunctor() {}
 
-      void setGridIndex(size_t grid_index) override;
-      size_t getNumGrids() override;
+  void setGridIndex(size_t grid_index) override;
+  size_t getNumGrids() override;
 
-    protected:
-      std::vector<base::Grid*> grids;
-      std::vector<base::DataVector*> alphas;
+ protected:
+  std::vector<base::Grid*> grids;
+  std::vector<base::DataVector*> alphas;
 
-      // One Surplus/VolumeRefinementFunctor for each grid
-      std::vector<base::SurplusRefinementFunctor> spFunctors;
-      std::vector<base::SurplusVolumeRefinementFunctor> spvFunctors;
+  // One Surplus/VolumeRefinementFunctor for each grid
+  std::vector<base::SurplusRefinementFunctor> spFunctors;
+  std::vector<base::SurplusVolumeRefinementFunctor> spvFunctors;
 
-      size_t current_grid_index;
-      bool level_penalize;
-    };
-}  // namespace base
+  size_t current_grid_index;
+  bool level_penalize;
+};
+}  // namespace datadriven
 }  // namespace sgpp
 
 #endif /* ZEROCROSSINGFUNCTOR_HPP */

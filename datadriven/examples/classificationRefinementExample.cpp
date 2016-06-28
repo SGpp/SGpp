@@ -21,22 +21,20 @@
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
-
 // Helper to create learner
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda);
 // Helper to evaluate the classifiers
-vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
-                                std::vector<sgpp::base::DataVector*> alphas,
-                                sgpp::base::DataMatrix& testData,
-                                sgpp::base::DataVector& testLabel);
+std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
+                                          std::vector<sgpp::base::DataVector*> alphas,
+                                          sgpp::base::DataMatrix& testData,
+                                          sgpp::base::DataVector& testLabel);
 
 int main() {
   /*
    * Get the training/test data
    */
-  string basePath = "../../datasets/ripley/ripleyGarcke";
+  std::string basePath = "../../datasets/ripley/ripleyGarcke";
   sgpp::datadriven::Dataset datasetTr =
     sgpp::datadriven::ARFFTools::readARFF(basePath + ".train.arff");
   sgpp::datadriven::Dataset datasetTs =
@@ -45,8 +43,8 @@ int main() {
   sgpp::base::DataVector targetTrain = datasetTr.getTargets();
   sgpp::base::DataMatrix dataTest = datasetTs.getData();
   sgpp::base::DataVector targetTest = datasetTs.getTargets();
-  cout << "Read training data: " << dataTrain.getNrows() << endl;
-  cout << "Read test data    : " << dataTest.getNrows() << endl;
+  std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
+  std::cout << "Read test data    : " << dataTest.getNrows() << std::endl;
 
 
   /*
@@ -56,7 +54,7 @@ int main() {
    * Preprocess to have class label 0, 1, ...
    * -1 -> 0 and 1 -> 1
    */
-   for (size_t i = 0; i < targetTrain.getSize(); i++) {
+  for (size_t i = 0; i < targetTrain.getSize(); i++) {
     if (targetTrain.get(i) < 0) {
       targetTrain.set(i, 0.0);
     } else {
@@ -70,7 +68,7 @@ int main() {
       targetTest.set(i, 1.0);
     }
   }
-  cout << "Preprocessing the data" << endl;
+  std::cout << "Preprocessing the data" << std::endl;
 
 
   /*
@@ -87,8 +85,8 @@ int main() {
       dataCl2.appendRow(row);
     }
   }
-  cout << "Data points of class -1.0 (= 0): " << dataCl1.getNrows() << endl;
-  cout << "Data points of class +1.0 (= 1): " << dataCl2.getNrows() << endl;
+  std::cout << "Data points of class -1.0 (= 0): " << dataCl1.getNrows() << std::endl;
+  std::cout << "Data points of class +1.0 (= 1): " << dataCl2.getNrows() << std::endl;
 
 
   /*
@@ -106,8 +104,8 @@ int main() {
    * Bundle grids and surplus vector pointer needed for refinement and
    * evaluation
    */
-  vector<sgpp::base::Grid*> grids;
-  vector<sgpp::base::DataVector*> alphas;
+  std::vector<sgpp::base::Grid*> grids;
+  std::vector<sgpp::base::DataVector*> alphas;
   grids.push_back(learner1.getGrid().get());
   grids.push_back(learner2.getGrid().get());
   alphas.push_back(learner1.getSurpluses().get());
@@ -118,8 +116,8 @@ int main() {
    * Create refinement functors
    */
   size_t numRefinements = 3;
-  bool levelPenalize = false; // Multiplies penalzing term for fine levels
-  bool preCompute = true;     // Precomputes and caches evals for zrcr & grid
+  bool levelPenalize = false;  // Multiplies penalzing term for fine levels
+  bool preCompute = true;      // Precomputes and caches evals for zrcr & grid
   sgpp::datadriven::MultiGridRefinementFunctor* fun = 0;
 
   // Surplus refinement
@@ -140,7 +138,7 @@ int main() {
   // were determined by testing (aim at ~10 % of the training data is
   // to be marked relevant. Cross-validation or similar can/should be employed
   // to determine this value.
-  vector<double> coeffA;
+  std::vector<double> coeffA;
   coeffA.push_back(1.2);
   coeffA.push_back(1.2);
   sgpp::datadriven::DataBasedRefinementFunctor funData(grids, alphas,
@@ -149,10 +147,10 @@ int main() {
                                                        numRefinements,
                                                        levelPenalize,
                                                        coeffA);
-  //fun = &funSrpl;
-  //fun = &funGrid;
+  // fun = &funSrpl;
+  // fun = &funGrid;
   fun = &funZrcr;
-  //fun = &funData;
+  // fun = &funData;
 
 
   /*
@@ -162,11 +160,11 @@ int main() {
    * An initial evaluation with the regular grid is done at "step 0"
    */
   size_t numSteps = 5;
-  vector<string> eval = doClassification(grids, alphas, dataTest, targetTest);
-  cout << "Evaluation:" << endl << endl;
-  cout << " Step  |  c=1    c=2  | total" << endl;
-  cout << "------------------------------" << endl;
-  cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << endl;
+  std::vector<std::string> eval = doClassification(grids, alphas, dataTest, targetTest);
+  std::cout << "Evaluation:" << std::endl << std::endl;
+  std::cout << " Step  |  c=1    c=2  | total" << std::endl;
+  std::cout << "------------------------------" << std::endl;
+  std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
   for (size_t i = 1; i < numSteps + 1; i++) {
     if (preCompute) {
       // precompute the evals. Needs to be done once per step, before
@@ -186,10 +184,10 @@ int main() {
     learner2.train(*grids.at(1), *alphas.at(1), dataCl2, lambda);
 
     eval = doClassification(grids, alphas, dataTest, targetTest);
-    cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
-         << endl;
+    std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
+         << std::endl;
   }
-  cout << endl << "Done" << endl;
+  std::cout << std::endl << "Done" << std::endl;
   return 0;
 }
 
@@ -206,7 +204,6 @@ int main() {
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
                                                 size_t level,
                                                 double lambda) {
-
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
   gridConfig.level_ = static_cast<int>(level);
@@ -253,10 +250,10 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
 }
 
 
-vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
-                                std::vector<sgpp::base::DataVector*> alphas,
-                                sgpp::base::DataMatrix& testData,
-                                sgpp::base::DataVector& testLabel) {
+std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
+                                          std::vector<sgpp::base::DataVector*> alphas,
+                                          sgpp::base::DataMatrix& testData,
+                                          sgpp::base::DataVector& testLabel) {
   double best_eval = 0;
   double eval = 0;
   sgpp::base::DataVector p(testData.getNcols());
