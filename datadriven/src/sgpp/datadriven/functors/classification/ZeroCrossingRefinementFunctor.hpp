@@ -13,23 +13,24 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 
 #include <vector>
+#include <string>
+#include <map>
 
 
 namespace sgpp {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Zero-crossing-based refinement uses zero crossings of the difference
-     * PDFS f_1 - f_2 to determine areas of interest for the refinement
-     * process. The signs of a grid point pair evaluated at two PDFs
-     * are compared and only if the signs differ (a zero crossing lies
-     * between them) are they considered for the scoring.
-     *
-     * The pairs of grid points are geometric neighbors, determined for each
-     * dimension separately.
-     */
-    class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
-
+  /**
+   * Zero-crossing-based refinement uses zero crossings of the difference
+   * PDFS f_1 - f_2 to determine areas of interest for the refinement
+   * process. The signs of a grid point pair evaluated at two PDFs
+   * are compared and only if the signs differ (a zero crossing lies
+   * between them) are they considered for the scoring.
+   *
+   * The pairs of grid points are geometric neighbors, determined for each
+   * dimension separately.
+   */
+  class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
     public:
       /**
        * Constructor.
@@ -42,18 +43,18 @@ namespace sgpp {
        * @param threshold Threshold for refinement scores
        */
       ZeroCrossingRefinementFunctor(std::vector<base::Grid*> grids,
-				    std::vector<base::DataVector*> alphas,
-				    size_t refinements_num = 1,
-				    bool level_penalize = false,
-				    bool pre_compute = false,
-				    double threshold = 0.0);
+                                    std::vector<base::DataVector*> alphas,
+                                    size_t refinements_num = 1,
+                                    bool level_penalize = false,
+                                    bool pre_compute = false,
+                                    double threshold = 0.0);
 
       double operator()(base::GridStorage& storage,
-			size_t seq) const override;
+                        size_t seq) const override;
       double start() const override;
       size_t getRefinementsNum() const override;
       double getRefinementThreshold() const override;
-      virtual ~ZeroCrossingRefinementFunctor() {};
+      virtual ~ZeroCrossingRefinementFunctor() {}
 
       void setGridIndex(size_t grid_index) override;
       size_t getNumGrids() override;
@@ -80,23 +81,20 @@ namespace sgpp {
 
       // Utility for finding geometric neighbors
       void goUp(base::HashGridPoint& gp, base::HashGridPoint& up, size_t d,
-		bool left) const;
+                bool left) const;
       void goDown(base::HashGridPoint& gp,
-		  base::HashGridPoint& down,
-		  size_t d,
-		  bool left) const;
+                  base::HashGridPoint& down,
+                  size_t d,
+                  bool left) const;
       bool hasChild(base::HashGridPoint& gp, size_t d, bool left) const;
       bool isLeftChild(base::HashGridPoint& gp, size_t d) const;
-      void getChild(base::HashGridPoint& gp,base::HashGridPoint& child,
-		    size_t d,
-		    bool left) const;
+      void getChild(base::HashGridPoint& gp, base::HashGridPoint& child,
+                    size_t d,
+                    bool left) const;
       void getParent(base::HashGridPoint& gp, base::HashGridPoint& par,
-		     size_t d) const;
-
-
+                     size_t d) const;
     };
-
-  }  // namespace base
+}  // namespace base
 }  // namespace sgpp
 
 #endif /* ZEROCROSSINGREFINEMENTFUNCTOR_HPP */

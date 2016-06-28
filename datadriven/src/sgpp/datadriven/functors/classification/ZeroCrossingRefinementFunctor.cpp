@@ -11,6 +11,10 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <utility>
+#include <vector>
+#include <map>
+#include <string>
 
 
 namespace sgpp {
@@ -69,7 +73,7 @@ namespace datadriven {
           neighSeq.push_back(storage.getSequenceNumber(down));
         } else {
           // Check if right-most grid point on level, which has no right neigh
-          if (gp.getIndex(d) < pow(2,gp.getLevel(d)) - 1) {
+          if (gp.getIndex(d) < pow(2, gp.getLevel(d)) - 1) {
             base::HashGridPoint gp_c = base::HashGridPoint(gp);
             base::HashGridPoint up = base::HashGridPoint(gp);
             goUp(gp_c, up, d, false);
@@ -215,8 +219,7 @@ namespace datadriven {
       iter.set(gp);
       if (left) {
         return iter.hintLeft(d);
-      }
-      else {
+      } else {
         return iter.hintRight(d);
       }
     }
@@ -237,8 +240,9 @@ namespace datadriven {
       unsigned int new_i = i * 2;
       if (left) {
         new_i -= 1;
+      } else {
+	new_i += 1;
       }
-      else new_i += 1;
       child.set(d, new_l, new_i);
     }
 
@@ -255,5 +259,5 @@ namespace datadriven {
       par.set(d, new_l, new_i);
     }
 
-}
-}
+} // namespace datadriven
+} // namespace sgpp

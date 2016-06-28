@@ -3,12 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <vector>
-#include <cmath>
-#include <string>
-#include <sstream>
-#include <iomanip>
-
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
@@ -21,6 +15,11 @@
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
+#include <vector>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
