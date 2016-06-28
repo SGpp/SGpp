@@ -204,7 +204,7 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
 
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
-  gridConfig.level_ = level;
+  gridConfig.level_ = static_cast<int>(level);
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
 
@@ -306,7 +306,7 @@ vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
   std::stringstream ss2;
   ss2 << std::fixed << std::setprecision(3);
   ss2 << (100 * (1 - (static_cast<double>(totalCount) /
-		      testData.getNrows())));
+		      static_cast<double>(testData.getNrows()))));
   std::vector<std::string> result;
   result.push_back(ss.str());
   result.push_back(ss2.str());

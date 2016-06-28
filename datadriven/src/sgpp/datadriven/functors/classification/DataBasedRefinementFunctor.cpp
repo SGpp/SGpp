@@ -95,7 +95,8 @@ namespace sgpp {
 							 *data));
 	opEval->eval(*alphas.at(i), evalVec);
 	evals.setColumn(i, evalVec);
-	means.push_back(evalVec.sum() * (1.0 / data->getNrows()));
+	means.push_back(evalVec.sum() *
+			(1.0 / static_cast<double>(data->getNrows())));
       }
 
       // Compute the sets H_k by pairwise H_kl for all class combiniations
@@ -136,7 +137,7 @@ namespace sgpp {
       for(size_t d = 0; d < point.getSize(); d++) {
 	double coord = gp.getStandardCoordinate(d);
 	size_t level = gp.getLevel(d);
-	double step = 1.0 / pow(2, level);
+	double step = 1.0 / pow(2, static_cast<double>(level));
 	double lower = coord - step;
 	double upper = coord + step;
 	if(point.get(d) < lower || point.get(d) > upper) return false;
