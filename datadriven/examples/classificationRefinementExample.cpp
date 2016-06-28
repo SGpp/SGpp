@@ -57,13 +57,19 @@ int main() {
    * Preprocess to have class label 0, 1, ...
    * -1 -> 0 and 1 -> 1
    */
-  for(size_t i = 0; i < targetTrain.getSize(); i++) {
-    if(targetTrain.get(i) < 0) targetTrain.set(i, 0.0);
-    else targetTrain.set(i, 1.0);
+   for (size_t i = 0; i < targetTrain.getSize(); i++) {
+    if (targetTrain.get(i) < 0) {
+      targetTrain.set(i, 0.0);
+    } else {
+      targetTrain.set(i, 1.0);
+    }
   }
-  for(size_t i = 0; i < targetTest.getSize(); i++) {
-    if(targetTest.get(i) < 0) targetTest.set(i, 0.0);
-    else targetTest.set(i, 1.0);
+  for (size_t i = 0; i < targetTest.getSize(); i++) {
+    if (targetTest.get(i) < 0) {
+      targetTest.set(i, 0.0);
+    } else {
+      targetTest.set(i, 1.0);
+    }
   }
   cout << "Preprocessing the data" << endl;
 
@@ -74,9 +80,9 @@ int main() {
   sgpp::base::DataMatrix dataCl1(0, dataTrain.getNcols());
   sgpp::base::DataMatrix dataCl2(0, dataTrain.getNcols());
   sgpp::base::DataVector row(dataTrain.getNcols());
-  for(size_t i = 0; i < dataTrain.getNrows(); i++) {
+  for (size_t i = 0; i < dataTrain.getNrows(); i++) {
     dataTrain.getRow(i, row);
-    if(targetTrain.get(i) < 1) {
+    if (targetTrain.get(i) < 1) {
       dataCl1.appendRow(row);
     } else {
       dataCl2.appendRow(row);
@@ -119,18 +125,18 @@ int main() {
 
   // Surplus refinement
   sgpp::datadriven::MultiSurplusRefinementFunctor funSrpl(grids, alphas,
-							  numRefinements,
-							  levelPenalize);
+                                                          numRefinements,
+                                                          levelPenalize);
   // Grid point-based refinement
   sgpp::datadriven::GridPointBasedRefinementFunctor funGrid(grids, alphas,
-							    numRefinements,
-							    levelPenalize,
-							    preCompute);
+                                                            numRefinements,
+                                                            levelPenalize,
+                                                            preCompute);
   // Zero-crossing-based refinement
   sgpp::datadriven::ZeroCrossingRefinementFunctor funZrcr(grids, alphas,
-							  numRefinements,
-							  levelPenalize,
-							  preCompute);
+                                                          numRefinements,
+                                                          levelPenalize,
+                                                          preCompute);
   // Data-based refinement. Needs a problem dependent coeffA. The values
   // were determined by testing (aim at ~10 % of the training data is
   // to be marked relevant. Cross-validation or similar can/should be employed
@@ -139,11 +145,11 @@ int main() {
   coeffA.push_back(1.2);
   coeffA.push_back(1.2);
   sgpp::datadriven::DataBasedRefinementFunctor funData(grids, alphas,
-						       &dataTrain,
-						       &targetTrain,
-						       numRefinements,
-						       levelPenalize,
-						       coeffA);
+                                                       &dataTrain,
+                                                       &targetTrain,
+                                                       numRefinements,
+                                                       levelPenalize,
+                                                       coeffA);
   //fun = &funSrpl;
   //fun = &funGrid;
   fun = &funZrcr;
@@ -162,8 +168,8 @@ int main() {
   cout << " Step  |  c=1    c=2  | total" << endl;
   cout << "------------------------------" << endl;
   cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << endl;
-  for(size_t i = 1; i < numSteps + 1; i++) {
-    if(preCompute) {
+  for (size_t i = 1; i < numSteps + 1; i++) {
+    if (preCompute) {
       // precompute the evals. Needs to be done once per step, before
       // any refinement is done
       fun->preComputeEvaluations();
@@ -182,7 +188,7 @@ int main() {
 
     eval = doClassification(grids, alphas, dataTest, targetTest);
     cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
-	 << endl;
+         << endl;
   }
   cout << endl << "Done" << endl;
   return 0;
@@ -199,8 +205,8 @@ int main() {
  */
 
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
-						size_t level,
-						double lambda) {
+                                                size_t level,
+                                                double lambda) {
 
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
@@ -240,43 +246,42 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
   crossvalidationConfig.silent_ = true;
 
   sgpp::datadriven::LearnerSGDE learner(gridConfig,
-					adaptConfig,
-					solverConfig,
-					regularizationConfig,
+                                        adaptConfig,
+                                        solverConfig,
+                                        regularizationConfig,
                                         crossvalidationConfig);
   return learner;
 }
 
 
 vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
-				std::vector<sgpp::base::DataVector*> alphas,
-				sgpp::base::DataMatrix& testData,
-				sgpp::base::DataVector& testLabel)
-{
+                                std::vector<sgpp::base::DataVector*> alphas,
+                                sgpp::base::DataMatrix& testData,
+                                sgpp::base::DataVector& testLabel) {
   double best_eval = 0;
   double eval = 0;
   sgpp::base::DataVector p(testData.getNcols());
   sgpp::base::DataVector indices(testData.getNrows());
   sgpp::base::DataVector evals(testData.getNrows());
   std::vector<std::unique_ptr<sgpp::base::OperationEval>> evalOps;
-  for(size_t i = 0; i < grids.size(); i++) {
+  for (size_t i = 0; i < grids.size(); i++) {
     std::unique_ptr<sgpp::base::OperationEval>
       e(sgpp::op_factory::createOperationEval(*grids.at(i)));
     evalOps.push_back(std::move(e));
   }
 
   // Get predictions and save to evals (confidence) and indices (class)
-  for(size_t i = 0; i < testData.getNrows(); i++) {
+  for (size_t i = 0; i < testData.getNrows(); i++) {
     testData.getRow(i, p);
     indices.set(i, 0.0);
     best_eval = evalOps.at(0)->eval(*alphas.at(0), p);
     evals.set(i, best_eval);
-    for(size_t j = 1; j < grids.size(); j++) {
+    for (size_t j = 1; j < grids.size(); j++) {
       eval = evalOps.at(j)->eval(*alphas.at(j), p);
-      if(eval > best_eval) {
-	best_eval = eval;
-	indices.set(i, static_cast<double>(j));
-	evals.set(i, best_eval);
+      if (eval > best_eval) {
+        best_eval = eval;
+        indices.set(i, static_cast<double>(j));
+        evals.set(i, best_eval);
       }
     }
   }
@@ -287,9 +292,9 @@ vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
   std::vector<int> classErrorCounts(grids.size(), 0);
   totalError.sub(testLabel);
   size_t totalCount = 0;
-  for(size_t i = 0; i < testData.getNrows(); i++) {
+  for (size_t i = 0; i < testData.getNrows(); i++) {
     classCounts.at(static_cast<size_t>(floor(testLabel.get(i)))) += 1;
-    if(abs(totalError.get(i)) > 0.01) {
+    if (abs(totalError.get(i)) > 0.01) {
       totalCount++;
       classErrorCounts.at(static_cast<size_t>(floor(testLabel.get(i)))) += 1;
     }
@@ -297,16 +302,18 @@ vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
 
   // Format and return the classification percentages
   std::stringstream ss;
-  for(size_t i = 0; i < grids.size(); i++) {
+  for (size_t i = 0; i < grids.size(); i++) {
     double ce = (100 * (1 - (static_cast<double>(classErrorCounts.at(i)) /
-			     classCounts.at(i))));
+                             classCounts.at(i))));
     ss << std::fixed << std::setprecision(2) << ce;
-    if(i < grids.size() - 1) ss << "  ";
+    if (i < grids.size() - 1) {
+      ss << "  ";
+    }
   }
   std::stringstream ss2;
   ss2 << std::fixed << std::setprecision(3);
   ss2 << (100 * (1 - (static_cast<double>(totalCount) /
-		      static_cast<double>(testData.getNrows()))));
+                      static_cast<double>(testData.getNrows()))));
   std::vector<std::string> result;
   result.push_back(ss.str());
   result.push_back(ss2.str());
