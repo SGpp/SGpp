@@ -201,8 +201,7 @@ int main() {
  *
  */
 
-sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
-                                                size_t level,
+sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
@@ -290,7 +289,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   size_t totalCount = 0;
   for (size_t i = 0; i < testData.getNrows(); i++) {
     classCounts.at(static_cast<size_t>(floor(testLabel.get(i)))) += 1;
-    if (abs(totalError.get(i)) > 0.01) {
+    if (fabs(totalError.get(i)) > 0.01) {
       totalCount++;
       classErrorCounts.at(static_cast<size_t>(floor(testLabel.get(i)))) += 1;
     }
