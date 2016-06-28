@@ -18,11 +18,11 @@ namespace sgpp {
 
     GridPointBasedRefinementFunctor::
     GridPointBasedRefinementFunctor(std::vector<base::Grid*> grids,
-				    std::vector<base::DataVector*> alphas,
-				    size_t r_num,
-				    bool level_penalize,
-				    bool pre_compute,
-				    double thresh) :
+                                    std::vector<base::DataVector*> alphas,
+                                    size_t r_num,
+                                    bool level_penalize,
+                                    bool pre_compute,
+                                    double thresh) :
       grids(grids), alphas(alphas), current_grid_index(-1),
       refinements_num(r_num), threshold(thresh),
       level_penalize(level_penalize),

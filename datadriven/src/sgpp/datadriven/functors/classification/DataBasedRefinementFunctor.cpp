@@ -19,13 +19,13 @@ namespace sgpp {
 
     DataBasedRefinementFunctor::
     DataBasedRefinementFunctor(std::vector<base::Grid*> grids,
-			       std::vector<base::DataVector*> alphas,
-			       base::DataMatrix* data,
-			       base::DataVector* targets,
-			       size_t refinements_num,
-			       bool levelPen,
-			       std::vector<double> coeff_a,
-			       double thresh) :
+                               std::vector<base::DataVector*> alphas,
+                               base::DataMatrix* data,
+                               base::DataVector* targets,
+                               size_t refinements_num,
+                               bool levelPen,
+                               std::vector<double> coeff_a,
+                               double thresh) :
       grids(grids), alphas(alphas), evals(0, 0),
       data(data), targets(targets), h(grids.size()),
       means(), coeff_a(coeff_a), current_grid_index(-1),
