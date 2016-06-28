@@ -26,12 +26,12 @@ using namespace std;
 
 // Helper to create learner
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
-					        double lambda);
+                                                double lambda);
 // Helper to evaluate the classifiers
 vector<string> doClassification(std::vector<sgpp::base::Grid*> grids,
-				std::vector<sgpp::base::DataVector*> alphas,
-				sgpp::base::DataMatrix& testData,
-				sgpp::base::DataVector& testLabel);
+                                std::vector<sgpp::base::DataVector*> alphas,
+                                sgpp::base::DataMatrix& testData,
+                                sgpp::base::DataVector& testLabel);
 
 int main() {
   /*

@@ -18,24 +18,24 @@ namespace sgpp {
 
     ZeroCrossingRefinementFunctor::
     ZeroCrossingRefinementFunctor(std::vector<base::Grid*> grids,
-				  std::vector<base::DataVector*> alphas,
-				  size_t refinements_num,
-				  bool level_penalize,
-				  bool pre_compute,
-				  double thresh) :
+                                  std::vector<base::DataVector*> alphas,
+                                  size_t refinements_num,
+                                  bool level_penalize,
+                                  bool pre_compute,
+                                  double thresh) :
       grids(grids), alphas(alphas), current_grid_index(-1),
       refinements_num(refinements_num), threshold(thresh),
       level_penalize(level_penalize),
       pre_compute(pre_compute), pre_comp_evals()
     {
       for(size_t i = 0; i < grids.size(); i++) {
-	this->pre_comp_evals.push_back(std::map<std::string, double>());
+        this->pre_comp_evals.push_back(std::map<std::string, double>());
       }
     }
 
     double ZeroCrossingRefinementFunctor::operator()(base::GridStorage&
-						     storage,
-						     size_t seq) const
+                                                     storage,
+                                                     size_t seq) const
     {
       base::HashGridPoint& gp = storage.getPoint(seq);
       std::vector<double> seqEvals = getEvalVector(current_grid_index, seq);
@@ -46,62 +46,62 @@ namespace sgpp {
       base::HashGridIterator iter(storage);
       std::vector<size_t> neighSeq;
       for(size_t d = 0; d < storage.getDimension(); d++) {
-	// Left neighbor
-	if(hasChild(gp, d, true)) {
-	  base::HashGridPoint child = base::HashGridPoint(gp);
-	  base::HashGridPoint down = base::HashGridPoint(gp);
-	  getChild(gp, child, d, true);
-	  goDown(child, down, d, false);
-	  neighSeq.push_back(storage.getSequenceNumber(down));
-	} else {
-	  // Check if left-most grid-point on level, which has no left neigh
-	  if(gp.getIndex(d) > 1) {
-	    base::HashGridPoint gp_c = base::HashGridPoint(gp);
-	    base::HashGridPoint up = base::HashGridPoint(gp);
-	    goUp(gp_c, up, d, true);
-	    neighSeq.push_back(storage.getSequenceNumber(up));
-	  }
-	}
-	// Right neighbor
-	if(hasChild(gp, d, false)) {
-	  base::HashGridPoint child = base::HashGridPoint(gp);
-	  base::HashGridPoint down = base::HashGridPoint(gp);
-	  getChild(gp, child, d, false);
-	  goDown(child, down, d, true);
-	  neighSeq.push_back(storage.getSequenceNumber(down));
-	} else {
-	  // Check if right-most grid point on level, which has no right neigh
-	  if(gp.getIndex(d) < pow(2,gp.getLevel(d)) - 1) {
-	    base::HashGridPoint gp_c = base::HashGridPoint(gp);
-	    base::HashGridPoint up = base::HashGridPoint(gp);
-	    goUp(gp_c, up, d, false);
-	    neighSeq.push_back(storage.getSequenceNumber(up));
-	  }
-	}
+        // Left neighbor
+        if(hasChild(gp, d, true)) {
+          base::HashGridPoint child = base::HashGridPoint(gp);
+          base::HashGridPoint down = base::HashGridPoint(gp);
+          getChild(gp, child, d, true);
+          goDown(child, down, d, false);
+          neighSeq.push_back(storage.getSequenceNumber(down));
+        } else {
+          // Check if left-most grid-point on level, which has no left neigh
+          if(gp.getIndex(d) > 1) {
+            base::HashGridPoint gp_c = base::HashGridPoint(gp);
+            base::HashGridPoint up = base::HashGridPoint(gp);
+            goUp(gp_c, up, d, true);
+            neighSeq.push_back(storage.getSequenceNumber(up));
+          }
+        }
+        // Right neighbor
+        if(hasChild(gp, d, false)) {
+          base::HashGridPoint child = base::HashGridPoint(gp);
+          base::HashGridPoint down = base::HashGridPoint(gp);
+          getChild(gp, child, d, false);
+          goDown(child, down, d, true);
+          neighSeq.push_back(storage.getSequenceNumber(down));
+        } else {
+          // Check if right-most grid point on level, which has no right neigh
+          if(gp.getIndex(d) < pow(2,gp.getLevel(d)) - 1) {
+            base::HashGridPoint gp_c = base::HashGridPoint(gp);
+            base::HashGridPoint up = base::HashGridPoint(gp);
+            goUp(gp_c, up, d, false);
+            neighSeq.push_back(storage.getSequenceNumber(up));
+          }
+        }
       }
 
       std::vector<double> neighEvals;
       double maxScore = 0.0;
       for(size_t i = 0; i < neighSeq.size(); i++) {
         neighEvals = getEvalVector(current_grid_index, neighSeq.at(i));
-	// eval at seq, current grid
-	double currThisEval = seqEvals.at(current_grid_index);
-	// eval at neigh, current grid
-	double currNeighEval = neighEvals.at(current_grid_index);
-	for(size_t j = 0; j < grids.size(); j++) {
-	  if(j == current_grid_index) continue;
-	  // eval at seq, j-th grid
-	  double thisEval = seqEvals.at(j);
-	  // eval at neigh, j-th grid
-	  double neighEval = neighEvals.at(j);
-	  if(sgn(currThisEval - thisEval) != sgn(currNeighEval - neighEval)) {
-	    double diff = fabs(currThisEval - thisEval);
-	    double neighDiff = fabs(currNeighEval - neighEval);
-	    double score = sqrt(diff * neighDiff) *
-	      fabs((currThisEval * thisEval));
-	    if(maxScore < score) maxScore = score;
-	  }
-	}
+        // eval at seq, current grid
+        double currThisEval = seqEvals.at(current_grid_index);
+        // eval at neigh, current grid
+        double currNeighEval = neighEvals.at(current_grid_index);
+        for(size_t j = 0; j < grids.size(); j++) {
+          if(j == current_grid_index) continue;
+          // eval at seq, j-th grid
+          double thisEval = seqEvals.at(j);
+          // eval at neigh, j-th grid
+          double neighEval = neighEvals.at(j);
+          if(sgn(currThisEval - thisEval) != sgn(currNeighEval - neighEval)) {
+            double diff = fabs(currThisEval - thisEval);
+            double neighDiff = fabs(currNeighEval - neighEval);
+            double score = sqrt(diff * neighDiff) *
+              fabs((currThisEval * thisEval));
+            if(maxScore < score) maxScore = score;
+          }
+        }
       }
       if(level_penalize) maxScore *= levelW;
       return maxScore;
@@ -109,17 +109,17 @@ namespace sgpp {
 
     std::vector<double> ZeroCrossingRefinementFunctor::
     getEvalVector(size_t ind,
-		  size_t seq) const
+                  size_t seq) const
     {
       base::HashGridPoint& gp = grids.at(ind)->getStorage().getPoint(seq);
       base::DataVector coords(grids.at(ind)->getDimension());
       gp.getStandardCoordinates(coords);
       std::vector<double> evals;
       if(pre_compute) {
-	for(size_t i = 0; i < grids.size(); i++) {
-	  std::string key = coords.toString();
-	  evals.push_back(pre_comp_evals.at(i).at(key));
-	}
+        for(size_t i = 0; i < grids.size(); i++) {
+          std::string key = coords.toString();
+          evals.push_back(pre_comp_evals.at(i).at(key));
+        }
       } else {
 	for(size_t j = 0; j < grids.size(); j++) {
 	  std::unique_ptr<base::OperationEval>
