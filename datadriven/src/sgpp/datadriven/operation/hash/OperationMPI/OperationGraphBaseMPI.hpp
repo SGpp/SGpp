@@ -36,9 +36,9 @@ class OperationGraphMethodMPI : public MPIOperation {
   size_t dimensions;
   size_t k;
   /// Protected constructor - creates slave operations and sends the dataset to them
-  OperationGraphMethodMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k,
-                          std::string slave_class_id)
-      : MPIOperation(slave_class_id), data(data),
+  OperationGraphMethodMPI(base::OperationConfiguration conf, sgpp::base::DataMatrix& data,
+                          size_t dimensions, size_t k, std::string slave_class_id)
+      : MPIOperation(conf, slave_class_id), data(data),
         datasize(data.getSize()), dimensions(dimensions), k(k) {
     send_dataset();
   }
@@ -60,7 +60,8 @@ class OperationGraphMethodMPI : public MPIOperation {
     int dataset_size;
 
    public:
-    OperationGraphMethodSlave(void) : verbose(true) {
+    explicit OperationGraphMethodSlave(base::OperationConfiguration conf) : MPISlaveOperation(conf),
+                                                                   verbose(true) {
       MPI_Status stat;
       // Receive dataset
       MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
@@ -85,6 +86,7 @@ class OperationGraphMethodMPI : public MPIOperation {
     }
     virtual void slave_code(void) = 0;
   };
+
  public:
   virtual ~OperationGraphMethodMPI(void) {
   }

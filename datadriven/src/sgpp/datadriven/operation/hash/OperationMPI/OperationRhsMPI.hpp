@@ -17,8 +17,9 @@ namespace clusteringmpi {
 /// MPI operation for creating right hand side clustering vector
 class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
-  OperationRhsMPI(base::Grid& grid, size_t dimensions, base::DataMatrix &data, int packagesize)
-      : OperationGridMethod(grid, "OperationRhsSlave"),
+  OperationRhsMPI(base::OperationConfiguration conf, base::Grid& grid, size_t dimensions,
+                  base::DataMatrix &data, int packagesize)
+      : OperationGridMethod(conf, grid, "OperationRhsSlave"),
         OperationGraphMethodMPI(data, dimensions, 12), packagesize(packagesize) {
   }
   base::DataVector create_rhs(void) {
@@ -49,8 +50,8 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
     return ret_rhs;
   }
   virtual ~OperationRhsMPI() {}
-  static MPISlaveOperation* create_slave(void) {
-    return new OperationRhsSlave();
+  static MPISlaveOperation* create_slave(base::OperationConfiguration conf) {
+    return new OperationRhsSlave(conf);
   }
 
  private:
@@ -59,8 +60,9 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
                             public OperationGraphMethodSlave {
    public:
     bool verbose;
-    OperationRhsSlave() : OperationGridMethodSlave(),
-                          OperationGraphMethodSlave() {
+    explicit OperationRhsSlave(base::OperationConfiguration conf) :
+        OperationGridMethodSlave(conf),
+        OperationGraphMethodSlave(conf) {
       verbose = true;
     }
     virtual ~OperationRhsSlave() {}

@@ -50,8 +50,8 @@ class OperationGridMethod : public MPIOperation {
   size_t gridsize;
 
   /// Protected constructor - creates slave operations and sends the grid to them
-  OperationGridMethod(base::Grid &grid, std::string slave_id)
-      : MPIOperation(slave_id) {
+  OperationGridMethod(base::OperationConfiguration conf, base::Grid &grid, std::string slave_id)
+      : MPIOperation(conf, slave_id) {
     std::cerr << "ctor grid method" << std::endl;
     send_grid(grid);
   }
@@ -71,7 +71,9 @@ class OperationGridMethod : public MPIOperation {
     MPI_Status stat;
 
    public:
-    OperationGridMethodSlave() : verbose(true), complete_gridsize(0) {
+    explicit OperationGridMethodSlave(base::OperationConfiguration conf) : MPISlaveOperation(conf),
+                                                                           verbose(true),
+                                                                           complete_gridsize(0) {
       // receive grid
       MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
       MPI_Get_count(&stat, MPI_INT, &complete_gridsize);

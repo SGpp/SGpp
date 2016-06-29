@@ -51,17 +51,29 @@ void MPIEnviroment::slave_mainloop(void) {
         delete [] message;
         break;
       } else if (message[0] == 1) {
-        // Create operation here
+
+        // Get serialized configuration and deserialize
+        MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+        MPI_Get_count(&stat, MPI_CHAR, &messagesize);
+        char *serialized_conf = new char[messagesize];
+        MPI_Recv(serialized_conf, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
+                 MPI_COMM_WORLD, &stat);
+        sgpp::base::OperationConfiguration conf;
+        conf.deserialize(serialized_conf);
+
+        // Get Operationname and create operation here
         MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
         MPI_Get_count(&stat, MPI_CHAR, &messagesize);
         char *classname = new char[messagesize];
         MPI_Recv(classname, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
                  MPI_COMM_WORLD, &stat);
-        slave_ops.push_back(create_mpi_operation(classname));
+        slave_ops.push_back(create_mpi_operation(conf, classname));
         if (verbose) {
           std::cout << "Node " << rank << ": Created slave operation \""
                     << classname << "\"" << std::endl;
         }
+        delete [] serialized_conf;
+        delete [] classname;
       } else if (message[0] == 2) {
         MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
         MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,

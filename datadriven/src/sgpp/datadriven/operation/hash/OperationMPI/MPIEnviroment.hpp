@@ -48,6 +48,7 @@ class SimpleQueue {
   MPI_Datatype mpi_typ;
 
   bool verbose;
+
  public:
   SimpleQueue(size_t workitem_count, size_t packagesize)  : packagesize(packagesize),
                                                             workitem_count(workitem_count) {
