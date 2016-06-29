@@ -44,10 +44,8 @@ void basisTest(SBasis& basis, const std::vector<level_t>& levels,
   }
 }
 
-void stretchedBasisTest(sgpp::base::SLinearStretchedBase& basis,
-                        const std::vector<double>& p,
-                        const std::vector<double>& pos0,
-                        const std::vector<double>& pos1,
+void stretchedBasisTest(sgpp::base::SLinearStretchedBase& basis, const std::vector<double>& p,
+                        const std::vector<double>& pos0, const std::vector<double>& pos1,
                         const std::vector<double>& testValues) {
   const size_t n = p.size();
   BOOST_CHECK_EQUAL(pos0.size(), n);
@@ -64,8 +62,7 @@ void linearUniformUnmodifiedTest(SBasis& basis) {
   const std::vector<level_t> levels = {1, 1, 1, 1, 1, 2, 2, 3, 3, 3};
   const std::vector<index_t> indices = {1, 1, 1, 1, 1, 1, 3, 1, 1, 1};
 
-  const std::vector<double> points = {0.5,  0.75, 0.875, 0.0,   1.0,
-                                             0.75, 0.75, 0.0,   0.125, 0.25};
+  const std::vector<double> points = {0.5, 0.75, 0.875, 0.0, 1.0, 0.75, 0.75, 0.0, 0.125, 0.25};
 
   const std::vector<double> testValues = {1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0};
 
@@ -77,10 +74,10 @@ void linearModifiedTest(SBasis& basis) {
   const std::vector<index_t> indices = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1};
 
   const std::vector<double> points = {0.5,   0.75, 0.875, 0.0, 1.0, 0.0,   0.125, 0.25,
-                                             0.375, 0.75, 0.75,  1.0, 0.0, 0.125, 0.25};
+                                      0.375, 0.75, 0.75,  1.0, 0.0, 0.125, 0.25};
 
   const std::vector<double> testValues = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.5, 1.0,
-                                                 0.5, 0.0, 1.0, 2.0, 2.0, 1.0, 0.0};
+                                          0.5, 0.0, 1.0, 2.0, 2.0, 1.0, 0.0};
 
   basisTest(basis, levels, indices, points, testValues);
 }
@@ -90,18 +87,17 @@ void linearLevelZeroTest(SBasis& basis) {
   for (index_t i = 0; i <= 1; i++) {
     for (size_t j = 0; j <= 4; j++) {
       const double x = static_cast<double>(j) / 4.0;
-      BOOST_CHECK_EQUAL(basis.eval(0, i, x), static_cast<double>(i) * x +
-                                                 static_cast<double>(1 - i) * (1.0 - x));
+      BOOST_CHECK_EQUAL(basis.eval(0, i, x),
+                        static_cast<double>(i) * x + static_cast<double>(1 - i) * (1.0 - x));
     }
   }
 }
 
 double ccKnot(level_t l, index_t i) {
   // Return Clenshaw-Curtis knot with given level and index.
-  return 0.5 * (std::cos(M_PI * (1.0 -
-                                 static_cast<double>(i) /
-                                     std::pow(2.0, static_cast<double>(l)))) +
-                1.0);
+  return 0.5 *
+         (std::cos(M_PI * (1.0 - static_cast<double>(i) / std::pow(2.0, static_cast<double>(l)))) +
+          1.0);
 }
 
 void linearClenshawCurtisTest(SBasis& basis) {
@@ -109,22 +105,14 @@ void linearClenshawCurtisTest(SBasis& basis) {
   const std::vector<level_t> indices = {1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1};
 
   const std::vector<double> points = {0.5,  0.75,         0.875, 0.0,   1.0,          0.75,
-                                             0.75, ccKnot(2, 3), 0.0,   0.125, ccKnot(3, 1), 0.25};
+                                      0.75, ccKnot(2, 3), 0.0,   0.125, ccKnot(3, 1), 0.25};
 
   const std::vector<double> testValuesDouble = {
-      1.0,
-      0.5,
-      0.25,
-      0.0,
-      0.0,
-      0.0,
-      0.25 / (static_cast<double>(ccKnot(2, 3)) - 0.5),
-      1.0,
-      0.0,
-      1.0 - (0.125 - static_cast<double>(ccKnot(3, 1))) /
-      (static_cast<double>(ccKnot(3, 2) - ccKnot(3, 1))),
-      1.0,
-      0.0};
+      1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 0.25 / (static_cast<double>(ccKnot(2, 3)) - 0.5), 1.0, 0.0,
+      1.0 -
+          (0.125 - static_cast<double>(ccKnot(3, 1))) /
+              (static_cast<double>(ccKnot(3, 2) - ccKnot(3, 1))),
+      1.0, 0.0};
 
   const std::vector<double> testValues(testValuesDouble.begin(), testValuesDouble.end());
 
@@ -200,8 +188,7 @@ void derivativesTest(SBasis& basis, size_t degree = 2, level_t startLevel = 1,
   }
 }
 
-void boundTest(SBasis& basis, level_t l, index_t i, double lowerBound,
-               double upperBound) {
+void boundTest(SBasis& basis, level_t l, index_t i, double lowerBound, double upperBound) {
   for (size_t j = 0; j <= 100; j++) {
     const double x = static_cast<double>(j) / 100.0;
     const double fx = basis.eval(l, i, x);
@@ -213,7 +200,7 @@ void boundTest(SBasis& basis, level_t l, index_t i, double lowerBound,
 void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1, bool modified = false) {
   // Test basic B-spline properties (mixed monotonicity, bounds) for
   // level >= start_level.
-  const double tol = 0.0;
+  const double tol = 1e-10;
 
   for (level_t l = 0; l < 6; l++) {
     const index_t hInv = static_cast<index_t>(1) << l;
@@ -273,9 +260,8 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
           const double sign = (((i2 - i) % 2 == 0) ? 1.0 : -1.0) * ((i2 < i) ? -1.0 : 1.0);
 
           for (size_t j = 0; j < 100; j++) {
-            const double x =
-                (static_cast<double>(i2) + static_cast<double>(j) / 100.0) /
-                static_cast<double>(hInv);
+            const double x = (static_cast<double>(i2) + static_cast<double>(j) / 100.0) /
+                             static_cast<double>(hInv);
             const double fx = basis.eval(l, i, x);
 
             if (sign == 1.0) {
