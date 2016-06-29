@@ -191,6 +191,16 @@ void JSON::serialize(const std::string& outFileName) {
   outFile.close();
 }
 
+void JSON::deserialize(std::string content) {
+  std::vector<Token> tokenStream = this->tokenize(content);
+
+  this->parse(tokenStream);
+
+  if (tokenStream.size() != 0) {
+    throw json_exception(tokenStream[0], "expected end-of-file");
+  }
+  fileName = "";
+}
 JSON* JSON::clone() { return new JSON(*this); }
 
 void JSON::clear() {
