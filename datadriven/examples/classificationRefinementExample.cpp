@@ -21,17 +21,33 @@
 #include <sstream>
 #include <iomanip>
 
-// Helper to create learner
+/**
+ * This example shows how classification specific refinement strategies
+ * are used. To do classification, for each class a PDF is approximated with
+ * LearnerSGDE and the class with the highest probability gets assigned for
+ * new data points to be classified.
+ * The ripley data sets is used, although the small number of training data
+ * poitns in combination with only a basic setup does not yield good results
+ * for any refinement strategy. This example is merely a tech-example.
+ */
+
+
+
+/**
+ * Helper to create learner
+ */
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda);
-// Helper to evaluate the classifiers
+/*
+ * Helper to evaluate the classifiers
+ */
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                                           std::vector<sgpp::base::DataVector*> alphas,
                                           sgpp::base::DataMatrix& testData,
                                           sgpp::base::DataVector& testLabel);
 
 int main() {
-  /*
+  /**
    * Get the training/test data
    */
   std::string basePath = "../../datasets/ripley/ripleyGarcke";
@@ -47,7 +63,7 @@ int main() {
   std::cout << "Read test data    : " << dataTest.getNrows() << std::endl;
 
 
-  /*
+  /**
    * Only uint class labels starting 0 and incrementing by 1 per class
    * are possible right no (to match grid-indices in vectors).
    * For use in DataVector class labels are cast to double.
@@ -71,7 +87,7 @@ int main() {
   std::cout << "Preprocessing the data" << std::endl;
 
 
-  /*
+  /**
    * Split Training data according to class
    */
   sgpp::base::DataMatrix dataCl1(0, dataTrain.getNcols());
@@ -89,7 +105,7 @@ int main() {
   std::cout << "Data points of class +1.0 (= 1): " << dataCl2.getNrows() << std::endl;
 
 
-  /*
+  /**
    * Approximate a probability density function for the class data using
    * LearnerSGDE, one for each class. Initialize the learners with the data
    */
@@ -100,7 +116,7 @@ int main() {
   learner2.initialize(dataCl2);
 
 
-  /*
+  /**
    * Bundle grids and surplus vector pointer needed for refinement and
    * evaluation
    */
@@ -112,7 +128,7 @@ int main() {
   alphas.push_back(learner2.getSurpluses().get());
 
 
-  /*
+  /**
    * Create refinement functors
    */
   size_t numRefinements = 3;
@@ -147,13 +163,17 @@ int main() {
                                                        numRefinements,
                                                        levelPenalize,
                                                        coeffA);
+
+  /**
+   * Choose the refinement functor to be used
+   */
   // fun = &funSrpl;
   // fun = &funGrid;
   fun = &funZrcr;
   // fun = &funData;
 
 
-  /*
+  /**
    * Repeat alternating refinement and training for n steps and do
    * evaluation after each step
    * Uses the refinement strategy defined in fun

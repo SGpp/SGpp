@@ -54,8 +54,14 @@ class MultiSurplusRefinementFunctor : public MultiGridRefinementFunctor {
   std::vector<base::Grid*> grids;
   std::vector<base::DataVector*> alphas;
 
-  // One Surplus/VolumeRefinementFunctor for each grid
+  /**
+   * One surplus refinement functor per grid
+   */
   std::vector<base::SurplusRefinementFunctor> spFunctors;
+
+  /**
+   * One volume refinement functor per grid
+   */
   std::vector<base::SurplusVolumeRefinementFunctor> spvFunctors;
 
   size_t current_grid_index;

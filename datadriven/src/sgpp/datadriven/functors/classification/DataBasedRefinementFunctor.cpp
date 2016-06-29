@@ -36,6 +36,7 @@ namespace datadriven {
     if (data != 0 && targets != 0) {
       computeH();
     }
+    // Default coeff_a = 1.0
     if (coeff_a.size() == 0) {
       this->coeff_a = std::vector<double>(grids.size(), 1.0);
     }

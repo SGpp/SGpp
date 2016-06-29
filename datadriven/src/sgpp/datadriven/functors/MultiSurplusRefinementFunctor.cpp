@@ -39,6 +39,7 @@ namespace datadriven {
                                                    storage,
                                                    size_t seq) const {
     size_t cgi = current_grid_index;
+    // If level penalize, then chose volume refinement, else surplus refinemet
     if (level_penalize) {
       return spvFunctors.at(cgi)(storage, seq);
     } else {

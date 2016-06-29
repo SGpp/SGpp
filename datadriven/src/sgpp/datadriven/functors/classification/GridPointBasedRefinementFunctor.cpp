@@ -32,6 +32,7 @@ namespace datadriven {
     level_penalize(level_penalize),
     pre_compute(pre_compute),
     pre_comp_evals() {
+    // Add a map for each grid
     for (size_t i = 0; i < grids.size(); i++) {
       pre_comp_evals.push_back(std::map<std::string, double>());
     }
@@ -87,15 +88,21 @@ namespace datadriven {
     base::DataVector p(grids.at(0)->getDimension());
     std::string key = "";
     double v = 0;
+    // Evaluated at (!) grid with index i and store in the i-th map
+    // Here grid points are not only evaluated at their own grid but at
+    // all grids
     for (size_t i = 0; i < grids.size(); i++) {
       std::unique_ptr<base::OperationEval>
         opEval(op_factory::createOperationEval(*grids.at(i)));
       pre_comp_evals.at(i).clear();
-
+      // Iterate over all possible grid point coordinates of all grids
       for (size_t j = 0; j < grids.size(); j++) {
         for (size_t k = 0; k < grids.at(j)->getSize(); k++) {
+          // The coordinates
           grids.at(j)->getStorage().getPoint(k).getStandardCoordinates(p);
+          // The hash key
           key = p.toString();
+          // Does the key already exist?
           if (pre_comp_evals.at(i).count(key) == 0) {
             v = opEval->eval(*alphas.at(i), p);
             pre_comp_evals.at(i).insert(std::pair<std::string, double>(key,
