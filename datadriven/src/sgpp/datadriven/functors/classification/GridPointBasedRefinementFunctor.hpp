@@ -55,8 +55,10 @@ class GridPointBasedRefinementFunctor : public MultiGridRefinementFunctor {
   size_t getNumGrids() override;
 
   /**
-   * Evaluates the grids at necessary grid points and stores them for later
-   * use. Needs to be called before a refinement step is applied.
+   * Precomputes grid evaluations for all grids. Used in combination with
+   * pre_compute flag = true. Should be called before refinement is done
+   * and needs to be re-called after a refinement step is over
+   * ie. the surplus vectors got recomputed
    */
   void preComputeEvaluations() override;
 
@@ -68,9 +70,15 @@ class GridPointBasedRefinementFunctor : public MultiGridRefinementFunctor {
   size_t current_grid_index;
   size_t refinements_num;
   double threshold;
-      bool level_penalize;
+  bool level_penalize;
 
   bool pre_compute;
+
+  /**
+   * Stores grid evaluations at all grids (vector) at the union
+   * of grid point coordinates over all grids (hashed by string representation
+   * in the map)
+   */
   std::vector<std::map<std::string, double>> pre_comp_evals;
 };
 }  // namespace datadriven

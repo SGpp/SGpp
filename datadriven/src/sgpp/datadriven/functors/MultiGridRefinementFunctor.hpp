@@ -12,6 +12,7 @@
 
 namespace sgpp {
 namespace datadriven {
+
 /**
  * Abstract super-class for refinement functors operating on multiple
  * grids.
@@ -25,6 +26,10 @@ class MultiGridRefinementFunctor : public base::RefinementFunctor {
    */
   virtual void setGridIndex(size_t grid_index) = 0;
 
+
+  /**
+   * Returns the number of grids the functor can / does refine
+   */
   virtual size_t getNumGrids() = 0;
 
   /**

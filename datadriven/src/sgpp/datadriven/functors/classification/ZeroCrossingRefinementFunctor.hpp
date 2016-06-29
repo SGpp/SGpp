@@ -58,6 +58,13 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
 
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;
+
+  /**
+   * Precomputes grid evaluations for all grids. Used in combination with
+   * pre_compute flag = true. Should be called before refinement is done
+   * and needs to be re-called after a refinement step is over
+   * ie. the surplus vectors got recomputed
+   */
   void preComputeEvaluations() override;
 
  protected:
@@ -70,6 +77,12 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
   bool level_penalize;
 
   bool pre_compute;
+
+  /**
+   * Stores grid evaluations at all grids (vector) at the union
+   * of grid point coordinates over all grids (hashed by string representation
+   * in the map)
+   */
   std::vector<std::map<std::string, double>> pre_comp_evals;
 
   /**

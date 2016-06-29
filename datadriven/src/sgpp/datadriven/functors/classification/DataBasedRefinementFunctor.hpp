@@ -61,31 +61,66 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;
 
-  // Sets the data/target pointer
+  /**
+   * Set the training data + targets which is the basis for determining
+   * relevant data points. This method is only necessary in data-streaming
+   * scenarios where the training data changes overall.
+   * @param data Pointer to the (subset of) training data used
+   * @param targets Pointer to the related targets
+   */
   void setData(base::DataMatrix* data, base::DataVector* targets);
 
-  // (re-)computes all H_k based on data and targets
+  /**
+   * Recomputes the set of relevant data (the set H). If the training
+   * data is changed, call this method to actually re-compute H.
+   * Might require a lot of time depending on the size of the training
+   * data.
+   */
   void computeH();
 
-  // Get the set Hk (for plotting/debugging)
+  /**
+   * Returns a ref to the specified H_k, used for debugging /plotting
+   * @param index The index k for H_k
+   */
   base::DataMatrix& getHk(size_t index);
 
 
  protected:
   std::vector<base::Grid*> grids;
   std::vector<base::DataVector*> alphas;
+
+  /**
+   * Evaluations of data points are cached here
+   */
   base::DataMatrix evals;
 
+  /**
+   * Pointer to the training data used for determining H
+   */
   base::DataMatrix* data;
+
+  /**
+   * Pointer to targets related to this->data
+   */
   base::DataVector* targets;
 
-  // The set H containing all H_k
+  /**
+   * The set H = \{ H_1, H_2, ..., H_n \}
+   * Each H_k contains a set of "intersection data points" between
+   * class k and all other classes. These sets are the basis for
+   * the scoring process
+   */
   std::vector<base::DataMatrix> h;
 
-  // Means of the PDF for all classes
+  /**
+   * The mean values of the PDFs given by grids, alphas
+   * Approximated using this->data
+   */
   std::vector<double> means;
 
-  // Scaling coefficient of the means
+  /**
+   * The scaling coefficients for this->means
+   */
   std::vector<double> coeff_a;
 
   size_t current_grid_index;
@@ -94,10 +129,16 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
   bool level_penalize;
 
 
-  // cl_indx is a index into classes rather than the label itself
+  /**
+   * Computes the "intersection data points" of class k and l
+   */
   void computeHkl(base::DataMatrix& inters,
                   size_t cl_ind1,
                   size_t cl_ind2);
+
+  /**
+   * Is point in support of basis function at gp
+   */
   bool isWithinSupport(base::HashGridPoint& gp,
                        base::DataVector& point) const;
 };
