@@ -18,8 +18,9 @@ namespace clusteringmpi {
 
 class OperationDensityMPI : public OperationGridMethod, public base::OperationMatrix {
  public:
-  OperationDensityMPI(base::Grid& grid, double lambda, int packagesize) :
-      OperationGridMethod(grid, "OperationDensitySlave"), packagesize(packagesize) {
+  OperationDensityMPI(base::OperationConfiguration conf, base::Grid& grid,
+                      double lambda, int packagesize) :
+      OperationGridMethod(conf, grid, "OperationDensitySlave"), packagesize(packagesize) {
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
@@ -48,8 +49,8 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
     delete [] partial_result;
   }
 
-  static MPISlaveOperation* create_slave(void) {
-    return new OperationDensitySlave();
+  static MPISlaveOperation* create_slave(base::OperationConfiguration conf) {
+    return new OperationDensitySlave(conf);
   }
 
  private:
@@ -61,8 +62,8 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
 
    public:
     bool verbose;
-    OperationDensitySlave()
-        : OperationGridMethodSlave() {
+    OperationDensitySlave(base::OperationConfiguration conf)
+        : OperationGridMethodSlave(conf) {
       // Receive lambda
       MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
       MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,

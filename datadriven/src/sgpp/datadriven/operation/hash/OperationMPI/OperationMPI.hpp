@@ -4,8 +4,11 @@
 // sgpp.sparsegrids.org
 #ifndef OPERATIONMPI_H
 #define OPERATIONMPI_H
-
 #include <mpi.h>
+
+
+#include <sgpp/base/tools/OperationConfiguration.hpp>
+
 #include <cstring>
 #include <string>
 #include <typeinfo>
@@ -16,7 +19,8 @@ namespace clusteringmpi {
 /// Base class for alls MPI slave node operations
 class MPISlaveOperation {
  public:
-  MPISlaveOperation();
+  MPISlaveOperation(void);
+  explicit MPISlaveOperation(base::OperationConfiguration conf);
   virtual ~MPISlaveOperation();
 
   virtual void slave_code(void) = 0;
@@ -27,9 +31,10 @@ class MPIOperation {
  private:
   static int index;
   int object_index;
+  bool verbose;
  public:
   /// Constructor - creates all slave operations of the given name
-  explicit MPIOperation(std::string slave_class_name);
+  explicit MPIOperation(base::OperationConfiguration &conf, std::string slave_class_name);
   /// Constructor - does not create any slave operations
   MPIOperation();
   virtual ~MPIOperation(void);

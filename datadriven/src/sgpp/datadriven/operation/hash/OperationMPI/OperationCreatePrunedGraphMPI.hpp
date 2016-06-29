@@ -20,9 +20,10 @@ namespace datadriven {
 namespace clusteringmpi {
 class OperationCreatePrunedGraph : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
-  OperationCreatePrunedGraph(base::Grid& grid, base::DataVector &alpha, base::DataMatrix &data,
+  OperationCreatePrunedGraph(base::OperationConfiguration conf, base::Grid& grid,
+                             base::DataVector &alpha, base::DataMatrix &data,
                              size_t k, int packagesize)
-      : OperationGridMethod(grid, "OperationCreatePrunedGraphSlave"),
+      : OperationGridMethod(conf, grid, "OperationCreatePrunedGraphSlave"),
         OperationGraphMethodMPI(data, grid.getDimension(), k), packagesize(packagesize) {
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
@@ -54,8 +55,8 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
     return ret_graph;
   }
 
-  static MPISlaveOperation* create_slave(void) {
-    return new OperationCreatePrunedGraphSlave();
+  static MPISlaveOperation* create_slave(base::OperationConfiguration conf) {
+    return new OperationCreatePrunedGraphSlave(conf);
   }
   virtual ~OperationCreatePrunedGraph() {}
 
@@ -67,8 +68,9 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
     double *alpha;
    public:
     bool verbose;
-    OperationCreatePrunedGraphSlave(void) : OperationGridMethodSlave(),
-                                            OperationGraphMethodSlave() {
+    explicit OperationCreatePrunedGraphSlave(base::OperationConfiguration conf) :
+        OperationGridMethodSlave(conf),
+        OperationGraphMethodSlave(conf) {
       verbose = true;
       // Receive alpha vector
       int buffer_size = 0;

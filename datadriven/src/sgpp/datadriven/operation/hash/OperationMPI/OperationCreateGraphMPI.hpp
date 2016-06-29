@@ -18,11 +18,13 @@ namespace clusteringmpi {
 
 class OperationCreateGraphMPI : public OperationGraphMethodMPI {
  public:
-  static MPISlaveOperation* create_slave(void) {
-    return new OperationCreateGraphSlave();
+  static MPISlaveOperation* create_slave(base::OperationConfiguration conf) {
+    return new OperationCreateGraphSlave(conf);
   }
-  OperationCreateGraphMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k, int packagesize)
-      : OperationGraphMethodMPI(data, dimensions, k, "OperationCreateGraphSlave"),
+  OperationCreateGraphMPI(base::OperationConfiguration conf,
+                          sgpp::base::DataMatrix& data,
+                          size_t dimensions, size_t k, int packagesize)
+      : OperationGraphMethodMPI(conf, data, dimensions, k, "OperationCreateGraphSlave"),
         packagesize(packagesize) {
   }
   std::vector<int> create_graph(void) {
@@ -53,8 +55,8 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
   int packagesize;
   class OperationCreateGraphSlave : public OperationGraphMethodSlave {
    public:
-    OperationCreateGraphSlave()
-        : OperationGraphMethodSlave() {
+    explicit OperationCreateGraphSlave(base::OperationConfiguration conf)
+        : OperationGraphMethodSlave(conf) {
     }
     virtual ~OperationCreateGraphSlave() {}
     virtual void slave_code(void) {

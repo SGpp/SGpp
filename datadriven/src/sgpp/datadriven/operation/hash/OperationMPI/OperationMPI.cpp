@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
+#include <algorithm>
 #include "OperationMPI.hpp"
 #include "MPIEnviroment.hpp"
 
@@ -14,11 +15,18 @@ namespace datadriven {
 namespace clusteringmpi {
 MPISlaveOperation::MPISlaveOperation(void) {
 }
+MPISlaveOperation::MPISlaveOperation(base::OperationConfiguration conf) {
+}
 
 MPISlaveOperation::~MPISlaveOperation(void) {
 }
-MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
-    std::cerr << "ctor base method" << std::endl;
+MPIOperation::MPIOperation(base::OperationConfiguration &conf,
+                           std::string slave_class_name) : object_index(index), verbose(false) {
+  if (conf.contains("VERBOSE"))
+    verbose = conf["VERBOSE"].getBool();
+
+  if (verbose)
+    std::cerr << "Created Master Node at process " << MPIEnviroment::get_node_rank() << std::endl;
   int message[1];
   index++;
   // Command for creation and execution of a slave
@@ -26,6 +34,19 @@ MPIOperation::MPIOperation(std::string slave_class_name) : object_index(index) {
   for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
     MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, MPI_COMM_WORLD);
   }
+
+  json::Node& slaves = conf["SLAVES"]["SLAVE1"];
+  std::ostringstream sstream;
+  slaves.serialize(sstream, 0);
+  std::string serialized_conf = sstream.str();
+  char *conf_message = new char[serialized_conf.length() + 1];
+  std::copy(serialized_conf.begin(), serialized_conf.end(), conf_message);
+  conf_message[serialized_conf.size()] = '\0';
+  for (int i = 1; i < MPIEnviroment::get_node_count(); i++) {
+    MPI_Send(conf_message, static_cast<int>(serialized_conf.size() + 1),
+             MPI_CHAR, i, 1, MPI_COMM_WORLD);
+  }
+  delete [] conf_message;
 
   char *class_message = new char[slave_class_name.size() + 1];
   snprintf(class_message, slave_class_name.size() + 1, "%s", slave_class_name.c_str());
