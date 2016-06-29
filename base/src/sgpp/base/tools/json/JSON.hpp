@@ -35,6 +35,8 @@ class JSON : public DictNode {
 
   void serialize(const std::string& outFileName);
 
+  void deserialize(std::string content);
+
   using DictNode::serialize;
 };
 
