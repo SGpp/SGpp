@@ -33,6 +33,7 @@ class RegressionLearner {
   size_t getGridSize() const;
   double getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
   void initializeWeights();
+  sgpp::base::DataVector getWeights() const;
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;
