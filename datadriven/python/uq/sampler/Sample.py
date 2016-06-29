@@ -60,8 +60,7 @@ class Samples(object):
         self._isUnit = True
         self._isActive = True
         self._dim = None
-        if params is not None:
-            self._dim = params.getStochasticDim()
+        self._dim = params.getStochasticDim()
 
     def combine(self, samples):
         for sample in samples:

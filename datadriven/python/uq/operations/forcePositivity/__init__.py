@@ -2,7 +2,7 @@ from operationMakePositive import OperationMakePositive
 from operationMakePositiveFast import OperationMakePositiveFast
 
 
-from interpolateParents import InterpolateParents
+from meanOfParents import MeanOfParents
 from interpolateFunction import InterpolateFunction
 from estimateDensity import EstimateDensityAlgorithm
 from interpolationAlgorithm import InterpolationAlgorithm
