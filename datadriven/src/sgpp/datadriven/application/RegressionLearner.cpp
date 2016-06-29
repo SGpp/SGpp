@@ -46,8 +46,6 @@ void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
   }
   const auto DMSystem = createDMSystem(trainDataset);
 
-
-
   for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
       refine(*DMSystem, trainDataset, classes);
@@ -125,9 +123,13 @@ void RegressionLearner::initializeWeights() {
         const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
         const double multiplicator = std::pow(exponentBase, exponent);
 
-        std::normal_distribution<> dist(0, multiplicator);
+        std::normal_distribution<> dist(0, std::sqrt(multiplicator));
         weights[i] = dist(gen);
     }
+}
+
+sgpp::base::DataVector RegressionLearner::getWeights() const {
+    return weights;
 }
 
 double RegressionLearner::getMSE(const sgpp::base::DataVector& y,
