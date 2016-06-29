@@ -25,15 +25,17 @@ class DataDist(Dist):
     Models a discrete distribution given by data
     """
 
-    def __init__(self, samples):
+    def __init__(self, samples, bounds=None):
         """
         Constructor. There are some restrictions to the samples:
         As they represent the underlying probability, they have to be drawn
         iid.
         @param samples: numpy array (num_samples x num_dims)
+        @param bounds: numpy array  (num_dims x 2)
         """
         # read data and store it in a set of samples
         self.samples = samples
+
         self.__sampleToIndex = {}
         for sample in self.samples:
             x = tuple(sample)
@@ -46,9 +48,12 @@ class DataDist(Dist):
         self.__n, self.__dim = self.samples.shape
 
         # find the bounds of the data
-        mins = np.min(self.samples, axis=0)
-        maxs = np.max(self.samples, axis=0)
-        self.__bounds = np.vstack((mins, maxs)).T
+        if bounds is None:
+            mins = np.min(self.samples, axis=0)
+            maxs = np.max(self.samples, axis=0)
+            self.__bounds = np.vstack((mins, maxs)).T
+        else:
+            self.__bounds = bounds
 
     def pdf(self, p, *args, **kws):
         x = tuple(p)
@@ -67,8 +72,11 @@ class DataDist(Dist):
         raise NotImplementedError()
 
     def rvs(self, n=1):
-        ixs = np.random.randint(0, len(self.samples) - 1, n)
-        return self.samples[ixs, :]
+        if n == self.samples.shape[0]:
+            return self.samples
+        else:
+            ixs = np.random.randint(0, len(self.samples) - 1, n)
+            return self.samples[ixs, :]
 
     def mean(self):
         return np.mean(self.samples, axis=0)

@@ -7,6 +7,7 @@ from DeterministicParameter import DeterministicParameter
 from UncertainParameter import UncertainParameter
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.dists.DataDist import DataDist
+from pysgpp.extensions.datadriven.uq.sampler.Sample import DistributionType
 
 
 class ParameterDescriptor(object):
