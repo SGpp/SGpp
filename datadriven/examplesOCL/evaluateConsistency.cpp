@@ -88,10 +88,10 @@ int main(int argc, char **argv) {
   }
 
   std::vector<std::string> scenarios = {
-      baseFolder + "friedman2_4d_500000_Linear_double.scenario",
-      baseFolder + "friedman2_4d_500000_Linear_float.scenario",
-      baseFolder + "friedman2_4d_500000_ModLinear_double.scenario",
-      baseFolder + "friedman2_4d_500000_ModLinear_float.scenario",
+      baseFolder + "chess_4d_500000_Linear_double.scenario",
+      baseFolder + "chess_4d_500000_Linear_float.scenario",
+      baseFolder + "chess_4d_500000_ModLinear_double.scenario",
+      baseFolder + "chess_4d_500000_ModLinear_float.scenario",
       baseFolder + "friedman1_10d_500000_Linear_double.scenario",
       baseFolder + "friedman1_10d_500000_Linear_float.scenario",
       baseFolder + "friedman1_10d_500000_ModLinear_double.scenario",
@@ -102,10 +102,10 @@ int main(int argc, char **argv) {
       baseFolder + "DR5_train_ModLinear_float.scenario"};
 
   std::vector<std::string> parameters = {
-      "friedman2_4d_500000_Linear_double_StreamingOCLMultiPlatform_tuned.cfg",
-      "friedman2_4d_500000_Linear_float_StreamingOCLMultiPlatform_tuned.cfg",
-      "friedman2_4d_500000_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
-      "friedman2_4d_500000_ModLinear_float_StreamingModOCLMaskMultiPlatform_tuned.cfg",
+      "chess_4d_500000_Linear_double_StreamingOCLMultiPlatform_tuned.cfg",
+      "chess_4d_500000_Linear_float_StreamingOCLMultiPlatform_tuned.cfg",
+      "chess_4d_500000_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
+      "chess_4d_500000_ModLinear_float_StreamingModOCLMaskMultiPlatform_tuned.cfg",
       "friedman1_10d_500000_Linear_double_StreamingOCLMultiPlatform_tuned.cfg",
       "friedman1_10d_500000_Linear_float_StreamingOCLMultiPlatform_tuned.cfg",
       "friedman1_10d_500000_ModLinear_double_StreamingModOCLMaskMultiPlatform_tuned.cfg",
