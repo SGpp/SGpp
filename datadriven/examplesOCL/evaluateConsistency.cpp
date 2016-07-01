@@ -125,6 +125,7 @@ int main(int argc, char **argv) {
 
     if (floatOnly && isDouble[i]) {
       std::cout << "skipping..." << std::endl;
+      continue;
     }
 
     std::cout << "scenario: " << scenarioFileName << std::endl;
