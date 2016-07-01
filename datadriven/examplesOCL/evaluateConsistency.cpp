@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 
   bool floatOnly = false;
   if (argc == 3) {
-    if (strcmp(argv[1], "floatOnly") == 0) {
+    if (strcmp(argv[2], "floatOnly") == 0) {
       std::cout << "float-only enabled!" << std::endl;
       floatOnly = true;
     } else {
