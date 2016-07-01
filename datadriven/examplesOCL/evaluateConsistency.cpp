@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
         sgpp::datadriven::OperationMultipleEvalType::STREAMING, subType, parameters);
 
-    for (size_t repeat = 0; repeat < 10; repeat++) {
+    for (size_t repeat = 0; repeat < 20; repeat++) {
       std::cout << "repeat: " << repeat << std::endl;
       bool verbose = true;
       sgpp::datadriven::MetaLearner learner(
