@@ -73,13 +73,14 @@ void LearnerVectorizedIdentity::postProcessing(const sgpp::base::DataMatrix& tra
   }
 }
 
-sgpp::base::DataVector LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset) {
+void LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset,
+                                        sgpp::base::DataVector& classesComputed) {
   sgpp::base::DataMatrix tmpDataSet(testDataset);
   size_t originalSize = testDataset.getNrows();
   size_t paddedSize =
       sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
 
-  sgpp::base::DataVector classesComputed(paddedSize);
+  classesComputed.resize(paddedSize);
 
   classesComputed.setAll(0.0);
 
@@ -93,8 +94,6 @@ sgpp::base::DataVector LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix
 
   // removed the padded instances
   classesComputed.resize(originalSize);
-
-  return classesComputed;
 }
 
 }  // namespace parallel

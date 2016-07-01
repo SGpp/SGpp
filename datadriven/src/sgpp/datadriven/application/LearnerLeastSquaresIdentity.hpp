@@ -57,7 +57,8 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
    */
   virtual ~LearnerLeastSquaresIdentity();
 
-  virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix& testDataset);
+  void predict(sgpp::base::DataMatrix& testDataset,
+               sgpp::base::DataVector& classesComputed) override;
 
   double testRegular(const sgpp::base::RegularGridConfiguration& GridConfig,
                      sgpp::base::DataMatrix& testDataset);
