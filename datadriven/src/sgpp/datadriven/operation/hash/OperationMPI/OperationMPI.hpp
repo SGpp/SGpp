@@ -12,11 +12,23 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-/// Base class for alls MPI slave node operations
+class ArchitecturCommunicator {
+ private:
+  MPI_Comm &communicator;
+  base::OperationConfiguration &configuration;
+ public:
+  void spawn_workers(std::string workerOperation);
+  void release_workers(void);
+
+  ArchitecturCommunicator(base::OperationConfiguration);
+};
+
+/// Base class for all MPI slave node operations
 class MPISlaveOperation {
  public:
   MPISlaveOperation(void);
@@ -32,6 +44,13 @@ class MPIOperation {
   static int index;
   int object_index;
   bool verbose;
+
+  base::OperationConfiguration conf;
+  MPI_Group slave_group;
+  MPI_Comm slave_comm;
+  size_t slave_count;
+
+  int count_slaves(json::Node &currentslave);
  public:
   /// Constructor - creates all slave operations of the given name
   explicit MPIOperation(base::OperationConfiguration &conf, std::string slave_class_name);
