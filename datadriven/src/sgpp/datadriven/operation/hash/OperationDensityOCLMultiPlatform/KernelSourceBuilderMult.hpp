@@ -32,6 +32,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   bool use_implicit_zero;
   bool use_fabs_instead_of_fmax;
   bool preprocess_positions;
+  bool unroll_dim;
 
   /// Generate the opencl code to save the fixed gridpoint of a workitem to the local memory
   std::string save_from_global_to_private(size_t dimensions) {
@@ -263,7 +264,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       kernelConfiguration(kernelConfiguration), dataBlockSize(1),
       use_level_cache(false), use_less(true), do_not_use_ternary(false),
       use_implicit_zero(true), use_fabs_instead_of_fmax(false),
-      preprocess_positions(false) {
+      preprocess_positions(false), unroll_dim(false) {
     if (kernelConfiguration.contains("LOCAL_SIZE"))
       localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     if (kernelConfiguration.contains("KERNEL_USE_LOCAL_MEMORY"))
@@ -282,6 +283,9 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       use_fabs_instead_of_fmax = kernelConfiguration["USE_FABS"].getBool();
     if (kernelConfiguration.contains("PREPROCESS_POSITIONS")) {
       preprocess_positions = kernelConfiguration["PREPROCESS_POSITIONS"].getBool();
+    }
+    if (kernelConfiguration.contains("UNROLL_DIM")) {
+      unroll_dim = kernelConfiguration["UNROLL_DIM"].getBool();
     }
   }
 
@@ -360,7 +364,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
                    << "; i++) {" << std::endl
                    << this->indent[2] << "__private " << this->floatType();
-    } else if (preprocess_positions) {
+    } else if (preprocess_positions && !unroll_dim) {
       // declare local arrays for grid point positions, and hs and hs inverses
       sourceStream << this->indent[0] << "__local " << this->floatType() << " positions_local["
                    << localWorkgroupSize * dimensions << "];" << std::endl
@@ -376,23 +380,63 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int j = 0; j <     " << dimensions
                    << " ; j++) {" << std::endl;
-      // calculate hs inverse
+      // get hs inverse
       sourceStream << this->indent[2] << "hinverses_local[local_id * " << dimensions
                    << " + j] = hs_inverses[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
                    << " + j];" << std::endl;
-      // calculate hs
+      // get hs
       sourceStream << this->indent[2] << "hs_local[local_id * " << dimensions
                    << " + j] = hs[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
                    << " + j];" << std::endl;
-      // calculate positions
+      // get positions
       sourceStream << this->indent[2] << "positions_local[local_id * " << dimensions
                    << " + j] = positions[group * "
                    << localWorkgroupSize * dimensions << " + local_id*" << dimensions
                    << " + j];" << std::endl;
       sourceStream << "}"
                    << this->indent[1] << "alpha_local[local_id] = alpha[group * "
+                   << localWorkgroupSize << "  + local_id ];" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
+                   << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
+                   << "; i++) {" << std::endl
+                   << this->indent[2] << "__private " << this->floatType();
+    } else if (preprocess_positions && unroll_dim) {
+      for (size_t dim = 0; dim < dimensions; ++dim) {
+        sourceStream << this->indent[0] << "__local " << this->floatType()
+                     << " positions_local_dim" << dim << "["
+                     << localWorkgroupSize << "];" << std::endl
+                     << this->indent[0] << "__local " << this->floatType() << " hs_local"
+                     << "_dim" << dim << "["
+                     << localWorkgroupSize << "];" << std::endl
+                     << this->indent[0] << "__local int hinverses_local"
+                     << "_dim" << dim << "["
+                     << localWorkgroupSize << "];" << std::endl;
+      }
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " alpha_local["
+                   << localWorkgroupSize << "];" << std::endl;
+      // start loop
+      sourceStream <<  this->indent[0] << "for (int group = 0; group < "
+                   << problemsize / localWorkgroupSize << "; group++) {" << std::endl
+                   << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+      for (size_t dim = 0; dim < dimensions; ++dim) {
+        // get hs inverse
+        sourceStream << this->indent[2] << "hinverses_local_dim" << dim
+                     << "[local_id] = hs_inverses[group * "
+                     << localWorkgroupSize * dimensions << " + local_id*" << dimensions
+                     << " + " << dim << "];" << std::endl;
+        // get hs
+        sourceStream << this->indent[2] << "hs_local_dim" << dim << "[local_id] = hs[group * "
+                     << localWorkgroupSize * dimensions << " + local_id*" << dimensions
+                     << " + " << dim << "];" << std::endl;
+        // get positions
+        sourceStream << this->indent[2] << "positions_local_dim" << dim
+                     << "[local_id] = positions[group * "
+                     << localWorkgroupSize * dimensions << " + local_id*" << dimensions
+                     << " + " << dim << "];" << std::endl;
+      }
+      sourceStream << this->indent[1] << "alpha_local[local_id] = alpha[group * "
                    << localWorkgroupSize << "  + local_id ];" << std::endl
                    << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                    << this->indent[1] << "for (int i = 0 ; i < " << localWorkgroupSize
@@ -408,40 +452,56 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     for (size_t block = 0; block < dataBlockSize; block++) {
       if (preprocess_positions) {
         sourceStream << " zellenintegral = 1.0;" << std::endl;
-        sourceStream << this->indent[2] << " __private int counter = 10;" << std::endl;
-        //sourceStream << this->indent[2] << "__private " << this->floatType() << " vorfaktor = 59049.0;" << std::endl;
-        // Loop over all dimensions
-        sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
-                     << ";dim++) {" << std::endl;
-        // Calculate distance between grid points in this dimensions
-        sourceStream << this->indent[2] << "__private " << this->floatType()
-                     << " distance = fabs(point_positions_block" << block << "[dim] - "
-                     << "positions_local[i * " << dimensions << " + dim]);" << std::endl;
-        // Calculate first integral (level_point < level_local)
-        sourceStream << this->indent[2] << "sum = 1.0 - distance * point_hinverses_block" << block
-                     << "[dim]; " << std::endl;
-        sourceStream << this->indent[2] << "sum *= hs_local[i *" << dimensions
-                   << " + dim]; " << std::endl;
-        sourceStream << this->indent[2] << "sum = max(sum, 0.0); " << std::endl;
-        // Calculate second integral (level_point > level_local)
-        sourceStream << this->indent[2] << "sum += max(point_hs_block" << block
-                     << "[dim] * (1.0 - hinverses_local[i * " << dimensions << " + dim] * distance), 0.0);"
-                     << std::endl;
-        // In case we have the same gridpoint
-        // sourceStream << this->indent[3] << "vorfaktor *= point_hinverses_block" << block
-        //              << "[dim] == hinverses_local[i * " << dimensions << " + dim]"
-        //              << " ? 1.0/3.0 : 1.0;" << std::endl;
-        //sourceStream << "vorfaktor /= 3.0;" << std::endl;
-
-        // Update cell integral
-        sourceStream << this->indent[3] << "zellenintegral*=sum*select((double)1.0, h, (long)(point_hinverses_block" << block
-                      << "[dim] == hinverses_local[i * " << dimensions << " + dim]));" << std::endl;
-        // sourceStream << this->indent[2] << "counter -= ceil(distance);" << std::endl;
-        sourceStream << this->indent[2] << "}" << std::endl;
-        // sourceStream << this->indent[2] << "for(private int c = 0; c < counter; c++) " << std::endl;
-        // sourceStream << this->indent[2] << "zellenintegral *= h;" << std::endl;
+        if (!unroll_dim) {
+          // Loop over all dimensions
+          sourceStream << this->indent[2] << "for(private int dim = 0;dim< " << dimensions
+                       << ";dim++) {" << std::endl;
+          // Calculate distance between grid points in this dimensions
+          sourceStream << this->indent[2] << "__private " << this->floatType()
+                       << " distance = fabs(point_positions_block" << block << "[dim] - "
+                       << "positions_local[i * " << dimensions << " + dim]);" << std::endl;
+          // Calculate first integral (level_point < level_local)
+          sourceStream << this->indent[2] << "sum = 1.0 - distance * point_hinverses_block" << block
+                       << "[dim]; " << std::endl;
+          sourceStream << this->indent[2] << "sum *= hs_local[i *" << dimensions
+                       << " + dim]; " << std::endl;
+          sourceStream << this->indent[2] << "sum = max(sum, 0.0); " << std::endl;
+          // Calculate second integral (level_point > level_local)
+          sourceStream << this->indent[2] << "sum += max(point_hs_block" << block
+                       << "[dim] * (1.0 - hinverses_local[i * " << dimensions
+                       << " + dim] * distance), 0.0);" << std::endl;
+          // Update cell integral
+          sourceStream << this->indent[3] << "zellenintegral*=sum*select((double)1.0,"
+                       << " h, (long)(point_hinverses_block" << block
+                       << "[dim] == hinverses_local[i * " << dimensions << " + dim]));"
+                       << std::endl;
+          sourceStream << this->indent[2] << "}" << std::endl;
+        } else {
+          for (size_t dim = 0; dim < dimensions; ++dim) {
+            // Calculate distance between grid points in this dimensions
+            sourceStream << this->indent[2] << "__private " << this->floatType()
+                         << " distance_dim" << dim << " = fabs(point_positions_block"
+                         << block << "[" << dim << "] - "
+                         << "positions_local_dim" << dim << "[i]);" << std::endl;
+            // Calculate first integral (level_point < level_local)
+            sourceStream << this->indent[2] << "sum = 1.0 - distance_dim" << dim
+                         << " * point_hinverses_block"
+                         << block << "[" << dim << "]; " << std::endl;
+            sourceStream << this->indent[2] << "sum *= hs_local_dim" << dim << "[i]; " << std::endl;
+            sourceStream << this->indent[2] << "sum = max(sum, 0.0); " << std::endl;
+            // Calculate second integral (level_point > level_local)
+            sourceStream << this->indent[2] << "sum += max(point_hs_block" << block
+                         << "[" << dim << "] * (1.0 - hinverses_local_dim" << dim
+                         << "[i] * distance_dim" << dim << "), 0.0);" << std::endl;
+            // Update cell integral
+            sourceStream << this->indent[3] << "zellenintegral*=sum*select((double)1.0,"
+                         << " h, (long)(point_hinverses_block" << block
+                         << "[" << dim << "] == hinverses_local_dim" << dim << "[i]));"
+                         << std::endl;
+          }
+        }
         sourceStream << this->indent[2] << "gesamtint_block" << block
-               << " += zellenintegral*alpha_local[i];" << std::endl;
+                     << " += zellenintegral*alpha_local[i];" << std::endl;
       } else {
         sourceStream << calculate_matrix_entry(block, dimensions) << std::endl;
       }
