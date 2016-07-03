@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-
+/*
 /// Base class for kNN graph operations with MPI
 class OperationGraphMethodMPI : public MPIOperation {
  private:
@@ -90,7 +90,7 @@ class OperationGraphMethodMPI : public MPIOperation {
  public:
   virtual ~OperationGraphMethodMPI(void) {
   }
-};
+  };*/
 }  // namespace clusteringmpi
 }  // namespace datadriven
 }  // namespace sgpp

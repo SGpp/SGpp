@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-
+/*
 /// MPI operation for creating right hand side clustering vector
 class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
@@ -99,7 +99,7 @@ class OperationRhsMPI : public OperationGridMethod, public OperationGraphMethodM
   };
 };
 
-
+*/
 }  // namespace clusteringmpi
 }  // namespace datadriven
 }  // namespace sgpp

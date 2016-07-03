@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-
+/*
 class OperationCreateGraphMPI : public OperationGraphMethodMPI {
  public:
   static MPISlaveOperation* create_slave(base::OperationConfiguration conf) {
@@ -95,7 +95,7 @@ class OperationCreateGraphMPI : public OperationGraphMethodMPI {
     }
   };
 };
-
+*/
 }  // namespace clusteringmpi
 }  // namespace datadriven
 }  // namespace sgpp

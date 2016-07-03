@@ -16,7 +16,7 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
-class OperationDensityMPI : public OperationGridMethod, public base::OperationMatrix {
+/*class OperationDensityMPI : public OperationGridMethod, public base::OperationMatrix {
  public:
   OperationDensityMPI(base::OperationConfiguration conf, base::Grid& grid,
                       double lambda, int packagesize) :
@@ -129,7 +129,7 @@ class OperationDensityMPI : public OperationGridMethod, public base::OperationMa
       delete [] alpha;
     }
   };
-};
+  };*/
 
 
 }  // namespace clusteringmpi
