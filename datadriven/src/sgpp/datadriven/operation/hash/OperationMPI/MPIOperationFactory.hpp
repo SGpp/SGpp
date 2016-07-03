@@ -13,21 +13,22 @@ namespace datadriven {
 namespace clusteringmpi {
 
 
-MPISlaveOperation* create_mpi_operation(base::OperationConfiguration conf, char *classname) {
+MPIWorkerBase* create_mpi_operation(int masternode,
+                                        base::OperationConfiguration conf, char *classname) {
   std::cout << classname << std::endl;
-  if (std::strcmp(classname, "OperationCreateGraphSlave")
+  /*if (std::strcmp(classname, "OperationCreateGraphSlave")
       == 0)  {
     return OperationCreateGraphMPI::create_slave(conf);
   }
   if (std::strcmp(classname, "OperationRhsSlave") == 0)  {
     return OperationRhsMPI::create_slave(conf);
-  }
-  if (std::strcmp(classname, "OperationDensitySlave") == 0)  {
-    return OperationDensityMPI::create_slave(conf);
-  }
-  if (std::strcmp(classname, "OperationCreatePrunedGraphSlave") == 0)  {
+    }*/
+  /*if (std::strcmp(classname, "OperationDensitySlave") == 0)  {
+    return OperationDensityMPI::create_slave(masternode, conf);
+    }*/
+  /*if (std::strcmp(classname, "OperationCreatePrunedGraphSlave") == 0)  {
     return OperationCreatePrunedGraph::create_slave(conf);
-  }
+    }*/
   return NULL;
 }
 

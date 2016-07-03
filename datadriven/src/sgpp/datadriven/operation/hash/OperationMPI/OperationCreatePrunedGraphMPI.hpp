@@ -18,7 +18,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class OperationCreatePrunedGraph : public OperationGridMethod, public OperationGraphMethodMPI {
+/*class OperationCreatePrunedGraph : public OperationGridMethod, public OperationGraphMethodMPI {
  public:
   OperationCreatePrunedGraph(base::OperationConfiguration conf, base::Grid& grid,
                              base::DataVector &alpha, base::DataMatrix &data,
@@ -136,7 +136,7 @@ class OperationCreatePrunedGraph : public OperationGridMethod, public OperationG
     }
   };
 };
-
+*/
 }  // namespace clusteringmpi
 }  // namespace datadriven
 }  // namespace sgpp

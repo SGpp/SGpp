@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
 
   // Loading dataset
-  std::string filename = "dataset2_dim2.arff";
+  /*  std::string filename = "dataset2_dim2.arff";
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
     alpha[i] = alpha[i]*1.0/(max-min);
-
+*/
   // Create and prune knn graph
   /*sgpp::datadriven::clusteringmpi::OperationCreatePrunedGraph prune_op(*grid, alpha,  dataset, 12);
   std::vector<int> pruned_graph = prune_op.createPrunedGraph(0.7);

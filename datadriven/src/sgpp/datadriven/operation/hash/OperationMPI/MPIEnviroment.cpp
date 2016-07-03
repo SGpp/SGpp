@@ -30,11 +30,13 @@ void MPIEnviroment::slave_mainloop(void) {
     if (verbose) {
       std::cout << "Node " << rank << ": Started slave mainloop" << std::endl;
     }
-    std::vector<MPISlaveOperation*> slave_ops;
+    std::vector<MPIWorkerBase*> slave_ops;
     do {
       int messagesize = 0;
-      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+      int message_source = -1;
+      MPI_Probe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &stat);
       MPI_Get_count(&stat, MPI_INT, &messagesize);
+      message_source = stat.MPI_SOURCE;
       int *message = new int[messagesize];
       MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
                MPI_COMM_WORLD, &stat);
@@ -51,7 +53,6 @@ void MPIEnviroment::slave_mainloop(void) {
         delete [] message;
         break;
       } else if (message[0] == 1) {
-
         // Get serialized configuration and deserialize
         MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
         MPI_Get_count(&stat, MPI_CHAR, &messagesize);
@@ -67,7 +68,7 @@ void MPIEnviroment::slave_mainloop(void) {
         char *classname = new char[messagesize];
         MPI_Recv(classname, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
                  MPI_COMM_WORLD, &stat);
-        slave_ops.push_back(create_mpi_operation(conf, classname));
+        slave_ops.push_back(create_mpi_operation(message_source, conf, classname));
         if (verbose) {
           std::cout << "Node " << rank << ": Created slave operation \""
                     << classname << "\"" << std::endl;

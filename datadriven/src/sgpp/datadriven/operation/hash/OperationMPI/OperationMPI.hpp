@@ -17,23 +17,37 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class ArchitecturCommunicator {
- private:
-  MPI_Comm &communicator;
+class NodeCommunicator {
+ protected:
+  MPI_Comm communicator;
+  int worker_count;
   base::OperationConfiguration &configuration;
- public:
-  void spawn_workers(std::string workerOperation);
-  void release_workers(void);
 
-  ArchitecturCommunicator(base::OperationConfiguration);
+  int count_slaves(json::Node &currentslave);
+ public:
+  void spawn_workers(std::string &workerOperation);
+  void start_workers(int object_index);
+  void release_workers(int object_index);
+
+  MPI_Comm& get_communicator(void) {return communicator;}
+  int get_workercount(void) {return worker_count;}
+  NodeCommunicator(int masternode, base::OperationConfiguration &configuration);
 };
 
 /// Base class for all MPI slave node operations
-class MPISlaveOperation {
+class MPIWorkerBase {
+ protected:
+  base::OperationConfiguration configuration;
+  NodeCommunicator *node_comm;
+
+  bool verbose;
+  bool opencl_node;
+
  public:
-  MPISlaveOperation(void);
-  explicit MPISlaveOperation(base::OperationConfiguration conf);
-  virtual ~MPISlaveOperation();
+  MPIWorkerBase(void);
+  explicit MPIWorkerBase(int masternode, std::string &operationName,
+                         base::OperationConfiguration conf);
+  virtual ~MPIWorkerBase();
 
   virtual void slave_code(void) = 0;
 };
@@ -45,15 +59,13 @@ class MPIOperation {
   int object_index;
   bool verbose;
 
-  base::OperationConfiguration conf;
-  MPI_Group slave_group;
-  MPI_Comm slave_comm;
-  size_t slave_count;
+ protected:
+  base::OperationConfiguration configuration;
+  NodeCommunicator *node_comm;
 
-  int count_slaves(json::Node &currentslave);
  public:
   /// Constructor - creates all slave operations of the given name
-  explicit MPIOperation(base::OperationConfiguration &conf, std::string slave_class_name);
+  MPIOperation(base::OperationConfiguration &conf, std::string &slave_class_name);
   /// Constructor - does not create any slave operations
   MPIOperation();
   virtual ~MPIOperation(void);
