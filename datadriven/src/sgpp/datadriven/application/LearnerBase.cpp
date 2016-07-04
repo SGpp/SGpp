@@ -293,7 +293,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
         }
       }
 
-   /*   if (isRegression) {
+      if (isRegression) {
         if ((i > 0) && (oldAcc <= acc)) {
           if (isVerbose) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
@@ -305,7 +305,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
 
           break;
         }
-      }*/
+      }
       oldAcc = acc;
     }
   }
