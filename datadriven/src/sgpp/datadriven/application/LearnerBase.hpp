@@ -142,6 +142,9 @@ class LearnerBase {
    * @param testAccDuringAdapt set to true if the training accuracy should be
    * determined in evert refinement step
    * @param lambdaRegularization regularization parameter lambda
+   * @param testDataset the test dataset (for accuracy output, nullptr if no output is wished)
+   * @param testClasses classes corresponding to the testing dataset (for accuracy output, nullptr
+   * if no output is wished)
    */
   virtual LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
                               const sgpp::base::RegularGridConfiguration& GridConfig,
