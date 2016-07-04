@@ -60,6 +60,9 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
   void predict(sgpp::base::DataMatrix& testDataset,
                sgpp::base::DataVector& classesComputed) override;
 
+  void multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
+                     sgpp::base::DataVector& result) override;
+
   double testRegular(const sgpp::base::RegularGridConfiguration& GridConfig,
                      sgpp::base::DataMatrix& testDataset);
 
