@@ -67,6 +67,16 @@ void LearnerLeastSquaresIdentity::predict(sgpp::base::DataMatrix& testDataset,
       ->mult(*alpha, classesComputed);
 }
 
+void LearnerLeastSquaresIdentity::multTranspose(sgpp::base::DataMatrix& dataset,
+                                                sgpp::base::DataVector& multiplier,
+                                                sgpp::base::DataVector& result) {
+  result.resize(grid->getSize());
+
+  sgpp::op_factory::createOperationMultipleEval(*(this->grid), dataset,
+                                                this->implementationConfiguration)
+      ->mult(multiplier, result);
+}
+
 double LearnerLeastSquaresIdentity::testRegular(
     const sgpp::base::RegularGridConfiguration& GridConfig, sgpp::base::DataMatrix& testDataset) {
   InitializeGrid(GridConfig);
