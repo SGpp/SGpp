@@ -57,7 +57,7 @@ namespace datadriven {
     }
     double score = static_cast<double>(accum);
     double levelSum = storage.getPoint(seq).getLevelSum();
-    double levelW = pow(2, -levelSum);
+    double levelW = pow(2.0, -levelSum);
     if (level_penalize) {
       score *= levelW;
     }
@@ -142,7 +142,7 @@ namespace datadriven {
     for (size_t d = 0; d < point.getSize(); d++) {
       double coord = gp.getStandardCoordinate(d);
       size_t level = gp.getLevel(d);
-      double step = 1.0 / pow(2, static_cast<double>(level));
+      double step = 1.0 / pow(2.0, static_cast<double>(level));
       double lower = coord - step;
       double upper = coord + step;
       if (point.get(d) < lower || point.get(d) > upper) {

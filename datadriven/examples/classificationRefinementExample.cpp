@@ -71,14 +71,14 @@ int main() {
    * -1 -> 0 and 1 -> 1
    */
   for (size_t i = 0; i < targetTrain.getSize(); i++) {
-    if (targetTrain.get(i) < 0) {
+    if (targetTrain.get(i) < 0.0) {
       targetTrain.set(i, 0.0);
     } else {
       targetTrain.set(i, 1.0);
     }
   }
   for (size_t i = 0; i < targetTest.getSize(); i++) {
-    if (targetTest.get(i) < 0) {
+    if (targetTest.get(i) < 0.0) {
       targetTest.set(i, 0.0);
     } else {
       targetTest.set(i, 1.0);
@@ -90,8 +90,8 @@ int main() {
   /**
    * Split Training data according to class
    */
-  sgpp::base::DataMatrix dataCl1(0, dataTrain.getNcols());
-  sgpp::base::DataMatrix dataCl2(0, dataTrain.getNcols());
+  sgpp::base::DataMatrix dataCl1(0.0, dataTrain.getNcols());
+  sgpp::base::DataMatrix dataCl2(0.0, dataTrain.getNcols());
   sgpp::base::DataVector row(dataTrain.getNcols());
   for (size_t i = 0; i < dataTrain.getNrows(); i++) {
     dataTrain.getRow(i, row);
@@ -318,8 +318,8 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   // Format and return the classification percentages
   std::stringstream ss;
   for (size_t i = 0; i < grids.size(); i++) {
-    double ce = (100 * (1 - (static_cast<double>(classErrorCounts.at(i)) /
-                             classCounts.at(i))));
+    double ce = (100.0 * (1.0 - (static_cast<double>(classErrorCounts.at(i)) /
+                                 classCounts.at(i))));
     ss << std::fixed << std::setprecision(2) << ce;
     if (i < grids.size() - 1) {
       ss << "  ";
@@ -327,8 +327,8 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   }
   std::stringstream ss2;
   ss2 << std::fixed << std::setprecision(3);
-  ss2 << (100 * (1 - (static_cast<double>(totalCount) /
-                      static_cast<double>(testData.getNrows()))));
+  ss2 << (100.0 * (1.0 - (static_cast<double>(totalCount) /
+                          static_cast<double>(testData.getNrows()))));
   std::vector<std::string> result;
   result.push_back(ss.str());
   result.push_back(ss2.str());

@@ -42,7 +42,7 @@ namespace datadriven {
     base::HashGridPoint& gp = storage.getPoint(seq);
     std::vector<double> seqEvals = getEvalVector(current_grid_index, seq);
     double levelSum = gp.getLevelSum();
-    double levelW = pow(2, -levelSum);
+    double levelW = pow(2.0, -levelSum);
 
     // Find the geometric neighbors
     base::HashGridIterator iter(storage);
@@ -73,7 +73,7 @@ namespace datadriven {
         neighSeq.push_back(storage.getSequenceNumber(down));
       } else {
         // Check if right-most grid point on level, which has no right neigh
-        if (gp.getIndex(d) < pow(2, gp.getLevel(d)) - 1) {
+        if (gp.getIndex(d) < pow(2.0, gp.getLevel(d)) - 1) {
           base::HashGridPoint gp_c = base::HashGridPoint(gp);
           base::HashGridPoint up = base::HashGridPoint(gp);
           goUp(gp_c, up, d, false);
