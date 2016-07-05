@@ -42,7 +42,7 @@ namespace datadriven {
   GridPointBasedRefinementFunctor::operator()(base::GridStorage& storage,
                                               size_t seq) const {
     double levelSum = storage.getPoint(seq).getLevelSum();
-    double levelW = pow(2, -levelSum);
+    double levelW = pow(2.0, -levelSum);
     double maxScore = 0.0;
 
     // Evaluations of all grids at (param) seq
