@@ -93,19 +93,41 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
   int sgn(double d) const;
 
   // Utility for finding geometric neighbors
+
+  /**
+   * Used for leaf grid points. Goes up the tree in dir left
+   * until the current grid point is not left/right child of the parent
+   * grid point.
+   * Modifies both gp and up. Result in up.
+   */
   void goUp(base::HashGridPoint& gp, base::HashGridPoint& up, size_t d,
             bool left) const;
+
+
+  /**
+   * Used for non-leaf grid points. Decends the tree in dir left
+   * until a leaf is reached.
+   * Modifies both gp and down. Result in down.
+   */
   void goDown(base::HashGridPoint& gp,
               base::HashGridPoint& down,
               size_t d,
               bool left) const;
-  bool hasChild(base::HashGridPoint& gp, size_t d, bool left) const;
-  bool isLeftChild(base::HashGridPoint& gp, size_t d) const;
-  void getChild(base::HashGridPoint& gp, base::HashGridPoint& child,
-                size_t d,
-                bool left) const;
-  void getParent(base::HashGridPoint& gp, base::HashGridPoint& par,
-                 size_t d) const;
+
+  bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
+  bool isLeftChild(const base::HashGridPoint& gp, size_t d) const;
+
+  /**
+   * @param child gets set to the left/right child in dim d of gp
+   */
+  void getChild(const base::HashGridPoint& gp, size_t d, bool left,
+                base::HashGridPoint& child) const;
+
+  /**
+   * @param par gets set to the parent in dim d of gp
+   */
+  void getParent(const base::HashGridPoint& gp,
+                 size_t d, base::HashGridPoint& par) const;
 };
 }  // namespace datadriven
 }  // namespace sgpp

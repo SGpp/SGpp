@@ -27,7 +27,7 @@ namespace datadriven {
                                   bool level_penalize,
                                   bool pre_compute,
                                   double thresh) :
-    grids(grids), alphas(alphas), current_grid_index(-1),
+    grids(grids), alphas(alphas), current_grid_index(0),
     refinements_num(r_num), threshold(thresh),
     level_penalize(level_penalize),
     pre_compute(pre_compute),
@@ -43,7 +43,7 @@ namespace datadriven {
                                               size_t seq) const {
     double levelSum = storage.getPoint(seq).getLevelSum();
     double levelW = pow(2, -levelSum);
-    double maxScore = 0;
+    double maxScore = 0.0;
 
     // Evaluations of all grids at (param) seq
     std::vector<double> gridEvals;
@@ -87,7 +87,7 @@ namespace datadriven {
   void GridPointBasedRefinementFunctor::preComputeEvaluations() {
     base::DataVector p(grids.at(0)->getDimension());
     std::string key = "";
-    double v = 0;
+    double v = 0.0;
     // Evaluated at (!) grid with index i and store in the i-th map
     // Here grid points are not only evaluated at their own grid but at
     // all grids

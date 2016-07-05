@@ -22,7 +22,7 @@ namespace datadriven {
                                 size_t r_num,
                                 bool level_penalize,
                                 double thresh) :
-    grids(g), alphas(a), current_grid_index(-1),
+    grids(g), alphas(a), current_grid_index(0),
     level_penalize(level_penalize) {
     for (size_t i = 0; i < grids.size(); i++) {
       spFunctors.push_back(base::SurplusRefinementFunctor(*alphas.at(i),
