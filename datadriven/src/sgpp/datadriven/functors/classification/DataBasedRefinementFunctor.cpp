@@ -29,11 +29,11 @@ namespace datadriven {
                              double thresh) :
     grids(grids), alphas(alphas), evals(0, 0),
     data(data), targets(targets), h(grids.size()),
-    means(), coeff_a(coeff_a), current_grid_index(-1),
+    means(), coeff_a(coeff_a), current_grid_index(0),
     refinements_num(refinements_num),
     threshold(thresh), level_penalize(levelPen) {
     // Compute H if data was provided
-    if (data != 0 && targets != 0) {
+    if (data != nullptr && targets != nullptr) {
       computeH();
     }
     // Default coeff_a = 1.0
@@ -121,7 +121,7 @@ namespace datadriven {
   void DataBasedRefinementFunctor::computeHkl(base::DataMatrix& inters,
                                               size_t cl_ind1,
                                               size_t cl_ind2) {
-    double val_1 = 0; double val_2 = 0;
+    double val_1 = 0.0; double val_2 = 0.0;
     base::DataVector p(data->getNcols());
     for (size_t i = 0; i < evals.getNrows(); i++) {
       val_1 = evals.get(i, cl_ind1);

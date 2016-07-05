@@ -134,7 +134,7 @@ int main() {
   size_t numRefinements = 3;
   bool levelPenalize = false;  // Multiplies penalzing term for fine levels
   bool preCompute = true;      // Precomputes and caches evals for zrcr & grid
-  sgpp::datadriven::MultiGridRefinementFunctor* fun = 0;
+  sgpp::datadriven::MultiGridRefinementFunctor* fun = nullptr;
 
   // Surplus refinement
   sgpp::datadriven::MultiSurplusRefinementFunctor funSrpl(grids, alphas,
@@ -273,8 +273,8 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                                           std::vector<sgpp::base::DataVector*> alphas,
                                           sgpp::base::DataMatrix& testData,
                                           sgpp::base::DataVector& testLabel) {
-  double best_eval = 0;
-  double eval = 0;
+  double best_eval = 0.0;
+  double eval = 0.0;
   sgpp::base::DataVector p(testData.getNcols());
   sgpp::base::DataVector indices(testData.getNrows());
   sgpp::base::DataVector evals(testData.getNrows());
