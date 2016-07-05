@@ -146,6 +146,24 @@ def parents(grid, gp):
             ans.append((d, ps))
     return ans
 
+def getGridPointsOnBoundary(level, index):
+    # find left boundary
+    left = None
+    value = (index - 1) & (index - 1)
+    if value > 0:
+        n = int(np.log2(value))
+        if level - n > 0:
+            left = (level - n, (index - 1) >> n)
+    # find right boundary
+    right = None
+    value = (index + 1) & (index + 1)
+    if value > 0:
+        n = int(np.log2(value))
+        if level - n > 0:
+            right = (level - n, (index + 1) >> n)
+
+    return (left, right)
+
 
 def getHierarchicalAncestors(grid, gp):
     ans = []
@@ -160,16 +178,14 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
-def isHierarchicalAncestorDimx(grid, gpi, gpj, idim):
-    li, lj = gpi.getLevel(idim), gpj.getLevel(idim)
+def isHierarchicalAncestorDimx(li, ii, lj, ij):
     if lj < li:
         return False
     else:
-        ii, ij = gpi.getIndex(idim), gpj.getIndex(idim)
         return ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
 
 
-def isHierarchicalAncestor(grid, gpi, gpj):
+def isHierarchicalAncestor(gpi, gpj):
     if gpi == gpj:
         return False
     else:
@@ -177,7 +193,26 @@ def isHierarchicalAncestor(grid, gpi, gpj):
         numDims = gpi.getDimension()
         isAncestor = True
         while isAncestor and idim < numDims:
-            isAncestor &= isHierarchicalAncestorDimx(grid, gpi, gpj, idim)
+            isAncestor &= isHierarchicalAncestorDimx(gpi.getLevel(idim),
+                                                     gpi.getIndex(idim),
+                                                     gpj.getLevel(idim),
+                                                     gpj.getIndex(idim))
+            idim += 1
+        return isAncestor
+
+
+def isHierarchicalAncestorByLevelIndex((leveli, indexi), (levelj, indexj)):
+    if np.all(leveli == levelj) and np.all(indexi == indexj):
+        return False
+    else:
+        idim = 0
+        numDims = len(leveli)
+        isAncestor = True
+        while isAncestor and idim < numDims:
+            isAncestor &= isHierarchicalAncestorDimx(leveli[idim],
+                                                     indexi[idim],
+                                                     levelj[idim],
+                                                     indexj[idim])
             idim += 1
         return isAncestor
 
@@ -196,30 +231,35 @@ def getNonExistingHierarchicalAncestors(grid, gp):
     return ans
 
 
-def haveOverlappingSupportDimx(gpi, gpj, idim):
-    # get level index
-    lid, iid = gpi.getLevel(idim), gpi.getIndex(idim)
-    ljd, ijd = gpj.getLevel(idim), gpj.getIndex(idim)
+def haveOverlappingSupportDimx(lid, iid, ljd, ijd):
+    if lid == ljd:
+        return iid == ijd
 
-    if lid == ljd and iid == ijd:
-        return True
-
-    # check if they have overlapping support
-    xlowi, xhighi = getBoundsOfSupport(lid, iid)
-    xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-    xlow = max(xlowi, xlowj)
-    xhigh = min(xhighi, xhighj)
-
-    # different level but not ancestors
-    return xlow < xhigh
+    return isHierarchicalAncestorDimx(lid, iid, ljd, ijd) or \
+         isHierarchicalAncestorDimx(ljd, ijd, lid, iid)
 
 
 def haveOverlappingSupport(gpi, gpj):
     idim = 0
     numDims = gpi.getDimension()
 
-    while idim < numDims and haveOverlappingSupportDimx(gpi, gpj, idim):
+    while idim < numDims and haveOverlappingSupportDimx(gpi.getLevel(idim),
+                                                        gpi.getIndex(idim),
+                                                        gpj.getLevel(idim),
+                                                        gpj.getIndex(idim)):
+        idim += 1
+
+    # check whether the supports are overlapping
+    # in all dimensions
+    return idim == numDims
+
+
+def haveOverlappingSupportByLevelIndex((leveli, indexi), (levelj, indexj)):
+    idim = 0
+    numDims = len(leveli)
+
+    while idim < numDims and haveOverlappingSupportDimx(leveli[idim], indexi[idim],
+                                                        levelj[idim], indexj[idim]):
         idim += 1
 
     # check whether the supports are overlapping

@@ -44,8 +44,10 @@ def reprVal(attrValue):
         text = attrValue.serialize()
         # hack to make the text json compatible
         return reprString(text.replace('\n', '__'))
+    elif attrValue is None:
+        return str(attrValue)
     else:
-        raise AttributeError('Unknown type "%s" of "%s"' %
+        raise AttributeError('jsonLib: reprVal - Unknown type "%s" of "%s"' %
                              (type(attrValue), attrValue))
 
 

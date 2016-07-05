@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
     getLevel, getIndex, getLevelIndex, getHierarchicalAncestors, parent,\
-    isHierarchicalAncestor, haveOverlappingSupport, haveOverlappingSupportDimx, isHierarchicalAncestorDimx
+    isHierarchicalAncestor, haveOverlappingSupport, haveOverlappingSupportDimx, isHierarchicalAncestorDimx, \
+    getGridPointsOnBoundary, haveOverlappingSupportByLevelIndex, isHierarchicalAncestorByLevelIndex
 from itertools import product, combinations, permutations
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotGrid2d
 import bisect
@@ -50,8 +51,8 @@ class LocalFullGrid(object):
         # 1. they need to have a hierarchical dependency gpi <= gpj
         # 2. the local levels of gpi in the overlapping region
         #    must be at least the same as the ones of gpj in the same region 
-        return (self.gp == gpj.gp or isHierarchicalAncestor(self.grid, self.gp, gpj.gp)) and \
-            np.all(gpj.level + gpj.fullGridLevels <= self.level + self.fullGridLevels)
+        return (self.gp == gpj.gp or isHierarchicalAncestorByLevelIndex((self.level, self.index), (gpj.level, gpj.index))) and \
+                np.all(gpj.level + gpj.fullGridLevels <= self.level + self.fullGridLevels)
 
 
     def containsDimx(self, gpj, jdim):
@@ -60,12 +61,13 @@ class LocalFullGrid(object):
         # 2. the local levels of gpi in the overlapping region
         #    must be at least the same as the ones of gpj in the same region
 
-        return (self.gp == gpj.gp or isHierarchicalAncestorDimx(self.grid, self.gp, gpj.gp, jdim)) and \
+        return (self.gp == gpj.gp or isHierarchicalAncestorDimx(self.gp, gpj.gp, jdim)) and \
             gpj.level[jdim] + gpj.fullGridLevels[jdim] <= self.level[jdim] + self.fullGridLevels[jdim]
 
     
     def overlap(self, gpj):
-        if haveOverlappingSupport(self.gp, gpj.gp):
+        if haveOverlappingSupportByLevelIndex((self.level, self.index),
+                                              (gpj.level, gpj.index)):
             # compute outer intersection
             levelOuter = np.vstack((self.level, gpj.level)).max(axis=0)
             return np.all(levelOuter <= self.level + self.fullGridLevels - 1) and \
@@ -75,7 +77,8 @@ class LocalFullGrid(object):
 
 
     def overlapDimx(self, gpj, jdim):
-        if haveOverlappingSupportDimx(self.gp, gpj.gp, jdim):
+        if haveOverlappingSupportDimx(self.level[jdim], self.index[jdim],
+                                      gpj.level[jdim], gpj.index[jdim]):
             # compute outer intersection
             levelOuter = max(self.level[jdim], gpj.level[jdim])
             return levelOuter <= self.level[jdim] + self.fullGridLevels[jdim] - 1 and \
@@ -248,7 +251,7 @@ class LocalFullGridCandidates(CandidateSet):
         # find all possible intersections of grid points
         comparisonCosts = 0
         for j, gpj in gpsj.items():
-            if not isHierarchicalAncestor(grid, gpi, gpj):
+            if not isHierarchicalAncestor(gpi, gpj):
                 comparisonCosts += 1
                 if haveOverlappingSupport(gpi, gpj):
                     levelOuter, indexOuter = self.findOuterIntersection(gpi, gpj)
@@ -260,8 +263,8 @@ class LocalFullGridCandidates(CandidateSet):
                         # TODO: this might not be correct
                         # -> it does work for a few test cases but this might
                         #    be a coincidence
-                        if not gs.isContaining(gpOuterIntersection):
-                            overlap[levelOuter, indexOuter] = gpi, gpj, gpOuterIntersection
+#                         if not gs.isContaining(gpOuterIntersection):
+                        overlap[levelOuter, indexOuter] = gpi, gpj, gpOuterIntersection
 
         return comparisonCosts
 
@@ -799,24 +802,6 @@ class LocalFullGridCandidates(CandidateSet):
 
         return diffLevels
 
-    def getGridPointsOnBoundary(self, level, index):
-        # find left boundary
-        left = None
-        value = (index - 1) & (index - 1)
-        if value > 0:
-            n = int(np.log2(value))
-            if level - n > 0:
-                left = (level - n, (index - 1) >> n)
-        # find right boundary
-        right= None
-        value = (index + 1) & (index + 1)
-        if value > 0:
-            n = int(np.log2(value))
-            if level - n > 0:
-                right = (level - n, (index + 1) >> n)
-        
-        return (left, right)
-                
 
 #     #@profile
     def getLocalFullGridLevel(self, levels, indices, grid, gpk=None, gpl=None):
@@ -844,9 +829,9 @@ class LocalFullGridCandidates(CandidateSet):
 
         for idim, jdim in combinations(range(self.numDims), 2):
             # find neighbors in direction idim
-            iright, ileft = self.getGridPointsOnBoundary(levels[idim], indices[idim])
+            iright, ileft = getGridPointsOnBoundary(levels[idim], indices[idim])
             # find neighbors in direction idim
-            jright, jleft = self.getGridPointsOnBoundary(levels[jdim], indices[jdim])
+            jright, jleft = getGridPointsOnBoundary(levels[jdim], indices[jdim])
 
             for left, right in product((iright, ileft), (jright, jleft)):
                 if left is not None and right is not None:
@@ -1006,7 +991,6 @@ class LocalFullGridCandidates(CandidateSet):
                 print "# coarsed intersection: predicted costs = %i" % (len(sortedOverlap) * len(sortedOverlap),),
 
             sortedCoarsedOverlap, newlyPredictedLocalCosts, searchCosts = self.coarseIntersections(grid, sortedOverlap)
-
             if self.verbose:
                 print ">= %i real costs" % searchCosts
                 print "                        %i/%i" % (len(sortedCoarsedOverlap),

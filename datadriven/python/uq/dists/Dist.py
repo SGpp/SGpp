@@ -200,21 +200,19 @@ class Dist(object):
     @classmethod
     def fromJson(cls, jsonObject):
         import pysgpp.extensions.datadriven.uq.dists as dists
-        if jsonObject['module'] == 'bin.uq.dists.J':
+        if 'uq.dists.J' in jsonObject['module']:
             return dists.J.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.Corr':
-            return dists.Corr.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.Uniform':
+        elif 'uq.dists.Uniform' in jsonObject['module']:
             return dists.Uniform.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.TNormal':
+        elif 'uq.dists.TNormal' in jsonObject['module']:
             return dists.TNormal.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.Normal':
+        elif 'uq.dists.Normal' in jsonObject['module']:
             return dists.Normal.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.Lognormal':
+        elif 'uq.dists.Lognormal' in jsonObject['module']:
             return dists.Lognormal.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.Beta':
+        elif 'uq.dists.Beta' in jsonObject['module']:
             return dists.Beta.fromJson(jsonObject)
-        elif jsonObject['module'] == 'bin.uq.dists.MultivariateNormal':
+        elif 'uq.dists.MultivariateNormal' in jsonObject['module']:
             return dists.MultivariateNormal.fromJson(jsonObject)
         else:
             raise TypeError('Unknown distribution "%s" => Please register \
