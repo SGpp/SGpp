@@ -235,8 +235,10 @@ def haveOverlappingSupportDimx(lid, iid, ljd, ijd):
     if lid == ljd:
         return iid == ijd
 
-    return isHierarchicalAncestorDimx(lid, iid, ljd, ijd) or \
-         isHierarchicalAncestorDimx(ljd, ijd, lid, iid)
+    if lid < ljd:
+        return isHierarchicalAncestorDimx(lid, iid, ljd, ijd)
+    else:
+        return isHierarchicalAncestorDimx(ljd, ijd, lid, iid)
 
 
 def haveOverlappingSupport(gpi, gpj):
