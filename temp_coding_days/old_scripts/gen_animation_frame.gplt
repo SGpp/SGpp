@@ -1,3 +1,0 @@
-set terminal jpeg
-set output 'temp.jpg'
-plot 'solution.gnuplot' with lines,'start.plot' with lines

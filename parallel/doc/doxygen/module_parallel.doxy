@@ -1,7 +1,0 @@
-/**
-@page module_parallel Module sgpp::parallel
-
-- sophisticated parallelizations using GPUs (datadriven)
-- MPI parallelization of PDE solvers
-
-**/
