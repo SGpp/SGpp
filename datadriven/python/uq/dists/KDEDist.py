@@ -1,14 +1,17 @@
+import numpy as np
+
 from Dist import Dist
-from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
                     KernelType_GAUSSIAN,
                     createOperationRosenblattTransformationKDE,
-                    createOperationInverseRosenblattTransformationKDE)
-import numpy as np
-
+                    createOperationInverseRosenblattTransformationKDE,
+                    BandwidthOptimizationType_RULEOFTHUMB,
+                    KernelType_EPANECHNIKOV)
+from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from EstimatedDist import EstimatedDist
-from pysgpp.pysgpp_swig import BandwidthOptimizationType_RULEOFTHUMB, \
-    KernelType_EPANECHNIKOV
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_NONE
+
 
 
 class KDEDist(EstimatedDist):
@@ -20,15 +23,21 @@ class KDEDist(EstimatedDist):
                  trainData,
                  kde=None,
                  kernelType=KernelType_GAUSSIAN,
+                 bandwidhts=None,
                  bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
                  bounds=None):
         super(KDEDist, self).__init__(trainData, bounds)
 
         trainData_matrix = DataMatrix(self.trainData)
-        if kde is None:
-            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, bandwidthOptimizationType)
-        else:
+        if kde is not None:
             self.dist = kde
+        elif bandwidhts is not None:
+            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, BandwidthOptimizationType_NONE)
+            bandwidhts_vec = DataVector(bandwidhts)
+            self.dist.setBandwidths(bandwidhts_vec)
+        else:
+            # # just learn the kernel density
+            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, bandwidthOptimizationType)
 
 
     def pdf(self, x):
@@ -116,3 +125,68 @@ class KDEDist(EstimatedDist):
         else:
             ans = ans % "unknown kernel"
         return ans
+
+    def toJson(self):
+        """
+        Returns a string that represents the object
+
+        Arguments:
+
+        Return A string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+
+        for attrName, attrValue in [("_KDEDist__kernelType", str(self.dist.getKernel().getType())),
+                                    ("_KDEDist__bandwidths", self.getBandwidths()),
+                                    ("_KDEDist__trainData", self.trainData),
+                                    ("_KDEDist__bounds", self.bounds)]:
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        s = serializationString.rstrip(",\n")
+
+        return "{" + s + "}"
+
+    @classmethod
+    def fromJson(cls, jsonObject):
+        """
+        Restores the Beta object from the json object with its
+        attributes.
+
+        Arguments:
+        jsonObject -- json object
+
+        Return the restored UQSetting object
+        """
+        # restore surplusses
+        key = '_KDEDist__trainData'
+        if key in jsonObject:
+            trainData = np.array(jsonObject[key])
+        else:
+            raise AttributeError("KDEDist: fromJson - trainData is missing")
+
+        key = '_KDEDist__kernelType'
+        if key in jsonObject:
+            kernelType = jsonObject[key]
+            if kernelType == "0":
+                kernelType = KernelType_GAUSSIAN
+            elif kernelType == "1":
+                kernelType = KernelType_EPANECHNIKOV
+            else:
+                raise AttributeError("KDEDist: fromJson - kernel type unknown")
+        else:
+            raise AttributeError("KDEDist: fromJson - kernelType is missing")
+
+        key = '_KDEDist__bounds'
+        bounds = None
+        if key in jsonObject:
+            bounds = np.array(jsonObject[key])
+
+        key = '_KDEDist__bandwidths'
+        bandwidths = None
+        if key in jsonObject:
+            bandwidths = np.array(jsonObject[key])
+
+        return KDEDist(trainData, bounds=bounds, bandwidhts=bandwidths,
+                       kernelType=kernelType)
+

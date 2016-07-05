@@ -198,5 +198,7 @@ class J(Dist):
         if key in jsonObject:
             vals = jsonObject[key]
             dists = [Dist.fromJson(vals[key]) for key in sorted(vals.keys())]
+        else:
+            raise AttributeError("J: fromJson - the mandatoriy keyword '%s' does not exist" % key)
 
         return J(dists)

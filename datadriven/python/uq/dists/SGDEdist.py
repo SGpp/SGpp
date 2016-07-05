@@ -28,9 +28,10 @@ from pysgpp.extensions.datadriven.uq.operations.general import isMatrix
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 from pysgpp import createOperationFirstMoment, \
-    createOperationSecondMoment
-from pysgpp._pysgpp_swig import createOperationDensityMargTo1D, \
+    createOperationSecondMoment, \
+    createOperationDensityMargTo1D, \
     createOperationEval
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 
 class SGDEdist(EstimatedDist):
@@ -260,3 +261,64 @@ class SGDEdist(EstimatedDist):
 
     def __str__(self):
         return "SGDE"
+
+
+    def toJson(self):
+        """
+        Returns a string that represents the object
+
+        Arguments:
+
+        Return A string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+
+        for attrName, attrValue in [("_SGDEDist__grid", self.grid),
+                                    ("_SGDEDist__alpha", self.alpha),
+                                    ("_SGDEDist__config", self.config),
+                                    ("_SGDEDist__bounds", self.bounds)]:
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        s = serializationString.rstrip(",\n")
+
+        return "{" + s + "}"
+
+    @classmethod
+    def fromJson(cls, jsonObject):
+        """
+        Restores the Beta object from the json object with its
+        attributes.
+
+        Arguments:
+        jsonObject -- json object
+
+        Return the restored UQSetting object
+        """
+        # restore surplusses
+        key = '_SGDEDist__grid'
+        if key in jsonObject:
+            # undo the hack that made it json compatible
+            gridString = jsonObject[key].replace('__', '\n').encode('utf8')
+            # deserialize ...
+            grid = Grid.unserialize(gridString)
+        else:
+            raise AttributeError("SGDEDist: fromJson - grid is missing")
+
+        key = '_SGDEDist__alpha'
+        if key in jsonObject:
+            alpha = np.array(jsonObject[key])
+        else:
+            raise AttributeError("SGDEDist: fromJson - coefficients are missing")
+
+        key = '_SGDEDist__bounds'
+        bounds = None
+        if key in jsonObject:
+            bounds = np.array(jsonObject[key])
+
+        key = '_SGDEDist__config'
+        config = None
+        if key in jsonObject:
+            config = jsonObject[key]
+
+        return SGDEdist(grid, alpha, bounds=bounds, config=config)

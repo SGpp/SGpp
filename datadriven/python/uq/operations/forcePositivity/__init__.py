@@ -2,9 +2,11 @@ from operationMakePositive import OperationMakePositive
 from operationMakePositiveFast import OperationMakePositiveFast
 
 
-from meanOfParents import MeanOfParents
+from scaledMinOfParents import ScaledMinOfParents
 from interpolateFunction import InterpolateFunction
 from estimateDensity import EstimateDensityAlgorithm
 from interpolationAlgorithm import InterpolationAlgorithm
 from setGridPointsToZero import SetGridPointsToZero
 
+from localFullGridSearch import LocalFullGridCandidates
+from fullGridSearch import FullGridCandidates

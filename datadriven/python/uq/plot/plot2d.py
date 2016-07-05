@@ -4,6 +4,7 @@ from pysgpp import DataVector, DataMatrix
 import numpy as np
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
+from pysgpp.pysgpp_swig import DataVector
 
 
 def plotDensity2d(U, n=50, addContour=True):
@@ -101,8 +102,9 @@ def plotFunction2d(f, addContour=True, n=101,
     return
 
 
-def plotSG2d(grid, alpha, addContour=True, n=50,
-             show_negative=False, show_grid_points=False):
+def plotSG2d(grid, alpha, addContour=True, n=100,
+             show_negative=False, show_grid_points=False,
+             show_numbers=False):
     gs = grid.getStorage()
 
     gpxp = []
@@ -114,17 +116,23 @@ def plotSG2d(grid, alpha, addContour=True, n=50,
     gpxz = []
     gpyz = []
 
-
+    numbers = []
+    
+    p = DataVector(2)
     for i in xrange(gs.getSize()):
+        gs.getPoint(i).getStandardCoordinates(p)
+
         if alpha[i] > 1e-14:
-            gpxp.append(gs.getPoint(i).getStandardCoordinate(0))
-            gpyp.append(gs.getPoint(i).getStandardCoordinate(1))
+            gpxp.append(p[0])
+            gpyp.append(p[1])
         elif alpha[i] < -1e-14:
-            gpxn.append(gs.getPoint(i).getStandardCoordinate(0))
-            gpyn.append(gs.getPoint(i).getStandardCoordinate(1))
+            gpxn.append(p[0])
+            gpyn.append(p[1])
         else:
-            gpxz.append(gs.getPoint(i).getStandardCoordinate(0))
-            gpyz.append(gs.getPoint(i).getStandardCoordinate(1))
+            gpxz.append(p[0])
+            gpyz.append(p[1])
+        
+        numbers.append((i, p[0], p[1]))
 
     x = np.linspace(0, 1, n)
     y = np.linspace(0, 1, n)
@@ -167,6 +175,10 @@ def plotSG2d(grid, alpha, addContour=True, n=50,
         plt.plot(gpxn, gpyn, "v ", color="red")
         plt.plot(gpxz, gpyz, "o ", color="white")
 
+    if show_numbers:
+        for i, x, y in numbers:
+           plt.text(x, y, "%i" % i, color='yellow', fontsize=12)
+
     plt.jet()
     plt.colorbar()
 
@@ -177,11 +189,12 @@ def plotSG2d(grid, alpha, addContour=True, n=50,
     return res
 
 
-def plotGrid2d(grid, alpha=None):
+def plotGrid2d(grid, alpha=None, show_numbers=True):
     gs = grid.getStorage()
     gps = {'p': np.zeros([0, 2]),
            'n': np.zeros([0, 2])}
     p = DataVector(2)
+    numbers = []
     for i in xrange(gs.getSize()):
         gs.getPoint(i).getStandardCoordinates(p)
         if alpha is None or alpha[i] >= 0:
@@ -189,11 +202,17 @@ def plotGrid2d(grid, alpha=None):
         else:
             gps['n'] = np.vstack((gps['n'], p.array()))
 
+        numbers.append((i, p[0], p[1]))
+
     # plot the grid points
     plt.plot(gps['p'][:, 0], gps['p'][:, 1], "^ ", color='blue')
     plt.plot(gps['n'][:, 0], gps['n'][:, 1], "v ", color='red')
     plt.xlim(0, 1)
     plt.ylim(0, 1)
+
+    if show_numbers:
+        for i, x, y in numbers:
+           plt.text(x, y, "%i" % i, color='black', fontsize=12)
 
 
 def plotSamples2d(samples):

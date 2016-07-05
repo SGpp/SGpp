@@ -22,9 +22,8 @@ from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSea
 class OperationMakePositiveFast(object):
 
     def __init__(self, grid,
-                 candidateSetAlgorithm=None,
-                 interpolationAlgorithm=None,
-                 candidateSearchAlgorithm=None):
+                 candidateSearchAlgorithm=None,
+                 interpolationAlgorithm=None,):
         self.grid = grid
         self.numDims = grid.getStorage().getDimension()
         self.maxLevel = grid.getStorage().getMaxLevel()
@@ -112,16 +111,23 @@ class OperationMakePositiveFast(object):
         self.candidateSearchAlgorithm = algorithm
 
 
-    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None):
+    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None, independent=True):
         nodalValues = dehierarchize(grid, alpha)
+        if independent:
+            newAlpha = alpha[:]
+
         neg = []
         for i, yi in enumerate(nodalValues):
             if yi < 0:
                 nodalValues[i] = 0
+                if independent:
+                    newAlpha[i] -= yi
                 neg.append(i)
         if len(neg) > 0:
             alpha = hierarchize(grid, nodalValues)
 
+            if independent:
+                assert np.all(abs(newAlpha - alpha) < 1e-13)
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
@@ -292,7 +298,7 @@ class OperationMakePositiveFast(object):
             print
 
         iteration = 0
-        newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
+        newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, independent=False)
         newGs = newGrid.getStorage()
         numDims = newGs.getDimension()
         newGridPoints = []
@@ -332,7 +338,7 @@ class OperationMakePositiveFast(object):
                                                                                            newAlpha,
                                                                                            addedGridPoints)
                 else:
-                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
+                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints, independent=True)
                     
                 # update list of new grid points
                 newGridPoints += addedGridPoints
@@ -357,7 +363,8 @@ class OperationMakePositiveFast(object):
         neg = checkPositivity(coarsedGrid, coarsedAlpha)
 
         if len(neg) > 0:
-            raise AttributeError("the sparse grid function is not positive")
+            print "warning: the sparse grid function is not positive"
+#             raise AttributeError("the sparse grid function is not positive")
             # check at which grid points the function is negative
 #             for i, (yi, gp) in neg.items():
 #                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
