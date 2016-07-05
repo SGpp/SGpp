@@ -33,6 +33,8 @@ class IntersectionCandidates(CandidateSet):
 
             gpintersection.set(idim, level[idim], index[idim])
 
+
+    @profile
     def findIntersections(self, grid, gpsi):
         overlappingGridPoints = []
         costs = 0
@@ -48,10 +50,9 @@ class IntersectionCandidates(CandidateSet):
         intersections[0] = {}
         for i, gpi in enumerate(gpsi):
             intersections[0][gpi] = set()
-            for gpj in gpsi[(i + 1):]:
+            for gpj in gpsi[:i] + gpsi[(i + 1):]:
                 if haveOverlappingSupportByLevelIndex(gpi, gpj) and \
-                    not (isHierarchicalAncestorByLevelIndex(gpi, gpj) or \
-                         isHierarchicalAncestorByLevelIndex(gpj, gpi)):
+                    not (isHierarchicalAncestorByLevelIndex(gpj, gpi)):
                     intersections[0][gpi].add(gpj)
                 costs += 1
 
@@ -75,10 +76,9 @@ class IntersectionCandidates(CandidateSet):
                          jintersections = intersections[k - 2][gpj]
 
                     intersections[k - 1][gpk] = set()
-                    for gpl in iintersections | jintersections:
+                    for gpl in set.intersection(*[iintersections, jintersections]):
                         if haveOverlappingSupportByLevelIndex(gpk, gpl) and \
-                            not (isHierarchicalAncestorByLevelIndex(gpk, gpl) or \
-                                 isHierarchicalAncestorByLevelIndex(gpl, gpk)):
+                            not isHierarchicalAncestorByLevelIndex(gpl, gpk):
                             intersections[k - 1][gpk].add(gpl)
 
                     costs += 1
