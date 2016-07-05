@@ -120,8 +120,8 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
   /**
    * @param gp the grid point we want the child from
    * @param child gets set to the left/right child in dim d of gp
-   * @param specifies if left or right child is returned
-   * @param specifies the dimension of the child. All other dims are kept constant
+   * @param left specifies if left or right child is returned
+   * @param d specifies the dimension of the child. All other dims are kept constant
    */
   void getChild(const base::HashGridPoint& gp, size_t d, bool left,
                 base::HashGridPoint& child) const;
@@ -129,8 +129,7 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
   /**
    * @param gp the grid point we want the parent from
    * @param par gets set to the parent in dim d of gp
-   * @param specifies if left or right child is returned
-   * @param specifies the dimension of the child. All other dims are kept constant
+   * @param d specifies the dimension of the child. All other dims are kept constant
    */
   void getParent(const base::HashGridPoint& gp,
                  size_t d, base::HashGridPoint& par) const;
