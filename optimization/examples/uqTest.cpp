@@ -13,7 +13,7 @@ using sgpp::base::DataVector;
 using sgpp::base::BsplineGrid;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
-using sgpp::base::GridIndex;
+using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::OperationQuadrature;
 using sgpp::base::OperationQuadratureMC;
@@ -40,8 +40,8 @@ public:
     GridStorage& gridStorage = grid->getStorage();
     sgpp::base::DataVector alpha(gridStorage.getSize());
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      GridIndex* gp = gridStorage.get(i);
-      double eps = gp->getCoord(0);
+      GridPoint& gp = gridStorage.getPoint(i);
+      double eps = gp.getStandardCoordinate(0);
       alpha[i] = (x[0] - 0.1) * (x[0] - 0.1) * 2 * eps;
     }
     auto hierarch = sgpp::op_factory::createOperationMultipleHierarchisation(*grid);
@@ -164,14 +164,13 @@ void ew_varianz(){
 
   // std::cout << bsplineQuadrature(*grid, 0) << std::endl;
   DataVector alpha(gridStorage.getSize());
-  GridIndex* gp;
   double p[2];
 
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    gp = gridStorage.get(i);
-    p[0] = gp->getCoord(0);
-    p[1] = gp->getCoord(1);
+    GridPoint& gp = gridStorage.getPoint(i);
+    p[0] = gp.getStandardCoordinate(0);
+    p[1] = gp.getStandardCoordinate(1);
     alpha[i] = u(p[0], p[1]);
   }
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
@@ -204,24 +203,23 @@ void ew_varianz(){
   // auto hierarch = sgpp::op_factory::createOperationHierarchisation(*int_grid);
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    gp = gridStorage.get(i);
-    p[0] = gp->getCoord(0);
-    p[1] = gp->getCoord(1);
+    GridPoint& gp = gridStorage.getPoint(i);
+    p[0] = gp.getStandardCoordinate(0);
+    p[1] = gp.getStandardCoordinate(1);
     double prod_res = 1.0;
 
     for (size_t d = 0; d < 2; d++){
-      in = gp->getIndex(d);
-      le = gp->getLevel(d);
+      in = gp.getIndex(d);
+      le = gp.getLevel(d);
       double h = pow(2, -le);
       //quadrature
       double x = 0.0;
       double int_res = 0.0;
       double int_res_comp = 0.0;
 
-      GridIndex* gp_int;
       for (size_t j = 0; j < intStorage.getSize(); j++) {
-        gp_int = intStorage.get(j);
-        x = gp_int->getCoord(0);
+        GridPoint& gp_int = intStorage.getPoint(j);
+        x = gp_int.getStandardCoordinate(0);
         // alpha_int[j] = base.eval(le, in, x)*base.eval(le, in, x)*f_1d(d, x); // Varianz
         alpha_int[j] = base.eval(le, in, x)*f_1d(d, x); // Erwartungswert
       }
@@ -298,7 +296,7 @@ void optimize(){
                                         functionValues.getSize()));
 
     for (size_t t = 0; t < d; t++) {
-      x0[t] = gridStorage[x0Index]->getCoord(t);
+      x0[t] = gridStorage[x0Index].getStandardCoordinate(t);
     }
 
     fX0 = functionValues[x0Index];
@@ -326,10 +324,10 @@ void integrate(){
   GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector alpha(gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    GridIndex* gp = gridStorage.get(i);
+    GridPoint& gp = gridStorage.getPoint(i);
     DataVector x(2);
-    x[0] = gp->getCoord(0);
-    x[1] = gp->getCoord(1);
+    x[0] = gp.getStandardCoordinate(0);
+    x[1] = gp.getStandardCoordinate(1);
     alpha[i] = oscill_genz(2, x);
     // std::cout << alpha[i] << std::endl;
   }

@@ -32,9 +32,9 @@ def target_func(x):
     alpha = pysgpp.DataVector(gridStorage.getSize())
     hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
     for i in range(gridStorage.getSize()):
-        gp = gridStorage.get(i)
-        # x = (gp.getCoord(0), gp.getCoord(1))
-        y = gp.getCoord(0)
+        gp = gridStorage.getPoint(i)
+        # x = (gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
+        y = gp.getStandardCoordinate(0)
         # alpha[i] = oscill_genz(d, x)
         # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
         # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y
@@ -44,7 +44,7 @@ def target_func(x):
     
     # Quadratur mit f(x) multiplizieren 
     # for i in range(gridStorage.getSize()):
-        # gp = gridStorage.get(0)
+        # gp = gridStorage.getPoint(0)
         # alpha[i] = alpha[i] * f(gp.getCord(0))
     return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha)
     
@@ -52,7 +52,7 @@ def shcb(x):
     return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1) 
 def oscill_genz(d, x):
     u = 0.5
-    a = [2, 2]
+    a = [5, 5]
     return np.cos(2*np.pi*u+sum([a[i]*x[i] for i in range(d)]))
 
 def michalewicz(x):
@@ -134,7 +134,7 @@ def optimize():
         printLine()
         errors = []
         for N in N_vals: 
-            grid.getStorage().emptyStorage()
+            grid.getStorage().clear()
             gridGen = pysgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma)
 
             # #############################################################################
@@ -188,7 +188,7 @@ def optimize():
                     x0Index = i
 
             for t in range(d):
-                x0[t] = gridStorage.get(x0Index).getCoord(t)
+                x0[t] = gridStorage.getPoint(x0Index).getStandardCoordinate(t)
 
             ftX0 = ft.eval(x0)
 
@@ -216,7 +216,7 @@ def optimize():
     plt.show()
    
 def genz_error(sol):
-    a = (2,2)
+    a = (5,5)
     exact_sol = (np.cos(a[0] + a[1]) - np.cos(a[0]) - np.cos(a[1])+1)/(a[0]*a[1])
     return abs(exact_sol-sol)
 
@@ -232,7 +232,7 @@ def l2_error(d, f, f_sg):
     
 def integrate():
     d = 2
-    grids = (pysgpp.Grid.createLinearGrid(d), pysgpp.Grid.createPolyGrid(d,3), pysgpp.Grid.createBsplineGrid(d, 3), pysgpp.Grid.createBsplineBoundaryGrid(d, 3), pysgpp.Grid.createModBsplineGrid(d, 3)) # pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
+    grids = (pysgpp.Grid.createLinearGrid(d), pysgpp.Grid.createPolyGrid(d,3), pysgpp.Grid.createBsplineGrid(d, 3), pysgpp.Grid.createBsplineBoundaryGrid(d, 3), pysgpp.Grid.createModBsplineGrid(d, 3), pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
     for grid in grids:
         printLine()
         print gridToName(grid.getType())
@@ -246,15 +246,15 @@ def integrate():
         # solver = pysgpp.OptUMFPACK()
         num_gridPoints = []
         errors = []
-        for l in range(1,10):
-            grid.getStorage().emptyStorage()
+        for l in range(1,9):
+            grid.getStorage().clear()
             gridGen = grid.getGenerator().regular(l)
             gridStorage = grid.getStorage()
             alpha = pysgpp.DataVector(gridStorage.getSize())
             opeval = pysgpp.createOperationNaiveEval(grid)
             for i in range(gridStorage.getSize()):
-                gp = gridStorage.get(i)
-                x = (gp.getCoord(0), gp.getCoord(1))
+                gp = gridStorage.getPoint(i)
+                x = (gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
                 alpha[i] = oscill_genz(d,x)
                 # alpha[i] = target_func(x)
                 # alpha[i] = michalewicz(x)

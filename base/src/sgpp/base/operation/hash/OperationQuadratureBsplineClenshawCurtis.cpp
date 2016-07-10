@@ -4,9 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineClenshawCurtis.hpp>
-
 #include <sgpp/globaldef.hpp>
-#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -14,16 +12,19 @@ namespace base {
 double OperationQuadratureBsplineClenshawCurtis::doQuadrature(DataVector& alpha) {
   double res = 0;
   double tmpres = 0;
-  GridIndex* gp;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    gp = storage.get(i);
+    GridPoint& gp = storage.getPoint(i);
     tmpres = 1.;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
+      tmpres *= base.getIntegral(gp.getLevel(d), gp.getIndex(d));
     }
     res += alpha[i] * tmpres;
+  }
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  for (size_t d = 0; d < storage.getDimension(); d++) {
+    res *= storage.getBoundingBox()->getIntervalWidth(d);
   }
 
   return res;
