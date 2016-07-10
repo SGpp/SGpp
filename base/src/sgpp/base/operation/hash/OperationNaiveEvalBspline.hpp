@@ -28,7 +28,7 @@ class OperationNaiveEvalBspline : public OperationNaiveEval {
    * @param degree    B-spline degree
    */
   OperationNaiveEvalBspline(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree) {
+    storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -57,6 +57,8 @@ class OperationNaiveEvalBspline : public OperationNaiveEval {
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

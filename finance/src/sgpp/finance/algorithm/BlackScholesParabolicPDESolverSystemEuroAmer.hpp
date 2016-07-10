@@ -71,7 +71,7 @@ class BlackScholesParabolicPDESolverSystemEuroAmer
   /// refine mode during solving Black Scholes Equation: classic or maxLevel
   std::string refineMode;
   /// maxLevel max. Level of refinement
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
   /// the algorithmic dimensions used in this system
   std::vector<size_t> BSalgoDims;
   /// store number of executed timesteps
@@ -162,7 +162,7 @@ class BlackScholesParabolicPDESolverSystemEuroAmer
       std::string OperationMode, double dStrike, std::string option_type,
       bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0,
       std::string adaptSolveMode = "none", int numCoarsenPoints = -1, double refineThreshold = 0.0,
-      std::string refineMode = "classic", sgpp::base::GridIndex::level_type refineMaxLevel = 0);
+      std::string refineMode = "classic", sgpp::base::GridPoint::level_type refineMaxLevel = 0);
 
   /**
    * Std-Destructor

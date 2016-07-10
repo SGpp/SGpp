@@ -82,18 +82,10 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
   bool result = true;
-  base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
   base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
-
-  if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
-      grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
-      grid.getType() == base::GridType::LinearClenshawCurtis) {
-    // Clenshaw-Curtis grid
-    distr = base::GridIndex::PointDistribution::ClenshawCurtis;
-  }
 
   // generate initial grid
   grid.getGenerator().regular(initialLevel);
@@ -128,8 +120,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   refinementAlpha.setAll(0.0);
 
   for (size_t i = 0; i < currentN; i++) {
-    base::GridIndex& gp = *gridStorage[i];
-    gp.setPointDistribution(distr);
+    base::GridPoint& gp = gridStorage[i];
     // prepare fXOrder and rank
     fXOrder[i] = i;
     rank[i] = i + 1;
@@ -193,7 +184,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
         // ==> check if a refinement of this point would generate
         // children with a level greater than max_level
         // (in one coordinate), if yes ignore the point
-        base::GridIndex& gp = *gridStorage[i];
+        base::GridPoint& gp = gridStorage[i];
 
         {
           base::index_t sourceIndex, childIndex;
@@ -208,7 +199,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
               childIndex = sourceIndex;
               childLevel = sourceLevel;
 
-              while (gridStorage.has_key(&gp)) {
+              while (gridStorage.isContaining(gp)) {
                 childIndex *= 2;
                 childLevel++;
                 gp.set(t, childLevel, childIndex - 1);
@@ -227,7 +218,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
               childIndex = sourceIndex;
               childLevel = sourceLevel;
 
-              while (gridStorage.has_key(&gp)) {
+              while (gridStorage.isContaining(gp)) {
                 childIndex *= 2;
                 childLevel++;
                 gp.set(t, childLevel, childIndex + 1);
@@ -283,9 +274,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     refinementAlpha[iBest] = 0.0;
 
     for (size_t i = currentN; i < newN; i++) {
-      base::GridIndex& gp = *gridStorage[i];
-      // set point distribution accordingly to normal/Clenshaw-Curtis grids
-      gp.setPointDistribution(distr);
+      base::GridPoint& gp = gridStorage[i];
       refinementAlpha[i] = 0.0;
 
       // calculate sum of levels

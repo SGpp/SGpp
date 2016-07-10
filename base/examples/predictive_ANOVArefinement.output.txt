@@ -1,3 +1,0 @@
-Choose Meaningful Function bevore this file can be filled!
-
-Then go to base/examples/all_simple_predictive_ANOVA_refinement.output.txt and insert the output there.

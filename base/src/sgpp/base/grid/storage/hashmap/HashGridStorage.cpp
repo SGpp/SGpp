@@ -18,23 +18,23 @@
 namespace sgpp {
 namespace base {
 
-HashGridStorage::HashGridStorage(size_t dim)
+HashGridStorage::HashGridStorage(size_t dimension)
     :  //  GridStorage(dim),
-      DIM(dim),
+      dimension(dimension),
       list(),
       map(),
       algoDims(),
-      boundingBox(new BoundingBox(dim)),
+      boundingBox(new BoundingBox(dimension)),
       stretching(nullptr),
       bUseStretching(false) {
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     algoDims.push_back(i);
   }
 }
 
 HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox)
     :  //  GridStorage(creationBoundingBox, creationBoundingBox.getDimensions()),
-      DIM(creationBoundingBox.getDimensions()),
+      dimension(creationBoundingBox.getDimension()),
       list(),
       map(),
       algoDims(),
@@ -42,14 +42,14 @@ HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox)
       stretching(nullptr),
       bUseStretching(false) {
   // this look like a bug, creationBoundingBox not used
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     algoDims.push_back(i);
   }
 }
 
 HashGridStorage::HashGridStorage(Stretching& creationStretching)
     :  //  : GridStorage(creationStretching, creationStretching.getDimensions()),
-      DIM(creationStretching.getDimensions()),
+      dimension(creationStretching.getDimension()),
       list(),
       map(),
       algoDims(),
@@ -57,14 +57,14 @@ HashGridStorage::HashGridStorage(Stretching& creationStretching)
       stretching(new Stretching(creationStretching)),
       bUseStretching(true) {
   // this look like a bug, creationBoundingBox not used
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     algoDims.push_back(i);
   }
 }
 
 HashGridStorage::HashGridStorage(std::string& istr)
     :  //  : GridStorage(istr),
-      DIM(0lu),
+      dimension(0lu),
       list(),
       map(),
       algoDims() {
@@ -73,27 +73,27 @@ HashGridStorage::HashGridStorage(std::string& istr)
 
   parseGridDescription(istream);
 
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     algoDims.push_back(i);
   }
 }
 
 HashGridStorage::HashGridStorage(std::istream& istream)
     :  // GridStorage(istream),
-      DIM(0lu),
+      dimension(0lu),
       list(),
       map(),
       algoDims() {
   parseGridDescription(istream);
 
-  for (size_t i = 0; i < DIM; i++) {
+  for (size_t i = 0; i < dimension; i++) {
     algoDims.push_back(i);
   }
 }
 
 HashGridStorage::HashGridStorage(HashGridStorage& copyFrom)
     :  // GridStorage(copyFrom),
-      DIM(copyFrom.DIM),
+      dimension(copyFrom.dimension),
       list(),
       map(),
       algoDims(copyFrom.algoDims),
@@ -102,7 +102,7 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom)
       bUseStretching(copyFrom.bUseStretching) {
   // copy gridpoints
   for (size_t i = 0; i < copyFrom.getSize(); i++) {
-    this->insert(*(copyFrom[i]));
+    this->insert(copyFrom[i]);
   }
 }
 
@@ -119,7 +119,7 @@ HashGridStorage::~HashGridStorage() {
   }
 }
 
-void HashGridStorage::emptyStorage() {
+void HashGridStorage::clear() {
   // delete all grid points
   for (grid_list_iterator iter = list.begin(); iter != list.end(); iter++) {
     delete *iter;
@@ -132,7 +132,7 @@ void HashGridStorage::emptyStorage() {
 }
 
 std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoints) {
-  index_pointer curPoint;
+  point_pointer curPoint;
   std::vector<size_t> remainingPoints;
   size_t delCounter = 0;
 
@@ -154,7 +154,7 @@ std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoint
     size_t tmpIndex = *iter;
     size_t curPos = tmpIndex - delCounter;
 
-    // GridIndex
+    // GridPoint
     curPoint = list[curPos];
 
     // erase point
@@ -178,7 +178,7 @@ std::vector<size_t> HashGridStorage::deletePoints(std::list<size_t>& removePoint
   return remainingPoints;
 }
 
-void HashGridStorage::unserialize_noAlgoDims(std::string& istr) {
+void HashGridStorage::unserializeNoAlgoDims(std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
 
@@ -190,113 +190,51 @@ void HashGridStorage::unserialize_noAlgoDims(std::string& istr) {
   //    }
 }
 
-std::string HashGridStorage::serialize(int version) {
+std::string HashGridStorage::serialize(int version) const {
   std::ostringstream ostream;
   this->serialize(ostream, version);
   return ostream.str();
 }
 
-void HashGridStorage::serialize(std::ostream& ostream, int version) {
-  DimensionBoundary tempBound;
-
+void HashGridStorage::serialize(std::ostream& ostream, int version) const {
   // Print version, dimensions and number of gridpoints
   ostream << version << " ";
-  ostream << DIM << " ";
+  ostream << dimension << " ";
   ostream << list.size() << std::endl;
 
   // If BoundingBox used, write zero
   if (!bUseStretching) {
     ostream << std::scientific << 0 << std::endl;
-
-    // Print the bounding box
-    for (size_t i = 0; i < DIM; i++) {
-      tempBound = boundingBox->getBoundary(i);
-      ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " "
-              << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-    }
-
-    ostream << std::endl;
+    boundingBox->serialize(ostream, version);
   } else {
     // If analytic stretching, print the stretching type
-    if (*(stretching->getStretchingMode()) == "analytic") {
+    if (stretching->getStretchingMode() == "analytic") {
       ostream << std::scientific << 1 << std::endl;
-
-      // Print the bounding box
-      for (size_t i = 0; i < DIM; i++) {
-        tempBound = stretching->getBoundary(i);
-        ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary
-                << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-      }
-
-      ostream << std::endl;
-      Stretching1D str1d;
-      int stretchingType = 0;
-
-      /*
-       * Write stretching type if
-       * id: 1
-       * log: 2
-       * sinh:3
-       */
-      for (size_t i = 0; i < DIM; i++) {
-        str1d = stretching->getStretching1D(i);
-
-        if (str1d.type == "id") {
-          stretchingType = 1;
-        } else if (str1d.type == "log") {
-          stretchingType = 2;
-        } else if (str1d.type == "sinh") {
-          stretchingType = 3;
-        }
-
-        ostream << std::scientific << stretchingType << " " << str1d.x_0 << " " << str1d.xsi
-                << std::endl;
-      }
-    } else if (*(stretching->getStretchingMode()) == "discrete") {
+    } else if (stretching->getStretchingMode() == "discrete") {
       // If discrete stretching, print the grid vector
       ostream << std::scientific << 2 << std::endl;
-
-      // Print the bounding box
-      for (size_t i = 0; i < DIM; i++) {
-        tempBound = stretching->getBoundary(i);
-        ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary
-                << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
-      }
-
-      ostream << std::endl;
-      std::vector<double>* vec = stretching->getDiscreteVector(true);
-      int* vecLevel = stretching->getDiscreteVectorLevel();
-
-      for (size_t i = 0; i < DIM; i++) {
-        ostream << std::scientific << vecLevel[i] << std::endl;
-
-        for (size_t j = 0; j < vec[i].size(); j++) {
-          ostream << std::scientific << vec[i][j] << " ";
-        }
-
-        ostream << std::endl;
-      }
     }
+
+    stretching->serialize(ostream, version);
   }
 
   // print the coordinates of the grid points
-  for (grid_list_iterator iter = list.begin(); iter != list.end(); iter++) {
+  for (grid_list_const_iterator iter = list.begin(); iter != list.end(); iter++) {
     (*iter)->serialize(ostream, version);
   }
 }
 
-std::string HashGridStorage::toString() {
+std::string HashGridStorage::toString() const {
   std::ostringstream ostream;
   this->toString(ostream);
   return ostream.str();
 }
 
-void HashGridStorage::toString(std::ostream& stream) {
+void HashGridStorage::toString(std::ostream& stream) const {
   stream << "[";
   int i = 0;
-  grid_map_iterator iter;
 
-  for (iter = map.begin(); iter != map.end(); iter++, i++) {
+  for (grid_map_const_iterator iter = map.begin(); iter != map.end(); iter++, i++) {
     if (i != 0) {
       stream << ",";
     }
@@ -311,7 +249,7 @@ void HashGridStorage::toString(std::ostream& stream) {
 
 size_t HashGridStorage::getSize() const { return map.size(); }
 
-size_t HashGridStorage::getNumInnerPoints() const {
+size_t HashGridStorage::getNumberOfInnerPoints() const {
   size_t innerPoints = 0;
 
   for (size_t p = 0; p < map.size(); p++) {
@@ -321,29 +259,29 @@ size_t HashGridStorage::getNumInnerPoints() const {
   return innerPoints;
 }
 
-size_t HashGridStorage::getDimension() const { return DIM; }
+size_t HashGridStorage::getDimension() const { return dimension; }
 
-size_t HashGridStorage::insert(index_type& index) {
-  index_pointer insert = new HashGridIndex(index);
+size_t HashGridStorage::insert(point_type& index) {
+  point_pointer insert = new HashGridPoint(index);
   list.push_back(insert);
-  return (map[insert] = this->seq() - 1);
+  return (map[insert] = list.size() - 1);
 }
 
-void HashGridStorage::update(index_type& index, size_t pos) {
-  if (pos < seq()) {
+void HashGridStorage::update(point_type& index, size_t pos) {
+  if (pos < list.size()) {
     // Remove old element at pos
-    index_pointer del = list[pos];
+    point_pointer del = list[pos];
     map.erase(del);
     delete del;
     // Insert update
-    index_pointer insert = new HashGridIndex(index);
+    point_pointer insert = new HashGridPoint(index);
     list[pos] = insert;
     map[insert] = pos;
   }
 }
 
 void HashGridStorage::deleteLast() {
-  index_pointer del = list.back();
+  point_pointer del = list.back();
   map.erase(del);
   list.pop_back();
   delete del;
@@ -353,7 +291,7 @@ void HashGridStorage::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) 
   algoDims.clear();
 
   // throw an exception if there is
-  if (newAlgoDims.size() > DIM) {
+  if (newAlgoDims.size() > dimension) {
     throw generation_exception("There are more algorithmic dimensions than real dimensions!");
   }
 
@@ -363,11 +301,11 @@ void HashGridStorage::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) 
 }
 
 void HashGridStorage::recalcLeafProperty() {
-  index_pointer point;
+  point_pointer point;
   grid_map_iterator iter;
   size_t current_dim;
-  index_type::level_type l;
-  index_type::level_type i;
+  point_type::level_type l;
+  point_type::level_type i;
   bool isLeaf = true;
 
   // iterate through the grid
@@ -376,24 +314,24 @@ void HashGridStorage::recalcLeafProperty() {
     isLeaf = true;
 
     // iterate through the dimensions
-    for (current_dim = 0; current_dim < DIM; current_dim++) {
+    for (current_dim = 0; current_dim < dimension; current_dim++) {
       point->get(current_dim, l, i);
 
       if (l > 0) {
         // Test left child
-        left_child(point, current_dim);
-        isLeaf = isLeaf && !has_key(point);
+        point->getLeftChild(current_dim);
+        isLeaf = isLeaf && !isContaining(*point);
 
         // restore value for dimension
         point->set(current_dim, l, i);
 
         // Test right child
-        right_child(point, current_dim);
-        isLeaf = isLeaf && !has_key(point);
+        point->getRightChild(current_dim);
+        isLeaf = isLeaf && !isContaining(*point);
       } else {
         // Test level 0
         point->set(current_dim, 1, 1);
-        isLeaf = isLeaf && !has_key(point);
+        isLeaf = isLeaf && !isContaining(*point);
       }
 
       // restore value for dimension
@@ -404,46 +342,50 @@ void HashGridStorage::recalcLeafProperty() {
   }
 }
 
-BoundingBox* HashGridStorage::getBoundingBox() { return boundingBox; }
-
-Stretching* HashGridStorage::getStretching() { return stretching; }
-
-void HashGridStorage::setBoundingBox(BoundingBox& bb) {
-  if (!bUseStretching) {
-    delete boundingBox;
-  }
-
+BoundingBox* HashGridStorage::getBoundingBox() {
   if (bUseStretching) {
-    delete stretching;
+    return stretching;
+  } else {
+    return boundingBox;
   }
-
-  boundingBox = new BoundingBox(bb);
-  bUseStretching = false;
 }
 
-void HashGridStorage::setStretching(Stretching& bb) {
+Stretching* HashGridStorage::getStretching() {
+  return stretching;
+}
+
+void HashGridStorage::setBoundingBox(BoundingBox& boundingBox) {
   if (bUseStretching) {
     delete stretching;
+  } else {
+    delete this->boundingBox;
   }
 
-  if (!bUseStretching) {
+  bUseStretching = false;
+  this->boundingBox = new BoundingBox(boundingBox);
+}
+
+void HashGridStorage::setStretching(Stretching& stretching) {
+  if (bUseStretching) {
+    delete this->stretching;
+  } else {
     delete boundingBox;
   }
 
   bUseStretching = true;
-  stretching = new Stretching(bb);
+  this->stretching = new Stretching(stretching);
 }
 
 void HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& index) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
   //    {
   //      #pragma omp for schedule (static) private(curLevel, curIndex)
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
       level.set(i, current_dim, static_cast<double>(1 << curLevel));
       index.set(i, current_dim, static_cast<double>(curIndex));
@@ -454,15 +396,15 @@ void HashGridStorage::getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& 
 }
 
 void HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
   //    {
   //      #pragma omp for schedule (static) private(curLevel, curIndex)
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
       level.set(i, current_dim, static_cast<float>(1 << curLevel));
       index.set(i, current_dim, static_cast<float>(curIndex));
@@ -473,15 +415,15 @@ void HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrix
 }
 
 void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   // Parallelization may lead to segfaults.... comment on your own risk
   //    #pragma omp parallel
   //    {
   //      #pragma omp for schedule (static) private(curLevel, curIndex)
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
       level.set(i, current_dim, pow(2.0, static_cast<int>(-curLevel)));
     }
@@ -491,14 +433,14 @@ void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
 }
 
 size_t HashGridStorage::getMaxLevel() const {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
-  index_type::level_type maxLevel;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
+  point_type::level_type maxLevel;
 
   maxLevel = 0;
 
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
 
       if (curLevel > maxLevel) {
@@ -512,11 +454,11 @@ size_t HashGridStorage::getMaxLevel() const {
 
 void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index,
                                                         DataMatrix& mask, DataMatrix& offset) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
 
       if (curLevel == 1) {
@@ -531,7 +473,7 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
         uint64_t intmask = 0x0000000000000000;
         mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<double>(1 << curLevel));
         index.set(i, current_dim, static_cast<double>(curIndex));
         uint64_t intmask = 0x0000000000000000;
@@ -550,11 +492,11 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
 
 void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
                                                         DataMatrixSP& mask, DataMatrixSP& offset) {
-  index_type::level_type curLevel;
-  index_type::level_type curIndex;
+  point_type::level_type curLevel;
+  point_type::level_type curIndex;
 
   for (size_t i = 0; i < list.size(); i++) {
-    for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+    for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
 
       if (curLevel == 1) {
@@ -569,7 +511,7 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
         uint32_t intmask = 0x00000000;
         mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<float>(1 << curLevel));
         index.set(i, current_dim, static_cast<float>(curIndex));
         uint32_t intmask = 0x00000000;
@@ -589,8 +531,7 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
 void HashGridStorage::parseGridDescription(std::istream& istream) {
   int version;
   istream >> version;
-
-  istream >> DIM;
+  istream >> dimension;
 
   size_t num;
   istream >> num;
@@ -608,17 +549,17 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   // no bounding box, generate a trivial one
   if (version == 1 || version == 2) {
     // create a standard bounding box
-    boundingBox = new BoundingBox(DIM);
+    boundingBox = new BoundingBox(dimension);
   } else if (version == 3 || version == 4) {
     // read the bounding box
     // create a standard bounding box
-    boundingBox = new BoundingBox(DIM);
+    boundingBox = new BoundingBox(dimension);
     stretching = NULL;
     bUseStretching = false;
-    DimensionBoundary tempBound;
+    BoundingBox1D tempBound;
 
     // reads the bounding box
-    for (size_t i = 0; i < DIM; i++) {
+    for (size_t i = 0; i < dimension; i++) {
       istream >> tempBound.leftBoundary;
       istream >> tempBound.rightBoundary;
       istream >> tempBound.bDirichletLeft;
@@ -629,109 +570,34 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   } else if (version >= 5) {
     //      std::cout<<"Version 5 parse starts\n";
     int useStretching;
-    DimensionBoundary tempBound;
+    BoundingBox1D tempBound;
     istream >> useStretching;
 
     if (useStretching == 0) {
       // BoundingBox
-
-      // create a standard bounding box
-      boundingBox = new BoundingBox(DIM);
-      stretching = NULL;
+      boundingBox = new BoundingBox(dimension);
+      stretching = nullptr;
       bUseStretching = false;
-
-      // reads the boundary data
-      for (size_t i = 0; i < DIM; i++) {
-        istream >> tempBound.leftBoundary;
-        istream >> tempBound.rightBoundary;
-        istream >> tempBound.bDirichletLeft;
-        istream >> tempBound.bDirichletRight;
-
-        boundingBox->setBoundary(i, tempBound);
-      }
-    } else if (useStretching == 1) {
-      // Stretching with analytic mode
-      boundingBox = NULL;
-      bUseStretching = true;
-      Stretching1D* str1ds = new Stretching1D[DIM];
-      DimensionBoundary* tempBounds = new DimensionBoundary[DIM];
-
-      // reads the boundary data
-      for (size_t i = 0; i < DIM; i++) {
-        istream >> tempBounds[i].leftBoundary;
-        istream >> tempBounds[i].rightBoundary;
-        istream >> tempBounds[i].bDirichletLeft;
-        istream >> tempBounds[i].bDirichletRight;
-      }
-
-      int stretchingType = 0;
-
-      // Reads the 1D stretching data
-      for (size_t i = 0; i < DIM; i++) {
-        istream >> stretchingType;
-
-        switch (stretchingType) {
-          case 1:
-            str1ds[i].type.assign("id");
-            break;
-
-          case 2:
-            str1ds[i].type.assign("log");
-            break;
-
-          case 3:
-            str1ds[i].type.assign("sinh");
-            break;
-
-          default:
-            std::cout << "Stretching Type Unknown in parseGridDescription\n";
-            break;
-        }
-
-        istream >> str1ds[i].x_0;
-        istream >> str1ds[i].xsi;
-      }
-
-      stretching = new Stretching(DIM, tempBounds, str1ds);
-      delete[] tempBounds;
-      delete[] str1ds;
-    } else if (useStretching == 2) {
-      // Stretching with discrete Mode
-
-      boundingBox = NULL;
-      bUseStretching = true;
-
-      // reads the boundary data, won't be used.
-      for (size_t i = 0; i < DIM; i++) {
-        istream >> tempBound.leftBoundary;
-        istream >> tempBound.rightBoundary;
-        istream >> tempBound.bDirichletLeft;
-        istream >> tempBound.bDirichletRight;
-      }
-
-      int discreteLevel = 0;
-      int vectorLength = 0;
-      std::vector<double>* vec = new std::vector<double>[DIM];
-
-      for (size_t i = 0; i < DIM; i++) {
-        istream >> discreteLevel;
-        vectorLength = static_cast<int>(pow(2.0, discreteLevel)) + 1;
-        vec[i] = std::vector<double>(vectorLength, 0);
-
-        for (int j = 0; j < vectorLength; j++) {
-          istream >> vec[i][j];
-        }
-      }
-
-      stretching = new Stretching(DIM, vec);
-      delete[] vec;
+      boundingBox->unserialize(istream, version);
     } else {
-      std::cout << "Unknown Container Id Given in parseGridDescription\n";
+      boundingBox = nullptr;
+      stretching = new Stretching(dimension);
+      bUseStretching = true;
+
+      if (useStretching == 1) {
+        // Stretching with analytic mode
+        stretching->unserialize(istream, "analytic", version);
+      } else if (useStretching == 2) {
+        // Stretching with discrete Mode
+        stretching->unserialize(istream, "discrete", version);
+      } else {
+        std::cout << "Unknown Container Id Given in parseGridDescription\n";
+      }
     }
   }
 
   for (size_t i = 0; i < num; i++) {
-    index_pointer index = new HashGridIndex(istream, version);
+    point_pointer index = new HashGridPoint(istream, version);
     list.push_back(index);
     map[index] = i;
   }
@@ -740,6 +606,24 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   if (version == 1 || version == 4) {
     recalcLeafProperty();
   }
+}
+
+void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinates) const {
+  coordinates.resize(dimension);
+
+  for (size_t d = 0; d < dimension; d++) {
+    coordinates[d] = getCoordinate(point, d);
+  }
+}
+
+DataVector HashGridStorage::getCoordinates(HashGridPoint point) const {
+  DataVector coordinates(dimension);
+
+  for (size_t d = 0; d < dimension; d++) {
+    coordinates[d] = getCoordinate(point, d);
+  }
+
+  return coordinates;
 }
 
 }  // namespace base

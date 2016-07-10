@@ -29,10 +29,10 @@ void SubspaceRefinement::addElementToCollection(
     element) {
       bool result = true;
 
-      for (size_t d = 0; d < key_value.first->getIndex().getDimension(); d++) {
+      for (size_t d = 0; d < key_value.first->getPoint().getDimension(); d++) {
         result = result
-                 && (key_value.first->getIndex().getLevel(d) ==
-                     element.first->getIndex().getLevel(d));
+                 && (key_value.first->getPoint().getLevel(d) ==
+                     element.first->getPoint().getLevel(d));
       }
 
       return result;
@@ -75,14 +75,14 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
 
   size_t refinements_num = functor.getRefinementsNum();
 
-  index_type index;
+  GridPoint point;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
 
   // start iterating over whole grid
   for (GridStorage::grid_map_iterator iter = storage.begin();
        iter != end_iter; iter++) {
-    index = *(iter->first);
+    point = *(iter->first);
 
     // std::cout <<"grid point " << iter->second << std::endl;
 
@@ -94,13 +94,13 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
     for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
-      index.get(d, source_level, source_index);
+      point.get(d, source_level, source_index);
 
       // std::cout << "processing dimension " << d << std::endl;
 
       // test existence of left child
-      index.set(d, source_level + 1, 2 * source_index - 1);
-      child_iter = storage.find(&index);
+      point.set(d, source_level + 1, 2 * source_index - 1);
+      child_iter = storage.find(&point);
 
       // if there no more grid points --> test if we should refine the grid
       if (child_iter == end_iter) {
@@ -117,8 +117,8 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
       }
 
       // test existence of right child
-      index.set(d, source_level + 1, 2 * source_index + 1);
-      child_iter = storage.find(&index);
+      point.set(d, source_level + 1, 2 * source_index + 1);
+      child_iter = storage.find(&point);
 
       if (child_iter == end_iter) {
         AbstractRefinement::refinement_list_type current_value_list =
@@ -131,7 +131,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
       }
 
       // reset current grid point in dimension d
-      index.set(d, source_level, source_index);
+      point.set(d, source_level, source_index);
     }
   }
 
@@ -158,7 +158,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  HashGridIndex grid_index(storage.getDimension());
+  HashGridPoint grid_index(storage.getDimension());
 
   // refine all points of the subspace in all dimensions
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
@@ -171,7 +171,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
         grid_index.set(d, level_vector[d], (*index_it)[d]);
       }
 
-      const size_t seq = storage.seq(&grid_index);
+      const size_t seq = storage.getSequenceNumber(grid_index);
 
       if (seq < storage.getSize()) {
         refineGridpoint(storage, seq);

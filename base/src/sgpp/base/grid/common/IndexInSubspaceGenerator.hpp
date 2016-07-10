@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/LevelIndexTypes.hpp>
 
 #include <algorithm>  // std::nth_element
 #include <cmath>
@@ -32,9 +33,9 @@ namespace base {
  */
 class IndexInSubspaceGenerator {
  public:
-  typedef std::vector<unsigned int> value_type;
+  typedef std::vector<index_t> value_type;
   typedef std::shared_ptr<value_type> pointer_type;
-  typedef std::pair<pointer_type, unsigned int> queue_value_type;
+  typedef std::pair<pointer_type, size_t> queue_value_type;
 
   /**
    * Constructor

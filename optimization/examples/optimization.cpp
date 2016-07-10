@@ -3,6 +3,25 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_optimization_cpp optimization.cpp
+ *
+ * On this page, we look at an example application of the sgpp::optimization module.
+ * Identical versions of the example are given in all languages
+ * currently supported by SG++: C++, Python, Java, and MATLAB.
+ *
+ * For instructions on how to compile and run the example, please see \ref installation.
+ *
+ * The example interpolates a bivariate test function like the \ref example_tutorial_cpp example.
+ * However, we use B-splines here instead to obtain a smoother interpolant.
+ * The resulting sparse grid function is then minimized with the method of steepest descent.
+ * For comparison, we also minimize the objective function with Nelder-Mead's method.
+ */
+
+/**
+ * First, we include all the necessary headers, including those of the sgpp::base and
+ * sgpp::optimization module.
+ */
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
@@ -11,30 +30,26 @@
 #include <algorithm>
 
 /**
- * Example test function.
+ * The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
+ * is called <i>objective function</i> and has to derive from
+ * sgpp::optimization::ScalarFunction.
+ * In the constructor, we give the dimensionality of the domain
+ * (in this case \f$d = 2\f$).
+ * The eval method evaluates the objective function and returns the function
+ * value \f$f(\vec{x})\f$ for a given point \f$\vec{x} \in [0, 1]^d\f$.
+ * The clone method returns a std::unique_ptr to a clone of the object
+ * and is used for parallelization (in case eval is not thread-safe).
  */
 class ExampleFunction : public sgpp::optimization::ScalarFunction {
  public:
-  /**
-   * Constructor.
-   */
   ExampleFunction() : sgpp::optimization::ScalarFunction(2) {
   }
 
-  /**
-   * Evaluates the test function.
-   *
-   * @param x     point \f$\vec{x} \in [0, 1]^2\f$
-   * @return      \f$f(\vec{x})\f$
-   */
   double eval(const sgpp::base::DataVector& x) {
     // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   }
 
-  /**
-   * @param[out] clone pointer to cloned object
-   */
   virtual void clone(
     std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
     clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
@@ -43,26 +58,25 @@ class ExampleFunction : public sgpp::optimization::ScalarFunction {
 };
 
 /**
- * Prints a separator line.
+ * Now, we can start with the \c main function.
  */
 void printLine() {
   std::cout << "----------------------------------------"
             "----------------------------------------\n";
 }
 
-/**
- * Main method.
- *
- * @param argc ignored
- * @param argv ignored
- */
 int main(int argc, const char* argv[]) {
   (void)argc;
   (void)argv;
 
   std::cout << "sgpp::optimization example program started.\n\n";
+  // increase verbosity of the output
   sgpp::optimization::Printer::getInstance().setVerbosity(2);
 
+  /**
+   * Here, we set define some parameters: objective function, dimensionality,
+   * B-spline degree, maximal number of grid points, and adaptivity.
+   */
   // objective function
   ExampleFunction f;
   // dimension of domain
@@ -74,14 +88,17 @@ int main(int argc, const char* argv[]) {
   // adaptivity of grid generation
   const double gamma = 0.95;
 
+  /**
+   * First, we define a grid with modified B-spline basis functions and
+   * an iterative grid generator, which can generate the grid adaptively.
+   */
   sgpp::base::ModBsplineGrid grid(d, p);
   sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(
     f, grid, N, gamma);
 
-  // //////////////////////////////////////////////////////////////////////////
-  // GRID GENERATION
-  // //////////////////////////////////////////////////////////////////////////
-
+  /**
+   * With the iterative grid generator, we generate adaptively a sparse grid.
+   */
   printLine();
   std::cout << "Generating grid...\n\n";
 
@@ -90,10 +107,11 @@ int main(int argc, const char* argv[]) {
     return 1;
   }
 
-  // //////////////////////////////////////////////////////////////////////////
-  // HIERARCHIZATION
-  // //////////////////////////////////////////////////////////////////////////
-
+  /**
+   * Then, we hierarchize the function values to get hierarchical B-spline
+   * coefficients of the B-spline sparse grid interpolant
+   * \f$\tilde{f}\colon [0, 1]^d \to \mathbb{R}\f$.
+   */
   printLine();
   std::cout << "Hierarchizing...\n\n";
   sgpp::base::DataVector functionValues(gridGen.getFunctionValues());
@@ -107,20 +125,27 @@ int main(int argc, const char* argv[]) {
     return 1;
   }
 
-  // //////////////////////////////////////////////////////////////////////////
-  // OPTIMIZATION OF THE SMOOTH INTERPOLANT
-  // //////////////////////////////////////////////////////////////////////////
-
+  /**
+   * We define the interpolant \f$\tilde{f}\f$ and its gradient
+   * \f$\nabla\tilde{f}\f$ for use with the gradient method (steepest descent).
+   * Of course, one can also use other optimization algorithms from
+   * sgpp::optimization::optimizer.
+   */
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
   sgpp::optimization::InterpolantScalarFunction ft(grid, coeffs);
   sgpp::optimization::InterpolantScalarFunctionGradient ftGradient(grid, coeffs);
-  sgpp::optimization::optimizer::GradientDescent gradientMethod(ft, ftGradient);
+  sgpp::optimization::optimizer::GradientDescent gradientDescent(ft, ftGradient);
   sgpp::base::DataVector x0(d);
   double fX0;
   double ftX0;
 
-  // determine best grid point as starting point
+  /**
+   * The gradient method needs a starting point.
+   * We use a point of our adaptively generated sparse grid as starting point.
+   * More specifically, we use the point with the smallest
+   * (most promising) function value and save it in x0.
+   */
   {
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
 
@@ -131,9 +156,7 @@ int main(int argc, const char* argv[]) {
                                         functionValues.getPointer() +
                                         functionValues.getSize()));
 
-    for (size_t t = 0; t < d; t++) {
-      x0[t] = gridStorage[x0Index]->getCoord(t);
-    }
+    x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
 
     fX0 = functionValues[x0Index];
     ftX0 = ft.eval(x0);
@@ -142,19 +165,22 @@ int main(int argc, const char* argv[]) {
   std::cout << "x0 = " << x0.toString() << "\n";
   std::cout << "f(x0) = " << fX0 << ", ft(x0) = " << ftX0 << "\n\n";
 
-  gradientMethod.setStartingPoint(x0);
-  gradientMethod.optimize();
-  const sgpp::base::DataVector& xOpt = gradientMethod.getOptimalPoint();
-  const double ftXOpt = gradientMethod.getOptimalValue();
+  /**
+   * We apply the gradient method and print the results.
+   */
+  gradientDescent.setStartingPoint(x0);
+  gradientDescent.optimize();
+  const sgpp::base::DataVector& xOpt = gradientDescent.getOptimalPoint();
+  const double ftXOpt = gradientDescent.getOptimalValue();
   const double fXOpt = f.eval(xOpt);
 
   std::cout << "\nxOpt = " << xOpt.toString() << "\n";
   std::cout << "f(xOpt) = " << fXOpt << ", ft(xOpt) = " << ftXOpt << "\n\n";
 
-  // //////////////////////////////////////////////////////////////////////////
-  // NELDER-MEAD OPTIMIZATION OF OBJECTIVE FUNCTION
-  // //////////////////////////////////////////////////////////////////////////
-
+  /**
+   * For comparison, we apply the classical gradient-free Nelder-Mead method
+   * directly to the objective function \f$f\f$.
+   */
   printLine();
   std::cout << "Optimizing objective function (for comparison)...\n\n";
 
@@ -173,3 +199,13 @@ int main(int argc, const char* argv[]) {
 
   return 0;
 }
+
+/**
+ * The example program outputs the following results:
+ * \verbinclude optimization.output.txt
+ *
+ * We see that both the gradient-based optimization of the smooth sparse grid
+ * interpolant and the gradient-free optimization of the objective function
+ * find reasonable approximations of the minimum, which lies at
+ * \f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
+ */

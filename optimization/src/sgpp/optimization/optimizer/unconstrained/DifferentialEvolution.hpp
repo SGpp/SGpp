@@ -44,13 +44,20 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
    * @param avgImprovementThreshold   stopping criterion parameter 2
    * @param maxDistanceThreshold      stopping criterion parameter 3
    */
-  DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
+  DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
                         size_t populationSize = 0,
                         double crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
                         double scalingFactor = DEFAULT_SCALING_FACTOR,
                         size_t idleGenerationsCount = DEFAULT_IDLE_GENERATIONS_COUNT,
                         double avgImprovementThreshold = DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
                         double maxDistanceThreshold = DEFAULT_MAX_DISTANCE_THRESHOLD);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  DifferentialEvolution(const DifferentialEvolution& other);
 
   /**
    * Destructor.

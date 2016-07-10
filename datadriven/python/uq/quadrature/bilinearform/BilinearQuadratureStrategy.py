@@ -21,9 +21,9 @@ class BilinearQuadratureStrategy(HashQuadrature):
     def computeBilinearFormByList(self, gpsi, basisi, gpsj, basisj):
         """
         Compute bilinear form for two lists of grid points
-        @param gpsi: list of HashGridIndex
+        @param gpsi: list of HashGridPoint
         @param basisi: SG++ basis for grid indices gpsi
-        @param gpsj: list of HashGridIndex
+        @param gpsj: list of HashGridPoint
         @param basisj: SG++ basis for grid indices gpsj
         @return: numpy array
         """
@@ -40,9 +40,9 @@ class BilinearQuadratureStrategy(HashQuadrature):
         """
         Compute the bilinear form of one grid point with a list
         of grid points
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis for grid indices i
-        @param gps: list of HashGridIndex
+        @param gps: list of HashGridPoint
         @param basisj: SG++ Basis for grid indices j
         @return DataVector
         """
@@ -63,9 +63,9 @@ class BilinearQuadratureStrategy(HashQuadrature):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis
-        @param gpj: HashGridIndex
+        @param gpj: HashGridPoint
         @param basisj: SG++ Basis
         @param d: int dimension
         """
@@ -83,9 +83,9 @@ class BilinearQuadratureStrategy(HashQuadrature):
     def computeBilinearFormEntry(self, gpi, basisi, gpj, basisj, d):
         """
         Compute the bilinear form of one grid point with another one
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis
-        @param gpj: HashGridIndex
+        @param gpj: HashGridPoint
         @param basisj: SG++ Basis
         @param d: int dimension
         """

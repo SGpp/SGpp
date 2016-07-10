@@ -76,7 +76,7 @@ BlackScholesHullWhiteSolver::~BlackScholesHullWhiteSolver() {
 }
 
 void BlackScholesHullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
@@ -136,10 +136,10 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
     std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
     myStopwatch->start();
 
-    // DimensionBoundary* myBoundaries = new DimensionBoundary[2];
+    // BoundingBox1D* myBoundaries = new BoundingBox1D[2];
     base::BoundingBox* t = &this->myGrid->getBoundingBox();
 
-    base::DimensionBoundary* myBoundaries = new base::DimensionBoundary[dim];
+    base::BoundingBox1D* myBoundaries = new base::BoundingBox1D[dim];
 
     myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
     myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);
@@ -257,7 +257,7 @@ void BlackScholesHullWhiteSolver::initScreen() {
 
 void BlackScholesHullWhiteSolver::setEnableCoarseningData(
     std::string adaptSolveMode, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints,
+    sgpp::base::GridPoint::level_type refineMaxLevel, int numCoarsenPoints,
     double coarsenThreshold, double refineThreshold) {
   this->useCoarsen = true;
   this->coarsenThreshold = coarsenThreshold;
@@ -268,7 +268,7 @@ void BlackScholesHullWhiteSolver::setEnableCoarseningData(
   this->numCoarsenPoints = numCoarsenPoints;
 }
 
-size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType, double strike,
+size_t BlackScholesHullWhiteSolver::getPointsAtMoney(std::string payoffType, double strike,
                                                          double eps) {
   size_t nPoints = 0;
 
@@ -277,7 +277,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
       for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
-        this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
+        this->myGridStorage->getCoordinates(this->myGridStorage->getPoint(i), coords);
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "GMIB") {
           for (size_t d = 0; d < this->dim; d++) {
@@ -288,7 +288,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
           }
         } else {
           throw base::application_exception(
-              "BlackScholesHullWhiteSolver::getGridPointsAtMoney : An unknown payoff-type was "
+              "BlackScholesHullWhiteSolver::getPointsAtMoney : An unknown payoff-type was "
               "specified!");
         }
 
@@ -298,7 +298,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
       }
     } else {
       throw base::application_exception(
-          "BlackScholesHullWhiteSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
+          "BlackScholesHullWhiteSolver::getPointsAtMoney : A grid wasn't constructed before!");
     }
   }
 
@@ -317,7 +317,8 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
     double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {

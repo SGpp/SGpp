@@ -243,35 +243,77 @@ const bool UMFPACK_ENABLED;
 %feature("director") sgpp::optimization::sle_solver::SLESolver;
 
 // dirty hack to override SWIG's generated director method for "clone"
-/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintFunction_t;") std::unique_ptr<sgpp::optimization::ConstraintFunction>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ConstraintFunction_t;") std::unique_ptr<sgpp::optimization::ConstraintFunction>& {
     clone = std::unique_ptr<sgpp::optimization::ConstraintFunction>(
         new SwigDirector_OptConstraintFunction(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ConstraintGradient_t;") std::unique_ptr<sgpp::optimization::ConstraintGradient>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ConstraintGradient_t;") std::unique_ptr<sgpp::optimization::ConstraintGradient>& {
     clone = std::unique_ptr<sgpp::optimization::ConstraintGradient>(
         new SwigDirector_OptConstraintGradient(*this));
     return;
 }
 
-/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveFunction_t;") std::unique_ptr<sgpp::optimization::ObjectiveFunction>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ConstraintHessian_t;") std::unique_ptr<sgpp::optimization::ConstraintHessian>& {
+    clone = std::unique_ptr<sgpp::optimization::ConstraintHessian>(
+        new SwigDirector_OptConstraintHessian(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ObjectiveFunction_t;") std::unique_ptr<sgpp::optimization::ObjectiveFunction>& {
     clone = std::unique_ptr<sgpp::optimization::ObjectiveFunction>(
         new SwigDirector_OptObjectiveFunction(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveGradient_t;") std::unique_ptr<sgpp::optimization::ObjectiveGradient>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ObjectiveGradient_t;") std::unique_ptr<sgpp::optimization::ObjectiveGradient>& {
     clone = std::unique_ptr<sgpp::optimization::ObjectiveGradient>(
         new SwigDirector_OptObjectiveGradient(*this));
     return;
 }
 
-%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveHessian_t;") std::unique_ptr<sgpp::optimization::ObjectiveHessian>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ObjectiveHessian_t;") std::unique_ptr<sgpp::optimization::ObjectiveHessian>& {
     clone = std::unique_ptr<sgpp::optimization::ObjectiveHessian>(
         new SwigDirector_OptObjectiveHessian(*this));
     return;
-}*/
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ScalarFunction_t;") std::unique_ptr<sgpp::optimization::ScalarFunction>& {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
+        new SwigDirector_OptScalarFunction(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ScalarFunctionGradient_t;") std::unique_ptr<sgpp::optimization::ScalarFunctionGradient>& {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunctionGradient>(
+        new SwigDirector_OptScalarFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ScalarFunctionHessian_t;") std::unique_ptr<sgpp::optimization::ScalarFunctionHessian>& {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunctionHessian>(
+        new SwigDirector_OptScalarFunctionHessian(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__VectorFunction_t;") std::unique_ptr<sgpp::optimization::VectorFunction>& {
+    clone = std::unique_ptr<sgpp::optimization::VectorFunction>(
+        new SwigDirector_OptVectorFunction(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__VectorFunctionGradient_t;") std::unique_ptr<sgpp::optimization::VectorFunctionGradient>& {
+    clone = std::unique_ptr<sgpp::optimization::VectorFunctionGradient>(
+        new SwigDirector_OptVectorFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__VectorFunctionHessian_t;") std::unique_ptr<sgpp::optimization::VectorFunctionHessian>& {
+    clone = std::unique_ptr<sgpp::optimization::VectorFunctionHessian>(
+        new SwigDirector_OptVectorFunctionHessian(*this));
+    return;
+}
 
 // includes
 %include "optimization/src/sgpp/optimization/function/scalar/ScalarFunction.hpp"

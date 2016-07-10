@@ -23,6 +23,11 @@ else:
 
 javaEnv = env.Clone()
 
+# add C++ defines for all modules
+for module in moduleNames:
+  if javaEnv[module]:
+    javaEnv["CPPDEFINES"][module] = "1"
+
 # remove compiler warnings caused by swig
 # (as we cannot do anything against them and as they confuse jenkins)
 javaEnv.AppendUnique(CPPFLAGS=["-w"])
@@ -37,11 +42,11 @@ javaEnv.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",
 
 #javaEnv["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
-libJava = javaEnv.SharedLibrary(target="jsgpp",
-                                source=["jsgpp.i"],
-                                LIBPATH=BUILD_DIR,
-                                LIBS=flattenedDependencyGraph)
-#TODO libs are set hacky!
+javaEnv.AppendUnique(LIBPATH=BUILD_DIR)
+javaEnv.AppendUnique(LIBS=flattenedDependencyGraph)
+
+libJava = javaEnv.SharedLibrary(target="jsgpp", source=["jsgpp.i"])
+
 installLibJava = javaEnv.Install(JSGPP_BUILD_PATH, libJava)
 libraryTargetList.append(installLibJava)
 

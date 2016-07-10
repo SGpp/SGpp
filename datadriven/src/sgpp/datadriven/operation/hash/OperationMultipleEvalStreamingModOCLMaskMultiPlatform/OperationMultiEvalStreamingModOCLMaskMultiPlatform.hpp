@@ -309,8 +309,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // size for distributing schedules of different size
     this->gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
 
-    sgpp::base::HashGridIndex::level_type curLevel;
-    sgpp::base::HashGridIndex::index_type curIndex;
+    sgpp::base::HashGridPoint::level_type curLevel;
+    sgpp::base::HashGridPoint::index_type curIndex;
 
     this->level = std::vector<T>(gridSizeBuffers * this->dims);
     this->index = std::vector<T>(gridSizeBuffers * this->dims);
@@ -319,7 +319,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage.get(i)->get(dim, curLevel, curIndex);
+        storage.getPoint(i).get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->level[i * this->dims + dim] = 0.0;
@@ -344,7 +344,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           }
           this->offset[i * this->dims + dim] = 2.0;
         } else if (curIndex ==
-                   static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                   static_cast<sgpp::base::HashGridPoint::level_type>(((1 << curLevel) - 1))) {
           this->level[i * this->dims + dim] = static_cast<T>(1 << curLevel);
           this->index[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {

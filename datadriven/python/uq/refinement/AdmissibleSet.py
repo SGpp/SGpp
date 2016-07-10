@@ -1,6 +1,6 @@
 from pysgpp.extensions.datadriven.uq.operations import (isValid, isRefineable,
                                getHierarchicalAncestors)
-from pysgpp import HashGridIndex
+from pysgpp import HashGridPoint
 
 
 class AdmissibleSetGenerator(object):
@@ -43,7 +43,7 @@ class RefinableNodesSet(AdmissibleSetGenerator):
     def create(self, grid):
         gs = grid.getStorage()
         for i in xrange(gs.getSize()):
-            gp = gs.get(i)
+            gp = gs.getPoint(i)
             if isRefineable(grid, gp):
                 self.insertPoint(gp)
 
@@ -76,14 +76,14 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
         gs = grid.getStorage()
         for d in xrange(gs.getDimension()):
             # check left child in d
-            gpl = HashGridIndex(gp)
+            gpl = HashGridPoint(gp)
             gs.left_child(gpl, d)
             if not gs.has_key(gpl) and isValid(grid, gpl) and \
                     self.checkRange(gpl, self.maxLevel):
                 self.addCollocationNode(grid, gpl)
 
             # check right child in d
-            gpr = HashGridIndex(gp)
+            gpr = HashGridPoint(gp)
             gs.right_child(gpr, d)
             if not gs.has_key(gpr) and isValid(grid, gpr) and \
                     self.checkRange(gpr, self.maxLevel):
@@ -92,7 +92,7 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
     def create(self, grid):
         gs = grid.getStorage()
         for i in xrange(grid.getSize()):
-            self.addChildren(grid, gs.get(i))
+            self.addChildren(grid, gs.getPoint(i))
 
     def update(self, grid, newGridPoints):
         for gp in newGridPoints:
@@ -104,5 +104,5 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             self.addChildren(grid, gp)
 
     def toString(self):
-        return str([[ngp.getCoord(d) for d in xrange(ngp.getDimension())]
+        return str([[ngp.getStandardCoordinate(d) for d in xrange(ngp.getDimension())]
                     for ngp in self.getAdmissibleSet()])

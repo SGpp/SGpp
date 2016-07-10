@@ -44,22 +44,14 @@ bool IterativeGridGeneratorSOO::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
 
   bool result = true;
-  base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
   base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
 
-  if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
-      grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
-      grid.getType() == base::GridType::LinearClenshawCurtis) {
-    // Clenshaw-Curtis grid
-    distr = base::GridIndex::PointDistribution::ClenshawCurtis;
-  }
-
   // generate initial grid
   {
-    base::GridIndex gp(d);
+    base::GridPoint gp(d);
 
     for (size_t t = 0; t < d; t++) {
       gp.set(t, 1, 1);
@@ -81,13 +73,7 @@ bool IterativeGridGeneratorSOO::generate() {
   fX.resize(N);
 
   {
-    base::GridIndex& gp = *gridStorage[0];
-    base::DataVector x(d);
-
-    for (size_t t = 0; t < d; t++) {
-      x[t] = gp.getCoord(t);
-    }
-
+    base::DataVector x(gridStorage.getCoordinates(gridStorage[0]));
     fX[0] = f.eval(x);
   }
 
@@ -156,10 +142,7 @@ bool IterativeGridGeneratorSOO::generate() {
         refinementAlpha[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
-          base::GridIndex& gp = *gridStorage[i];
-          // set point distribution accordingly to
-          // normal/Clenshaw-Curtis grids
-          gp.setPointDistribution(distr);
+          base::GridPoint& gp = gridStorage[i];
           refinementAlpha[i] = 0.0;
           size_t depth = 0;
 

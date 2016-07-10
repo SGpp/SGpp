@@ -52,7 +52,7 @@ double integrateByRule(combigrid::AbstractQuadratureRule<double>* rule,
       combigrid::FullGrid<double>* fg = wrapper->fg();
       int nr_elems = fg->getNrElements();
       for (int e = 0; e < nr_elems; e++) {
-        fg->getCoords(e, coords);
+        fg->getStandardCoordinates(e, coords);
         fg->getElementVector()[e] = f(dim, coords);
       }
     }

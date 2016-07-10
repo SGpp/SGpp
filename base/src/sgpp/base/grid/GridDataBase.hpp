@@ -29,8 +29,8 @@ namespace base {
  */
 class GridDataBase {
  private:
-  typedef GridIndex index_type;
-  typedef GridIndex* index_pointer;
+  typedef GridPoint index_type;
+  typedef GridPoint* index_pointer;
   /*
   #ifndef USETRONE
   #ifndef LARRABEENATIVE
@@ -46,8 +46,8 @@ class GridDataBase {
   */
   //        typedef HashGridStorage::grid_map grid_map;
   typedef std::unordered_map<index_pointer, double,
-          HashGridIndexPointerHashFunctor,
-          HashGridIndexPointerEqualityFunctor >
+          HashGridPointPointerHashFunctor,
+          HashGridPointPointerEqualityFunctor >
           grid_map;
 
   // the hash_map
@@ -56,8 +56,8 @@ class GridDataBase {
   int _dim;
 
   // index and level types
-  typedef GridIndex::index_type index_t;
-  typedef GridIndex::level_type level_t;
+  typedef GridPoint::index_type index_t;
+  typedef GridPoint::level_type level_t;
 
   /**
    * Loads database in ASCII format from file. Adds (grid point - value) mappings
@@ -125,17 +125,17 @@ class GridDataBase {
 
   /**
    * Test, whether database already contains a grid point.
-   * @param gi a grid index
+   * @param gi a grid point
    * @return false, if grid point not in database
    */
-  bool hasKey(GridIndex* gi);
+  bool hasKey(GridPoint* gi);
 
   /**
    * Store (grid point - value) pair in database.
-   * @param gi a grid index
+   * @param gi a grid point
    * @param value the value to store
    */
-  void set(GridIndex* gi, double value);
+  void set(GridPoint* gi, double value);
 
   /**
    * Set values for given grid from stored ones in database.
@@ -165,16 +165,16 @@ class GridDataBase {
 
   /**
    * Get value for grid point from database. Return NULL if not existant.
-   * @param gi a grid index
+   * @param gi a grid point
    * @return value
    */
-  double get(GridIndex* gi);
+  double get(GridPoint* gi);
 
   /**
    * Remove grid point from database. Do nothing, if not in database.
    * @param gi grid point
    */
-  void remove(GridIndex* gi);
+  void remove(GridPoint* gi);
 
   /**
    * Save database to file. Overwrites existing files
@@ -193,7 +193,7 @@ class GridDataBase {
   void load(const std::string filename);
 
   /**
-   * Return iterator to beginning. Entries are of type pair<GridIndex, double>.
+   * Return iterator to beginning. Entries are of type pair<GridPoint, double>.
    * @return iterator to beginning.
    */
   grid_map_iterator begin();
