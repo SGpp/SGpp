@@ -42,7 +42,7 @@ public:
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
       GridIndex* gp = gridStorage.get(i);
       double eps = gp->getCoord(0);
-      alpha[i] = (x[0] - 0.5) * (x[0] - 0.5) * 2 * eps;
+      alpha[i] = (x[0] - 0.1) * (x[0] - 0.1) * 2 * eps;
     }
     auto hierarch = sgpp::op_factory::createOperationMultipleHierarchisation(*grid);
     hierarch->doHierarchisation(alpha);
@@ -65,14 +65,19 @@ public:
 
 
 
-double cont_genz(int d, double x){
+double oscill_genz(size_t d, DataVector x){
   double a[2];
   double u[2];
+  double pi = 3.14159265358979323846;
   a[0] = 5;
   a[1] = 5;
   u[0] = 0.5;
   u[1] = 0.5;
-  return std::exp( - a[d]*std::abs(x - u[d]));
+  double s = 0.0;
+  for (size_t i = 0; i < d; i++ ){
+    s += a[i]*x[i];
+  }
+  return std::cos(2*pi*u[0]+s);
 }
 
 void bsplineQuadTest(int p, int level, int index){
@@ -187,8 +192,8 @@ void ew_varianz(){
   int in = 0;
   int le = 0;
 
-  std::unique_ptr<Grid> int_grid = Grid::createBsplineBoundaryGrid(1,3);
-  int_grid->getGenerator().regular(7);
+  std::unique_ptr<Grid> int_grid = Grid::createBsplineGrid(1,3);
+  int_grid->getGenerator().regular(5);
 
 
 
@@ -217,8 +222,8 @@ void ew_varianz(){
       for (size_t j = 0; j < intStorage.getSize(); j++) {
         gp_int = intStorage.get(j);
         x = gp_int->getCoord(0);
-        alpha_int[j] = base.eval(le, in, x)*base.eval(le, in, x)*f_1d(d, x); // Varianz
-        // alpha_int[j] = base.eval(le, in, x)*const_one(d, x); // Erwartungswert
+        // alpha_int[j] = base.eval(le, in, x)*base.eval(le, in, x)*f_1d(d, x); // Varianz
+        alpha_int[j] = base.eval(le, in, x)*f_1d(d, x); // Erwartungswert
       }
       hierarch->doHierarchisation(alpha_int);
       int_res = opQ->doQuadrature(alpha_int);
@@ -229,12 +234,12 @@ void ew_varianz(){
     }
     std:: cout << "prod_res:" << prod_res << std::endl;
     
-    // double v_i = alpha[i]; // Erwartungswert
-    double v_i = alpha[i]*alpha[i]; // Varianz
+    double v_i = alpha[i]; // Erwartungswert
+    // double v_i = alpha[i]*alpha[i]; // Varianz
     res += v_i*prod_res;
     std:: cout << "res:" << res << std::endl;
   }
-  res -= 0.711111111*0.711111111;
+  // res -= 0.711111111*0.711111111; // Varianz
   std::cout << res << std::endl;
 }
 
@@ -314,12 +319,28 @@ void optimize(){
 
 }
 
+void integrate(){
+  std::unique_ptr<Grid> grid = Grid::createBsplineGrid(2, 5);
+  size_t level = 5;
+  grid->getGenerator().regular(level);
+  GridStorage& gridStorage = grid->getStorage();
+  sgpp::base::DataVector alpha(gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    GridIndex* gp = gridStorage.get(i);
+    DataVector x(2);
+    x[0] = gp->getCoord(0);
+    x[1] = gp->getCoord(1);
+    alpha[i] = oscill_genz(2, x);
+    // std::cout << alpha[i] << std::endl;
+  }
+  auto hierarch = sgpp::op_factory::createOperationMultipleHierarchisation(*grid);
+  hierarch->doHierarchisation(alpha);
+  std::unique_ptr<OperationQuadrature> opQ(sgpp::op_factory::createOperationQuadrature(*grid));
+  std::cout << opQ->doQuadrature(alpha) << std::endl;
+}
 
 int main(int argc, char **argv) {
-  optimize();
-  // ExampleFunction f;
-  // DataVector x(1);
-  // x[0] = 0.8;
-  // std::cout << f.eval(x) << std::endl;
+  // optimize();
   // ew_varianz();
+  integrate();
 }

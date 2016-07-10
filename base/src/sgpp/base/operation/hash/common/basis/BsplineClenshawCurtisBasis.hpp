@@ -256,6 +256,9 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   }
 
   double getIntegral(LT l, IT i){
+    if(l == 0){
+      return bsplineBasis.getIntegral(0,i);
+    }
     size_t degree = bsplineBasis.getDegree();
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
     size_t letzter_abschnitt = std::min(degree, (1 << l) + (degree+1)/2 - i - 1 );
@@ -272,7 +275,6 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++){
         double x = (h * coordinates[c]) + xi[j];
-        std::cout << "x:" << x << " non:" << nonUniformBSpline(x, degree, 0) << std::endl;
         temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;
