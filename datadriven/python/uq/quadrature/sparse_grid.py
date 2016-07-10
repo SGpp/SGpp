@@ -41,7 +41,7 @@ def doQuadrature(grid, alpha):
 
         # set function values for n_alpha
         for i in xrange(gs.getSize()):
-            gp = gs.get(i)
+            gp = gs.getPoint(i)
 
             q = 1.0
             for d in xrange(gs.getDimension()):

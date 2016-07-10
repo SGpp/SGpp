@@ -140,19 +140,19 @@ void LaplaceEnhancedUpBBLinear::rec(double& fl, double& fr, size_t dim, grid_ite
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(fmr, fr, dim, index);
     }
 
@@ -217,13 +217,13 @@ void LaplaceEnhancedUpBBLinear::rec_LL(double& fl, double& fr, double& fl2, doub
   fl = fr = fl2 = fr2 = 0.0;
 #endif
 #endif
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
 #if 1
 #if defined(__SSE3__)
       rec_LL(fl, fml, dim, index);
@@ -241,7 +241,7 @@ void LaplaceEnhancedUpBBLinear::rec_LL(double& fl, double& fr, double& fl2, doub
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
 #if 1
 #if defined(__SSE3__)
       rec_LL(fmr, fr, dim, index);
@@ -330,19 +330,19 @@ void LaplaceEnhancedUpBBLinear::rec_GL(double& fl, double& fr, size_t dim, grid_
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_GL(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_GL(fmr, fr, dim, index);
     }
 
@@ -371,19 +371,19 @@ void LaplaceEnhancedUpBBLinear::rec_LG(double& fl, double& fr, size_t dim, grid_
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_LG(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_LG(fmr, fr, dim, index);
     }
 
@@ -414,13 +414,13 @@ void LaplaceEnhancedUpBBLinear::rec_grad(size_t dim, grid_iterator& index) {
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_grad(dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_grad(dim, index);
     }
 
@@ -435,19 +435,19 @@ void LaplaceEnhancedUpBBLinear::recBB(double& fl, double& fr, size_t dim, grid_i
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(fmr, fr, dim, index);
     }
 
@@ -479,19 +479,19 @@ void LaplaceEnhancedUpBBLinear::recBB_LL(double& fl, double& fr, double& fl2, do
   double fmr2 = 0.0;
   fl = fr = fl2 = fr2 = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_LL(fl, fml, fl2, fml2, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_LL(fmr, fr, fmr2, fr2, dim, index);
     }
 
@@ -527,19 +527,19 @@ void LaplaceEnhancedUpBBLinear::recBB_GL(double& fl, double& fr, size_t dim,
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_GL(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_GL(fmr, fr, dim, index);
     }
 
@@ -569,19 +569,19 @@ void LaplaceEnhancedUpBBLinear::recBB_LG(double& fl, double& fr, size_t dim,
   double fmr = 0.0;
   fl = fr = 0.0;
 
-  sgpp::base::GridStorage::index_type::level_type current_level;
-  sgpp::base::GridStorage::index_type::index_type current_index;
+  sgpp::base::level_t current_level;
+  sgpp::base::index_t current_index;
 
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_LG(fl, fml, dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB_LG(fmr, fr, dim, index);
     }
 
@@ -612,13 +612,13 @@ void LaplaceEnhancedUpBBLinear::recBB_grad(size_t dim, grid_iterator& index) {
   if (!index.hint()) {
     index.leftChild(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_grad(dim, index);
     }
 
     index.stepRight(cur_algo_dim_);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec_grad(dim, index);
     }
 

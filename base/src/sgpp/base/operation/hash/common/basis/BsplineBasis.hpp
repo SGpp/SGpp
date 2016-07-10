@@ -1600,11 +1600,10 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of B-spline basis function
    */
   inline double eval(LT l, IT i, double x) override {
-    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return uniformBSpline(
-             x * hinv - static_cast<double>(i) +
-             static_cast<double>(this->degree + 1) / 2.0,
+             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 
@@ -1615,11 +1614,10 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of derivative of B-spline basis function
    */
   inline double evalDx(LT l, IT i, double x) {
-    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hinv * uniformBSplineDx(
-             x * hinv - static_cast<double>(i) +
-             static_cast<double>(this->degree + 1) / 2.0,
+    return hInv * uniformBSplineDx(
+             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 
@@ -1630,11 +1628,10 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of B-spline basis function
    */
   inline double evalDxDx(LT l, IT i, double x) {
-    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
+    const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hinv * hinv * uniformBSplineDxDx(
-             x * hinv - static_cast<double>(i) +
-             static_cast<double>(this->degree + 1) / 2.0,
+    return hInv * hInv * uniformBSplineDxDx(
+             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 

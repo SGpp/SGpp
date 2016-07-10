@@ -64,7 +64,7 @@ class ExpectationValueOptRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.getCoord(j) for j in xrange(gs.getDimension())]
+        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -98,7 +98,7 @@ class VarianceOptRanking(Ranking):
         gs = grid.getStorage()
         gpsj = [None] * gs.size()
         for i in xrange(gs.size()):
-            gpsj[i] = gs.get(i)
+            gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)
@@ -116,7 +116,7 @@ class VarianceOptRanking(Ranking):
 #         p = DataVector(gs.getDimension())
 #         plotDensity2d(J(U))
 #         for gp in admissibleSet.values():
-#             gp.getCoords(p)
+#             gp.getStandardCoordinates(p)
 #             r = self._ranking[gp.hash()]
 #             plt.plot(p[0], p[1], marker="o")
 #             plt.text(p[0], p[1], "%i" % r,
@@ -188,7 +188,7 @@ class VarianceBFRanking(Ranking):
         gs = grid.getStorage()
         gpsj = [None] * gs.size()
         for i in xrange(gs.size()):
-            gpsj[i] = gs.get(i)
+            gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)
@@ -212,7 +212,7 @@ class VarianceBFRanking(Ranking):
 #         p = DataVector(gs.getDimension())
 #         plotDensity2d(J(U))
 #         for gp in admissibleSet.values():
-#             gp.getCoords(p)
+#             gp.getStandardCoordinates(p)
 #             r = self._ranking[gp.hash()]
 #             plt.plot(p[0], p[1], marker="o")
 #             plt.text(p[0], p[1], "%i" % r,
@@ -262,7 +262,7 @@ class ExpectationValueBFRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.getCoord(j) for j in xrange(gs.getDimension())]
+        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -293,7 +293,7 @@ class SurplusRatioEstimationRanking(Ranking):
         ratio = estimateConvergence(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.getCoord(j) for j in xrange(gs.getDimension())]
+        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -321,7 +321,7 @@ class LinearSurplusEstimationRanking(Ranking):
         ratio = estimateSurplus(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.getCoord(j) for j in xrange(gs.getDimension())]
+        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()

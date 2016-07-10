@@ -33,10 +33,10 @@ void gridEqualityTest(sgpp::base::Grid& grid1, sgpp::base::Grid& grid2) {
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(storage1[k]->getLevel(t),
-                        storage2[k]->getLevel(t));
-      BOOST_CHECK_EQUAL(storage1[k]->getIndex(t),
-                        storage2[k]->getIndex(t));
+      BOOST_CHECK_EQUAL(storage1[k].getLevel(t),
+                        storage2[k].getLevel(t));
+      BOOST_CHECK_EQUAL(storage1[k].getIndex(t),
+                        storage2[k].getIndex(t));
     }
   }
 }
@@ -388,8 +388,7 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 
     for (size_t k = 0; k < mus.size(); k++) {
       for (size_t i = 0; i < N; i++) {
-        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(sigmas[k],
-                     mus[k]);
+        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(mus[k], sigmas[k]);
       }
 
       BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],

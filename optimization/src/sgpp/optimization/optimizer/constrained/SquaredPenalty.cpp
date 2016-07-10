@@ -147,28 +147,45 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
 };
 }  // namespace
 
-SquaredPenalty::SquaredPenalty(ScalarFunction& f, ScalarFunctionGradient& fGradient,
-                               VectorFunction& g, VectorFunctionGradient& gGradient,
-                               VectorFunction& h, VectorFunctionGradient& hGradient,
+SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
+                               const ScalarFunctionGradient& fGradient,
+                               const VectorFunction& g,
+                               const VectorFunctionGradient& gGradient,
+                               const VectorFunction& h,
+                               const VectorFunctionGradient& hGradient,
                                size_t maxItCount, double xTolerance, double constraintTolerance,
                                double penaltyStartValue, double penaltyIncreaseFactor)
     : ConstrainedOptimizer(f, g, h, maxItCount),
-      fGradient(fGradient),
-      gGradient(gGradient),
-      hGradient(hGradient),
       theta(xTolerance),
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
       xHistInner(0, 0),
-      kHistInner() {}
+      kHistInner() {
+  fGradient.clone(this->fGradient);
+  gGradient.clone(this->gGradient);
+  hGradient.clone(this->hGradient);
+}
+
+SquaredPenalty::SquaredPenalty(const SquaredPenalty& other)
+    : ConstrainedOptimizer(other),
+      theta(other.theta),
+      epsilon(other.epsilon),
+      mu0(other.mu0),
+      rhoMuPlus(other.rhoMuPlus),
+      xHistInner(other.xHistInner),
+      kHistInner(other.kHistInner) {
+  other.fGradient->clone(fGradient);
+  other.gGradient->clone(gGradient);
+  other.hGradient->clone(hGradient);
+}
 
 SquaredPenalty::~SquaredPenalty() {}
 
 void SquaredPenalty::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -177,11 +194,11 @@ void SquaredPenalty::optimize() {
   xHistInner.resize(0, d);
   kHistInner.clear();
 
-  const size_t mG = g.getNumberOfComponents();
-  const size_t mH = h.getNumberOfComponents();
+  const size_t mG = g->getNumberOfComponents();
+  const size_t mH = h->getNumberOfComponents();
 
   base::DataVector x(x0);
-  double fx = f.eval(x);
+  double fx = f->eval(x);
 
   xHist.appendRow(x);
   fHist.append(fx);
@@ -199,8 +216,8 @@ void SquaredPenalty::optimize() {
 
   const size_t unconstrainedN = N / 20;
 
-  PenalizedObjectiveFunction fPenalized(f, g, h, mu);
-  PenalizedObjectiveGradient fPenalizedGradient(fGradient, gGradient, hGradient, mu);
+  PenalizedObjectiveFunction fPenalized(*f, *g, *h, mu);
+  PenalizedObjectiveGradient fPenalizedGradient(*fGradient, *gGradient, *hGradient, mu);
 
   while (k < N) {
     fPenalized.setMu(mu);
@@ -217,9 +234,9 @@ void SquaredPenalty::optimize() {
     k += numberInnerIterations;
 
     x = xNew;
-    fx = f.eval(x);
-    g.eval(x, gx);
-    h.eval(x, hx);
+    fx = f->eval(x);
+    g->eval(x, gx);
+    h->eval(x, hx);
     k++;
 
     xHist.appendRow(x);
@@ -260,13 +277,13 @@ void SquaredPenalty::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const { return *fGradient; }
 
 VectorFunctionGradient& SquaredPenalty::getInequalityConstraintGradient() const {
-  return gGradient;
+  return *gGradient;
 }
 
-VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const { return hGradient; }
+VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const { return *hGradient; }
 
 double SquaredPenalty::getXTolerance() const { return theta; }
 

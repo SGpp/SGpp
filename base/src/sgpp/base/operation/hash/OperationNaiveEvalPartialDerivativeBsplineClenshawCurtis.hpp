@@ -28,10 +28,10 @@ class OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(
-    GridStorage& storage, size_t degree)
-    : storage(storage),
-      base(degree) {
+  OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(GridStorage& storage, size_t degree) :
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -41,26 +41,31 @@ class OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis :
   }
 
   /**
-   * @param alpha     coefficient vector
-   * @param point     evaluation point
-   * @param derivDim  dimension in which the partial derivative should be taken
-   * @return          value of the partial derivative of the linear combination
+   * @param       alpha               coefficient vector
+   * @param       point               evaluation point
+   * @param       derivDim            dimension in which the partial derivative should be taken
+   *                                  (0, ..., d-1)
+   * @param[out]  partialDerivative   value of the partial derivative of the linear combination
+   * @return                          value of the linear combination
    */
   double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
-                                size_t derivDim) override;
+                                size_t derivDim,
+                                double& partialDerivative) override;
 
   /**
    * @param       alpha               coefficient matrix (each column is a coefficient vector)
    * @param       point               evaluation point
    * @param       derivDim            dimension in which the partial derivative should be taken
    *                                  (0, ..., d-1)
+   * @param[out]  value               values of the linear combination
    * @param[out]  partialDerivative   values of the partial derivatives of the linear combination
    *                                  (the j-th entry corresponds to the j-th column of alpha)
    */
   void evalPartialDerivative(const DataMatrix& alpha,
                              const DataVector& point,
                              size_t derivDim,
+                             DataVector& value,
                              DataVector& partialDerivative) override;
 
  protected:
@@ -68,6 +73,8 @@ class OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis :
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineClenshawCurtisBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

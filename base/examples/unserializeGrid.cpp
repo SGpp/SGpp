@@ -12,7 +12,7 @@
 using sgpp::base::Grid;
 using sgpp::base::DataVector;
 using sgpp::base::GridGenerator;
-using sgpp::base::GridIndex;
+using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::OperationEval;
 

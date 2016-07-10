@@ -38,8 +38,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    */
   size_t getNumberOfRefinablePoints(GridStorage& storage) override;
 
-  void refineGridpoint1D(GridStorage& storage,
-                         AbstractRefinement::index_type& index, size_t d) override;
+  void refineGridpoint1D(GridStorage& storage, GridPoint& point, size_t d) override;
 
  protected:
   /**
@@ -58,9 +57,9 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * executed if a gridpoint is refined
    *
    * @param storage hashmap that stores the gridpoinrs
-   * @param index the point that should be inserted
+   * @param point the point that should be inserted
    */
-  void createGridpoint(GridStorage& storage, index_type& index) override;
+  void createGridpoint(GridStorage& storage, GridPoint& point) override;
 
 
   /**
@@ -68,9 +67,9 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoinrs
-   * @param index the point that should be inserted
+   * @param point the point that should be inserted
    */
-  void createGridpointGeneral(GridStorage& storage, index_type& index);
+  void createGridpointGeneral(GridStorage& storage, GridPoint& point);
 
 
   /**
@@ -78,21 +77,20 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * 0,0 and 0,1 on level zero
    *
    * @param storage hashmap that stores the gridpoinrs
-   * @param index the point that should be inserted
+   * @param point the point that should be inserted
    */
-  void createGridpointLevelZeroConsistency(GridStorage& storage,
-      index_type& index);
+  void createGridpointLevelZeroConsistency(GridStorage& storage, GridPoint& point);
 
   /**
          * Creates children grid points along single direction
          *
-         * @param index The point that should be refined
+         * @param point The point that should be refined
          * @param d direction
          * @param storage hashmap that stores the gridpoints
          * @param source_index index value in the dimension d
          * @param source_level level value in the dimension d
          */
-  void createGridpoint1D(index_type& index,
+  void createGridpoint1D(GridPoint& point,
                          size_t d, GridStorage& storage,
                          index_t& source_index, level_t& source_level) override;
 

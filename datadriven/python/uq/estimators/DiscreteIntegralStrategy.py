@@ -8,7 +8,7 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.general import project
 from pysgpp.extensions.datadriven.uq.operations.discretizeProduct import discretizeProduct
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction, getBasis
-from pysgpp import DataVector, HashGridIndex
+from pysgpp import DataVector, HashGridPoint
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.ScipyQuadratureStrategy import ScipyQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.UniformQuadratureStrategy import UniformQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d

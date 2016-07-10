@@ -32,9 +32,9 @@ namespace std {
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
 }
 
-//TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
+//TODO really evil hack, find a better solution! (used e.g. for HashGridPoint->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };%
-%apply uint32_t *OUTPUT {sgpp::base::HashGridIndex::level_type& l, sgpp::base::HashGridIndex::index_type& i}
+%apply uint32_t *OUTPUT {sgpp::base::HashGridPoint::level_type& l, sgpp::base::HashGridPoint::index_type& i}
 
 // include other interface files
 %import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
@@ -43,6 +43,8 @@ namespace std {
 %include "DataMatrix.i"
 %include "GridFactory.i"
 %include "OpFactory.i"
+
+%include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
 
 %ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
 %ignore sgpp::base::DataVectorSP::operator=;
@@ -55,12 +57,12 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
-%ignore sgpp::base::BoundingBox::toString(std::string& text);
+%ignore sgpp::base::BoundingBox::toString(std::string& text) const;
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%ignore sgpp::base::HashGridIndex::operator=;
-%include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
+%ignore sgpp::base::HashGridPoint::operator=;
+%include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
@@ -181,7 +183,7 @@ namespace std {
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
+%template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
 
 

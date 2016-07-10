@@ -58,13 +58,23 @@ void LearnerLeastSquaresIdentity::postProcessing(const sgpp::base::DataMatrix& t
   }
 }
 
-sgpp::base::DataVector LearnerLeastSquaresIdentity::predict(sgpp::base::DataMatrix& testDataset) {
-  sgpp::base::DataVector classesComputed(testDataset.getNrows());
+void LearnerLeastSquaresIdentity::predict(sgpp::base::DataMatrix& testDataset,
+                                          sgpp::base::DataVector& classesComputed) {
+  classesComputed.resize(testDataset.getNrows());
 
-  sgpp::op_factory::createOperationMultipleEval(
-      *(this->grid), testDataset, this->implementationConfiguration)->mult(*alpha, classesComputed);
+  sgpp::op_factory::createOperationMultipleEval(*(this->grid), testDataset,
+                                                this->implementationConfiguration)
+      ->mult(*alpha, classesComputed);
+}
 
-  return classesComputed;
+void LearnerLeastSquaresIdentity::multTranspose(sgpp::base::DataMatrix& dataset,
+                                                sgpp::base::DataVector& multiplier,
+                                                sgpp::base::DataVector& result) {
+  result.resize(grid->getSize());
+
+  sgpp::op_factory::createOperationMultipleEval(*(this->grid), dataset,
+                                                this->implementationConfiguration)
+      ->mult(multiplier, result);
 }
 
 double LearnerLeastSquaresIdentity::testRegular(

@@ -30,11 +30,11 @@ class AbstractRefinement_refinement_key {
   /***
    * Constructor
    *
-   * @param index The index of the grid point in the HashGridStorage
+   * @param point The grid point in the HashGridStorage
    * @param seq The sequential number of the grid points in the HashGridStorage
    */
-  AbstractRefinement_refinement_key(const HashGridIndex& index, size_t seq) :
-    index(index), seq(seq), level_vector() {
+  AbstractRefinement_refinement_key(const GridPoint& point, size_t seq) :
+    point(point), seq(seq), level_vector() {
   }
 
 
@@ -51,8 +51,8 @@ class AbstractRefinement_refinement_key {
    */
   const std::vector<level_t> getLevelVector() {
     if (level_vector.empty()) {
-      for (size_t d = 0; d < index.getDimension(); d++) {
-        level_vector.push_back(index.getLevel(d));
+      for (size_t d = 0; d < point.getDimension(); d++) {
+        level_vector.push_back(point.getLevel(d));
       }
     }
 
@@ -61,12 +61,12 @@ class AbstractRefinement_refinement_key {
 
 
   /***
-   * Gets the index of the grid point
+   * Gets the grid point
    *
-   * @return index
+   * @return point
    */
-  HashGridIndex& getIndex() {
-    return index;
+  GridPoint& getPoint() {
+    return point;
   }
 
 
@@ -79,7 +79,7 @@ class AbstractRefinement_refinement_key {
   }
 
  private:
-  HashGridIndex index;
+  GridPoint point;
   size_t seq;
   std::vector<level_t> level_vector;
 };
@@ -90,13 +90,6 @@ class AbstractRefinement_refinement_key {
  */
 class AbstractRefinement {
  public:
-  typedef HashGridIndex index_type;
-  typedef HashGridStorage::index_pointer index_pointer;
-  typedef HashGridIndex::index_type index_t;
-  typedef HashGridIndex::level_type level_t;
-
-
-
   /**
   * Type of the identifier of the refinement atom (e.g. a grid point or a subspace)
   */
@@ -163,10 +156,10 @@ class AbstractRefinement {
   /**
    * Refine one grid point along a single direction
    * @param storage hashmap that stores the grid points
-   * @param index point to refine
+   * @param point point to refine
    * @param d direction
    */
-  virtual void refineGridpoint1D(GridStorage& storage, index_type& index,
+  virtual void refineGridpoint1D(GridStorage& storage, GridPoint& point,
                                  size_t d) = 0;
 
 
@@ -182,9 +175,9 @@ class AbstractRefinement {
   /**
    * Check if the grid point is refinable
    * @param storage hashmap that stores the grid points
-   * @param index grid point index
+   * @param point grid point
    */
-  bool isRefinable(GridStorage& storage, index_type& index);
+  bool isRefinable(GridStorage& storage, GridPoint& point);
 
   /**
    * Destructor
@@ -219,31 +212,31 @@ class AbstractRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param index The point that should be inserted
+   * @param point The point that should be inserted
    */
-  virtual void createGridpoint(GridStorage& storage, index_type& index) = 0;
+  virtual void createGridpoint(GridStorage& storage, GridPoint& point) = 0;
 
 
   /**
    * Subroutine for grid point creation.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param index The point that should be inserted
+   * @param point The point that should be inserted
    */
   virtual void createGridpointSubroutine(GridStorage& storage,
-                                         index_type& index) {
+                                         GridPoint& point) {
     // For efficiency this function is defined the header file, this way it
     // be easily inlined by compiler.
-    if (!storage.has_key(&index)) {
+    if (!storage.isContaining(point)) {
       // save old leaf value
-      bool saveLeaf = index.isLeaf();
-      index.setLeaf(false);
-      createGridpoint(storage, index);
+      bool saveLeaf = point.isLeaf();
+      point.setLeaf(false);
+      createGridpoint(storage, point);
       // restore leaf value
-      index.setLeaf(saveLeaf);
+      point.setLeaf(saveLeaf);
     } else {
       // set stored index to false
-      (storage.get((storage.find(&index))->second))->setLeaf(false);
+      storage.getPoint((storage.find(&point))->second).setLeaf(false);
     }
   }
 
@@ -251,14 +244,14 @@ class AbstractRefinement {
   /**
    * Creates children grid points along single direction
    *
-   * @param index The point that should be refined
+   * @param point The point that should be refined
    * @param d direction
    * @param storage hashmap that stores the gridpoints
    * @param source_index index value in the dimension d
    * @param source_level level value in the dimension d
    */
   virtual void createGridpoint1D(
-    index_type& index,
+      GridPoint& point,
     size_t d, GridStorage& storage,
     index_t& source_index, level_t& source_level);
 
@@ -269,7 +262,7 @@ class AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
-   * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+   * @param collection container with grid element identifiers (e.g. sequence number, grid point)
    *  and corresponding refinement values (usually empty)
    */
   virtual void collectRefinablePoints(
@@ -283,7 +276,7 @@ class AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
-   * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+   * @param collection container with grid element identifiers (e.g. sequence number, grid point)
    *  and corresponding refinement values
    */
   virtual void refineGridpointsCollection(

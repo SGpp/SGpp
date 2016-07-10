@@ -437,7 +437,7 @@ def doNormal():
     alpha = run(grid, training, y)
 
 #    for n in xrange(grid.getSize()):
-#        print grid.getStorage().get(n).getCoordinates()
+#        print grid.getStorage().getPoint(n).getCoordinates()
 
     if options.outfile:
         writeAlphaARFF(options.outfile, alpha)

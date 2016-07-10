@@ -23,7 +23,9 @@ class OperationNaiveEvalModPoly : public OperationNaiveEval {
    * @param storage   storage of the sparse grid
    * @param degree    polynomial degree
    */
-  OperationNaiveEvalModPoly(GridStorage& storage, size_t degree) : storage(storage), base(degree) {}
+  OperationNaiveEvalModPoly(GridStorage& storage, size_t degree) :
+    storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {
+  }
 
   ~OperationNaiveEvalModPoly() override {}
 
@@ -46,6 +48,8 @@ class OperationNaiveEvalModPoly : public OperationNaiveEval {
   GridStorage& storage;
   /// 1D B-spline basis
   SPolyModifiedBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base
