@@ -164,13 +164,12 @@ void ew_varianz(){
 
   // std::cout << bsplineQuadrature(*grid, 0) << std::endl;
   DataVector alpha(gridStorage.getSize());
-  double p[2];
+  DataVector p(dim);
 
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     GridPoint& gp = gridStorage.getPoint(i);
-    p[0] = gp.getStandardCoordinate(0);
-    p[1] = gp.getStandardCoordinate(1);
+    p = gridStorage.getCoordinates(gp);
     alpha[i] = u(p[0], p[1]);
   }
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
@@ -204,8 +203,7 @@ void ew_varianz(){
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     GridPoint& gp = gridStorage.getPoint(i);
-    p[0] = gp.getStandardCoordinate(0);
-    p[1] = gp.getStandardCoordinate(1);
+    p = gridStorage.getCoordinates(gp);
     double prod_res = 1.0;
 
     for (size_t d = 0; d < 2; d++){
@@ -219,7 +217,7 @@ void ew_varianz(){
 
       for (size_t j = 0; j < intStorage.getSize(); j++) {
         GridPoint& gp_int = intStorage.getPoint(j);
-        x = gp_int.getStandardCoordinate(0);
+        x = intStorage.getCoordinates(gp_int)[0];
         // alpha_int[j] = base.eval(le, in, x)*base.eval(le, in, x)*f_1d(d, x); // Varianz
         alpha_int[j] = base.eval(le, in, x)*f_1d(d, x); // Erwartungswert
       }
