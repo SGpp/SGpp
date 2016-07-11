@@ -8,32 +8,11 @@ class CandidateSet(object):
         self.iteration = 0
         self.verbose = True
 
-
-    def findGridPointsWithNegativeCoefficient(self, gps, alpha):
-        negativeGridPoints = {}
-        for i, gp in gps.items():
-            if alpha[i] < 0.0:
-                negativeGridPoints[i] = gp
-        return negativeGridPoints
-
-
-    def separateGridPoints(self, gps, alpha):
-        negativeGridPoints = {}
-        positiveGridPoints = {}
-        for i, gp in gps.items():
-            if alpha[i] < 0.0:
-                negativeGridPoints[i] = gp
-            else:
-                positiveGridPoints[i] = gp
-
-        return negativeGridPoints, positiveGridPoints
-
-
     def removeAlreadyExistingGridPoints(self, grid, intersections):
         gs = grid.getStorage()
         return [gp for gp in intersections if not gs.isContaining(gp)]
 
-    
+
     def findCandidates(self, grid, alpha, addedGridPoints):
         raise NotImplementedError
 

@@ -227,6 +227,16 @@ class HashGridStorage {
   size_t insert(point_type& index);
 
   /**
+   * insert a new index into map including all its ancestors
+   *
+   * @param index reference to the index that should be inserted
+   * @param vector containing the indices of the new points
+   *
+   * @return
+   */
+  void insert(point_type& index, std::vector<size_t> insertedPoints);
+
+  /**
    * updates an already stored index
    *
    * @param index reference to the index that should be updated
@@ -395,6 +405,14 @@ class HashGridStorage {
   void getLevelForIntegral(DataMatrix& level);
 
   /**
+   * Converts this storage from AOS (array of structures) to SOA (structure of array)
+   * to speed up operations on the position of the grid points.
+   *
+   * @param coordinates DataMatrix to store the coordinates of the grid points
+   */
+  void getCoordinateArraysForEval(DataMatrix& coordinates);
+
+  /**
    * returns the max. depth in all dimension of the grid
    */
   size_t getMaxLevel() const;
@@ -438,7 +456,7 @@ class HashGridStorage {
    * @param d     dimension
    * @return      coordinate of the point in dimension d
    */
-  inline double getCoordinate(HashGridPoint point, size_t d) const {
+  inline double getCoordinate(HashGridPoint& point, size_t d) const {
     if ((boundingBox == nullptr) && (stretching == nullptr)) {
       return point.getStandardCoordinate(d);
     } else {
@@ -450,7 +468,7 @@ class HashGridStorage {
         return stretching->getCoordinate(level, index, d);
       } else {
         return boundingBox->getIntervalWidth(d) * point.getStandardCoordinate(d) +
-            boundingBox->getIntervalOffset(d);
+               boundingBox->getIntervalOffset(d);
       }
     }
   }
