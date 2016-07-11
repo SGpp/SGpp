@@ -33,8 +33,7 @@ def target_func(x):
     hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
     for i in range(gridStorage.getSize()):
         gp = gridStorage.getPoint(i)
-        # x = (gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
-        y = gp.getStandardCoordinate(0)
+        y = gridStorage.getCoordinates(gp)
         # alpha[i] = oscill_genz(d, x)
         # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
         # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y
@@ -52,7 +51,7 @@ def shcb(x):
     return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1) 
 def oscill_genz(d, x):
     u = 0.5
-    a = [5, 5]
+    a = [2, 2]
     return np.cos(2*np.pi*u+sum([a[i]*x[i] for i in range(d)]))
 
 def michalewicz(x):
@@ -187,9 +186,7 @@ def optimize():
                     fX0 = functionValues[i]
                     x0Index = i
 
-            for t in range(d):
-                x0[t] = gridStorage.getPoint(x0Index).getStandardCoordinate(t)
-
+            x0 = gridStorage.getCoordinates(gridStorage.getPoint(x0Index));
             ftX0 = ft.eval(x0)
 
             print "x0 = {}".format(x0)
@@ -216,7 +213,7 @@ def optimize():
     plt.show()
    
 def genz_error(sol):
-    a = (5,5)
+    a = (2,2)
     exact_sol = (np.cos(a[0] + a[1]) - np.cos(a[0]) - np.cos(a[1])+1)/(a[0]*a[1])
     return abs(exact_sol-sol)
 
@@ -246,7 +243,7 @@ def integrate():
         # solver = pysgpp.OptUMFPACK()
         num_gridPoints = []
         errors = []
-        for l in range(1,9):
+        for l in range(1,10):
             grid.getStorage().clear()
             gridGen = grid.getGenerator().regular(l)
             gridStorage = grid.getStorage()
@@ -254,7 +251,7 @@ def integrate():
             opeval = pysgpp.createOperationNaiveEval(grid)
             for i in range(gridStorage.getSize()):
                 gp = gridStorage.getPoint(i)
-                x = (gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
+                x = (gridStorage.getCoordinate(gp, 0), gridStorage.getCoordinate(gp ,1))
                 alpha[i] = oscill_genz(d,x)
                 # alpha[i] = target_func(x)
                 # alpha[i] = michalewicz(x)
