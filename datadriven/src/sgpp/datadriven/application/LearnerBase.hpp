@@ -131,7 +131,7 @@ class LearnerBase {
   /**
    * Learning a dataset with spatially adaptive sparse grids
    *
-   * @param testDataset the training dataset
+   * @param trainDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular start grid
    * @param SolverConfigRefine configuration of the SLE solver during the
@@ -142,24 +142,29 @@ class LearnerBase {
    * @param testAccDuringAdapt set to true if the training accuracy should be
    * determined in evert refinement step
    * @param lambdaRegularization regularization parameter lambda
+   * @param testDataset the test dataset (for accuracy output, nullptr if no output is wished)
+   * @param testClasses classes corresponding to the testing dataset (for accuracy output, nullptr
+   * if no output is wished)
    */
-  virtual LearnerTiming train(sgpp::base::DataMatrix& testDataset, sgpp::base::DataVector& classes,
+  virtual LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
                               const sgpp::base::AdpativityConfiguration& AdaptConfig,
-                              bool testAccDuringAdapt, const double lambdaRegularization);
+                              bool testAccDuringAdapt, const double lambdaRegularization,
+                              sgpp::base::DataMatrix* testDataset = nullptr,
+                              sgpp::base::DataVector* testClasses = nullptr);
 
   /**
    * Learning a dataset with regular sparse grids
    *
-   * @param testDataset the training dataset
+   * @param trainDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular grid
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
-  LearnerTiming train(sgpp::base::DataMatrix& testDataset, sgpp::base::DataVector& classes,
+  LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
                       const sgpp::base::RegularGridConfiguration& GridConfig,
                       const sgpp::solver::SLESolverConfiguration& SolverConfig,
                       const double lambdaRegularization);
@@ -174,6 +179,9 @@ class LearnerBase {
    */
   virtual void predict(sgpp::base::DataMatrix& testDataset,
                        sgpp::base::DataVector& classesComputed);
+
+  virtual void multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
+                             sgpp::base::DataVector& result);
 
   /**
    * compute the accuracy for given testDataset. test is automatically called
