@@ -179,10 +179,7 @@ def getHierarchicalAncestors(grid, gp):
 
 
 def isHierarchicalAncestorDimx(li, ii, lj, ij):
-    if lj < li:
-        return False
-    else:
-        return ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+    return lj >= li and ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
 
 
 def isHierarchicalAncestor(gpi, gpj):
@@ -202,19 +199,36 @@ def isHierarchicalAncestor(gpi, gpj):
 
 
 def isHierarchicalAncestorByLevelIndex((leveli, indexi), (levelj, indexj)):
-    if np.all(leveli == levelj) and np.all(indexi == indexj):
-        return False
-    else:
-        idim = 0
-        numDims = len(leveli)
-        isAncestor = True
-        while isAncestor and idim < numDims:
-            isAncestor &= isHierarchicalAncestorDimx(leveli[idim],
-                                                     indexi[idim],
-                                                     levelj[idim],
-                                                     indexj[idim])
-            idim += 1
-        return isAncestor
+    idim = 0
+    numDims = len(leveli)
+    isAncestor = True
+    isEqual = False
+    while isAncestor and idim < numDims:
+        isAncestor &= isHierarchicalAncestorDimx(leveli[idim],
+                                                 indexi[idim],
+                                                 levelj[idim],
+                                                 indexj[idim])
+        isEqual &= leveli[idim] == levelj[idim] and indexi[idim] == indexj[idim]
+        idim += 1
+
+    return isAncestor and not isEqual
+
+
+def haveHierarchicalRelationshipByLevelIndex((leveli, indexi), (levelj, indexj)):
+    idim = 0
+    numDims = len(leveli)
+    isAncestorij = True
+    isAncestorji = True
+    isEqual = False
+    while (isAncestorij or isAncestorji) and idim < numDims:
+        li, ii = leveli[idim], indexi[idim]
+        lj, ij = levelj[idim], indexj[idim]
+        isAncestorij &= lj >= li and ii == (ij >> (lj - li)) | 1
+        isAncestorji &= li >= lj and ij == (ii >> (li - lj)) | 1
+        isEqual &= li == lj and ii == ij
+        idim += 1
+
+    return (isAncestorij or isAncestorji) and not isEqual
 
 
 def getNonExistingHierarchicalAncestors(grid, gp):

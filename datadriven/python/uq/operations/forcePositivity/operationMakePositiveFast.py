@@ -136,25 +136,6 @@ class OperationMakePositiveFast(object):
         return alpha
     
 
-    def computeBoundsOfOverlappingPatch(self, gpi, gpj):
-        # compute bounds of the overlapping patch
-        numDims = gpi.getDimension()
-        xlim = np.ndarray((numDims, 2))
-        for d in xrange(numDims):
-            # get level index
-            lid, iid = gpi.getLevel(d), gpi.getIndex(d)
-            ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
-
-            # check if they have overlapping support
-            xlowi, xhighi = getBoundsOfSupport(lid, iid)
-            xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-            xlim[d, 0] = max(xlowi, xlowj)
-            xlim[d, 1] = min(xhighi, xhighj)
-
-        return xlim
-
-
     def sortCandidatesByLevelSum(self, candidates):
         gps = {}
         for gp in candidates:

@@ -304,18 +304,14 @@ class HashGridPoint {
    *
    * @param dim the dimension in which the modification is taken place
    */
-  inline void getLeftLevelZero(size_t dim) {
-    set(dim, 0, 0);
-  }
+  inline void getLeftLevelZero(size_t dim) { set(dim, 0, 0); }
 
   /**
    * Sets the index to the right level zero parent
    *
    * @param dim the dimension in which the modification is taken place
    */
-  inline void getRightLevelZero(size_t dim) {
-    set(dim, 0, 1);
-  }
+  inline void getRightLevelZero(size_t dim) { set(dim, 0, 1); }
 
   /**
    * Sets the index to the left child
@@ -346,8 +342,18 @@ class HashGridPoint {
    *
    * @param d the dimension in which the modification is taken place
    */
-  inline void getRoot(size_t d) {
-    set(d, 1, 1);
+  inline void getRoot(size_t d) { set(d, 1, 1); }
+
+  /**
+   * Sets the index to the parent
+   *
+   * @param dim the dimension in which the modification is taken place
+   */
+  inline void getParent(size_t dim) {
+    level_type l;
+    index_type i;
+    get(dim, l, i);
+    set(dim, l - 1, (i >> 1) | 1);
   }
 
  private:
