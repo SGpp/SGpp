@@ -13,6 +13,13 @@
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+
+
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
