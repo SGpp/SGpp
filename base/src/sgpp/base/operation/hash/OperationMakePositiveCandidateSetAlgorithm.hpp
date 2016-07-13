@@ -39,7 +39,8 @@ class OperationMakePositiveFindIntersectionCandidates
                       std::vector<std::shared_ptr<HashGridPoint>>& candidates) override;
 
  private:
-  void findIntersections(base::Grid& grid, std::map<size_t, std::shared_ptr<HashGridPoint>>& res);
+  void findIntersections(base::Grid& grid, size_t levelSum,
+                         std::map<size_t, std::shared_ptr<HashGridPoint>>& res);
 
   void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
 
@@ -48,7 +49,8 @@ class OperationMakePositiveFindIntersectionCandidates
 
   size_t iteration;
   std::map<size_t, std::shared_ptr<std::vector<std::shared_ptr<HashGridPoint>>>> intersections;
-  std::vector<std::map<size_t, std::shared_ptr<HashGridPoint>>> nextIntersections;
+  std::map<size_t, std::shared_ptr<HashGridPoint>> currentIntersections;
+  std::map<size_t, std::shared_ptr<HashGridPoint>> nextIntersections;
 
   std::map<size_t, std::shared_ptr<HashGridPoint>> candidates;
   bool verbose;
