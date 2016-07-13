@@ -60,11 +60,12 @@ class OperationMakePositive {
   /**
    *
    * @param candidates
-   * @param sortedCandidates
+   * @param finalCandidates
+   * @param currentLevelSum
    */
-  void sortNonExistingCandidatesByLevelSum(
-      std::vector<base::HashGridPoint*>& candidates,
-      std::map<size_t, std::vector<base::HashGridPoint*> >& sortedCandidates);
+  void extractNonExistingCandidatesByLevelSum(
+      std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
+      std::vector<std::shared_ptr<base::HashGridPoint>>& finalCandidates, size_t currentLevelSum);
 
   /**
    *
@@ -72,18 +73,22 @@ class OperationMakePositive {
    * @param candidates
    */
   void addFullGridPoints(base::Grid& grid, base::DataVector& alpha,
-                         std::vector<base::HashGridPoint*>& candidates,
+                         std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
                          std::vector<size_t>& addedGridPoints);
 
   /// grid
   base::Grid& grid;
 
-  /// last checked level sum
-  size_t lastMinimumCandidateLevelSum;
+  /// range for level sums to be tested
+  size_t minimumLevelSum;
+  size_t maximumLevelSum;
 
   /// candidate search algorithm
   std::shared_ptr<base::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
   std::shared_ptr<base::OperationMakePositiveInterpolationAlgorithm> interpolationMethod;
+
+  /// verbosity
+  bool verbose;
 };
 
 } /* namespace base */

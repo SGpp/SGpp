@@ -912,6 +912,7 @@ def checkPositivity(grid, alpha):
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
     for i, yi in enumerate(res):
+#         print A[i, :], yi
         if yi < -1e-11:
             cnt += 1
             negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.getPoint(i))

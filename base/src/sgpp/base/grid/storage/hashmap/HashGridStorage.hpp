@@ -234,7 +234,7 @@ class HashGridStorage {
    *
    * @return
    */
-  void insert(point_type& index, std::vector<size_t> insertedPoints);
+  void insert(point_type& index, std::vector<size_t>& insertedPoints);
 
   /**
    * updates an already stored index
@@ -456,7 +456,7 @@ class HashGridStorage {
    * @param d     dimension
    * @return      coordinate of the point in dimension d
    */
-  inline double getCoordinate(HashGridPoint& point, size_t d) const {
+  inline double getCoordinate(const HashGridPoint& point, size_t d) const {
     if ((boundingBox == nullptr) && (stretching == nullptr)) {
       return point.getStandardCoordinate(d);
     } else {
@@ -481,7 +481,7 @@ class HashGridStorage {
    * @param       point         grid point
    * @param[out]  coordinates   vector of coordinates
    */
-  void getCoordinates(HashGridPoint point, DataVector& coordinates) const;
+  void getCoordinates(const HashGridPoint& point, DataVector& coordinates) const;
 
   /**
    * Calculates the coordinates of a given grid point.
@@ -491,7 +491,7 @@ class HashGridStorage {
    * @param   point   grid point
    * @return          vector of coordinates
    */
-  DataVector getCoordinates(HashGridPoint point) const;
+  DataVector getCoordinates(const HashGridPoint& point) const;
 
  private:
   /// the dimension of the grid

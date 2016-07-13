@@ -19,21 +19,21 @@
 namespace sgpp {
 namespace base {
 
-HashGridPoint::HashGridPoint(size_t dimension) :
-    dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(size_t dimension)
+    : dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
   hInv = new index_type[dimension];
   leaf = false;
 }
 
-HashGridPoint::HashGridPoint() :
-    dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint()
+    : dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   leaf = false;
 }
 
-HashGridPoint::HashGridPoint(const HashGridPoint& o) :
-    dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(const HashGridPoint& o)
+    : dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
   hInv = new index_type[dimension];
@@ -48,8 +48,8 @@ HashGridPoint::HashGridPoint(const HashGridPoint& o) :
   rehash();
 }
 
-HashGridPoint::HashGridPoint(std::istream& istream, int version) :
-    dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(std::istream& istream, int version)
+    : dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   size_t temp_leaf;
 
   istream >> dimension;
@@ -123,16 +123,47 @@ void HashGridPoint::serialize(std::ostream& ostream, int version) {
   }
 }
 
-size_t HashGridPoint::getDimension() const {
-  return dimension;
+size_t HashGridPoint::getDimension() const { return dimension; }
+
+void HashGridPoint::setLeaf(bool isLeaf) { leaf = isLeaf; }
+
+bool HashGridPoint::isLeaf() { return leaf; }
+
+bool HashGridPoint::hasOverlappingSupport(size_t dim, HashGridPoint& gp) {
+  size_t leveli = level[dim], indexi = index[dim];
+  size_t levelj = gp.getLevel(dim), indexj = gp.getIndex(dim);
+
+  if (leveli == levelj) return indexi == indexj;
+
+  if (leveli < levelj)
+    return isHierarchicalAncestor(dim, gp);
+  else
+    return gp.isHierarchicalAncestor(dim, *this);
 }
 
-void HashGridPoint::setLeaf(bool isLeaf) {
-  leaf = isLeaf;
+bool HashGridPoint::isHierarchicalAncestor(size_t dim, HashGridPoint& gp) {
+  size_t leveli = level[dim], indexi = index[dim];
+  size_t levelj = gp.getLevel(dim), indexj = gp.getIndex(dim);
+
+  return (levelj >= leveli) && (indexi == ((indexj >> (levelj - leveli)) | 1));
 }
 
-bool HashGridPoint::isLeaf() {
-  return leaf;
+bool HashGridPoint::hasOverlappingSupport(HashGridPoint& gp) {
+  size_t idim = 0;
+
+  while (idim < dimension && hasOverlappingSupport(idim, gp)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == dimension;
+}
+
+bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gp) {
+  size_t idim = 0;
+
+  while (idim < dimension && isHierarchicalAncestor(idim, gp)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == dimension;
 }
 
 void HashGridPoint::getStandardCoordinates(DataVector& coordinates) const {
@@ -164,9 +195,7 @@ void HashGridPoint::rehash() {
   this->hash = hash;
 }
 
-size_t HashGridPoint::getHash() const {
-  return hash;
-}
+size_t HashGridPoint::getHash() const { return hash; }
 
 bool HashGridPoint::equals(const HashGridPoint& rhs) const {
   for (size_t d = 0; d < dimension; d++) {
@@ -184,9 +213,7 @@ bool HashGridPoint::equals(const HashGridPoint& rhs) const {
   return true;
 }
 
-HashGridPoint& HashGridPoint::assign(const HashGridPoint& rhs) {
-  return this->operator=(rhs);
-}
+HashGridPoint& HashGridPoint::assign(const HashGridPoint& rhs) { return this->operator=(rhs); }
 
 HashGridPoint& HashGridPoint::operator=(const HashGridPoint& rhs) {
   if (this == &rhs) {

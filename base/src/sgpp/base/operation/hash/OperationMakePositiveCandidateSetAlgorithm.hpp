@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <map>
 #include <vector>
 
 namespace sgpp {
@@ -21,17 +22,36 @@ class OperationMakePositiveCandidateSetAlgorithm {
   virtual ~OperationMakePositiveCandidateSetAlgorithm();
 
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
-                              std::vector<HashGridPoint*>& candidates) = 0;
+                              std::vector<std::shared_ptr<HashGridPoint>>& candidates) = 0;
+
+ protected:
+  void findNodesWithNegativeCoefficients(base::DataVector& alpha,
+                                         std::vector<size_t>& negativeGridPoints);
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveFindIntersectionCandidates();
+  explicit OperationMakePositiveFindIntersectionCandidates(base::Grid& grid);
   virtual ~OperationMakePositiveFindIntersectionCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
-                      std::vector<HashGridPoint*>& candidates) override;
+                      std::vector<std::shared_ptr<HashGridPoint>>& candidates) override;
+
+ private:
+  void findIntersections(base::Grid& grid, std::map<size_t, std::shared_ptr<HashGridPoint>>& res);
+
+  void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
+
+  void computeIntersection(base::HashGridPoint& gpi, base::HashGridPoint& gpj,
+                           base::HashGridPoint& gpintersection);
+
+  size_t iteration;
+  std::map<size_t, std::shared_ptr<std::vector<std::shared_ptr<HashGridPoint>>>> intersections;
+  std::vector<std::map<size_t, std::shared_ptr<HashGridPoint>>> nextIntersections;
+
+  std::map<size_t, std::shared_ptr<HashGridPoint>> candidates;
+  bool verbose;
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveLoadFullGridCandidates
@@ -41,7 +61,7 @@ class OperationMakePositiveLoadFullGridCandidates
   virtual ~OperationMakePositiveLoadFullGridCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
-                      std::vector<HashGridPoint*>& candidates) override;
+                      std::vector<std::shared_ptr<HashGridPoint>>& candidates) override;
 
  private:
   std::unique_ptr<base::Grid> fullGrid;

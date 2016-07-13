@@ -187,7 +187,7 @@ class OperationMakePositiveFast(object):
                 print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(currentCandidates),
                                                                              len(candidates),
                                                                              minLevelSum,
-                                                                             np.max(levelSums))
+                                                                             np.max(levelSums)),
 
             # evaluate the remaining candidates
             samples = np.ndarray((len(currentCandidates), self.numDims))
@@ -198,6 +198,9 @@ class OperationMakePositiveFast(object):
             eval = evalSGFunctionMulti(grid, alpha, samples)
 
             negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < 0.0]
+
+            if self.verbose:
+                print "-> %i : considered candidates" % len(negativeNonExistingCandidates)
 
             for gp in negativeNonExistingCandidates:
                 addedGridPoints += insertPoint(grid, gp)
