@@ -267,7 +267,7 @@ size_t HashGridStorage::insert(point_type& index) {
   return (map[insert] = list.size() - 1);
 }
 
-void HashGridStorage::insert(point_type& index, std::vector<size_t> insertedPoints) {
+void HashGridStorage::insert(point_type& index, std::vector<size_t>& insertedPoints) {
   index_t source_index;
   level_t source_level;
 
@@ -647,7 +647,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 }
 
-void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinates) const {
+void HashGridStorage::getCoordinates(const HashGridPoint& point, DataVector& coordinates) const {
   coordinates.resize(dimension);
 
   for (size_t d = 0; d < dimension; d++) {
@@ -655,7 +655,7 @@ void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinate
   }
 }
 
-DataVector HashGridStorage::getCoordinates(HashGridPoint point) const {
+DataVector HashGridStorage::getCoordinates(const HashGridPoint& point) const {
   DataVector coordinates(dimension);
 
   for (size_t d = 0; d < dimension; d++) {

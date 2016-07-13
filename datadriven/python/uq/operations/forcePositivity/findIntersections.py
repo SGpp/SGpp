@@ -38,64 +38,69 @@ class IntersectionCandidates(CandidateSet):
 
 #     @profile
     def findIntersections(self, grid, gpsi):
-        overlappingGridPoints = []
         costs = 0
         gs = grid.getStorage()
         numDims = gs.getDimension()
 
         # list of intersections of negative grid points
         intersections = {}
-        gpintersection = HashGridPoint(numDims)
         level, index = np.ndarray(numDims, dtype="int"), np.ndarray(numDims, dtype="int")
 
         # check pair interactions
-        intersections[0] = {}
+        intersections = {}
         for i, gpi in enumerate(gpsi):
-            intersections[0][gpi] = set()
+            intersections[gpi] = set()
 
+        newIntersections = {}
         for i, gpi in enumerate(gpsi):
+            newIntersections[gpi] = True
+
             for gpj in gpsi[(i + 1):]:
                 if haveOverlappingSupportByLevelIndex(gpi, gpj) and \
                         not haveHierarchicalRelationshipByLevelIndex(gpi, gpj):
-                    intersections[0][gpi].add(gpj)
-                    intersections[0][gpj].add(gpi)
+                    intersections[gpi].add(gpj)
+                    intersections[gpj].add(gpi)
 
                 costs += 1
 
+        if self.verbose:
+            print "# intersections (k=1) : %i" % (len(newIntersections),)
+
         res = {}
+        gpintersection = HashGridPoint(numDims)
         # check higher interactions
         for k in xrange(2, numDims + 1):
-            intersections[k - 1] = {}
-            for gpi, candidates in intersections[k - 2].items():
-                for gpj in candidates:
+            nextNewIntersections = newIntersections
+            newIntersections = {}
+            for gpi in nextNewIntersections.keys():
+                for gpj in intersections[gpi]:
                     # find non existing intersections and store them
                     self.findIntersection(gpintersection, (level, index), gpi, gpj)
                     gpk = tuple(level), tuple(index)
                     
-                    if not gs.isContaining(gpintersection):
-                        if gpk not in res:
-                            res[gpk] = HashGridPoint(gpintersection)
+                    if gpk not in res and not gs.isContaining(gpintersection):
+                        newIntersections[gpk] = True
+                        res[gpk] = HashGridPoint(gpintersection)
 
                         # join the sets for possible intersections searches in the
                         # next iteration
-                        iintersections = intersections[k - 2][gpi]
-                        if gpj in intersections[k - 2]:
-                             jintersections = intersections[k - 2][gpj]
+                        iintersections = intersections[gpi]
+                        jintersections = intersections[gpj]
 
-                        intersections[k - 1][gpk] = set()
+                        intersections[gpk] = set()
                         for gpl in iintersections & jintersections:
                             # check if the outer intersection overlaps with the
                             # remaining candidates. We don't need to check if they
                             # aren't hierarchical ancestors, this is fulfilled by
                             # definition
                             if haveOverlappingSupportByLevelIndex(gpk, gpl):
-                                intersections[k - 1][gpk].add(gpl)
+                                intersections[gpk].add(gpl)
     #                             assert not isHierarchicalAncestorByLevelIndex(gpk, gpl)
 
                     costs += 1
 
             if self.verbose:
-                print "# intersections (k=%i) : %i -> %i : resulting unique interactions" % (k, len(intersections[k - 1]), len(res))
+                print "# intersections (k=%i) : %i -> %i : resulting unique interactions" % (k, len(newIntersections), len(res))
 
         # flatten list of lists
         return res.values(), costs

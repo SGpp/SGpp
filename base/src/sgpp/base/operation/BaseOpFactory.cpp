@@ -122,6 +122,10 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModFundamentalSpline.hpp>
 
+#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+#include <sgpp/base/operation/hash/OperationMakePositiveCandidateSetAlgorithm.hpp>
+#include <sgpp/base/operation/hash/OperationMakePositiveInterpolationAlgorithm.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <cstring>
@@ -518,6 +522,13 @@ createOperationNaiveEvalPartialDerivative(base::Grid& grid) {
         "OperationNaiveEvalPartialDerivative is not implemented for "
         "this grid type.");
   }
+}
+
+std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
+    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm) {
+  return std::unique_ptr<base::OperationMakePositive>(
+      new base::OperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm));
 }
 
 }  // namespace op_factory

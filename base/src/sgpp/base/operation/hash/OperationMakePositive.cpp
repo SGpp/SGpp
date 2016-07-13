@@ -11,7 +11,6 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <vector>
-#include <map>
 
 namespace sgpp {
 namespace base {
@@ -19,17 +18,26 @@ namespace base {
 OperationMakePositive::OperationMakePositive(
     base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm)
-    : grid(grid), lastMinimumCandidateLevelSum(-1) {
+    : grid(grid), minimumLevelSum(0), maximumLevelSum(0), verbose(true) {
+  // set range of level sums for candidate search
+  base::HashGridStorage& gridStorage = grid.getStorage();
+  auto numDims = gridStorage.getDimension();
+  auto maxLevel = gridStorage.getMaxLevel();
+  minimumLevelSum = numDims;
+  maximumLevelSum = maxLevel * numDims;
+
   // set the candidate search algorithm
   switch (candidateSearchAlgorithm) {
     case MakePositiveCandidateSearchAlgorithm::FullGrid:
       candidateSearch = std::make_shared<base::OperationMakePositiveLoadFullGridCandidates>(grid);
       break;
     case MakePositiveCandidateSearchAlgorithm::Intersections:
-      candidateSearch = std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>();
+      candidateSearch =
+          std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>(grid);
       break;
     default:
-      candidateSearch = std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>();
+      candidateSearch =
+          std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>(grid);
       break;
   }
   // set the interpolation algorithm
@@ -44,38 +52,6 @@ OperationMakePositive::OperationMakePositive(
 }
 
 OperationMakePositive::~OperationMakePositive() {}
-
-void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector& newAlpha) {
-  // copy the current grid
-  copyGrid(grid, newGrid);
-
-  // force the nodal values of the initial grid to be positive
-  makeCurrentNodalValuesPositive(newAlpha);
-
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-  //  auto numGridPoints = gridStorage.getSize();
-  auto maxLevel = gridStorage.getMaxLevel();
-
-  size_t minLevelSum = maxLevel + numDims - 1;
-  size_t maxLevelSum = maxLevel * numDims;
-
-  std::vector<size_t> addedGridPoints;
-  std::vector<HashGridPoint*> candidates;
-
-  while (minLevelSum <= maxLevelSum) {
-    // search the next candidate set
-    candidateSearch->nextCandidates(*newGrid, newAlpha, minLevelSum, candidates);
-
-    if (candidates.size() > 0) {
-      addFullGridPoints(*newGrid, newAlpha, candidates, addedGridPoints);
-      interpolationMethod->computeHierarchicalCoefficients(*newGrid, newAlpha, addedGridPoints);
-    }
-
-    // increment the level sum
-    ++minLevelSum;
-  }
-}
 
 void OperationMakePositive::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
   // create grid of dimensions d - 1 of the same type
@@ -99,18 +75,14 @@ void OperationMakePositive::makeCurrentNodalValuesPositive(base::DataVector& alp
   auto opHier = op_factory::createOperationHierarchisation(grid);
   opHier->doDehierarchisation(alpha);
 
-  std::vector<size_t> negativeGridPoints;
   for (size_t i = 0; i < alpha.getSize(); ++i) {
     if (alpha[i] < 0.0) {
-      negativeGridPoints.push_back(i);
       alpha[i] = 0.0;
     }
   }
 
-  if (negativeGridPoints.size() > 0) {
-    // hierarchize the result
-    opHier->doHierarchisation(alpha);
-  }
+  // hierarchize the result
+  opHier->doHierarchisation(alpha);
 }
 
 void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
@@ -128,50 +100,112 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
   }
 }
 
-void OperationMakePositive::sortNonExistingCandidatesByLevelSum(
-    std::vector<base::HashGridPoint*>& candidates,
-    std::map<size_t, std::vector<base::HashGridPoint*> >& sortedCandidates) {
+void OperationMakePositive::extractNonExistingCandidatesByLevelSum(
+    std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
+    std::vector<std::shared_ptr<base::HashGridPoint>>& finalCandidates, size_t currentLevelSum) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   for (auto& candidate : candidates) {
-    size_t levelSum = candidate->getLevelSum();
-    if (levelSum >= lastMinimumCandidateLevelSum && !gridStorage.isContaining(*candidate)) {
-      if (sortedCandidates.find(levelSum) != sortedCandidates.end()) {
-        std::vector<base::HashGridPoint*> gridPointvector(1);
-        sortedCandidates.insert(std::make_pair(levelSum, gridPointvector));
-      }
-
-      sortedCandidates[levelSum].push_back(candidate);
+    if (!gridStorage.isContaining(*candidate) && candidate->getLevelSum() == currentLevelSum) {
+      finalCandidates.push_back(candidate);
     }
   }
 }
 
-void OperationMakePositive::addFullGridPoints(base::Grid& grid, base::DataVector& alpha,
-                                              std::vector<base::HashGridPoint*>& candidates,
-                                              std::vector<size_t>& addedGridPoints) {
-  // remove existing candidates from the candidate set and sort the rest by level sum
-  std::map<size_t, std::vector<base::HashGridPoint*> > finalCandidates;
-  sortNonExistingCandidatesByLevelSum(candidates, finalCandidates);
-
+void OperationMakePositive::addFullGridPoints(
+    base::Grid& grid, base::DataVector& alpha,
+    std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
+    std::vector<size_t>& addedGridPoints) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto opEval = op_factory::createOperationEval(grid);
   DataVector x(gridStorage.getDimension());
 
-  while (addedGridPoints.size() == 0) {
-    if (finalCandidates.find(lastMinimumCandidateLevelSum) != finalCandidates.end()) {
-      auto curCandidates = finalCandidates[lastMinimumCandidateLevelSum];
+  // check if the function value at the new candidates is negative
+  DataVector nodalValues(candidates.size());
+  double mean = 0.0;
+  for (size_t i = 0; i < candidates.size(); ++i) {
+    gridStorage.getCoordinates(*candidates[i], x);
+    nodalValues[i] = opEval->eval(alpha, x);
+    mean += nodalValues[i];
+  }
 
-      for (auto& candidate : curCandidates) {
-        gridStorage.getCoordinates(*candidate, x);
-        double nodalValue = opEval->eval(alpha, x);
-        if (nodalValue < 0.0) {
-          gridStorage.insert(*candidate, addedGridPoints);
-        }
-      }
-      ++lastMinimumCandidateLevelSum;
+  // insert the negative ones to the grid
+  size_t cntConsidered = 0;
+  for (size_t i = 0; i < candidates.size(); ++i) {
+    if (nodalValues[i] < 0.0) {
+      ++cntConsidered;
+      gridStorage.insert(*candidates[i], addedGridPoints);
+    }
+  }
+
+  if (verbose) {
+    std::cout << "# considered          : " << cntConsidered << " -> " << addedGridPoints.size()
+              << " : # new grid points" << std::endl;
+  }
+
+  // recompute the leaf property
+  grid.getStorage().recalcLeafProperty();
+
+  // resize the alpha vector and set the new values to zero
+  alpha.resizeZero(gridStorage.getSize());
+}
+
+void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector& newAlpha) {
+  // copy the current grid
+  copyGrid(grid, newGrid);
+
+  // force the nodal values of the initial grid to be positive
+  makeCurrentNodalValuesPositive(newAlpha);
+
+  size_t currentLevelSum = minimumLevelSum;
+
+  std::vector<size_t> addedGridPoints;
+  std::vector<std::shared_ptr<HashGridPoint>> candidates;
+
+  while (currentLevelSum <= maximumLevelSum) {
+    if (verbose) {
+      std::cout << "current level sum     : " << currentLevelSum << "/" << maximumLevelSum
+                << std::endl;
     }
 
-    // recompute the leaf property and return the result
-    grid.getStorage().recalcLeafProperty();
+    // search the next candidate set
+    candidateSearch->nextCandidates(*newGrid, newAlpha, currentLevelSum, candidates);
+
+    if (verbose) {
+      std::cout << "# candidates found    : " << candidates.size();
+    }
+
+    if (candidates.size() > 0) {
+      // remove existing candidates from the candidate set and sort the rest by level sum
+      std::vector<std::shared_ptr<base::HashGridPoint>> finalCandidates;
+      extractNonExistingCandidatesByLevelSum(candidates, finalCandidates, currentLevelSum);
+
+      if (verbose) {
+        std::cout << " >= " << finalCandidates.size() << " : #considered" << std::endl;
+      }
+
+      // add the those candidates for which the sparse grid function is negative
+      addFullGridPoints(*newGrid, newAlpha, finalCandidates, addedGridPoints);
+
+      if (verbose) {
+        std::cout << "# new grid points     : " << addedGridPoints.size() << " -> "
+                  << newGrid->getSize() << std::endl;
+      }
+
+      // update the hierarchical coefficients for the new points
+      interpolationMethod->computeHierarchicalCoefficients(*newGrid, newAlpha, addedGridPoints);
+    } else {
+      if (verbose) {
+        std::cout << std::endl;
+      }
+    }
+
+    if (verbose) {
+      std::cout << "--------------------------------------------------------" << std::endl;
+    }
+
+    // increment the level sum
+    ++currentLevelSum;
+    addedGridPoints.clear();
   }
 }
 

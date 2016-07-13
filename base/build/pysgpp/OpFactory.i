@@ -15,6 +15,7 @@
 %newobject sgpp::op_factory::createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm);
 
 %{
 sgpp::base::OperationHierarchisation* createOperationHierarchisation(sgpp::base::Grid& grid) {
@@ -64,7 +65,11 @@ sgpp::base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(sgpp::bas
 sgpp::base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid) {
   return sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid).release();
 }
-%}
+
+sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm) {
+   return sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm).release();
+}
+ %}
 
 sgpp::base::OperationHierarchisation* createOperationHierarchisation(sgpp::base::Grid& grid);
 sgpp::base::OperationQuadrature* createOperationQuadrature(sgpp::base::Grid& grid);
@@ -78,3 +83,4 @@ sgpp::base::OperationNaiveEval* createOperationNaiveEval(sgpp::base::Grid& grid)
 sgpp::base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid);
+sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm);
