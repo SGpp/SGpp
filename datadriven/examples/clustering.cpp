@@ -63,7 +63,7 @@ int main() {
       "MyOCLConf.cfg");
 
   operation_mult->mult(alpha, result);
-  for (auto i = 0; i < 500; ++i) {
+  for (auto i = 0; i < 100; ++i) {
     std::cout << result[i] << " ";
   }
 

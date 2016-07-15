@@ -6,10 +6,12 @@
 #define MPIENVIROMENT_H
 
 #include <mpi.h>
+#include <sgpp/base/tools/OperationConfiguration.hpp>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -18,20 +20,35 @@ namespace clusteringmpi {
 class MPIEnviroment {
  private:
   static MPIEnviroment *singleton_instance;
+  base::OperationConfiguration configuration;
   int numTasks;
   int rank;
   bool verbose;
+  bool initialized;
+  int initialized_worker_counter;
+
+  MPI_Comm communicator;
+  MPI_Comm input_communicator;
+  MPI_Group node_neighbors;
+  std::vector<int> neighbor_list;
+  int worker_count;
 
   MPIEnviroment(int argc, char *argv[], bool verbose);
   MPIEnviroment(void);
   MPIEnviroment(MPIEnviroment &cpy);
-  void slave_mainloop(void);
 
+  void slave_mainloop(void);
+  int count_slaves(json::Node &currentslave);
+  void init_communicator(int masternode, base::OperationConfiguration conf);
+  void init_workers(void);
  public:
   static void init(int argc, char *argv[], bool verbose = false);
+  static void connect_nodes(base::OperationConfiguration conf);
   static void release(void);
   static int get_node_rank(void);
   static int get_node_count(void);
+
+  MPI_Comm& get_communicator(void) {return communicator;}
   ~MPIEnviroment();
 };
 

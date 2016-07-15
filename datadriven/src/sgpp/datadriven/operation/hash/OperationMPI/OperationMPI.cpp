@@ -21,19 +21,44 @@ NodeCommunicator::NodeCommunicator(int masternode, base::OperationConfiguration 
   slave_ids.push_back(masternode);  // Masternode on position 0
   int slaveid = MPIEnviroment::get_node_rank() + 1;
   worker_count = 0;
+  if (conf.contains("SLAVES")) {
+    std::cerr << "jau!";
+
   for (std::string &slaveName : conf["SLAVES"].keys()) {
+    std::cerr << "jau!";
     slave_ids.push_back(slaveid);
     slaveid += count_slaves(conf["SLAVES"][slaveName]) + 1;
     worker_count++;
   }
+  }
+  std::cerr << "slaves counted" << std::endl;
+
   MPI_Group world_group;
   MPI_Group worker_group;
   MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-  MPI_Group_incl(world_group, slave_ids.size(), slave_ids.data(), &worker_group);
+  int bla[] = {0, 1, 2};
+  MPI_Group_incl(world_group, 3, bla, &worker_group);
+  for (auto id : slave_ids)
+    std::cout << id << " ";
+  std::cerr << "group created" << std::endl;
+  /*MPI_Comm dup_comm_world, world_comm;
+    MPI_Group world_group;
+    int world_rank, world_size, rank, size;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank( MPI_COMM_WORLD, &world_rank );
+    MPI_Comm_size( MPI_COMM_WORLD, &world_size );
+    MPI_Comm_dup( MPI_COMM_WORLD, &dup_comm_world );
+    MPI_Comm_group( dup_comm_world, &world_group );
+    MPI_Comm_create( dup_comm_world, world_group, &world_comm );
+    MPI_Comm_rank( world_comm, &rank );*/
   MPI_Comm_create(MPI_COMM_WORLD, worker_group, &communicator);
+  std::cerr << "comm created" << std::endl;
 }
 
 void NodeCommunicator::spawn_workers(std::string &operationName) {
+  if (!configuration.contains("SLAVES"))
+    return;
   // Command for creation and execution of a slave
   int message[1];
   message[0] = 1;
@@ -92,14 +117,25 @@ MPIWorkerBase::MPIWorkerBase(void) {
 MPIWorkerBase::MPIWorkerBase(int masternode, std::string &operationName,
                              base::OperationConfiguration conf) : configuration(conf) {
   // Create communicator
+  if (verbose)
+    std::cout << "Creating node communicator on process "
+              << MPIEnviroment::get_node_rank() << std::endl;
   node_comm = new NodeCommunicator(masternode, configuration);
   // Create worker processes if necessary
+  if (verbose)
+    std::cout << "Spawning " << node_comm->get_workercount() << " workers for process "
+              << MPIEnviroment::get_node_rank() << std::endl;
   node_comm->spawn_workers(operationName);
   // Get Configuration
   if (conf.contains("VERBOSE"))
     verbose = configuration["VERBOSE"].getBool();
   if (conf.contains("OPENCL_NODE"))
     opencl_node = configuration["OPENCL_NODE"].getBool();
+
+  if (verbose) {
+    std::cout << "Created basic mpi worker on process " << MPIEnviroment::get_node_rank() << "!" << std::endl;
+    std::cout << "This worker controlls " << node_comm->get_workercount() << " other workers." << std::endl;
+  }
 }
 
 MPIWorkerBase::~MPIWorkerBase(void) {
@@ -110,19 +146,28 @@ MPIOperation::MPIOperation(base::OperationConfiguration &conf,
                                                            configuration(conf) {
   if (conf.contains("VERBOSE"))
     verbose = conf["VERBOSE"].getBool();
+  verbose = true;
 
-  if (verbose)
-    std::cerr << "Created Master Node at process " << MPIEnviroment::get_node_rank() << std::endl;
+
   index++;
 
   // Create communicator
+  if (verbose)
+    std::cout << "Creating node communicator on process "
+              << MPIEnviroment::get_node_rank() << std::endl;
   node_comm = new NodeCommunicator(0, configuration);
   // Create worker processes if necessary
+  if (verbose)
+    std::cout << "Spawning " << node_comm->get_workercount() << " workers for process "
+              << MPIEnviroment::get_node_rank() << std::endl;
   node_comm->spawn_workers(operationName);
+  if (verbose)
+    std::cerr << "Created Master Node at process " << MPIEnviroment::get_node_rank() << std::endl;
 }
 
 int NodeCommunicator::count_slaves(json::Node &currentslave) {
   int slavecount = 0;
+  if (currentslave.contains("SLAVES")) {
   for (std::string &slaveName : currentslave["SLAVES"].keys()) {
     if (currentslave["SLAVES"][slaveName].contains("SLAVES")) {
       slavecount += count_slaves(currentslave["SLAVES"][slaveName]);
@@ -130,6 +175,8 @@ int NodeCommunicator::count_slaves(json::Node &currentslave) {
       slavecount++;
     }
   }
+  }
+
   return slavecount;
 }
 
