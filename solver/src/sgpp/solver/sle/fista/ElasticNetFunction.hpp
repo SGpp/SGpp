@@ -17,9 +17,12 @@ namespace solver {
 
 class ElasticNetFunction : public RegularizationFunction {
  public:
-  ElasticNetFunction(double lambda, double gamma) : lambda(lambda), gamma(gamma), lasso(lambda) {}
+  // Accept lambda * [(1 - l1Ratio) ||x||_1 +  l1Ratio * |x|_2^2]
+  // Internally we use ( lambda |x|_1 + gamma |x|_2^2)
+  ElasticNetFunction(double lambda, double l1Ratio)
+      : lambda(lambda * l1Ratio), gamma(lambda * (1 - l1Ratio)), lasso(this->lambda) {}
 
-  // ( lambda |x|_1 + (gamma/2) |x|_2)
+  // ( lambda |x|_1 + gamma |x|_2^2)
   double eval(sgpp::base::DataVector weights) const override {
     double l1 = 0.0;
     double l2 = 0.0;
@@ -29,14 +32,14 @@ class ElasticNetFunction : public RegularizationFunction {
       l2 += weights[i] * weights[i];
     }
     l1 *= lambda;
-    l2 *= (gamma / 2.0);
+    l2 *= gamma;
     const double en = (l1 + l2);
     return en;
   }
 
   base::DataVector prox(const sgpp::base::DataVector& weights, double stepsize) const override {
     base::DataVector proxVec = lasso.prox(weights, stepsize);
-    const double multiplicator = 1 / (1 + stepsize * gamma);
+    const double multiplicator = 1 / (1 + 2 * stepsize * gamma);
     proxVec.mult(multiplicator);
     return proxVec;
   }
