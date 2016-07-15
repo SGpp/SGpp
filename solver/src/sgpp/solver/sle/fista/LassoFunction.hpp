@@ -26,7 +26,7 @@ class LassoFunction : public RegularizationFunction {
   base::DataVector prox(const base::DataVector& weights, double stepsize) const override {
     stepsize = lambda * stepsize;
     auto proxVec = base::DataVector(weights.getSize());
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < weights.getSize(); ++i) {
       const double left = std::max(weights[i] - stepsize, 0.0);
       const double right = std::max(-weights[i] - stepsize, 0.0);
