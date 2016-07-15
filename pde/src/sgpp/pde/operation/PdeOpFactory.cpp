@@ -24,6 +24,7 @@
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -109,6 +110,9 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid
   } else if (grid.getType() == base::GridType::Periodic) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid));
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
@@ -126,6 +130,9 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(
   } else if (grid.getType() == base::GridType::Periodic) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid));
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationMatrixLTwoDotExplicitBspline(m, &grid));
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
