@@ -75,9 +75,6 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
     // refine a single grid point each time
     SurplusRefinementFunctor functor(alpha, 1);
     grid.getGenerator().refine(functor);
-    std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-              << std::endl;
-
     alpha.resize(gridStorage.getSize());
     // extend alpha vector (new entries uninitialized)
 
@@ -89,7 +86,25 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
     // hierarchize
     sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
+
+    std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
+              << std::endl;
   }
+
+  size_t numFullGridPoints =
+      static_cast<size_t>(std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
+  size_t maxLevel = gridStorage.getMaxLevel();
+  if (refnums > 0) {
+    std::cout << "--------------------------------------------------------" << std::endl;
+    std::cout << "level after refinement       : " << gridStorage.getMaxLevel() << std::endl;
+    std::cout << "grid size after refinement   : " << gridStorage.getSize() << std::endl;
+  }
+
+  std::cout << "--------------------------------------------------------" << std::endl;
+  std::cout << "number of full grid points   : " << numFullGridPoints
+            << " (maxLevel = " << gridStorage.getMaxLevel() << ")" << std::endl;
+  std::cout << "--------------------------------------------------------" << std::endl;
+
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
   Grid* positiveGrid = nullptr;
@@ -98,12 +113,14 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
       ->makePositive(positiveGrid, positiveAlpha);
 
   std::cout << "(" << gridStorage.getDimension() << "," << level
-            << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
-            << std::endl;
+            << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize() << " < "
+            << numFullGridPoints << std::endl;
 
   // make sure that the sparse grid function is really positive
+  std::cout << "check full grid for success: ";
   auto fullGrid = sgpp::base::Grid::createLinearGrid(numDims);
-  fullGrid->getGenerator().full(level);
+  fullGrid->getGenerator().full(maxLevel);
+  std::cout << fullGrid->getSize() << std::endl;
 
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
@@ -124,7 +141,7 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 0;
+  size_t refnums = 2;
 
   // interpolate the normal pdf
   for (size_t idim = numDims; idim <= numDims; idim++) {
@@ -138,9 +155,9 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
-  size_t numDims = 4;
+  size_t numDims = 5;
   size_t level = 4;
-  size_t refnums = 0;
+  size_t refnums = 8;
 
   // interpolate the normal pdf
   for (size_t idim = numDims; idim <= numDims; idim++) {

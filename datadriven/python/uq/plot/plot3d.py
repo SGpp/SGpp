@@ -36,7 +36,7 @@ def plotDensity3d(U, n=50):
     return fig, ax
 
 
-def plotSG3d(grid, alpha, n=50, f=lambda x: x):
+def plotSG3d(grid, alpha, n=40, f=lambda x: x):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n)
@@ -57,16 +57,58 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
         gs.getPoint(i).getStandardCoordinates(p)
         gps[i, :] = p.array()
 
-    ax.plot_wireframe(xv, yv, Z)
+    ax.plot_wireframe(xv, yv, Z, color="black")
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
+
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.getSize()), color="red")
+    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gps.shape[0]), c="red", marker="o")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
 
 #     fig.colorbar(surf, shrink=0.5, aspect=5)
     return fig, ax, Z
+
+
+def plotSG3d(grid, alpha, n=40, f=lambda x: x):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    x = np.linspace(0, 1, n)
+    y = np.linspace(0, 1, n)
+    Z = np.zeros((n, n))
+
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
+            Z[j, i] = f(evalSGFunction(grid, alpha,
+                                       np.array([xv[j, i], yv[j, i]])))
+
+    # get grid points
+    gs = grid.getStorage()
+    gps = np.zeros([gs.getSize(), 2])
+    p = DataVector(2)
+    for i in xrange(gs.getSize()):
+        gs.getPoint(i).getStandardCoordinates(p)
+        gps[i, :] = p.array()
+
+    ax.plot_wireframe(xv, yv, Z, color="black")
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
+
+#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+#                            linewidth=0, antialiased=False)
+    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gps.shape[0]), c="red", marker="o")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    # ax.set_zlim(0, 2)
+
+#     fig.colorbar(surf, shrink=0.5, aspect=5)
+    return fig, ax, Z
+
 
 
 def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):

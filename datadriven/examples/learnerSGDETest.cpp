@@ -14,6 +14,7 @@
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
 #include "sgpp/datadriven/application/KernelDensityEstimator.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
-  gridConfig.level_ = 2;
+  gridConfig.level_ = 4;
   gridConfig.type_ = sgpp::base::GridType::Linear;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
@@ -91,6 +92,12 @@ int main(int argc, char** argv) {
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
   learner.initialize(samples);
+
+  // make positive
+  Grid* positiveGrid = nullptr;
+  DataVector positiveAlpha(*learner.getSurpluses());
+  sgpp::op_factory::createOperationMakePositive(*learner.getGrid())
+      ->makePositive(positiveGrid, positiveAlpha);
 
   sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
   learner.cov(covSgde);
@@ -146,4 +153,6 @@ int main(int argc, char** argv) {
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << points.toString() << std::endl;
+
+  delete positiveGrid;
 }
