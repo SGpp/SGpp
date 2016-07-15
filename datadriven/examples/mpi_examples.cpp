@@ -14,6 +14,8 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationCreatePrunedGraphMPI.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGridBaseMPI.hpp>
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -24,12 +26,10 @@ int main(int argc, char *argv[]) {
   // Init MPI enviroment - always has to be done first
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
 
-  // Loading dataset
-  /*  std::string filename = "dataset2_dim2.arff";
-  std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data =
-      sgpp::datadriven::ARFFTools::readARFF(filename);
-      sgpp::base::DataMatrix& dataset = data.getData();
+  // MPI_Init(&argc, &argv);
+  sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
+  sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
+
 
   // Create Grid
   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
@@ -38,16 +38,35 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
+  // MPI_Group world_group;
+  // MPI_Group worker_group;
+  // MPI_Comm communicator;
+  // MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+  // int bla[] = {0, 1, 2};
+  // MPI_Group_incl(world_group, 3, bla, &worker_group);
+  // MPI_Comm_create(MPI_COMM_WORLD, worker_group, &communicator);
+  // std::cerr << "comm created!" << std::endl;
+  // std::cin.get();
+
+  //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
+  // Loading dataset
+  /*  std::string filename = "dataset2_dim2.arff";
+  std::cout << "Loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::base::DataMatrix& dataset = data.getData();
+
+
   // Create right hand side vector
   sgpp::base::DataVector rhs(gridsize);
-  sgpp::datadriven::clusteringmpi::OperationRhsMPI rhs_op(*grid, 2, dataset, 1280);
+  sgpp::datadriven::clusteringmpi::OperationRhsMPI rhs_op(testnode, *grid, 2, dataset, 1280);
   rhs = rhs_op.create_rhs();
   for (auto i = 0; i < 100; ++i) {
     std::cout << rhs[i] << " ";
     }
 
   // Solve for alpha vector via CG solver
-  sgpp::base::DataVector alpha(gridsize);
+  /*sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
   sgpp::solver::ConjugateGradients solver(1000, 0.001);

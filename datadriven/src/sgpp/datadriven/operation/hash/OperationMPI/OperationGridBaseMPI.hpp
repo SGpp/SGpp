@@ -59,6 +59,7 @@ class OperationGridMethod : public MPIOperation {
   size_t gridsize;
   GridCommunicator *grid_comm;
 
+ public:
   /// Protected constructor - creates slave operations and sends the grid to them
   OperationGridMethod(base::OperationConfiguration conf, base::Grid &grid, std::string slave_id)
       : MPIOperation(conf, slave_id) {
@@ -90,7 +91,7 @@ class MPIGridWorker : public MPIWorkerBase {
   int dimensions;
   GridCommunicator *grid_comm;
  public:
-  MPIGridWorker(int masternode, std::string &operationName,
+  MPIGridWorker(int masternode, std::string operationName,
                 base::OperationConfiguration conf)
       : MPIWorkerBase(masternode, operationName, conf), gridpoints(NULL) {
     grid_comm = new GridCommunicator(node_comm->get_communicator(), node_comm->get_workercount());
@@ -101,7 +102,7 @@ class MPIGridWorker : public MPIWorkerBase {
       delete [] gridpoints;
     delete grid_comm;
   }
-  virtual void slave_code() = 0;
+  virtual void slave_code() {}
 };
 
 }  // namespace clusteringmpi
