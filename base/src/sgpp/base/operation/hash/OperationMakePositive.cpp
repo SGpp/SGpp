@@ -12,6 +12,10 @@
 
 #include <vector>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace sgpp {
 namespace base {
 
