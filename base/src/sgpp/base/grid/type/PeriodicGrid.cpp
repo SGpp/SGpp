@@ -36,7 +36,7 @@ std::unique_ptr<Grid> PeriodicGrid::unserialize(std::istream& istr) {
   return std::unique_ptr<Grid>(new PeriodicGrid(istr));
 }
 
-const SBasis& PeriodicGrid::getBasis() {
+SBasis& PeriodicGrid::getBasis() {
   static SLinearPeriodicBasis basis;
   return basis;
 }
