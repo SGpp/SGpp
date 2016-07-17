@@ -15,6 +15,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplacePrewavelet.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretchedBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
@@ -75,6 +76,27 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(
   } else {
     throw base::factory_exception(
         "OperationLaplace (with coefficients) is not implemented for this grid type.");
+  }
+}
+
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid& grid) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
+  } else {
+    throw base::factory_exception(
+        "OperationLaplaceExplicit is not implemented for this grid type.");
+  }
+}
+
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(
+    base::DataMatrix* m, base::Grid& grid) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationLaplaceExplicitBspline(m, &grid));
+  } else {
+    throw base::factory_exception(
+        "OperationLaplaceExplicit is not implemented for this grid type.");
   }
 }
 
