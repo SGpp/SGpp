@@ -30,6 +30,11 @@ int main(int argc, char *argv[]) {
   sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
+  sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
+  dumdum.start_operation();
+
+
+
 
   // Create Grid
   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);

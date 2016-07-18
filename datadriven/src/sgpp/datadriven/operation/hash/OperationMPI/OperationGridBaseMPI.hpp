@@ -16,7 +16,7 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class GridCommunicator {
+/*class GridCommunicator {
  private:
   MPI_Comm &communicator;
   int worker_count;
@@ -103,7 +103,7 @@ class MPIGridWorker : public MPIWorkerBase {
     delete grid_comm;
   }
   virtual void slave_code() {}
-};
+};*/
 
 }  // namespace clusteringmpi
 }  // namespace datadriven
