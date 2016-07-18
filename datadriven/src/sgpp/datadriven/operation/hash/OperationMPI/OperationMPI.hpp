@@ -17,61 +17,53 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class NodeCommunicator {
- protected:
-  MPI_Comm communicator;
-  int worker_count;
-  base::OperationConfiguration &configuration;
-
-  int count_slaves(json::Node &currentslave);
- public:
-  void spawn_workers(std::string &workerOperation);
-  void start_workers(int object_index);
-  void release_workers(int object_index);
-
-  MPI_Comm& get_communicator(void) {return communicator;}
-  int get_workercount(void) {return worker_count;}
-  NodeCommunicator(int masternode, base::OperationConfiguration &configuration);
-};
-
-/// Base class for all MPI slave node operations
-class MPIWorkerBase {
- protected:
-  base::OperationConfiguration configuration;
-  NodeCommunicator *node_comm;
-
-  bool verbose;
-  bool opencl_node;
-
- public:
-  MPIWorkerBase(void);
-  explicit MPIWorkerBase(int masternode, std::string &operationName,
-                         base::OperationConfiguration conf);
-  virtual ~MPIWorkerBase();
-
-  virtual void slave_code(void) = 0;
-};
 
 /// Base class for MPI master node operations
-class MPIOperation {
+class MPIWorkerBase {
  private:
   static int index;
   int object_index;
-  bool verbose;
+  std::string operationName;
 
  protected:
-  base::OperationConfiguration configuration;
-  NodeCommunicator *node_comm;
+  bool verbose;
+  explicit MPIWorkerBase(std::string &worker_class_name);
+  MPIWorkerBase();
 
  public:
-  /// Constructor - creates all slave operations of the given name
-  MPIOperation(base::OperationConfiguration &conf, std::string &slave_class_name);
-  /// Constructor - does not create any slave operations
-  MPIOperation();
-  virtual ~MPIOperation(void);
-  void start_slave_code(void);
-  void release_slave_objects(void);
+  virtual ~MPIWorkerBase(void);
+  virtual void start_worker_main(void) = 0;
+  void start_sub_workers(void);
+  void release_sub_workers(void);
 };
+
+class WorkerDummy : public MPIWorkerBase
+{
+ public:
+  explicit WorkerDummy(std::string worker_name);
+  virtual void start_worker_main(void);
+  virtual ~WorkerDummy() {}
+
+};
+
+class OperationDummy : protected WorkerDummy {
+ public:
+  OperationDummy(void)
+      : WorkerDummy("OPDummy") {
+  }
+  void start_operation(void) {
+    std::cout << "Press any key to start dummy operation " << std::endl;
+    std::cin.get();
+    start_sub_workers();
+    std::cout << "Press any key to exit dummy operation " << std::endl;
+    std::cin.get();
+
+  }
+};
+
+
+
+
 
 }  // namespace clusteringmpi
 }  // namespace datadriven

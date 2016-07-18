@@ -48,7 +48,10 @@ class MPIEnviroment {
   static int get_node_rank(void);
   static int get_node_count(void);
 
-  MPI_Comm& get_communicator(void) {return communicator;}
+  static MPI_Comm& get_communicator(void) {return singleton_instance->communicator;}
+  static base::OperationConfiguration& get_configuration(void)
+  {return singleton_instance->configuration;}
+  static int get_sub_worker_count(void) {return singleton_instance->worker_count;}
   ~MPIEnviroment();
 };
 

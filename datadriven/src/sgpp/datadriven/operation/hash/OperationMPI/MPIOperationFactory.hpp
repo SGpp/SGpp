@@ -29,8 +29,8 @@ MPIWorkerBase* create_mpi_operation(int masternode,
   /*if (std::strcmp(classname, "OperationCreatePrunedGraphSlave") == 0)  {
     return OperationCreatePrunedGraph::create_slave(conf);
     }*/
-  if (std::strcmp(classname, "grid_dummy") == 0)  {
-    return new MPIGridWorker(masternode, classname, conf);
+  if (std::strcmp(classname, "OPDummy") == 0)  {
+    return new WorkerDummy(classname);
   }
   return NULL;
 }

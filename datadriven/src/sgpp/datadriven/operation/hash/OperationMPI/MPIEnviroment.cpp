@@ -123,9 +123,7 @@ void MPIEnviroment::slave_mainloop(void) {
         int len = 0;
         MPI_Comm_get_name(input_communicator, buffer, &len);
       } else {
-
         MPI_Comm_create(MPI_COMM_WORLD, tmp_group, &tmp_comm);
-
         if (tmp_comm != MPI_COMM_NULL) {
           int row_rank, row_size;
           MPI_Comm_rank(tmp_comm, &row_rank);
@@ -170,7 +168,8 @@ void MPIEnviroment::slave_mainloop(void) {
       }
       if (slave_ops[message[0] - 10] == NULL)
         throw std::logic_error("Trying to run an non existing slave operation!");
-      slave_ops[message[0] - 10]->slave_code();
+      slave_ops[message[0] - 10]->start_sub_workers();
+      slave_ops[message[0] - 10]->start_worker_main();
     }
     delete [] message;
   }while(true);
