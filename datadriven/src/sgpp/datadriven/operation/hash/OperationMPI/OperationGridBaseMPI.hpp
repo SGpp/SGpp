@@ -16,63 +16,57 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-/*class GridCommunicator {
+
+class MPIWorkerGridBase : public MPIWorkerBase
+{
  private:
-  MPI_Comm &communicator;
-  int worker_count;
-
- public:
-  explicit GridCommunicator(MPI_Comm &comm, int worker_count)
-      : communicator(comm), worker_count(worker_count) {}
-
-  void send_grid(int *gridpoints, int dimensions, int gridsize) {
-    // Send grid to slaves
-    for (int dest = 1; dest < worker_count; dest++)
-      MPI_Send(gridpoints, static_cast<int>(gridsize * 2 * dimensions), MPI_INT,
-               dest, 1, communicator);
-    // Send grid dimension to slaves
-    for (int dest = 1; dest < worker_count; dest++)
-      MPI_Send(&dimensions, 1, MPI_INT, dest, 1, communicator);
-  }
-  void receive_grid(int *gridpoints, int &dimensions, int &gridsize) {
-    MPI_Status stat;
-    int complete_gridsize;
+  void receive_grid(void) {
     // receive grid
-    MPI_Probe(0, 1, communicator, &stat);
+    MPI_Status stat;
+    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
     MPI_Get_count(&stat, MPI_INT, &complete_gridsize);
     gridpoints = new int[complete_gridsize];
     MPI_Recv(gridpoints, complete_gridsize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-             communicator, &stat);
+             MPIEnviroment::get_input_communicator(), &stat);
 
     // Receive grid dimensions
-    MPI_Probe(0, 1, communicator, &stat);
-    MPI_Recv(&dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-             communicator, &stat);
-
-    gridsize = complete_gridsize / (2 * dimensions);
+    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+    MPI_Recv(&grid_dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
+             MPIEnviroment::get_input_communicator(), &stat);
+    if (verbose) {
+      std::cout << "Node " << MPIEnviroment::get_node_rank()
+                << ":  Recevied grid with "<< complete_gridsize / (grid_dimensions *2)
+                << " integers and " << grid_dimensions << " dimensions " << std::endl;
+    }
   }
-};
-
-/// Base class for grid releated mpi operations
-class OperationGridMethod : public MPIOperation {
+  void send_grid(void) {
+    // Send grid to slaves
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(gridpoints, static_cast<int>(complete_gridsize), MPI_INT,
+               i, 1, MPIEnviroment::get_communicator());
+    }
+    // Send grid dimension to slaves
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(&grid_dimensions, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
+    }
+  }
  protected:
-  size_t gridsize;
-  GridCommunicator *grid_comm;
-
- public:
-  /// Protected constructor - creates slave operations and sends the grid to them
-  OperationGridMethod(base::OperationConfiguration conf, base::Grid &grid, std::string slave_id)
-      : MPIOperation(conf, slave_id) {
-    std::cerr << "ctor grid method" << std::endl;
-    grid_comm = new GridCommunicator(node_comm->get_communicator(), node_comm->get_workercount());
-
+  int grid_dimensions;
+  int complete_gridsize;
+  int *gridpoints;
+  explicit MPIWorkerGridBase(std::string operationName) : MPIWorkerBase(operationName) {
+    receive_grid();
+    send_grid();
+  }
+  MPIWorkerGridBase(std::string operationName, base::Grid &grid)
+      : MPIWorkerBase(operationName) {
     // Store grid in integer array
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
-    gridsize = gridStorage.getSize();
+    int gridsize = gridStorage.getSize();
     size_t dimensions = gridStorage.getDimension();
     int *gridpoints = new int[gridsize * 2 * dimensions];
     size_t pointscount = 0;
-    for (size_t i = 0; i < gridsize; i++) {
+    for (int i = 0; i < gridsize; i++) {
       sgpp::base::HashGridIndex *point = gridStorage.get(i);
       pointscount++;
       for (size_t d = 0; d < dimensions; d++) {
@@ -80,30 +74,27 @@ class OperationGridMethod : public MPIOperation {
         gridpoints[i * 2 * dimensions + 2 * d + 1] = point->getLevel(d);
       }
     }
-    grid_comm->send_grid(gridpoints, dimensions, gridsize / (2 * dimensions));
+
+    // Send grid to slaves
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(gridpoints, static_cast<int>(gridsize * 2 * dimensions), MPI_INT,
+               i, 1, MPIEnviroment::get_communicator());
+    }
+    // Send grid dimension to slaves
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(&dimensions, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
+    }
+    complete_gridsize = gridsize * 2 * dimensions;
+    grid_dimensions = dimensions;
+    send_grid();
+  }
+
+ public:
+  virtual ~MPIWorkerGridBase() {
     delete [] gridpoints;
   }
 };
-class MPIGridWorker : public MPIWorkerBase {
- protected:
-  int *gridpoints;
-  int gridsize;
-  int dimensions;
-  GridCommunicator *grid_comm;
- public:
-  MPIGridWorker(int masternode, std::string operationName,
-                base::OperationConfiguration conf)
-      : MPIWorkerBase(masternode, operationName, conf), gridpoints(NULL) {
-    grid_comm = new GridCommunicator(node_comm->get_communicator(), node_comm->get_workercount());
-    grid_comm->receive_grid(gridpoints, dimensions, gridsize);
-  }
-  virtual ~MPIGridWorker() {
-    if (gridpoints != NULL)
-      delete [] gridpoints;
-    delete grid_comm;
-  }
-  virtual void slave_code() {}
-};*/
+
 
 }  // namespace clusteringmpi
 }  // namespace datadriven
