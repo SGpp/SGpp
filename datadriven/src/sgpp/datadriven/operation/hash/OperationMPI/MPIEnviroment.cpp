@@ -143,7 +143,7 @@ void MPIEnviroment::slave_mainloop(void) {
       conf.deserialize(serialized_conf);
 
       // Init communicator
-      init_communicator(message_source, conf);
+      init_communicator(conf);
       // Init subworkers if necessary
       init_workers();
       delete [] serialized_conf;
@@ -194,7 +194,7 @@ int MPIEnviroment::count_slaves(json::Node &currentslave) {
   return slavecount;
 }
 
-void MPIEnviroment::init_communicator(int masternode, base::OperationConfiguration conf) {
+void MPIEnviroment::init_communicator(base::OperationConfiguration conf) {
   configuration = conf;
   // Get Slave MPI IDs to construct an MPI_Group
   neighbor_list.push_back(MPIEnviroment::get_node_rank());  // Self at 0
@@ -283,7 +283,7 @@ void MPIEnviroment::init(int argc, char *argv[], bool verbose) {
 void MPIEnviroment::connect_nodes(base::OperationConfiguration conf) {
   if (singleton_instance != NULL) {
     if (singleton_instance->rank == 0) {
-      singleton_instance->init_communicator(0, conf);
+      singleton_instance->init_communicator(conf);
       singleton_instance->init_workers();
       singleton_instance->slave_mainloop();
       int message[1];

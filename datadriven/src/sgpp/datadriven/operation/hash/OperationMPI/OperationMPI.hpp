@@ -37,8 +37,7 @@ class MPIWorkerBase {
   void release_sub_workers(void);
 };
 
-class WorkerDummy : public MPIWorkerBase
-{
+class WorkerDummy : public MPIWorkerBase {
  public:
   explicit WorkerDummy(std::string worker_name);
   virtual void start_worker_main(void);

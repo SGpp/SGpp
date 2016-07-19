@@ -39,7 +39,7 @@ class MPIEnviroment {
 
   void slave_mainloop(void);
   int count_slaves(json::Node &currentslave);
-  void init_communicator(int masternode, base::OperationConfiguration conf);
+  void init_communicator(base::OperationConfiguration conf);
   void init_workers(void);
  public:
   static void init(int argc, char *argv[], bool verbose = false);
@@ -52,6 +52,7 @@ class MPIEnviroment {
   static base::OperationConfiguration& get_configuration(void)
   {return singleton_instance->configuration;}
   static int get_sub_worker_count(void) {return singleton_instance->worker_count;}
+  static MPI_Comm& get_input_communicator(void) {return singleton_instance->input_communicator;}
   ~MPIEnviroment();
 };
 
