@@ -17,8 +17,7 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
-class MPIWorkerGridBase : public MPIWorkerBase
-{
+class MPIWorkerGridBase : public MPIWorkerBase {
  private:
   void receive_grid(void) {
     // receive grid
@@ -33,6 +32,7 @@ class MPIWorkerGridBase : public MPIWorkerBase
     MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
     MPI_Recv(&grid_dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
              MPIEnviroment::get_input_communicator(), &stat);
+    gridsize = complete_gridsize / (2 * grid_dimensions);
     if (verbose) {
       std::cout << "Node " << MPIEnviroment::get_node_rank()
                 << ":  Recevied grid with "<< complete_gridsize / (grid_dimensions *2)
@@ -50,9 +50,11 @@ class MPIWorkerGridBase : public MPIWorkerBase
       MPI_Send(&grid_dimensions, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
     }
   }
+
  protected:
   int grid_dimensions;
   int complete_gridsize;
+  int gridsize;
   int *gridpoints;
   explicit MPIWorkerGridBase(std::string operationName) : MPIWorkerBase(operationName) {
     receive_grid();
@@ -62,7 +64,7 @@ class MPIWorkerGridBase : public MPIWorkerBase
       : MPIWorkerBase(operationName) {
     // Store grid in integer array
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
-    int gridsize = gridStorage.getSize();
+    gridsize = gridStorage.getSize();
     size_t dimensions = gridStorage.getDimension();
     int *gridpoints = new int[gridsize * 2 * dimensions];
     size_t pointscount = 0;
