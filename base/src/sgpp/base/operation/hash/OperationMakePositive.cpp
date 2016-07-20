@@ -120,17 +120,19 @@ void OperationMakePositive::addFullGridPoints(
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
     std::vector<size_t>& addedGridPoints) {
   base::HashGridStorage& gridStorage = grid.getStorage();
-  auto opEval = op_factory::createOperationEval(grid);
-  DataVector x(gridStorage.getDimension());
+  size_t numDims = gridStorage.getDimension();
+  size_t numCandidates = candidates.size();
+  DataVector x(numDims);
 
   // check if the function value at the new candidates is negative
-  DataVector nodalValues(candidates.size());
-  double mean = 0.0;
+  DataMatrix data(numCandidates, numDims);
   for (size_t i = 0; i < candidates.size(); ++i) {
     gridStorage.getCoordinates(*candidates[i], x);
-    nodalValues[i] = opEval->eval(alpha, x);
-    mean += nodalValues[i];
+    data.setRow(i, x);
   }
+
+  DataVector nodalValues(numCandidates);
+  op_factory::createOperationMultipleEval(grid, data)->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
   size_t cntConsidered = 0;

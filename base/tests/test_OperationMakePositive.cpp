@@ -122,16 +122,19 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   fullGrid->getGenerator().full(maxLevel);
   std::cout << fullGrid->getSize() << std::endl;
 
+  std::cout << "evaluate at all grid points" << std::endl;
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
   fullGrid->getStorage().getCoordinateArraysForEval(coordinates);
   sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates)
       ->mult(positiveAlpha, nodalValues);
 
+  std::cout << "check for positivity: ";
   for (size_t i = 0; i < nodalValues.getSize(); ++i) {
     BOOST_CHECK_GE(nodalValues[i], tol);
   }
 
+  std::cout << "Done" << std::endl;
   delete positiveGrid;
 }
 
@@ -155,9 +158,9 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
-  size_t numDims = 5;
+  size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 8;
+  size_t refnums = 3;
 
   // interpolate the normal pdf
   for (size_t idim = numDims; idim <= numDims; idim++) {
