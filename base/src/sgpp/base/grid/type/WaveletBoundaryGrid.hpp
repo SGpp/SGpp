@@ -41,7 +41,7 @@ class WaveletBoundaryGrid : public Grid {
 
   sgpp::base::GridType getType() override;
 
-  const SBasis& getBasis() override;
+  SBasis& getBasis() override;
 
   GridGenerator& getGenerator() override;
 
