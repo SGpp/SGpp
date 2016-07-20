@@ -89,7 +89,6 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
   auto numDims = gridStorage.getDimension();
 
   // check for intersections of more than two grid points
-  std::map<size_t, std::shared_ptr<HashGridPoint>> intersectionsForNextIteration;
   for (size_t k = 2; k <= numDims; ++k) {
     for (auto& candidates : currentIntersections) {
       auto overlappingGridPoints = *intersections[candidates.first];
@@ -158,11 +157,6 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     if (currentIntersections.size() == 0) {
       break;
     }
-  }
-
-  // join the maps which we have to consider in the next iteration
-  for (auto& candidate : intersectionsForNextIteration) {
-    currentIntersections.insert(candidate);
   }
 }
 
