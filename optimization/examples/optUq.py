@@ -79,22 +79,22 @@ def gridToName(i):
     types = {0 : "Linear",
              1 : "LinearStretched",
              2 : "LinearL0Boundary",
-             3 : "LinearBoundary",
+             3 : "LinearBoundary (Rand)",
              4 : "LinearStretchedBoundary",
              5 : "LinearTruncatedBoundary",
              6 : "ModLinear",
              7 : "Poly (Grad 3)",
-             8 : "PolyBoundary",
+             8 : "PolyBoundary (Grad 3) (Rand)",
              9 : "ModPoly",
              10 : "ModWavelet",
-             11 : "ModBspline (Grad 3)",
+             11 : "ModBspline (Grad 3) (Rand)",
              12 : "Prewavelet",
              13 : "SquareRoot",
              14 : "Periodic",
              15 : "LinearClenshawCurtis",
              16 : "B-Spline (Grad 3)",
-             17 : "B-SplineBoundary (Grad 3)",
-             18 : "B-SplineClenshawCurtis (Grad 3)",
+             17 : "B-SplineBoundary (Grad 3) (Rand)",
+             18 : "B-SplineClenshawCurtis (Grad 3) (Rand)",
              19 : "Wavelet",
              20 : "WaveletBoundary",
              21 : "FundamentalSpline",
@@ -229,15 +229,24 @@ def l2_error(d, f, f_sg):
     
 def integrate():
     d = 2
-    grids = (pysgpp.Grid.createLinearGrid(d), pysgpp.Grid.createPolyGrid(d,3), pysgpp.Grid.createBsplineGrid(d, 3), pysgpp.Grid.createBsplineBoundaryGrid(d, 3), pysgpp.Grid.createModBsplineGrid(d, 3), pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
+    grids = (pysgpp.Grid.createLinearGrid(d),
+             pysgpp.Grid.createPolyGrid(d,3),
+             pysgpp.Grid.createBsplineGrid(d, 3),
+             pysgpp.Grid.createLinearBoundaryGrid(d, 1),
+             pysgpp.Grid.createPolyBoundaryGrid(d,3),
+             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
+             # pysgpp.Grid.createModLinearGrid(d),
+             # pysgpp.Grid.createModPolyGrid(d,3),
+             pysgpp.Grid.createModBsplineGrid(d,3),
+             # pysgpp.Grid.createLinearClenshawCurtisGrid(d),
+             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
     for grid in grids:
         printLine()
         print gridToName(grid.getType())
         printLine()
-        opQ = pysgpp.createOperationQuadrature(grid)
-        if grid.getType() == 7:
+        try:
             hierarch = pysgpp.createOperationHierarchisation(grid)
-        else:
+        except:
             hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
         # system = pysgpp.OptHierarchisationSLE(grid)
         # solver = pysgpp.OptUMFPACK()
@@ -264,8 +273,12 @@ def integrate():
             f_sg = lambda point: opeval.eval(alpha, point)
             # errors.append(l2_error(d, lambda point: oscill_genz(d, point), f_sg) )
             # errors.append(l2_error(d, michalewicz, f_sg) )
+            # try:
+            opQ = pysgpp.createOperationQuadrature(grid)
             sol = opQ.doQuadrature(alpha)
             errors.append(genz_error(sol))
+            # except:
+            # errors.append(l2_error(d, lambda point: oscill_genz(d, point), f_sg) )
             # print errors[-1]
             num_gridPoints.append(gridStorage.getSize())
             
@@ -279,24 +292,83 @@ def integrate():
     plt.show()
     # tikz_save('mytikz.tex');
 
-def test():
-    pysgpp.OptPrinter.getInstance().setVerbosity(10)
-    grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(1, 3)
-    gridGen = grid.getGenerator().regular(6)
-    gridStorage = grid.getStorage()
-    alpha = pysgpp.DataVector(gridStorage.getSize())
-    system = pysgpp.OptHierarchisationSLE(grid)
-    solver = pysgpp.OptArmadillo()
-    for i in range(gridStorage.getSize()):
-        alpha[i] = 1
-    b = pysgpp.DataVector(alpha)
+def interpolation_error():
+    l = 7
+    d = 2
+    grid_poly = pysgpp.Grid.createPolyBoundaryGrid(d,3)
+    grid_cc = pysgpp.Grid.createBsplineClenshawCurtisGrid(d,3)
+    grid_poly.getGenerator().regular(l)
+    grid_cc.getGenerator().regular(l)
+    # error_grid = pysgpp.Grid.createLinearGrid(d)
+    # error_grid.getGenerator().full(l)
+    # error_gridStorage = error_grid.getStorage()
+    grid_polyStorage = grid_poly.getStorage()
+    grid_ccStorage = grid_cc.getStorage()
+    alpha_cc = pysgpp.DataVector(grid_ccStorage.getSize())
+    alpha_poly= pysgpp.DataVector(grid_polyStorage.getSize())
+    hierarch_poly = pysgpp.createOperationHierarchisation(grid_poly)
+    hierarch_cc = pysgpp.createOperationMultipleHierarchisation(grid_cc)
+        
+    for i in range(grid_ccStorage.getSize()):
+        gp = grid_ccStorage.getPoint(i)
+        x = (grid_ccStorage.getCoordinate(gp, 0), grid_ccStorage.getCoordinate(gp ,1))
+        alpha_cc[i] = oscill_genz(d,x)
+    hierarch_cc.doHierarchisation(alpha_cc)
     
-    n = system.getDimension()
-    print "[" + "\n".join(["[" + ", ".join([str(system.getMatrixEntry(i, j))
-                                        for j in range(n)]) + "]"
-                       for i in range(n)]) + "]"
-    solver.solve(system, b, alpha)
+    for i in range(grid_polyStorage.getSize()):
+        gp = grid_polyStorage.getPoint(i)
+        x = (grid_polyStorage.getCoordinate(gp, 0), grid_polyStorage.getCoordinate(gp ,1))
+        alpha_poly[i] = oscill_genz(d,x)
+    hierarch_poly.doHierarchisation(alpha_poly)
+
+
+    opeval_poly = pysgpp.createOperationEval(grid_poly)
+    opeval_cc = pysgpp.createOperationNaiveEval(grid_cc)
+    f_sg_poly = lambda point: opeval_poly.eval(alpha_poly, point)
+    f_sg_cc = lambda point: opeval_cc.eval(alpha_cc, point)
+    X_grid = []
+    Y_grid = []
+    err = []
     
+    # for i in range(error_gridStorage.getSize()):
+    #     gp = error_gridStorage.getPoint(i)
+    #     x = (gridStorage.getCoordinate(gp, 0), gridStorage.getCoordinate(gp ,1))
+    #     vec_x = pysgpp.DataVector(d)
+    #     for i in range(d):
+    #         vec_x[i] = x[i]
+    #     X_grid.append(x[0])
+    #     Y_grid.append(x[1])
+    #     error = oscill_genz(d,x) - f_sg(vec_x)
+    #     err.append(error)
+        
+        
+    X = np.arange(0, 1, 0.01)
+    Y = np.arange(0, 1, 0.01)
+    X, Y = np.meshgrid(X, Y)
+    Z_cc = np.zeros((len(X), len(X)))
+    Z_poly = np.zeros((len(X), len(X)))
+    for i in range(len(X)):
+        for j in range(len(X)):
+            vec_x = pysgpp.DataVector(d)
+            vec_x[0] = X[i,j] 
+            vec_x[1] = Y[i,j] 
+            Z_cc[i,j] = oscill_genz(d,[X[i,j],Y[i,j]]) - f_sg_cc(vec_x)
+            Z_poly[i,j] = oscill_genz(d,[X[i,j],Y[i,j]]) - f_sg_poly(vec_x)
+    
+    opQ_poly = pysgpp.createOperationQuadrature(grid_poly)
+    opQ_cc= pysgpp.createOperationQuadrature(grid_cc)
+    print "Error poly: " + str(genz_error(opQ_poly.doQuadrature(alpha_poly)))
+    print "Error cc: " + str(genz_error(opQ_cc.doQuadrature(alpha_cc)))
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    print X.shape
+    print Y.shape
+    ax.plot_surface(X, Y, Z_poly, rstride=4, cstride=4, cmap=cm.coolwarm)
+    ax = fig.add_subplot(211, projection='3d')
+    ax.plot_surface(X, Y, Z_cc, rstride=4, cstride=4, cmap=cm.coolwarm)
+    plt.show()
+        
+
 def plot_genz():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -308,8 +380,9 @@ def plot_genz():
     plt.show()
 # test()
 # plot_genz()
-integrate()
+# integrate()
 # optimize()
+interpolation_error()
 # X_grid = np.outer(np.linspace(0, 1, 50), np.ones(50))
 # Y_grid = X_grid.copy().T
 # fig = plt.figure()

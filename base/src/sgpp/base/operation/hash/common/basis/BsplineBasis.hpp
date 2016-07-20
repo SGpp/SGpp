@@ -7,6 +7,7 @@
 #define BSPLINE_BASE_HPP
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -1714,7 +1715,8 @@ class BsplineBasis: public Basis<LT, IT> {
         }
         break;
       default:
-        //NOT implemented Exception
+        throw operation_exception("BsplineBasis::getIntegral()  only implemented for 1 <= degree <= 7 ");
+
         break;
       }
     }
