@@ -118,7 +118,8 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProduct(base::Grid&
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationMatrixLTwoDotPeriodic(&grid.getStorage()));
   } else {
-    throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type.");
+    throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type. "
+        "You could try createOperationLTwoDotExplicit (if you're lucky).");
   }
 }
 
@@ -137,7 +138,8 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid
         new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
   } else {
     throw base::factory_exception(
-        "OperationLTwoDotExplicit is not implemented for this grid type.");
+        "OperationLTwoDotExplicit is not implemented for this grid type. "
+        "You could try createOperationLTwoDotProduct (if you're lucky).");
   }
 }
 
