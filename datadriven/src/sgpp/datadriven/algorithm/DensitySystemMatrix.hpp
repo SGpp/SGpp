@@ -32,21 +32,24 @@ class DensitySystemMatrix : public base::OperationMatrix {
   /// OperationB for calculating the data matrix
   std::unique_ptr<base::OperationMultipleEval> B;
   /// OperationMatrix, the regularisation method
-  base::OperationMatrix& C;
-  /// Training data
-  base::DataMatrix& data;
+  std::unique_ptr<base::OperationMatrix> C;
+  /// number of training samples
+  size_t numSamples;
 
  public:
   /**
    * Std-Constructor
    *
-   * @param grid  reference to the sparse grid
-   * @param trainData reference to DataVector that contains the training data
+   * @param A L^2 dot product matrix of some grid
+   * @param B MultipleEval matrix of grid and data points
    * @param C the regression functional
    * @param lambda the regression parameter
+   * @param numSamples number of data samples
    */
-  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix& C,
-                      double lambda);
+  DensitySystemMatrix(std::unique_ptr<sgpp::base::OperationMatrix> &A,
+                      std::unique_ptr<sgpp::base::OperationMultipleEval> &B,
+                      std::unique_ptr<sgpp::base::OperationMatrix> &C, double lambda,
+                      size_t numSamples);
 
   /**
    * Generates the left hand side of the classification equation
