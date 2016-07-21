@@ -341,7 +341,7 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEvalNaive(
     base::Grid& grid, base::DataMatrix& dataset) {
-  if (grid.getType() == base::GridType::ModBspline) {
+  if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalBsplineNaive(
         grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset));
   } else {
