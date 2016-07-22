@@ -21,8 +21,8 @@ namespace base {
 
 OperationMakePositive::OperationMakePositive(
     base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    MakePositiveInterpolationAlgorithm interpolationAlgorithm)
-    : grid(grid), minimumLevelSum(0), maximumLevelSum(0), verbose(true) {
+    MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose)
+    : grid(grid), minimumLevelSum(0), maximumLevelSum(0), verbose(verbose) {
   // set range of level sums for candidate search
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
@@ -44,6 +44,8 @@ OperationMakePositive::OperationMakePositive(
           std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>(grid);
       break;
   }
+  candidateSearch->setVerbose(verbose);
+
   // set the interpolation algorithm
   switch (interpolationAlgorithm) {
     case MakePositiveInterpolationAlgorithm::SetToZero:

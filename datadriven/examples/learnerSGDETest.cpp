@@ -8,6 +8,7 @@
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/datatypes/DataMatrix.hpp"
+#include "sgpp/base/operation/hash/OperationMakePositive.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/datadriven/application/LearnerSGDE.hpp"
 #include "sgpp/base/grid/Grid.hpp"
@@ -52,7 +53,7 @@ int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 2;
-  gridConfig.type_ = sgpp::base::GridType::Bspline;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
   gridConfig.maxDegree_ = 3;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
@@ -75,8 +76,8 @@ int main(int argc, char** argv) {
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
-  // configure learner
-  std::cout << "# create learner config" << std::endl;
+  // configure cross validation
+  std::cout << "# create cross validation config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
@@ -89,17 +90,23 @@ int main(int argc, char** argv) {
   crossvalidationConfig.seed_ = 1234567;
   crossvalidationConfig.silent_ = false;
 
+  // configure learner
+  std::cout << "# create learner config" << std::endl;
+  sgpp::datadriven::SGDEConfiguration sgdeConfig;
+  sgdeConfig.makePositive_ = true;
+  sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+      sgpp::base::MakePositiveCandidateSearchAlgorithm::Intersections;
+  sgdeConfig.makePositive_interpolationAlgorithm_ =
+      sgpp::base::MakePositiveInterpolationAlgorithm::SetToZero;
+  sgdeConfig.makePositive_verbose_ = false;
+  sgdeConfig.unitIntegrand_ = false;
+
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-                                        crossvalidationConfig);
+                                        crossvalidationConfig, sgdeConfig);
   learner.initialize(samples);
 
-  // make positive
-  Grid* positiveGrid = nullptr;
-  DataVector positiveAlpha(*learner.getSurpluses());
-  sgpp::op_factory::createOperationMakePositive(*learner.getGrid())
-      ->makePositive(positiveGrid, positiveAlpha);
-
+  std::cout << "# estimating a kde" << std::endl;
   sgpp::datadriven::KernelDensityEstimator kde(samples);
 
   sgpp::base::DataVector x(learner.getDim());
@@ -148,6 +155,4 @@ int main(int argc, char** argv) {
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << points.toString() << std::endl;*/
-
-  delete positiveGrid;
 }

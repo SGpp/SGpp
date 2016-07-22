@@ -15,6 +15,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -43,6 +44,16 @@ struct CrossvalidationForRegularizationConfiguration {
   bool logScale_;  // search the optimization interval on a log-scale
 };
 
+struct MakePositiveConfiguration {};
+
+struct SGDEConfiguration {
+  bool makePositive_;  // force the density to be positive
+  base::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
+  base::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
+  bool makePositive_verbose_;
+  bool unitIntegrand_;  // force unit integrand
+};
+
 // --------------------------------------------------------------------------
 class LearnerSGDE;
 
@@ -66,6 +77,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  sgpp::datadriven::SGDEConfiguration sgdeConfig;
 };
 
 class LearnerSGDE : public datadriven::DensityEstimator {
@@ -78,12 +90,14 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param solverConfig solver configuration (CG)
    * @param regularizationConfig config for regularization operator
    * @param crossvalidationConfig configuration for the cross validation
+   * @param sgdeConfig configuration for the sparse grid density estimation
    */
   LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
               sgpp::base::AdpativityConfiguration& adaptivityConfig,
               sgpp::solver::SLESolverConfiguration& solverConfig,
               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-              CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
+              CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
+              SGDEConfiguration& sgdeConfig);
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
 
@@ -205,8 +219,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param grid grid
    * @param train training data
    */
-  std::unique_ptr<base::OperationMultipleEval> computeMultipleEvalMatrix(
-      base::Grid& grid, base::DataMatrix& train);
+  std::unique_ptr<base::OperationMultipleEval> computeMultipleEvalMatrix(base::Grid& grid,
+                                                                         base::DataMatrix& train);
 
   /**
    * generates the regularization matrix
@@ -245,6 +259,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  SGDEConfiguration sgdeConfig;
 };
 
 }  // namespace datadriven

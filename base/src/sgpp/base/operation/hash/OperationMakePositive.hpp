@@ -29,7 +29,8 @@ class OperationMakePositive {
                                  MakePositiveCandidateSearchAlgorithm candiateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-                                     MakePositiveInterpolationAlgorithm::SetToZero);
+                                     MakePositiveInterpolationAlgorithm::SetToZero,
+                                 bool verbose = false);
 
   virtual ~OperationMakePositive();
 

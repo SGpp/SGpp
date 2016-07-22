@@ -1,5 +1,6 @@
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval,
+                    createOperationMultipleEvalNaive,
                     DataVector, DataMatrix,
                     HashGridPoint,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
@@ -7,7 +8,7 @@ from pysgpp import (createOperationHierarchisation,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
-                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary)
+                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline)
 
 from scipy.interpolate import interp1d
 
@@ -509,7 +510,11 @@ def evalSGFunctionMulti(grid, alpha, samples):
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
     samples_matrix = DataMatrix(samples)
-    opEval = createOperationMultipleEval(grid, samples_matrix)
+    if grid.getType() == GridType_Bspline:
+        opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+    else:
+        opEval = createOperationMultipleEval(grid, samples_matrix)
+
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)
     opEval.mult(alpha_vec, res_vec)
