@@ -416,7 +416,7 @@ class Grid {
    *
    * @return Basis class associated with the grid
    */
-  virtual const SBasis& getBasis() = 0;
+  virtual SBasis& getBasis() = 0;
 
   /**
    * Serializes grid to a string.

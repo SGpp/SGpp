@@ -7,6 +7,10 @@
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLaplace(
     sgpp::base::Grid& grid, sgpp::base::DataVector& coef);
+%newobject sgpp::op_factory::createOperationLaplaceExplicit(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationLaplaceExplicit(
+    sgpp::base::DataMatrix* m, sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLTwoDotProduct(
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLTwoDotExplicit(
@@ -27,6 +31,16 @@ sgpp::base::OperationMatrix* createOperationLaplace(
 sgpp::base::OperationMatrix* createOperationLaplace(
         sgpp::base::Grid& grid, sgpp::base::DataVector& coef) {
     return sgpp::op_factory::createOperationLaplace(grid, coef).release();
+}
+
+sgpp::base::OperationMatrix* createOperationLaplaceExplicit(
+        sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationLaplaceExplicit(grid).release();
+}
+
+sgpp::base::OperationMatrix* createOperationLaplaceExplicit(
+        sgpp::base::DataMatrix* m, sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationLaplaceExplicit(m, grid).release();
 }
 
 sgpp::base::OperationMatrix* createOperationLTwoDotProduct(
@@ -59,6 +73,10 @@ sgpp::base::OperationMatrix* createOperationLaplace(
     sgpp::base::Grid& grid);
 sgpp::base::OperationMatrix* createOperationLaplace(
     sgpp::base::Grid& grid, sgpp::base::DataVector& coef);
+sgpp::base::OperationMatrix* createOperationLaplaceExplicit(
+    sgpp::base::Grid& grid);
+sgpp::base::OperationMatrix* createOperationLaplaceExplicit(
+    sgpp::base::DataMatrix* m, sgpp::base::Grid& grid);
 sgpp::base::OperationMatrix* createOperationLTwoDotProduct(
     sgpp::base::Grid& grid);
 sgpp::base::OperationMatrix* createOperationLTwoDotExplicit(

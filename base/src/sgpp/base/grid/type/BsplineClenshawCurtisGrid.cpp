@@ -43,7 +43,7 @@ sgpp::base::GridType BsplineClenshawCurtisGrid::getType() {
   return sgpp::base::GridType::BsplineClenshawCurtis;
 }
 
-const SBasis& BsplineClenshawCurtisGrid::getBasis() { return *basis_; }
+SBasis& BsplineClenshawCurtisGrid::getBasis() { return *basis_; }
 
 size_t BsplineClenshawCurtisGrid::getDegree() { return this->degree; }
 

@@ -36,7 +36,7 @@ sgpp::base::GridType LinearClenshawCurtisGrid::getType() {
   return sgpp::base::GridType::LinearClenshawCurtis;
 }
 
-const SBasis& LinearClenshawCurtisGrid::getBasis() {
+SBasis& LinearClenshawCurtisGrid::getBasis() {
   static SLinearClenshawCurtisBase basis;
   return basis;
 }

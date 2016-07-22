@@ -47,7 +47,7 @@ class LinearStretchedGrid : public Grid {
 
   sgpp::base::GridType getType() override;
 
-  const SBasis& getBasis() override;
+  SBasis& getBasis() override;
 
   GridGenerator& getGenerator() override;
   static std::unique_ptr<Grid> unserialize(std::istream& istr);

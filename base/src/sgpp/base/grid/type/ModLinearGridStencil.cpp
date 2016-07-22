@@ -35,7 +35,7 @@ sgpp::base::GridType ModLinearGridStencil::getType() {
   return sgpp::base::GridType::ModLinearStencil;
 }
 
-const SBasis& ModLinearGridStencil::getBasis() {
+SBasis& ModLinearGridStencil::getBasis() {
   throw factory_exception("Not implemented");
   // it should never get so far, code just for compilation reasons
   // If there will be a meaningful basis, this following lines should be changed
