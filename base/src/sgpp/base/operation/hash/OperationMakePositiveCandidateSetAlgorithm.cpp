@@ -30,6 +30,51 @@ void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficien
   }
 }
 
+bool OperationMakePositiveCandidateSetAlgorithm::hasOverlappingSupport(HashGridPoint& gpi,
+                                                                       HashGridPoint& gpj,
+                                                                       size_t dim) {
+  size_t leveli = gpi.getLevel(dim), indexi = gpi.getIndex(dim);
+  size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
+
+  if (leveli == levelj) return indexi == indexj;
+
+  if (leveli < levelj)
+    return isHierarchicalAncestor(gpi, gpj, dim);
+  else
+    return isHierarchicalAncestor(gpj, gpi, dim);
+}
+
+bool OperationMakePositiveCandidateSetAlgorithm::isHierarchicalAncestor(HashGridPoint& gpi,
+                                                                        HashGridPoint& gpj,
+                                                                        size_t dim) {
+  size_t leveli = gpi.getLevel(dim), indexi = gpi.getIndex(dim);
+  size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
+
+  return (levelj >= leveli) && (indexi == ((indexj >> (levelj - leveli)) | 1));
+}
+
+bool OperationMakePositiveCandidateSetAlgorithm::hasOverlappingSupport(HashGridPoint& gpi,
+                                                                       HashGridPoint& gpj) {
+  size_t idim = 0;
+  size_t numDims = gpi.getDimension();
+
+  while (idim < numDims && hasOverlappingSupport(gpi, gpj, idim)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == numDims;
+}
+
+bool OperationMakePositiveCandidateSetAlgorithm::isHierarchicalAncestor(HashGridPoint& gpi,
+                                                                        HashGridPoint& gpj) {
+  size_t idim = 0;
+  size_t numDims = gpi.getDimension();
+
+  while (idim < numDims && isHierarchicalAncestor(gpi, gpj, idim)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == numDims;
+}
+
 // -------------------------------------------------------------------------------------------
 OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates(
     base::Grid& grid)
@@ -69,8 +114,8 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
     for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
       auto jseq = negativeGridPoints[j];
       auto gpj = std::make_shared<HashGridPoint>(gridStorage.getPoint(jseq));
-      if (gpi->hasOverlappingSupport(*gpj) ||
-          (!gpi->isHierarchicalAncestor(*gpj) && !gpj->isHierarchicalAncestor(*gpi))) {
+      if (hasOverlappingSupport(*gpi, *gpj) ||
+          (!isHierarchicalAncestor(*gpi, *gpj) && !isHierarchicalAncestor(*gpj, *gpi))) {
         intersections[gpi->getHash()]->push_back(gpj);
         intersections[gpj->getHash()]->push_back(gpi);
       }
@@ -134,7 +179,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 
           // store the result if the common candidates overlap with the current intersection
           for (auto& gpk : commonIntersections) {
-            if (gpk->hasOverlappingSupport(*gpintersection)) {
+            if (hasOverlappingSupport(*gpk, *gpintersection)) {
               intersections[gpintersection->getHash()]->push_back(gpk);
             }
           }
