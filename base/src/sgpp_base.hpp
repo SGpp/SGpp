@@ -67,6 +67,8 @@
 // #include <sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/GSGRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
 /*#include <sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
@@ -79,6 +81,8 @@
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 /*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>

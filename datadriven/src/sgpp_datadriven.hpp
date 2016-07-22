@@ -25,6 +25,9 @@
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 
+#include <sgpp/datadriven/application/PrimalDualSVM.hpp>
+#include <sgpp/datadriven/application/LearnerSVM.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
 
@@ -42,6 +45,8 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+
+#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 

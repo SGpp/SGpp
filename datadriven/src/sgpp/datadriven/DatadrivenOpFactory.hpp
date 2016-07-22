@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
+#ifndef DATADRIVEN_OP_FACTORY_HPP
+#define DATADRIVEN_OP_FACTORY_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -25,6 +26,8 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
+
+#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -51,8 +54,8 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(base::Grid& grid,
-                                                                             int mode, double k);
+std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
+    base::Grid& grid, int mode, double k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -178,6 +181,16 @@ std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensi
  */
 std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensityConditionalKDE(
     datadriven::GaussianKDE& kde);
+	
+/**
+ * Factory method, returning an OperationEvalSGKernel for the sparse grid kernel evaluation.
+ *
+ * @param grid Grid which is to be used for the operation
+ * @param dim dimension of input data
+ * @return Pointer to new OperationEvalSGKernel
+ */
+std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
@@ -193,3 +206,5 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 
 }  // namespace op_factory
 }  // namespace sgpp
+
+#endif /*DATADRIVEN_OP_FACTORY_HPP*/

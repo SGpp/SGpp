@@ -46,7 +46,6 @@
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
 #endif
@@ -234,6 +233,16 @@ std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensi
       new datadriven::OperationDensityConditionalKDE(kde));
 }
 
+std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
+    base::Grid& grid) {
+  if (grid.getType() == base::GridType::ModLinear)
+    return std::unique_ptr<datadriven::OperationEvalSGKernel>(
+        new datadriven::OperationEvalSGKernel(grid));
+  else
+    throw base::factory_exception(
+        "OperationEvalSGKernel is not implemented for this grid type.");
+}
+
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
@@ -309,15 +318,6 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingModOCLMaskMultiPlatformConfigured(grid, dataset,
                                                                          configuration));
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled with OpenCL support");
-#endif
-      } else if (configuration.getSubType() ==
-                 sgpp::datadriven::OperationMultipleEvalSubType::OCLOPT) {
-#ifdef USE_OCL
-        return std::unique_ptr<base::OperationMultipleEval>(
-            datadriven::createStreamingModOCLOptConfigured(grid, dataset, configuration));
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with OpenCL support");
