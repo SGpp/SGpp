@@ -17,9 +17,12 @@
 namespace sgpp {
 namespace base {
 
-OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm() {}
+OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm()
+    : verbose(false) {}
 
 OperationMakePositiveCandidateSetAlgorithm::~OperationMakePositiveCandidateSetAlgorithm() {}
+
+void OperationMakePositiveCandidateSetAlgorithm::setVerbose(bool pverbose) { verbose = pverbose; }
 
 void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficients(
     base::DataVector& alpha, std::vector<size_t>& negativeGridPoints) {
@@ -78,7 +81,7 @@ bool OperationMakePositiveCandidateSetAlgorithm::isHierarchicalAncestor(HashGrid
 // -------------------------------------------------------------------------------------------
 OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates(
     base::Grid& grid)
-    : iteration(0), costs(0), verbose(true) {}
+    : iteration(0), costs(0) {}
 
 OperationMakePositiveFindIntersectionCandidates::
     ~OperationMakePositiveFindIntersectionCandidates() {}

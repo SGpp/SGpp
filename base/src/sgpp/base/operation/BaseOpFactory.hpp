@@ -111,8 +111,8 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::G
  * the sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
-std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEvalNaive(base::Grid& grid,
-    base::DataMatrix& dataset);
+std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEvalNaive(
+    base::Grid& grid, base::DataMatrix& dataset);
 /**
  * Factory method, returning an OperationNaiveEval for the grid at hand.
  * Note: object has to be freed after use.
@@ -159,7 +159,8 @@ std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
     base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                           base::MakePositiveCandidateSearchAlgorithm::FullGrid,
     base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-        base::MakePositiveInterpolationAlgorithm::SetToZero);
+        base::MakePositiveInterpolationAlgorithm::SetToZero,
+    bool verbose = false);
 
 }  // namespace op_factory
 }  // namespace sgpp

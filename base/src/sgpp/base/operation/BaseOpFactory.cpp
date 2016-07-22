@@ -218,8 +218,9 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineBoundary(
         grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree()));
+    return std::unique_ptr<base::OperationQuadrature>(
+        new base::OperationQuadratureBsplineClenshawCurtis(
+            grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree()));
   } else {
     throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
   }
@@ -555,9 +556,15 @@ createOperationNaiveEvalPartialDerivative(base::Grid& grid) {
 
 std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
     base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm) {
-  return std::unique_ptr<base::OperationMakePositive>(
-      new base::OperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm));
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return std::unique_ptr<base::OperationMakePositive>(new base::OperationMakePositive(
+        grid, candidateSearchAlgorithm, interpolationAlgorithm, verbose));
+  } else {
+    throw base::factory_exception(
+        "OperationMakePositive is not implemented for "
+        "this grid type.");
+  }
 }
 
 }  // namespace op_factory

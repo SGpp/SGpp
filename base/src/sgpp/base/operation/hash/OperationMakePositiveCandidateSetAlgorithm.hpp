@@ -24,6 +24,8 @@ class OperationMakePositiveCandidateSetAlgorithm {
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<HashGridPoint>>& candidates) = 0;
 
+  void setVerbose(bool pverbose);
+
  protected:
   void findNodesWithNegativeCoefficients(base::DataVector& alpha,
                                          std::vector<size_t>& negativeGridPoints);
@@ -32,6 +34,8 @@ class OperationMakePositiveCandidateSetAlgorithm {
   bool hasOverlappingSupport(HashGridPoint& gpi, HashGridPoint& gpj);
   bool isHierarchicalAncestor(HashGridPoint& gpi, HashGridPoint& gpj);
   bool isHierarchicalAncestor(HashGridPoint& gpi, HashGridPoint& gpj, size_t dim);
+
+  bool verbose;
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveFindIntersectionCandidates
@@ -60,7 +64,6 @@ class OperationMakePositiveFindIntersectionCandidates
   std::unordered_map<size_t, std::shared_ptr<HashGridPoint>> candidates;
 
   size_t costs;
-  bool verbose;
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveLoadFullGridCandidates

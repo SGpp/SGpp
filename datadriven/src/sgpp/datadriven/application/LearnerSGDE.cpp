@@ -41,6 +41,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() { initConfig
 
 LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     : json::JSON(fileName) {
+  // initialize structs with default values
   initConfig();
   // initialize structs from file
   // configure grid
@@ -68,13 +69,15 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     if (this->contains("solver_eps")) solverConfig.eps_ = (*this)["solver_eps"].getDouble();
     if (this->contains("solver_threshold"))
       solverConfig.threshold_ = (*this)["solver_threshold"].getDouble();
+    if (this->contains("solver_verbose"))
+      solverConfig.verbose_ = (*this)["solver_verbose"].getBool();
 
     // configure regularization
     if (this->contains("regularization_type"))
       regularizationConfig.regType_ =
           stringToRegularizationType((*this)["regularization_type"].get());
 
-    // configure learner
+    // configure cross validation
     if (this->contains("crossValidation_lambda"))
       crossvalidationConfig.lambda_ = (*this)["crossValidation_lambda"].getDouble();
     if (this->contains("crossValidation_enable"))
@@ -95,6 +98,35 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       crossvalidationConfig.seed_ = static_cast<int>((*this)["crossValidation_seed"].getInt());
     if (this->contains("crossValidation_silent"))
       crossvalidationConfig.silent_ = (*this)["crossValidation_silent"].getBool();
+
+    // configure learner
+    if (this->contains("sgde_makePositive"))
+      sgdeConfig.makePositive_ = (*this)["sgde_makePositive"].getBool();
+    if (this->contains("sgde_makePositive_candidateSearchAlgorithm")) {
+      std::string candidateSearchStr = (*this)["sgde_makePositive_candidateSearchAlgorithm"].get();
+      if ((strcmp(candidateSearchStr.c_str(), "intersections") == 0)) {
+        sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+            base::MakePositiveCandidateSearchAlgorithm::Intersections;
+      } else if ((strcmp(candidateSearchStr.c_str(), "fullGrid") == 0)) {
+        sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+            base::MakePositiveCandidateSearchAlgorithm::FullGrid;
+      } else {
+        throw sgpp::base::application_exception("candidate search algorithm is unknown");
+      }
+    }
+    if (this->contains("sgde_makePositive_interpolationAlgorithm")) {
+      std::string candidateSearchStr = (*this)["sgde_makePositive_interpolationAlgorithm"].get();
+      if ((strcmp(candidateSearchStr.c_str(), "setToZero") == 0)) {
+        sgdeConfig.makePositive_interpolationAlgorithm_ =
+            base::MakePositiveInterpolationAlgorithm::SetToZero;
+      } else {
+        throw sgpp::base::application_exception("interpolation algorithm is unknown");
+      }
+    }
+    if (this->contains("sgde_makePositive_verbose"))
+      sgdeConfig.makePositive_verbose_ = (*this)["sgde_makePositive_verbose"].getBool();
+    if (this->contains("sgde_unitIntegrand"))
+      sgdeConfig.unitIntegrand_ = (*this)["sgde_unitIntegrand"].getBool();
   } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
   }
@@ -117,11 +149,12 @@ void LearnerSGDEConfiguration::initConfig() {
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-10;
   solverConfig.threshold_ = 1e-14;
+  solverConfig.verbose_ = false;
 
   // configure regularization
   regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
 
-  // configure learner
+  // configure cross validation
   crossvalidationConfig.enable_ = true;
   crossvalidationConfig.kfold_ = 5;
   crossvalidationConfig.lambda_ = 1e-5;
@@ -132,6 +165,16 @@ void LearnerSGDEConfiguration::initConfig() {
   crossvalidationConfig.shuffle_ = false;
   crossvalidationConfig.seed_ = 1234567;
   crossvalidationConfig.silent_ = true;
+
+  // configure learner
+  sgdeConfig.makePositive_ = false;
+  sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+      base::MakePositiveCandidateSearchAlgorithm::Intersections;
+  sgdeConfig.makePositive_interpolationAlgorithm_ =
+      base::MakePositiveInterpolationAlgorithm::SetToZero;
+  sgdeConfig.makePositive_verbose_ = false;
+
+  sgdeConfig.unitIntegrand_ = false;
 }
 
 LearnerSGDEConfiguration* LearnerSGDEConfiguration::clone() {
@@ -223,7 +266,8 @@ LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
                          sgpp::base::AdpativityConfiguration& adaptivityConfig,
                          sgpp::solver::SLESolverConfiguration& solverConfig,
                          sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                         CrossvalidationForRegularizationConfiguration& crossvalidationConfig)
+                         CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
+                         SGDEConfiguration& sgdeConfig)
     : grid(nullptr),
       alpha(nullptr),
       samples(nullptr),
@@ -231,12 +275,13 @@ LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       regularizationConfig(regularizationConfig),
-      crossvalidationConfig(crossvalidationConfig) {}
+      crossvalidationConfig(crossvalidationConfig),
+      sgdeConfig(sgdeConfig) {}
 
 LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
     : LearnerSGDE(learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
                   learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
-                  learnerSGDEConfig.crossvalidationConfig) {}
+                  learnerSGDEConfig.crossvalidationConfig, learnerSGDEConfig.sgdeConfig) {}
 
 LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   grid = learnerSGDE.grid;
@@ -247,6 +292,7 @@ LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   solverConfig = learnerSGDE.solverConfig;
   regularizationConfig = learnerSGDE.regularizationConfig;
   crossvalidationConfig = learnerSGDE.crossvalidationConfig;
+  sgdeConfig = learnerSGDE.sgdeConfig;
 }
 
 LearnerSGDE::~LearnerSGDE() {}
@@ -270,6 +316,22 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 
   // learn the data -> do the density estimation
   train(*grid, *alpha, *samples, lambdaReg);
+
+  // make the density positive
+  if (sgdeConfig.makePositive_) {
+    base::Grid* positiveGrid = nullptr;
+    op_factory::createOperationMakePositive(
+        *grid, sgdeConfig.makePositive_candidateSearchAlgorithm_,
+        sgdeConfig.makePositive_interpolationAlgorithm_, sgdeConfig.makePositive_verbose_)
+        ->makePositive(positiveGrid, *alpha);
+    grid = std::shared_ptr<base::Grid>(positiveGrid);
+  }
+
+  // force the integral to be 1
+  if (sgdeConfig.unitIntegrand_) {
+    double vol = op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+    alpha->mult(1. / vol);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -510,7 +572,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
     }
 
     solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
-    myCG.solve(*sMatrix, alpha, rhs, false, false, solverConfig.threshold_);
+    myCG.solve(*sMatrix, alpha, rhs, false, solverConfig.verbose_, solverConfig.threshold_);
 
     if (myCG.getResiduum() > solverConfig.threshold_) {
       throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
@@ -522,7 +584,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       }
 
       // Weight surplus with function evaluation at grid points
-      auto opEval(op_factory::createOperationNaiveEval(grid));
+      auto opEval = op_factory::createOperationNaiveEval(grid);
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
