@@ -183,11 +183,6 @@ class HashGridPoint {
    */
   bool isLeaf();
 
-  bool hasOverlappingSupport(HashGridPoint& gp);
-  bool hasOverlappingSupport(size_t dim, HashGridPoint& gp);
-  bool isHierarchicalAncestor(HashGridPoint& gp);
-  bool isHierarchicalAncestor(size_t dim, HashGridPoint& gp);
-
   /**
    * determines the coordinate in a given dimension
    * "Standard" means no bounding box (i.e., the domain is the unit hypercube)

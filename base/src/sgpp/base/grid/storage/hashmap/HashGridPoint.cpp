@@ -129,43 +129,6 @@ void HashGridPoint::setLeaf(bool isLeaf) { leaf = isLeaf; }
 
 bool HashGridPoint::isLeaf() { return leaf; }
 
-bool HashGridPoint::hasOverlappingSupport(size_t dim, HashGridPoint& gp) {
-  size_t leveli = level[dim], indexi = index[dim];
-  size_t levelj = gp.getLevel(dim), indexj = gp.getIndex(dim);
-
-  if (leveli == levelj) return indexi == indexj;
-
-  if (leveli < levelj)
-    return isHierarchicalAncestor(dim, gp);
-  else
-    return gp.isHierarchicalAncestor(dim, *this);
-}
-
-bool HashGridPoint::isHierarchicalAncestor(size_t dim, HashGridPoint& gp) {
-  size_t leveli = level[dim], indexi = index[dim];
-  size_t levelj = gp.getLevel(dim), indexj = gp.getIndex(dim);
-
-  return (levelj >= leveli) && (indexi == ((indexj >> (levelj - leveli)) | 1));
-}
-
-bool HashGridPoint::hasOverlappingSupport(HashGridPoint& gp) {
-  size_t idim = 0;
-
-  while (idim < dimension && hasOverlappingSupport(idim, gp)) ++idim;
-
-  // check whether the supports are overlapping in all dimensions
-  return idim == dimension;
-}
-
-bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gp) {
-  size_t idim = 0;
-
-  while (idim < dimension && isHierarchicalAncestor(idim, gp)) ++idim;
-
-  // check whether the supports are overlapping in all dimensions
-  return idim == dimension;
-}
-
 void HashGridPoint::getStandardCoordinates(DataVector& coordinates) const {
   coordinates.resize(dimension);
 
