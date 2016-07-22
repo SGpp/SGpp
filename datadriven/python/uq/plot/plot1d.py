@@ -4,6 +4,13 @@ from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 import numpy as np
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
+from pysgpp.pysgpp_swig import DataMatrix
+
+
+def plotFunction1d(f, n=1000):
+    x = np.linspace(0, 1, n, endpoint=True)
+    y = [f(xi) for xi in x]
+    plt.plot(x, y)
 
 
 def plotDensity1d(U, n=1000, *args, **kws):
@@ -42,12 +49,20 @@ def plotNodal1d(grid, alpha):
     plt.plot(x, nodalValues, " ", marker="o")
 
 
-def plotSG1d(grid, alpha, n=1000, f=lambda x: x, **kws):
+def plotSG1d(grid, alpha, n=1000, f=lambda x: x, show_grid_points=False,
+             **kws):
     x = np.linspace(0, 1, n)
     y = [f(evalSGFunction(grid, alpha, np.array([xi])))
          for xi in x]
 
     plt.plot(x, y, **kws)
+
+    if show_grid_points:
+        gs = grid.getStorage()
+        coordinates = DataMatrix(gs.getSize(), gs.getDimension())
+        grid.getStorage().getCoordinateArraysForEval(coordinates)
+        plt.plot(coordinates.array()[:, 0],
+                 np.zeros(gs.getSize()), "o ")
 
 
 def plotCDF(p, buckets):

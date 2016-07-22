@@ -182,9 +182,9 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     plt.jet()
     plt.colorbar()
 
-#     if addContour:
-#         cs = plt.contour(xv, yv, Z, colors='white')
-#         plt.clabel(cs, inline=1, fontsize=18)
+    if addContour:
+        cs = plt.contour(xv, yv, Z, colors='white')
+        plt.clabel(cs, inline=1, fontsize=18)
 
     return res
 
