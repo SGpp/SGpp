@@ -103,6 +103,17 @@ std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid);
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::Grid& grid,
                                                                          base::DataMatrix& dataset);
 /**
+ * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
+ * the sparse grid function
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEvalNaive(base::Grid& grid,
+    base::DataMatrix& dataset);
+/**
  * Factory method, returning an OperationNaiveEval for the grid at hand.
  * Note: object has to be freed after use.
  *

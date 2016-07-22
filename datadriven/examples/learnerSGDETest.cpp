@@ -51,8 +51,9 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
-  gridConfig.level_ = 4;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.level_ = 2;
+  gridConfig.type_ = sgpp::base::GridType::Bspline;
+  gridConfig.maxDegree_ = 3;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
   // configure adaptive refinement
@@ -99,14 +100,7 @@ int main(int argc, char** argv) {
   sgpp::op_factory::createOperationMakePositive(*learner.getGrid())
       ->makePositive(positiveGrid, positiveAlpha);
 
-  sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
-  learner.cov(covSgde);
-  std::cout << covSgde.toString() << std::endl;
-
   sgpp::datadriven::KernelDensityEstimator kde(samples);
-  sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
-  kde.cov(covKDE);
-  std::cout << covKDE.toString() << std::endl;
 
   sgpp::base::DataVector x(learner.getDim());
 
@@ -119,12 +113,12 @@ int main(int argc, char** argv) {
             << std::endl;
   std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
             << std::endl;
-  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
+  /*std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
             << std::endl;
   std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
-            << std::endl;
+            << std::endl;*/
 
-  sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
+  /*sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
   std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
   learner.cov(C);
   std::cout << C.toString() << std::endl;
@@ -133,9 +127,10 @@ int main(int argc, char** argv) {
   kde.cov(C);
   std::cout << C.toString() << std::endl;
 
-  std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;*/
+
   // inverse Rosenblatt transformation
-  auto opInvRos =
+  /*auto opInvRos =
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
@@ -152,7 +147,7 @@ int main(int argc, char** argv) {
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << points.toString() << std::endl;
+  std::cout << points.toString() << std::endl;*/
 
   delete positiveGrid;
 }

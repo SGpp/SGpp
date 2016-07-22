@@ -18,6 +18,8 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -356,14 +358,17 @@ void BatchLearner::processBatch(string workData) {
     newAlpha.setAll(0.0);
     std::unique_ptr<base::OperationMatrix> id(
         op_factory::createOperationIdentity(*grids.at(p.first)));
-    datadriven::DensitySystemMatrix DMatrix(*grids.at(p.first),
-        *dataInBatch.at(p.first), *id, batchConf.lambda);
+    auto A = op_factory::createOperationLTwoDotProduct(*grids.at(p.first));
+    auto B = op_factory::createOperationMultipleEval(*grids.at(p.first), *dataInBatch.at(p.first));
+    auto C = op_factory::createOperationLaplace(*grids.at(p.first));
+    auto DMatrix = std::make_unique<datadriven::DensitySystemMatrix>(
+        A, B, C, batchConf.lambda, dataInBatch.at(p.first)->getNrows());
     base::DataVector rhs(grids.at(p.first)->getSize());
-    DMatrix.generateb(rhs);
+    DMatrix->generateb(rhs);
     myCG->setMaxIterations(solverConf.maxIterations_);
     myCG->setEpsilon(solverConf.eps_);
     // solve euqation to get new alpha
-    myCG->solve(DMatrix, newAlpha, rhs, false, false, -1.0);
+    myCG->solve(*DMatrix, newAlpha, rhs, false, false, -1.0);
 
     // apply weighting
     alphaVectors.at(p.first)->copyFrom(applyWeight(newAlpha, p.first));

@@ -29,7 +29,7 @@ sgpp::base::GridType FundamentalSplineGrid::getType() {
   return sgpp::base::GridType::FundamentalSpline;
 }
 
-const SBasis& FundamentalSplineGrid::getBasis() { return *basis_; }
+SBasis& FundamentalSplineGrid::getBasis() { return *basis_; }
 
 size_t FundamentalSplineGrid::getDegree() { return this->degree; }
 

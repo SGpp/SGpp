@@ -25,7 +25,7 @@ PolyGrid::~PolyGrid() {}
 
 sgpp::base::GridType PolyGrid::getType() { return sgpp::base::GridType::Poly; }
 
-const SBasis& PolyGrid::getBasis() { return *basis_; }
+SBasis& PolyGrid::getBasis() { return *basis_; }
 
 size_t PolyGrid::getDegree() const { return this->degree; }
 

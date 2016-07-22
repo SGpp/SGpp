@@ -41,7 +41,7 @@ class PeriodicGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  const SBasis& getBasis() override;
+  SBasis& getBasis() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

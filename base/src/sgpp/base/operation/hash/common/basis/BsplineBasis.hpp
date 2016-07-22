@@ -7,11 +7,13 @@
 #define BSPLINE_BASE_HPP
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -1641,6 +1643,85 @@ class BsplineBasis: public Basis<LT, IT> {
     return degree;
   }
 
+
+  inline double getIntegral(LT level, IT index) {
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(index-(degree+1)/2));
+    size_t letzter_abschnitt = std::min(degree, (1 << level) + (degree+1)/2 - index - 1 );
+    double res = 0.0;
+    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
+      switch(degree){
+      case 1:
+        switch(j){
+        case 0:
+        case 1:
+          res += 0.5;
+          break;
+        default:
+          break;
+        }
+        break;
+      case 3:
+        switch(j){
+        case 0:
+        case 3:
+          res += 1.0/24.0;
+          break;
+        case 1:
+        case 2:
+          res += 11.0/24.0;
+          break;
+        default:
+          break;
+        }
+        break;
+      case 5:
+        switch(j){
+        case 0:
+        case 5:
+          res += 1.0/720.0;
+          break;
+        case 1:
+        case 4:
+          res += 57.0/720.0;
+          break;
+        case 2:
+        case 3:
+          res += 302.0/720.0;
+          break;
+        default:
+          break;
+        }
+        break;
+      case 7:
+        switch(j){
+        case 0:
+        case 7:
+          res += 1.0/40320.0;
+          break;
+        case 1:
+        case 6:
+          res += 247.0/40320.0;
+          break;
+        case 2:
+        case 5:
+          res += 4293.0/40320.0;
+          break;
+        case 3:
+        case 4:
+          res += 15619.0/40320.0;
+          break;
+        default:
+          break;
+        }
+        break;
+      default:
+        throw operation_exception("BsplineBasis::getIntegral()  only implemented for 1 <= degree <= 7 ");
+
+        break;
+      }
+    }
+    return 1.0/(1 << level)*res;
+  }
  protected:
   /// degree of the B-spline
   size_t degree;

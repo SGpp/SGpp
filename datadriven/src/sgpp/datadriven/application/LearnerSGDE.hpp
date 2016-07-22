@@ -7,6 +7,7 @@
 #define LEARNERSGDE_HPP_
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
@@ -187,17 +188,40 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param grid grid
    * @param alpha coefficient vector
    * @param test test set
-   * @param lambdaReg regularization parameters
+   * @param lambdaReg regularization parameter
    * @return
    */
   double computeResidual(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& test,
                          double lambdaReg);
 
   /**
+   * generates the L^2 dot product matrix
+   * @param grid grid
+   */
+  std::unique_ptr<base::OperationMatrix> computeLTwoDotProductMatrix(base::Grid& grid);
+
+  /**
+   * generates the MultipleEval matrix
+   * @param grid grid
+   * @param train training data
+   */
+  std::unique_ptr<base::OperationMultipleEval> computeMultipleEvalMatrix(
+      base::Grid& grid, base::DataMatrix& train);
+
+  /**
    * generates the regularization matrix
    * @param grid grid
    */
   std::unique_ptr<base::OperationMatrix> computeRegularizationMatrix(base::Grid& grid);
+
+  /**
+   * generates the density system matrix
+   * @param grid grid
+   * @param train train
+   * @param lambdaReg regularization parameter
+   */
+  std::unique_ptr<datadriven::DensitySystemMatrix> computeDensitySystemMatrix(
+      base::Grid& grid, base::DataMatrix& train, double lambdaReg);
 
   /**
    * splits the complete sample set in a set of smaller training and test
