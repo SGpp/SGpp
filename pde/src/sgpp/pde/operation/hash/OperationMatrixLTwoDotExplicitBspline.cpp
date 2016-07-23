@@ -36,7 +36,7 @@ void OperationMatrixLTwoDotExplicitBspline::buildMatrix(sgpp::base::Grid* grid) 
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
   const size_t p = dynamic_cast<sgpp::base::BsplineGrid*>(grid)->getDegree();
-  const size_t pp1h = (p + 1) / 2;
+  const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
   sgpp::base::SBasis& basis = grid->getBasis();
   sgpp::base::GridStorage& storage = grid->getStorage();
@@ -110,7 +110,7 @@ OperationMatrixLTwoDotExplicitBspline::~OperationMatrixLTwoDotExplicitBspline() 
 }
 
 void OperationMatrixLTwoDotExplicitBspline::mult(sgpp::base::DataVector& alpha,
-                                                sgpp::base::DataVector& result) {
+                                                 sgpp::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
