@@ -70,6 +70,7 @@ int main(int argc, char** argv) {
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-14;
   solverConfig.threshold_ = 1e-14;
+  solverConfig.verbose_ = true;
 
   // configure regularization
   std::cout << "# create regularization config" << std::endl;
