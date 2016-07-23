@@ -38,13 +38,14 @@ void OperationMatrixLTwoDotExplicitBspline::buildMatrix(sgpp::base::Grid* grid) 
   const size_t p = dynamic_cast<sgpp::base::BsplineGrid*>(grid)->getDegree();
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
+  const size_t quadOrder = p + 1;
   sgpp::base::SBasis& basis = grid->getBasis();
   sgpp::base::GridStorage& storage = grid->getStorage();
 
   sgpp::base::DataVector coordinates;
   sgpp::base::DataVector weights;
   sgpp::base::GaussLegendreQuadRule1D gauss;
-  gauss.getLevelPointsAndWeightsNormalized(p, coordinates, weights);
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
 
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
@@ -89,7 +90,7 @@ void OperationMatrixLTwoDotExplicitBspline::buildMatrix(sgpp::base::Grid* grid) 
           }
 
           for (size_t n = start; n <= stop; n++) {
-            for (size_t c = 0; c < p; c++) {
+            for (size_t c = 0; c < quadOrder; c++) {
               const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
               temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
             }
