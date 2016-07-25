@@ -224,7 +224,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
       X.setColumn(i, x);
     } else {
       Printer::getInstance().printStatusEnd(
-          "error: Could solve via umfpack_dl_solve, "
+          "error: Could not solve via umfpack_dl_solve, "
           "error code " +
           std::to_string(result));
       umfpack_dl_free_numeric(&numeric);
