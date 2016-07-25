@@ -27,13 +27,13 @@ int main() {
   double lambda = 0.000, treshold = 0.7;
   std::string filename = "dataset3_dim10.arff";
 
-  std::cout << "Loading file: " << filename << std::endl;
+  /*std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& dataset = data.getData();
   dimension = dataset.getNcols();
   std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
-            << dataset.getNrows() << " datapoints." << std::endl;
+            << dataset.getNrows() << " datapoints." << std::endl;*/
 
   /*std::cout << "Size of Grid (3-18): ";
   std::cin >> tiefe;
@@ -47,9 +47,9 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
             std::cin >> treshold;*/
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(tiefe);
+  gridGen.regular(10);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
@@ -59,11 +59,11 @@ int main() {
 
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
-      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
+      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, 2, 0.001,
       "MyOCLConf.cfg");
 
   operation_mult->mult(alpha, result);
-  for (auto i = 0; i < 100; ++i) {
+  for (auto i = 0; i < gridsize; ++i) {
     std::cout << result[i] << " ";
   }
 

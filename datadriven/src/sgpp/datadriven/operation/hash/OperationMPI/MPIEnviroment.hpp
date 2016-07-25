@@ -102,7 +102,7 @@ class SimpleQueue {
     }
     // Send first packages
     std::cout << "Sending size: " << packageinfo[1] << std::endl;
-    for (int dest = 1; dest < commsize + 1; dest++) {
+    for (int dest = 1; dest < commsize; dest++) {
       packageinfo[0] = static_cast<int>(send_packageindex * packagesize);
       MPI_Send(packageinfo, 2, MPI_INT, dest, 1, comm);
       startindices[dest - 1] = packageinfo[0];
@@ -117,7 +117,7 @@ class SimpleQueue {
       MPI_Probe(MPI_ANY_SOURCE, 1, comm, &stat);
       MPI_Get_count(&stat, mpi_typ, &messagesize);  // Count should be packagesize*k
       if (verbose) {
-        std::cerr << "Received work package [" << received_packageindex+1
+        std::cout << "Received work package [" << received_packageindex+1
                   << " / " << packagecount+1 << "] from node "<< stat.MPI_SOURCE
                   << "! Messagesize: " << messagesize << std::endl;
       }
@@ -140,13 +140,16 @@ class SimpleQueue {
           send_packageindex++;
           received_packageindex++;
           if (verbose)
-            std::cerr << "Received work package [" << received_packageindex+1
+            std::cout << "Received work package [" << received_packageindex+1
                       << " / " << packagecount+1 << "] (empty package)" << std::endl;
           return 0;
         } else {
           MPI_Send(packageinfo, 2, MPI_INT, source, 1, comm);
           startindices[source-1] = packageinfo[0];
           send_packageindex++;
+          if (verbose)
+            std::cout << "Received work package [" << received_packageindex+1
+                      << " / " << packagecount+1 << "] (not empty package)" << std::endl;
         }
       } else {
       }
@@ -158,7 +161,6 @@ class SimpleQueue {
     delete [] startindices;
   }
 };
-
 
 }  // namespace clusteringmpi
 }  // namespace datadriven

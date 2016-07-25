@@ -22,14 +22,14 @@ class MPIWorkerGridBase : public MPIWorkerBase {
   void receive_grid(void) {
     // receive grid
     MPI_Status stat;
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+    MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
     MPI_Get_count(&stat, MPI_INT, &complete_gridsize);
     gridpoints = new int[complete_gridsize];
     MPI_Recv(gridpoints, complete_gridsize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
              MPIEnviroment::get_input_communicator(), &stat);
 
     // Receive grid dimensions
-    MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
+    MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
     MPI_Recv(&grid_dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
              MPIEnviroment::get_input_communicator(), &stat);
     gridsize = complete_gridsize / (2 * grid_dimensions);
@@ -66,7 +66,7 @@ class MPIWorkerGridBase : public MPIWorkerBase {
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     gridsize = gridStorage.getSize();
     size_t dimensions = gridStorage.getDimension();
-    int *gridpoints = new int[gridsize * 2 * dimensions];
+    gridpoints = new int[gridsize * 2 * dimensions];
     size_t pointscount = 0;
     for (int i = 0; i < gridsize; i++) {
       sgpp::base::HashGridIndex *point = gridStorage.get(i);
@@ -77,15 +77,6 @@ class MPIWorkerGridBase : public MPIWorkerBase {
       }
     }
 
-    // Send grid to slaves
-    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
-      MPI_Send(gridpoints, static_cast<int>(gridsize * 2 * dimensions), MPI_INT,
-               i, 1, MPIEnviroment::get_communicator());
-    }
-    // Send grid dimension to slaves
-    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
-      MPI_Send(&dimensions, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
-    }
     complete_gridsize = gridsize * 2 * dimensions;
     grid_dimensions = dimensions;
     send_grid();

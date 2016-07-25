@@ -30,11 +30,8 @@ int main(int argc, char *argv[]) {
   sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
-  sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
-  dumdum.start_operation();
-
-
-
+  // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
+  // dumdum.start_operation();
 
   // Create Grid
   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
@@ -43,15 +40,17 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  // MPI_Group world_group;
-  // MPI_Group worker_group;
-  // MPI_Comm communicator;
-  // MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-  // int bla[] = {0, 1, 2};
-  // MPI_Group_incl(world_group, 3, bla, &worker_group);
-  // MPI_Comm_create(MPI_COMM_WORLD, worker_group, &communicator);
-  // std::cerr << "comm created!" << std::endl;
-  // std::cin.get();
+  sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
+  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector result(gridsize);
+  alpha.setAll(1.0);
+  mult_op.mult(alpha, result);
+  std::cout << std::endl << std::endl;
+  for (size_t i = 0; i < gridsize; ++i) {
+    std::cout << result[i] << " ";
+  }
+  std::cout << std::endl << std::endl;
+
 
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
   // Loading dataset
