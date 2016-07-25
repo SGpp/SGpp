@@ -32,6 +32,9 @@ MPIWorkerBase* create_mpi_operation(int masternode,
   if (std::strcmp(classname, "OPDummy") == 0)  {
     return new WorkerDummy(classname);
   }
+  if (std::strcmp(classname, "DensityMultiplicationWorker") == 0)  {
+    return new DensityWorker();
+  }
   return NULL;
 }
 
