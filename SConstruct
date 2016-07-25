@@ -136,6 +136,8 @@ vars.Add(BoolVariable("USE_EIGEN", "Set if Eigen should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_MATLAB", "Set if MATLAB should be used " +
+                                   "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
