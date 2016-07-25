@@ -78,6 +78,7 @@ vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " 
                      converter=Helper.multiParamConverter)
 vars.Add("CPPPATH", "Set path where to look for additional headers", "")
 vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
+vars.Add("RPATH", "Set path where to look for additional dynamic libraries", "")
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
                  "for COMPILER=gnu, e.g., the following values are possible: " +
                  "sse3, sse42, avx, fma4, avx2, avx512", "sse3")
