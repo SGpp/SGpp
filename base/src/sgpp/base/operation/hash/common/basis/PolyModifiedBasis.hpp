@@ -70,14 +70,25 @@ class PolyModifiedBasis : public Basis<LT, IT> {
   }
 
   double evalSave(LT level, IT index, double p) {
-    // spacing on current level
-    double h = 1.0f / static_cast<double>(1 << level);
+    const IT hInv = static_cast<IT>(1) << level;
+    const double hInvDbl = static_cast<double>(hInv);
+    const double h = 1.0 / hInvDbl;
 
-    // check if p is out of bounds
-    if ((p < h * static_cast<double>(index - 1)) || (p > h * static_cast<double>(index + 1))) {
-      return 0.0f;
+    if (level == 1) {
+      // first level
+      return 1.0;
+    } else if (index == 1) {
+      // left modified basis function
+      return ((p <= 2.0 * h) ? (2.0 - hInvDbl * p) : 0.0);
+    } else if (index == hInv - 1) {
+      // right modified basis function
+      return ((p >= 1.0 - 2.0 * h) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
+    } else if ((p < h * (static_cast<double>(index) - 1.0)) ||
+               (p > h * (static_cast<double>(index) + 1.0))) {
+      return 0.0;
     } else {
-      return eval(level, index, p);
+      // interior basis function
+      return polyBasis.eval(level, index, p);
     }
   }
 
