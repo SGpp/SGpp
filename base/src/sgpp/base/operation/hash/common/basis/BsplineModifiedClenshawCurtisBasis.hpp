@@ -9,6 +9,7 @@
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -2737,6 +2738,45 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 
     return y;
   }
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      integreal of the basis function
+   */
+  double getIntegral(LT l,  IT i) {
+    // if(l == 0){
+      // return bsplineBasis.getIntegral(0,i);
+    // }
+    // else if(l == 1){
+      // return 1.0;
+    // }
+    size_t degree = getDegree();
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
+    size_t letzter_abschnitt = std::min(degree, (1 << l) + (degree+1)/2 - i - 1 );
+    size_t quadLevel = (degree + 1)/2;
+    if(!integrationInitialized){
+      sgpp::base::GaussLegendreQuadRule1D gauss;
+      gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
+      integrationInitialized = true;
+    }
+    constructKnots(l, i);
+    double res = 0.0;
+    for(size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
+      double h = xi[j + 1] - xi[j];
+      double temp_res = 0.0;
+      for (size_t c = 0; c < quadLevel; c++){
+        double x = (h * coordinates[c]) + xi[j];
+        temp_res += weights[c]*eval(l, i, x);
+      }
+      res += h * temp_res;
+    }
+    return res;
+  }
+  
+protected:
+  DataVector coordinates;
+  DataVector weights;
+  bool integrationInitialized = false;
 };
 
 // default type-def (unsigned int for level and index)
