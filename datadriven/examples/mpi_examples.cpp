@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+#include <unistd.h>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -27,14 +28,14 @@ int main(int argc, char *argv[]) {
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
 
   // MPI_Init(&argc, &argv);
-  sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
+  sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
-  // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
-  // dumdum.start_operation();
+  sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
+  dumdum.start_operation();
 
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(10);
   size_t gridsize = grid->getStorage().getSize();
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < gridsize; ++i) {
     std::cout << result[i] << " ";
   }
-  std::cout << std::endl << std::endl;
+  std::cout << std::endl << std::endl;*/
 
 
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
@@ -91,6 +92,7 @@ int main(int argc, char *argv[]) {
     std::cout << "\n";
     }*/
 
+  sleep(1);
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
   return 0;

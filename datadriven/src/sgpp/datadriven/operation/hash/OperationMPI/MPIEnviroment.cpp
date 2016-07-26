@@ -38,7 +38,7 @@ void MPIEnviroment::slave_mainloop(void) {
     int message_source = -1;
     if (!initialized) {
       MPI_Probe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &stat);
-    } else if (!(rank == 0)) {
+    } else /*if (!(rank == 0))*/ {
       MPI_Probe(MPI_ANY_SOURCE, 1, input_communicator, &stat);
     }
     MPI_Get_count(&stat, MPI_INT, &messagesize);
@@ -47,7 +47,7 @@ void MPIEnviroment::slave_mainloop(void) {
     if (!initialized)
       MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
                MPI_COMM_WORLD, &stat);
-    else if (!(rank == 0))
+    else //if (!(rank == 0))
       MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
                input_communicator, &stat);
     if (messagesize != 1) {
@@ -57,9 +57,15 @@ void MPIEnviroment::slave_mainloop(void) {
       delete [] message;
       continue;
     } else if (message[0] == -1) {
+      std::cout << "Node " << rank << " received cleanup signal..." << std::endl;
       for (auto p : slave_ops) {
         if (p != NULL)
           delete p;
+      }
+      // Send the order to terminate all slaves processes!
+      for (int i = 1; i < worker_count + 1; i++) {
+        std::cout << "Sending cleanup signal to" << neighbor_list[i] << std::endl;
+        MPI_Send(message, static_cast<int>(1), MPI_INT, i, 1, communicator);
       }
       delete [] message;
       break;
@@ -108,8 +114,10 @@ void MPIEnviroment::slave_mainloop(void) {
                MPI_COMM_WORLD, &stat);
       bool is_input_comm = false;
       for (int i = 0; i < messagesize; ++i) {
-        if (rank == nodelist[i])
+        if (rank == nodelist[i]) {
           is_input_comm = true;
+          break;
+        }
       }
 
       // Create Comm
@@ -119,15 +127,11 @@ void MPIEnviroment::slave_mainloop(void) {
       MPI_Group_incl(world_group, messagesize, nodelist, &tmp_group);
       if (is_input_comm) {
         MPI_Comm_create(MPI_COMM_WORLD, tmp_group, &input_communicator);
-        char buffer[1024];
-        int len = 0;
-        MPI_Comm_get_name(input_communicator, buffer, &len);
+        std::cout << "Created input_comm on " << rank << std::endl;
       } else {
         MPI_Comm_create(MPI_COMM_WORLD, tmp_group, &tmp_comm);
         if (tmp_comm != MPI_COMM_NULL) {
-          int row_rank, row_size;
-          MPI_Comm_rank(tmp_comm, &row_rank);
-          MPI_Comm_size(tmp_comm, &row_size);
+          std::cout << "ERROR - created unnecessary comm!" << std::endl;
         }
       }
       delete [] nodelist;
@@ -136,7 +140,6 @@ void MPIEnviroment::slave_mainloop(void) {
       MPI_Probe(message_source, 1, MPI_COMM_WORLD, &stat);
       MPI_Get_count(&stat, MPI_CHAR, &messagesize);
       char *serialized_conf = new char[messagesize];
-
       MPI_Recv(serialized_conf, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
                MPI_COMM_WORLD, &stat);
       base::OperationConfiguration conf;
@@ -145,7 +148,8 @@ void MPIEnviroment::slave_mainloop(void) {
       // Init communicator
       init_communicator(conf);
       // Init subworkers if necessary
-      init_workers();
+      init_worker(0, message_source);
+      initial_source = message_source;
       delete [] serialized_conf;
     } else if (message[0] == 5) {
       initialized_worker_counter++;
@@ -156,10 +160,14 @@ void MPIEnviroment::slave_mainloop(void) {
         } else {
           int message[1];
           message[0] = 5;
-          MPI_Send(message, static_cast<int>(1), MPI_INT, neighbor_list[1], 1, MPI_COMM_WORLD);
+          MPI_Send(message, static_cast<int>(1), MPI_INT, initial_source, 1, MPI_COMM_WORLD);
         }
+      } else {
+        // Init next worker
+        init_worker(initialized_worker_counter, initial_source);
       }
     } else if (message[0] == 6) {
+      std::cout << "Node " << rank << " switched to local communicator!" << std::endl;
       initialized = true;
     } else if (message[0] >= 10) {
       // run operation here
@@ -226,21 +234,19 @@ void MPIEnviroment::init_communicator(base::OperationConfiguration conf) {
   MPI_Comm_group(MPI_COMM_WORLD, &world_group);
   MPI_Group_incl(world_group, neighbor_list.size(), neighbor_list.data(), &node_neighbors);
 
+  std::cout << "Created comm on " << MPIEnviroment::get_node_rank() << "\n";
   MPI_Comm_create(MPI_COMM_WORLD, node_neighbors, &communicator);
   if (communicator == MPI_COMM_NULL) {
     throw std::logic_error("Comm on node could not be created! Check configuration file");
-  } else {
-    char buffer[1024];
-    int len = 0;
-    MPI_Comm_get_name(communicator, buffer, &len);
   }
 }
 
-void MPIEnviroment::init_workers(void) {
+void MPIEnviroment::init_worker(int workerid, int source) {
   if (!configuration.contains("SLAVES")) {
+    // Send init signal back
     int message[1];
     message[0] = 5;
-    MPI_Send(message, static_cast<int>(1), MPI_INT, neighbor_list[1], 1, MPI_COMM_WORLD);
+    MPI_Send(message, static_cast<int>(1), MPI_INT, source, 1, MPI_COMM_WORLD);
     std::cout << "Node " << rank << " initialized! Sending signal to "
               << neighbor_list[1] << std::endl;
     return;
@@ -250,12 +256,14 @@ void MPIEnviroment::init_workers(void) {
   message[0] = 4;
   int offset = 1;
   for (int i = offset; i < worker_count + offset; i++) {
-    MPI_Send(message, static_cast<int>(1), MPI_INT, neighbor_list[i], 1, MPI_COMM_WORLD);
   }
-
   // Send Configuration to other processes
-  size_t slaveid = offset;
+  int workercounter = offset;
   for (std::string &slaveName : configuration["SLAVES"].keys()) {
+    if (workerid + 1 == workercounter) {
+      // Send init_comm message
+      MPI_Send(message, static_cast<int>(1), MPI_INT, neighbor_list[workerid +1],
+               1, MPI_COMM_WORLD);
     json::Node& slave = configuration["SLAVES"][slaveName];
     std::ostringstream sstream;
     slave.serialize(sstream, 0);
@@ -263,10 +271,14 @@ void MPIEnviroment::init_workers(void) {
     char *conf_message = new char[serialized_conf.length() + 1];
     std::copy(serialized_conf.begin(), serialized_conf.end(), conf_message);
     conf_message[serialized_conf.size()] = '\0';
+    // Send configuration
     MPI_Send(conf_message, static_cast<int>(serialized_conf.size() + 1),
-             MPI_CHAR, neighbor_list[slaveid], 1, MPI_COMM_WORLD);
+             MPI_CHAR, neighbor_list[workerid + 1], 1, MPI_COMM_WORLD);
+
     delete [] conf_message;
-    slaveid++;
+    }
+
+    workercounter++;
   }
 }
 
@@ -284,7 +296,7 @@ void MPIEnviroment::connect_nodes(base::OperationConfiguration conf) {
   if (singleton_instance != NULL) {
     if (singleton_instance->rank == 0) {
       singleton_instance->init_communicator(conf);
-      singleton_instance->init_workers();
+      singleton_instance->init_worker(0, 0);
       singleton_instance->slave_mainloop();
       int message[1];
       message[0] = 6;
@@ -302,6 +314,7 @@ void MPIEnviroment::connect_nodes(base::OperationConfiguration conf) {
 }
 void MPIEnviroment::release(void) {
   if (singleton_instance != NULL) {
+    std::cout << "Beginning cleanup..." << std::endl;
     int message[1];
     // Send the order to terminate all slaves processes!
     message[0] = -1;
@@ -310,6 +323,7 @@ void MPIEnviroment::release(void) {
     }
     MPI_Finalize();
     delete singleton_instance;
+    std::cout << "Cleanup done!" << std::endl;
   } else {
     throw std::logic_error("Singleton class \"MPIEnviroment\" not yet initialized!");
   }
