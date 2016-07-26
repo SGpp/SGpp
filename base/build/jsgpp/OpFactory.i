@@ -11,6 +11,7 @@
 %newobject sgpp::op_factory::createOperationIdentity(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationEval(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationMultipleEval(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationMultipleEvalNaive(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEval(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
@@ -49,6 +50,10 @@ sgpp::base::OperationMultipleEval* createOperationMultipleEval(sgpp::base::Grid&
   return sgpp::op_factory::createOperationMultipleEval(grid, dataset).release();
 }
 
+sgpp::base::OperationMultipleEval* createOperationMultipleEvalNaive(sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset) {
+  return sgpp::op_factory::createOperationMultipleEvalNaive(grid, dataset).release();
+}
+
 sgpp::base::OperationNaiveEval* createOperationNaiveEval(sgpp::base::Grid& grid) {
   return sgpp::op_factory::createOperationNaiveEval(grid).release();
 }
@@ -74,6 +79,7 @@ sgpp::base::OperationConvert* createOperationConvert(sgpp::base::Grid& grid);
 sgpp::base::OperationMatrix* createOperationIdentity(sgpp::base::Grid& grid);
 sgpp::base::OperationEval* createOperationEval(sgpp::base::Grid& grid);
 sgpp::base::OperationMultipleEval* createOperationMultipleEval(sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset);
+sgpp::base::OperationMultipleEval* createOperationMultipleEvalNaive(sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset);
 sgpp::base::OperationNaiveEval* createOperationNaiveEval(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
