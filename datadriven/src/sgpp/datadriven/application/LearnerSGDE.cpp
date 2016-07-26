@@ -11,12 +11,11 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
@@ -52,6 +51,8 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       gridConfig.level_ = static_cast<int>((*this)["grid_level"].getInt());
     if (this->contains("grid_type"))
       gridConfig.type_ = stringToGridType((*this)["grid_type"].get());
+    if (this->contains("grid_maxDegree"))
+      gridConfig.maxDegree_ = (*this)["grid_maxDegree"].getUInt();
 
     // configure adaptive refinement
     if (this->contains("refinement_numSteps"))
@@ -104,7 +105,7 @@ void LearnerSGDEConfiguration::initConfig() {
   gridConfig.dim_ = 0;
   gridConfig.level_ = 6;
   gridConfig.type_ = base::GridType::Linear;
-  gridConfig.maxDegree_ = 1;
+  gridConfig.maxDegree_ = 3;
   gridConfig.boundaryLevel_ = 0;
 
   // configure adaptive refinement
@@ -274,11 +275,11 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 double LearnerSGDE::pdf(base::DataVector& x) {
-  return op_factory::createOperationEval(*grid)->eval(*alpha, x);
+  return op_factory::createOperationNaiveEval(*grid)->eval(*alpha, x);
 }
 
 void LearnerSGDE::pdf(base::DataMatrix& points, base::DataVector& res) {
-  op_factory::createOperationMultipleEval(*grid, points)->eval(*alpha, res);
+  computeMultipleEvalMatrix(*grid, points)->eval(*alpha, res);
 }
 
 double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
@@ -386,6 +387,8 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
       uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
     } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
       uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
+    } else if (gridConfig.type_ == base::GridType::Bspline) {
+      uGrid = base::Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
     } else {
       throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
     }
@@ -498,17 +501,16 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   }
 
   for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
-    std::unique_ptr<base::OperationMatrix> C = computeRegularizationMatrix(grid);
-
-    datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
-    SMatrix.generateb(rhs);
+    std::unique_ptr<datadriven::DensitySystemMatrix> sMatrix =
+        computeDensitySystemMatrix(grid, train, lambdaReg);
+    sMatrix->generateb(rhs);
 
     if (!crossvalidationConfig.silent_) {
       std::cout << "# LearnerSGDE: Solving " << std::endl;
     }
 
     solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
-    myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
+    myCG.solve(*sMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
     if (myCG.getResiduum() > solverConfig.threshold_) {
       throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
@@ -520,7 +522,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       }
 
       // Weight surplus with function evaluation at grid points
-      std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(grid));
+      auto opEval(op_factory::createOperationNaiveEval(grid));
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
@@ -550,19 +552,35 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 
 double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
                                     base::DataMatrix& test, double lambdaReg) {
-  std::unique_ptr<base::OperationMatrix> C = computeRegularizationMatrix(grid);
-
   base::DataVector rhs(grid.getSize());
   base::DataVector res(grid.getSize());
-  datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambdaReg);
-  SMatrix.generateb(rhs);
+  std::unique_ptr<datadriven::DensitySystemMatrix> sMatrix =
+      computeDensitySystemMatrix(grid, test, lambdaReg);
+  sMatrix->generateb(rhs);
 
-  SMatrix.mult(alpha, res);
+  sMatrix->mult(alpha, res);
 
   for (size_t i = 0; i < res.getSize(); i++) {
     res[i] = res[i] - rhs[i];
   }
   return res.l2Norm();
+}
+
+std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return op_factory::createOperationLTwoDotExplicit(grid);
+  } else {
+    return op_factory::createOperationLTwoDotProduct(grid);
+  }
+}
+
+std::unique_ptr<base::OperationMultipleEval> LearnerSGDE::computeMultipleEvalMatrix(
+    base::Grid& grid, base::DataMatrix& train) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return op_factory::createOperationMultipleEvalNaive(grid, train);
+  } else {
+    return op_factory::createOperationMultipleEval(grid, train);
+  }
 }
 
 std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(base::Grid& grid) {
@@ -571,12 +589,25 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
-    C = op_factory::createOperationLaplace(grid);
+    if (grid.getType() == base::GridType::Bspline) {
+      C = op_factory::createOperationLaplaceExplicit(grid);
+    } else {
+      C = op_factory::createOperationLaplace(grid);
+    }
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }
 
   return C;
+}
+
+std::unique_ptr<datadriven::DensitySystemMatrix> LearnerSGDE::computeDensitySystemMatrix(
+    base::Grid& grid, base::DataMatrix& train, double lambdaReg) {
+  auto A = computeLTwoDotProductMatrix(grid);
+  auto B = computeMultipleEvalMatrix(grid, train);
+  auto C = computeRegularizationMatrix(grid);
+
+  return std::make_unique<datadriven::DensitySystemMatrix>(A, B, C, lambdaReg, train.getNrows());
 }
 
 void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,
