@@ -42,7 +42,6 @@ class WorkerDummy : public MPIWorkerBase {
   explicit WorkerDummy(std::string worker_name);
   virtual void start_worker_main(void);
   virtual ~WorkerDummy() {}
-
 };
 
 class OperationDummy : protected WorkerDummy {
@@ -56,7 +55,6 @@ class OperationDummy : protected WorkerDummy {
     start_sub_workers();
     std::cout << "Press any key to exit dummy operation " << std::endl;
     std::cin.get();
-
   }
 };
 

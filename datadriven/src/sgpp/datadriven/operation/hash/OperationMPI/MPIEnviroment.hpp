@@ -26,6 +26,7 @@ class MPIEnviroment {
   bool verbose;
   bool initialized;
   int initialized_worker_counter;
+  int initial_source;
 
   MPI_Comm communicator;
   MPI_Comm input_communicator;
@@ -40,7 +41,8 @@ class MPIEnviroment {
   void slave_mainloop(void);
   int count_slaves(json::Node &currentslave);
   void init_communicator(base::OperationConfiguration conf);
-  void init_workers(void);
+  void init_worker(int workerid, int source);
+
  public:
   static void init(int argc, char *argv[], bool verbose = false);
   static void connect_nodes(base::OperationConfiguration conf);
