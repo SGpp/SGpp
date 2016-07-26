@@ -9,6 +9,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <limits>
 
@@ -26,48 +27,75 @@ OperationLimitFunctionValueRange::OperationLimitFunctionValueRange(
 OperationLimitFunctionValueRange::~OperationLimitFunctionValueRange() {}
 
 void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
-                                                         base::DataVector& newAlpha,
-                                                         double ylower) {
+                                                         base::DataVector& newAlpha, double ylower,
+                                                         bool resetGrid) {
   // limit the function values from below
   // f(x) >= ylower => g(x) := f(x) - ylower >= 0
-  addConst(newAlpha, 1.0, -ylower);
-  op_factory::createOperationMakePositive(grid, candidateSearch, interpolationAlgorithm, verbose)
-      ->makePositive(newGrid, newAlpha);
+  if (resetGrid) {
+    copyGrid(grid, newGrid);
+  }
+
+  addConst(*newGrid, newAlpha, 1.0, -ylower);
+  op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
+                                          verbose)
+      ->makePositive(newGrid, newAlpha, !resetGrid);
   // f(x) = g(x) + ylower
-  addConst(newAlpha, 1.0, ylower);
+  addConst(*newGrid, newAlpha, 1.0, ylower);
 }
 
 void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
-                                                         base::DataVector& newAlpha,
-                                                         double yupper) {
+                                                         base::DataVector& newAlpha, double yupper,
+                                                         bool resetGrid) {
   // limit the function from above
   // f(x) <= yupper => -f(x) >= -yupper => g(x) := -f(x) + yupper >= 0
-  addConst(newAlpha, -1.0, yupper);
-  op_factory::createOperationMakePositive(grid, candidateSearch, interpolationAlgorithm, verbose)
-      ->makePositive(newGrid, newAlpha);
+  if (resetGrid) {
+    copyGrid(grid, newGrid);
+  }
+
+  addConst(*newGrid, newAlpha, -1.0, yupper);
+  op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
+                                          verbose)
+      ->makePositive(newGrid, newAlpha, !resetGrid);
   // f(x) = -g(x) + yupper
-  addConst(newAlpha, -1.0, yupper);
+  addConst(*newGrid, newAlpha, -1.0, yupper);
 }
 
 void OperationLimitFunctionValueRange::doLimitation(base::Grid*& newGrid,
                                                     base::DataVector& newAlpha, double ylower,
                                                     double yupper) {
-  doLowerLimitation(newGrid, newAlpha, ylower);
-  doUpperLimitation(newGrid, newAlpha, yupper);
+  doLowerLimitation(newGrid, newAlpha, ylower, true);
+  doUpperLimitation(newGrid, newAlpha, yupper, false);
 }
 
-void OperationLimitFunctionValueRange::addConst(base::DataVector& alpha, double c, double y) {
+void OperationLimitFunctionValueRange::addConst(base::Grid& grid, base::DataVector& alpha, double c,
+                                                double y) {
   // dehierarchize the values
   auto opHier = op_factory::createOperationHierarchisation(grid);
   opHier->doDehierarchisation(alpha);
-
   // add the constant
   for (size_t i = 0; i < alpha.getSize(); i++) {
     alpha[i] = c * alpha[i] + y;
   }
-
   // hierarchize the result
   opHier->doHierarchisation(alpha);
 }
+
+void OperationLimitFunctionValueRange::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
+  // create grid of dimensions d - 1 of the same type
+  base::HashGridStorage& gridStorage = grid.getStorage();
+  auto numDims = gridStorage.getDimension();
+
+  newGrid = base::Grid::createLinearGrid(numDims).release();
+  base::HashGridStorage& newGridStorage = newGrid->getStorage();
+
+  // run through grid g and add points to mg
+  base::GridPoint gridPoint(numDims);
+
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    newGridStorage.insert(gridStorage.getPoint(i));
+  }
+  newGridStorage.recalcLeafProperty();
+}
+
 } /* namespace base */
 } /* namespace sgpp */

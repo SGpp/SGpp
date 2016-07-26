@@ -26,12 +26,16 @@ class OperationLimitFunctionValueRange {
                                    bool verbose = false);
   virtual ~OperationLimitFunctionValueRange();
 
-  void doLowerLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower);
-  void doUpperLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double yupper);
+  void doLowerLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower,
+                         bool resetGrid = true);
+  void doUpperLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double yupper,
+                         bool resetGrid = true);
   void doLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower, double yupper);
 
  private:
-  void addConst(base::DataVector& alpha, double c, double y);
+  void copyGrid(base::Grid& grid, base::Grid*& newGrid);
+
+  void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   base::Grid& grid;
   base::MakePositiveCandidateSearchAlgorithm candidateSearch;

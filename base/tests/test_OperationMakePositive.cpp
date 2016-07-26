@@ -116,9 +116,9 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
       std::cout << "--------------------------------------------------------" << std::endl;
       std::cout << "level after refinement       : " << gridStorage.getMaxLevel() << std::endl;
       std::cout << "grid size after refinement   : " << gridStorage.getSize() << std::endl;
+      std::cout << "--------------------------------------------------------" << std::endl;
     }
 
-    std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << "number of full grid points   : " << numFullGridPoints
               << " (maxLevel = " << gridStorage.getMaxLevel() << ")" << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
@@ -135,6 +135,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
               << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
               << " < " << numFullGridPoints << std::endl;
   }
+
   // make sure that the sparse grid function is really positive
   if (verbose) {
     std::cout << "check full grid for success: ";
@@ -181,8 +182,8 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
-  size_t numDims = 2;
-  size_t level = 6;
+  size_t numDims = 4;
+  size_t level = 4;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {

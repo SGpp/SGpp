@@ -76,13 +76,13 @@ void OperationMakePositive::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
   newGridStorage.recalcLeafProperty();
 }
 
-void OperationMakePositive::makeCurrentNodalValuesPositive(base::DataVector& alpha) {
+void OperationMakePositive::makeCurrentNodalValuesPositive(base::DataVector& alpha, double tol) {
   // dehierarchize the grid
   auto opHier = op_factory::createOperationHierarchisation(grid);
   opHier->doDehierarchisation(alpha);
 
   for (size_t i = 0; i < alpha.getSize(); ++i) {
-    if (alpha[i] < 0.0) {
+    if (alpha[i] < tol) {
       alpha[i] = 0.0;
     }
   }
@@ -98,7 +98,7 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
   auto opEval = op_factory::createOperationEval(grid);
   DataVector x(gridStorage.getDimension());
   for (size_t i : newGridPoints) {
-    gridStorage.getCoordinates(gridStorage.getPoint(i), x);
+    gridStorage.getPoint(i).getStandardCoordinates(x);
     double nodalValue = opEval->eval(alpha, x);
     if (nodalValue < 0.0) {
       alpha[i] -= nodalValue;
@@ -129,7 +129,7 @@ void OperationMakePositive::addFullGridPoints(
   // check if the function value at the new candidates is negative
   DataMatrix data(numCandidates, numDims);
   for (size_t i = 0; i < candidates.size(); ++i) {
-    gridStorage.getCoordinates(*candidates[i], x);
+    candidates[i]->getStandardCoordinates(x);
     data.setRow(i, x);
   }
 
@@ -157,13 +157,15 @@ void OperationMakePositive::addFullGridPoints(
   alpha.resizeZero(gridStorage.getSize());
 }
 
-void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector& newAlpha) {
+void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector& newAlpha,
+                                         bool resetGrid) {
   // copy the current grid
-  copyGrid(grid, newGrid);
+  if (resetGrid) {
+    copyGrid(grid, newGrid);
+  }
 
   // force the nodal values of the initial grid to be positive
   makeCurrentNodalValuesPositive(newAlpha);
-
   size_t currentLevelSum = minimumLevelSum;
 
   std::vector<size_t> addedGridPoints;

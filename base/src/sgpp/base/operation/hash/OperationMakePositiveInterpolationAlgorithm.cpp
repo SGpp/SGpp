@@ -19,16 +19,16 @@ OperationMakePositiveInterpolationAlgorithm::~OperationMakePositiveInterpolation
 
 void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
     base::Grid& grid, base::DataVector& alpha, std::vector<size_t>& addedGridPoints, double tol) {
-  base::HashGridStorage& gridStorage = grid.getStorage();
-
   // compute the nodal values of the newly added grid points and subtract the
   // nodal value from the hierarchical coefficient. This sets the function value at that point
   // to zero
+  base::HashGridStorage& gridStorage = grid.getStorage();
+
   auto opEval = op_factory::createOperationEval(grid);
   base::DataVector x(gridStorage.getDimension());
 
   for (auto& i : addedGridPoints) {
-    gridStorage.getCoordinates(gridStorage.getPoint(i), x);
+    gridStorage.getPoint(i).getStandardCoordinates(x);
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
       alpha[i] -= yi;

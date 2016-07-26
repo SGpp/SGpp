@@ -40,7 +40,7 @@ class OperationMakePositive {
    * @param newGrod
    * @param newAlpha
    */
-  void makePositive(base::Grid*& newGrid, base::DataVector& newAlpha);
+  void makePositive(base::Grid*& newGrid, base::DataVector& newAlpha, bool resetGrid = true);
 
  private:
   void copyGrid(base::Grid& grid, base::Grid*& newGrid);
@@ -49,7 +49,7 @@ class OperationMakePositive {
    *
    * @param alpha
    */
-  void makeCurrentNodalValuesPositive(base::DataVector& alpha);
+  void makeCurrentNodalValuesPositive(base::DataVector& alpha, double tol = -1e-14);
 
   /**
    *
