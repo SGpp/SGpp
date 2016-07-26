@@ -41,6 +41,7 @@
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBspline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
@@ -202,6 +203,9 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree()));
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModPoly(
+        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBspline(
         grid.getStorage(), dynamic_cast<base::BsplineGrid*>(&grid)->getDegree()));
