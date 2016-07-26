@@ -27,6 +27,7 @@ using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::MakePositiveCandidateSearchAlgorithm;
+using sgpp::base::MakePositiveInterpolationAlgorithm;
 
 BOOST_AUTO_TEST_SUITE(TestOperationLimitFunctionValueRange)
 
@@ -100,33 +101,43 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
       std::cout << "--------------------------------------------------------" << std::endl;
       std::cout << "level after refinement       : " << gridStorage.getMaxLevel() << std::endl;
       std::cout << "grid size after refinement   : " << gridStorage.getSize() << std::endl;
+      std::cout << "--------------------------------------------------------" << std::endl;
     }
 
-    std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << "number of full grid points   : " << numFullGridPoints
               << " (maxLevel = " << gridStorage.getMaxLevel() << ")" << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
   }
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
-  Grid* positiveGrid = nullptr;
-  DataVector positiveAlpha(alpha);
-  auto opLimit =
-      sgpp::op_factory::createOperationLimitFunctionValueRange(grid, candidateSearchAlgorithm);
+  Grid* limitedGrid = nullptr;
+  DataVector limitedAlpha(alpha);
+  auto opLimit = sgpp::op_factory::createOperationLimitFunctionValueRange(
+      grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose);
 
   if (side == 0) {
-    opLimit->doLowerLimitation(positiveGrid, positiveAlpha, ylower);
+    if (verbose) {
+      std::cout << "side: lower" << std::endl;
+    }
+    opLimit->doLowerLimitation(limitedGrid, limitedAlpha, ylower);
   } else if (side == 1) {
-    opLimit->doUpperLimitation(positiveGrid, positiveAlpha, yupper);
+    if (verbose) {
+      std::cout << "side: upper" << std::endl;
+    }
+    opLimit->doUpperLimitation(limitedGrid, limitedAlpha, yupper);
   } else {  // both
-    opLimit->doLimitation(positiveGrid, positiveAlpha, ylower, yupper);
+    if (verbose) {
+      std::cout << "side: [lower, upper]" << std::endl;
+    }
+    opLimit->doLimitation(limitedGrid, limitedAlpha, ylower, yupper);
   }
 
   if (verbose) {
     std::cout << "(" << gridStorage.getDimension() << "," << level
-              << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
+              << ") : #grid points = " << grid.getSize() << " -> " << limitedGrid->getSize()
               << " < " << numFullGridPoints << std::endl;
   }
+
   // make sure that the sparse grid function is really positive
   if (verbose) {
     std::cout << "check full grid for success: ";
@@ -141,16 +152,16 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
   fullGrid->getStorage().getCoordinateArrays(coordinates);
-  sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates)
-      ->mult(positiveAlpha, nodalValues);
+  sgpp::op_factory::createOperationMultipleEval(*limitedGrid, coordinates)
+      ->mult(limitedAlpha, nodalValues);
   if (verbose) {
     std::cout << "  check range: ";
   }
   for (size_t i = 0; i < nodalValues.getSize(); ++i) {
-    if (side == 0 || side > 1) {
+    if (side == 0 || side == 2) {
       BOOST_CHECK_GE(nodalValues[i], ylower - tol);
     }
-    if (side == 1 || side > 1) {
+    if (side == 1 || side == 2) {
       BOOST_CHECK_LE(nodalValues[i], yupper + tol);
     }
   }
@@ -158,13 +169,14 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   if (verbose) {
     std::cout << "Done" << std::endl;
   }
-  delete positiveGrid;
+
+  delete limitedGrid;
 }
 
 BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
   // parameters
-  size_t numDims = 2;
-  size_t level = 2;
+  size_t numDims = 4;
+  size_t level = 4;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
@@ -179,8 +191,8 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
 
 BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
   // parameters
-  size_t numDims = 2;
-  size_t level = 2;
+  size_t numDims = 4;
+  size_t level = 4;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
@@ -195,8 +207,8 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
 
 BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
   // parameters
-  size_t numDims = 2;
-  size_t level = 2;
+  size_t numDims = 4;
+  size_t level = 4;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {

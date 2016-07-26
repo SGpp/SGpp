@@ -92,19 +92,18 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
 
   // check intersection of two grid points
   size_t cntIntersections = 0;
-  size_t cntComparisons = 0;
   for (size_t i = 0; i < negativeGridPoints.size(); ++i) {
     auto iseq = negativeGridPoints[i];
     auto gpi = std::make_shared<HashGridPoint>(gridStorage.getPoint(iseq));
     for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
-      cntComparisons++;
+      costs++;
       auto jseq = negativeGridPoints[j];
       auto gpj = std::make_shared<HashGridPoint>(gridStorage.getPoint(jseq));
       if (haveOverlappingSupport(*gpi, *gpj) && !gpi->isHierarchicalAncestor(*gpj) &&
           !gpj->isHierarchicalAncestor(*gpi)) {
         intersections[gpi->getHash()]->push_back(gpj);
         intersections[gpj->getHash()]->push_back(gpi);
-        cntIntersections++;
+        cntIntersections += 2;
       }
     }
   }
@@ -112,7 +111,6 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
   if (verbose) {
     std::cout << "# intersections (k=1) : " << currentIntersections.size() << " ("
               << cntIntersections << ")" << std::endl;
-    std::cout << "# comparisons   (k=1) : " << cntComparisons << std::endl;
   }
 }
 
@@ -200,7 +198,6 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
   if (iteration == 0) {
     // find all the grid points with negative coefficient
     std::vector<size_t> negativeGridPoints;
-    std::cout << alpha.toString() << std::endl;
     findNodesWithNegativeCoefficients(alpha, negativeGridPoints);
 
     if (verbose) {
@@ -210,8 +207,8 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     }
 
     // search for intersections
+    costs = 0;
     initializeCandidates(grid, negativeGridPoints);
-
     findIntersections(grid, levelSum, this->candidates);
 
     if (verbose) {

@@ -10,7 +10,8 @@ from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
-    insertTruncatedBorder, getBoundsOfSupport, evalSGFunctionMulti
+    insertTruncatedBorder, getBoundsOfSupport, evalSGFunctionMulti, \
+    evalSGFunction
 import numpy as np
 from matplotlib.patches import Rectangle
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation, \
@@ -112,30 +113,30 @@ class OperationMakePositiveFast(object):
         self.candidateSearchAlgorithm = algorithm
 
 
-    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None, independent=True, tol=-1e-14):
-        nodalValues = dehierarchize(grid, alpha)
-        if independent:
-            newAlpha = alpha[:]
+    def makeAddedNodalValuesPositive(self, grid, alpha, addedGridPoints, tol=-1e-14):
+        neg = []
+        gs = grid.getStorage()
+        x = DataVector(gs.getDimension())
+        for gp in addedGridPoints:
+            gp.getStandardCoordinates(x)
+            yi = evalSGFunction(grid, alpha, x.array())
+            if yi < tol:
+                i = gs.getSequenceNumber(gp)
+                alpha[i] -= yi
+                assert alpha[i] > -1e-14
+                assert evalSGFunction(grid, alpha, x.array()) < 1e-14
+        return alpha
 
+
+    def makeCurrentNodalValuesPositive(self, grid, alpha, tol=-1e-14):
+        nodalValues = dehierarchize(grid, alpha)
         neg = []
         for i, yi in enumerate(nodalValues):
             if yi < tol:
                 nodalValues[i] = 0
-                if independent:
-                    newAlpha[i] -= yi
                 neg.append(i)
         if len(neg) > 0:
-            if independent:
-                alpha = newAlpha
-            else:
-                alpha = hierarchize(grid, nodalValues)
-
-#             if independent:
-#                 assert np.all(abs(newAlpha - alpha) < 1e-13)
-            # check if the coefficients of the new grid points are positive
-            if addedGridPoints is not None:
-                gs = grid.getStorage()
-                assert all([alpha[gs.getSequenceNumber(gp)] > -1e-13 for gp in addedGridPoints])
+            alpha = hierarchize(grid, nodalValues)
 
         return alpha
     
@@ -287,7 +288,8 @@ class OperationMakePositiveFast(object):
             print
 
         iteration = 0
-        newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, independent=False)
+        newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
+
         newGs = newGrid.getStorage()
         numDims = newGs.getDimension()
         newGridPoints = []
@@ -327,8 +329,8 @@ class OperationMakePositiveFast(object):
                                                                                            newAlpha,
                                                                                            addedGridPoints)
                 else:
-                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints, independent=True)
-                    
+                    newAlpha = self.makeAddedNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
+
                 # update list of new grid points
                 newGridPoints += addedGridPoints
 
