@@ -28,12 +28,11 @@ class OperationMakePositiveCandidateSetAlgorithm {
 
  protected:
   void findNodesWithNegativeCoefficients(base::DataVector& alpha,
-                                         std::vector<size_t>& negativeGridPoints);
+                                         std::vector<size_t>& negativeGridPoints,
+                                         double tol = -1e-14);
 
-  bool hasOverlappingSupport(HashGridPoint& gpi, HashGridPoint& gpj, size_t dim);
-  bool hasOverlappingSupport(HashGridPoint& gpi, HashGridPoint& gpj);
-  bool isHierarchicalAncestor(HashGridPoint& gpi, HashGridPoint& gpj);
-  bool isHierarchicalAncestor(HashGridPoint& gpi, HashGridPoint& gpj, size_t dim);
+  bool haveOverlappingSupport(HashGridPoint& gpi, HashGridPoint& gpj, size_t dim);
+  bool haveOverlappingSupport(HashGridPoint& gpi, HashGridPoint& gpj);
 
   bool verbose;
 };

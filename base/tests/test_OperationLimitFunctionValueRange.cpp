@@ -14,8 +14,9 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+
+#include <string>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -26,37 +27,22 @@ using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::MakePositiveCandidateSearchAlgorithm;
-using sgpp::base::MakePositiveInterpolationAlgorithm;
 
-BOOST_AUTO_TEST_SUITE(TestOperationMakePositive)
-
-double normal(DataVector& input) {
-  double result = 1.;
-
-  double mean = 0.5;
-  double sigma = 0.02;
-  size_t numDims = input.getSize();
-
-  double norm = 1. / std::sqrt(std::pow(2 * M_PI, numDims) * std::pow(sigma, numDims));
-
-  for (size_t i = 0; i < numDims; i++) {
-    double x = (input[i] - mean);
-    result *= std::exp(-0.5 * (x * x) / sigma);
-  }
-  return norm * result;
-}
+BOOST_AUTO_TEST_SUITE(TestOperationLimitFunctionValueRange)
 
 double sin(DataVector& x) {
   double result = 0;
   for (size_t i = 0; i < x.getSize(); i++) {
-    result += std::sin(M_PI * (2 * x[i] - 1.0)) + 0.8;
+    result += std::sin(M_PI * (2 * x[i] - 1.0));
   }
   return result;
 }
 
-void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
-                      MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                      double (*f)(DataVector&), double tol = -1e-12, bool verbose = true) {
+void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_t refnums,
+                                 size_t side,
+                                 MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+                                 double (*f)(DataVector&), double ylower, double yupper,
+                                 double tol = 1e-12, bool verbose = true) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
@@ -84,7 +70,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   // hierarchize
   sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
 
-  // refine adaptively 5 times
+  // refine adaptively
   for (size_t step = 0; step < refnums; step++) {
     // refine a single grid point each time
     SurplusRefinementFunctor functor(alpha, 1);
@@ -106,8 +92,6 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
     }
   }
 
-  std::cout << alpha.toString() << std::endl;
-
   size_t numFullGridPoints =
       static_cast<size_t>(std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
   size_t maxLevel = gridStorage.getMaxLevel();
@@ -127,9 +111,17 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   // force the function to be positive
   Grid* positiveGrid = nullptr;
   DataVector positiveAlpha(alpha);
-  sgpp::op_factory::createOperationMakePositive(
-      grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose)
-      ->makePositive(positiveGrid, positiveAlpha);
+  auto opLimit =
+      sgpp::op_factory::createOperationLimitFunctionValueRange(grid, candidateSearchAlgorithm);
+
+  if (side == 0) {
+    opLimit->doLowerLimitation(positiveGrid, positiveAlpha, ylower);
+  } else if (side == 1) {
+    opLimit->doUpperLimitation(positiveGrid, positiveAlpha, yupper);
+  } else {  // both
+    opLimit->doLimitation(positiveGrid, positiveAlpha, ylower, yupper);
+  }
+
   if (verbose) {
     std::cout << "(" << gridStorage.getDimension() << "," << level
               << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
@@ -144,7 +136,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
   if (verbose) {
     std::cout << fullGrid->getSize() << std::endl;
-    std::cout << "evaluate at all grid points" << std::endl;
+    std::cout << "  evaluate at all grid points" << std::endl;
   }
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
@@ -152,10 +144,15 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates)
       ->mult(positiveAlpha, nodalValues);
   if (verbose) {
-    std::cout << "check for positivity: ";
+    std::cout << "  check range: ";
   }
   for (size_t i = 0; i < nodalValues.getSize(); ++i) {
-    BOOST_CHECK_GE(nodalValues[i], tol);
+    if (side == 0 || side > 1) {
+      BOOST_CHECK_GE(nodalValues[i], ylower - tol);
+    }
+    if (side == 1 || side > 1) {
+      BOOST_CHECK_LE(nodalValues[i], yupper + tol);
+    }
   }
 
   if (verbose) {
@@ -164,32 +161,50 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   delete positiveGrid;
 }
 
-BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
+BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
   // parameters
   size_t numDims = 2;
-  size_t level = 6;
+  size_t level = 2;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
       std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testMakePositive(*grid, idim, ilevel, refnums, MakePositiveCandidateSearchAlgorithm::FullGrid,
-                       &sin);
+      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 0,
+                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                  0.8);
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
+BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
   // parameters
   size_t numDims = 2;
-  size_t level = 6;
+  size_t level = 2;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
       std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testMakePositive(*grid, idim, ilevel, refnums,
-                       MakePositiveCandidateSearchAlgorithm::Intersections, &sin);
+      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 1,
+                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                  0.8);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
+  // parameters
+  size_t numDims = 2;
+  size_t level = 2;
+  size_t refnums = 0;
+
+  for (size_t idim = numDims; idim <= numDims; idim++) {
+    for (size_t ilevel = level; ilevel <= level; ilevel++) {
+      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 2,
+                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                  0.8);
     }
   }
 }

@@ -21,14 +21,16 @@ class OperationMakePositiveInterpolationAlgorithm {
   virtual ~OperationMakePositiveInterpolationAlgorithm();
 
   virtual void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
-                                               std::vector<size_t>& addedGridPoints) = 0;
+                                               std::vector<size_t>& addedGridPoints,
+                                               double tol = -1e-14) = 0;
 };
 
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolationAlgorithm {
  public:
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
-                                       std::vector<size_t>& addedGridPoints) override;
+                                       std::vector<size_t>& addedGridPoints,
+                                       double tol = -1e-14) override;
 };
 
 } /* namespace base */

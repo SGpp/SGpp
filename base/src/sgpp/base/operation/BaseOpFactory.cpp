@@ -129,6 +129,7 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModFundamentalSpline.hpp>
 
 #include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+#include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
 #include <sgpp/base/operation/hash/OperationMakePositiveCandidateSetAlgorithm.hpp>
 #include <sgpp/base/operation/hash/OperationMakePositiveInterpolationAlgorithm.hpp>
 
@@ -563,6 +564,20 @@ std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
   } else {
     throw base::factory_exception(
         "OperationMakePositive is not implemented for "
+        "this grid type.");
+  }
+}
+
+std::unique_ptr<base::OperationLimitFunctionValueRange> createOperationLimitFunctionValueRange(
+    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return std::unique_ptr<base::OperationLimitFunctionValueRange>(
+        new base::OperationLimitFunctionValueRange(grid, candidateSearchAlgorithm,
+                                                   interpolationAlgorithm, verbose));
+  } else {
+    throw base::factory_exception(
+        "OperationLimitFunctionValueRange is not implemented for "
         "this grid type.");
   }
 }
