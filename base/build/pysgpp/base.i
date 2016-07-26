@@ -82,6 +82,8 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationMakePositive.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp"
 %include "OperationQuadratureMC.i"
 
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"

@@ -14,11 +14,11 @@ class IntersectionCandidates(CandidateSet):
     def __init__(self):
         super(IntersectionCandidates, self).__init__()
 
-    def findNodesWithNegativeCoefficients(self, grid, alpha):
+    def findNodesWithNegativeCoefficients(self, grid, alpha, tol=-1e-14):
         gs = grid.getStorage()
         ans = []
         for i in xrange(gs.getSize()):
-            if alpha[i] < 0.0:
+            if alpha[i] < tol:
                 level, index = getLevelIndex(gs.getPoint(i))
                 ans.append((tuple(level), tuple(index)))
 
@@ -52,6 +52,7 @@ class IntersectionCandidates(CandidateSet):
             intersections[gpi] = set()
 
         newIntersections = {}
+        cnt_intersections = 0
         for i, gpi in enumerate(gpsi):
             newIntersections[gpi] = True
 
@@ -60,11 +61,14 @@ class IntersectionCandidates(CandidateSet):
                         not haveHierarchicalRelationshipByLevelIndex(gpi, gpj):
                     intersections[gpi].add(gpj)
                     intersections[gpj].add(gpi)
+                    cnt_intersections += 1
 
                 costs += 1
 
         if self.verbose:
-            print "# intersections (k=1) : %i" % (len(newIntersections),)
+            print "# intersections (k=1) : %i (%i)" % (len(newIntersections),
+                                                       cnt_intersections)
+            print "# comparisons   (k=1) : %i" % (costs,)
 
         res = {}
         gpintersection = HashGridPoint(numDims)
@@ -108,6 +112,7 @@ class IntersectionCandidates(CandidateSet):
 
     def findCandidates(self, grid, alpha, addedGridPoints):
         if self.iteration == 0:
+            print DataVector(alpha).toString()
             negativeGridPoints = self.findNodesWithNegativeCoefficients(grid, alpha)
 
             if self.verbose:

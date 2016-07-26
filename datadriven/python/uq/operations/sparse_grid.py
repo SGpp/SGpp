@@ -710,11 +710,15 @@ def add(alpha, alphas):
         alpha.add(a)
 
 
-def addConst(grid, alpha, c):
+def addConst(grid, alpha, c, y):
+    alpha_vec = DataVector(alpha)
     opHier = createOperationHierarchisation(grid)
-    opHier.doDehierarchisation(alpha)
-    alpha.add(DataVector([c] * len(alpha)))
-    opHier.doHierarchisation(alpha)
+    opHier.doDehierarchisation(alpha_vec)
+    for i in xrange(alpha_vec.getSize()):
+        alpha_vec[i] = c * alpha_vec[i] + y
+    opHier.doHierarchisation(alpha_vec)
+
+    return alpha_vec.array()
 
 
 #########################################################

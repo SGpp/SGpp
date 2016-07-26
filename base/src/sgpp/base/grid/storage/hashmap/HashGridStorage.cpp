@@ -461,7 +461,7 @@ void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
   //    }
 }
 
-void HashGridStorage::getCoordinateArraysForEval(DataMatrix& coordinates) {
+void HashGridStorage::getCoordinateArrays(DataMatrix& coordinates) {
   coordinates.resize(list.size(), dimension);
 
   base::DataVector x(dimension);

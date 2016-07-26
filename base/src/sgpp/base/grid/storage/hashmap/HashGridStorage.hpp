@@ -410,7 +410,7 @@ class HashGridStorage {
    *
    * @param coordinates DataMatrix to store the coordinates of the grid points
    */
-  void getCoordinateArraysForEval(DataMatrix& coordinates);
+  void getCoordinateArrays(DataMatrix& coordinates);
 
   /**
    * returns the max. depth in all dimension of the grid

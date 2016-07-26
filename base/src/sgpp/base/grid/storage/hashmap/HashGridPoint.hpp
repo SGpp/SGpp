@@ -359,6 +359,21 @@ class HashGridPoint {
     }
   }
 
+  /**
+   * checks if this is a hierarchical ancestor of gpj
+   * @param gpj
+   * @return
+   */
+  bool isHierarchicalAncestor(HashGridPoint& gpj);
+
+  /**
+   * checks if this is a hierarchical ancestor of gpj in dimension dim
+   * @param gpj
+   * @param dim
+   * @return
+   */
+  bool isHierarchicalAncestor(HashGridPoint& gpj, size_t dim);
+
  private:
   /// the dimension of the gridpoint
   size_t dimension;

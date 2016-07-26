@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMakePositive.hpp"
+#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
 #include <sgpp/base/operation/hash/OperationMakePositiveCandidateSetAlgorithm.hpp>
 #include <sgpp/base/operation/hash/OperationMakePositiveInterpolationAlgorithm.hpp>
 
@@ -120,7 +120,7 @@ void OperationMakePositive::extractNonExistingCandidatesByLevelSum(
 void OperationMakePositive::addFullGridPoints(
     base::Grid& grid, base::DataVector& alpha,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
-    std::vector<size_t>& addedGridPoints) {
+    std::vector<size_t>& addedGridPoints, double tol) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   size_t numDims = gridStorage.getDimension();
   size_t numCandidates = candidates.size();
@@ -139,7 +139,7 @@ void OperationMakePositive::addFullGridPoints(
   // insert the negative ones to the grid
   size_t cntConsidered = 0;
   for (size_t i = 0; i < candidates.size(); ++i) {
-    if (nodalValues[i] < 0.0) {
+    if (nodalValues[i] < tol) {
       ++cntConsidered;
       gridStorage.insert(*candidates[i], addedGridPoints);
     }
@@ -188,7 +188,7 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
       extractNonExistingCandidatesByLevelSum(candidates, finalCandidates, currentLevelSum);
 
       if (verbose) {
-        std::cout << " >= " << finalCandidates.size() << " : #considered" << std::endl;
+        std::cout << " >= " << finalCandidates.size() << std::endl;
       }
 
       // add the those candidates for which the sparse grid function is negative

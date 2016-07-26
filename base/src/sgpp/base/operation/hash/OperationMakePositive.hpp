@@ -26,7 +26,7 @@ class OperationMakePositive {
   typedef std::map<size_t, base::HashGridPoint> gridPointCandidatesMap;
 
   explicit OperationMakePositive(base::Grid& grid,
-                                 MakePositiveCandidateSearchAlgorithm candiateSearchAlgorithm =
+                                 MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
@@ -75,7 +75,7 @@ class OperationMakePositive {
    */
   void addFullGridPoints(base::Grid& grid, base::DataVector& alpha,
                          std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
-                         std::vector<size_t>& addedGridPoints);
+                         std::vector<size_t>& addedGridPoints, double tol = -1e-14);
 
   /// grid
   base::Grid& grid;

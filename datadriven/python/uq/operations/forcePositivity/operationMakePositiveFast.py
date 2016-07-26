@@ -17,6 +17,7 @@ from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation,
     JointTransformation
 from pysgpp.extensions.datadriven.uq.operations.forcePositivity.fullGridSearch import FullGridCandidates
 from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSearch import LocalFullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findIntersections import IntersectionCandidates
 
 
 class OperationMakePositiveFast(object):
@@ -30,7 +31,7 @@ class OperationMakePositiveFast(object):
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
         if self.candidateSearchAlgorithm is None:
-            self.candidateSearchAlgorithm = LocalFullGridCandidates(grid)
+            self.candidateSearchAlgorithm = IntersectionCandidates()
 
         self.maxNewGridPoints = 10
         self.addAllGridPointsOnNextLevel = True
@@ -111,23 +112,26 @@ class OperationMakePositiveFast(object):
         self.candidateSearchAlgorithm = algorithm
 
 
-    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None, independent=True):
+    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None, independent=True, tol=-1e-14):
         nodalValues = dehierarchize(grid, alpha)
         if independent:
             newAlpha = alpha[:]
 
         neg = []
         for i, yi in enumerate(nodalValues):
-            if yi < 0:
+            if yi < tol:
                 nodalValues[i] = 0
                 if independent:
                     newAlpha[i] -= yi
                 neg.append(i)
         if len(neg) > 0:
-            alpha = hierarchize(grid, nodalValues)
-
             if independent:
-                assert np.all(abs(newAlpha - alpha) < 1e-13)
+                alpha = newAlpha
+            else:
+                alpha = hierarchize(grid, nodalValues)
+
+#             if independent:
+#                 assert np.all(abs(newAlpha - alpha) < 1e-13)
             # check if the coefficients of the new grid points are positive
             if addedGridPoints is not None:
                 gs = grid.getStorage()
@@ -147,12 +151,13 @@ class OperationMakePositiveFast(object):
         return gps
 
 
-    def addFullGridPoints(self, grid, alpha, candidates):
+    def addFullGridPoints(self, grid, alpha, candidates, tol=-1e-14):
         """
         Add all those full grid points with |accLevel|_1 <= n, where n is the
         maximun level of the sparse grid
         @param grid: Grid sparse grid to be discretized
         @param candidates:
+        @param tol:
         """
         # remove all the already existing candidates
         gs = grid.getStorage()
@@ -184,10 +189,10 @@ class OperationMakePositiveFast(object):
 
             currentCandidates = finalCandidates[minLevelSum]
             if self.verbose:
-                print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(currentCandidates),
-                                                                             len(candidates),
-                                                                             minLevelSum,
-                                                                             np.max(levelSums)),
+                print "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
+                                                                               len(candidates),
+                                                                               minLevelSum,
+                                                                               np.max(levelSums)),
 
             # evaluate the remaining candidates
             samples = np.ndarray((len(currentCandidates), self.numDims))
@@ -197,7 +202,7 @@ class OperationMakePositiveFast(object):
                 samples[j, :] = p.array()
             eval = evalSGFunctionMulti(grid, alpha, samples)
 
-            negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < 0.0]
+            negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < tol]
 
             if self.verbose:
                 print "-> %i : considered candidates" % len(negativeNonExistingCandidates)
@@ -222,7 +227,7 @@ class OperationMakePositiveFast(object):
         return addedGridPoints, minLevelSum, nextLevelCosts
 
 
-    def coarsening(self, grid, alpha, newGridPoints):
+    def coarsening(self, grid, alpha, newGridPoints, tol=1e-14):
         """
         Removes all unnecessary grid points. A grid point is defined as
         unnecessary if it is a leaf node and its hierarchical coefficient is
@@ -244,7 +249,7 @@ class OperationMakePositiveFast(object):
                 # we dont need it to make the function positive
                 if gs.isContaining(gp):
                     ix = gs.getSequenceNumber(gp)
-                    if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
+                    if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < tol:
                         toBeRemoved.append(ix)
 
             # remove the identified grid points

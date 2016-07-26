@@ -16,7 +16,8 @@
 %newobject sgpp::op_factory::createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid);
-%newobject sgpp::op_factory::createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm);
+%newobject sgpp::op_factory::createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose);
+%newobject sgpp::op_factory::createOperationLimitFunctionValueRange(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose);
 
 %{
 sgpp::base::OperationHierarchisation* createOperationHierarchisation(sgpp::base::Grid& grid) {
@@ -71,10 +72,15 @@ sgpp::base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartial
   return sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid).release();
 }
 
-sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm) {
-   return sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm).release();
+sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+   return sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm, verbose).release();
 }
- %}
+
+sgpp::base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+   return sgpp::op_factory::createOperationLimitFunctionValueRange(grid, candidateSearchAlgorithm, interpolationAlgorithm, verbose).release();
+}
+
+%}
 
 sgpp::base::OperationHierarchisation* createOperationHierarchisation(sgpp::base::Grid& grid);
 sgpp::base::OperationQuadrature* createOperationQuadrature(sgpp::base::Grid& grid);
@@ -89,4 +95,5 @@ sgpp::base::OperationNaiveEval* createOperationNaiveEval(sgpp::base::Grid& grid)
 sgpp::base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
 sgpp::base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid);
-sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm);
+sgpp::base::OperationMakePositive* createOperationMakePositive(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose);
+sgpp::base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(sgpp::base::Grid& grid, sgpp::base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, sgpp::base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose);

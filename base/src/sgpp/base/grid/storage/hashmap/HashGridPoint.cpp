@@ -266,5 +266,21 @@ HashGridPoint::level_type HashGridPoint::getLevelMin() const {
   return levelmin;
 }
 
+bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gpj, size_t dim) {
+  size_t leveli = level[dim], indexi = index[dim];
+  size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
+
+  return (levelj >= leveli) && (indexi == ((indexj >> (levelj - leveli)) | 1));
+}
+
+bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gpj) {
+  size_t idim = 0;
+
+  while (idim < dimension && isHierarchicalAncestor(gpj, idim)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == dimension;
+}
+
 }  // namespace base
 }  // namespace sgpp

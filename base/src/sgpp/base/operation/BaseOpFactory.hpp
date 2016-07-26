@@ -23,6 +23,7 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 #include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+#include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -157,7 +158,21 @@ createOperationNaiveEvalPartialDerivative(base::Grid& grid);
  */
 std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
     base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                          base::MakePositiveCandidateSearchAlgorithm::FullGrid,
+                          base::MakePositiveCandidateSearchAlgorithm::Intersections,
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+        base::MakePositiveInterpolationAlgorithm::SetToZero,
+    bool verbose = false);
+
+/**
+ * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
+ */
+std::unique_ptr<base::OperationLimitFunctionValueRange> createOperationLimitFunctionValueRange(
+    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+                          base::MakePositiveCandidateSearchAlgorithm::Intersections,
     base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         base::MakePositiveInterpolationAlgorithm::SetToZero,
     bool verbose = false);
