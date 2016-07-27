@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalBsplineNaive::mult(DataVector& alpha, DataVector& result) {
+void OperationMultipleEvalModBsplineNaive::mult(DataVector& alpha, DataVector& result) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = dataset.getNrows();
@@ -41,7 +41,7 @@ void OperationMultipleEvalBsplineNaive::mult(DataVector& alpha, DataVector& resu
   }
 }
 
-void OperationMultipleEvalBsplineNaive::multTranspose(DataVector& alpha, DataVector& result) {
+void OperationMultipleEvalModBsplineNaive::multTranspose(DataVector& alpha, DataVector& result) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = dataset.getNrows();

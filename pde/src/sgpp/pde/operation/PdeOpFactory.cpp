@@ -16,6 +16,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretchedBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
@@ -26,6 +27,7 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -82,7 +84,10 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
+        new pde::OperationLaplaceExplicitBspline(&grid));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+      return std::unique_ptr<base::OperationMatrix>(
+          new pde::OperationLaplaceExplicitModBspline(&grid));
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
@@ -94,6 +99,9 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationLaplaceExplicitBspline(m, &grid));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+      return std::unique_ptr<base::OperationMatrix>(
+          new pde::OperationLaplaceExplicitModBspline(m, &grid));
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
@@ -136,6 +144,9 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid
   } else if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationMatrixLTwoDotExplicitModBspline(&grid));
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type. "
@@ -157,6 +168,9 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(
   } else if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationMatrixLTwoDotExplicitBspline(m, &grid));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return std::unique_ptr<base::OperationMatrix>(
+        new pde::OperationMatrixLTwoDotExplicitModBspline(m, &grid));
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
