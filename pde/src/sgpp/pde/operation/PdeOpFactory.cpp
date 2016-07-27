@@ -82,7 +82,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
+        new pde::OperationLaplaceExplicitBspline(&grid));
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
