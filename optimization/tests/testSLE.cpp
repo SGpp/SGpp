@@ -50,7 +50,9 @@ void testSLESystem(SLE& system, const sgpp::base::DataVector& x,
       Ax[i] += Aij * x[j];
 
       // test isMatrixEntryNonZero
-      BOOST_CHECK_EQUAL(system.isMatrixEntryNonZero(i, j), Aij != 0);
+      if (!system.isMatrixEntryNonZero(i, j)) {
+        BOOST_CHECK_SMALL(Aij, 1e-10);
+      }
     }
   }
 

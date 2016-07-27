@@ -12,13 +12,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
@@ -27,19 +21,19 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
 
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 
 #include <cstddef>
 #include <cstring>
 #include <stdexcept>
 #include <memory>
+#include <functional>
 
 namespace sgpp {
 namespace optimization {
@@ -67,69 +61,182 @@ class HierarchisationSLE : public CloneableSLE {
    *                          grid points according to gridStorage)
    */
   HierarchisationSLE(base::Grid& grid, base::GridStorage& gridStorage)
-      : CloneableSLE(), grid(grid), gridStorage(gridStorage), basisType(INVALID) {
-    // initialize the correct basis (according to the grid)
+      : CloneableSLE(), grid(grid), gridStorage(gridStorage), basis(nullptr),
+        p(0), pp1h(0), pp1hDbl(0.0) {
     if (grid.getType() == base::GridType::Bspline) {
-      bsplineBasis = std::unique_ptr<base::SBsplineBase>(
-          new base::SBsplineBase(dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
-      basisType = BSPLINE;
+      p = dynamic_cast<base::BsplineGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SBsplineBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - pp1hDbl)) &&
+               (x < h * (static_cast<double>(i) + pp1hDbl));
+      };
     } else if (grid.getType() == base::GridType::BsplineBoundary) {
-      bsplineBoundaryBasis =
-          std::unique_ptr<base::SBsplineBoundaryBase>(new base::SBsplineBoundaryBase(
-              dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
-      basisType = BSPLINE_BOUNDARY;
+      p = dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SBsplineBoundaryBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - pp1hDbl)) &&
+               (x < h * (static_cast<double>(i) + pp1hDbl));
+      };
     } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-      bsplineClenshawCurtisBasis =
-          std::unique_ptr<base::SBsplineClenshawCurtisBase>(new base::SBsplineClenshawCurtisBase(
-              dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
-      basisType = BSPLINE_CLENSHAW_CURTIS;
+      p = dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SBsplineClenshawCurtisBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const base::index_t hInv = static_cast<base::index_t>(1) << l;
+
+        if (i >= pp1h) {
+          const double xl = base::ClenshawCurtisTable::getInstance().getPoint(l, i - pp1h);
+
+          if (x <= xl) {
+            return false;
+          }
+        }
+
+        if (i + pp1h <= hInv) {
+          const double xr = base::ClenshawCurtisTable::getInstance().getPoint(l, i + pp1h);
+
+          if (x >= xr) {
+            return false;
+          }
+        }
+
+        return true;
+      };
     } else if (grid.getType() == base::GridType::ModBspline) {
-      modBsplineBasis = std::unique_ptr<base::SBsplineModifiedBase>(
-          new base::SBsplineModifiedBase(dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
-      basisType = BSPLINE_MODIFIED;
+      p = dynamic_cast<base::ModBsplineGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SBsplineModifiedBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - pp1hDbl)) &&
+               (x < h * (static_cast<double>(i) + pp1hDbl));
+      };
     } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-      modBsplineClenshawCurtisBasis = std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>(
-          new base::SBsplineModifiedClenshawCurtisBase(
-              dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
-      basisType = BSPLINE_MODIFIED_CLENSHAW_CURTIS;
+      p = dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SBsplineModifiedClenshawCurtisBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        return true;
+        const base::index_t hInv = static_cast<base::index_t>(1) << l;
+
+        if (i >= pp1h) {
+          const double xl = base::ClenshawCurtisTable::getInstance().getPoint(l, i - pp1h);
+
+          if (x <= xl) {
+            return false;
+          }
+        }
+
+        if (i + pp1h <= hInv) {
+          const double xr = base::ClenshawCurtisTable::getInstance().getPoint(l, i + pp1h);
+
+          if (x >= xr) {
+            return false;
+          }
+        }
+
+        return true;
+      };
     } else if (grid.getType() == base::GridType::FundamentalSpline) {
-      fundamentalSplineBasis =
-          std::unique_ptr<base::SFundamentalSplineBase>(new base::SFundamentalSplineBase(
-              dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
-      basisType = FUNDAMENTAL_SPLINE;
+      p = dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SFundamentalSplineBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double hInv = static_cast<double>(1 << l);
+        const double xoh = x * hInv;
+
+        if ((xoh == static_cast<double>(static_cast<base::index_t>(xoh))) &&
+            (xoh != static_cast<double>(i))) {
+          return false;
+        } else {
+          return true;
+        }
+      };
     } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-      modFundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineModifiedBase>(
-          new base::SFundamentalSplineModifiedBase(
-              dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
-      basisType = FUNDAMENTAL_SPLINE_MODIFIED;
+      p = dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree();
+      basis = std::unique_ptr<base::SBasis>(new base::SFundamentalSplineModifiedBase(p));
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const base::index_t hInv = static_cast<base::index_t>(1) << l;
+        const double hInvDbl = static_cast<double>(hInv);
+        const double xoh = x * hInvDbl;
+
+        if ((xoh == static_cast<double>(static_cast<base::index_t>(xoh))) &&
+            (xoh != static_cast<double>(i)) &&
+            !((i == 1) && (x == 0)) && !((i == hInv - 1) && (x == 1))) {
+          return false;
+        } else {
+          return true;
+        }
+      };
     } else if (grid.getType() == base::GridType::Linear) {
-      linearBasis = std::unique_ptr<base::SLinearBase>(new base::SLinearBase());
-      basisType = LINEAR;
+      basis = std::unique_ptr<base::SBasis>(new base::SLinearBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - 1.0)) &&
+               (x < h * (static_cast<double>(i) + 1.0));
+      };
     } else if (grid.getType() == base::GridType::LinearBoundary) {
-      linearL0BoundaryBasis =
-          std::unique_ptr<base::SLinearBoundaryBase>(new base::SLinearBoundaryBase());
-      basisType = LINEAR_BOUNDARY;
+      basis = std::unique_ptr<base::SBasis>(new base::SLinearBoundaryBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - 1.0)) &&
+               (x < h * (static_cast<double>(i) + 1.0));
+      };
     } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-      linearClenshawCurtisBasis =
-          std::unique_ptr<base::SLinearClenshawCurtisBase>(new base::SLinearClenshawCurtisBase());
-      basisType = LINEAR_CLENSHAW_CURTIS;
+      basis = std::unique_ptr<base::SBasis>(new base::SLinearClenshawCurtisBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const base::index_t hInv = static_cast<base::index_t>(1) << l;
+
+        if (i >= 1) {
+          const double xl = base::ClenshawCurtisTable::getInstance().getPoint(l, i - 1);
+
+          if (x <= xl) {
+            return false;
+          }
+        }
+
+        if (i + 1 <= hInv) {
+          const double xr = base::ClenshawCurtisTable::getInstance().getPoint(l, i + 1);
+
+          if (x >= xr) {
+            return false;
+          }
+        }
+
+        return true;
+      };
     } else if (grid.getType() == base::GridType::ModLinear) {
-      modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(new base::SLinearModifiedBase());
-      basisType = LINEAR_MODIFIED;
+      basis = std::unique_ptr<base::SBasis>(new base::SLinearModifiedBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x > h * (static_cast<double>(i) - 1.0)) &&
+               (x < h * (static_cast<double>(i) + 1.0));
+      };
     } else if (grid.getType() == base::GridType::Wavelet) {
-      waveletBasis = std::unique_ptr<base::SWaveletBase>(new base::SWaveletBase());
-      basisType = WAVELET;
+      basis = std::unique_ptr<base::SBasis>(new base::SWaveletBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x >= h * (static_cast<double>(i) - 2.0)) &&
+               (x <= h * (static_cast<double>(i) + 2.0));
+      };
     } else if (grid.getType() == base::GridType::WaveletBoundary) {
-      waveletBoundaryBasis =
-          std::unique_ptr<base::SWaveletBoundaryBase>(new base::SWaveletBoundaryBase());
-      basisType = WAVELET_BOUNDARY;
+      basis = std::unique_ptr<base::SBasis>(new base::SWaveletBoundaryBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x >= h * (static_cast<double>(i) - 2.0)) &&
+               (x <= h * (static_cast<double>(i) + 2.0));
+      };
     } else if (grid.getType() == base::GridType::ModWavelet) {
-      modWaveletBasis =
-          std::unique_ptr<base::SWaveletModifiedBase>(new base::SWaveletModifiedBase());
-      basisType = WAVELET_MODIFIED;
+      basis = std::unique_ptr<base::SBasis>(new base::SWaveletModifiedBase());
+      isPointIn1DSupportFunction = [this](base::level_t l, base::index_t i, double x) {
+        const double h = 1.0 / static_cast<double>(1 << l);
+        return (x >= h * (static_cast<double>(i) - 2.0)) &&
+               (x <= h * (static_cast<double>(i) + 2.0));
+      };
     } else {
       throw std::invalid_argument("Grid type not supported.");
     }
+
+    pp1h = (static_cast<base::index_t>(p) + 1) / 2;
+    pp1hDbl = static_cast<double>(pp1h);
   }
 
   /**
@@ -139,7 +246,7 @@ class HierarchisationSLE : public CloneableSLE {
    *              the j-th basis function
    */
   inline bool isMatrixEntryNonZero(size_t i, size_t j) override {
-    return (evalBasisFunctionAtGridPoint(j, i) != 0.0);
+    return isGridPointInBasisFunctionSupport(j, i);
   }
 
   /**
@@ -171,58 +278,22 @@ class HierarchisationSLE : public CloneableSLE {
   }
 
  protected:
+  typedef std::function<bool(base::level_t, base::index_t, double)> IsPointIn1DSupportFunction;
+
   /// sparse grid
   base::Grid& grid;
   /// grid storage
   base::GridStorage& gridStorage;
-
-  /// B-spline basis
-  std::unique_ptr<base::SBsplineBase> bsplineBasis;
-  /// B-spline boundary basis
-  std::unique_ptr<base::SBsplineBoundaryBase> bsplineBoundaryBasis;
-  /// B-spline Clenshaw-Curtis basis
-  std::unique_ptr<base::SBsplineClenshawCurtisBase> bsplineClenshawCurtisBasis;
-  /// modified B-spline basis
-  std::unique_ptr<base::SBsplineModifiedBase> modBsplineBasis;
-  /// modified B-spline Clenshaw-Curtis basis
-  std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase> modBsplineClenshawCurtisBasis;
-  /// fundamental spline basis
-  std::unique_ptr<base::SFundamentalSplineBase> fundamentalSplineBasis;
-  /// modified fundamental spline basis
-  std::unique_ptr<base::SFundamentalSplineModifiedBase> modFundamentalSplineBasis;
-  /// linear basis
-  std::unique_ptr<base::SLinearBase> linearBasis;
-  /// linear boundary basis
-  std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
-  /// linear Clenshaw-Curtis basis
-  std::unique_ptr<base::SLinearClenshawCurtisBase> linearClenshawCurtisBasis;
-  /// modified linear basis
-  std::unique_ptr<base::SLinearModifiedBase> modLinearBasis;
-  /// wavelet basis
-  std::unique_ptr<base::SWaveletBase> waveletBasis;
-  /// wavelet boundary basis
-  std::unique_ptr<base::SWaveletBoundaryBase> waveletBoundaryBasis;
-  /// modified wavelet basis
-  std::unique_ptr<base::SWaveletModifiedBase> modWaveletBasis;
-
-  /// type of grid/basis functions
-  enum {
-    INVALID,
-    BSPLINE,
-    BSPLINE_BOUNDARY,
-    BSPLINE_CLENSHAW_CURTIS,
-    BSPLINE_MODIFIED,
-    BSPLINE_MODIFIED_CLENSHAW_CURTIS,
-    FUNDAMENTAL_SPLINE,
-    FUNDAMENTAL_SPLINE_MODIFIED,
-    LINEAR,
-    LINEAR_BOUNDARY,
-    LINEAR_CLENSHAW_CURTIS,
-    LINEAR_MODIFIED,
-    WAVELET,
-    WAVELET_BOUNDARY,
-    WAVELET_MODIFIED
-  } basisType;
+  /// basis
+  std::unique_ptr<base::SBasis> basis;
+  /// B-spline degree
+  size_t p;
+  /// (p + 1) / 2
+  base::index_t pp1h;
+  /// (p + 1) / 2
+  double pp1hDbl;
+  /// function to check if 1D point is in 1D basis support
+  IsPointIn1DSupportFunction isPointIn1DSupportFunction;
 
   /**
    * @param basisI    basis function index
@@ -231,52 +302,12 @@ class HierarchisationSLE : public CloneableSLE {
    *                  pointJ-th grid point
    */
   inline double evalBasisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    if (basisType == BSPLINE) {
-      return evalBsplineFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == BSPLINE_BOUNDARY) {
-      return evalBsplineBoundaryFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == BSPLINE_CLENSHAW_CURTIS) {
-      return evalBsplineClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == BSPLINE_MODIFIED) {
-      return evalBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == BSPLINE_MODIFIED_CLENSHAW_CURTIS) {
-      return evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == FUNDAMENTAL_SPLINE) {
-      return evalFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == FUNDAMENTAL_SPLINE_MODIFIED) {
-      return evalFundamentalSplineModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LINEAR) {
-      return evalLinearFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LINEAR_BOUNDARY) {
-      return evalLinearBoundaryFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LINEAR_CLENSHAW_CURTIS) {
-      return evalLinearClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LINEAR_MODIFIED) {
-      return evalLinearModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == WAVELET) {
-      return evalWaveletFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == WAVELET_BOUNDARY) {
-      return evalWaveletBoundaryFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == WAVELET_MODIFIED) {
-      return evalWaveletModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else {
-      return 0.0;
-    }
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th B-spline basis function
-   *                  at the pointJ-th grid point
-   */
-  inline double evalBsplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
     double result = 1.0;
 
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = bsplineBasis->eval(
+      const double result1d = basis->eval(
           gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
@@ -292,343 +323,21 @@ class HierarchisationSLE : public CloneableSLE {
   /**
    * @param basisI    basis function index
    * @param pointJ    grid point index
-   * @return          value of the basisI-th B-spline boundary
-   *                  basis function at the pointJ-th grid point
+   * @return          if false, the basis function is guaranteed to be zero at the grid point
+   *                  (should be non-zero if true, but that's not guaranteed)
    */
-  inline double evalBsplineBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+  inline bool isGridPointInBasisFunctionSupport(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
 
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = bsplineBoundaryBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th B-spline Clenshaw-Curtis
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalBsplineClenshawCurtisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = bsplineClenshawCurtisBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th modified B-spline
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalBsplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = modBsplineBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th modified Clenshaw-Curtis
-   *                  B-spline basis function at the pointJ-th grid point
-   */
-  inline double evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(size_t basisI,
-                                                                      size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = modBsplineClenshawCurtisBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th fundamental spline basis
-   *                  function at the pointJ-th grid point
-   */
-  inline double evalFundamentalSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
-        return 0.0;
-      } else if (gpPoint.getLevel(t) == gpBasis.getLevel(t)) {
-        if (gpPoint.getIndex(t) != gpBasis.getIndex(t)) {
-          return 0.0;
-        }
-      } else {
-        const double result1d = fundamentalSplineBasis->eval(
-            gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-        if (result1d == 0.0) {
-          return 0.0;
-        }
-
-        result *= result1d;
+      if (!isPointIn1DSupportFunction(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                      gridStorage.getCoordinate(gpPoint, t))) {
+        return false;
       }
     }
 
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th modified fundamental spline
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalFundamentalSplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
-        return 0.0;
-      } else if (gpPoint.getLevel(t) == gpBasis.getLevel(t)) {
-        if (gpPoint.getIndex(t) != gpBasis.getIndex(t)) {
-          return 0.0;
-        }
-      } else {
-        const double result1d = modFundamentalSplineBasis->eval(
-            gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-        if (result1d == 0.0) {
-          return 0.0;
-        }
-
-        result *= result1d;
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th linear
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalLinearFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = linearBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th linear boundary
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalLinearBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = linearL0BoundaryBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th linear Clenshaw-Curtis
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalLinearClenshawCurtisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = linearClenshawCurtisBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th modified linear
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalLinearModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = modLinearBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th wavelet
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalWaveletFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = waveletBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th wavelet boundary
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalWaveletBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = waveletBoundaryBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
-
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th modified wavelet
-   *                  basis function at the pointJ-th grid point
-   */
-  inline double evalWaveletModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    const base::GridPoint& gpBasis = gridStorage[basisI];
-    const base::GridPoint& gpPoint = gridStorage[pointJ];
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = modWaveletBasis->eval(
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
+    return true;
   }
 };
 }  // namespace optimization

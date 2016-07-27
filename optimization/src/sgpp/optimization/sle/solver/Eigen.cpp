@@ -94,11 +94,8 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 
     for (size_t i = 0; i < n; i++) {
       for (size_t j = 0; j < n; j++) {
-        A(i, j) = system2->getMatrixEntry(i, j);
-
-        // count nonzero entries
-        // (not necessary, you can also remove that if you like)
-        if (A(i, j) != 0) {
+        if (system2->isMatrixEntryNonZero(i, j)) {
+          A(i, j) = system2->getMatrixEntry(i, j);
 #pragma omp atomic
           nnz++;
         }

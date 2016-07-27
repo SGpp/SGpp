@@ -98,9 +98,9 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
 
     for (uint32_t i = 0; i < n; i++) {
       for (uint32_t j = 0; j < n; j++) {
-        double entry = system2->getMatrixEntry(i, j);
+        if (system2->isMatrixEntryNonZero(i, j)) {
+          const double entry = system2->getMatrixEntry(i, j);
 
-        if (entry != 0) {
 #pragma omp critical
           {
             Ti.push_back(i);

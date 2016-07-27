@@ -73,11 +73,8 @@ bool MATLAB::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const 
 
     for (size_t j = 0; j < n; j++) {
       for (size_t i = 0; i < n; i++) {
-        arrayA[i + j * n] = system2->getMatrixEntry(i, j);
-
-        // count nonzero entries
-        // (not necessary, you can also remove that if you like)
-        if (arrayA[i + j * n] != 0) {
+        if (system2->isMatrixEntryNonZero(i, j)) {
+          arrayA[i + j * n] = system2->getMatrixEntry(i, j);
 #pragma omp atomic
           nnz++;
         }

@@ -139,10 +139,10 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
-          double entry = system2->getMatrixEntry(i, j);
+          if (system2->isMatrixEntryNonZero(i, j)) {
+            const double entry = system2->getMatrixEntry(i, j);
 
-          if (entry != 0) {
-#pragma omp critical
+  #pragma omp critical
             {
               A(i, j) = entry;
               nnz++;

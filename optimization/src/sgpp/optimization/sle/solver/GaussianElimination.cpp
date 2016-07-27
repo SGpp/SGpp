@@ -24,12 +24,14 @@ bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVect
   // size of the system
   const size_t n = b.getSize();
   // working matrix
-  base::DataMatrix W(n, n + 1);
+  base::DataMatrix W(n, n + 1, 0.0);
 
   // set W := (A, b) at the beginning
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
-      W(i, j) = system.getMatrixEntry(i, j);
+      if (system.isMatrixEntryNonZero(i, j)) {
+        W(i, j) = system.getMatrixEntry(i, j);
+      }
     }
 
     W(i, n) = b[i];
