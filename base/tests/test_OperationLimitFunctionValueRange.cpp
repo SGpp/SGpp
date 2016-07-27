@@ -43,7 +43,7 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
                                  size_t side,
                                  MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                  double (*f)(DataVector&), double ylower, double yupper,
-                                 double tol = 1e-12, bool verbose = true) {
+                                 double tol = 1e-12, bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
