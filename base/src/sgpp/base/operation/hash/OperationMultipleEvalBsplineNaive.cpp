@@ -53,9 +53,10 @@ void OperationMultipleEvalBsplineNaive::multTranspose(DataVector& alpha, DataVec
 
   for (size_t i = 0; i < n; i++) {
     const GridPoint& gp = storage[i];
-    double curValue = 1.0;
 
     for (size_t j = 0; j < m; j++) {
+      double curValue = 1.0;
+
       for (size_t t = 0; t < d; t++) {
         const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointsInUnitCube(j, t));
 
