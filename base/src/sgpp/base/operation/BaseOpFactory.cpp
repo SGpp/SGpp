@@ -76,6 +76,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationNaiveEvalBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalBsplineClenshawCurtis.hpp>
@@ -348,8 +349,13 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEvalNaive(
     base::Grid& grid, base::DataMatrix& dataset) {
   if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationMultipleEval>(new base::OperationMultipleEvalBsplineNaive(
+    return std::unique_ptr<base::OperationMultipleEval>(
+        new base::OperationMultipleEvalBsplineNaive(
         grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return std::unique_ptr<base::OperationMultipleEval>(
+        new base::OperationMultipleEvalModBsplineNaive(
+        grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset));
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalNaive is not implemented for this grid type.");
