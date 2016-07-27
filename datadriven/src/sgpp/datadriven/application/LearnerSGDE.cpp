@@ -451,6 +451,8 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
       uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
     } else if (gridConfig.type_ == base::GridType::Bspline) {
       uGrid = base::Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+    } else if (gridConfig.type_ == base::GridType::ModBspline) {
+      uGrid = base::Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
     } else {
       throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
     }
@@ -629,7 +631,7 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
 }
 
 std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
-  if (grid.getType() == base::GridType::Bspline) {
+  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
     return op_factory::createOperationLTwoDotExplicit(grid);
   } else {
     return op_factory::createOperationLTwoDotProduct(grid);
@@ -638,7 +640,7 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeLTwoDotProductMatrix(
 
 std::unique_ptr<base::OperationMultipleEval> LearnerSGDE::computeMultipleEvalMatrix(
     base::Grid& grid, base::DataMatrix& train) {
-  if (grid.getType() == base::GridType::Bspline) {
+  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
     return op_factory::createOperationMultipleEvalNaive(grid, train);
   } else {
     return op_factory::createOperationMultipleEval(grid, train);
@@ -651,7 +653,7 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
-    if (grid.getType() == base::GridType::Bspline) {
+    if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
       C = op_factory::createOperationLaplaceExplicit(grid);
     } else {
       C = op_factory::createOperationLaplace(grid);
