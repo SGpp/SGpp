@@ -15,7 +15,6 @@
 
 #include <cmath>
 #include <vector>
-#include <iostream>
 
 namespace sgpp {
 namespace base {

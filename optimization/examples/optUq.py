@@ -13,22 +13,22 @@ from matplotlib2tikz import save as tikz_save
 
 
 class ExampleFunction(pysgpp.OptScalarFunction):
-    """Example objective function from the title of my Master's thesis."""
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
 
     def eval(self, x):
-        # return 0.1*(x*15-8)**2 - 5*np.cos(x*15-8)
-        # return target_func(x)
+        return target_func(x)
         # return shcb(x)
         # return easom(x)
-        # return michalewicz(x)
-        return schwefel(x)
+        # return michalewicz(x)   # 
+        # return griewank(x)
+        # return schwefel(x)
 
 def target_func(x):
-    grid = pysgpp.Grid.createBsplineGrid(1, 3)
-    gridGen = grid.getGenerator().regular(1)
+    grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(1, 3)
+    gridGen = grid.getGenerator().regular(4)
     gridStorage = grid.getStorage()
+    
     alpha = pysgpp.DataVector(gridStorage.getSize())
     hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
     for i in range(gridStorage.getSize()):
@@ -36,36 +36,70 @@ def target_func(x):
         y = gridStorage.getCoordinates(gp)
         # alpha[i] = oscill_genz(d, x)
         # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
-        # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y
-        alpha[i] = easom(pysgpp.DataVector(x))*2*y
+        # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y # alpha[i] = easom(pysgpp.DataVector(x))*2*y
         # alpha[i] = 1
+        alpha[i] = schwefel([x[0],x[1],y[0]])*f_beta(y[0])
+        
     hierarch.doHierarchisation(alpha)
-    
     # Quadratur mit f(x) multiplizieren 
     # for i in range(gridStorage.getSize()):
         # gp = gridStorage.getPoint(0)
         # alpha[i] = alpha[i] * f(gp.getCord(0))
-    return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha)
+    return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha) 
     
+def gamma(n):
+    res = 1
+    for i in range(1, n):
+        res *= i
+    return float(res)
+    
+def beta(p, q):
+    return (gamma(p)*gamma(q)) / gamma(p+q)
+
+def f_beta(x):
+    p = 3
+    q = 4
+    return (1.0/beta(p, q)) * x**(p-1) * (1-x)**q-1 
+
 def shcb(x):
+    x[0] = x[0]*10 - 5
+    x[1] = x[1]*10 - 5
     return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1) 
+    
 def oscill_genz(d, x):
     u = 0.5
-    a = [2, 2]
+    a = [200, 200]
     return np.cos(2*np.pi*u+sum([a[i]*x[i] for i in range(d)]))
 
 def michalewicz(x):
-    return -np.sin(5*x[0])*np.sin((x[0]*5)**2/np.pi)**20-np.sin(5*x[1])*np.sin(2*(x[1]*5)**2/np.pi)**20
+    x[0] = x[0]*5
+    x[1] = x[1]*5
+    return -np.sin(x[0])*np.sin(x[0]**2/np.pi)**20-np.sin(x[1])*np.sin(2*x[1]**2/np.pi)**20
+
+def eggcrate(x):
+    x[0] = x[0]*10 - 5
+    x[1] = x[1]*10 - 5
+    return x[0]**2 + x[1]**2 + 25*(np.sin(x[0])**2 + np.sin(x[1])**2)
           
 def easom(x):
-    x[0] = (x[0]+100)/200
-    x[1] = (x[1]+100)/200
+    x[0] = x[0]*200 - 100
+    x[1] = x[1]*200 - 100
+    
     return -np.cos(x[0])*np.cos(x[1])*np.exp(-(x[0]-np.pi)**2-(x[1]-np.pi)**2)
 
+def griewank(x):  #falsch
+    d = len(x)
+    for i in range(d):
+        x[i] = x[i]*1200 - 600
+    prod = 1
+    for i in range(d):
+       prod *= np.cos(x[i] / (i+1)**0.5 ) 
+    return 1 + np.linalg.norm(x)**2 / 4000 - prod
+    
 def schwefel(x):
-    for x_i in x:
-        x_i = (x_i + 500) / 1000
-    return -sum([x_t*np.sin(abs(x_t)**0.5) for x_t in x] )
+    for i in range(len(x)):
+        x[i] = x[i] * 1000 - 500
+    return -sum([x[i]*np.sin(abs(x[i])**0.5) for i in range(len(x))] )
         
 def grid2d(start, end, num=50):
     """Create an 2D array where each row is a 2D coordinate.
@@ -80,8 +114,7 @@ def gridToName(i, p):
              1 : "LinearStretched",
              2 : "LinearL0Boundary",
              3 : "LinearBoundary (Rand)",
-             4 : "LinearStretchedBoundary",
-             5 : "LinearTruncatedBoundary",
+             4 : "LinearStretchedBoundary", 5 : "LinearTruncatedBoundary",
              6 : "ModLinear",
              7 : "Poly (Grad " + str(p) + ")",
              8 : "PolyBoundary (Grad 3) (Rand)",
@@ -124,12 +157,15 @@ def optimize():
     # maximal number of grid points
     # adaptivity of grid generation
     gamma = 0.95 
-    grids = (pysgpp.Grid.createBsplineGrid(d, 3), pysgpp.Grid.createBsplineBoundaryGrid(d, 3), pysgpp.Grid.createModBsplineGrid(d, 3))# pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
-    N_vals =  range(100, 3000, 300)
+    N_vals =  range(100, 2000, 400)
+    grids = (pysgpp.Grid.createBsplineGrid(d, 3),
+             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
+             # pysgpp.Grid.createModBsplineGrid(d,p),
+             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
+
     for grid in grids:
-        
         printLine()
-        print gridToName(grid.getType())
+        print gridToName(grid.getType(), p)
         printLine()
         errors = []
         for N in N_vals: 
@@ -199,24 +235,37 @@ def optimize():
             fXOpt = f.eval(xOpt)
             # errors.append(fXOpt - (-1.8013)) #michalewicz
             # errors.append(fXOpt - (-1.031628)) #SHCB
-            errors.append(fXOpt - (-1)) #Easom
+            errors.append(fXOpt) #Griewank
+            # errors.append(fXOpt - (-1)) #Easom
+            # errors.append(fXOpt - d*(-418.9829)) #Schwefel
             
             print "\nxOpt = {}".format(xOpt)
             print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
 
-        plt.plot(N_vals, errors, label=gridToName(grid.getType()))
+        plt.plot(N_vals, errors, label=gridToName(grid.getType(),p))
         # plt.loglog(N_vals, errors, basex=2, basey=2, label=gridToName(grid.getType()))
     plt.xlabel('Grid Points')
     plt.ylabel('Error')
     plt.legend(loc=1)
-    plt.title("Optimization-Error SHCB-Funktion") 
+    plt.title("Optimization-Error Schwefel-Funktion 3-4-Betaverteilung reg-5-grid") 
     plt.show()
    
+    
+    #1: -394
+    #3: -325
+    #4: -356.521
+    #5: -360
+    #6: -359.773
+    #7: -359.764
+    
 def genz_error(sol):
-    a = (2,2)
+    a = (200,200)
     exact_sol = (np.cos(a[0] + a[1]) - np.cos(a[0]) - np.cos(a[1])+1)/(a[0]*a[1])
     return abs(exact_sol-sol)
 
+def eggcrate_error(sol):
+    exact_sol = -(5/6.0)*(3*np.sin(10)-50) 
+    return abs(sol - exact_sol)
 def l2_error(d, f, f_sg):
     n = 10000
     s = 0
@@ -238,15 +287,14 @@ def integrate():
              # pysgpp.Grid.createModLinearGrid(d),
              pysgpp.Grid.createModPolyGrid(d,3),
              pysgpp.Grid.createModBsplineGrid(d,3),
-             # pysgpp.Grid.createLinearClenshawCurtisGrid(d),
              pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3),
              pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1))
+    
     for grid in grids:
         #p  wird manuell gesetzt weil grid.getDegree() buggy 
         p  = 3
         if grid == grids[-1]:
             p = 1
-            
         printLine()
         print gridToName(grid.getType(), p)
         printLine()
@@ -254,11 +302,12 @@ def integrate():
             hierarch = pysgpp.createOperationHierarchisation(grid)
         except:
             hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
+            
         # system = pysgpp.OptHierarchisationSLE(grid)
         # solver = pysgpp.OptUMFPACK()
         num_gridPoints = []
         errors = []
-        for l in range(1,10):
+        for l in range(1,11):
             grid.getStorage().clear()
             gridGen = grid.getGenerator().regular(l)
             gridStorage = grid.getStorage()
@@ -266,7 +315,9 @@ def integrate():
             opeval = pysgpp.createOperationNaiveEval(grid)
             for i in range(gridStorage.getSize()):
                 gp = gridStorage.getPoint(i)
-                x = (gridStorage.getCoordinate(gp, 0), gridStorage.getCoordinate(gp ,1))
+                x = [gridStorage.getCoordinate(gp, 0), gridStorage.getCoordinate(gp ,1)]
+                # alpha[i] = easom(x)
+                # alpha[i] = eggcrate(x)
                 alpha[i] = oscill_genz(d,x)
                 # alpha[i] = target_func(x)
                 # alpha[i] = michalewicz(x)
@@ -277,12 +328,15 @@ def integrate():
             # solver.solve(system, b, alpha)
   
             f_sg = lambda point: opeval.eval(alpha, point)
-            errors.append(l2_error(d, lambda point: oscill_genz(d, point), f_sg) )
+            # errors.append(l2_error(d, lambda point: oscill_genz(d, point), f_sg) )
             # errors.append(l2_error(d, michalewicz, f_sg) )
+            # errors.append(l2_error(d, easom, f_sg) )
             # try:
-            # opQ = pysgpp.createOperationQuadrature(grid)
-            # sol = opQ.doQuadrature(alpha)
-            # errors.append(genz_error(sol))
+            opQ = pysgpp.createOperationQuadrature(grid)
+            sol = opQ.doQuadrature(alpha)
+            errors.append(genz_error(sol))
+            # errors.append(abs(sol - (-0.0000476373))) #easom
+            # errors.append(eggcrate_error(sol)) #eggcrate
             # except:
             # errors.append(l2_error(d, lambda point: oscill_genz(d, point), f_sg) )
             # print errors[-1]
@@ -294,7 +348,7 @@ def integrate():
     plt.xlabel('#Gitterpunkte')
     plt.ylabel('Fehler')
     plt.legend(loc=3)
-    plt.title("L2-Fehler Genz-Funktion (10000 Punkte)") 
+    plt.title("Quadratur-Fehler Eggcrate-Funktion") 
     plt.show()
     # tikz_save('mytikz.tex');
 
@@ -304,7 +358,7 @@ def interpolation_error():
     grids = (pysgpp.Grid.createLinearGrid(d),
              pysgpp.Grid.createPolyGrid(d,3),
              pysgpp.Grid.createBsplineGrid(d, 3),
-             pysgpp.Grid.createLinearBoundaryGrid(d, 1),
+             # pysgpp.Grid.createLinearBoundaryGrid(d, 1),
              pysgpp.Grid.createPolyBoundaryGrid(d,3),
              pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
              # pysgpp.Grid.createModLinearGrid(d),
@@ -373,15 +427,15 @@ def plot_genz():
     X = np.arange(0, 1, 0.01)
     Y = np.arange(0, 1, 0.01)
     X, Y = np.meshgrid(X, Y)
-    Z = oscill_genz(2, [X,Y])
+    # Z = oscill_genz(2, [X,Y])
+    Z = schwefel([X,Y])
     ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
     plt.show()
     
-    
 # test()
 # plot_genz()
-integrate()
-# optimize()
+# integrate()
+optimize()
 # interpolation_error()
 # X_grid = np.outer(np.linspace(0, 1, 50), np.ones(50))
 # Y_grid = X_grid.copy().T
