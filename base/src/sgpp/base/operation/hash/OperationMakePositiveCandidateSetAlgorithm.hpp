@@ -55,6 +55,9 @@ class OperationMakePositiveFindIntersectionCandidates
   void computeIntersection(base::HashGridPoint& gpi, base::HashGridPoint& gpj,
                            base::HashGridPoint& gpintersection);
 
+  static bool sortGridPointsByHash(const std::shared_ptr<HashGridPoint>& lhs,
+                                   const std::shared_ptr<HashGridPoint>& rhs);
+
   size_t iteration;
   std::unordered_map<size_t, std::shared_ptr<std::vector<std::shared_ptr<HashGridPoint>>>>
       intersections;

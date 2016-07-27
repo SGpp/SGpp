@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from pysgpp.extensions.datadriven.uq.operations.forcePositivity import (OperationMakePositive,
-                                               EstimateDensityAlgorithm)
+                                                                        EstimateDensityAlgorithm)
 from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
 from pysgpp import DataMatrix, Grid, createOperationQuadrature
 from shutil import copy2
