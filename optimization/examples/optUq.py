@@ -13,6 +13,7 @@ from matplotlib2tikz import save as tikz_save
 
 
 class ExampleFunction(pysgpp.OptScalarFunction):
+    int_grid_level = 1
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
 
@@ -24,28 +25,28 @@ class ExampleFunction(pysgpp.OptScalarFunction):
         # return griewank(x)
         # return schwefel(x)
 
-def target_func(x):
-    grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(1, 3)
-    gridGen = grid.getGenerator().regular(4)
-    gridStorage = grid.getStorage()
+    def target_func(x):
+        grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(1, 3)
+        gridGen = grid.getGenerator().regular(int_grid_level)
+        gridStorage = grid.getStorage()
     
-    alpha = pysgpp.DataVector(gridStorage.getSize())
-    hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
-    for i in range(gridStorage.getSize()):
-        gp = gridStorage.getPoint(i)
-        y = gridStorage.getCoordinates(gp)
-        # alpha[i] = oscill_genz(d, x)
-        # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
-        # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y # alpha[i] = easom(pysgpp.DataVector(x))*2*y
-        # alpha[i] = 1
-        alpha[i] = schwefel([x[0],x[1],y[0]])*f_beta(y[0])
+        alpha = pysgpp.DataVector(gridStorage.getSize())
+        hierarch = pysgpp.createOperationMultipleHierarchisation(grid)
+        for i in range(gridStorage.getSize()):
+            gp = gridStorage.getPoint(i)
+            y = gridStorage.getCoordinates(gp)
+            # alpha[i] = oscill_genz(d, x)
+            # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
+            # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y # alpha[i] = easom(pysgpp.DataVector(x))*2*y
+            # alpha[i] = 1
+            alpha[i] = schwefel([x[0],x[1],y[0]])*f_beta(y[0])
         
-    hierarch.doHierarchisation(alpha)
-    # Quadratur mit f(x) multiplizieren 
-    # for i in range(gridStorage.getSize()):
+        hierarch.doHierarchisation(alpha)
+        # Quadratur mit f(x) multiplizieren 
+        # for i in range(gridStorage.getSize()):
         # gp = gridStorage.getPoint(0)
         # alpha[i] = alpha[i] * f(gp.getCord(0))
-    return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha) 
+        return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha) 
     
 def gamma(n):
     res = 1
@@ -59,7 +60,7 @@ def beta(p, q):
 def f_beta(x):
     p = 3
     q = 4
-    return (1.0/beta(p, q)) * x**(p-1) * (1-x)**q-1 
+    return (1.0/beta(p, q)) * x**(p-1) * (1-x)**(q-1) 
 
 def shcb(x):
     x[0] = x[0]*10 - 5
@@ -158,17 +159,17 @@ def optimize():
     # adaptivity of grid generation
     gamma = 0.95 
     N_vals =  range(100, 2000, 400)
-    grids = (pysgpp.Grid.createBsplineGrid(d, 3),
-             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
+    grids = (pysgpp.Grid.createBsplineGrid(d, 3),)
+             # pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
              # pysgpp.Grid.createModBsplineGrid(d,p),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
+             # pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
 
     for grid in grids:
         printLine()
         print gridToName(grid.getType(), p)
         printLine()
         errors = []
-        for N in N_vals: 
+        for N in N_vals:
             grid.getStorage().clear()
             gridGen = pysgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma)
 
@@ -250,7 +251,7 @@ def optimize():
     plt.title("Optimization-Error Schwefel-Funktion 3-4-Betaverteilung reg-5-grid") 
     plt.show()
    
-    
+    #3-4-Betaverteilung
     #1: -394
     #3: -325
     #4: -356.521
@@ -432,6 +433,12 @@ def plot_genz():
     ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
     plt.show()
     
+print beta(3,4)
+
+xs = np.linspace(0,1,100) 
+plt.plot(xs, [f_beta(x) for x in xs])
+plt.show()
+
 # test()
 # plot_genz()
 # integrate()
