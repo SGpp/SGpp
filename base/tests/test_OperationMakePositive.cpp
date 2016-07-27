@@ -106,8 +106,6 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
     }
   }
 
-  std::cout << alpha.toString() << std::endl;
-
   size_t numFullGridPoints =
       static_cast<size_t>(std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
   size_t maxLevel = gridStorage.getMaxLevel();
@@ -167,22 +165,22 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
   // parameters
-  size_t numDims = 2;
-  size_t level = 6;
+  size_t numDims = 3;
+  size_t level = 3;
   size_t refnums = 0;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
       std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
       testMakePositive(*grid, idim, ilevel, refnums, MakePositiveCandidateSearchAlgorithm::FullGrid,
-                       &sin);
+                       &normal);
     }
   }
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
-  size_t numDims = 4;
+  size_t numDims = 5;
   size_t level = 4;
   size_t refnums = 0;
 
@@ -190,7 +188,7 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
       std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
       testMakePositive(*grid, idim, ilevel, refnums,
-                       MakePositiveCandidateSearchAlgorithm::Intersections, &sin);
+                       MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
     }
   }
 }

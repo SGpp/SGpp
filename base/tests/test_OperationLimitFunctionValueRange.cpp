@@ -215,8 +215,8 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
       std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
       testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 2,
-                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                  0.8);
+                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.2,
+                                  0.5);
     }
   }
 }

@@ -1,7 +1,6 @@
 from operationMakePositive import OperationMakePositive
 from operationMakePositiveFast import OperationMakePositiveFast
 
-
 from scaledMinOfParents import ScaledMinOfParents
 from interpolateFunction import InterpolateFunction
 from estimateDensity import EstimateDensityAlgorithm
