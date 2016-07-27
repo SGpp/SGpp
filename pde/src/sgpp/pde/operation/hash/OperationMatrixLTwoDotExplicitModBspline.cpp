@@ -26,7 +26,8 @@ OperationMatrixLTwoDotExplicitModBspline::OperationMatrixLTwoDotExplicitModBspli
   buildMatrix(grid);
 }
 
-OperationMatrixLTwoDotExplicitModBspline::OperationMatrixLTwoDotExplicitModBspline(sgpp::base::Grid* grid)
+OperationMatrixLTwoDotExplicitModBspline::OperationMatrixLTwoDotExplicitModBspline(
+    sgpp::base::Grid* grid)
     : ownsMatrix_(true) {
   m_ = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
   buildMatrix(grid);
@@ -111,7 +112,7 @@ OperationMatrixLTwoDotExplicitModBspline::~OperationMatrixLTwoDotExplicitModBspl
 }
 
 void OperationMatrixLTwoDotExplicitModBspline::mult(sgpp::base::DataVector& alpha,
-                                                sgpp::base::DataVector& result) {
+                                                    sgpp::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
