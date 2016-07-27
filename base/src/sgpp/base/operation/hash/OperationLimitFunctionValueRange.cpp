@@ -63,8 +63,16 @@ void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
 void OperationLimitFunctionValueRange::doLimitation(base::Grid*& newGrid,
                                                     base::DataVector& newAlpha, double ylower,
                                                     double yupper) {
-  doLowerLimitation(newGrid, newAlpha, ylower, true);
-  doUpperLimitation(newGrid, newAlpha, yupper, false);
+  size_t newGridSize = grid.getSize();
+  size_t oldGridSize = 0;
+  size_t iteration = 0;
+  while (oldGridSize < newGridSize) {
+    oldGridSize = newGridSize;
+    doLowerLimitation(newGrid, newAlpha, ylower, iteration == 0);
+    doUpperLimitation(newGrid, newAlpha, yupper, false);
+    newGridSize = newGrid->getSize();
+    iteration++;
+  }
 }
 
 void OperationLimitFunctionValueRange::addConst(base::Grid& grid, base::DataVector& alpha, double c,

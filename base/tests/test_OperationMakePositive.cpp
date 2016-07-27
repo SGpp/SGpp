@@ -180,9 +180,9 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
-  size_t numDims = 5;
+  size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 0;
+  size_t refnums = 10;
 
   for (size_t idim = numDims; idim <= numDims; idim++) {
     for (size_t ilevel = level; ilevel <= level; ilevel++) {
