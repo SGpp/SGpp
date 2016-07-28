@@ -15,82 +15,69 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-/*
-/// Base class for kNN graph operations with MPI
-class OperationGraphMethodMPI : public MPIOperation {
- private:
-  void send_dataset(void) {
-    // Sending dataset to slaves
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(data.getPointer(), static_cast<int>(data.getSize()), MPI_DOUBLE,
-               dest, 1, MPI_COMM_WORLD);
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(&dimensions, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
-    for (int dest = 1; dest < MPIEnviroment::get_node_count(); dest++)
-      MPI_Send(&k, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
-  }
-
+class MPIWorkerGraphBase : public MPIWorkerBase {
  protected:
-  sgpp::base::DataMatrix &data;
-  size_t datasize;
-  size_t dimensions;
-  size_t k;
-  /// Protected constructor - creates slave operations and sends the dataset to them
-  OperationGraphMethodMPI(base::OperationConfiguration conf, sgpp::base::DataMatrix& data,
-                          size_t dimensions, size_t k, std::string slave_class_id)
-      : MPIOperation(conf, slave_class_id), data(data),
-        datasize(data.getSize()), dimensions(dimensions), k(k) {
-    send_dataset();
-  }
-  /// Protected constructor - expects slaves already exist and just sends the dataset to them
-  OperationGraphMethodMPI(sgpp::base::DataMatrix& data, size_t dimensions, size_t k)
-      : MPIOperation(), data(data), datasize(data.getSize()), dimensions(dimensions),
-        k(k) {
-    send_dataset();
-  }
-
- protected:
-  /// Slave base class for kNN graph operations
-  class OperationGraphMethodSlave : virtual public MPISlaveOperation {
-   protected:
-    bool verbose;
-    int k;
-    int dimensions;
-    double *dataset;
-    int dataset_size;
-
-   public:
-    explicit OperationGraphMethodSlave(base::OperationConfiguration conf) : MPISlaveOperation(conf),
-                                                                   verbose(true) {
-      MPI_Status stat;
-      // Receive dataset
-      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-      MPI_Get_count(&stat, MPI_DOUBLE, &dataset_size);
-      dataset = new double[dataset_size];
-      MPI_Recv(dataset, dataset_size, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
-               MPI_COMM_WORLD, &stat);
-      // Receive clustering parameters
-      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-               MPI_COMM_WORLD, &stat);
-      MPI_Probe(0, 1, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&k, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
-               MPI_COMM_WORLD, &stat);
-      if (verbose) {
-        std::cout << "Node " << MPIEnviroment::get_node_rank() << ": Received dataset (size "
-                  << dataset_size / dimensions << " datapoints) and graph parameters" << std::endl;
-      }
-    }
-    virtual ~OperationGraphMethodSlave(void) {
-      delete [] dataset;
-    }
-    virtual void slave_code(void) = 0;
-  };
+  double *dataset;
+  int dataset_size;
+  int k;
+  int dimensions;
 
  public:
-  virtual ~OperationGraphMethodMPI(void) {
+  MPIWorkerGraphBase(std::string operationName, sgpp::base::DataMatrix &data,
+                     size_t k) : MPIWorkerBase(operationName), dataset(data.getPointer()),
+                                 dataset_size(data.getSize()), k(k),
+                                 dimensions(data.getNcols()), delete_dataset(true) {
+    send_dataset();
+    delete_dataset = false;
   }
-  };*/
+  explicit MPIWorkerGraphBase(std::string operationName) : MPIWorkerBase(operationName) {
+    receive_dataset();
+    send_dataset();
+  }
+
+  virtual ~MPIWorkerGraphBase(void) {
+    if (delete_dataset)
+      delete [] dataset;
+  }
+
+ private:
+  bool delete_dataset;
+  void send_dataset() {
+    // Sending dataset to slaves
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(dataset, dataset_size, MPI_DOUBLE,
+               i, 1, MPIEnviroment::get_communicator());
+    }
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(&dimensions, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
+    }
+    for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
+      MPI_Send(&k, 1, MPI_INT, i, 1, MPIEnviroment::get_communicator());
+    }
+  }
+  void receive_dataset(void) {
+    MPI_Status stat;
+    // Receive dataset
+    MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
+    MPI_Get_count(&stat, MPI_DOUBLE, &dataset_size);
+    dataset = new double[dataset_size];
+    MPI_Recv(dataset, dataset_size, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
+             MPIEnviroment::get_input_communicator(), &stat);
+    // Receive clustering parameters
+    MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
+    MPI_Recv(&dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
+             MPIEnviroment::get_input_communicator(), &stat);
+    MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
+    MPI_Recv(&k, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
+             MPIEnviroment::get_input_communicator(), &stat);
+    if (verbose) {
+      std::cout << "Node " << MPIEnviroment::get_node_rank() << ": Received dataset (size "
+                << dataset_size / dimensions << " datapoints) and graph parameters"
+                << std::endl;
+    }
+  }
+};
+
 }  // namespace clusteringmpi
 }  // namespace datadriven
 }  // namespace sgpp
