@@ -76,20 +76,26 @@ class SimpleQueue {
   int commsize;
 
  public:
-  SimpleQueue(size_t startindex, size_t workitem_count, size_t packagesize, MPI_Comm &comm,
+  SimpleQueue(size_t startindex, size_t workitem_count, size_t node_packagesize, MPI_Comm &comm,
               int commsize) :
-      startindex(startindex), packagesize(packagesize), workitem_count(workitem_count), comm(comm),
+      startindex(startindex), packagesize(node_packagesize),
+      workitem_count(workitem_count), comm(comm),
       commsize(commsize) {
-    if (packagesize > workitem_count / (commsize)) {
+    // Adapt packagesize
+    if (packagesize > workitem_count) {
+      commsize = 1;
+      packagesize = workitem_count;
+    } else if (packagesize > workitem_count / (commsize)) {
       packagesize = static_cast<int>(workitem_count / commsize);
     }
     send_packageindex = 0;
     received_packageindex = 0;
-    packagecount = static_cast<unsigned int>(workitem_count / packagesize);
+    packagecount = static_cast<unsigned int>(workitem_count / packagesize) + 1;
     startindices = new unsigned int[commsize];
     packageinfo[0] = startindex;
     packageinfo[1] = static_cast<int>(packagesize);
 
+    // Returnvector type
     if (std::is_same<T, int>::value) {
       mpi_typ = MPI_INT;
     } else if (std::is_same<T, float>::value) {
@@ -104,8 +110,8 @@ class SimpleQueue {
     }
     // Send first packages
     std::cout << "Sending size: " << packageinfo[1] << std::endl;
-    for (int dest = 1; dest < commsize; dest++) {
-      packageinfo[0] = static_cast<int>(send_packageindex * packagesize);
+    for (int dest = 1; dest < commsize + 1 ; dest++) {
+      packageinfo[0] = static_cast<int>(startindex + send_packageindex * packagesize);
       MPI_Send(packageinfo, 2, MPI_INT, dest, 1, comm);
       startindices[dest - 1] = packageinfo[0];
       send_packageindex++;
@@ -115,49 +121,55 @@ class SimpleQueue {
   size_t receive_result(int &startid, T *partial_result) {
     MPI_Status stat;
     int messagesize = 0;
-    if (received_packageindex != packagecount+1) {
+    if (received_packageindex < packagecount+1) {
       MPI_Probe(MPI_ANY_SOURCE, 1, comm, &stat);
-      MPI_Get_count(&stat, mpi_typ, &messagesize);  // Count should be packagesize*k
+      MPI_Get_count(&stat, mpi_typ, &messagesize);
       if (verbose) {
         std::cout << "Received work package [" << received_packageindex+1
-                  << " / " << packagecount+1 << "] from node "<< stat.MPI_SOURCE
+                  << " / " << packagecount << "] from node "<< stat.MPI_SOURCE
                   << "! Messagesize: " << messagesize << std::endl;
       }
       int source = stat.MPI_SOURCE;
       startid = startindices[source-1];
       MPI_Recv(partial_result, messagesize, mpi_typ, stat.MPI_SOURCE,
                stat.MPI_TAG, comm, &stat);
+      received_packageindex++;
 
       // Send next package
-      if (send_packageindex < packagecount) {
-        packageinfo[0] = static_cast<int>(send_packageindex * packagesize);
+      if (send_packageindex < packagecount - 1) {
+        packageinfo[0] = static_cast<int>(startindex + send_packageindex * packagesize);
         MPI_Send(packageinfo, 2, MPI_INT, source, 1, comm);
         startindices[source - 1] = packageinfo[0];
         send_packageindex++;
-      } else if (send_packageindex == packagecount) {
+      } else if (send_packageindex == packagecount - 1) {
         // Send last package
-        packageinfo[0] = static_cast<int>(send_packageindex * packagesize);
+        packageinfo[0] = static_cast<int>(startindex + send_packageindex * packagesize);
         packageinfo[1] = static_cast<int>((workitem_count) % packagesize);
         if (packageinfo[1] == 0) {
           send_packageindex++;
           received_packageindex++;
           if (verbose)
-            std::cout << "Received work package [" << received_packageindex+1
-                      << " / " << packagecount+1 << "] (empty package)" << std::endl;
-          return 0;
+            std::cout << "Received work package [" << received_packageindex
+                      << " / " << packagecount << "] (empty package)" << std::endl;
         } else {
           MPI_Send(packageinfo, 2, MPI_INT, source, 1, comm);
           startindices[source-1] = packageinfo[0];
           send_packageindex++;
-          if (verbose)
-            std::cout << "Received work package [" << received_packageindex+1
-                      << " / " << packagecount+1 << "] (not empty package)" << std::endl;
         }
       } else {
       }
+    } else {
+      std::cout << "Error - packagecount: " << packagecount << " Received:"
+                << received_packageindex << "\n";
+      throw "bla";
     }
-    received_packageindex++;
     return messagesize;
+  }
+  bool is_finished(void) {
+    if (received_packageindex == packagecount)
+      return true;
+    else
+      return false;
   }
   virtual ~SimpleQueue() {
     delete [] startindices;
