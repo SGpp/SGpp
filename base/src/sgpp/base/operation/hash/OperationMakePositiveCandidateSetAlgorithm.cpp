@@ -218,8 +218,13 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     findIntersections(grid, levelSum, this->candidates);
 
     if (verbose) {
-      std::cout << "# considered intersect: " << this->candidates.size() << std::endl;
-      std::cout << "# costs               : " << costs << std::endl;
+      size_t numDims = grid.getStorage().getDimension();
+      size_t maxLevel = grid.getStorage().getMaxLevel();
+      double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
+
+      std::cout << "# considered intersect: " << this->candidates.size() << " / "
+                << numFullGridPoints << " : full grid points (l = " << maxLevel << ")" << std::endl;
+      std::cout << "# comparison costs    : " << costs << std::endl;
       std::cout << "--------------------------------------------------------" << std::endl;
     }
   }
