@@ -81,6 +81,7 @@
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/Gmmpp.hpp>
 #include <sgpp/optimization/sle/solver/MATLAB.hpp>
+#include <sgpp/optimization/sle/solver/MATLABSparse.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
