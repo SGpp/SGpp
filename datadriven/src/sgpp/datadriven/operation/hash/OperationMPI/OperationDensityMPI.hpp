@@ -46,6 +46,10 @@ class DensityWorker : public MPIWorkerGridBase {
     MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
              master_worker_comm, &stat);
 
+    // Send lambda
+    for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
+      MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
+
     // Create opencl operation
     op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                  (2 * grid_dimensions), grid_dimensions,
@@ -73,6 +77,7 @@ class DensityWorker : public MPIWorkerGridBase {
     MPI_Status stat;
     double *alpha = NULL;
     receive_alpha(&alpha);
+    send_alpha(&alpha);
     if (verbose) {
       std::cout << "Received alpha on " << MPIEnviroment::get_node_rank() << std::endl;
     }
@@ -147,26 +152,29 @@ class DensityWorker : public MPIWorkerGridBase {
   }
   void divide_workpackages(int *package, double *erg) {
     // Divide into more work packages
-    int packagesize = 1280;
+    int packagesize = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getInt();
     double *package_result = new double[packagesize];
     SimpleQueue<double> workitem_queue(package[0], package[1], packagesize,
                                        sub_worker_comm,
-                                       MPIEnviroment::get_sub_worker_count() + 1);
+                                       MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
     if (package[0] < 0)
       throw std::logic_error("wat");
-    size_t messagesize = workitem_queue.receive_result(chunkid, package_result);
-    while (messagesize > 0) {
+    size_t messagesize = 0;
+    while (!workitem_queue.is_finished()) {
       // Store result
-      std::cerr << messagesize << std::endl;
-      std::cout << package_result[0] << " at  " << chunkid - package[0] + 0 << "with"
-                << chunkid << std::endl;
+      if (verbose) {
+        std::cout << "Messagesize: "<< messagesize << std::endl;
+        std::cout << package_result[0] << " at  " << chunkid - package[0] + 0
+                  << " with packageid " << chunkid << " on "
+                  << MPIEnviroment::get_node_rank() << std::endl;
+      }
+      messagesize = workitem_queue.receive_result(chunkid, package_result);
       for (size_t i = 0; i < messagesize; i++) {
         erg[chunkid - package[0] + i] = package_result[i];
       }
-      std::cout << std::endl << std::endl;
-      messagesize = workitem_queue.receive_result(chunkid, package_result);
     }
+    delete [] package_result;
   }
 };
 

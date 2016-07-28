@@ -31,26 +31,28 @@ int main(int argc, char *argv[]) {
   sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
-  sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
-  dumdum.start_operation();
+  // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
+  // dumdum.start_operation();
 
   // Create Grid
-  /*std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(10);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(10);
+  gridGen.regular(6);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
   sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
+  std::cin.get();
+
   sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
   mult_op.mult(alpha, result);
   std::cout << std::endl << std::endl;
-  for (size_t i = 0; i < gridsize; ++i) {
+  for (size_t i = 0; i < 100; ++i) {
     std::cout << result[i] << " ";
   }
-  std::cout << std::endl << std::endl;*/
+  std::cout << std::endl << std::endl;
 
 
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
@@ -92,7 +94,7 @@ int main(int argc, char *argv[]) {
     std::cout << "\n";
     }*/
 
-  sleep(1);
+  std::cin.get();
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
   return 0;
