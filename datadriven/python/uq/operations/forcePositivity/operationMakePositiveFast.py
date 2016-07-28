@@ -339,28 +339,15 @@ class OperationMakePositiveFast(object):
             else:
                 break
 
-        # coarsening: remove all new grid points with zero surplus
-        coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
-        if self.verbose:
-            print "                        old | coarsed | new | max (cand) | full"
-            print "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(),
-                                                                               coarsedGrid.getSize(),
-                                                                               newGrid.getSize(),
-                                                                               self.grid.getSize() + len(candidates),
-                                                                               len(candidates),
-                                                                               (2 ** self.maxLevel - 1) ** self.numDims)
-
-        # security check for positiveness
-        neg = checkPositivity(coarsedGrid, coarsedAlpha)
-
-        if len(neg) > 0:
-            print "warning: the sparse grid function is not positive"
-#             raise AttributeError("the sparse grid function is not positive")
-            # check at which grid points the function is negative
-#             for i, (yi, gp) in neg.items():
-#                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
-#                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
-#                                                      [gp.getIndex(d) for d in xrange(numDims)],
-#                                                      yi)
+#         # coarsening: remove all new grid points with zero surplus
+#         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
+#         if self.verbose:
+#             print "                        old | coarsed | new | max (cand) | full"
+#             print "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(),
+#                                                                                coarsedGrid.getSize(),
+#                                                                                newGrid.getSize(),
+#                                                                                self.grid.getSize() + len(candidates),
+#                                                                                len(candidates),
+#                                                                                (2 ** self.maxLevel - 1) ** self.numDims)
 
         return coarsedGrid, coarsedAlpha

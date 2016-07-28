@@ -211,6 +211,14 @@ namespace std {
     %}
 }
 
+%extend sgpp::base::OperationMakePositive {
+  sgpp::base::Grid* makePositive(base::DataVector& newAlpha) {
+    sgpp::base::Grid* grid = nullptr;
+    $self->makePositive(grid, newAlpha);
+    return grid;
+  }
+}
+
 %extend sgpp::base::OperationLimitFunctionValueRange {
   sgpp::base::Grid* doLowerLimitation(base::DataVector& newAlpha, double ylower, bool resetGrid) {
     sgpp::base::Grid* grid = nullptr;
