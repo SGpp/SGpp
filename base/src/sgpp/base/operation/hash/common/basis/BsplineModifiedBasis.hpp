@@ -8,6 +8,7 @@
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -1274,8 +1275,8 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           return 90719.0/40320.0 / hInvDbl; // = 2.25 - 1/4032
         }
       default:
+        throw operation_exception("BsplineModifiedBasis::getIntegral()  only implemented for 1 <= degree <= 7 ");
         break;
-        // not implemented exception
       }
     }
     else {
