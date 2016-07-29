@@ -341,8 +341,6 @@ BOOST_AUTO_TEST_CASE(TestBsplineBoundaryBasis) {
 BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisBasis) {
   // Test B-spline ClenshawCurtis basis.
   sgpp::base::SBsplineClenshawCurtisBase basis(1);
-  linearLevelZeroTest(basis);
-  linearClenshawCurtisTest(basis);
 
   for (size_t p = 2; p <= 11; p++) {
     sgpp::base::SBsplineClenshawCurtisBase basis(p);
