@@ -28,7 +28,10 @@ class ShufflingFunctor {
 
   virtual void shuffle(std::vector<size_t>& indices) const = 0;
   int64_t getSeed() const { return seed; }
-  void setSeed(int64_t seed) { this->seed = seed; }
+  void setSeed(int64_t seed) {
+    this->seed = seed;
+    generator = std::mt19937(seed);
+  }
   virtual ~ShufflingFunctor();
 
  protected:
