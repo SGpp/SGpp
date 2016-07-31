@@ -19,7 +19,8 @@ using base::DataVector;
 using base::OperationMatrix;
 using base::GridType;
 using base::Grid;
-using base::GridIndex;
+
+using base::GridPoint;
 using base::application_exception;
 using base::GridGenerator;
 
@@ -53,7 +54,7 @@ void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig)
     grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
   } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
     grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(
-        gridConfig.dim_, static_cast<GridIndex::level_type>(gridConfig.boundaryLevel_)));
+        gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_)));
   } else if (gridConfig.type_ == GridType::LinearBoundary) {
     grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
   } else {
