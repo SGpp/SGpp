@@ -25,7 +25,8 @@ class OperationNaiveEvalModWavelet : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalModWavelet(GridStorage& storage) : storage(storage) {
+  explicit OperationNaiveEvalModWavelet(GridStorage& storage) :
+    storage(storage), pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -54,6 +55,8 @@ class OperationNaiveEvalModWavelet : public OperationNaiveEval {
   GridStorage& storage;
   /// 1D wavelet basis
   SWaveletModifiedBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

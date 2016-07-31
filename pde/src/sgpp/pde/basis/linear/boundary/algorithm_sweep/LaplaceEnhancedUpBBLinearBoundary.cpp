@@ -48,7 +48,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             recBB_GL(fl2, fr2, i, index);
           }
 
@@ -64,7 +64,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             recBB_LG(fl1, fr1, i, index);
           }
 
@@ -82,7 +82,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             recBB_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -99,7 +99,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             recBB_grad(i, index);
           }
 
@@ -114,7 +114,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             recBB(fl, fr, i, index);
           }
 
@@ -135,7 +135,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_GL(fl2, fr2, i, index);
           }
 
@@ -151,7 +151,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_LG(fl1, fr1, i, index);
           }
 
@@ -173,7 +173,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_LL(fl_xmm, fr_xmm, i, index);
           }
 
@@ -189,7 +189,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -205,7 +205,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_LL(fl_xmm, fr_xmm, i, index);
           }
 
@@ -221,7 +221,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -240,7 +240,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec_grad(i, index);
           }
 
@@ -255,7 +255,7 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& sourc
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->end(index.seq())) {
+          if (!this->storage->isValidSequenceNumber(index.seq())) {
             rec(fl, fr, i, index);
           }
 

@@ -62,7 +62,7 @@ void PhidPhiDownBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& so
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
-    if (!this->storage->end(index.seq())) {
+    if (!this->storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, left_boundary, right_boundary);
     }
 

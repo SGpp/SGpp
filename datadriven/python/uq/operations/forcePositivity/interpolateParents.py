@@ -23,7 +23,7 @@ class InterpolateParents(InterpolationAlgorithm):
 
         for newGp in newGridPoints:
             # run over all grid points of current level
-            newGp.getCoords(p)
+            newGp.getStandardCoordinates(p)
             pp = DataVector(p)
             i = newGs.seq(newGp)
             newNodalValues[i] = 0.

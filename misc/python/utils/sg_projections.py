@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 # project grid
                 gridpoints = {} # count, how often projected grid point at same place
                 for k in xrange(gridStorage.getSize()):
-                    gridStorage.get(k).getCoords(p)
+                    gridStorage.getPoint(k).getStandardCoordinates(p)
                     if not gridpoints.has_key((p[i], p[j])):
                         gridpoints[(p[i], p[j])] = 1
                     else:

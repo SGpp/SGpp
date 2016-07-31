@@ -15,10 +15,11 @@
 
 #include <vector>
 
+using sgpp::base::BoundingBox1D;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
-using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridPoint;
 using sgpp::base::OperationQuadrature;
 using sgpp::base::OperationQuadratureMC;
 using sgpp::base::SPolyBase;
@@ -31,9 +32,13 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   size_t level = 4;
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
-
   grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
+
+  grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 5.0));
+  grid->getBoundingBox().setBoundary(1, BoundingBox1D(-2.0, 2.0));
+  grid->getBoundingBox().setBoundary(2, BoundingBox1D(2.0, 3.0));
+  const double determinant = 2.0 * 4.0 * 1.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
   std::vector<int> v(N);
@@ -46,9 +51,12 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   double lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<double>(gS.get(i)->getLevelSum());
+    lSum = static_cast<double>(gS.getPoint(i).getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
+
+  // take BoundingBox into account by multiplying with determinant
+  qres *= determinant;
 
   double quadOperation =
       sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
@@ -66,9 +74,13 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   size_t level = 3;
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
-
   grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
+
+  grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 5.0));
+  grid->getBoundingBox().setBoundary(1, BoundingBox1D(-2.0, 2.0));
+  grid->getBoundingBox().setBoundary(2, BoundingBox1D(2.0, 3.0));
+
   size_t N = gS.getSize();
   std::vector<int> v(N);
 
@@ -97,6 +109,10 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, deg);
   grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
+
+  grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 45.0));
+  const double determinant = 42.0;  // volume of BoundingBox
+
   size_t N = gS.getSize();
   std::vector<int> v(N);
 
@@ -110,14 +126,17 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS.get(i);
-    HashGridIndex::level_type lvl = gp->getLevel(0);
-    HashGridIndex::index_type idx = gp->getIndex(0);
+    HashGridPoint& gp = gS.getPoint(i);
+    HashGridPoint::level_type lvl = gp.getLevel(0);
+    HashGridPoint::index_type idx = gp.getIndex(0);
     double quadSGPP =
         basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
+
+  // take BoundingBox into account by multiplying with determinant
+  quadManual *= determinant;
 
   double quadOperation =
       sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
@@ -135,6 +154,10 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
+
+  grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 45.0));
+  const double determinant = 42.0;  // volume of BoundingBox
+
   size_t N = gS.getSize();
   std::vector<int> v(N);
 
@@ -149,14 +172,17 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS.get(i);
-    HashGridIndex::level_type lvl = gp->getLevel(0);
-    HashGridIndex::index_type idx = gp->getIndex(0);
+    HashGridPoint& gp = gS.getPoint(i);
+    HashGridPoint::level_type lvl = gp.getLevel(0);
+    HashGridPoint::index_type idx = gp.getIndex(0);
     double quadSGPP =
         basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
+
+  // take BoundingBox into account by multiplying with determinant
+  quadManual *= determinant;
 
   double quadOperation =
       sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
