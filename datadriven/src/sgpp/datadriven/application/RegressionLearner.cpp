@@ -16,19 +16,22 @@
 
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
-
+#include <sgpp/solver/sle/fista/Fista.hpp>
+#include <sgpp/solver/sle/fista/RidgeFunction.hpp>
+#include <sgpp/solver/sle/fista/LassoFunction.hpp>
+#include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
 #include <limits>
 #include <random>
+#include <cassert>
 
 namespace sgpp {
 namespace datadriven {
 
-RegressionLearner::RegressionLearner(
-    sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdpativityConfiguration adaptivityConfig,
-    sgpp::solver::SLESolverConfiguration solverConfig,
-    sgpp::solver::SLESolverConfiguration finalSolverConfig,
-    sgpp::datadriven::RegularizationConfiguration regularizationConfig)
+RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
+                                     base::AdpativityConfiguration adaptivityConfig,
+                                     solver::SLESolverConfiguration solverConfig,
+                                     solver::SLESolverConfiguration finalSolverConfig,
+                                     datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
@@ -37,49 +40,63 @@ RegressionLearner::RegressionLearner(
   initializeGrid(gridConfig);
 }
 
-void RegressionLearner::train(sgpp::base::DataMatrix& trainDataset,
-                              sgpp::base::DataVector& classes) {
+void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& classes) {
   if (trainDataset.getNrows() != classes.getSize()) {
     throw base::application_exception(
         "RegressionLearner::train: length of classes vector does not match to "
         "dataset!");
   }
-  const auto DMSystem = createDMSystem(trainDataset);
+  auto solver = std::move(createSolver());
+
+  if (solver.type == Solver::solverCategory::cg) {
+    systemMatrix = createDMSystem(trainDataset);
+  }
+
+  op = sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset);
 
   for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
-      refine(*DMSystem, trainDataset, classes);
+      refine(trainDataset, classes);
     }
     if (curStep == adaptivityConfig.numRefinements_) {
-      solverConfig = finalSolverConfig; // TODO(krenzls): Add final solver!
+      solverConfig = finalSolverConfig;
     }
-    auto solver = createSolver();
-    fit(*DMSystem, *solver, classes);
+    fit(solver, classes);
   }
 }
 
-
-sgpp::base::DataVector RegressionLearner::predict(sgpp::base::DataMatrix& data) {
-  auto prediction = sgpp::base::DataVector(data.getNrows());
+base::DataVector RegressionLearner::predict(base::DataMatrix& data) {
+  auto prediction = base::DataVector(data.getNrows());
   auto multOp = sgpp::op_factory::createOperationMultipleEval(*grid, data);
   multOp->mult(weights, prediction);
   return prediction;
 }
 
-double RegressionLearner::getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y) {
+double RegressionLearner::getMSE(base::DataMatrix& data, const base::DataVector& y) {
   const auto yPrediction = predict(data);
   return getMSE(y, yPrediction);
 }
 
-void RegressionLearner::fit(sgpp::datadriven::DMSystemMatrixBase& DMSystem,
-                            sgpp::solver::SLESolver& solver, sgpp::base::DataVector& classes) {
-  auto b = sgpp::base::DataVector(weights.getSize());
-  DMSystem.generateb(classes, b);
-  solver.solve(DMSystem, weights, b, true, false, 0.0);
+void RegressionLearner::fit(Solver& solver, base::DataVector& classes) {
+  switch (solver.type) {
+    case Solver::solverCategory::cg: {
+      auto b = base::DataVector(weights.getSize());
+      systemMatrix->generateb(classes, b);
+      solver.solveCG(*systemMatrix, weights, b, true, false, solverConfig.threshold_);
+      break;
+    }
+    case Solver::solverCategory::fista: {
+      solver.solveFista(*op, weights, classes, solverConfig.maxIterations_,
+                        solverConfig.threshold_);
+      break;
+    }
+    case Solver::solverCategory::none:
+    default:
+      throw base::application_exception("RegressionLearner::fit: Solver not supported!");
+  }
 }
 
-void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem, sgpp::base::DataMatrix& data,
-                               sgpp::base::DataVector& classes) {
+void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes) {
   // First calculate the training errors for the dataset.
   auto error = predict(data);
   error.sub(classes);
@@ -87,83 +104,79 @@ void RegressionLearner::refine(sgpp::datadriven::DMSystemMatrixBase& DMSystem, s
 
   // Calculate the weighted errors per basis function.
   auto multOp = sgpp::op_factory::createOperationMultipleEval(*grid, data);
-  auto errors = sgpp::base::DataVector(weights.getSize());
+  auto errors = base::DataVector(weights.getSize());
   multOp->multTranspose(error, errors);
   errors.componentwise_mult(weights);
 
   // Refine the grid using the weighted errors.
-  auto refineFunctor = sgpp::base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
-                                                            adaptivityConfig.threshold_);
+  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
+                                                      adaptivityConfig.threshold_);
   grid->getGenerator().refine(refineFunctor);
 
   // tell the SLE manager that the grid changed (for internal
   // data structures)
-  DMSystem.prepareGrid();
+  if (systemMatrix != nullptr) {
+    systemMatrix->prepareGrid();
+  }
   weights.resizeZero(grid->getSize());
 }
 
-size_t RegressionLearner::getGridSize() const {
-    return grid->getSize();
-}
+size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 
 void RegressionLearner::initializeWeights() {
-    const size_t size = grid->getSize();
-    const size_t dimensions = grid->getDimension();
+  const size_t size = grid->getSize();
+  const size_t dimensions = grid->getDimension();
 
-    weights = sgpp::base::DataVector(size);
-    auto& gridStorage = grid->getStorage();
+  weights = base::DataVector(size);
+  auto& gridStorage = grid->getStorage();
 
-    std::mt19937_64 gen(42);
+  std::mt19937_64 gen(42);
 
-    const double exponentBase = 0.25;
-    for(size_t i = 0; i < size; ++i) {
+  const double exponentBase = 0.25;
+  for (size_t i = 0; i < size; ++i) {
+    base::GridStorage::index_pointer gridIndex = gridStorage.get(i);
+    base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
+    const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
+    const double multiplicator = std::pow(exponentBase, exponent);
 
-        sgpp::base::GridStorage::index_pointer gridIndex = gridStorage.get(i);
-        sgpp::base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
-        const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
-        const double multiplicator = std::pow(exponentBase, exponent);
-
-        std::normal_distribution<> dist(0, std::sqrt(multiplicator));
-        weights[i] = dist(gen);
-    }
+    std::normal_distribution<> dist(0, std::sqrt(multiplicator));
+    weights[i] = dist(gen);
+  }
 }
 
-sgpp::base::DataVector RegressionLearner::getWeights() const {
-    return weights;
-}
+base::DataVector RegressionLearner::getWeights() const { return weights; }
 
-double RegressionLearner::getMSE(const sgpp::base::DataVector& y,
-                                 sgpp::base::DataVector yPrediction) {
+double RegressionLearner::getMSE(const base::DataVector& y, base::DataVector yPrediction) {
   yPrediction.sub(y);
   yPrediction.sqr();
   const double totalError = yPrediction.sum();
   return (totalError / static_cast<double>(yPrediction.getSize()));
 }
 
-void RegressionLearner::initializeGrid(const sgpp::base::RegularGridConfiguration gridConfig) {
-  using sgpp::base::GridType;
+void RegressionLearner::initializeGrid(const base::RegularGridConfiguration gridConfig) {
+  using base::GridType;
   // no switch used to avoid missing case warnings
   if (gridConfig.type_ == GridType::LinearBoundary) {
-    grid = std::make_unique<sgpp::base::LinearBoundaryGrid>(gridConfig.dim_);
+    grid = std::make_unique<base::LinearBoundaryGrid>(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::ModLinear) {
-    grid = std::make_unique<sgpp::base::ModLinearGrid>(gridConfig.dim_);
+    grid = std::make_unique<base::ModLinearGrid>(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::Linear) {
-    grid = std::make_unique<sgpp::base::LinearGrid>(gridConfig.dim_);
+    grid = std::make_unique<base::LinearGrid>(gridConfig.dim_);
   } else {
     throw base::application_exception(
         "RegressionLearner::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
-  weights = sgpp::base::DataVector(grid->getSize());
+  weights = base::DataVector(grid->getSize());
   weights.setAll(0.0);
 }
 
 // maybe pass regularizationConfig instead of state.
-std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
-    sgpp::base::DataMatrix& trainDataset) {
+std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
+    base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
-  std::unique_ptr<sgpp::base::OperationMatrix> opMatrix;
+  std::unique_ptr<base::OperationMatrix> opMatrix;
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
@@ -175,31 +188,52 @@ std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> RegressionLearner::createD
       opMatrix =
           sgpp::op_factory::createOperationDiagonal(*grid, regularizationConfig.exponentBase_);
       break;
+    case RegularizationType::Lasso:
+    case RegularizationType::ElasticNet:
     default:
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
-  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(
-      *grid, trainDataset, std::move(opMatrix), regularizationConfig.lambda_);
+  return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset, std::move(opMatrix),
+                                                      regularizationConfig.lambda_);
 }
 
-std::unique_ptr<sgpp::solver::SLESolver> RegressionLearner::createSolver() {
-  using sgpp::solver::SLESolverType;
-  decltype(createSolver()) solver;
+RegressionLearner::Solver RegressionLearner::createSolver() {
+  using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
-      solver = std::make_unique<sgpp::solver::ConjugateGradients>(solverConfig.maxIterations_,
-                                                                  solverConfig.eps_);
-      break;
+      return Solver(std::move(std::make_unique<solver::ConjugateGradients>(
+          solverConfig.maxIterations_, solverConfig.eps_)));
     case SLESolverType::BiCGSTAB:
-      solver =
-          std::make_unique<sgpp::solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_);
-      break;
+      return Solver(std::move(
+          std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_)));
+    case SLESolverType::FISTA:
+      return createSolverFista();
     default:
       throw base::application_exception(
           "RegressionLearner::createSolver: An unsupported solver type was chosen!");
   }
-  return solver;
+}
+
+RegressionLearner::Solver RegressionLearner::createSolverFista() {
+  using datadriven::RegularizationType;
+  switch (regularizationConfig.regType_) {
+    case RegularizationType::Identity:
+      return Solver(std::make_unique<solver::Fista<solver::RidgeFunction>>(
+          solver::RidgeFunction(regularizationConfig.lambda_)));
+    case RegularizationType::Lasso:
+      return Solver(std::make_unique<solver::Fista<solver::LassoFunction>>(
+          solver::LassoFunction(regularizationConfig.lambda_)));
+    case RegularizationType::ElasticNet:
+      return Solver(std::make_unique<solver::Fista<solver::ElasticNetFunction>>(
+          solver::ElasticNetFunction(regularizationConfig.lambda_, regularizationConfig.l1Ratio_)));
+    // The following methods are not supported by FISTA.
+    case RegularizationType::Diagonal:
+    case RegularizationType::Laplace:
+    default:
+      throw base::application_exception(
+          "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
+  }
 }
 
 }  // namespace datadriven
