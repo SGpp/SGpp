@@ -12,11 +12,12 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class RegularizationType { Identity, Laplace, Diagonal };
+enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet };
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
   double lambda_;
+  double l1Ratio_;
   double exponentBase_;
 };
 

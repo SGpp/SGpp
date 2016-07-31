@@ -42,14 +42,14 @@ int main(int argc, char** argv) {
     auto weights = DataVector(grid->getSize());
     weights.setAll(0.0);
     double lambda = 1.0;
-    const double gamma = 0.1;
+    const double gamma = 0.98;
     for (int i = 0; i < 5; ++i) {
         weights.setAll(0.0);
         lambda /= 10;
         auto g = sgpp::solver::ElasticNetFunction(lambda, gamma);
         auto solver = sgpp::solver::Fista<decltype(g)>(g);
         std::cout << "Start solving." << std::endl;
-        solver.solve(*op, weights, y);
+        solver.solve(*op, weights, y, 500, 10e-5);
         std::cout << "Finished solving." << std::endl;
         auto prediction = DataVector(num_examples);
         op->mult(weights, prediction);
