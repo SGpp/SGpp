@@ -65,7 +65,7 @@ class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
   /// identifies if the Black Scholes Equation should be solved on a log-transformed grid
   bool useLogTransform;
   /// max. level for refinement during solving
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
   /// variable to store needed solving iterations
   size_t nNeededIterations;
   /// variable to store the solving time
@@ -187,7 +187,7 @@ class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
    *  @param refineThreshold Threshold needed to determine if a grid point should be refined
    */
   void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
-                               sgpp::base::GridIndex::level_type refineMaxLevel,
+                               sgpp::base::GridPoint::level_type refineMaxLevel,
                                int numCoarsenPoints, double coarsenThreshold,
                                double refineThreshold);
 
@@ -200,7 +200,7 @@ class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
    * @param strike the option's strike
    * @param eps epsilon to determine the gridpoints, use if at the money is not exactly on grid
    */
-  size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * gets the number needed iterations to solve Black Scholes Equation

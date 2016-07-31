@@ -22,6 +22,8 @@ class Auto : public SLESolver {
  public:
   /// maximal matrix dimension to allow use of full solvers
   static const size_t MAX_DIM_FOR_FULL = 30000;
+  /// maximal matrix dimension to prefer GaussianElimination over BiCGStab
+  static const size_t MAX_DIM_FOR_GAUSSIAN = 200;
   /// maximal ratio of non-zero entries for sparse solvers
   static constexpr double MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
   /// ratio of the rows (e.g. 0.1 = 10%) to use for sparsity estimation

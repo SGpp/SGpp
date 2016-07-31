@@ -51,9 +51,9 @@ double OperationEvalPrewavelet::integrate(const DataVector& alpha) {
     double temp_result = 1;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      GridStorage::index_type::level_type level;
-      GridStorage::index_type::index_type index;
-      storage[i]->get(d, level, index);
+      level_t level;
+      index_t index;
+      storage[i].get(d, level, index);
 
       if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
         temp_result = 0.0;

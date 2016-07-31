@@ -341,7 +341,7 @@ def writeGnuplotGrid(filename, grid):
         p = DataVector(dim)
         fout = file(filename, "w")
         for i in range(grid.getSize()):
-            grid.getStorage().get(i).getCoords(p)
+            grid.getStorage().getPoint(i).getStandardCoordinates(p)
             fout.write("%f %f\n" % (p[0],p[1]))
     # can't plot anything else
     else:
@@ -1031,7 +1031,7 @@ class Matrix:
             # fill temp vector with levelsums
             gridStorage = self.grid.getStorage()
             for i in range(gridStorage.getSize()):
-                gp = gridStorage.get(i)
+                gp = gridStorage.getPoint(i)
                 temp[i] = gp.getLevelSum()
             class Diagop(object):
                 def __init__(self, d):
@@ -1093,7 +1093,7 @@ class Matrix:
             result.axpy(M*self.l, alpha)
             # now correct for level 1 again
             gridStorage = self.grid.getStorage()
-            gi = GridIndex(gridStorage.getDimension())
+            gi = GridPoint(gridStorage.getDimension())
             for d in range(gridStorage.getDimension()):
                 gi.set(d, 1, 1)
             i = gridStorage.seq(gi)
@@ -1104,7 +1104,7 @@ class Matrix:
 #            # fill temp vector with levelsums
 #            gridStorage = self.grid.getStorage()
 #            for i in range(gridStorage.getSize()):
-#                gp = gridStorage.get(i)
+#                gp = gridStorage.getPoint(i)
 #                temp[i] = gp.getLevelSum()*alpha[i]
 #            result.axpy(M*self.l, temp)
 #

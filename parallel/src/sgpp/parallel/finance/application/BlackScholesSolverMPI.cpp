@@ -82,7 +82,8 @@ void BlackScholesSolverMPI::getGridNormalDistribution(sgpp::base::DataVector& al
     double* s_coords = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
@@ -123,7 +124,7 @@ void BlackScholesSolverMPI::getGridNormalDistribution(sgpp::base::DataVector& al
 }
 
 void BlackScholesSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
@@ -480,7 +481,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
           "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
           this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
           this->refineThreshold, this->refineMode,
-          static_cast<sgpp::base::GridIndex::level_type>(this->refineMaxLevel));
+          static_cast<sgpp::base::GridPoint::level_type>(this->refineMaxLevel));
     } else {
       // read env variable, which solver type should be selected
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -512,7 +513,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
             timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
             this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
             this->refineThreshold, this->refineMode,
-            static_cast<sgpp::base::GridIndex::level_type>(this->refineMaxLevel));
+            static_cast<sgpp::base::GridPoint::level_type>(this->refineMaxLevel));
       }
     }
 
@@ -586,7 +587,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
           "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
           this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
           this->refineThreshold, this->refineMode,
-          static_cast<sgpp::base::GridIndex::level_type>(this->refineMaxLevel));
+          static_cast<sgpp::base::GridPoint::level_type>(this->refineMaxLevel));
     } else {
       // read env variable, which solver type should be selected
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -618,7 +619,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
             timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
             this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
             this->refineThreshold, this->refineMode,
-            static_cast<sgpp::base::GridIndex::level_type>(this->refineMaxLevel));
+            static_cast<sgpp::base::GridPoint::level_type>(this->refineMaxLevel));
       }
     }
 
@@ -822,7 +823,8 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(sgpp::base::DataVector& 
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -872,7 +874,8 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(base::DataVector& a
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -922,7 +925,8 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(base::DataVector& a
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -1062,7 +1066,8 @@ void BlackScholesSolverMPI::printSparseGridPAT(sgpp::base::DataVector& alpha, st
   fileout.open(tfilename.c_str());
 
   for (size_t i = 0; i < myGrid->getStorage().getSize(); i++) {
-    std::string coords = myGrid->getStorage().get(i)->getCoordsStringBB(myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     double* dblFuncValues = new double[dim];

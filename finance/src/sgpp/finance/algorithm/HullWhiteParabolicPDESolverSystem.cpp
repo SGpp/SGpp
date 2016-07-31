@@ -24,7 +24,7 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(
     double a, double TimestepSize, std::string OperationMode, bool useCoarsen,
     double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel, int dim_HW) {
+    sgpp::base::GridPoint::level_type refineMaxLevel, int dim_HW) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 

@@ -26,12 +26,12 @@ class TrilinearQuadratureStrategy(HashQuadrature):
                                    gpsj, basisj):
         """
         Compute trilinear form for two lists of grid points
-        @param gpsk: list of HashGridIndex
+        @param gpsk: list of HashGridPoint
         @param basisk: SG++ basis for grid indices gpsk
         @param alphak: coefficients for kth grid
-        @param gpsi: list of HashGridIndex
+        @param gpsi: list of HashGridPoint
         @param basisi: SG++ basis for grid indices gpsi
-        @param gpsj: list of HashGridIndex
+        @param gpsj: list of HashGridPoint
         @param basisj: SG++ basis for grid indices gpsj
         @return: DataMatrix
         """
@@ -60,11 +60,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         """
         Compute the trilinear form of two grid point with a list
         of grid points
-        @param gpk: list of HashGridIndex
+        @param gpk: list of HashGridPoint
         @param basisk: SG++ Basis for grid indices k
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis for grid indices i
-        @param gpj: HashGridIndex
+        @param gpj: HashGridPoint
         @param basisj: SG++ Basis for grid indices j
         @return numpy array
         """
@@ -91,11 +91,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         """
         Restore the trilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
-        @param gpk: HashGridIndex
+        @param gpk: HashGridPoint
         @param basisk: SG++ Basis
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis
-        @param gpj: HashGridIndex
+        @param gpj: HashGridPoint
         @param basisj: SG++ Basis
         """
         available, key = self.hasValue(gpk, gpi, gpj, d)
@@ -115,11 +115,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
     def computeTrilinearFormEntry(self, gpk, basisk, gpi, basisi, gpj, basisj, d):
         """
         Compute the Trilinear form of one grid point with another one
-        @param gpk: HashGridIndex
+        @param gpk: HashGridPoint
         @param basisk: SG++ Basis
-        @param gpi: HashGridIndex
+        @param gpi: HashGridPoint
         @param basisi: SG++ Basis
-        @param gpj: HashGridIndex
+        @param gpj: HashGridPoint
         @param basisj: SG++ Basis
         """
         raise NotImplementedError()

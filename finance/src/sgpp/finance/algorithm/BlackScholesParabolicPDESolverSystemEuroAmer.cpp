@@ -27,7 +27,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
     std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
     bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -176,10 +176,10 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
 #ifdef HEDGE
   sgpp::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
-  sgpp::base::DimensionBoundary* myBoundaries =
-      new sgpp::base::DimensionBoundary[grid_bb->getDimensions()];
+  sgpp::base::BoundingBox1D* myBoundaries =
+      new sgpp::base::BoundingBox1D[grid_bb->getDimension()];
 
-  for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
+  for (size_t d = 0; d < grid_bb->getDimension(); d++) {
     if (bLogTransform == true) {
       double interval_width =
           exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
@@ -199,7 +199,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   }
 
   sgpp::base::BoundingBox* myHedgeBB =
-      new sgpp::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
+      new sgpp::base::BoundingBox(grid_bb->getDimension(), myBoundaries);
   // hedging
   myHedge = new sgpp::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
 
@@ -336,7 +336,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep() {
     double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
-      std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getCoordinates(
+          this->BoundGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       double tmp;

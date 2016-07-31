@@ -1,4 +1,4 @@
-from pysgpp import (DataVector, DataMatrix, Grid, HashGridIndex)
+from pysgpp import (DataVector, DataMatrix, Grid, HashGridPoint)
 from sparse_grid import (evalSGFunctionMulti, hierarchize,
                          copyGrid, evalSGFunction, insertPoint,
                          insertHierarchicalAncestors)
@@ -18,7 +18,7 @@ def computeNodalValues(jgrid, grid, alpha):
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.size(), jgs.getDimension())
     for i in xrange(jgs.size()):
-        jgs.get(i).getCoords(p)
+        jgs.getPoint(i).getStandardCoordinates(p)
         A.setRow(i, p)
 
     return evalSGFunctionMulti(grid, alpha, A)
@@ -53,7 +53,7 @@ def makePositive(grid, alpha):
         # insert those fg points, which are not yet positive
         values = computeNodalValues(fg, grid, alpha)
         for i in xrange(len(values)):
-            gp = fgs.get(i)
+            gp = fgs.getPoint(i)
             if values[i] < 0 and not jgs.has_key(gp):
                 gps += insertPoint(jgrid, gp)
                 gps += insertHierarchicalAncestors(jgrid, gp)

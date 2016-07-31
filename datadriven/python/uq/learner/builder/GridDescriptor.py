@@ -1,7 +1,7 @@
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.learner.formatter.GridFormatter import GridFormatter
 
-from pysgpp import Grid, HashGridIndex
+from pysgpp import Grid, HashGridPoint
 
 import os
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
@@ -144,10 +144,10 @@ class GridDescriptor(object):
 
                 # insert grid points
                 for i in xrange(copygs.size()):
-                    gp = copygs.get(i)
+                    gp = copygs.getPoint(i)
                     # insert grid point
                     if not gs.has_key(gp):
-                        gs.insert(HashGridIndex(gp))
+                        gs.insert(HashGridPoint(gp))
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                         insertTruncatedBorder(grid, gp)
                 gs.recalcLeafProperty()

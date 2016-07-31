@@ -40,8 +40,8 @@ void SqrtXPhiPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::Da
 
   double alpha_value = source[seq];
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i_idx;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i_idx;
 
   index.get(dim, l, i_idx);
 
@@ -84,13 +84,13 @@ void SqrtXPhiPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::Da
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 
@@ -105,8 +105,8 @@ void SqrtXPhiPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::
 
   double alpha_value = source[seq];
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i_idx;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i_idx;
 
   index.get(dim, l, i_idx);
 
@@ -174,13 +174,13 @@ void SqrtXPhiPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fl, fm, q, t);
     }
 
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage->isValidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fm, fr, q, t);
     }
 

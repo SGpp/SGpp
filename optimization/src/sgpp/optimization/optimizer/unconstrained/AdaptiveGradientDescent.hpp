@@ -41,11 +41,18 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  AdaptiveGradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
+  AdaptiveGradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
                           size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
                           double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                           double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
                           double lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  AdaptiveGradientDescent(const AdaptiveGradientDescent& other);
 
   /**
    * Destructor.
@@ -106,7 +113,7 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// step size increase factor

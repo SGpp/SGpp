@@ -29,7 +29,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     double r, double TimestepSize, std::string OperationMode, double dStrike,
     std::string option_type, bool bLogTransform, bool useCoarsen, double coarsenThreshold,
     std::string adaptSolveMode, int numCoarsenPoints, double refineThreshold,
-    std::string refineMode, sgpp::base::GridIndex::level_type refineMaxLevel) {
+    std::string refineMode, sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -588,13 +588,13 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
       sgpp::base::GridStorage* storage = &this->BoundGrid->getStorage();
 
       for (size_t i = 0; i < storage->getSize(); i++) {
-        sgpp::base::GridIndex* curPoint = (*storage)[i];
+        sgpp::base::GridPoint& curPoint = (*storage)[i];
 
         sgpp::base::DataVector pointCoords(storage->getDimension());
-        curPoint->getCoords(pointCoords);
+        curPoint.getStandardCoordinates(pointCoords);
 
         // Discount the boundary points
-        if (!curPoint->isInnerPoint()) {
+        if (!curPoint.isInnerPoint()) {
           this->alpha_complete->set(
               i, this->alpha_complete->get(i) * exp(((-1.0) * (this->r * this->TimestepSize))));
         }
