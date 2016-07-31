@@ -296,7 +296,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     if (this->floatType().compare("double") == 0) {
       sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
                    << std::endl;
-    }
+      }
 
     sourceStream << "__kernel" << std::endl;
     sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))"
@@ -304,8 +304,9 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     if (!preprocess_positions) {
       sourceStream << "void multdensity(__global const int *starting_points,";
     } else {
-      sourceStream << "void multdensity(__global const int *hs_inverses, __global const double *hs,"
-                   << std::endl << " __global const double *positions,";
+      sourceStream << "void multdensity(__global const int *hs_inverses, __global const "
+                   << this->floatType() <<" *hs,"
+                   << std::endl << " __global const " << this->floatType() << " *positions,";
     }
     sourceStream << "__global const " << this->floatType() << " *alpha, __global "
                  << this->floatType() << " *result,const " << this->floatType()
@@ -465,16 +466,28 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                        << "[dim]; " << std::endl;
           sourceStream << this->indent[2] << "sum *= hs_local[i *" << dimensions
                        << " + dim]; " << std::endl;
-          sourceStream << this->indent[2] << "sum = max(sum, 0.0); " << std::endl;
+          sourceStream << this->indent[2] << "sum = max(sum, (" << this->floatType()
+                       << ") 0.0); " << std::endl;
           // Calculate second integral (level_point > level_local)
-          sourceStream << this->indent[2] << "sum += max(point_hs_block" << block
+          sourceStream << this->indent[2] << "sum += max((" << this->floatType()
+                       << ")(point_hs_block" << block
                        << "[dim] * (1.0 - hinverses_local[i * " << dimensions
-                       << " + dim] * distance), 0.0);" << std::endl;
+                       << " + dim] * distance)), (" << this->floatType()
+                       << ")0.0);" << std::endl;
           // Update cell integral
-          sourceStream << this->indent[3] << "zellenintegral*=sum*select((double)1.0,"
-                       << " h, (long)(point_hinverses_block" << block
-                       << "[dim] == hinverses_local[i * " << dimensions << " + dim]));"
+          if (this->floatType().compare("double") == 0) {
+          sourceStream << this->indent[3] << "zellenintegral*=sum*select(("
+                       << this->floatType() << " )1.0,"
+                       << " (" << this->floatType() << " )h, (long)(point_hinverses_block"
+                       << block << "[dim] == hinverses_local[i * " << dimensions << " + dim]));"
                        << std::endl;
+          } else {
+          sourceStream << this->indent[3] << "zellenintegral*=sum*select(("
+                       << this->floatType() << " )1.0,"
+                       << " (" << this->floatType() << " )h, (uint)(point_hinverses_block"
+                       << block << "[dim] == hinverses_local[i * " << dimensions << " + dim]));"
+                       << std::endl;
+          }
           sourceStream << this->indent[2] << "}" << std::endl;
         } else {
           for (size_t dim = 0; dim < dimensions; ++dim) {
@@ -487,17 +500,30 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
             sourceStream << this->indent[2] << "sum = 1.0 - distance_dim" << dim
                          << " * point_hinverses_block"
                          << block << "[" << dim << "]; " << std::endl;
-            sourceStream << this->indent[2] << "sum *= hs_local_dim" << dim << "[i]; " << std::endl;
-            sourceStream << this->indent[2] << "sum = max(sum, 0.0); " << std::endl;
+            sourceStream << this->indent[2] << "sum *= hs_local_dim" << dim
+                         << "[i]; " << std::endl;
+            sourceStream << this->indent[2] << "sum = max(sum, (" << this->floatType()
+                         << ")0.0); " << std::endl;
             // Calculate second integral (level_point > level_local)
-            sourceStream << this->indent[2] << "sum += max(point_hs_block" << block
+            sourceStream << this->indent[2] << "sum += max((" << this->floatType()
+                       << ")(point_hs_block" << block
                          << "[" << dim << "] * (1.0 - hinverses_local_dim" << dim
-                         << "[i] * distance_dim" << dim << "), 0.0);" << std::endl;
+                         << "[i] * distance_dim" << dim << ")), (" << this->floatType()
+                         << ")0.0);" << std::endl;
             // Update cell integral
-            sourceStream << this->indent[3] << "zellenintegral*=sum*select((double)1.0,"
-                         << " h, (long)(point_hinverses_block" << block
+          if (this->floatType().compare("double") == 0) {
+            sourceStream << this->indent[3] << "zellenintegral*=sum*select(("
+                         << this->floatType() << " )1.0,"
+                         << " (" << this->floatType() << " )h, (long)(point_hinverses_block"
                          << "[" << dim << "] == hinverses_local_dim" << dim << "[i]));"
                          << std::endl;
+          } else {
+            sourceStream << this->indent[3] << "zellenintegral*=sum*select(("
+                         << this->floatType() << " )1.0,"
+                         << " (" << this->floatType() << " )h, (uint)(point_hinverses_block"
+                         << "[" << dim << "] == hinverses_local_dim" << dim << "[i]));"
+                         << std::endl;
+          }
           }
         }
         sourceStream << this->indent[2] << "gesamtint_block" << block

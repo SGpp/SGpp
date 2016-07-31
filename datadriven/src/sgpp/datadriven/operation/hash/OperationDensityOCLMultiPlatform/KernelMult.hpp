@@ -402,7 +402,7 @@ class KernelDensityMult {
         }
 
         if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-          kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+          kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
         }
 
         if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
