@@ -141,7 +141,7 @@ class AbstractQuadratureRule {
       } else {  // not bad stretching
         for (unsigned int j = 0; j < num_elem; j++) {
           grid->getVectorIndex(j, indices);
-          grid->getCoords(j, coords);
+          grid->getStandardCoordinates(j, coords);
           _Tp jacobian_j = 1.0;
 
           for (unsigned int d = 0; d < indices.size(); d++) {

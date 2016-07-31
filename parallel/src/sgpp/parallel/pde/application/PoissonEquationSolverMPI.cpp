@@ -37,7 +37,7 @@ PoissonEquationSolverMPI::~PoissonEquationSolverMPI() {
 }
 
 void PoissonEquationSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, size_t level) {
-  this->dim = BoundingBox.getDimensions();
+  this->dim = BoundingBox.getDimension();
   this->levels = static_cast<int>(level);
 
   this->myGrid = new sgpp::base::LinearBoundaryGrid(BoundingBox);
@@ -161,7 +161,8 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(sgpp::base::DataVector& al
     double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       bool isInner = true;
 
@@ -213,7 +214,8 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(sgpp::base::Data
     double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
@@ -258,7 +260,8 @@ void PoissonEquationSolverMPI::initGridWithExpHeat(sgpp::base::DataVector& alpha
     }
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       bool isInner = true;
       tmp = 0.0;
@@ -315,7 +318,8 @@ void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(sgpp::base::DataVec
     }
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+      std::string coords = this->myGrid->getStorage().getCoordinates(
+          this->myGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
       tmp = 0.0;
 

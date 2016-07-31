@@ -34,12 +34,7 @@ void OperationMultipleHierarchisationWavelet::doDehierarchisation(base::DataVect
   base::DataVector x(d, 0.0);
 
   for (size_t j = 0; j < storage.getSize(); j++) {
-    const base::GridIndex& gp = *storage[j];
-
-    for (size_t t = 0; t < d; t++) {
-      x[t] = gp.getCoord(t);
-    }
-
+    storage.getCoordinates(storage[j], x);
     nodeValues[j] = opNaiveEval.eval(alpha, x);
   }
 
@@ -66,12 +61,7 @@ void OperationMultipleHierarchisationWavelet::doDehierarchisation(base::DataMatr
     alpha.getColumn(i, alpha1);
 
     for (size_t j = 0; j < storage.getSize(); j++) {
-      const base::GridIndex& gp = *storage[j];
-
-      for (size_t t = 0; t < d; t++) {
-        x[t] = gp.getCoord(t);
-      }
-
+      storage.getCoordinates(storage[j], x);
       nodeValues[j] = opNaiveEval.eval(alpha1, x);
     }
 

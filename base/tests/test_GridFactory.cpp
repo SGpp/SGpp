@@ -17,7 +17,7 @@
 using sgpp::base::BoundingBox;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
-using sgpp::base::DimensionBoundary;
+using sgpp::base::BoundingBox1D;
 using sgpp::base::generation_exception;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -830,18 +830,18 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
   str1d.x_0 = 1;
   str1d.xsi = 10;
 
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
 
-  std::vector<DimensionBoundary> dimBoundaryVector(2);
+  std::vector<BoundingBox1D> dimBoundaryVector(2);
   dimBoundaryVector[0] = dimBound;
   dimBoundaryVector[1] = dimBound;
 
   std::vector<Stretching1D> str1dvector(2);
   str1dvector[0] = str1d;
   str1dvector[1] = str1d;
-  Stretching stretch(2, dimBoundaryVector, str1dvector);
+  Stretching stretch(dimBoundaryVector, str1dvector);
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(2);
   GridStorage& storage = factory->getStorage();
@@ -903,10 +903,10 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
   factory->getStorage().setStretching(stretch);
@@ -945,13 +945,13 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   /*
-  from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
+  from pysgpp import Grid, DataVector, Stretching, Stretching1D, BoundingBox1D
 
   str1d = Stretching1D()
   str1d.type='log'
   str1d.x_0=1
   str1d.xsi=10
-  dimBound = DimensionBoundary()
+  dimBound = BoundingBox1D()
   dimBound.leftBoundary=0.5
   dimBound.rightBoundary=7
   stretch=Stretching(1,dimBound,str1d)
@@ -975,10 +975,10 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
   std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
   factory->getStorage().setStretching(stretch);

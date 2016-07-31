@@ -9,7 +9,7 @@ import random
 import numpy
 import collections
 
-from pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, HashGridIndex, PredictiveRefinementDimensionIndicator
+from pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, HashGridPoint, PredictiveRefinementDimensionIndicator
 
 class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
@@ -132,7 +132,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 #print "All values:"
                 #print "Key: Online result, naive result"
                 #for k,v in online_result.iteritems():
-                #    print("{} ({}): {}, {}".format(k, self.storage.get(k[0]).toString(), v, naive_result[k]))
+                #    print("{} ({}): {}, {}".format(k, self.storage.getPoint(k[0]).toString(), v, naive_result[k]))
 
                 self.assertTrue(False)
 
@@ -151,10 +151,10 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         for j in xrange(self.gridSize):
 
-            HashGridIndex = self.storage.get(j)
-            HashGridIndex.setLeaf(False)
+            HashGridPoint = self.storage.getPoint(j)
+            HashGridPoint.setLeaf(False)
 
-            # print "Point: ", j, " (", HashGridIndex.toString(), ")"
+            # print "Point: ", j, " (", HashGridPoint.toString(), ")"
 
             for d in xrange(self.dim):
 
@@ -164,8 +164,8 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 # Get left and right child
                 #
 
-                leftChild = HashGridIndex(HashGridIndex)
-                rightChild = HashGridIndex(HashGridIndex)
+                leftChild = HashGridPoint(HashGridPoint)
+                rightChild = HashGridPoint(HashGridPoint)
 
                 self.storage.left_child(leftChild, d)
                 self.storage.right_child(rightChild, d)

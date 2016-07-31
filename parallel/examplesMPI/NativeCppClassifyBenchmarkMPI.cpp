@@ -281,7 +281,7 @@ void adaptClassificationTest(sgpp::base::DataMatrix& data, sgpp::base::DataVecto
 
   // training
   gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
-                              AdaptConfig, false, lambda);
+                              AdaptConfig, true, lambda, &testdata, &testclasses);
 
   double time_gTrainAcc = 0;
   double time_gTrainQual = 0;
@@ -573,6 +573,7 @@ int main(int argc, char* argv[]) {
     adaptConfig.numRefinements_ = refine_count;
     adaptConfig.percent_ = 100.0;
     adaptConfig.threshold_ = refine_thresh;
+    adaptConfig.errorBasedRefinement = true;
 
     // Set solver during refinement
     SLESolverConfigRefine.eps_ = cg_eps_learning;

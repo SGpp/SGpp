@@ -143,10 +143,10 @@ class AdaptiveOCLKernelSourceBuilder {
     stream_program_src << "        int streamElementSize = " << dims << " + 1;" << std::endl;
     stream_program_src << "        for ( int i = 0; i < numElements; i++)" << std::endl;
     stream_program_src << "        {" << std::endl;
-    stream_program_src << "            int gridIndex = "
+    stream_program_src << "            int gridPoint = "
                           "(int)ptrStreamingArray[streamElementSize*(startIndex + i) + " << dims
                        << "];" << std::endl;
-    stream_program_src << "            curSupport = ptrAlpha[gridIndex];" << std::endl;
+    stream_program_src << "            curSupport = ptrAlpha[gridPoint];" << std::endl;
     stream_program_src << "            for (size_t d = 0; d < " << dims << "; d++)" << std::endl;
     stream_program_src << "            {" << std::endl;
     stream_program_src << "                index_calc = eval[d] - "
@@ -198,11 +198,11 @@ class AdaptiveOCLKernelSourceBuilder {
                        << std::endl;
     // GRID INDEX AND EVAL
     stream_program_src << "        " << strType
-                       << " gridIndex = ptrSubspaceArray[subElementSize*(startIndex + linIndex) + "
+                       << " gridPoint = ptrSubspaceArray[subElementSize*(startIndex + linIndex) + "
                        << dims << "];" << std::endl;
-    stream_program_src << "        if ( !isnan(gridIndex) )" << std::endl;
+    stream_program_src << "        if ( !isnan(gridPoint) )" << std::endl;
     stream_program_src << "        {" << std::endl;
-    stream_program_src << "            curSupport = ptrAlpha[(int)gridIndex];" << std::endl
+    stream_program_src << "            curSupport = ptrAlpha[(int)gridPoint];" << std::endl
                        << std::endl;
 
     stream_program_src << "            for (size_t d = 0; d < " << dims << "; d++)" << std::endl;
@@ -393,10 +393,10 @@ class AdaptiveOCLKernelSourceBuilder {
                        << AdaptiveOCL::getType<real_type>::constSuffix() << ");" << std::endl;
     stream_program_src << "                    curSupport *= localSupport;" << std::endl;
     stream_program_src << "                }" << std::endl;
-    stream_program_src << "                int gridIndex = "
+    stream_program_src << "                int gridPoint = "
                           "(int)ptrStreamingArray[streamElementSize*(startIndex + i) + " << dims
                        << "];" << std::endl;
-    stream_program_src << "                atomic_add_global(&ptrResult[gridIndex], curSupport);"
+    stream_program_src << "                atomic_add_global(&ptrResult[gridPoint], curSupport);"
                        << std::endl;
     stream_program_src << "            }" << std::endl;
     stream_program_src << "        }" << std::endl;
@@ -440,9 +440,9 @@ class AdaptiveOCLKernelSourceBuilder {
                        << std::endl;
     // GRID INDEX AND EVAL
     stream_program_src << "            " << strPrecisionType
-                       << " gridIndex = ptrSubspaceArray[subElementSize*(startIndex + linIndex) + "
+                       << " gridPoint = ptrSubspaceArray[subElementSize*(startIndex + linIndex) + "
                        << dims << "];" << std::endl;
-    stream_program_src << "            if ( !isnan(gridIndex) )" << std::endl;
+    stream_program_src << "            if ( !isnan(gridPoint) )" << std::endl;
     stream_program_src << "            {" << std::endl;
     stream_program_src << "                curSupport = ptrSource[globalIdx];" << std::endl
                        << std::endl;
@@ -458,7 +458,7 @@ class AdaptiveOCLKernelSourceBuilder {
     stream_program_src << "                    curSupport *= localSupport;" << std::endl;
     stream_program_src << "                }" << std::endl;
     stream_program_src
-        << "                atomic_add_global(&ptrResult[(int)gridIndex], curSupport);"
+        << "                atomic_add_global(&ptrResult[(int)gridPoint], curSupport);"
         << std::endl;
     stream_program_src << "            }" << std::endl;
     stream_program_src << "        }" << std::endl;

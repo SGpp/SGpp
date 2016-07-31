@@ -22,7 +22,7 @@ GeneralizedBoundaryGridGenerator::~GeneralizedBoundaryGridGenerator() {
 }
 
 void GeneralizedBoundaryGridGenerator::regular(size_t level) {
-  this->truncated(static_cast<HashGenerator::level_t>(level), 1);
+  this->truncated(static_cast<level_t>(level), 1);
 }
 
 void GeneralizedBoundaryGridGenerator::cliques(size_t level,
@@ -33,8 +33,7 @@ void GeneralizedBoundaryGridGenerator::cliques(size_t level,
 
 void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
   HashGenerator gen;
-  gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level),
-                static_cast<HashGenerator::level_t>(l_user));
+  gen.truncated(this->storage, static_cast<level_t>(level), static_cast<level_t>(l_user));
 }
 
 // void L0BoundaryGridGenerator::refine(RefinementFunctor& func)

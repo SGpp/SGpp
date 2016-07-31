@@ -150,19 +150,19 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
         dString = pointerAccess;
       }
 
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        output << this->indent[indentLevel] << "eval = " << getLevel(dString, gridIndex) << " * "
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+        output << this->indent[indentLevel] << "eval = " << getLevel(dString, gridPoint) << " * "
                << getData(dString) << ";" << std::endl;
         output << this->indent[indentLevel] << "index_calc = eval - "
-               << getIndex(dString, gridIndex) << ";" << std::endl;
+               << getIndex(dString, gridPoint) << ";" << std::endl;
         output << this->indent[indentLevel] << "abs = as_" << this->floatType() << "(as_"
                << this->intType() << "(index_calc) | as_" << this->intType() << "("
-               << getMask(dString, gridIndex) << "));" << std::endl;
-        output << this->indent[indentLevel] << "last = " << getOffset(dString, gridIndex)
+               << getMask(dString, gridPoint) << "));" << std::endl;
+        output << this->indent[indentLevel] << "last = " << getOffset(dString, gridPoint)
                << " + abs;" << std::endl;
         output << this->indent[indentLevel] << "localSupport = fmax(last, 0.0"
                << this->constSuffix() << ");" << std::endl;
-        output << this->indent[indentLevel] << "curSupport_" << gridIndex << " *= localSupport;"
+        output << this->indent[indentLevel] << "curSupport_" << gridPoint << " *= localSupport;"
                << std::endl;
       }
     }
@@ -228,8 +228,8 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
                  << " eval, index_calc, abs, last, localSupport;" << std::endl
                  << std::endl;
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[indentLevel] << this->floatType() << " myResult_" << gridIndex
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+      sourceStream << this->indent[indentLevel] << this->floatType() << " myResult_" << gridPoint
                    << " = 0.0;" << std::endl;
     }
     sourceStream << std::endl;
@@ -245,69 +245,69 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     // create a register storage for the level and index of the grid points of
     // the work item
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        sourceStream << this->indent[indentLevel] << this->floatType() << " level_" << gridIndex
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+        sourceStream << this->indent[indentLevel] << this->floatType() << " level_" << gridPoint
                      << "[" << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << "level_" << gridIndex << "[" << d
-                       << "] = ptrLevel[(((globalSize * " << gridIndex << ") + globalIdx) * "
+          sourceStream << this->indent[indentLevel] << "level_" << gridPoint << "[" << d
+                       << "] = ptrLevel[(((globalSize * " << gridPoint << ") + globalIdx) * "
                        << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
-        sourceStream << this->indent[indentLevel] << this->floatType() << " index_" << gridIndex
+        sourceStream << this->indent[indentLevel] << this->floatType() << " index_" << gridPoint
                      << "[" << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << "index_" << gridIndex << "[" << d
-                       << "] = ptrIndex[(((globalSize * " << gridIndex << ") + globalIdx) * "
+          sourceStream << this->indent[indentLevel] << "index_" << gridPoint << "[" << d
+                       << "] = ptrIndex[(((globalSize * " << gridPoint << ") + globalIdx) * "
                        << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
-        sourceStream << this->indent[indentLevel] << this->floatType() << " mask_" << gridIndex
+        sourceStream << this->indent[indentLevel] << this->floatType() << " mask_" << gridPoint
                      << "[" << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << "mask_" << gridIndex << "[" << d
-                       << "] = ptrMask[(((globalSize * " << gridIndex << ") + globalIdx) * " << dims
+          sourceStream << this->indent[indentLevel] << "mask_" << gridPoint << "[" << d
+                       << "] = ptrMask[(((globalSize * " << gridPoint << ") + globalIdx) * " << dims
                        << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
-        sourceStream << this->indent[indentLevel] << this->floatType() << " offset_" << gridIndex
+        sourceStream << this->indent[indentLevel] << this->floatType() << " offset_" << gridPoint
                      << "[" << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << "offset_" << gridIndex << "[" << d
-                       << "] = ptrOffset[(((globalSize * " << gridIndex << ") + globalIdx) * "
+          sourceStream << this->indent[indentLevel] << "offset_" << gridPoint << "[" << d
+                       << "] = ptrOffset[(((globalSize * " << gridPoint << ") + globalIdx) * "
                        << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
       }
     } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << this->floatType() << " level_" << gridIndex
-                       << "_" << d << " = ptrLevel[(((globalSize * " << gridIndex
+          sourceStream << this->indent[indentLevel] << this->floatType() << " level_" << gridPoint
+                       << "_" << d << " = ptrLevel[(((globalSize * " << gridPoint
                        << ") + globalIdx) * " << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << this->floatType() << " index_" << gridIndex
-                       << "_" << d << " = ptrIndex[(((globalSize * " << gridIndex
+          sourceStream << this->indent[indentLevel] << this->floatType() << " index_" << gridPoint
+                       << "_" << d << " = ptrIndex[(((globalSize * " << gridPoint
                        << ") + globalIdx) * " << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << this->floatType() << " mask_" << gridIndex
-                       << "_" << d << " = ptrMask[(((globalSize * " << gridIndex
+          sourceStream << this->indent[indentLevel] << this->floatType() << " mask_" << gridPoint
+                       << "_" << d << " = ptrMask[(((globalSize * " << gridPoint
                        << ") + globalIdx) * " << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[indentLevel] << this->floatType() << " offset_" << gridIndex
-                       << "_" << d << " = ptrOffset[(((globalSize * " << gridIndex
+          sourceStream << this->indent[indentLevel] << this->floatType() << " offset_" << gridPoint
+                       << "_" << d << " = ptrOffset[(((globalSize * " << gridPoint
                        << ") + globalIdx) * " << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
@@ -344,9 +344,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
       indentLevel += 1;
 
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
         sourceStream << this->indent[indentLevel] << this->floatType() << " curSupport_"
-                     << gridIndex << " = locSource[k];" << std::endl;
+                     << gridPoint << " = locSource[k];" << std::endl;
       }
     } else {
       sourceStream << this->indent[indentLevel]
@@ -354,9 +354,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
       indentLevel += 1;
 
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
         sourceStream << this->indent[indentLevel] << this->floatType() << " curSupport_"
-                     << gridIndex << " = ptrSource[k];" << std::endl;
+                     << gridPoint << " = ptrSource[k];" << std::endl;
       }
     }
 
@@ -387,9 +387,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
     sourceStream << std::endl;
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[indentLevel] << "myResult_" << gridIndex << " += curSupport_"
-                   << gridIndex << ";" << std::endl;
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+      sourceStream << this->indent[indentLevel] << "myResult_" << gridPoint << " += curSupport_"
+                   << gridPoint << ";" << std::endl;
     }
 
     indentLevel -= 1;
@@ -405,9 +405,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
       sourceStream << this->indent[indentLevel] << "}" << std::endl;
     }
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[indentLevel] << "ptrResult[(globalSize * " << gridIndex
-                   << ") + globalIdx] = myResult_" << gridIndex << ";" << std::endl;
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+      sourceStream << this->indent[indentLevel] << "ptrResult[(globalSize * " << gridPoint
+                   << ") + globalIdx] = myResult_" << gridPoint << ";" << std::endl;
     }
 
     indentLevel -= 1;

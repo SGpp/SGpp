@@ -146,7 +146,7 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
  * size_t   d (dimension)
  * for j = 0, ..., N-1
  *     for t = 0, ..., d-1
- *         double          grid_point[j].getCoord(t)
+ *         double           grid_point[j].coord(t)
  *         unsigned int     grid_point[j].level(t)
  *         unsigned int     grid_point[j].index(t)
  *     end

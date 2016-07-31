@@ -74,7 +74,7 @@ class PolyModifiedBasis : public Basis<LT, IT> {
     double h = 1.0f / static_cast<double>(1 << level);
 
     // check if p is out of bounds
-    if ((p <= h * static_cast<double>(index - 1)) || (p >= h * static_cast<double>(index + 1))) {
+    if ((p < h * static_cast<double>(index - 1)) || (p > h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
       return eval(level, index, p);
