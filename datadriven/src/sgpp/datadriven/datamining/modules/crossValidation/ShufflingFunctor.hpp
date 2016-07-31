@@ -12,6 +12,7 @@
 #pragma once
 
 #include <memory>
+#include <random>
 #include <vector>
 
 namespace sgpp {
@@ -19,9 +20,20 @@ namespace datadriven {
 
 class ShufflingFunctor {
  public:
-  ShufflingFunctor();
-  virtual void operator()(std::shared_ptr<std::vector<size_t>>) = 0;
+  ShufflingFunctor() {
+    std::random_device rd;
+    seed = rd();
+    generator = std::mt19937(seed);
+  };
+
+  virtual void shuffle(std::vector<size_t>& indices) const = 0;
+  int64_t getSeed() const { return seed; }
+  void setSeed(int64_t seed) { this->seed = seed; }
   virtual ~ShufflingFunctor();
+
+ protected:
+  int64_t seed;
+  std::mt19937 generator;
 };
 
 } /* namespace datadriven */
