@@ -9,13 +9,13 @@
  *      Author: perun
  */
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <random>
 #include <ctime>
 #include <iostream>
+#include <random>
 #include <vector>
 
 namespace sgpp {
@@ -36,9 +36,7 @@ SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
   }
 }
 
-SimpleSplittingScorer::~SimpleSplittingScorer() {
-  // TODO(lettrich): Auto-generated destructor stub
-}
+SimpleSplittingScorer::~SimpleSplittingScorer() {}
 
 double SimpleSplittingScorer::getScore(Dataset& dataset) {
   // initialize data structures
