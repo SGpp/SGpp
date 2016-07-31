@@ -3,6 +3,9 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
+ *
+ *
+ * Author: Michael Lettrich
  */
 
 #include <sgpp/base/exception/application_exception.hpp>
