@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE TestRegularizationFunctionModule
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
