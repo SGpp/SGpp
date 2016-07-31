@@ -36,8 +36,24 @@ class UnconstrainedOptimizer {
    * @param N     maximal number of iterations or function evaluations
    *              (depending on the implementation)
    */
-  explicit UnconstrainedOptimizer(ScalarFunction& f, size_t N = DEFAULT_N)
-      : f(f), N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {}
+  explicit UnconstrainedOptimizer(const ScalarFunction& f, size_t N = DEFAULT_N)
+      : N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
+    f.clone(this->f);
+  }
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  UnconstrainedOptimizer(const UnconstrainedOptimizer& other)
+      : UnconstrainedOptimizer(*other.f, other.N) {
+    x0 = other.x0;
+    xOpt = other.xOpt;
+    fOpt = other.fOpt;
+    xHist = other.xHist;
+    fHist = other.fHist;
+  }
 
   /**
    * Destructor.
@@ -54,7 +70,7 @@ class UnconstrainedOptimizer {
   /**
    * @return objective function
    */
-  ScalarFunction& getObjectiveFunction() const { return f; }
+  ScalarFunction& getObjectiveFunction() const { return *f; }
 
   /**
    * @return  maximal number of iterations or function evaluations
@@ -113,7 +129,7 @@ class UnconstrainedOptimizer {
 
  protected:
   /// objective function
-  ScalarFunction& f;
+  std::unique_ptr<ScalarFunction> f;
   /// maximal number of iterations or function evaluations
   size_t N;
   /// starting point

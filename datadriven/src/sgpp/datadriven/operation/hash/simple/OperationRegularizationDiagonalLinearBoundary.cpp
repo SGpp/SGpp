@@ -20,15 +20,14 @@ OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLi
 
 void OperationRegularizationDiagonalLinearBoundary::initHkmix(double k) {
   size_t dim = storage->getDimension();
-  base::GridIndex* gi;
   double res;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->get(i);
+    base::GridPoint& gi = storage->getPoint(i);
     res = 1.0;
 
     for (size_t d = 0; d < dim; d++) {
-      res *= pow(2, (2 * k - 1) * static_cast<double>(gi->getLevel(d)) - 1);
+      res *= pow(2, (2 * k - 1) * static_cast<double>(gi.getLevel(d)) - 1);
     }
 
     diagonal[i] = res;
@@ -37,24 +36,23 @@ void OperationRegularizationDiagonalLinearBoundary::initHkmix(double k) {
 
 void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace(double k) {
   size_t dim = storage->getDimension();
-  base::GridIndex* gi;
   double res, resd;
 
   for (size_t i = 0; i < size; i++) {
-    gi = storage->get(i);
+    base::GridPoint& gi = storage->getPoint(i);
     res = 0.0;
 
     for (size_t d = 0; d < dim; d++) {
       // Hk in dimension d
-      resd = pow(2, (2 * k - 1) * static_cast<double>(gi->getLevel(d)) - 1);
+      resd = pow(2, (2 * k - 1) * static_cast<double>(gi.getLevel(d)) - 1);
 
       // "H0" in remaining dimensions
       for (size_t d2 = 0; d2 < d; d2++) {
-        resd *= pow(2.0, -1 - gi->getLevel(d2));
+        resd *= pow(2.0, -1 - gi.getLevel(d2));
       }
 
       for (size_t d2 = d + 1; d2 < dim; d2++) {
-        resd *= pow(2.0, -1 - gi->getLevel(d2));
+        resd *= pow(2.0, -1 - gi.getLevel(d2));
       }
 
       res += resd;

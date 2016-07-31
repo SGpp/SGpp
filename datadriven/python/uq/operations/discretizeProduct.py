@@ -65,7 +65,7 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     ps = DataMatrix(gs.size(), gs.getDimension())
     p = DataVector(gs.getDimension())
     for i in xrange(gs.size()):
-        gs.get(i).getCoords(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         ps.setRow(i, p)
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
     return nodalValues
@@ -90,7 +90,7 @@ def refine(jgrid, jalpha):
     if len(refinable) == 0:
         refinable = []
         for i in xrange(jgs.size()):
-            gp = jgs.get(i)
+            gp = jgs.getPoint(i)
             if isRefineable(jgrid, gp):
                 refinable.append(gp)
 

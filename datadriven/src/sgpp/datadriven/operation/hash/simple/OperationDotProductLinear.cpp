@@ -14,16 +14,16 @@ namespace datadriven {
 
 double OperationDotProductLinear::eval(base::DataVector& x1, base::DataVector& x2) {
   base::LinearBasis<unsigned int, unsigned int> base;
-  base::GridStorage::index_type::level_type work_level = 1;
-  base::GridStorage::index_type::index_type work_index;
-  base::GridStorage::index_type::level_type temp;
+  base::level_t work_level = 1;
+  base::index_t work_index;
+  base::level_t temp;
   double result = 0;
 
   // GridStorage::grid_iterator working;
   // for (GridStorage::grid_iterator working = storage->begin(); working != storage->end();
   // working++){
   for (size_t i = 0; i < storage->getSize(); i++) {
-    base::GridStorage::index_type working = *storage->get(i);
+    base::GridStorage::point_type& working = storage->getPoint(i);
     double value1 = 1.0;
     double value2 = 1.0;
 

@@ -134,7 +134,7 @@ class BlackScholesSolverWithStretching : public BlackScholesSolver {
   virtual void refineInitialGridWithPayoffToMaxLevel(sgpp::base::DataVector& alpha, double strike,
                                                      std::string payoffType,
                                                      double dStrikeDistance,
-                                                     sgpp::base::GridIndex::level_type maxLevel);
+                                                     sgpp::base::GridPoint::level_type maxLevel);
 
   /**
    * Inits the alpha vector with a payoff function of an European call option or put option
@@ -191,7 +191,7 @@ class BlackScholesSolverWithStretching : public BlackScholesSolver {
    * @param strike the option's strike
    * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
    */
-  virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  virtual size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * This is some kind of debug functionality. It writes a file,

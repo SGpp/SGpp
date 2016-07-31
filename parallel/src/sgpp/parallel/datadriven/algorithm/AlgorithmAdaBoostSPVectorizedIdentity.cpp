@@ -25,7 +25,7 @@ AlgorithmAdaBoostSPVectorizedIdentity::AlgorithmAdaBoostSPVectorizedIdentity(
     size_t refineNum, size_t numberOfAda, double percentOfAda, VectorizationType vecMode,
     size_t mode)
     : AlgorithmAdaBoostBase(SparseGrid, gridType,
-                            static_cast<sgpp::base::HashGenerator::level_t>(gridLevel), trainData,
+                            static_cast<sgpp::base::level_t>(gridLevel), trainData,
                             trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final,
                             firstLabel, secondLabel, threshold, maxLambda, minLambda, searchNum,
                             refine, refineMode, refineNum, numberOfAda, percentOfAda, mode) {

@@ -28,7 +28,7 @@ void HierarchisationFundamentalSpline::operator()(
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *storage[q];
+    const GridPoint& point = storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -36,12 +36,12 @@ void HierarchisationFundamentalSpline::operator()(
     }
 
     for (size_t t = 0; t < d; t++) {
-      GridIndex::level_type l;
-      GridIndex::level_type i;
+      GridPoint::level_type l;
+      GridPoint::level_type i;
       iterator.get(t, l, i);
 
-      GridIndex::level_type k;
-      GridIndex::level_type j;
+      GridPoint::level_type k;
+      GridPoint::level_type j;
       point.get(t, k, j);
 
       if ((k <= l) && ((k != l) || (i != j))) {
@@ -54,11 +54,11 @@ void HierarchisationFundamentalSpline::operator()(
       double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
-        GridIndex::level_type l;
-        GridIndex::level_type i;
+        GridPoint::level_type l;
+        GridPoint::level_type i;
         iterator.get(t, l, i);
 
-        const double val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getStandardCoordinate(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -86,7 +86,7 @@ void HierarchisationFundamentalSpline::operator()(
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *storage[q];
+    const GridPoint& point = storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -94,12 +94,12 @@ void HierarchisationFundamentalSpline::operator()(
     }
 
     for (size_t t = 0; t < d; t++) {
-      GridIndex::level_type l;
-      GridIndex::level_type i;
+      GridPoint::level_type l;
+      GridPoint::level_type i;
       iterator.get(t, l, i);
 
-      GridIndex::level_type k;
-      GridIndex::level_type j;
+      GridPoint::level_type k;
+      GridPoint::level_type j;
       point.get(t, k, j);
 
       if ((k <= l) && ((k != l) || (i != j))) {
@@ -112,11 +112,11 @@ void HierarchisationFundamentalSpline::operator()(
       double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
-        GridIndex::level_type l;
-        GridIndex::level_type i;
+        GridPoint::level_type l;
+        GridPoint::level_type i;
         iterator.get(t, l, i);
 
-        const double val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getStandardCoordinate(t));
 
         if (val1d == 0.0) {
           value = 0.0;

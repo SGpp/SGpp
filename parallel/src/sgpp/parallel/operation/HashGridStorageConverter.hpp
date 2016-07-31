@@ -5,7 +5,7 @@
 
 #pragma once
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
@@ -53,8 +53,8 @@ class HashGridStorageConverter {
       sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& level,
       sgpp::base::DataMatrix& index, sgpp::parallel::VectorizationType vectorizationType,
       size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
@@ -76,7 +76,7 @@ class HashGridStorageConverter {
       for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
         for (size_t t = i; t < i + blocking_length; ++t) {
           if (t < storage->getSize()) {
-            (*storage)[t]->get(current_dim, curLevel, curIndex);
+            (*storage)[t].get(current_dim, curLevel, curIndex);
             *level_ptr = static_cast<double>(1 << curLevel);
             *index_ptr = static_cast<double>(curIndex);
           }
@@ -103,8 +103,8 @@ class HashGridStorageConverter {
                                               sgpp::base::DataMatrix& level,
                                               sgpp::parallel::VectorizationType vectorizationType,
                                               size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
@@ -122,7 +122,7 @@ class HashGridStorageConverter {
       for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
         for (size_t t = i; t < i + blocking_length; ++t) {
           if (t < storage->getSize()) {
-            (*storage)[t]->get(current_dim, curLevel, curIndex);
+            (*storage)[t].get(current_dim, curLevel, curIndex);
             *level_ptr = pow(2.0, static_cast<int>(-curLevel));
           }
 

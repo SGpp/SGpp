@@ -31,7 +31,14 @@ class CMAES : public UnconstrainedOptimizer {
    * @param maxFcnEvalCount       maximal number of
    *                              function evaluations
    */
-  explicit CMAES(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
+  explicit CMAES(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  CMAES(const CMAES& other);
 
   /**
    * Destructor.

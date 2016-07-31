@@ -36,14 +36,29 @@ class LeastSquaresOptimizer {
    * @param N     maximal number of iterations or function evaluations
    *              (depending on the implementation)
    */
-  explicit LeastSquaresOptimizer(VectorFunction& phi, size_t N = DEFAULT_N)
-      : phi(phi),
-        N(N),
+  explicit LeastSquaresOptimizer(const VectorFunction& phi, size_t N = DEFAULT_N)
+      : N(N),
         x0(phi.getNumberOfParameters(), 0.5),
         xOpt(0),
         fOpt(NAN),
         xHist(0, 0),
-        fHist(0) {}
+        fHist(0) {
+    phi.clone(this->phi);
+  }
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  LeastSquaresOptimizer(const LeastSquaresOptimizer& other)
+      : LeastSquaresOptimizer(*other.phi, other.N) {
+    x0 = other.x0;
+    xOpt = other.xOpt;
+    fOpt = other.fOpt;
+    xHist = other.xHist;
+    fHist = other.fHist;
+  }
 
   /**
    * Destructor.
@@ -60,7 +75,7 @@ class LeastSquaresOptimizer {
   /**
    * @return phi
    */
-  VectorFunction& getPhiFunction() const { return phi; }
+  VectorFunction& getPhiFunction() const { return *phi; }
 
   /**
    * @return  maximal number of iterations or function evaluations
@@ -119,7 +134,7 @@ class LeastSquaresOptimizer {
 
  protected:
   /// phi function
-  VectorFunction& phi;
+  std::unique_ptr<VectorFunction> phi;
   /// maximal number of iterations or function evaluations
   size_t N;
   /// starting point

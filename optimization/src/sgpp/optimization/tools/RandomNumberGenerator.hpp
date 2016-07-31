@@ -7,6 +7,8 @@
 #define SGPP_OPTIMIZATION_TOOLS_RANDOMNUMBERGENERATOR_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+
 #include <random>
 
 namespace sgpp {
@@ -36,6 +38,15 @@ class RandomNumberGenerator {
   double getUniformRN(double a = 0.0, double b = 1.0);
 
   /**
+   * Fills vector with uniform pseudo-random numbers.
+   *
+   * @param[out]  vector  vector to be filled, has to have desired size beforehand
+   * @param       a       lower bound
+   * @param       b       upper bound
+   */
+  void getUniformRV(base::DataVector& vector, double a = 0.0, double b = 1.0);
+
+  /**
    * Generate a uniform pseudo-random array index.
    *
    * @param size  size of the array
@@ -47,11 +58,20 @@ class RandomNumberGenerator {
   /**
    * Generate a Gaussian pseudo-random number.
    *
-   * @param stdDev    standard deviation of the Gaussian distribution
    * @param mean      mean of the Gaussian distribution
+   * @param stdDev    standard deviation of the Gaussian distribution
    * @return          Gaussian pseudo-random number
    */
-  double getGaussianRN(double stdDev = 1.0, double mean = 0.0);
+  double getGaussianRN(double mean = 0.0, double stdDev = 1.0);
+
+  /**
+   * Fills vector with Gaussian pseudo-random numbers.
+   *
+   * @param[out]  vector  vector to be filled, has to have desired size beforehand
+   * @param       mean    mean of the Gaussian distribution
+   * @param       stdDev  standard deviation of the Gaussian distribution
+   */
+  void getGaussianRV(base::DataVector& vector, double mean = 0.0, double stdDev = 1.0);
 
   /**
    * @return      seed

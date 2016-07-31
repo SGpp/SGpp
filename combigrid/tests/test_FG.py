@@ -50,7 +50,7 @@ def testFG(obj, grid, level, function):
     # generate the node_values vector
     node_values = DataVector(storage.getSize())
     for n in xrange(storage.getSize()):
-        points = storage.get(n).getCoordsString().split()
+        points = storage.getPoint(n).getStandardCoordinatesString().split()
         node_values[n] = evalFunction(function, points)        
     fgs = FullGridSet(dim,level, grid.getType())   
     beta = DataVector(storage.getSize())
@@ -62,7 +62,7 @@ def testFG(obj, grid, level, function):
         fg=fgs.at(i)  
         m=fg.getSize()   
         for j in xrange(m):
-            points=fg.getCoordsString(j).split()
+            points=fg.getStandardCoordinatesString(j).split()
             obj.failUnlessAlmostEqual(evalFunction(function, points), 
                                   fg.get(j))
     #test composition
