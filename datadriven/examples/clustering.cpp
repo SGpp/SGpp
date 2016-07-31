@@ -47,9 +47,9 @@ int main() {
             << "treshold. 0 - 0.2 recommended.): ";
             std::cin >> treshold;*/
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(10);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(10);
+  gridGen.regular(7);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
@@ -59,11 +59,11 @@ int main() {
 
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
-      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, 2, 0.001,
+      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, 10, 0.001,
       "MyOCLConf.cfg");
 
   operation_mult->mult(alpha, result);
-  for (auto i = 0; i < gridsize; ++i) {
+  for (auto i = 0; i < 100; ++i) {
     std::cout << result[i] << " ";
   }
 
