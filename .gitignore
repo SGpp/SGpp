@@ -28,12 +28,22 @@ pysgpp/pysgpp_swig.py
 pysgpp/pysgpp_wrap.cc
 pysgpp/pysgpp_wrap.h
 
-#ignoreing build output
+#ignoring build output
 lib/*
 *.log
 Doxyfile
-base/doc/doxygen/examples.doxy
+base/doc/doxygen/examples_*.doxy
 base/doc/doxygen/modules.doxy
+base/doc/doxygen/example_*.doxy
+combigrid/doc/doxygen/example_*.doxy
+datadriven/doc/doxygen/example_*.doxy
+finance/doc/doxygen/example_*.doxy
+misc/doc/doxygen/example_*.doxy
+optimization/doc/doxygen/example_*.doxy
+parallel/doc/doxygen/example_*.doxy
+pde/doc/doxygen/example_*.doxy
+quadrature/doc/doxygen/example_*.doxy
+solver/doc/doxygen/example_*.doxy
 
 #ignoring tests
 */tests/test_*_boost

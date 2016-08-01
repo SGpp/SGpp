@@ -15,11 +15,12 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 
 #define CRNIC_IMEUL_STEPS 3
 
 int readBoudingBoxData(std::string tFile, size_t numAssests,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -77,15 +78,14 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[1];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries = {sgpp::base::BoundingBox1D()};
 
   if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0) {
     return;
   }
 
   sgpp::finance::HullWhiteSolver* myHWSolver = new sgpp::finance::HullWhiteSolver();
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(1, myBoundaries);
-  delete[] myBoundaries;
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   // init Screen Object
   myHWSolver->initScreen();
@@ -106,7 +106,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   myHWSolver->initGridWithPayoff(*alpha, dStrike, payoffType, sigma, a, t, T);
 
   // Gridpoints @Money
-  //  std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike,
+  //  std::cout << "Gridpoints @Money: " << myBSSolver->getPointsAtMoney(payoffType, dStrike,
   //  DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
   // Print the payoff function into a gnuplot file

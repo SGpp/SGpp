@@ -30,18 +30,17 @@ PrewaveletGridGenerator::~PrewaveletGridGenerator() {
 
 void PrewaveletGridGenerator::regular(size_t level) {
   HashGenerator gen;
-  gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
+  gen.regular(this->storage, static_cast<level_t>(level));
 }
 
 void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
-  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level),
-              clique_size);
+  gen.cliques(this->storage, static_cast<level_t>(level), clique_size);
 }
 
 void PrewaveletGridGenerator::full(size_t level) {
   HashGenerator gen;
-  gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
+  gen.full(this->storage, static_cast<level_t>(level));
 }
 
 /**
@@ -57,7 +56,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
   // Check if a gridpoint within the shadow storage
   // is now part of the actual grid!
   for (size_t i = start; i < end; i++) {
-    if (shadowstorage.find(storage.get(i)) != shadowstorage.end()) {
+    if (shadowstorage.find(&storage.getPoint(i)) != shadowstorage.end()) {
       consolidateShadow();
       break;
     }
@@ -65,20 +64,20 @@ void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
 
   // Now add all missing neigbours to the shadowStorage
   for (size_t i = start; i < end; i++) {
-    GridStorage::index_pointer index = this->storage.get(i);
+    GridPoint& index = this->storage.getPoint(i);
 
     level_t sum = 0;
 
     for (size_t d = 0; d < storage.getDimension(); ++d) {
       index_t current_index;
       level_t current_level;
-      index->get(d, current_level, current_index);
+      index.get(d, current_level, current_index);
       sum += current_level;
     }
 
     GridStorage::grid_iterator iter(storage);
     GridStorage::grid_iterator shadowIter(shadowstorage);
-    addNeighbours(*this->storage.get(i), 0, sum, iter, shadowIter);
+    addNeighbours(this->storage.getPoint(i), 0, sum, iter, shadowIter);
   }
 }
 
@@ -100,11 +99,12 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 
     iter.up(d);
     shadowIter.up(d);
-    this->storage.get(iter.seq())->setLeaf(false);
+    this->storage.getPoint(iter.seq()).setLeaf(false);
 
     // Ok, point is neither in storage, nor in shadowstorage ...
-    if (storage.end(iter.seq()) && shadowstorage.end(shadowIter.seq())) {
-      GridStorage::index_pointer new_index = new GridStorage::index_type(
+    if (storage.isValidSequenceNumber(iter.seq()) &&
+        shadowstorage.isValidSequenceNumber(shadowIter.seq())) {
+      GridStorage::point_pointer new_index = new GridStorage::point_type(
         storage.getDimension());
 
       for (size_t dim = 0; dim < storage.getDimension(); ++dim) {
@@ -141,10 +141,11 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
   }
 
   if (sum == target_level) {
-    GridStorage::index_pointer new_index = new GridStorage::index_type(
+    GridStorage::point_pointer new_index = new GridStorage::point_type(
       storage.getDimension());
 
-    if (storage.end(iter.seq()) && shadowstorage.end(shadowIter.seq())) {
+    if (storage.isValidSequenceNumber(iter.seq()) &&
+        shadowstorage.isValidSequenceNumber(shadowIter.seq())) {
       // Ok, point is neither in storage, nor in shadowstorage ...
       // check if the border of index and iter touching
       for (size_t d = 0; d < storage.getDimension(); ++d) {
@@ -223,14 +224,14 @@ void PrewaveletGridGenerator::consolidateShadow() {
   GridStorage temp(storage.getDimension());
 
   for (size_t i = 0; i < shadowstorage.getSize(); i++) {
-    temp.insert(*shadowstorage.get(i));
+    temp.insert(shadowstorage.getPoint(i));
   }
 
-  shadowstorage.emptyStorage();
+  shadowstorage.clear();
 
   for (size_t i = 0; i < temp.getSize(); i++) {
-    if (storage.find(temp.get(i)) == storage.end()) {
-      shadowstorage.insert(*temp.get(i));
+    if (storage.find(&temp.getPoint(i)) == storage.end()) {
+      shadowstorage.insert(temp.getPoint(i));
     }
   }
 }

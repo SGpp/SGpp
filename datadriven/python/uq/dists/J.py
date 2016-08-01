@@ -160,7 +160,7 @@ class J(Dist):
 #         p = DataVector(gs.getDimension())
 #         nodalValues = DataVector(gs.size())
 #         for i in xrange(gs.size()):
-#             gs.get(i).getCoords(p)
+#             gs.getPoint(i).getStandardCoordinates(p)
 #             nodalValues[i] = self.pdf(p.array())
 #
 #         alpha = hierarchize(grid, nodalValues)

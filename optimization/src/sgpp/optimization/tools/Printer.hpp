@@ -52,17 +52,17 @@ inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x)
 }
 
 /**
- * Concatenate output stream with base::GridIndex.
+ * Concatenate output stream with base::GridPoint.
  *
  * @param stream    output stream
  * @param x         pointer to grid point
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream, const sgpp::base::GridIndex& x) {
+inline std::ostream& operator<<(std::ostream& stream, const sgpp::base::GridPoint& x) {
   base::DataVector xCoord(x.getDimension());
 
   for (size_t t = 0; t < x.getDimension(); t++) {
-    xCoord[t] = x.getCoord(t);
+    xCoord[t] = x.getStandardCoordinate(t);
   }
 
   return stream << xCoord;

@@ -204,21 +204,44 @@ class ASGCUQManager(object):
         if len(self.dataContainer) == 0:
             self.updateDataContainer(True)
 
+        self.knowledge.clearAlphas()
+
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             # do the learning
             for t, dataContainer in values.items():
                 if dataContainer is not None:
                     for iteration in self.knowledge.getAvailableIterations():
-                        # update the results for each sparse grid function
-                        grid, alpha = self.knowledge.getSparseGridFunction(self._qoi, t, dtype, iteration)
+                        grid = self.knowledge.getGrid(self._qoi, iteration)
+                        self.learner.grid = grid
                         trainSubset = dataContainer.getTrainDataset()
                         testSubset = None
-                        if dataContainer.getSizeTest() > 0:
+                        if self.learnWithTest:
                             testSubset = dataContainer.getTestDataset()
 
+                        # -----------------------------------------------------
+                        # do the learning
+                        if self.verbose:
+                            print "learning: t = %g," % t,
+                        # learn alpha with corresponding grid
                         self.learner.grid = grid
-                        self.learner.updateResults(alpha, trainSubset, testSubset, dtype)
+
+                        if self.learnWithTest:
+                            if self.verbose:
+                                print "with test (i=%i, gs=%i)" % (iteration, grid.getSize())
+                            self.learner.learnDataWithTest(dataContainer, dtype=dtype)
+                        else:
+                            if self.verbose:
+                                print "(i=%i, gs=%i)" % (iteration, grid.getSize())
+                            self.learner.learnDataWithoutTest(dataContainer, dtype=dtype)
+
+                        # -----------------------------------------------------
+                        # update the knowledge
+                        self.knowledge.update(grid, self.learner.alpha,
+                                              self._qoi,
+                                              t,
+                                              dtype,
+                                              iteration)
 
                         # update stats -> copy
                         self.stats.updateResults(dtype, t, self.learner)

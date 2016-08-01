@@ -27,11 +27,11 @@ def computeBilinearFormQuad(grid, U):
     s = np.ndarray(gs.getDimension(), dtype='float')
     # run over all rows
     for i in xrange(gs.size()):
-        gpi = gs.get(i)
+        gpi = gs.getPoint(i)
         # run over all columns
         for j in xrange(i, gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = level.get(i, d), index.get(i, d)
@@ -96,11 +96,11 @@ def computeBilinearForm(grid, U):
 
     # run over all rows
     for i in xrange(gs.size()):
-        gpi = gs.get(i)
+        gpi = gs.getPoint(i)
         # run over all columns
         for j in xrange(i, gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             # run over all dimensions
             for d in xrange(gs.getDimension()):
                 # get level index
@@ -124,7 +124,7 @@ def computeBilinearForm(grid, U):
                     lid, iid = gpi.getLevel(d), int(iid)
                     ljd, ijd = gpj.getLevel(d), int(ijd)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).getCoord(0)
+                        x = ngs.getPoint(k).getStandardCoordinate(0)
                         nodalValues[k] = max(0, basis.eval(lid, iid, x)) * \
                             max(0, basis.eval(ljd, ijd, x))
                     # ... by hierarchization
@@ -154,9 +154,9 @@ def computePiecewiseConstantBilinearForm(grid, U):
     q = DataVector(gs.getDimension())
 
     for i in xrange(gs.size()):
-        gs.get(i).getCoords(p)
+        gs.getPoint(i).getStandardCoordinates(p)
         for j in xrange(gs.size()):
-            gs.get(j).getCoords(q)
+            gs.getPoint(j).getStandardCoordinates(q)
             # compute center of the support
             p.add(q)
             p.mult(0.5)

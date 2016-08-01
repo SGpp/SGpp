@@ -14,22 +14,31 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-GradientDescent::GradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
+GradientDescent::GradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
                                  size_t maxItCount, double beta, double gamma, double tolerance,
                                  double epsilon)
     : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
-      eps(epsilon) {}
+      eps(epsilon) {
+  fGradient.clone(this->fGradient);
+}
+GradientDescent::GradientDescent(const GradientDescent& other)
+    : UnconstrainedOptimizer(other),
+      beta(other.beta),
+      gamma(other.gamma),
+      tol(other.tol),
+      eps(other.eps) {
+  other.fGradient->clone(fGradient);
+}
 
 GradientDescent::~GradientDescent() {}
 
 void GradientDescent::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -46,7 +55,7 @@ void GradientDescent::optimize() {
 
   while (k < N) {
     // calculate gradient and norm
-    fx = fGradient.eval(x, gradFx);
+    fx = fGradient->eval(x, gradFx);
     k++;
     double gradFxNorm = gradFx.l2Norm();
 
@@ -70,7 +79,7 @@ void GradientDescent::optimize() {
                                              x.toString() + ", f(x) = " + std::to_string(fx));
 
     // line search
-    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
+    if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
       // line search failed ==> exit
       // (either a "real" error occured or the improvement
       // achieved is too small)
@@ -88,7 +97,7 @@ void GradientDescent::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double GradientDescent::getBeta() const { return beta; }
 

@@ -321,7 +321,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   void addToStreamingArray(uint32_t* level, std::vector<uint32_t> indexList, uint32_t numIndices) {
     // read and store indices
     for (size_t i = 0; i < numIndices; i++) {
-      size_t indexStepSize = (m_dims + 1);  // indexVector + gridIndex
+      size_t indexStepSize = (m_dims + 1);  // indexVector + gridPoint
 
       // store index
       for (size_t d = 0; d < m_dims; d++) {
@@ -329,9 +329,9 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
         m_streamingArray[(m_streamingCounter + i) * indexStepSize + d] = tmpVal;
       }
 
-      // store gridIndex
-      T gridIndex = (T)(indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
-      m_streamingArray[(m_streamingCounter + i) * indexStepSize + m_dims] = gridIndex;
+      // store gridPoint
+      T gridPoint = (T)(indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
+      m_streamingArray[(m_streamingCounter + i) * indexStepSize + m_dims] = gridPoint;
     }
 
     addMetaEntry(level, static_cast<uint32_t>(m_streamingCounter), numIndices, true);
@@ -371,14 +371,14 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       // memcpy(&m_subspaceArray[(m_subspaceCounter + linIndex)*indexStepSize],
       // index, sizeof(uint32_t)*m_dims);
 
-      // store gridIndex
-      T gridIndex = (T)(indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
+      // store gridPoint
+      T gridPoint = (T)(indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
       // ugly hack to fix padding points messing up the calculation
       // TODO(leiterrl): REMOVE!!
       if (levelIndexSum == m_dims * 2) {
-        gridIndex = 0;
+        gridPoint = 0;
       }
-      m_subspaceArray[(m_subspaceCounter + linIndex) * indexStepSize + m_dims] = gridIndex;
+      m_subspaceArray[(m_subspaceCounter + linIndex) * indexStepSize + m_dims] = gridPoint;
     }
 
     addMetaEntry(level, static_cast<uint32_t>(m_subspaceCounter), subSize, false);
@@ -425,12 +425,12 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     uint32_t curIndex = 1;
 
     // iterate through the grid to read out levels and indices
-    for (size_t gridIndex = 0; gridIndex < this->gridSize; gridIndex++) {
+    for (size_t gridPoint = 0; gridPoint < this->gridSize; gridPoint++) {
       uint32_t* level = new uint32_t[this->m_dims];
       uint32_t* index = new uint32_t[this->m_dims];
 
-      if (gridIndex < this->storage->getSize()) {
-        sgpp::base::GridIndex* point = this->storage->get(gridIndex);
+      if (gridPoint < this->storage->getSize()) {
+        sgpp::base::GridPoint* point = this->storage->get(gridPoint);
 
         for (size_t d = 0; d < this->m_dims; d++) {
           point->get(d, curLevel, curIndex);
@@ -463,10 +463,10 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
          level[3]);
          printf("index: %i \t %i \t %i \t %i \n", index[0], index[1], index[2],
          index[3]);
-         printf("gridindex: %i \n", gridIndex);*/
+         printf("gridpoint: %i \n", gridPoint);*/
 
-        // store gridIndex to map to alphaArray
-        indexList.push_back((uint32_t)gridIndex);
+        // store gridPoint to map to alphaArray
+        indexList.push_back((uint32_t)gridPoint);
         // store index
         for (size_t d = 0; d < this->m_dims; d++) {
           indexList.push_back(index[d]);
@@ -475,8 +475,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
         flatLevelList.insert(std::make_pair(flatLevel, indexList));
         this->numSubspaces += 1;
       } else {
-        // store gridIndex to map to alphaArray
-        flatLevelEntry->second.push_back((uint32_t)gridIndex);
+        // store gridPoint to map to alphaArray
+        flatLevelEntry->second.push_back((uint32_t)gridPoint);
         // store index
         for (size_t d = 0; d < this->m_dims; d++) {
           flatLevelEntry->second.push_back(index[d]);
@@ -487,7 +487,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
          flatLevelEntry->second[3]);
          printf("index: %i \t %i \t %i \t %i \n", index[0], index[1], index[2],
          index[3]);
-         printf("gridindex: %i \n", gridIndex);*/
+         printf("gridpoint: %i \n", gridPoint);*/
       }
     }
 

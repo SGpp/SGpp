@@ -203,40 +203,40 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << std::endl;
 
     // blocked result variables
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[0] << this->floatType() << " myResult_" << gridIndex << " = 0.0;"
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+      sourceStream << this->indent[0] << this->floatType() << " myResult_" << gridPoint << " = 0.0;"
                    << std::endl
                    << std::endl;
     }
 
     // create a register storage for the level and index of the grid points of the work item
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        sourceStream << this->indent[0] << this->floatType() << " level_" << gridIndex << "["
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+        sourceStream << this->indent[0] << this->floatType() << " level_" << gridPoint << "["
                      << dims << "];" << std::endl;
-        sourceStream << this->indent[0] << this->floatType() << " index_" << gridIndex << "["
+        sourceStream << this->indent[0] << this->floatType() << " index_" << gridPoint << "["
                      << dims << "];" << std::endl;
 
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[0] << "level_" << gridIndex << "[" << d << "] = ptrLevel[(("
-                       << transGridBlockSize << " * assignedComponentBase + " << gridIndex << ") * "
+          sourceStream << this->indent[0] << "level_" << gridPoint << "[" << d << "] = ptrLevel[(("
+                       << transGridBlockSize << " * assignedComponentBase + " << gridPoint << ") * "
                        << dims << ") +" << d << "];" << std::endl;
-          sourceStream << this->indent[0] << "index_" << gridIndex << "[" << d << "] = ptrIndex[(("
-                       << transGridBlockSize << " * assignedComponentBase + " << gridIndex << ") * "
+          sourceStream << this->indent[0] << "index_" << gridPoint << "[" << d << "] = ptrIndex[(("
+                       << transGridBlockSize << " * assignedComponentBase + " << gridPoint << ") * "
                        << dims << ") +" << d << "];" << std::endl;
         }
         sourceStream << std::endl;
       }
       sourceStream << std::endl;
     } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-      for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+      for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[0] << this->floatType() << " level_" << gridIndex << "_" << d
+          sourceStream << this->indent[0] << this->floatType() << " level_" << gridPoint << "_" << d
                        << " = ptrLevel[((" << transGridBlockSize << " * assignedComponentBase + "
-                       << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
-          sourceStream << this->indent[0] << this->floatType() << " index_" << gridIndex << "_" << d
+                       << gridPoint << ") * " << dims << ") +" << d << "];" << std::endl;
+          sourceStream << this->indent[0] << this->floatType() << " index_" << gridPoint << "_" << d
                        << " = ptrIndex[((" << transGridBlockSize << " * assignedComponentBase + "
-                       << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
+                       << gridPoint << ") * " << dims << ") +" << d << "];" << std::endl;
         }
         sourceStream << std::endl;
       }
@@ -254,50 +254,50 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << this->indent[0] << "for(int k = start_data + localIdx; k < end_data; k += "
                  << transDataBlockSize *localWorkgroupSize << ") {" << std::endl;
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
       for (size_t dataIndex = 0; dataIndex < transDataBlockSize; dataIndex++) {
-        sourceStream << this->indent[1] << this->floatType() << " curSupport_" << gridIndex << "_"
+        sourceStream << this->indent[1] << this->floatType() << " curSupport_" << gridPoint << "_"
                      << dataIndex << " = ptrSource[k + " << (localWorkgroupSize * dataIndex) << "];"
                      << std::endl;
       }
     }
     sourceStream << std::endl;
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
       if (dims > maxDimUnroll) {
         sourceStream << this->indent[1] << "for (int unrollDim = 0; unrollDim < "
                      << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
                      << ") {" << std::endl;
         sourceStream << this->unrolledBasisFunctionEvalulationTrans(
-            dims, 0, std::min(maxDimUnroll, dims), "unrollDim", gridIndex);
+            dims, 0, std::min(maxDimUnroll, dims), "unrollDim", gridPoint);
 
         sourceStream << this->indent[1] << "}" << std::endl;
         if (dims % maxDimUnroll != 0) {
           sourceStream << this->unrolledBasisFunctionEvalulationTrans(
-              dims, (dims / maxDimUnroll) * maxDimUnroll, dims, "", gridIndex);
+              dims, (dims / maxDimUnroll) * maxDimUnroll, dims, "", gridPoint);
         }
       } else {
-        sourceStream << this->unrolledBasisFunctionEvalulationTrans(dims, 0, dims, "", gridIndex);
+        sourceStream << this->unrolledBasisFunctionEvalulationTrans(dims, 0, dims, "", gridPoint);
       }
     }
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
       for (size_t dataIndex = 0; dataIndex < transDataBlockSize; dataIndex++) {
-        sourceStream << this->indent[1] << "myResult_" << gridIndex << " += curSupport_"
-                     << gridIndex << "_" << dataIndex << ";" << std::endl;
+        sourceStream << this->indent[1] << "myResult_" << gridPoint << " += curSupport_"
+                     << gridPoint << "_" << dataIndex << ";" << std::endl;
       }
     }
 
     sourceStream << this->indent[0] << "}" << std::endl
                  << std::endl;
 
-    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      if (gridIndex > 0) {
+    for (size_t gridPoint = 0; gridPoint < transGridBlockSize; gridPoint++) {
+      if (gridPoint > 0) {
         sourceStream << this->indent[0] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
                      << std::endl;
       }
 
-      sourceStream << this->indent[0] << "resultsTemp[localIdx] = myResult_" << gridIndex << ";"
+      sourceStream << this->indent[0] << "resultsTemp[localIdx] = myResult_" << gridPoint << ";"
                    << std::endl
                    << std::endl;
       sourceStream << this->indent[0] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
@@ -310,7 +310,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
       sourceStream << this->indent[2] << "overallResult += resultsTemp[i];" << std::endl;
       sourceStream << this->indent[1] << "}" << std::endl;
       sourceStream << this->indent[1] << "ptrResult[" << transGridBlockSize
-                   << " * assignedComponentBase + " << gridIndex << "] = overallResult;"
+                   << " * assignedComponentBase + " << gridPoint << "] = overallResult;"
                    << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     }

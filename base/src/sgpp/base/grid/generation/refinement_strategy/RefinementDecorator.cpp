@@ -23,8 +23,8 @@ size_t RefinementDecorator::getNumberOfRefinablePoints(GridStorage& storage) {
 }
 
 void RefinementDecorator::refineGridpoint1D(GridStorage& storage,
-    index_type& index, size_t d) {
-  this->decorated_refinement_->refineGridpoint1D(storage, index, d);
+                                            GridPoint& point, size_t d) {
+  this->decorated_refinement_->refineGridpoint1D(storage, point, d);
 }
 
 void RefinementDecorator::refineGridpoint(GridStorage& storage,
@@ -33,8 +33,8 @@ void RefinementDecorator::refineGridpoint(GridStorage& storage,
 }
 
 void RefinementDecorator::createGridpoint(GridStorage& storage,
-    index_type& index) {
-  this->decorated_refinement_->createGridpoint(storage, index);
+    GridPoint& point) {
+  this->decorated_refinement_->createGridpoint(storage, point);
 }
 
 void RefinementDecorator::collectRefinablePoints(GridStorage& storage,
@@ -52,7 +52,7 @@ void RefinementDecorator::refineGridpointsCollection(GridStorage& storage,
 }
 
 bool RefinementDecorator::checkAdmissibility(GridStorage& storage,
-    index_type& index) {
+                                             GridPoint& point) {
   bool isAdmissible = true;
   /*
   index_type gridPoint = index;

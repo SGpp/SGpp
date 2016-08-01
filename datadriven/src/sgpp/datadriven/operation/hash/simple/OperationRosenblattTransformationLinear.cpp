@@ -21,6 +21,7 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -34,61 +35,63 @@ void OperationRosenblattTransformationLinear::doTransformation(base::DataVector*
                                                                base::DataMatrix* pointscdf) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
-  size_t bucket_size = points->getNrows() / num_dims + 1;
-  base::DataVector* coords1d = new base::DataVector(points->getNcols());
-  base::DataVector* cdfs1d = new base::DataVector(points->getNcols());
+  size_t num_samples = pointscdf->getNrows();
+  size_t bucket_size = num_samples / num_dims + 1;
 
-  // 1. marginalize to dim_start
-  base::Grid* g1d = NULL;
-  base::DataVector* a1d = NULL;
+  // 1. marginalize to all possible start dimensions
+  std::vector<base::Grid*> grids1d(num_dims);
+  std::vector<base::DataVector*> alphas1d(num_dims);
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
-  marg1d->margToDimX(alpha, g1d, a1d, dim_start);
+  for (size_t idim = 0; idim < num_dims; idim++) {
+    marg1d->margToDimX(alpha, grids1d[idim], alphas1d[idim], idim);
+  }
 
-  // 2. 1D transformation on dim_start
-  double y = 0;
+  // 2. compute the start dimension for each sample
+  std::vector<size_t> startindices(num_samples);
+  // change the starting dimension when the bucket_size is arrived
+  // this distributes the error in the projection uniformly to all
+  // dimensions and make it therefore stable
+  for (size_t i = 0; i < num_samples; i++) {
+    if (((i + 1) % bucket_size) == 0 && (i + 1) < pointscdf->getNrows()) {
+      ++dim_start;
+    }
+    startindices[i] = dim_start;
+  }
 
-  // 3. for every sample do...
-  // #pragma omp parallel
-  //  {
-  // #pragma omp for schedule(dynamic)
-  for (size_t i = 0; i < points->getNrows(); i++) {
-    //        OperationTransformation1D* trans1d =
-    //        op_factory::createOperationRosenblattTransformation1D(*g1d);
-    //        y = trans1d->doTransformation1D(a1d, points->get(i, dim_start));
-    y = doTransformation1D(g1d, a1d, points->get(i, dim_start));
-    pointscdf->set(i, dim_start, y);
-    points->getRow(i, *coords1d);
-    pointscdf->getRow(i, *cdfs1d);
-    doTransformation_start_dimX(this->grid, alpha, dim_start, coords1d, cdfs1d);
-    pointscdf->setRow(i, *cdfs1d);
+// 3. for every sample do...
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
+    for (size_t i = 0; i < points->getNrows(); i++) {
+      // transform the point in the current dimension
+      size_t idim = startindices[i];
+      double y = doTransformation1D(grids1d[idim], alphas1d[idim], points->get(i, idim));
+      // and write it to the output
+      pointscdf->set(i, idim, y);
 
-    // change the starting dimension when the bucket_size is arrived
-    // this distributes the error in the projection uniformly to all
-    // dimensions and make it therefore stable
-    if (((i + 1) % bucket_size) == 0 && (i + 1) < points->getNrows()) {
-      dim_start++;
-      // 1. marginalize to dim_start
-      marg1d->margToDimX(alpha, g1d, a1d, dim_start);
+      // prepare the next dimensions -> read samples
+      base::DataVector cdfs1d(num_dims);
+      base::DataVector coords1d(num_dims);
+
+      points->getRow(i, coords1d);
+      pointscdf->getRow(i, cdfs1d);
+      doTransformation_start_dimX(this->grid, alpha, idim, &coords1d, &cdfs1d);
+      pointscdf->setRow(i, cdfs1d);
     }
   }
 
-  //  }
-
-  delete g1d;
-  delete a1d;
-  delete coords1d;
-  return;
+  // cleanup
+  for (size_t idim = 0; idim < num_dims; idim++) {
+    delete grids1d[idim];
+    delete alphas1d[idim];
+  }
 }
 
 void OperationRosenblattTransformationLinear::doTransformation(base::DataVector* alpha,
                                                                base::DataMatrix* points,
                                                                base::DataMatrix* pointscdf,
                                                                size_t dim_start) {
-  base::DataVector* coords1d = new base::DataVector(points->getNcols());
-  base::DataVector* cdfs1d = new base::DataVector(points->getNcols());
-  double y = 0;
-
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -96,27 +99,26 @@ void OperationRosenblattTransformationLinear::doTransformation(base::DataVector*
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-  // #pragma omp parallel
-  //  {
-  // #pragma omp for schedule(dynamic)
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
 
-  for (size_t i = 0; i < points->getNrows(); i++) {
-    // 2. 1D transformation on dim_start
-    y = doTransformation1D(g1d, a1d, points->get(i, dim_start));
-    pointscdf->set(i, dim_start, y);
-    // 3. for every missing dimension do...
-    points->getRow(i, *coords1d);
-    pointscdf->getRow(i, *cdfs1d);
-    doTransformation_start_dimX(this->grid, alpha, dim_start, coords1d, cdfs1d);
-    pointscdf->setRow(i, *cdfs1d);
+    for (size_t i = 0; i < points->getNrows(); i++) {
+      base::DataVector coords1d(points->getNcols());
+      base::DataVector cdfs1d(points->getNcols());
+      // 2. 1D transformation on dim_start
+      double y = doTransformation1D(g1d, a1d, points->get(i, dim_start));
+      pointscdf->set(i, dim_start, y);
+      // 3. for every missing dimension do...
+      points->getRow(i, coords1d);
+      pointscdf->getRow(i, cdfs1d);
+      doTransformation_start_dimX(this->grid, alpha, dim_start, &coords1d, &cdfs1d);
+      pointscdf->setRow(i, cdfs1d);
+    }
   }
-
-  //  }
 
   delete g1d;
   delete a1d;
-  delete coords1d;
-  return;
 }
 
 void OperationRosenblattTransformationLinear::doTransformation_start_dimX(
@@ -192,14 +194,14 @@ double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* g
 
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
-  std::multimap<double, double>::iterator it1, it2;
+  std::multimap<double, double>::iterator it1, it2, it3;
 
   base::GridStorage* gs = &grid1d->getStorage();
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(grid1d));
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    coord[0] = gs->get(i)->getCoord(0);
+    coord[0] = gs->getPoint(i).getStandardCoordinate(0);
     coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }
@@ -209,6 +211,25 @@ double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* g
   coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
+
+  // make sure that all the pdf values are positive
+  // if not, interpolate between the closest positive neighbors
+  it1 = coord_pdf.begin();
+  it2 = coord_pdf.begin();
+
+  it1->second = std::max(it1->second, 0.0);
+  for (++it2; it2 != coord_pdf.end(); ++it2) {
+    if (it2->second < 0.0) {
+      // search for next right neighbor that has a positive function value
+      it3 = it2;
+      while (it3->second <= 0.0 && it3 != coord_pdf.end()) {
+        it3++;
+      }
+      it2->second = (it1->second + it3->second) / 2.0;
+    }
+
+    it1 = it2;
+  }
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
   it1 = coord_pdf.begin();

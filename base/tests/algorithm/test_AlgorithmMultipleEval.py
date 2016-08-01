@@ -6,7 +6,7 @@
 import unittest
 import math
 import random
-from pysgpp import Grid, DataVector, DataMatrix, DimensionBoundary, BoundingBox, createOperationMultipleEval
+from pysgpp import Grid, DataVector, DataMatrix, BoundingBox1D, BoundingBox, createOperationMultipleEval
 
 class TestAlgorithmMultipleEval(unittest.TestCase):
 
@@ -37,7 +37,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
         bb_ = BoundingBox(d)
 
         for d_k in xrange(d):
-            dimbb = DimensionBoundary()
+            dimbb = BoundingBox1D()
             dimbb.leftBoundary = bb[d_k][0]
             dimbb.rightBoundary = bb[d_k][1]
             bb_.setBoundary(d_k, dimbb)

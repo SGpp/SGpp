@@ -8,7 +8,7 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -37,28 +37,30 @@ namespace base {
 class HashGridIterator;
 
 /**
- * Generic hash table based index storage.
+ * Generic hash table based storage of grid points.
  */
 class HashGridStorage {
  public:
   /// type of grid points
-  typedef HashGridIndex index_type;
+  typedef HashGridPoint point_type;
   /// pointer to index_type
-  typedef HashGridIndex* index_pointer;
+  typedef HashGridPoint* point_pointer;
   /// pointer to constant index_type
-  typedef const HashGridIndex* index_const_pointer;
+  typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
-  typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor,
-                             HashGridIndexPointerEqualityFunctor> grid_map;
+  typedef std::unordered_map<point_pointer, size_t, HashGridPointPointerHashFunctor,
+                             HashGridPointPointerEqualityFunctor> grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
   typedef grid_map::const_iterator grid_map_const_iterator;
 
   /// vector of index_pointers
-  typedef std::vector<index_pointer> grid_list;
+  typedef std::vector<point_pointer> grid_list;
   /// iterator of grid_list
   typedef grid_list::iterator grid_list_iterator;
+  /// const iterator of grid_list
+  typedef grid_list::const_iterator grid_list_const_iterator;
 
   /// iterator for grid points
   typedef HashGridIterator grid_iterator;
@@ -68,9 +70,9 @@ class HashGridStorage {
    *
    * initializes the boundingBox with a trivial cube
    *
-   * @param dim the dimension of the sparse grid
+   * @param dimension the dimension of the sparse grid
    */
-  explicit HashGridStorage(size_t dim);
+  explicit HashGridStorage(size_t dimension);
 
   /**
    * Constructor
@@ -118,7 +120,7 @@ class HashGridStorage {
   /**
    * deletes all grid points in the storage
    */
-  void emptyStorage();
+  void clear();
 
   /**
    * Remove several point from HashGridStorage. The points to removed
@@ -136,7 +138,7 @@ class HashGridStorage {
    *
    * @param istr the string that contains the data
    */
-  void unserialize_noAlgoDims(std::string& istr);
+  void unserializeNoAlgoDims(std::string& istr);
 
   /**
    * serialize the gridstorage into a string
@@ -144,7 +146,7 @@ class HashGridStorage {
    * @param version the serialization version of the file
    * @return a string that contains all gridstorage information
    */
-  std::string serialize(int version = SERIALIZATION_VERSION);
+  std::string serialize(int version = SERIALIZATION_VERSION) const;
 
   /**
    * serialize the gridstorage into a stream
@@ -152,21 +154,21 @@ class HashGridStorage {
    * @param ostream reference to a stream into that all gridstorage information is written
    * @param version the serialization version of the file
    */
-  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION);
+  void serialize(std::ostream& ostream, int version = SERIALIZATION_VERSION) const;
 
   /**
    * serialize the gridstorage's gridpoints into a stream
    *
    * @return returns the string that contains all gridpoint information
    */
-  std::string toString();
+  std::string toString() const;
 
   /**
    * serialize the gridstorage's gridpoints into a stream
    *
    * @param stream reference to a stream into that all gridpoint information is written
    */
-  void toString(std::ostream& stream);
+  void toString(std::ostream& stream) const;
 
   /**
    * gets the size of the hashmap
@@ -180,7 +182,7 @@ class HashGridStorage {
    *
    * @return the number of inner grid points
    */
-  size_t getNumInnerPoints() const;
+  size_t getNumberOfInnerPoints() const;
 
   /**
    * gets the dimension of the grid
@@ -194,26 +196,26 @@ class HashGridStorage {
    *
    * @param seq the sequence number of the index
    *
-   * @return gridindex object (pointer)
+   * @return gridpoint object (pointer)
    */
-  inline index_pointer operator[](size_t seq) { return list[seq]; }
+  inline HashGridPoint& operator[](size_t seq) { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
    *
    * @param seq the sequence number of the index
-   * @return gridindex object (constant pointer)
+   * @return gridpoint object (constant pointer)
    */
-  inline index_const_pointer operator[](size_t seq) const { return list[seq]; }
+  inline const HashGridPoint& operator[](size_t seq) const { return *list[seq]; }
 
   /**
    * gets the index number for given gridpoint by its sequence number
    *
    * @param seq the sequence number of the index
    *
-   * @return gridindex object (pointer)
+   * @return gridpoint object (pointer)
    */
-  inline index_pointer get(size_t seq) const { return list[seq]; }
+  inline HashGridPoint& getPoint(size_t seq) const { return *list[seq]; }
 
   /**
    * insert a new index into map
@@ -222,7 +224,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(index_type& index);
+  size_t insert(point_type& index);
 
   /**
    * updates an already stored index
@@ -230,7 +232,7 @@ class HashGridStorage {
    * @param index reference to the index that should be updated
    * @param pos position where the index should be stored
    */
-  void update(index_type& index, size_t pos);
+  void update(point_type& index, size_t pos);
 
   /**
    * This methods removes the gridpoint added last. Use with coution, only needed for
@@ -248,14 +250,14 @@ class HashGridStorage {
    *
    * @return pointer to new index object
    */
-  index_pointer create(index_type& index);
+  point_pointer create(point_type& index);
 
   /**
    * removes an index from gridstorage
    *
    * @param index pointer to index that should be removed
    */
-  void destroy(index_pointer index);
+  void destroy(point_pointer index);
 
   /**
    * stores a given index in the hashmap
@@ -264,7 +266,7 @@ class HashGridStorage {
    *
    * @return sequence number
    */
-  unsigned int store(index_pointer index);
+  unsigned int store(point_pointer index);
 
   /**
    * sets the iterator to a given index
@@ -272,7 +274,7 @@ class HashGridStorage {
    * @param index the index to which the cursor should be moved
    * @return iterator pointing to the index
    */
-  grid_map_iterator find(index_pointer index);
+  grid_map_iterator find(point_pointer index);
 
   /**
    * set iterator to the first position in the map
@@ -293,47 +295,7 @@ class HashGridStorage {
    *
    * @return true if the index is in the storage
    */
-  bool has_key(HashGridIndex* index);
-
-  /**
-   * Sets the index to the left level zero parent
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void left_levelzero(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the right level zero parent
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void right_levelzero(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the left child
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void left_child(HashGridIndex* index, size_t dim);
-
-  /**
-   * Sets the index to the right child
-   *
-   * @param index pointer to index the should be modified
-   * @param dim the dimension in which the modification is taken place
-   */
-  void right_child(HashGridIndex* index, size_t dim);
-
-  /**
-   * Resets the index to the top level in direction d
-   *
-   * @param index pointer to index the should be modified
-   * @param d the dimension in which the modification is taken place
-   */
-  void top(HashGridIndex* index, size_t d);
+  bool isContaining(HashGridPoint& index) const;
 
   /**
    * Gets the seq number for index
@@ -342,16 +304,16 @@ class HashGridStorage {
    *
    * @return the seq number for index
    */
-  size_t seq(HashGridIndex* index);
+  size_t getSequenceNumber(HashGridPoint& index) const;
 
   /**
-   * Tests if seq number does not point to a valid grid index
+   * Tests if seq number does not point to a valid grid point
    *
    * @param s sequence number that should be tested
    *
    * @return true if we are not EOF
    */
-  bool end(size_t s);
+  bool isValidSequenceNumber(size_t s);
 
   /**
    * returns the algorithmic dimensions (the dimensions in which the Up Down
@@ -392,16 +354,16 @@ class HashGridStorage {
   /**
    * sets the bounding box of the current grid
    *
-   * @param bb bounding box to which the HashGridStorage's pointer is set
+   * @param boundingBox bounding box to which the HashGridStorage's pointer is set
    */
-  void setBoundingBox(BoundingBox& bb);
+  void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the stretching bounding box of the current grid
    *
-   * @param bb stretching to which the HashGridStorage's pointer is set
+   * @param stretching stretching to which the HashGridStorage's pointer is set
    */
-  void setStretching(Stretching& bb);
+  void setStretching(Stretching& stretching);
 
   /**
    * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -467,17 +429,55 @@ class HashGridStorage {
   void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
                                          DataMatrixSP& mask, DataMatrixSP& offset);
 
- protected:
   /**
-   * returns the next sequence numbers
+   * Calculates the coordinate of a given grid point in specific dimension.
+   * In contrast to HashGridPoint::getStandardCoordinate, this takes the BoundingBox and
+   * Stretching into account.
    *
-   * @return returns the next sequence numbers
+   * @param point grid point
+   * @param d     dimension
+   * @return      coordinate of the point in dimension d
    */
-  size_t seq() const;
+  inline double getCoordinate(HashGridPoint point, size_t d) const {
+    if ((boundingBox == nullptr) && (stretching == nullptr)) {
+      return point.getStandardCoordinate(d);
+    } else {
+      if (bUseStretching) {
+        HashGridPoint::level_type level;
+        HashGridPoint::index_type index;
+
+        point.get(d, level, index);
+        return stretching->getCoordinate(level, index, d);
+      } else {
+        return boundingBox->getIntervalWidth(d) * point.getStandardCoordinate(d) +
+            boundingBox->getIntervalOffset(d);
+      }
+    }
+  }
+
+  /**
+   * Calculates the coordinates of a given grid point.
+   * In contrast to HashGridPoint::getStandardCoordinates, this takes the BoundingBox and
+   * Stretching into account.
+   *
+   * @param       point         grid point
+   * @param[out]  coordinates   vector of coordinates
+   */
+  void getCoordinates(HashGridPoint point, DataVector& coordinates) const;
+
+  /**
+   * Calculates the coordinates of a given grid point.
+   * In contrast to HashGridPoint::getStandardCoordinates, this takes the BoundingBox and
+   * Stretching into account.
+   *
+   * @param   point   grid point
+   * @return          vector of coordinates
+   */
+  DataVector getCoordinates(HashGridPoint point) const;
 
  private:
   /// the dimension of the grid
-  size_t DIM;
+  size_t dimension;
 
   /// the grid points
   grid_list list;
@@ -491,7 +491,7 @@ class HashGridStorage {
   /// the grid's stretching
   Stretching* stretching;
 
-  /// Flag to check if stretching or bb used
+  /// Flag to check if stretching or boundingBox used
   bool bUseStretching;
 
   /**
@@ -502,19 +502,19 @@ class HashGridStorage {
   void parseGridDescription(std::istream& istream);
 };
 
-HashGridStorage::index_pointer inline HashGridStorage::create(index_type& index) {
-  index_pointer insert = new HashGridIndex(index);
+HashGridStorage::point_pointer inline HashGridStorage::create(point_type& index) {
+  point_pointer insert = new HashGridPoint(index);
   return insert;
 }
 
-void inline HashGridStorage::destroy(index_pointer index) { delete index; }
+void inline HashGridStorage::destroy(point_pointer index) { delete index; }
 
-unsigned int inline HashGridStorage::store(index_pointer index) {
+unsigned int inline HashGridStorage::store(point_pointer index) {
   list.push_back(index);
-  return static_cast<unsigned int>(map[index] = static_cast<unsigned int>(this->seq() - 1));
+  return static_cast<unsigned int>(map[index] = static_cast<unsigned int>(list.size() - 1));
 }
 
-HashGridStorage::grid_map_iterator inline HashGridStorage::find(index_pointer index) {
+HashGridStorage::grid_map_iterator inline HashGridStorage::find(point_pointer index) {
   return map.find(index);
 }
 
@@ -522,40 +522,12 @@ HashGridStorage::grid_map_iterator inline HashGridStorage::begin() { return map.
 
 HashGridStorage::grid_map_iterator inline HashGridStorage::end() { return map.end(); }
 
-bool inline HashGridStorage::has_key(HashGridIndex* index) { return map.find(index) != map.end(); }
-
-void inline HashGridStorage::left_levelzero(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, 0, 0);
+bool inline HashGridStorage::isContaining(HashGridPoint& index) const {
+  return map.find(&index) != map.end();
 }
 
-void inline HashGridStorage::right_levelzero(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, 0, 1);
-}
-
-void inline HashGridStorage::left_child(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, l + 1, 2 * i - 1);
-}
-
-void inline HashGridStorage::right_child(HashGridIndex* index, size_t dim) {
-  index_type::level_type l;
-  index_type::index_type i;
-  index->get(dim, l, i);
-  index->set(dim, l + 1, 2 * i + 1);
-}
-
-void inline HashGridStorage::top(HashGridIndex* index, size_t d) { index->set(d, 1, 1); }
-
-size_t inline HashGridStorage::seq(HashGridIndex* index) {
-  grid_map_iterator iter = map.find(index);
+size_t inline HashGridStorage::getSequenceNumber(HashGridPoint& index) const {
+  grid_map_const_iterator iter = map.find(&index);
 
   if (iter != map.end()) {
     return iter->second;
@@ -564,11 +536,9 @@ size_t inline HashGridStorage::seq(HashGridIndex* index) {
   }
 }
 
-bool inline HashGridStorage::end(size_t s) { return s > map.size(); }
+bool inline HashGridStorage::isValidSequenceNumber(size_t s) { return s > map.size(); }
 
 std::vector<size_t> inline HashGridStorage::getAlgorithmicDimensions() { return algoDims; }
-
-size_t inline HashGridStorage::seq() const { return list.size(); }
 
 }  // namespace base
 }  // namespace sgpp

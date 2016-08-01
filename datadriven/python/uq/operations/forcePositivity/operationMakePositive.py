@@ -6,13 +6,14 @@ Created on Feb 6, 2015
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
-    createOperationQuadrature, LinearBoundary, PolyBoundary
+from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList, \
+    createOperationQuadrature, GridType_LinearBoundary, GridType_PolyBoundary
 import warnings
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
     insertTruncatedBorder
+import numpy as np
 
 
 class OperationMakePositive(object):
@@ -24,17 +25,17 @@ class OperationMakePositive(object):
     def setInterpolationAlgorithm(self, algorithm):
         self.algorithm = algorithm
 
-    def makeCurrentGridPositive(self, grid, alpha):
+    def makeCurrentNodalValuesPositive(self, grid, alpha):
         nodalValues = dehierarchize(grid, alpha)
         cnt = 0
-        for i, yi in enumerate(nodalValues.array()):
+        for i, yi in enumerate(nodalValues):
             if yi < 0:
                 nodalValues[i] = 0
                 cnt += 1
         if cnt > 0:
             alpha = hierarchize(grid, nodalValues)
             if self.verbose:
-                warnings.warn("negative function values encountered, this should not happen")
+                warnings.warn("negative function values at grid points encountered, this should not happen")
 
         return alpha
 
@@ -71,22 +72,22 @@ class OperationMakePositive(object):
         for d in xrange(gs.getDimension()):
             # compute starting points by level sum
             anchors = []
-            for i in xrange(gs.size()):
-                accLevel = gs.get(i).getLevel(d)
+            for i in xrange(gs.getSize()):
+                accLevel = gs.getPoint(i).getLevel(d)
                 if accLevel == 1:
                     anchors.append(i)
 
             while len(anchors) > 0:
                 # get next starting node
                 ix = anchors.pop(0)
-                gp = gs.get(ix)
+                gp = gs.getPoint(ix)
                 acc = []
                 self.findCandidatesSweep1d(d, gp, alpha, grid, acc, False)
                 # store candidates
                 for gp in acc:
                     ix = gs.seq(gp)
                     if ix not in candidates:
-                        candidates[ix] = HashGridIndex(gp)
+                        candidates[ix] = HashGridPoint(gp)
 
         return candidates.values()
 
@@ -96,8 +97,8 @@ class OperationMakePositive(object):
 #         candidates = {}
 #
 #         # run over all grid points...
-#         for i in xrange(gs.size()):
-#             gp = gs.get(i)
+#         for i in xrange(gs.getSize()):
+#             gp = gs.getPoint(i)
 #             # ... and check if they are leaf nodes
 #             if not hasAllChildren(grid, gp):
 #                 # load all hierarchical ancestors
@@ -125,9 +126,9 @@ class OperationMakePositive(object):
         # is negtive, then add it with all its
         # hierarchical ancestors
         gs.left_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         if level + 1 < maxLevel:
             self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p, opEval, maxLevel, acc)
@@ -137,9 +138,9 @@ class OperationMakePositive(object):
         # hierarchical ancestors
         gp.set(d, level, index)
         gs.right_child(gp, d)
-        gp.getCoords(p)
+        gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(HashGridIndex(gp))
+            acc.append(HashGridPoint(gp))
 
         # store them for next round
         if level + 1 < maxLevel:
@@ -155,13 +156,14 @@ class OperationMakePositive(object):
         opEval = createOperationEval(grid)
         # TODO: find local max level for adaptively refined grids
         maxLevel = gs.getMaxLevel()
-        if grid.getType() in [LinearBoundary, PolyBoundary]:
+        if grid.getType() in [GridType_LinearBoundary, GridType_PolyBoundary]:
             maxLevel += 1
 
+        alphaVec = DataVector(alpha)
         for gp in candidates:
             for d in xrange(gs.getDimension()):
                 if 0 < gp.getLevel(d) < maxLevel:
-                    self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p,
+                    self.lookupFullGridPointsRec1d(grid, alphaVec, gp, d, p,
                                                    opEval, maxLevel, acc)
         return acc
 
@@ -170,7 +172,7 @@ class OperationMakePositive(object):
         Add all those full grid points with |accLevel|_1 <= n, where n is the
         maximun level of the sparse grid
         @param grid: Grid sparse grid to be discretized
-        @param alpha: DataVector hierarchical coefficients
+        @param alpha: numpy array hierarchical coefficients
         """
 
         # make grid isotropic by adding all missing hierarchical ancestors
@@ -183,7 +185,7 @@ class OperationMakePositive(object):
         for gp in gridPoinsToBeAdded:
             newGridPoints += insertPoint(grid, gp)
             newGridPoints += insertHierarchicalAncestors(grid, gp)
-            if grid.getType() in [LinearBoundary, PolyBoundary]:
+            if grid.getType() in [GridType_LinearBoundary, GridType_PolyBoundary]:
                 newGridPoints += insertTruncatedBorder(grid, gp)
 
         # recompute the leaf property and return the result
@@ -196,11 +198,11 @@ class OperationMakePositive(object):
         unnecessary if it is a leaf node and its hierarchical coefficient is
         negative. This is applied just for the newly added points.
         @param grid: Grid
-        @param alpha: DataVector hierarchical coefficients
+        @param alpha: numpy array hierarchical coefficients
         @param newGridPoints: newly added grid points
         """
         gs = grid.getStorage()
-        newAlpha = DataVector(alpha)
+        newAlpha = alpha
         notAffectedGridPoints = []
         p = DataVector(gs.getDimension())
         # remove all entirely negative weighted sub-branches in the tree
@@ -212,7 +214,7 @@ class OperationMakePositive(object):
             toBeRemoved = IndexList()
             for gp in newGridPoints:
                 ix = gs.seq(gp)
-                gp.getCoords(p)
+                gp.getStandardCoordinates(p)
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
                 if not hasChildren(grid, gp) and newAlpha[ix] < 0.:
@@ -230,9 +232,9 @@ class OperationMakePositive(object):
                 # reset lists
                 newGridPoints = notAffectedGridPoints
                 # copy the remaining alpha values
-                newAlpha = DataVector(newGs.size())
-                for i in xrange(newGs.size()):
-                    newAlpha[i] = alpha[gs.seq(newGs.get(i))]
+                newAlpha = np.ndarray(newGs.getSize())
+                for i in xrange(newGs.getSize()):
+                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
 
                 grid, gs, alpha = newGrid, newGs, newAlpha
                 iteration += 1
@@ -246,11 +248,11 @@ class OperationMakePositive(object):
         insert recursively all grid points such that the function is positive
         defined. Interpolate the function values for the new grid points using
         the registered algorithm.
-        @param alpha: DataVector hierarchical coefficients
+        @param alpha: numpy array hierarchical coefficients
         """
         # make sure that the function is positive at every existing grid point
         grid = self.grid
-        alpha = self.makeCurrentGridPositive(grid, alpha)
+        alpha = self.makeCurrentNodalValuesPositive(grid, alpha)
         # start adding points
         newGridPoints = []
         iteration = 1
@@ -275,9 +277,8 @@ class OperationMakePositive(object):
             newGridPoints += addedGridPoints
             # set the function value at the new grid points to zero
             newNodalValues = dehierarchize(grid, alpha)
-            newNodalValues.resizeZero(newGrid.getSize())
-            newAlpha = DataVector(alpha)
-            newAlpha.resizeZero(newGrid.getSize())
+            newNodalValues = np.append(newNodalValues, newGrid.getSize() - len(newNodalValues))
+            newAlpha = np.append(alpha, np.zeros(newGrid.getSize() - len(alpha)))
             # compute now the hierarchical coefficients for the newly
             # added points
             newAlpha = self.algorithm.computeHierarchicalCoefficients(newGrid,
@@ -291,8 +292,8 @@ class OperationMakePositive(object):
             # collect all negative function values
             forceToBePositive = []
             newGs = newGrid.getStorage()
-            for i in xrange(newGs.size()):
-                gp = newGs.get(i)
+            for i in xrange(newGs.getSize()):
+                gp = newGs.getPoint(i)
                 if newNodalValues[newGs.seq(gp)] < 0.:
                     forceToBePositive.append(gp)
 
@@ -310,7 +311,7 @@ class OperationMakePositive(object):
 
             if self.verbose:
                 fig = plt.figure()
-                plotSG2d(newGrid, newAlpha)
+                plotSG2d(newGrid, newAlpha, show_grid_points=True, show_negative=True)
                 plt.title("iteration = %i" % iteration)
                 fig.show()
 

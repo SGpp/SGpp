@@ -59,7 +59,7 @@ class ModifiedBlackScholesParabolicPDESolverSystem : public BlackScholesParaboli
       sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
       std::string OperationMode, bool bLogTransform, bool useCoarsen, double coarsenThreshold,
       std::string adaptSolveMode, int numCoarsenPoints, double refineThreshold,
-      std::string refineMode, sgpp::base::GridIndex::level_type refineMaxLevel, int dim_HW);
+      std::string refineMode, sgpp::base::GridPoint::level_type refineMaxLevel, int dim_HW);
 
   /**
   * Multiplies the corresponding r coordinates with the whole grid value
