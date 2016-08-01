@@ -12,27 +12,22 @@
 #include <cmath>
 
 namespace sgpp {
-
 namespace base {
 
-HierarchisationPoly::HierarchisationPoly(GridStorage& storage,
-    SPolyBase* base) :
-  storage(storage), base(base) {
-}
+HierarchisationPoly::HierarchisationPoly(GridStorage& storage, SPolyBase* base)
+    : storage(storage), base(base) {}
 
-HierarchisationPoly::~HierarchisationPoly() {
-}
+HierarchisationPoly::~HierarchisationPoly() {}
 
-void HierarchisationPoly::operator()(DataVector& source, DataVector& result,
-                                     grid_iterator& index, size_t dim) {
+void HierarchisationPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index,
+                                     size_t dim) {
   DataVector coeffs(index.getGridDepth(dim) + 1);
   coeffs.setAll(0.0);
   rec(source, result, index, dim, coeffs);
 }
 
-void HierarchisationPoly::rec(DataVector& source, DataVector& result,
-                              grid_iterator& index, size_t dim,
-                              DataVector& coeffs) {
+void HierarchisationPoly::rec(DataVector& source, DataVector& result, grid_iterator& index,
+                              size_t dim, DataVector& coeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -43,10 +38,8 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // hierarchisation
-  double x = static_cast<double>(cur_ind) /
-              static_cast<double>(1 << cur_lev);
-  result[seq] = source[seq]
-                - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
+  double x = static_cast<double>(cur_ind) / static_cast<double>(1 << cur_lev);
+  result[seq] = source[seq] - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
@@ -55,14 +48,14 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 

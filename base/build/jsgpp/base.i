@@ -5,6 +5,16 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
+// -------------------------------------------------------
+// shared pointer declarations
+// this needs to be done before the declarations of the types themselves
+//%include <std_shared_ptr.i>
+//%shared_ptr(sgpp::base::Grid)
+//%shared_ptr(sgpp::base::DataVector)
+//%shared_ptr(sgpp::base::DataMatrix)
+// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
+// -------------------------------------------------------
+
 namespace std {
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
@@ -19,6 +29,8 @@ namespace std {
 %include "GridFactory.i"
 %include "OpFactory.i"
 //%include "Operations.i"
+
+%include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
 
 %rename(operatorAssignment) sgpp::base::DataVector::operator=;
 %rename(operatorAssignment) sgpp::base::DataVectorSP::operator=;
@@ -40,19 +52,19 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataVector.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrix.hpp"
 
-%rename(GridIndex) sgpp::base::HashGridIndex;
+%rename(GridPoint) sgpp::base::HashGridPoint;
 %rename(GridStorage) sgpp::base::HashGridStorage;
 
 // The Good, i.e. without any modifications
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%rename(operatorAssignment) sgpp::base::HashGridIndex::operator=;
-%rename(operatorParentheses) sgpp::base::HashGridIndexPointerHashFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexPointerEqualityFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexHashFunctor::operator();
-%rename(operatorParentheses) sgpp::base::HashGridIndexEqualityFunctor::operator();
-%include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
+%rename(operatorAssignment) sgpp::base::HashGridPoint::operator=;
+%rename(operatorParentheses) sgpp::base::HashGridPointPointerHashFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointPointerEqualityFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointHashFunctor::operator();
+%rename(operatorParentheses) sgpp::base::HashGridPointEqualityFunctor::operator();
+%include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
@@ -109,6 +121,12 @@ namespace std {
 %include "base/src/sgpp/base/tools/GridPrinter.hpp"
 %include "base/src/sgpp/base/tools/GridPrinterForStretching.hpp"
 %include "base/src/sgpp/base/tools/StdNormalDistribution.hpp"
+%include "base/src/sgpp/base/tools/QuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
+
+%include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
 
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
@@ -200,11 +218,11 @@ namespace std {
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-//%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+//%apply std::vector<double> *INPUT { std::vector<double>& point };
 
 %template(SGetAffectedBasisFunctions) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBase>;
 %template(SAlgorithmEvaluation) sgpp::base::AlgorithmEvaluation<sgpp::base::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sgpp::base::DimensionBoundary>;
+%template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;

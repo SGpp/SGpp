@@ -11,8 +11,7 @@ import numpy as np
 class MonteCarloStrategy(SparseGridEstimationStrategy):
 
     def __init__(self, samples=None, ixs=None,
-                 n=5000, npaths=10, epsilon=1e-1, beta=0.01,
-                 isPositive=False):
+                 n=5000, npaths=10, isPositive=False):
         """
         Constructor
         @param samples: ndarray containing monte carlo samples
@@ -26,23 +25,21 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         super(MonteCarloStrategy, self).__init__()
         if samples is not None:
             self.samples = samples
+            self.__n = samples.shape[0]
         else:
             self.samples = None
+            self.__n = n
+
         self.__ixs = None
         if ixs is not None and len(ixs) > 0:
             self.__ixs = np.array(ixs)
-        self.__n = n
+
         self.__npaths = npaths
 
         # other stuff
-        self.__c = norm.ppf(1. - beta / 2.)
-        self.__epsilon = epsilon
         self.__isPositive = isPositive
 
         self.verbose = True
-
-        # set seed
-        np.random.seed(1234567)
 
 
     def __getSamples(self, W, T, n):
@@ -54,7 +51,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             return T.probabilisticToUnitMatrix(ans)
         else:
             # bootstrapping on the available samples
-            ixs = np.random.randint(0, self.samples.shape[0], n)
+            ixs = np.random.randint(0, self.__n, n)
             dataSamples = self.samples[ixs, :]
 
             # check if there are samples for just a subset of the random
@@ -115,15 +112,15 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # bordergs = borderGrid.getStorage()
         # p = DataVector(gs.getDimension())
         # for i in xrange(gs.size()):
-        #     gs.get(i).getCoords(p)
+        #     gs.getPoint(i).getStandardCoordinates(p)
         #     nodalValues[i] -= evalSGFunction(borderGrid, borderAlpha, p)
         # nalpha = hierarchize(grid, nodalValues)
         # # # check if interpolation criterion is fulfilled for splitted grid
         # # p = DataVector(gs.getDimension())
         # # for i in xrange(gs.size()):
-        # #     gp = gs.get(i)
+        # #     gp = gs.getPoint(i)
         # #     if bordergs.has_key(gp):
-        # #         gp.getCoords(p)
+        # #         gp.getStandardCoordinates(p)
         # #         res1 = evalSGFunction(grid, alpha, p)
         # #         res2 = evalSGFunction(grid, nalpha, p) + evalSGFunction(borderGrid, borderAlpha, p)
         # #         print res1, res2, abs(res1 - res2)
@@ -145,6 +142,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         \frac{1}{N}\sum\limits_{i = 1}^N f_N(x_i)
 
         where x_i \in \Gamma
+        @return: (mean, error of bootstrapping)
         """
         # init
         _, W = self._extractPDFforMomentEstimation(U, T)
@@ -152,23 +150,18 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         for i in xrange(self.__npaths):
             samples = self.__getSamples(W, T, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
-            # multiply the result with the corresponding pdf value
-#             sample = DataVector(samples.getNcols())
-#             for j in xrange(samples.getNrows()):
-#                 samples.getRow(j, sample)
-#                 res[j] *= W.pdf(sample)
 
             # compute the moment
-            moments[i] = res.mean()
+            moments[i] = np.mean(res)
 
         # error statistics
         if self.__npaths > 1:
-            err_clt = self.__c * np.sqrt(np.var(moments, ddof=1) / len(moments))
+            err = np.var(moments, ddof=1)
         else:
-            err_clt = np.Inf
+            err = np.Inf
 
         # calculate moment
-        return np.sum(moments) / self.__npaths, err_clt
+        return np.mean(moments), err
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -177,6 +170,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         \frac{1}{N}\sum\limits_{i = 1}^N (f_N(x_i) - E(f))^2
 
         where x_i \in \Gamma
+        @return: (variance, error of bootstrapping)
         """
         # init
         _, W = self._extractPDFforMomentEstimation(U, T)
@@ -189,7 +183,10 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             moments[i] = np.sum((res - mean) ** 2) / (len(res) - 1.)
 
         # error statistics
-        err = np.var(moments, ddof=1)
+        if self.__npaths > 1:
+            err = np.var(moments, ddof=1)
+        else:
+            err = np.Inf
 
         # calculate moment
-        return np.sum(moments) / self.__npaths, err
+        return np.mean(moments), err

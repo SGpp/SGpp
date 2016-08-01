@@ -67,6 +67,9 @@ class OperationNaiveEvalGradient {
       gradient.setRow(j, curGradient);
     }
   }
+
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

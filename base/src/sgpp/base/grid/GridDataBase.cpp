@@ -28,7 +28,7 @@ GridDataBase::GridDataBase(Grid* grid, DataVector& values) : _map(),
   GridStorage& gs = grid->getStorage();
 
   for (size_t i = 0; i < gs.getSize(); i++) {
-    set(gs.get(i), values[gs.seq(gs.get(i))]);
+    set(&gs.getPoint(i), values[gs.getSequenceNumber(gs.getPoint(i))]);
   }
 }
 
@@ -51,7 +51,7 @@ GridDataBase::~GridDataBase() {
 
 void GridDataBase::clear() {
   for (grid_map_iterator ind = _map.begin(); ind != _map.end(); ind++) {
-    // free allocated memory for GridIndex
+    // free allocated memory for GridPoint
     delete ind->first;
   }
 
@@ -73,16 +73,16 @@ std::string GridDataBase::toString() {
 }
 
 
-bool GridDataBase::hasKey(GridIndex* gi) {
+bool GridDataBase::hasKey(GridPoint* gi) {
   return _map.find(gi) != _map.end();
 }
 
-void GridDataBase::set(GridIndex* gi, double value) {
+void GridDataBase::set(GridPoint* gi, double value) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
     // create copy and store
-    index_pointer cpy = new GridIndex(*gi);
+    index_pointer cpy = new GridPoint(*gi);
     _map[cpy] = value;
   } else {
     // just overwrite value
@@ -99,7 +99,7 @@ void GridDataBase::setValuesFor(Grid* grid, DataVector& values) {
   }
 }
 
-double GridDataBase::get(GridIndex* gi) {
+double GridDataBase::get(GridPoint* gi) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
@@ -111,13 +111,13 @@ double GridDataBase::get(GridIndex* gi) {
   return ind->second;
 }
 
-void GridDataBase::remove(GridIndex* gi) {
+void GridDataBase::remove(GridPoint* gi) {
   grid_map_iterator ind = _map.find(gi);
 
   if (ind != _map.end()) {
     // remove
     _map.erase(ind);
-    // free allocated memory for GridIndex
+    // free allocated memory for GridPoint
     delete ind->first;
   }
 }
@@ -250,7 +250,7 @@ void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
   }
 
   // read grid points
-  GridIndex gi(_dim);
+  GridPoint gi(_dim);
   level_t lev;
   index_t ind;
   double val;

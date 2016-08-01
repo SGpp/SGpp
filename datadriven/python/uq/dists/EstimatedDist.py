@@ -11,11 +11,16 @@ class EstimatedDist(Dist):
     def __init__(self, trainData, bounds=None):
         super(EstimatedDist, self).__init__()
 
-        if isList(trainData) or len(trainData.shape) == 1:
-            trainData = np.array([trainData]).reshape(len(trainData), 1)
+        self.trainData = None
+        self.dim = 0
 
-        self.trainData = trainData
-        self.dim = trainData.shape[1]
+        if trainData is not None:
+            if isList(trainData) or len(trainData.shape) == 1:
+                trainData = np.array([trainData]).reshape(len(trainData), 1)
+
+            self.trainData = trainData
+            self.dim = trainData.shape[1]
+
         self.trans = None
         if bounds is not None:
             self.trans = self.computeLinearTransformation(bounds)
@@ -25,7 +30,7 @@ class EstimatedDist(Dist):
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
-        return self.ppf(DataMatrix(unif))
+        return self.ppf(unif)
 
     @classmethod
     def computeLinearTransformation(self, bounds):

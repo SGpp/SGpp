@@ -27,22 +27,34 @@ OperationQuadratureMC::OperationQuadratureMC(Grid& grid,
 
 double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
   size_t dim = grid->getDimension();
+  BoundingBox& boundingBox = grid->getBoundingBox();
+
   // create number of paths (uniformly drawn from [0,1]^d)
   DataMatrix dm(mcPaths, dim);
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      dm.set(i, d, static_cast<double>(rand()) / RAND_MAX);
+      dm.set(i, d, boundingBox.transformPointToBoundingBox(
+          d, static_cast<double>(rand()) / RAND_MAX));
     }
   }
 
-  DataVector res = DataVector(mcPaths);
+  DataVector res(mcPaths);
   sgpp::op_factory::createOperationMultipleEval(*grid, dm)->mult(alpha, res);
-  return res.sum() / static_cast<double>(mcPaths);
+
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  double determinant = 1.0;
+
+  for (size_t d = 0; d < dim; d++) {
+    determinant *= boundingBox.getIntervalWidth(d);
+  }
+
+  return res.sum() / static_cast<double>(mcPaths) * determinant;
 }
 
 double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
   size_t dim = grid->getDimension();
+  BoundingBox& boundingBox = grid->getBoundingBox();
   double* p = new double[dim];
 
   // create number of paths (uniformly drawn from [0,1]^d)
@@ -50,20 +62,28 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      p[d] = static_cast<double>(rand()) / RAND_MAX;
+      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
     }
 
     res += func(*reinterpret_cast<int*>(&dim), p, clientdata);
   }
 
   delete[] p;
-  return res / static_cast<double>(mcPaths);
+
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  double determinant = 1.0;
+
+  for (size_t d = 0; d < dim; d++) {
+    determinant *= boundingBox.getIntervalWidth(d);
+  }
+
+  return res / static_cast<double>(mcPaths) * determinant;
 }
 
 double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
     DataVector& alpha) {
   size_t dim = grid->getDimension();
-  double x;
+  BoundingBox& boundingBox = grid->getBoundingBox();
   double* p = new double[dim];
 
   sgpp::base::DataVector point(dim);
@@ -73,9 +93,8 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      x = static_cast<double>(rand()) / RAND_MAX;
-      p[d] = x;
-      point[d] = x;
+      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
+      point[d] = p[d];
     }
 
     res += pow(func(*reinterpret_cast<int*>(&dim), p,
@@ -83,7 +102,15 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
   }
 
   delete[] p;
-  return sqrt(res / static_cast<double>(mcPaths));
+
+  // multiply with determinant of "unit cube -> BoundingBox" transformation
+  double determinant = 1.0;
+
+  for (size_t d = 0; d < dim; d++) {
+    determinant *= boundingBox.getIntervalWidth(d);
+  }
+
+  return sqrt(res / static_cast<double>(mcPaths) * determinant);
 }
 
 }  // namespace base

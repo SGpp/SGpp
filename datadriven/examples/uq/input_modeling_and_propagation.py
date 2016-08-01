@@ -38,8 +38,26 @@ ax.set_title("estimated density")
 fig.show()
 
 print "mean = %g ~ %g" % (m.prod(), dist.mean())
+print "var = %g ~ %g" % (np.var(testSamples), dist.var())
 print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
 print "cross entropy = %g" % dist.crossEntropy(testSamples)
 print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+
+# sampling
+uniform_samples = np.random.random((1000, 2))
+samples = dist.ppf(uniform_samples)
+
+fig = plt.figure()
+plt.scatter(samples[:, 0], samples[:, 1])
+plt.title("x in [%g, %g]" % (np.min(samples), np.max(samples)))
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+fig.show()
+
+# sample it back
+transformed_uniform_samples = dist.cdf(samples)
+
+errors = np.abs(uniform_samples - transformed_uniform_samples) / uniform_samples
+assert (errors < 1e-12).all()
 
 plt.show()

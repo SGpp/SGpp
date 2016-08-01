@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(gridEval) {
 
     for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements());
          j++) {                     // should be the same as data.size()
-      fgrid->getCoords(j, coords);  // working on unit square ...
+      fgrid->getStandardCoordinates(j, coords);  // working on unit square ...
       fgrid->getElementVector()[j] =
           static_cast<float>(f_2D(coords));  // evaluate f on the corresponding point.
     }
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(gridEval) {
     std::vector<float> data = (fgrid->getElementVector());
 
     for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-      fgrid->getCoords(j, coords);
+      fgrid->getStandardCoordinates(j, coords);
       fgrid->getElementVector()[j] = static_cast<float>(f_2D(coords));
     }
   }
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(gridEval) {
     std::vector<float> data = (fgrid->getElementVector());
 
     for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-      fgrid->getCoords(j, coords);
+      fgrid->getStandardCoordinates(j, coords);
       fgrid->getElementVector()[j] = static_cast<float>(f_2D(coords));
     }
   }

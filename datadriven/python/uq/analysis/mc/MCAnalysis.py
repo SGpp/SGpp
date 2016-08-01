@@ -27,7 +27,7 @@ class MCAnalysis(Analysis):
     """
 
     def __init__(self, params, samples, estimator=None,
-                 npaths=20, nsamples=5000):
+                 npaths=20):
         """
         Constructor
         @param params: ParameterSet
@@ -37,18 +37,17 @@ class MCAnalysis(Analysis):
         self.__params = params
         self.__samples = samples
         if estimator is None:
-            nsamples = int(np.ceil(0.9 * len(samples.itervalues().next())))
-            self.__estimator = MCEstimator(nsamples, npaths)
+            self.__estimator = MCEstimator(npaths)
         else:
             self.__estimator = estimator
 
     def computeMean(self, iteration, qoi, t):
         # do the computation
-        values = self.__samples[t].values()
+        values = np.array(self.__samples[t].values())
         return self.__estimator.mean(values)
 
     def computeVar(self, iteration, qoi, t):
-        values = self.__samples[t].values()
+        values = np.array(self.__samples[t].values())
         return self.__estimator.var(values)
 
 # -----------------------------------------------------------------------------
@@ -58,9 +57,9 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
-                 'meanBootstrapping',
+                 'meanVarBootstrapping',
                  'var',
-                 'varBootstrapping']
+                 'varVarBootstrapping']
         # parameters
         ts = self.__samples.keys()
         nrows = len(ts)

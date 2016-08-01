@@ -42,9 +42,23 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *              objective function evaluations
    *              (depending on the implementation)
    */
-  ConstrainedOptimizer(ScalarFunction& f, VectorFunction& g, VectorFunction& h,
+  ConstrainedOptimizer(const ScalarFunction& f, const VectorFunction& g, const VectorFunction& h,
                        size_t N = DEFAULT_N)
-      : UnconstrainedOptimizer(f, N), g(g), h(h) {}
+      : UnconstrainedOptimizer(f, N) {
+    g.clone(this->g);
+    h.clone(this->h);
+  }
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  ConstrainedOptimizer(const ConstrainedOptimizer& other)
+      : UnconstrainedOptimizer(other) {
+    other.g->clone(g);
+    other.h->clone(h);
+  }
 
   /**
    * Destructor.
@@ -54,18 +68,18 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
   /**
    * @return inequality constraint function
    */
-  VectorFunction& getInequalityConstraintFunction() const { return g; }
+  VectorFunction& getInequalityConstraintFunction() const { return *g; }
 
   /**
    * @return equality constraint function
    */
-  VectorFunction& getEqualityConstraintFunction() const { return h; }
+  VectorFunction& getEqualityConstraintFunction() const { return *h; }
 
  protected:
   /// inequality constraint function
-  VectorFunction& g;
+  std::unique_ptr<VectorFunction> g;
   /// equality constraint function
-  VectorFunction& h;
+  std::unique_ptr<VectorFunction> h;
 };
 }  // namespace optimizer
 }  // namespace optimization

@@ -46,6 +46,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
   // initialize structs from file
   // configure grid
   try {
+    if (this->contains("grid_filename")) gridConfig.filename_ = (*this)["grid_filename"].get();
     if (this->contains("grid_dim")) gridConfig.dim_ = (*this)["grid_level"].getUInt();
     if (this->contains("grid_level"))
       gridConfig.level_ = static_cast<int>((*this)["grid_level"].getInt());
@@ -112,9 +113,9 @@ void LearnerSGDEConfiguration::initConfig() {
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 100;
+  solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-10;
-  solverConfig.threshold_ = 1e-10;
+  solverConfig.threshold_ = 1e-14;
 
   // configure regularization
   regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
@@ -374,17 +375,22 @@ std::shared_ptr<base::Grid> LearnerSGDE::getGrid() { return grid; }
 std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
-  if (gridConfig.type_ == base::GridType::Linear) {
-    uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
-  } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-    uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
-  } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-    uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
+  if (gridConfig.filename_.length() > 0) {
+    std::ifstream ifs(gridConfig.filename_);
+    std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+    uGrid = base::Grid::unserialize(content);
   } else {
-    throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
+    if (gridConfig.type_ == base::GridType::Linear) {
+      uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
+    } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
+      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
+    } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
+      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
+    } else {
+      throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
+    }
+    uGrid->getGenerator().regular(gridConfig.level_);
   }
-
-  uGrid->getGenerator().regular(gridConfig.level_);
 
   // move the grid to be shared
   std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
@@ -441,7 +447,7 @@ double LearnerSGDE::optimizeLambdaCV() {
     for (size_t j = 0; j < kfold; j++) {
       // initialize standard grid and alpha vector
       grid = createRegularGrid();
-      alpha.setAll(0.0);
+      alpha.resizeZero(grid->getSize());
 
       // compute density
       train(*grid, alpha, *(kfold_train[j]), curLambda);
@@ -451,7 +457,9 @@ double LearnerSGDE::optimizeLambdaCV() {
 
       if (!crossvalidationConfig.silent_) {
         std::cout << "# " << curLambda << " " << i << " " << j << " " << curMeanAcc << " "
-                  << curMean << std::endl;
+                  << curMean << "; alpha in [" << alpha.min() << ", " << alpha.max() << "]"
+                  << "; data in " << kfold_test[j]->getNrows() << " x " << kfold_test[j]->getNcols()
+                  << std::endl;
       }
     }
 
@@ -502,6 +510,10 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
     solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
     myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
+    if (myCG.getResiduum() > solverConfig.threshold_) {
+      throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
+    }
+
     if (ref < adaptivityConfig.numRefinements_) {
       if (!crossvalidationConfig.silent_) {
         std::cout << "# LearnerSGDE: Refine grid ... ";
@@ -509,13 +521,11 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 
       // Weight surplus with function evaluation at grid points
       std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(grid));
-      base::GridIndex* gp;
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < grid.getSize(); i++) {
-        gp = gridStorage.get(i);
-        gp->getCoords(p);
+        gridStorage.getPoint(i).getStandardCoordinates(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 

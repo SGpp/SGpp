@@ -16,7 +16,7 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NelderMead::NelderMead(ScalarFunction& f, size_t maxFcnEvalCount, double alpha, double beta,
+NelderMead::NelderMead(const ScalarFunction& f, size_t maxFcnEvalCount, double alpha, double beta,
                        double gamma, double delta)
     : UnconstrainedOptimizer(f, maxFcnEvalCount),
       alpha(alpha),
@@ -24,12 +24,20 @@ NelderMead::NelderMead(ScalarFunction& f, size_t maxFcnEvalCount, double alpha, 
       gamma(gamma),
       delta(delta) {}
 
+NelderMead::NelderMead(const NelderMead& other)
+    : UnconstrainedOptimizer(other),
+      alpha(other.alpha),
+      beta(other.beta),
+      gamma(other.gamma),
+      delta(other.delta) {
+}
+
 NelderMead::~NelderMead() {}
 
 void NelderMead::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -44,10 +52,10 @@ void NelderMead::optimize() {
   // construct starting simplex
   for (size_t t = 0; t < d; t++) {
     points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, 1.0);
-    fPoints[t + 1] = f.eval(points[t + 1]);
+    fPoints[t + 1] = f->eval(points[t + 1]);
   }
 
-  fPoints[0] = f.eval(points[0]);
+  fPoints[0] = f->eval(points[0]);
 
   std::vector<size_t> index(d + 1, 0);
   base::DataVector pointO(d);
@@ -96,7 +104,7 @@ void NelderMead::optimize() {
       }
     }
 
-    double fPointR = (inDomain ? f.eval(pointR) : INFINITY);
+    double fPointR = (inDomain ? f->eval(pointR) : INFINITY);
     numberOfFcnEvals++;
 
     if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -114,7 +122,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double f_point_e = (inDomain ? f.eval(pointE) : INFINITY);
+      double f_point_e = (inDomain ? f->eval(pointE) : INFINITY);
       numberOfFcnEvals++;
 
       if (f_point_e < fPointR) {
@@ -136,7 +144,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointOC = (in_domain ? f.eval(pointOC) : INFINITY);
+      double fPointOC = (in_domain ? f->eval(pointOC) : INFINITY);
       numberOfFcnEvals++;
 
       if (fPointOC <= fPointR) {
@@ -157,7 +165,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointIC = (in_domain ? f.eval(pointIC) : INFINITY);
+      double fPointIC = (in_domain ? f->eval(pointIC) : INFINITY);
       numberOfFcnEvals++;
 
       if (fPointIC < fPoints[d]) {
@@ -181,7 +189,7 @@ void NelderMead::optimize() {
           }
         }
 
-        fPoints[i] = (in_domain ? f.eval(points[i]) : INFINITY);
+        fPoints[i] = (in_domain ? f->eval(points[i]) : INFINITY);
       }
 
       numberOfFcnEvals += d;

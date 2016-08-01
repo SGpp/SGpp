@@ -11,6 +11,8 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -21,10 +23,12 @@ LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr)
 }
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel)
-    : Grid(dim), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {}
-
-LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(BoundingBox& BB, level_t boundaryLevel)
-    : Grid(BB), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {}
+    : Grid(dim), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {
+  std::vector<BoundingBox1D> boundingBox1Ds(dim, BoundingBox1D());
+  std::vector<Stretching1D> stretching1Ds(dim, Stretching1D("cc"));
+  Stretching stretching(boundingBox1Ds, stretching1Ds);
+  storage.setStretching(stretching);
+}
 
 LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {}
 

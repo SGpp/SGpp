@@ -37,8 +37,8 @@ void HierarchisationModLinear::rec(DataVector& source, DataVector& result,
   // calculation of the hierarchical surplus
   double fm = source[seq];
 
-  GridStorage::index_type::level_type l;
-  GridStorage::index_type::index_type i;
+  level_t l;
+  index_t i;
 
   index.get(dim, l, i);
 
@@ -70,14 +70,14 @@ void HierarchisationModLinear::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fltemp, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, frtemp);
     }
 
