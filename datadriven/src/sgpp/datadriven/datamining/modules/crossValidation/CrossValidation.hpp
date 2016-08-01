@@ -23,14 +23,19 @@ namespace datadriven {
 class CrossValidation {
  public:
   virtual ~CrossValidation();
-  CrossValidation(const Metric& metric, const ShufflingFunctor& shuffling, int64_t seed = -1);
+  CrossValidation(std::shared_ptr<Metric> metric, std::shared_ptr<ShufflingFunctor> shuffling,
+                  int64_t seed = -1);
 
-  double calculateScore(const ModelFittingBase& model, const Dataset& dataset,
-                        size_t foldNumber = 5, std::shared_ptr<double> stdDeviation = nullptr);
+  double calculateScore(ModelFittingBase& model, Dataset& dataset, size_t foldNumber = 5,
+                        std::shared_ptr<double> stdDeviation = nullptr);
 
   // TODO (lettrich): implement calculateScore
   // void optimizeHyperparameters ( model, dataset, hyperParamtersFixed, hyperParametersSearched,
   // fold_number, );
+
+ private:
+  std::shared_ptr<Metric> metric;
+  std::shared_ptr<ShufflingFunctor> shuffling;
 };
 
 } /* namespace datadriven */
