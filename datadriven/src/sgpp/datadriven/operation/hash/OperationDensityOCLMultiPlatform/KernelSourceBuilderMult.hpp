@@ -462,7 +462,8 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                        << " distance = fabs(point_positions_block" << block << "[dim] - "
                        << "positions_local[i * " << dimensions << " + dim]);" << std::endl;
           // Calculate first integral (level_point < level_local)
-          sourceStream << this->indent[2] << "sum = 1.0 - distance * point_hinverses_block" << block
+          sourceStream << this->indent[2] << "sum = 1.0 - distance * point_hinverses_block"
+                       << block
                        << "[dim]; " << std::endl;
           sourceStream << this->indent[2] << "sum *= hs_local[i *" << dimensions
                        << " + dim]; " << std::endl;

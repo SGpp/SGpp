@@ -15,16 +15,25 @@
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class MPIWorkerGraphBase : public MPIWorkerBase {
+class MPIWorkerGraphBase : virtual public MPIWorkerBase {
  protected:
   double *dataset;
   int dataset_size;
   int k;
   int dimensions;
 
- public:
   MPIWorkerGraphBase(std::string operationName, sgpp::base::DataMatrix &data,
                      size_t k) : MPIWorkerBase(operationName), dataset(data.getPointer()),
+                                 dataset_size(data.getSize()), k(k),
+                                 dimensions(data.getNcols()), delete_dataset(true) {
+      std::cout << "Node " << MPIEnviroment::get_node_rank() << ": Received dataset (size "
+                << dataset_size / dimensions << " datapoints) and graph parameters"
+                << std::endl;
+    send_dataset();
+    delete_dataset = false;
+  }
+  MPIWorkerGraphBase(sgpp::base::DataMatrix &data,
+                     size_t k) : MPIWorkerBase(), dataset(data.getPointer()),
                                  dataset_size(data.getSize()), k(k),
                                  dimensions(data.getNcols()), delete_dataset(true) {
     send_dataset();

@@ -29,7 +29,8 @@ class DensityWorker : public MPIWorkerGridBase {
 
  public:
   DensityWorker()
-      : MPIWorkerGridBase("DensityMultiplicationWorker"), opencl_node(false),
+      : MPIWorkerBase("DensityMultiplicationWorker"),
+        MPIWorkerGridBase("DensityMultiplicationWorker"), opencl_node(false),
         overseer_node(false), master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {
     if (MPIEnviroment::get_sub_worker_count() > 0) {
@@ -60,10 +61,12 @@ class DensityWorker : public MPIWorkerGridBase {
     }
   }
   DensityWorker(base::Grid &grid, double lambda)
-      : MPIWorkerGridBase("DensityMultiplicationWorker", grid), opencl_node(false),
+      : MPIWorkerBase("DensityMultiplicationWorker"),
+        MPIWorkerGridBase("DensityMultiplicationWorker", grid), opencl_node(false),
         overseer_node(false), lambda(lambda),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {
+    std::cout << "IN DensityWorker cstr" << "\n";
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
@@ -180,7 +183,8 @@ class DensityWorker : public MPIWorkerGridBase {
 
 class OperationDensityMultMPI : public base::OperationMatrix, public DensityWorker {
  public:
-  OperationDensityMultMPI(base::Grid &grid, double lambda) : DensityWorker(grid, lambda) {
+  OperationDensityMultMPI(base::Grid &grid, double lambda) :
+      MPIWorkerBase("DensityMultiplicationWorker"), DensityWorker(grid, lambda) {
   }
   virtual ~OperationDensityMultMPI() {}
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {

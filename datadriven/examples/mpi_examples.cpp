@@ -35,29 +35,30 @@ int main(int argc, char *argv[]) {
   // dumdum.start_operation();
 
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(10);
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(6);
+  gridGen.regular(11);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
   std::cin.get();
+  // sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
+  // std::cin.get();
 
-  sgpp::base::DataVector alpha(gridsize);
-  sgpp::base::DataVector result(gridsize);
-  alpha.setAll(1.0);
-  mult_op.mult(alpha, result);
-  std::cout << std::endl << std::endl;
-  for (size_t i = 0; i < 100; ++i) {
-    std::cout << result[i] << " ";
-  }
-  std::cout << std::endl << std::endl;
+  // sgpp::base::DataVector alpha(gridsize);
+  // sgpp::base::DataVector result(gridsize);
+  // alpha.setAll(1.0);
+  // mult_op.mult(alpha, result);
+  // std::cout << std::endl << std::endl;
+  // for (size_t i = 0; i < 100; ++i) {
+  //   std::cout << result[i] << " ";
+  // }
+  // std::cout << std::endl << std::endl;
 
 
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
   // Loading dataset
-  /*  std::string filename = "dataset2_dim2.arff";
+  std::string filename = "dataset2_dim2.arff";
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -66,8 +67,9 @@ int main(int argc, char *argv[]) {
 
   // Create right hand side vector
   sgpp::base::DataVector rhs(gridsize);
-  sgpp::datadriven::clusteringmpi::OperationRhsMPI rhs_op(testnode, *grid, 2, dataset, 1280);
-  rhs = rhs_op.create_rhs();
+  sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
+  std::cin.get();
+  rhs_op.generate_b(rhs);
   for (auto i = 0; i < 100; ++i) {
     std::cout << rhs[i] << " ";
     }
