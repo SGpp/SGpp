@@ -9,3 +9,4 @@ from setGridPointsToZero import SetGridPointsToZero
 
 from localFullGridSearch import LocalFullGridCandidates
 from fullGridSearch import FullGridCandidates
+from findIntersectionsSubspaceBased import IntersectionSubspaceCandidates
