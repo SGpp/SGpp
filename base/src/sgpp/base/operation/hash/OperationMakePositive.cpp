@@ -22,7 +22,12 @@ namespace base {
 OperationMakePositive::OperationMakePositive(
     base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose)
-    : grid(grid), minimumLevelSum(0), maximumLevelSum(0), verbose(verbose) {
+    : grid(grid),
+      minimumLevelSum(0),
+      maximumLevelSum(0),
+      numNewGridPointsForPositivity(0),
+      numNewGridPoints(0),
+      verbose(verbose) {
   // set range of level sums for candidate search
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
@@ -137,16 +142,18 @@ void OperationMakePositive::addFullGridPoints(
   op_factory::createOperationMultipleEval(grid, data)->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
-  size_t cntConsidered = 0;
   for (size_t i = 0; i < candidates.size(); ++i) {
     if (nodalValues[i] < tol) {
-      ++cntConsidered;
       gridStorage.insert(*candidates[i], addedGridPoints);
+      numNewGridPointsForPositivity++;
     }
   }
 
+  numNewGridPoints += addedGridPoints.size();
+
   if (verbose) {
-    std::cout << "# considered          : " << cntConsidered << " -> " << addedGridPoints.size()
+    std::cout << "# considered          : " << numNewGridPointsForPositivity
+              << " <= " << addedGridPoints.size() << " <= " << numNewGridPoints
               << " : # new grid points" << std::endl;
   }
 
@@ -161,6 +168,10 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
                                          bool resetGrid) {
   // copy the current grid
   if (resetGrid) {
+    // delete the current grid if the pointer is not null
+    if (newGrid != nullptr) {
+      delete newGrid;
+    }
     copyGrid(grid, newGrid);
   }
 
@@ -190,7 +201,8 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
       extractNonExistingCandidatesByLevelSum(candidates, finalCandidates, currentLevelSum);
 
       if (verbose) {
-        std::cout << " >= " << finalCandidates.size() << std::endl;
+        std::cout << " >= " << finalCandidates.size() << " / " << candidateSearch->numCandidates()
+                  << std::endl;
       }
 
       // add the those candidates for which the sparse grid function is negative
@@ -217,6 +229,19 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
     ++currentLevelSum;
     addedGridPoints.clear();
   }
+
+  if (verbose) {
+    std::cout << "# added grid points   : " << numNewGridPointsForPositivity << " + "
+              << (numNewGridPoints - numNewGridPointsForPositivity) << " = " << numNewGridPoints
+              << " + " << grid.getSize() << " = " << newGrid->getSize() << std::endl;
+    std::cout << "--------------------------------------------------------" << std::endl;
+  }
+}
+
+size_t OperationMakePositive::numAddedGridPoints() { return numNewGridPoints; }
+
+size_t OperationMakePositive::numAddedGridPointsForPositivity() {
+  return numNewGridPointsForPositivity;
 }
 
 } /* namespace base */

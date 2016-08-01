@@ -24,6 +24,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<HashGridPoint>>& candidates) = 0;
 
+  virtual size_t numCandidates() = 0;
   void setVerbose(bool pverbose);
 
  protected:
@@ -46,6 +47,8 @@ class OperationMakePositiveFindIntersectionCandidates
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<HashGridPoint>>& candidates) override;
 
+  size_t numCandidates() override;
+
  private:
   void findIntersections(base::Grid& grid, size_t levelSum,
                          std::unordered_map<size_t, std::shared_ptr<HashGridPoint>>& res);
@@ -55,7 +58,7 @@ class OperationMakePositiveFindIntersectionCandidates
   void computeIntersection(base::HashGridPoint& gpi, base::HashGridPoint& gpj,
                            base::HashGridPoint& gpintersection);
 
-  static bool sortGridPointsByHash(const std::shared_ptr<HashGridPoint>& lhs,
+  static bool compareGridPointsByHash(const std::shared_ptr<HashGridPoint>& lhs,
                                    const std::shared_ptr<HashGridPoint>& rhs);
 
   size_t iteration;
@@ -76,6 +79,8 @@ class OperationMakePositiveLoadFullGridCandidates
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<HashGridPoint>>& candidates) override;
+
+  size_t numCandidates() override;
 
  private:
   std::unique_ptr<base::Grid> fullGrid;

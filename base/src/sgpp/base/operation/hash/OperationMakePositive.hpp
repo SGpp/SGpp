@@ -25,6 +25,14 @@ class OperationMakePositive {
  public:
   typedef std::map<size_t, base::HashGridPoint> gridPointCandidatesMap;
 
+  /**
+   *
+   * @param grid
+   * @param candidateSearchAlgorithm
+   * @param interpolationAlgorithm
+   * @param insertAncestors
+   * @param verbose
+   */
   explicit OperationMakePositive(base::Grid& grid,
                                  MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
@@ -39,8 +47,21 @@ class OperationMakePositive {
    * @param alpha
    * @param newGrod
    * @param newAlpha
+   * @param resetGrid
    */
   void makePositive(base::Grid*& newGrid, base::DataVector& newAlpha, bool resetGrid = true);
+
+  /**
+   *
+   * @return
+   */
+  size_t numAddedGridPoints();
+
+  /**
+   *
+   * @return
+   */
+  size_t numAddedGridPointsForPositivity();
 
  private:
   void copyGrid(base::Grid& grid, base::Grid*& newGrid);
@@ -83,6 +104,11 @@ class OperationMakePositive {
   /// range for level sums to be tested
   size_t minimumLevelSum;
   size_t maximumLevelSum;
+
+  /// number of needed new grid points
+  size_t numNewGridPointsForPositivity;
+  /// number of infact newly added grid points
+  size_t numNewGridPoints;
 
   /// candidate search algorithm
   std::shared_ptr<base::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
