@@ -31,9 +31,19 @@ ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {}
 
 ModelFittingBase::~ModelFittingBase() {}
 
-double ModelFittingBase::evaluate(DataVector& sample) { return 0.0; }
+double ModelFittingBase::evaluate(DataVector& sample) {
+  // TODO(lettrich): write test
+  auto opEval(op_factory::createOperationEval(*grid));
+  return opEval->eval(*alpha, sample);
+}
 
-void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {}
+std::unique_ptr<DataVector> ModelFittingBase::evaluate(DataMatrix& samples) {
+  // TODO(lettrich): write test
+  auto opMultEval(op_factory::createOperationMultipleEval(*grid, samples));
+  auto result = std::make_unique<DataVector>(samples.getNrows());
+  opMultEval->eval(*alpha, *result);
+  return result;
+}
 
 std::shared_ptr<OperationMatrix> ModelFittingBase::getRegularizationMatrix(
     sgpp::datadriven::RegularizationType regType) {

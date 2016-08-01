@@ -46,7 +46,7 @@ class ModelFittingBase {
    * @param result
    * @return
    */
-  virtual void evaluate(sgpp::base::DataMatrix& samples, sgpp::base::DataVector& result);
+  virtual std::unique_ptr<base::DataVector> evaluate(sgpp::base::DataMatrix& samples);
 
   virtual std::shared_ptr<base::Grid> getGrid();
   virtual std::shared_ptr<base::DataVector> getSurpluses();

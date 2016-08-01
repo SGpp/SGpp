@@ -52,9 +52,8 @@ double SimpleSplittingScorer::getScore(Dataset& dataset) {
   fitter->update(trainingSet);
 
   // evaluate the model on the test set and return the metric
-  DataVector predictedValues(testSize);
-  fitter->evaluate(testSet.getData(), predictedValues);
-  return (*metric)(predictedValues, testSet.getTargets());
+  auto predictedValues = fitter->evaluate(testSet.getData());
+  return (*metric)(*predictedValues, testSet.getTargets());
 }
 
 void SimpleSplittingScorer::splitset(Dataset& dataset, Dataset& trainingSet, Dataset& testSet,
