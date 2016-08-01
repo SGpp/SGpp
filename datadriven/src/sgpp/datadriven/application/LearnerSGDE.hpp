@@ -155,7 +155,6 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   virtual std::shared_ptr<base::Grid> getGrid();
 
- protected:
   /**
    * Does the learning step on a given grid, training set and regularization parameter lambda
    *
@@ -167,6 +166,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
                      double lambdaReg);
 
+ protected:
   /**
    * generates a regular grid
    * @return grid
