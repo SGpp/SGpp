@@ -33,12 +33,13 @@ void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
   // f(x) >= ylower => g(x) := f(x) - ylower >= 0
   if (resetGrid) {
     copyGrid(grid, newGrid);
+    resetGrid = false;
   }
 
   addConst(*newGrid, newAlpha, 1.0, -ylower);
   op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
                                           verbose)
-      ->makePositive(newGrid, newAlpha, !resetGrid);
+      ->makePositive(newGrid, newAlpha, false);
   // f(x) = g(x) + ylower
   addConst(*newGrid, newAlpha, 1.0, ylower);
 }
@@ -55,7 +56,7 @@ void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
   addConst(*newGrid, newAlpha, -1.0, yupper);
   op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
                                           verbose)
-      ->makePositive(newGrid, newAlpha, !resetGrid);
+      ->makePositive(newGrid, newAlpha, false);
   // f(x) = -g(x) + yupper
   addConst(*newGrid, newAlpha, -1.0, yupper);
 }

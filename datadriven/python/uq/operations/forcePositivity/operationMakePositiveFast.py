@@ -350,4 +350,4 @@ class OperationMakePositiveFast(object):
 #                                                                                len(candidates),
 #                                                                                (2 ** self.maxLevel - 1) ** self.numDims)
 
-        return coarsedGrid, coarsedAlpha
+        return newGrid, newAlpha

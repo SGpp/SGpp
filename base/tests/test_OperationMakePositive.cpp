@@ -56,7 +56,7 @@ double sin(DataVector& x) {
 
 void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
                       MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                      double (*f)(DataVector&), double tol = -1e-12, bool verbose = true) {
+                      double (*f)(DataVector&), double tol = -1e-12, bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
@@ -165,15 +165,18 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
   // parameters
-  size_t numDims = 3;
-  size_t level = 3;
-  size_t refnums = 0;
+  size_t numDims = 4;
+  size_t level = 4;
+  size_t refIterations = 0;
+  size_t refnums = 5;
 
-  for (size_t idim = numDims; idim <= numDims; idim++) {
-    for (size_t ilevel = level; ilevel <= level; ilevel++) {
-      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testMakePositive(*grid, idim, ilevel, refnums, MakePositiveCandidateSearchAlgorithm::FullGrid,
-                       &normal);
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::FullGrid, &normal);
+      }
     }
   }
 }
@@ -182,13 +185,16 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 10;
+  size_t refIterations = 2;
+  size_t refnums = 5;
 
-  for (size_t idim = numDims; idim <= numDims; idim++) {
-    for (size_t ilevel = level; ilevel <= level; ilevel++) {
-      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testMakePositive(*grid, idim, ilevel, refnums,
-                       MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
+      }
     }
   }
 }
