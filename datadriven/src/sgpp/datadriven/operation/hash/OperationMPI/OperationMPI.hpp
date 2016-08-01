@@ -27,10 +27,10 @@ class MPIWorkerBase {
 
  protected:
   bool verbose;
-  explicit MPIWorkerBase(std::string &worker_class_name);
-  MPIWorkerBase();
 
  public:
+  explicit MPIWorkerBase(std::string worker_class_name);
+  MPIWorkerBase();
   virtual ~MPIWorkerBase(void);
   virtual void start_worker_main(void) = 0;
   void start_sub_workers(void);

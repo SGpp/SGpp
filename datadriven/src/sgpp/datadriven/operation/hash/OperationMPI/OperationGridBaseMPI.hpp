@@ -17,7 +17,7 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 
-class MPIWorkerGridBase : public MPIWorkerBase {
+class MPIWorkerGridBase : virtual public MPIWorkerBase {
  private:
   void receive_grid(void) {
     // receive grid
@@ -63,6 +63,7 @@ class MPIWorkerGridBase : public MPIWorkerBase {
   MPIWorkerGridBase(std::string operationName, base::Grid &grid)
       : MPIWorkerBase(operationName) {
     // Store grid in integer array
+    std::cout << "IN GridWorker cstr" << "\n";
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     gridsize = gridStorage.getSize();
     size_t dimensions = gridStorage.getDimension();
