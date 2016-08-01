@@ -77,7 +77,7 @@ void OperationMakePositiveFindIntersectionCandidates::computeIntersection(
   }
 }
 
-bool OperationMakePositiveFindIntersectionCandidates::sortGridPointsByHash(
+bool OperationMakePositiveFindIntersectionCandidates::compareGridPointsByHash(
     const std::shared_ptr<HashGridPoint>& lhs, const std::shared_ptr<HashGridPoint>& rhs) {
   return lhs->getHash() < rhs->getHash();
 }
@@ -97,28 +97,28 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
   size_t cntIntersections = 0;
   for (size_t i = 0; i < negativeGridPoints.size(); ++i) {
     auto iseq = negativeGridPoints[i];
-    auto gpi = std::make_shared<HashGridPoint>(gridStorage.getPoint(iseq));
+    auto gpi = currentIntersections[gridStorage.getPoint(iseq).getHash()];
     for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
       costs++;
       auto jseq = negativeGridPoints[j];
-      auto gpj = std::make_shared<HashGridPoint>(gridStorage.getPoint(jseq));
+      auto gpj = currentIntersections[gridStorage.getPoint(jseq).getHash()];
       if (haveOverlappingSupport(*gpi, *gpj) && !gpi->isHierarchicalAncestor(*gpj) &&
           !gpj->isHierarchicalAncestor(*gpi)) {
         intersections[gpi->getHash()]->push_back(gpj);
         intersections[gpj->getHash()]->push_back(gpi);
-        cntIntersections += 2;
+        cntIntersections++;
       }
     }
   }
 
   // sort the overlapping grid points to speed up intersection search
   for (auto& gps : intersections) {
-    std::sort(gps.second->begin(), gps.second->end(), sortGridPointsByHash);
+    std::sort(gps.second->begin(), gps.second->end(), compareGridPointsByHash);
   }
 
   if (verbose) {
-    std::cout << "# intersections (k=1) : " << currentIntersections.size() << " ("
-              << cntIntersections << ")" << std::endl;
+    std::cout << "# intersections (k=1) : " << currentIntersections.size() << "/" << costs
+              << std::endl;
   }
 }
 
@@ -131,11 +131,12 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
   // check for intersections of more than two grid points
   for (size_t k = 2; k <= numDims; ++k) {
     size_t cntNewIntersections = 0;
+    size_t currentCosts = 0;
     for (auto& candidates : currentIntersections) {
       auto gpi = candidates.second;
       auto overlappingGridPoints = intersections[candidates.first];
       for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
-        costs++;
+        currentCosts++;
         auto gpj = (*overlappingGridPoints)[j];
 
         // find intersection and store it
@@ -158,7 +159,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
           std::vector<std::shared_ptr<HashGridPoint>> commonIntersections;
           std::set_intersection(iintersections->begin(), iintersections->end(),
                                 jintersections->begin(), jintersections->end(),
-                                std::back_inserter(commonIntersections), sortGridPointsByHash);
+                                std::back_inserter(commonIntersections), compareGridPointsByHash);
 
           // store the result if the common candidates overlap with the current intersection
           // initialize the grid points that need to be considered
@@ -185,10 +186,11 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     auto hIntersections = currentIntersections;
     currentIntersections = nextIntersections;
     nextIntersections = hIntersections;
+    costs += currentCosts;
 
     if (verbose) {
       std::cout << "# intersections (k=" << k << ") : " << cntNewIntersections << " -> "
-                << res.size() << std::endl;
+                << res.size() << " (costs = " << currentCosts << ")" << std::endl;
     }
 
     // just stop if there are no more grid points to be considered in the current iteration
@@ -241,6 +243,11 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     }
   }
 }
+
+size_t OperationMakePositiveFindIntersectionCandidates::numCandidates() {
+  return candidates.size();
+}
+
 // -------------------------------------------------------------------------------------------
 OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCandidates(
     base::Grid& grid) {
@@ -264,6 +271,8 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
     }
   }
 }
+
+size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return fullGrid->getSize(); }
 
 } /* namespace base */
 } /* namespace sgpp */
