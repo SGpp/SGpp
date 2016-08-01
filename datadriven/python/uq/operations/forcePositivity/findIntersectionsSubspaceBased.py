@@ -21,25 +21,13 @@ class IntersectionSubspaceCandidates(CandidateSet):
         for i in xrange(gs.getSize()):
             if alpha[i] < 0.0:
                 level, index = getLevelIndex(gs.getPoint(i))
-                level, index = tuple(level), tuple(index)
+                tlevel = tuple(level)
 
-                if level in ret:
-                    ret[level].append((level, index))
+                if tlevel in ret:
+                    ret[tlevel].append((level, index))
                 else:
-                    ret[level] = [(level, index)]
+                    ret[tlevel] = [(level, index)]
 
-        return ret
-
-
-    def findRelevantSubspaces(self, level, subspaces):
-        ret = {}
-        for idim in xrange(len(level)):
-            # enumerate all the possible subspaces in the current direction
-            ret[idim] = []
-            ilevel = np.array(level)  # copy
-            while ilevel[idim] > 1:
-                ilevel[idim] -= 1
-                ret[idim].append(tuple(ilevel))
         return ret
 
 
@@ -55,66 +43,51 @@ class IntersectionSubspaceCandidates(CandidateSet):
             gpintersection.set(idim, level[idim], index[idim])
 
 
-    def findIntersectionsOnSubspace(self, subspaces, gps, grid):
-        gs = grid.getStorage()
-        numDims = gs.getDimension()
-
-        gpintersection = HashGridPoint(numDims)
-        level = np.ndarray(numDims, dtype="int")
-        index = np.ndarray(numDims, dtype="int")
-
-        costs = 0
-        res = {}
-        for idim, isubspaces in subspaces.items():
-            for jdim, jsubspaces in subspaces.items():
-                if idim != jdim:
-                    # now run over all subspaces in the current directions
-                    for ilevel in isubspaces:
-                        if ilevel in gps:
-                            for gpi in gps[ilevel]:
-                                for jlevel in jsubspaces:
-                                    if jlevel in gps:
-                                        for gpj in gps[jlevel]:
-                                            # find intersections and store them
-                                            # if the grid points have overlapping support
-                                            if haveOverlappingSupportByLevelIndex(gpi, gpj):
-                                                # find non existing intersections and store them
-                                                self.findIntersection(gpintersection, (level, index), gpi, gpj)
-                                                gpk = tuple(level), tuple(index)
-
-                                                if gpk not in res and not gs.isContaining(gpintersection):
-                                                    res[gpk] = HashGridPoint(gpintersection)
-
-                                                # insert intersection into the
-                                                # list of grid points
-                                                klevel, kindex = gpk
-                                                if klevel in gps and gpk not in gps[klevel]:
-                                                    gps[klevel].append(gpk)
-                                                else:
-                                                    gps[klevel] = [gpk]
-
-                                            costs += 1
-        return res, costs
-
-
-    def findIntersections(self, grid, gps):
+    def findIntersections(self, grid, currentSubspaces):
         gs = grid.getStorage()
         numDims = gs.getDimension()
         maxLevel = gs.getMaxLevel()
-        subspaces = np.vstack(gps.keys())
+        subspaces = np.vstack(currentSubspaces.keys())
         costs = 0
 
         # enumerate all the available subspaces in the grid
         intersections = {}
-        for level in product(xrange(1, maxLevel + 1), repeat=numDims):
-            # search all the relevant subspaces
-            relevantSubspaces = self.findRelevantSubspaces(level, subspaces)
-            # search for intersections on the current subspace
-            localIntersections, localCosts = self.findIntersectionsOnSubspace(relevantSubspaces, gps, grid)
+        alreadyChecked = {}
 
-            # update return values
-            intersections.update(localIntersections)
-            costs += localCosts
+        gpintersection = HashGridPoint(numDims)
+        level, index = np.ndarray(numDims, dtype="int"), np.ndarray(numDims, dtype="int")
+        
+        while len(currentSubspaces) > 0:
+            nextSubspaces = {}
+            levels = currentSubspaces.keys()
+            for i in xrange(len(levels)):
+                levelk = levels[i]
+                gpsk = currentSubspaces[levelk]
+                for j in xrange(i + 1, len(levels)):
+                    levell = levels[j]
+                    gpsl = currentSubspaces[levell]
+                    for gpk in gpsk:
+                        for gpl in gpsl:
+                            if haveOverlappingSupportByLevelIndex(gpk, gpl) and \
+                                    not haveHierarchicalRelationshipByLevelIndex(gpk, gpl):
+                                # compute intersection
+                                self.findIntersection(gpintersection, (level, index),
+                                                      gpk, gpl)
+                                tlevel, tindex = tuple(level), tuple(index)
+                                if (tlevel, tindex) not in intersections:
+                                    intersections[tlevel, tindex] = HashGridPoint(gpintersection)
+                                    if (tlevel, tindex) not in alreadyChecked:
+                                        alreadyChecked[tlevel, tindex] = True
+                                        if tlevel not in nextSubspaces:
+                                            nextSubspaces[tlevel] = [(tlevel, tindex)]
+                                        else:
+                                            nextSubspaces[tlevel].append((tlevel, tindex))
+
+
+                            costs += 1
+            
+            currentSubspaces = nextSubspaces
+
 
         return intersections.values(), costs
     
