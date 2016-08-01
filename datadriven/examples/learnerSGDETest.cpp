@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
-  sgdeConfig.makePositive_ = true;
+  sgdeConfig.makePositive_ = false;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
       sgpp::base::MakePositiveCandidateSearchAlgorithm::Intersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =

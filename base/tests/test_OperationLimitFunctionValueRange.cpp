@@ -177,14 +177,17 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 0;
+  size_t refIterations = 2;
+  size_t refnums = 5;
 
-  for (size_t idim = numDims; idim <= numDims; idim++) {
-    for (size_t ilevel = level; ilevel <= level; ilevel++) {
-      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 0,
-                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                  0.8);
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 0,
+                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                    0.8);
+      }
     }
   }
 }
@@ -193,14 +196,17 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 0;
+  size_t refIterations = 2;
+  size_t refnums = 5;
 
-  for (size_t idim = numDims; idim <= numDims; idim++) {
-    for (size_t ilevel = level; ilevel <= level; ilevel++) {
-      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 1,
-                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                  0.8);
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 1,
+                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                    0.8);
+      }
     }
   }
 }
@@ -209,14 +215,17 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refnums = 10;
+  size_t refIterations = 2;
+  size_t refnums = 5;
 
-  for (size_t idim = numDims; idim <= numDims; idim++) {
-    for (size_t ilevel = level; ilevel <= level; ilevel++) {
-      std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
-      testLimitFunctionValueRange(*grid, idim, ilevel, refnums, 2,
-                                  MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.2,
-                                  0.5);
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 2,
+                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+                                    0.8);
+      }
     }
   }
 }
