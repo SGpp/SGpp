@@ -84,6 +84,8 @@ struct AdpativityConfiguration {
   size_t noPoints_;
   /// max. percent of points to be refined
   double percent_;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedRefinement = false;
 };
 
 /**
