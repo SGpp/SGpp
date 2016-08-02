@@ -16,8 +16,7 @@ On this page, we describe best coding practices for SG++.
 - @ref development_testing
 - @ref development_doxygen
 - @ref development_coding
-
-
+- @ref development_newmodules
 
 <!-- ############################################################# -->
 @section development_testing Testing
@@ -183,4 +182,11 @@ Don't…
 - … use <tt>using namespace</tt>.
 - … use tabs, use two spaces instead!
   Please configure your editor in order to do so!
+
+
+@section development_newmodules Creating new modules
+
+T.b.d.
+
+
 */
