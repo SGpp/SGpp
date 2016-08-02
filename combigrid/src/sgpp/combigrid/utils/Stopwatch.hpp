@@ -11,7 +11,7 @@
 #include <chrono>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class Stopwatch {
@@ -22,11 +22,11 @@ public:
 
     void start();
 
-    SGPP::float_t elapsedSeconds();
+    double elapsedSeconds();
     void log();
 };
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* STOPWATCH_HPP_ */

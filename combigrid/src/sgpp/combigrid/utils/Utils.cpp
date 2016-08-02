@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 long long binom(long long n, long long k) {

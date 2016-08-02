@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename T> class TreeStorageSerializationStrategy: public AbstractSerializationStrategy<std::shared_ptr<TreeStorage<T>>>{
@@ -90,6 +90,6 @@ virtual std::shared_ptr<TreeStorage<T>> deserialize(std::string const &input) {
 
 }
 /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* TREESTORAGESERIALIZATIONSTRATEGY_HPP_ */

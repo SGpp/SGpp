@@ -7,19 +7,19 @@
 
 #include "SingleFunction.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
-SingleFunction::SingleFunction(SGPP::float_t (*ptr)(SGPP::float_t)) : func(ptr) {
+SingleFunction::SingleFunction(double (*ptr)(double)) : func(ptr) {
 }
 
-float_t SingleFunction::operator()(float_t param) {
+double SingleFunction::operator()(double param) {
 	return func(param);
 }
 
-float_t SingleFunction::call(float_t param) {
+double SingleFunction::call(double param) {
 	return func(param);
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

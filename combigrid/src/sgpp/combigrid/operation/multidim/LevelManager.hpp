@@ -25,7 +25,7 @@
 #include "CombigridEvaluator.hpp" // TODO: remove
 #include <sgpp/combigrid/algebraic/ScalarVector.hpp> // TODO: remove
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 // TODO: put functions in cpp file
@@ -42,7 +42,7 @@ protected:
 	/**
 	 * By implementing this method in a derived class, the adaption can be customized.
 	 */
-	virtual float_t computePriority(MultiIndex const &level) = 0;
+	virtual double computePriority(MultiIndex const &level) = 0;
 
 	/**
 	 * Initializes the data structures for adaptive level generation
@@ -125,6 +125,6 @@ public:
 
 }
 /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_ */

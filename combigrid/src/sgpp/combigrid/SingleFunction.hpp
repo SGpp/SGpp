@@ -11,34 +11,34 @@
 #include <sgpp/globaldef.hpp>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace combigrid {
 
 class SingleFunction {
-public:
-	typedef std::function<SGPP::float_t(SGPP::float_t)> function_type;
+ public:
+  typedef std::function<double(double)> function_type;
 
-private:
-	function_type func;
+ private:
+  function_type func;
 
-public:
-	/**
-	 * for function pointers
-	 */
-	SingleFunction(SGPP::float_t (*ptr)(SGPP::float_t));
+ public:
+  /**
+   * for function pointers
+   */
+  SingleFunction(double (*ptr)(double));
 
-	/**
-	 * for lambdas or function objects
-	 */
-	template<typename T> explicit SingleFunction(T f) : func(f) {
+  /**
+   * for lambdas or function objects
+   */
+  template <typename T>
+  explicit SingleFunction(T f)
+      : func(f) {}
 
-	}
-
-	float_t operator()(float_t param);
-	float_t call(float_t param);
+  double operator()(double param);
+  double call(double param);
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_SINGLEFUNCTION_HPP_ */

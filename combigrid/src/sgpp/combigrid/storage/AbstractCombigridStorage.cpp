@@ -7,7 +7,7 @@
 
 #include "AbstractCombigridStorage.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AbstractCombigridStorage::~AbstractCombigridStorage() {
@@ -15,4 +15,4 @@ AbstractCombigridStorage::~AbstractCombigridStorage() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

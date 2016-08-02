@@ -7,8 +7,8 @@
 
 #include "NormalAdder.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/

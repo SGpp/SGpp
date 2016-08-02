@@ -16,7 +16,7 @@
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -75,7 +75,7 @@ public:
 		std::vector<bool> orderingConfiguration(numDimensions, false); // The request does not need ordered points
 		auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
 
-		std::vector<std::function<float_t()>> computationTasks;
+		std::vector<std::function<double()>> computationTasks;
 		std::vector<MultiIndex> multiIndices;
 
 		while(funcIter->isValid()) {
@@ -182,7 +182,7 @@ public:
 		while(true) {
 			CGLOG("FullGridTensorEvaluator::eval(): in loop");
 			// get function value and partial product and multiply them together with the last basis coefficient, then add the resulting value to the total sum
-			SGPP::float_t value = funcIter->value();
+			double value = funcIter->value();
 			V vec = partialProducts[lastDim];
 			vec.componentwiseMult(basisValues[lastDim][it.indexAt(lastDim)]);
 			vec.scalarMult(value);
@@ -264,6 +264,6 @@ public:
 
 }
 /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_ */

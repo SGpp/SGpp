@@ -13,7 +13,7 @@
 #include "AbstractMultiStorageIterator.hpp"
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class AbstractCombigridStorage {
@@ -28,7 +28,7 @@ public:
 	 * When moveToNext() is called on the returned iterator, it also calls moveToNext() on the underlying MultiIndexIterator.
 	 * If the values are not already stored, they are created during iteration.
 	 */
-	virtual std::shared_ptr<AbstractMultiStorageIterator<SGPP::float_t> > getGuidedIterator(MultiIndex const &level, MultiIndexIterator &iterator,
+	virtual std::shared_ptr<AbstractMultiStorageIterator<double> > getGuidedIterator(MultiIndex const &level, MultiIndexIterator &iterator,
 			std::vector<bool> orderingConfiguration) = 0;
 
 	/**
@@ -38,10 +38,10 @@ public:
 
 	virtual std::string serialize() = 0;
 	virtual void deserialize(std::string const &str) = 0;
-	virtual void set(MultiIndex const &level, MultiIndex const &index, float_t value) = 0;
+	virtual void set(MultiIndex const &level, MultiIndex const &index, double value) = 0;
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTCOMBIGRIDSTORAGE_HPP_ */

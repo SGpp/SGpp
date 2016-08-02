@@ -7,7 +7,7 @@
 
 #include "LinearGrowthStrategy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 LinearGrowthStrategy::LinearGrowthStrategy(size_t factor)
@@ -22,4 +22,4 @@ size_t LinearGrowthStrategy::numPoints(size_t level) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

@@ -13,33 +13,33 @@
 #include <cmath>
 #include <ctime>
 
-using namespace SGPP::combigrid::optimize;
+using namespace sgpp::combigrid::optimize;
 using namespace std;
 
-const SGPP::float_t check_tolerance(1e-15);
+const double check_tolerance(1e-15);
 
 void test_local_min_all();
 void test_glomin_all();
 
 template <class T>
-void test_local_min_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t t, T f,
-		SGPP::float_t expected_xval, SGPP::float_t expected_yval);
-void test_glomin_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t c, SGPP::float_t m, SGPP::float_t e,
-	SGPP::float_t t, SGPP::float_t f(SGPP::float_t x), SGPP::float_t expected_xval, SGPP::float_t expected_yval);
+void test_local_min_one(double a, double b, double t, T f,
+		double expected_xval, double expected_yval);
+void test_glomin_one(double a, double b, double c, double m, double e,
+	double t, double f(double x), double expected_xval, double expected_yval);
 
-SGPP::float_t g_01(SGPP::float_t x);
-SGPP::float_t g_02(SGPP::float_t x);
-SGPP::float_t g_03(SGPP::float_t x);
-SGPP::float_t g_04(SGPP::float_t x);
-SGPP::float_t g_05(SGPP::float_t x);
-SGPP::float_t h_01(SGPP::float_t x);
-SGPP::float_t h_02(SGPP::float_t x);
-SGPP::float_t h_03(SGPP::float_t x);
-SGPP::float_t h_04(SGPP::float_t x);
-SGPP::float_t h_05(SGPP::float_t x);
+double g_01(double x);
+double g_02(double x);
+double g_03(double x);
+double g_04(double x);
+double g_05(double x);
+double h_01(double x);
+double h_02(double x);
+double h_03(double x);
+double h_04(double x);
+double h_05(double x);
 
 // in %
-SGPP::float_t tol = 0.01;
+double tol = 0.01;
 
 BOOST_AUTO_TEST_CASE(testOptimizer) {
 	test_local_min_all();
@@ -48,9 +48,9 @@ BOOST_AUTO_TEST_CASE(testOptimizer) {
 
 void test_local_min_all()
 {
-	SGPP::float_t a;
-	SGPP::float_t b;
-	SGPP::float_t t;
+	double a;
+	double b;
+	double t;
 
 	t = r8_epsilon();
 
@@ -65,7 +65,7 @@ void test_local_min_all()
 	test_local_min_one(a, b, t, g_02, 0.351734, 0.827184);
 
 	const int degree(4);
-	SGPP::float_t coefflist [1+degree] = {3,1,2,0,1};
+	double coefflist [1+degree] = {3,1,2,0,1};
 	Poly quadric(coefflist,degree);
 
 	test_local_min_one(-2.0, 2.0, t, quadric, -0.236733, 2.87849);
@@ -85,12 +85,12 @@ void test_local_min_all()
 
 void test_glomin_all()
 {
-	SGPP::float_t a;
-	SGPP::float_t b;
-	SGPP::float_t c;
-	SGPP::float_t e;
-	SGPP::float_t m;
-	SGPP::float_t t;
+	double a;
+	double b;
+	double c;
+	double e;
+	double m;
+	double t;
 
 	e = sqrt(r8_epsilon());
 	t = sqrt(r8_epsilon());
@@ -155,22 +155,22 @@ void test_glomin_all()
 }
 
 template <class T>
-void test_local_min_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t t, T f,
-	SGPP::float_t expected_xval, SGPP::float_t expected_yval)
+void test_local_min_one(double a, double b, double t, T f,
+	double expected_xval, double expected_yval)
 
 	//  Parameters:
 	//
-	//    Input, SGPP::float_t A, B, the endpoints of the interval.
+	//    Input, double A, B, the endpoints of the interval.
 	//
-	//    Input, SGPP::float_t T, a positive absolute error tolerance.
+	//    Input, double T, a positive absolute error tolerance.
 	//
-	//    Input, SGPP::float_t F ( SGPP::float_t x ), the name of a user-supplied
+	//    Input, double F ( double x ), the name of a user-supplied
 	//    function, whose local minimum is being sought.
 	//
 	//    Input, expected_xval, y_val: expected values
 {
-	SGPP::float_t fx;
-	SGPP::float_t x;
+	double fx;
+	double x;
 
 	fx = local_min(a, b, t, f, x);
 
@@ -180,29 +180,29 @@ void test_local_min_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t t, T f,
 	return;
 }
 
-void test_glomin_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t c, SGPP::float_t m,
-	SGPP::float_t e, SGPP::float_t t, SGPP::float_t f(SGPP::float_t x), SGPP::float_t expected_xval, SGPP::float_t expected_yval)
+void test_glomin_one(double a, double b, double c, double m,
+	double e, double t, double f(double x), double expected_xval, double expected_yval)
 	//  Parameters:
 	//
-	//    Input, SGPP::float_t A, B, the endpoints of the interval.
+	//    Input, double A, B, the endpoints of the interval.
 	//
-	//    Input, SGPP::float_t C, an initial guess for the global
+	//    Input, double C, an initial guess for the global
 	//    minimizer.  If no good guess is known, C = A or B is acceptable.
 	//
-	//    Input, SGPP::float_t M, the bound on the second derivative.
+	//    Input, double M, the bound on the second derivative.
 	//
-	//    Input, SGPP::float_t E, a positive tolerance, a bound for the
+	//    Input, double E, a positive tolerance, a bound for the
 	//    absolute error in the evaluation of F(X) for any X in [A,B].
 	//
-	//    Input, SGPP::float_t T, a positive absolute error tolerance.
+	//    Input, double T, a positive absolute error tolerance.
 	//
-	//    Input, SGPP::float_t F ( SGPP::float_t x ), the name of a user-supplied
+	//    Input, double F ( double x ), the name of a user-supplied
 	//    function whose global minimum is being sought.
 	//
     //    Input, expected_xval, y_val: expected values
 {
-	SGPP::float_t fx;
-	SGPP::float_t x;
+	double fx;
+	double x;
 
 	fx = glomin(a, b, c, m, e, t, f, x);
 
@@ -212,61 +212,61 @@ void test_glomin_one(SGPP::float_t a, SGPP::float_t b, SGPP::float_t c, SGPP::fl
 	return;
 }
 
-SGPP::float_t g_01(SGPP::float_t x)
+double g_01(double x)
 // g_01(x) = (x-2)^2 + 1
 {
 	return (x - 2.0) * (x - 2.0) + 1.0;
 }
 
-SGPP::float_t g_02(SGPP::float_t x)
+double g_02(double x)
 // g_02(0) = x^2 + exp ( - x )
 {
 	return x * x + exp(-x);
 }
 
-SGPP::float_t g_03(SGPP::float_t x)
+double g_03(double x)
 // g_03(x) = x^4+2x^2+x+3
 {
 	return ((x * x + 2.0) * x + 1.0) * x + 3.0;
 }
 
-SGPP::float_t g_04(SGPP::float_t x)
+double g_04(double x)
 // g_04(x) = exp(x)+1/(100X)
 {
 	return exp(x) + 0.01 / x;
 }
 
-SGPP::float_t g_05(SGPP::float_t x)
+double g_05(double x)
 // g_05(x) = exp(x) - 2x + 1/(100x) - 1/(1000000x^2)
 {
 	return exp(x) - 2.0 * x + 0.01 / x - 0.000001 / x / x;
 }
 
-SGPP::float_t h_01(SGPP::float_t x)
+double h_01(double x)
 // h_01(x) = 2 - x.
 {
 	return 2.0 - x;
 }
 
-SGPP::float_t h_02(SGPP::float_t x)
+double h_02(double x)
 // h_02(x) = x^2.
 {
 	return x * x;
 }
 
-SGPP::float_t h_03(SGPP::float_t x)
+double h_03(double x)
 // h_03(x) = x^3+x^2.
 {
 	return  x * x * (x + 1.0);
 }
 
-SGPP::float_t h_04(SGPP::float_t x)
+double h_04(double x)
 // h_04(x) = ( x + sin ( x ) ) * exp ( - x * x ).
 {
 	return (x + sin(x)) * exp(-x * x);
 }
 
-SGPP::float_t h_05(SGPP::float_t x)
+double h_05(double x)
 // h_05(x) = ( x - sin ( x ) ) * exp ( - x * x ).
 {
 	return (x - sin(x)) * exp(-x * x);

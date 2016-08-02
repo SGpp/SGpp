@@ -17,7 +17,7 @@
 // #include <iostream>
 // #define CGLOG(str) std::cout << str << "\n"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 typedef std::vector<size_t> MultiIndex;

@@ -7,19 +7,19 @@
 
 #include "MultiFunction.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
-MultiFunction::MultiFunction(SGPP::float_t (*ptr)(const base::DataVector&)) : func(ptr) {
+MultiFunction::MultiFunction(double (*ptr)(const base::DataVector&)) : func(ptr) {
 }
 
-SGPP::float_t MultiFunction::operator ()(const base::DataVector& vec) {
+double MultiFunction::operator ()(const base::DataVector& vec) {
 	return func(vec);
 }
 
-SGPP::float_t MultiFunction::call(const base::DataVector& vec) {
+double MultiFunction::call(const base::DataVector& vec) {
 	return func(vec);
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

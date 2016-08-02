@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 Stopwatch::Stopwatch()
@@ -20,8 +20,8 @@ void Stopwatch::start() {
     startTime = std::chrono::high_resolution_clock::now();
 }
 
-SGPP::float_t Stopwatch::elapsedSeconds() {
-    std::chrono::duration<SGPP::float_t> diff = std::chrono::high_resolution_clock::now() - startTime;
+double Stopwatch::elapsedSeconds() {
+    std::chrono::duration<double> diff = std::chrono::high_resolution_clock::now() - startTime;
     return diff.count();
 }
 
@@ -30,4 +30,4 @@ void Stopwatch::log() {
 }
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/

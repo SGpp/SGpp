@@ -12,14 +12,14 @@
 
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 FunctionLookupTable::FunctionLookupTable(MultiFunction func) :
-		hashmap(new std::unordered_map<base::DataVector, SGPP::float_t, DataVectorHash, DataVectorEqualTo>()), func(func), tableMutex() {
+		hashmap(new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()), func(func), tableMutex() {
 }
 
-SGPP::float_t FunctionLookupTable::operator ()(const base::DataVector& x) {
+double FunctionLookupTable::operator ()(const base::DataVector& x) {
 	auto it = hashmap->find(x);
 	if (it == hashmap->end()) {
 		auto y = func(x);
@@ -30,11 +30,11 @@ SGPP::float_t FunctionLookupTable::operator ()(const base::DataVector& x) {
 	return it->second;
 }
 
-SGPP::float_t FunctionLookupTable::eval(const base::DataVector& x) {
+double FunctionLookupTable::eval(const base::DataVector& x) {
 	return (*this)(x);
 }
 
-SGPP::float_t FunctionLookupTable::evalThreadsafe(const base::DataVector& x) {
+double FunctionLookupTable::evalThreadsafe(const base::DataVector& x) {
 	tableMutex.lock();
 	auto it = hashmap->find(x);
 	if (it == hashmap->end()) {
@@ -52,12 +52,12 @@ SGPP::float_t FunctionLookupTable::evalThreadsafe(const base::DataVector& x) {
 	return y;
 }
 
-void FunctionLookupTable::addEntry(const base::DataVector& x, SGPP::float_t y) {
+void FunctionLookupTable::addEntry(const base::DataVector& x, double y) {
 	(*hashmap)[x] = y;
 }
 
 std::string FunctionLookupTable::serialize() {
-	FloatSerializationStrategy<float_t> strategy;
+	FloatSerializationStrategy<double> strategy;
 
 	std::vector<std::string> entries;
 
@@ -77,7 +77,7 @@ std::string FunctionLookupTable::serialize() {
 }
 
 void FunctionLookupTable::deserialize(const std::string& value) {
-	FloatSerializationStrategy<float_t> strategy;
+	FloatSerializationStrategy<double> strategy;
 
 	std::vector<std::string> entries = split(value, "\n");
 
@@ -103,7 +103,7 @@ void FunctionLookupTable::deserialize(const std::string& value) {
 			x[j] = strategy.deserialize(dataVectorEntries[j]);
 		}
 
-		float_t y = strategy.deserialize(keyValuePair[1]);
+		double y = strategy.deserialize(keyValuePair[1]);
 
 		addEntry(x, y);
 	}

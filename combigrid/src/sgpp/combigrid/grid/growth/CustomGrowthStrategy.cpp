@@ -7,7 +7,7 @@
 
 #include "CustomGrowthStrategy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 CustomGrowthStrategy::CustomGrowthStrategy(std::function<size_t(size_t)> func)
@@ -23,4 +23,4 @@ size_t CustomGrowthStrategy::numPoints(size_t level) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

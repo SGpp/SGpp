@@ -12,7 +12,7 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <iostream>
 
-using namespace SGPP::combigrid;
+using namespace sgpp::combigrid;
 
 BOOST_AUTO_TEST_CASE(testTreeStorageGetSet) {
 	TreeStorage<int> storage(3);

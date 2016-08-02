@@ -7,8 +7,8 @@
 
 #include "AbstractTreeStorageNode.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

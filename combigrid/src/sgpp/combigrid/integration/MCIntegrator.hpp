@@ -13,22 +13,22 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class MCIntegrator {
     std::function<base::DataVector(std::vector<base::DataVector> const &)> func;
 
 public:
-    MCIntegrator(std::function<SGPP::float_t(base::DataVector const &)> func);
+    MCIntegrator(std::function<double(base::DataVector const &)> func);
     MCIntegrator(std::function<base::DataVector(std::vector<base::DataVector> const &)> func);
 
-    SGPP::float_t integrate(std::vector<std::pair<SGPP::float_t, SGPP::float_t>> domain, size_t num_samples);
+    double integrate(std::vector<std::pair<double, double>> domain, size_t num_samples);
 
-    SGPP::float_t average(std::vector<std::pair<SGPP::float_t, SGPP::float_t>> domain, size_t num_samples);
+    double average(std::vector<std::pair<double, double>> domain, size_t num_samples);
 };
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* MCINTEGRATOR_HPP_ */

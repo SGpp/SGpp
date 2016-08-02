@@ -75,7 +75,7 @@ import_array();
 #include "sgpp_parallel.hpp"
 #endif
 #ifdef SG_COMBIGRID
-#include "combigrid.hpp"
+#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_QUADRATURE
 #include "sgpp_quadrature.hpp"
@@ -152,5 +152,3 @@ import_array();
 
 %include "optimization/build/pysgpp/optimization.i"
 #endif
-
-

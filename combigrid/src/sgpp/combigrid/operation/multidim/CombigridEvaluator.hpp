@@ -24,7 +24,7 @@
 
 #include "LevelHelpers.hpp" // TODO: remove
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename V> class CombigridEvaluator {
@@ -99,7 +99,7 @@ public:
 			}
 		}
 
-		float_t norm = value.norm();
+		double norm = value.norm();
 
 		if (std::isnan(norm) || std::isinf(norm)) {
 			return false;
@@ -129,7 +129,7 @@ public:
 		return multiEval->maxNewPoints(level);
 	}
 
-	float_t getDifferenceNorm(MultiIndex const &level) {
+	double getDifferenceNorm(MultiIndex const &level) {
 		return partialDifferences[numDimensions]->get(level).norm();
 	}
 
@@ -291,7 +291,7 @@ private:
 		}
 
 		// calculate estimated value...
-		std::vector<float_t> predecessorNorms;
+		std::vector<double> predecessorNorms;
 
 		bool hasAllPredecessors = true;
 
@@ -301,7 +301,7 @@ private:
 				--prevIndex[prevDim];
 
 				if (partialDifferences[numDimensions]->containsIndex(prevIndex)) {
-					float_t norm = partialDifferences[numDimensions]->get(prevIndex).norm();
+					double norm = partialDifferences[numDimensions]->get(prevIndex).norm();
 					predecessorNorms.push_back(norm);
 				} else {
 					hasAllPredecessors = false; // add index later, not all predecessors are available
@@ -321,6 +321,6 @@ private:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_ */

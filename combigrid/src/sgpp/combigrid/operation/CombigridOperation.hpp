@@ -27,7 +27,7 @@
 #include <vector>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class CombigridOperationImpl; // we use pimpl for not having to include all the template stuff in the header
@@ -46,7 +46,7 @@ public:
 
 	// TODO: add extra functions, for example for configuring the storage
 
-	SGPP::float_t evaluate(size_t q, base::DataVector const &param = base::DataVector(0));
+	double evaluate(size_t q, base::DataVector const &param = base::DataVector(0));
 
 	// TODO: add static constructor functions
 	static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(size_t numDimensions,
@@ -68,6 +68,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_COMBIGRIDOPERATION_HPP_ */

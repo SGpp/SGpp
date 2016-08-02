@@ -9,7 +9,7 @@
 #include <limits>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 BarycentricInterpolationEvaluator::BarycentricInterpolationEvaluator(BarycentricInterpolationEvaluator const &other) :
@@ -23,14 +23,14 @@ BarycentricInterpolationEvaluator::BarycentricInterpolationEvaluator() :
 BarycentricInterpolationEvaluator::~BarycentricInterpolationEvaluator() {
 }
 
-void BarycentricInterpolationEvaluator::setGridPoints(std::vector<SGPP::float_t> const &newXValues) {
+void BarycentricInterpolationEvaluator::setGridPoints(std::vector<double> const &newXValues) {
 	this->xValues = newXValues;
 	size_t numPoints = xValues.size();
 	wValues.resize(numPoints);
 
 	for (size_t i = 0; i < numPoints; ++i) {
 		auto x = xValues[i];
-		SGPP::float_t wInv = 1.0;
+		double wInv = 1.0;
 
 		for (size_t j = 0; j < i; ++j) {
 			wInv *= x - xValues[j];
@@ -59,13 +59,13 @@ bool BarycentricInterpolationEvaluator::needsParameter() {
 }
 
 void BarycentricInterpolationEvaluator::computeBasisCoefficients() {
-	SGPP::float_t sum = 0.0;
-	const SGPP::float_t minDeviation = std::numeric_limits<SGPP::float_t>::min() / std::numeric_limits<SGPP::float_t>::epsilon();
+	double sum = 0.0;
+	const double minDeviation = std::numeric_limits<double>::min() / std::numeric_limits<double>::epsilon();
 	size_t numPoints = xValues.size();
 	basisCoefficients.resize(numPoints);
 
 	for (size_t i = 0; i < numPoints; ++i) {
-		SGPP::float_t diff = evaluationPoint - xValues[i];
+		double diff = evaluationPoint - xValues[i];
 
 		// very near to a interpolation value, must not divide by zero
 		if (std::abs(diff) < minDeviation) {
@@ -75,7 +75,7 @@ void BarycentricInterpolationEvaluator::computeBasisCoefficients() {
 			return;
 		}
 
-		SGPP::float_t unweightedTerm = wValues[i] / diff;
+		double unweightedTerm = wValues[i] / diff;
 
 		sum += unweightedTerm;
 		basisCoefficients[i] = unweightedTerm;
@@ -92,4 +92,4 @@ void BarycentricInterpolationEvaluator::setParameter(const FloatScalarVector& pa
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

@@ -7,7 +7,7 @@
 
 #include "LinearInterpolationEvaluator.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 LinearInterpolationEvaluator::LinearInterpolationEvaluator()
@@ -42,10 +42,10 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
 	// TODO: could be optimized by using binary search
 	for(size_t i = 1; i < numPoints; ++i) {
 		if(evaluationPoint <= xValues[i]) {
-			float_t x0 = xValues[i-1];
-			float_t x1 = xValues[i];
+			double x0 = xValues[i-1];
+			double x1 = xValues[i];
 
-			float_t weight = (x1 - evaluationPoint) / (x1 - x0);
+			double weight = (x1 - evaluationPoint) / (x1 - x0);
 			basisCoefficients[i-1] = FloatScalarVector(weight);
 			basisCoefficients[i] = FloatScalarVector(1 - weight);
 
@@ -57,7 +57,7 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
 	basisCoefficients[numPoints - 1] = 1.0;
 }
 
-void LinearInterpolationEvaluator::setGridPoints(const std::vector<SGPP::float_t>& newXValues) {
+void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
 	xValues = newXValues;
 	computeBasisCoefficients();
 }
@@ -80,4 +80,4 @@ void LinearInterpolationEvaluator::setParameter(const FloatScalarVector& param) 
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

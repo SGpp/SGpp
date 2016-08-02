@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -24,10 +24,10 @@ public:
 	/**
 	 * computes the j-th grid point from the set of numPoints grid points.
 	 */
-	virtual SGPP::float_t compute(size_t numPoints, size_t j) = 0;
+	virtual double compute(size_t numPoints, size_t j) = 0;
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTPOINTDISTRIBUTION_HPP_ */

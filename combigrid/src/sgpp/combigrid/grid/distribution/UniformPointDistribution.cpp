@@ -9,13 +9,13 @@
 
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 UniformPointDistribution::~UniformPointDistribution() {
 }
 
-SGPP::float_t UniformPointDistribution::compute(size_t numPoints, size_t j) {
+double UniformPointDistribution::compute(size_t numPoints, size_t j) {
 	if(j >= numPoints) {
 		throw std::logic_error("UniformPointDistribution::compute: j >= numPoints");
 	}
@@ -24,8 +24,8 @@ SGPP::float_t UniformPointDistribution::compute(size_t numPoints, size_t j) {
 		return 0.5;
 	}
 
-	return static_cast<float_t>(j) / static_cast<float_t>(numPoints-1);
+	return static_cast<double>(j) / static_cast<double>(numPoints-1);
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

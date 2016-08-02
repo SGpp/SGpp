@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename T> T pow(T base, size_t exponent) {

@@ -7,10 +7,10 @@
 
 #include "IterationPolicy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 IterationPolicy IterationPolicy::Default;
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

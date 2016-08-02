@@ -17,7 +17,7 @@
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class CombigridOperationImpl {
@@ -47,7 +47,7 @@ CombigridOperation::CombigridOperation(std::vector<std::shared_ptr<AbstractPoint
 		impl(new CombigridOperationImpl(pointHierarchies, evaluatorPrototypes, storage)) {
 }
 
-SGPP::float_t CombigridOperation::evaluate(size_t q, base::DataVector const &param) {
+double CombigridOperation::evaluate(size_t q, base::DataVector const &param) {
 	std::vector<FloatScalarVector> scalars(param.getSize());
 	for(size_t i = 0; i < param.getSize(); ++i) {
 		scalars[i].value() = param[i];
@@ -141,4 +141,4 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformLinearIn
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

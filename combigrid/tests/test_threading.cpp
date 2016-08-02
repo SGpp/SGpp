@@ -21,8 +21,8 @@
 #include <vector>
 #include <algorithm>
 
-using namespace SGPP::combigrid;
-using namespace SGPP::base;
+using namespace sgpp::combigrid;
+using namespace sgpp::base;
 
 int counter = 0;
 std::vector<int> data;

@@ -9,7 +9,7 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 
-using namespace SGPP::combigrid;
+using namespace sgpp::combigrid;
 
 BOOST_AUTO_TEST_CASE(testExpLevelorderPointOrdering) {
 	ExponentialLevelorderPointOrdering ordering;
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(testExpLevelorderPointOrdering) {
 	BOOST_CHECK_EQUAL(ordering.convertIndex(3, 9, 7), 5);
 	BOOST_CHECK_EQUAL(ordering.convertIndex(3, 9, 8), 7);
 
-	std::vector<SGPP::float_t> points;
+	std::vector<double> points;
 
 	auto it = ordering.getSortedPermutationIterator(3, points, 9);
 

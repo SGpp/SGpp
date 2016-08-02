@@ -13,7 +13,7 @@
 
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename V> class AbstractFullGridEvaluator {
@@ -30,6 +30,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_ */

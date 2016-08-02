@@ -11,7 +11,7 @@
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class SortedPermutationIterator: public AbstractPermutationIterator {
@@ -20,7 +20,7 @@ class SortedPermutationIterator: public AbstractPermutationIterator {
 
 	SortedPermutationIterator(std::vector<size_t> const &permutation, size_t currentIndex);
 public:
-	SortedPermutationIterator(std::vector<SGPP::float_t> const &points, size_t numPoints);
+	SortedPermutationIterator(std::vector<double> const &points, size_t numPoints);
 	virtual ~SortedPermutationIterator();
 
 	/**
@@ -36,6 +36,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_SORTEDPERMUTATIONITERATOR_HPP_ */

@@ -12,7 +12,7 @@
 
 #include <mutex>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -31,6 +31,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGECONTEXT_HPP_ */

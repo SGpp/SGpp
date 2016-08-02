@@ -8,7 +8,7 @@
 #include "ThreadPool.hpp"
 #include <chrono>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 ThreadPool::ThreadPool(size_t numThreads) :
@@ -96,4 +96,4 @@ void ThreadPool::terminateWhenIdle(ThreadPool &tp) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

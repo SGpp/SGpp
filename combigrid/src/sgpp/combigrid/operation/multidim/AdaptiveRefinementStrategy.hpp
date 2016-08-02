@@ -13,16 +13,16 @@
 #include <vector>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class AdaptiveRefinementStrategy {
 public:
-	typedef std::function<float_t(std::vector<float_t> const &, size_t)> priority_function;
+	typedef std::function<double(std::vector<double> const &, size_t)> priority_function;
 
 	AdaptiveRefinementStrategy(priority_function func);
 
-	float_t computePriority(std::vector<float_t> const &predecessorNorms, size_t numNewPoints);
+	double computePriority(std::vector<double> const &predecessorNorms, size_t numNewPoints);
 
 	static AdaptiveRefinementStrategy maxStrategy();
 	static AdaptiveRefinementStrategy minStrategy();
@@ -34,6 +34,6 @@ private:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ADAPTIVEREFINEMENTSTRATEGY_HPP_ */

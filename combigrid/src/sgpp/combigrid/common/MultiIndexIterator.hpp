@@ -10,7 +10,7 @@
 
 #include "../definitions.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class MultiIndexIterator {
@@ -81,6 +81,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_COMMON_MULTIINDEXITERATOR_HPP_ */

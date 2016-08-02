@@ -10,7 +10,7 @@
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class ExponentialLevelorderPermutationIterator: public AbstractPermutationIterator {
@@ -36,6 +36,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALLEVELORDERPERMUTATIONITERATOR_HPP_ */

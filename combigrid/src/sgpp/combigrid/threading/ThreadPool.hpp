@@ -18,7 +18,7 @@
 #include <vector>
 #include <condition_variable>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class ThreadPool {
@@ -58,6 +58,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_ */

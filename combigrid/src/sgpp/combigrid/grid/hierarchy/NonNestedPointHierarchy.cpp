@@ -7,7 +7,7 @@
 
 #include "NonNestedPointHierarchy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 NonNestedPointHierarchy::NonNestedPointHierarchy(std::shared_ptr<AbstractPointDistribution> pointDistribution,
@@ -18,7 +18,7 @@ NonNestedPointHierarchy::NonNestedPointHierarchy(std::shared_ptr<AbstractPointDi
 NonNestedPointHierarchy::~NonNestedPointHierarchy() {
 }
 
-SGPP::float_t NonNestedPointHierarchy::getPoint(size_t level, size_t index) {
+double NonNestedPointHierarchy::getPoint(size_t level, size_t index) {
 	return computePoints(level)[index];
 }
 
@@ -35,9 +35,9 @@ bool NonNestedPointHierarchy::isNested() {
 	return false;
 }
 
-std::vector<SGPP::float_t>& NonNestedPointHierarchy::computePoints(size_t level) {
+std::vector<double>& NonNestedPointHierarchy::computePoints(size_t level) {
 	while (level >= points.size()) {
-		points.push_back(std::vector<SGPP::float_t>());
+		points.push_back(std::vector<double>());
 	}
 
 	auto &pointLevel = points[level];
@@ -51,13 +51,13 @@ std::vector<SGPP::float_t>& NonNestedPointHierarchy::computePoints(size_t level)
 	return pointLevel;
 }
 
-std::vector<SGPP::float_t> NonNestedPointHierarchy::getPoints(size_t level, bool sorted) {
+std::vector<double> NonNestedPointHierarchy::getPoints(size_t level, bool sorted) {
 	auto &points = computePoints(level); // could be more than just for this level
 	if (!sorted) {
 		return points;
 	} else {
 		size_t numPoints = points.size();
-		std::vector<SGPP::float_t> result(numPoints);
+		std::vector<double> result(numPoints);
 		auto it = getSortedPermutationIterator(level);
 		for (size_t i = 0; i < result.size(); ++i) {
 			result[i] = points[it->value()];
@@ -80,4 +80,4 @@ std::shared_ptr<AbstractPermutationIterator> NonNestedPointHierarchy::getSortedP
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
