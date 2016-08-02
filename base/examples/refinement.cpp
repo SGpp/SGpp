@@ -32,7 +32,7 @@ double f(double x0, double x1) {
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   GridStorage& gridStorage = grid->getStorage();
   std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 
