@@ -92,7 +92,7 @@ double testFunctionAtan(DataVector const &x);
  }
  */
 
-BOOST_AUTO_TEST_CASE(testLevelManagerRegular) {
+BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   size_t numDimensions = 2;
 
   auto func = testFunction2;
