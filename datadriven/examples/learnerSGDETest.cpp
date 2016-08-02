@@ -128,8 +128,8 @@ int main(int argc, char** argv) {
 
   std::cout << "------------------------------------------------------" << std::endl;
   // inverse Rosenblatt transformation
-  auto opInvRos =
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
+  sgpp::datadriven::OperationInverseRosenblattTransformation* opInvRos(
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get()));
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
@@ -140,7 +140,8 @@ int main(int argc, char** argv) {
   opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
 
   points.setAll(0.0);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
+  sgpp::datadriven::OperationRosenblattTransformation* opRos(
+      sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get()));
   opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
