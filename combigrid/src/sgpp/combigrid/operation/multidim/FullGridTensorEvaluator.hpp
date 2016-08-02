@@ -121,7 +121,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
         tasks.push_back([compTask, index, counter, callback, this, level]() {
           auto result = compTask();
 
-          PtrGuard guard(this->mutexPtr);
+          CGLOG_SURROUND(PtrGuard guard(this->mutexPtr));
           this->storage->set(level, index, result);
           --(*counter);
           if (*counter == 0) {
