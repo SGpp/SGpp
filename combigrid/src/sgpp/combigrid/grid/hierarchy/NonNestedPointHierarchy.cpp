@@ -1,0 +1,83 @@
+/*
+ * NonNestedPointHierarchy.cpp
+ *
+ *  Created on: 18.12.2015
+ *      Author: david
+ */
+
+#include "NonNestedPointHierarchy.hpp"
+
+namespace SGPP {
+namespace combigrid {
+
+NonNestedPointHierarchy::NonNestedPointHierarchy(std::shared_ptr<AbstractPointDistribution> pointDistribution,
+		std::shared_ptr<AbstractPointOrdering> pointOrdering) :
+		numPointsPerLevel(), points(), permutationIterators(), pointDistribution(pointDistribution), pointOrdering(pointOrdering) {
+}
+
+NonNestedPointHierarchy::~NonNestedPointHierarchy() {
+}
+
+SGPP::float_t NonNestedPointHierarchy::getPoint(size_t level, size_t index) {
+	return computePoints(level)[index];
+}
+
+size_t NonNestedPointHierarchy::getNumPoints(size_t level) {
+	while (level >= numPointsPerLevel.size()) {
+		size_t currentLevel = numPointsPerLevel.size();
+		numPointsPerLevel.push_back(pointOrdering->numPoints(currentLevel));
+	}
+
+	return numPointsPerLevel[level];
+}
+
+bool NonNestedPointHierarchy::isNested() {
+	return false;
+}
+
+std::vector<SGPP::float_t>& NonNestedPointHierarchy::computePoints(size_t level) {
+	while (level >= points.size()) {
+		points.push_back(std::vector<SGPP::float_t>());
+	}
+
+	auto &pointLevel = points[level];
+	size_t numPoints = getNumPoints(level);
+
+	while (numPoints > pointLevel.size()) {
+		size_t convertedIndex = pointOrdering->convertIndex(level, numPoints, pointLevel.size());
+		pointLevel.push_back(pointDistribution->compute(numPoints, convertedIndex));
+	}
+
+	return pointLevel;
+}
+
+std::vector<SGPP::float_t> NonNestedPointHierarchy::getPoints(size_t level, bool sorted) {
+	auto &points = computePoints(level); // could be more than just for this level
+	if (!sorted) {
+		return points;
+	} else {
+		size_t numPoints = points.size();
+		std::vector<SGPP::float_t> result(numPoints);
+		auto it = getSortedPermutationIterator(level);
+		for (size_t i = 0; i < result.size(); ++i) {
+			result[i] = points[it->value()];
+			it->moveToNext();
+		}
+
+		return result;
+	}
+}
+
+std::shared_ptr<AbstractPermutationIterator> NonNestedPointHierarchy::getSortedPermutationIterator(size_t level) {
+	while (level >= permutationIterators.size()) {
+		size_t currentLevel = permutationIterators.size();
+		size_t numPoints = getNumPoints(currentLevel);
+		auto &points = computePoints(currentLevel);
+		permutationIterators.push_back(pointOrdering->getSortedPermutationIterator(currentLevel, points, numPoints));
+	}
+
+	return permutationIterators[level]->clone();
+}
+
+} /* namespace combigrid */
+} /* namespace SGPP */

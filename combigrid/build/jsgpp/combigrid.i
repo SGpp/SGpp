@@ -3,5 +3,5 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
+// The Good, i.e. without any modifications
 
