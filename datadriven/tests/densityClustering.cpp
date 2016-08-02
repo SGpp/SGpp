@@ -10,6 +10,8 @@
 #include <zlib.h>
 
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 #include <random>
 #include <fstream>
 #include <iostream>
@@ -193,7 +195,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
     while (rhs_in >> value)
       rhs_optimal_result.push_back(value);
   } else {
-    BOOST_THROW_EXCEPTION(std::runtime_error("Density multiplication result file is missing!"));
+    BOOST_THROW_EXCEPTION(std::runtime_error("Density rhs result file is missing!"));
   }
 
   // Create OCL configuration
@@ -231,6 +233,55 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
     BOOST_CHECK_CLOSE(rhs_optimal_result[i], b[i], 0.001);
   }
   delete operation_rhs;
+}
+
+BOOST_AUTO_TEST_CASE(KNNGraphOpenCL)  {
+  // Load correct results for comparison
+  std::vector<int> graph_optimal_result;
+  std::ifstream graph_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/graph_erg_dim2_depth11.txt");
+  if (graph_in) {
+    double value;
+    while (graph_in >> value)
+      graph_optimal_result.push_back(value);
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("knn graph result file is missing!"));
+  }
+
+  // Create OCL configuration
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+  sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationCreateGraphOCL::load_default_parameters(parameters.get());
+
+  // Create OpenCL Manager
+  std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
+  manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
+
+  // Create grid for test scenario
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(11);
+  size_t gridsize = grid->getStorage().getSize();
+
+  // Load dataset for test scenario
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::
+      readARFF("/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/clustering_testdataset_dim2.arff");
+  sgpp::base::DataMatrix& dataset = data.getData();
+
+  // Create operation
+  size_t k = 8;
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
+      new sgpp::datadriven::DensityOCLMultiPlatform::
+        OperationCreateGraphOCLSingleDevice<double>(dataset, 2, manager,
+                                                    parameters.get(), k, 0, 0);
+  // Test graph kernel
+  std::vector<int> graph(dataset.getNrows() * k);
+  operation_graph->create_graph(graph);
+  for (size_t i = 0; i < dataset.getNrows() * k; ++i) {
+    BOOST_CHECK(graph_optimal_result[i] == graph[i]);
+  }
+  delete operation_graph;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
