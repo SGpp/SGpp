@@ -84,12 +84,10 @@ void LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset,
 
   classesComputed.setAll(0.0);
 
-  if (this->vecType_ != ArBB) {
-    tmpDataSet.transpose();
-  }
+  tmpDataSet.transpose();
 
-  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval =
-      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet);
+  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval(
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet));
   MultEval->multVectorized(*alpha, classesComputed);
 
   // removed the padded instances
@@ -108,12 +106,10 @@ void LearnerVectorizedIdentity::multTranspose(sgpp::base::DataMatrix& dataset,
   result.resize(grid->getSize());
   result.setAll(0.0);
 
-  if (this->vecType_ != ArBB) {
-    tmpDataSet.transpose();
-  }
+  tmpDataSet.transpose();
 
-  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval =
-      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet);
+  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval(
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet));
   MultEval->multTransposeVectorized(multiplier, result);
 
   // removed the padded instances

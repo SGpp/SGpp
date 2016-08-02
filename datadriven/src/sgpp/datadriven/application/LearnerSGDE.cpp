@@ -313,8 +313,8 @@ void LearnerSGDE::cov(base::DataMatrix& cov) {
   base::DataVector means(ndim);
   base::DataVector variances(ndim);
 
-  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg =
-      op_factory::createOperationDensityMargTo1D(*grid);
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
 
   base::Grid* marginalizedGrid = NULL;
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
@@ -378,14 +378,14 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-    uGrid = base::Grid::unserialize(content);
+    uGrid.reset(base::Grid::unserialize(content));
   } else {
     if (gridConfig.type_ == base::GridType::Linear) {
-      uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
+      uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
     } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
+      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0));
     } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
+      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1));
     } else {
       throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
     }
@@ -569,9 +569,9 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   std::unique_ptr<base::OperationMatrix> C;
 
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
-    C = op_factory::createOperationIdentity(grid);
+    C.reset(op_factory::createOperationIdentity(grid));
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
-    C = op_factory::createOperationLaplace(grid);
+    C.reset(op_factory::createOperationLaplace(grid));
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }

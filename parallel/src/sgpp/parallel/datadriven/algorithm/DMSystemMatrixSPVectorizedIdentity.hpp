@@ -50,7 +50,7 @@ class DMSystemMatrixSPVectorizedIdentity : public sgpp::datadriven::DMSystemMatr
    * @param SparseGrid reference to the sparse grid
    * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
-   * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
+   * @param vecMode vectorization mode, possible values are SSE, AVX, OCL
    */
   DMSystemMatrixSPVectorizedIdentity(sgpp::base::Grid& SparseGrid,
                                      sgpp::base::DataMatrixSP& trainData, float lambda,
