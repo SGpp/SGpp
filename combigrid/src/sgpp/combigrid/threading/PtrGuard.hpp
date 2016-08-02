@@ -23,7 +23,7 @@ class PtrGuard {
 
   ~PtrGuard() {
     if (mutexPtr) {
-      mutexPtr->lock();
+      mutexPtr->unlock();
     }
   }
 };
