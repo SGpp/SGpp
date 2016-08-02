@@ -12,7 +12,32 @@
 #include "OperationDensityOCLMultiPlatform.hpp"
 namespace sgpp {
 namespace datadriven {
+DensityOCLMultiPlatform::OperationDensityOCL*
+createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
+                                        double lambda, base::OCLOperationConfiguration *parameters,
+                                        size_t platform_id, size_t device_id) {
+  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  parameters->serialize("testdebug.cfg");
 
+  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
+  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    return new datadriven::DensityOCLMultiPlatform::
+        OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, parameters,
+                                                static_cast<float>(lambda),
+                                                platform_id, device_id);
+  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    return new datadriven::DensityOCLMultiPlatform::
+        OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, parameters,
+                                                 lambda, platform_id, device_id);
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
+                << " invalid value for parameter \"INTERNAL_PRECISION\"";
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  return NULL;
+}
 DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, std::string opencl_conf,
@@ -21,26 +46,8 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
+  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "double");
-  }
-
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<float>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<double>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -68,33 +75,15 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
+  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "double");
-  }
-
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<float>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<double>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<float>(gridpoints, gridsize, dimension, manager,
                                                 parameters, static_cast<float>(lambda),
-                                                 platform_id, device_id);
+                                                platform_id, device_id);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<double>(gridpoints, gridsize, dimension, manager,
@@ -114,27 +103,8 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
+  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "double");
-  }
-
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<float>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelDensityMult<double>::augmentDefaultParameters(*parameters);
-    DensityOCLMultiPlatform::KernelDensityB<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
-  parameters->serialize("MyOCLConf.cfg");
 
   size_t platformid = 0;
   if (parameters->contains("USE_PLATFORM") == true) {
@@ -158,7 +128,6 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                 << "or use a different factory method." << std::endl;
     throw base::factory_exception(errorString.str().c_str());
   }
-
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, parameters,
@@ -168,7 +137,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<double>(grid, dimension, manager, parameters,
                                                  lambda,
-                                                platformid, deviceid);
+                                                 platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"OperationDensityOCLMultiPlatform\": "
