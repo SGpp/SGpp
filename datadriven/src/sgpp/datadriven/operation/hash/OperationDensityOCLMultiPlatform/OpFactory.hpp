@@ -12,6 +12,10 @@
 namespace sgpp {
 namespace datadriven {
 
+DensityOCLMultiPlatform::OperationDensityOCL*
+createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
+                                        double lambda, base::OCLOperationConfiguration *parameters,
+                                        size_t platform_id, size_t device_id);
 sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf, size_t platform_id,
