@@ -15,7 +15,7 @@
 #include <vector>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -47,10 +47,10 @@ public:
 
 	virtual size_t numPoints(size_t level) = 0;
 
-	virtual std::shared_ptr<AbstractPermutationIterator> getSortedPermutationIterator(size_t level, std::vector<SGPP::float_t> const &points, size_t numPoints) = 0;
+	virtual std::shared_ptr<AbstractPermutationIterator> getSortedPermutationIterator(size_t level, std::vector<double> const &points, size_t numPoints) = 0;
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_ABSTRACTPOINTORDERING_HPP_ */

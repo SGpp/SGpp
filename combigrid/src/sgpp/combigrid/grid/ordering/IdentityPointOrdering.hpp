@@ -12,7 +12,7 @@
 #include "../growth/AbstractGrowthStrategy.hpp"
 
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class IdentityPointOrdering: public AbstractPointOrdering {
@@ -28,11 +28,11 @@ public:
 
 	virtual size_t numPoints(size_t level);
 
-	virtual std::shared_ptr<AbstractPermutationIterator> getSortedPermutationIterator(size_t level, std::vector<SGPP::float_t> const &points,
+	virtual std::shared_ptr<AbstractPermutationIterator> getSortedPermutationIterator(size_t level, std::vector<double> const &points,
 			size_t numPoints);
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_IDENTITYPOINTORDERING_HPP_ */

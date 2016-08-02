@@ -7,7 +7,7 @@
 
 #include "AbstractPointOrdering.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AbstractPointOrdering::~AbstractPointOrdering() {
@@ -15,4 +15,4 @@ AbstractPointOrdering::~AbstractPointOrdering() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

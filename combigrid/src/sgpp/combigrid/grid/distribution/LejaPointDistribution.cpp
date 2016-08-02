@@ -12,7 +12,7 @@
 #include "sgpp/combigrid/optimization/Optimization.h"
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 const double epsilon = 0.00001;
@@ -22,16 +22,16 @@ public:
 	virtual ~leja_f() {
 	}
 
-	leja_f(std::function<float_t(float_t)> f) {
+	leja_f(std::function<double(double)> f) {
 		this->func = f;
 	}
 
-	float_t operator()(float_t x) {
+	double operator()(double x) {
 		return func(x);
 	}
 
 private:
-	std::function<float_t(float_t)> func;
+	std::function<double(double)> func;
 };
 
 /**
@@ -43,39 +43,39 @@ private:
  * @param upper_bound upper bound for the range of the points
  * @param weight_func the weight function
  */
-void calc_leja_points(std::vector<float_t>& sortedPoints,
-		std::vector<float_t> &points, int number, float_t lower_bound,
-		float_t upper_bound, std::function<float_t(float_t)> weight_func) {
+void calc_leja_points(std::vector<double>& sortedPoints,
+		std::vector<double> &points, int number, double lower_bound,
+		double upper_bound, std::function<double(double)> weight_func) {
 	// calculates the next NUMBER leja points
 	for (int i = 0; i < number; ++i) {
-		std::vector<float_t> tries;
-		std::vector<float_t> values;
+		std::vector<double> tries;
+		std::vector<double> values;
 
-		float_t low, up;
+		double low, up;
 		for (size_t j = 0; j <= sortedPoints.size(); ++j) {
 
 			low = (j == 0) ? lower_bound : sortedPoints.at(j - 1);
 			up = (j == sortedPoints.size()) ? upper_bound : sortedPoints.at(j);
 
-			std::function<float_t(float_t)> leja_func =
-					[sortedPoints, weight_func](float_t x) {
-						float_t prod = 1;
+			std::function<double(double)> leja_func =
+					[sortedPoints, weight_func](double x) {
+						double prod = 1;
 						for (size_t i = 0; i < sortedPoints.size(); ++i) {
 							prod *= std::abs(x - sortedPoints.at(i));
 						}
 						return (-1) * prod * weight_func(x);
 					};
 
-			float_t x_val = (low + up) / 2;
+			double x_val = (low + up) / 2;
 
 			leja_f f(leja_func);
-			float_t y_val = optimize::local_min(low, up, epsilon, f, x_val);
+			double y_val = optimize::local_min(low, up, epsilon, f, x_val);
 
 			tries.push_back(x_val);
 			values.push_back(y_val);
 		}
 
-		float_t min_val = 100;
+		double min_val = 100;
 		size_t idx = 0;
 		for (size_t j = 0; j < values.size(); ++j) {
 			if (values.at(j) < min_val) {
@@ -84,7 +84,7 @@ void calc_leja_points(std::vector<float_t>& sortedPoints,
 			}
 		}
 
-		float_t next_point = tries.at(idx);
+		double next_point = tries.at(idx);
 		points.push_back(next_point);
 		// insertion sort
 		for (size_t j = 0; j < sortedPoints.size(); ++j) {
@@ -102,7 +102,7 @@ void calc_leja_points(std::vector<float_t>& sortedPoints,
 /**
  * normal distribution for the calculation of the starting point
  */
-SGPP::float_t normalDistributionFunc(SGPP::float_t x) {
+double normalDistributionFunc(double x) {
 	const double factor = 0.2;
 	return exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
 }
@@ -111,15 +111,15 @@ SGPP::float_t normalDistributionFunc(SGPP::float_t x) {
  * Calculates the Starting Point by weighting the weight function with a wide normal distribution
  * and searching via optimizer for the maximum
  */
-SGPP::float_t LejaPointDistribution::calcStartingPoint() {
+double LejaPointDistribution::calcStartingPoint() {
 	// weight the weight function with the normal distribution
-	std::function<SGPP::float_t(SGPP::float_t)> w =
-			[&](SGPP::float_t x) {return -(this->normalDistribution(x) * this->weightFunction(x));};
+	std::function<double(double)> w =
+			[&](double x) {return -(this->normalDistribution(x) * this->weightFunction(x));};
 
 	// optimize it
 	leja_f f(w);
 	// starting x value
-	SGPP::float_t x_val = 0.5;
+	double x_val = 0.5;
 	optimize::local_min(0.0, 1.0, epsilon, f, x_val);
 
 	return x_val;
@@ -136,7 +136,7 @@ LejaPointDistribution::LejaPointDistribution(
 LejaPointDistribution::~LejaPointDistribution() {
 }
 
-SGPP::float_t LejaPointDistribution::compute(size_t numPoints, size_t j) {
+double LejaPointDistribution::compute(size_t numPoints, size_t j) {
 	if (points.size() <= j) {
 		calc_leja_points(sortedPoints, points,
 				static_cast<int>(j + 1 - points.size()), 0.0, 1.0,
@@ -147,4 +147,4 @@ SGPP::float_t LejaPointDistribution::compute(size_t numPoints, size_t j) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

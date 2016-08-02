@@ -8,7 +8,7 @@
 #include "ExponentialLevelorderPointOrdering.hpp"
 #include "ExponentialLevelorderPermutationIterator.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 ExponentialLevelorderPointOrdering::~ExponentialLevelorderPointOrdering() {
@@ -55,9 +55,9 @@ size_t ExponentialLevelorderPointOrdering::numPoints(size_t level) {
 }
 
 std::shared_ptr<AbstractPermutationIterator> ExponentialLevelorderPointOrdering::getSortedPermutationIterator(size_t level,
-		const std::vector<SGPP::float_t>& points, size_t numPoints) {
+		const std::vector<double>& points, size_t numPoints) {
 	return std::shared_ptr<AbstractPermutationIterator>(new ExponentialLevelorderPermutationIterator(level, numPoints));
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

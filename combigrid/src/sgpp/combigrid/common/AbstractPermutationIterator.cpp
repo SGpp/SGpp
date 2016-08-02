@@ -7,7 +7,7 @@
 
 #include "AbstractPermutationIterator.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AbstractPermutationIterator::~AbstractPermutationIterator() {
@@ -15,4 +15,4 @@ AbstractPermutationIterator::~AbstractPermutationIterator() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

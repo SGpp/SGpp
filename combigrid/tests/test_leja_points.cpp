@@ -12,28 +12,28 @@
 #include <cmath>
 
 // in %
-SGPP::float_t tolerance = 0.01;
+double tolerance = 0.01;
 
 void testLejaPoints() {
-	std::function<SGPP::float_t(SGPP::float_t)> weight_func =
-			[](SGPP::float_t d) {return 1;};
-	SGPP::float_t start = 0.5;
-	SGPP::float_t lower_bound = 0;
-	SGPP::float_t upper_bound = 1;
+	std::function<double(double)> weight_func =
+			[](double d) {return 1;};
+	double start = 0.5;
+	double lower_bound = 0;
+	double upper_bound = 1;
 	int number = 8;
 
-	std::vector<SGPP::float_t> leja_points;
+	std::vector<double> leja_points;
 
 	// start point
 	leja_points.push_back(start);
 	auto points = leja_points;
 
 	// calc leja points
-	SGPP::combigrid::calc_leja_points(leja_points, points, number, lower_bound,
+	sgpp::combigrid::calc_leja_points(leja_points, points, number, lower_bound,
 			upper_bound, weight_func);
 
 	// correct solution:
-	std::vector<SGPP::float_t> correct_leja_points;
+	std::vector<double> correct_leja_points;
 	correct_leja_points.push_back(1.0428174199820221e-05);
 	correct_leja_points.push_back(0.065002567709224635);
 	correct_leja_points.push_back(0.17065421163314368);
@@ -54,9 +54,9 @@ void testLejaPoints() {
 }
 
 void testLejaDistributionStartingPoint() {
-	SGPP::combigrid::LejaPointDistribution leja;
+	sgpp::combigrid::LejaPointDistribution leja;
 
-	SGPP::float_t first_point = leja.compute(0, 0);
+	double first_point = leja.compute(0, 0);
 
 	BOOST_CHECK_CLOSE(first_point, 0.5, tolerance);
 }
@@ -64,23 +64,23 @@ void testLejaDistributionStartingPoint() {
 /*
  * the starting point for this function is 1.0
  */
-SGPP::float_t quadratic_func(SGPP::float_t x) {
+double quadratic_func(double x) {
 	return 42 * x * x;
 }
 
 void testOtherStartingPoint() {
-	SGPP::combigrid::LejaPointDistribution leja(quadratic_func);
+	sgpp::combigrid::LejaPointDistribution leja(quadratic_func);
 
 	// check if first point is correct, it should be 1.0
 	BOOST_CHECK_CLOSE(leja.compute(0, 0), 1.0, tolerance);
 }
 
-SGPP::float_t sinusweight(SGPP::float_t x) {
+double sinusweight(double x) {
 	return std::sin(x * 3.14159265358979323846);
 }
 
 void testLejaSinusWithNormalDistribution() {
-	SGPP::combigrid::LejaPointDistribution leja(sinusweight);
+	sgpp::combigrid::LejaPointDistribution leja(sinusweight);
 
 	// check if first point is correct, it should be 0.5
 	BOOST_CHECK_CLOSE(leja.compute(0, 0), 0.5, tolerance);

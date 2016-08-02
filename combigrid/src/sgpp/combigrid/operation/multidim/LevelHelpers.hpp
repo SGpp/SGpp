@@ -17,25 +17,25 @@
 #include <unordered_set>
 #include <boost/heap/binomial_heap.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class QueueEntry {
 public:
-	QueueEntry(MultiIndex const &level, float_t priority, size_t maxNewPoints) :
+	QueueEntry(MultiIndex const &level, double priority, size_t maxNewPoints) :
 			level(level), priority(priority), maxNewPoints(maxNewPoints) {
 
 	}
 
 	MultiIndex level;
-	float_t priority;
+	double priority;
 	size_t maxNewPoints;
 };
 
 class QueueComparator {
 public:
 	int operator()(QueueEntry first, QueueEntry second) const {
-		return std::less<float_t>()(first.priority, second.priority);
+		return std::less<double>()(first.priority, second.priority);
 	}
 };
 
@@ -78,7 +78,7 @@ public:
 
 	}
 
-	void setPriority(MultiIndexQueue &queue, float_t priority) {
+	void setPriority(MultiIndexQueue &queue, double priority) {
 		auto entry = *(*handle);
 		entry.priority = priority;
 		queue.update(*handle, entry);
@@ -86,6 +86,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELHELPERS_HPP_ */

@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class CombigridMultiOperationImpl {
@@ -176,4 +176,4 @@ std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createExpUnifo
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

@@ -14,7 +14,7 @@
 #include "ScalarVector.hpp"
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename Scalar, typename V> class ArrayVector {
@@ -148,9 +148,9 @@ public:
 	}
 };
 
-typedef ArrayVector<SGPP::float_t, FloatScalarVector> FloatArrayVector;
+typedef ArrayVector<double, FloatScalarVector> FloatArrayVector;
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_ */

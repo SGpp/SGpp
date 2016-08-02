@@ -11,7 +11,7 @@
 #include "AbstractSerializationStrategy.hpp"
 #include <sstream>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename T> class DefaultSerializationStrategy: public AbstractSerializationStrategy<T> {
@@ -33,6 +33,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_SERIALIZATION_DEFAULTSERIALIZATIONSTRATEGY_HPP_ */

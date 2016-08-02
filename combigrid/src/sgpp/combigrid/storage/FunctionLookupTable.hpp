@@ -18,7 +18,7 @@
 #include <string>
 #include <mutex>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class DataVectorEqualTo {
@@ -41,7 +41,7 @@ public:
 class DataVectorHash {
 public:
 	size_t operator()(base::DataVector const &vec) const {
-		std::hash<SGPP::float_t> h;
+		std::hash<double> h;
 		size_t result = 0;
 		for (size_t i = 0; i < vec.getSize(); ++i) {
 			result ^= h(vec[i]) * (i + 1);
@@ -51,21 +51,21 @@ public:
 };
 
 class FunctionLookupTable {
-	std::shared_ptr<std::unordered_map<base::DataVector, SGPP::float_t, DataVectorHash, DataVectorEqualTo>> hashmap;
+	std::shared_ptr<std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>> hashmap;
 	MultiFunction func;
 	std::mutex tableMutex;
 
 public:
 	FunctionLookupTable(MultiFunction func);
 
-	SGPP::float_t operator()(base::DataVector const &x);
+	double operator()(base::DataVector const &x);
 
-	SGPP::float_t eval(base::DataVector const &x);
-	SGPP::float_t evalThreadsafe(base::DataVector const &x);
+	double eval(base::DataVector const &x);
+	double evalThreadsafe(base::DataVector const &x);
 
 	bool containsEntry(base::DataVector const &x);
 
-	void addEntry(base::DataVector const &x, SGPP::float_t y);
+	void addEntry(base::DataVector const &x, double y);
 
 	std::string serialize();
 

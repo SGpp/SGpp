@@ -16,7 +16,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -24,7 +24,7 @@ namespace combigrid {
  */
 class NestedPointHierarchy: public AbstractPointHierarchy {
 	std::vector<size_t> numPointsPerLevel;
-	std::vector<SGPP::float_t> points;
+	std::vector<double> points;
 	std::vector<std::shared_ptr<AbstractPermutationIterator>> permutationIterators;
 
 	std::shared_ptr<AbstractPointDistribution> pointDistribution;
@@ -35,10 +35,10 @@ public:
 
 	virtual ~NestedPointHierarchy();
 
-	virtual SGPP::float_t getPoint(size_t level, size_t index);
+	virtual double getPoint(size_t level, size_t index);
 
-	virtual std::vector<SGPP::float_t> &computePoints(size_t level);
-	virtual std::vector<SGPP::float_t> getPoints(size_t level, bool sorted);
+	virtual std::vector<double> &computePoints(size_t level);
+	virtual std::vector<double> getPoints(size_t level, bool sorted);
 
 	virtual size_t getNumPoints(size_t level);
 
@@ -48,6 +48,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_HIERARCHY_NESTEDPOINTHIERARCHY_HPP_ */

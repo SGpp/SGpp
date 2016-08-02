@@ -10,13 +10,13 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 ClenshawCurtisDistribution::~ClenshawCurtisDistribution() {
 }
 
-SGPP::float_t ClenshawCurtisDistribution::compute(size_t numPoints, size_t j) {
+double ClenshawCurtisDistribution::compute(size_t numPoints, size_t j) {
 	if (j >= numPoints) {
 		throw std::logic_error("ClenshawCurtisDistribution::compute: j >= numPoints");
 	}
@@ -29,4 +29,4 @@ SGPP::float_t ClenshawCurtisDistribution::compute(size_t numPoints, size_t j) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

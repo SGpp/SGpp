@@ -21,7 +21,7 @@
 #include <vector>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class CombigridMultiOperationImpl; // we use pimpl for not having to include all the template stuff in the header
@@ -62,6 +62,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_COMBIGRIDMULTIOPERATION_HPP_ */

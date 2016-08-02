@@ -12,7 +12,7 @@
 #include <memory>
 #include "../../definitions.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 enum class StorageStatus : uint8_t {
@@ -54,6 +54,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_ABSTRACTTREESTORAGENODE_HPP_ */

@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <thread>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -90,6 +90,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGE_HPP_ */

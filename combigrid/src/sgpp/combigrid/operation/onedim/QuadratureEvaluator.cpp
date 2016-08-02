@@ -10,7 +10,7 @@
 
 #include <iomanip>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -18,11 +18,11 @@ namespace combigrid {
  */
 struct LagrangePolynom {
 
-	std::vector<SGPP::float_t> points;
+	std::vector<double> points;
 	size_t point;
 
-	SGPP::float_t evaluate(SGPP::float_t x) {
-		SGPP::float_t result = 1.0;
+	double evaluate(double x) {
+		double result = 1.0;
 		for (size_t i = 0; i < points.size(); ++i) {
 			if (i != point) {
 				// TODO: precalculate denominator?
@@ -50,12 +50,12 @@ public:
 	 *   @param b    upper limit of integration
 	 *   @param f    the polynomial to integrate
 	 */
-	SGPP::float_t integrate(SGPP::float_t a, SGPP::float_t b, LagrangePolynom f) {
-		SGPP::float_t p = (b - a) / 2;
-		SGPP::float_t q = (b + a) / 2;
+	double integrate(double a, double b, LagrangePolynom f) {
+		double p = (b - a) / 2;
+		double q = (b + a) / 2;
 		const LegendrePolynomial& legpoly = s_LegendrePolynomial;
 
-		SGPP::float_t sum = 0;
+		double sum = 0;
 		for (size_t i = 1; i <= eDEGREE; ++i) { // TODO: warum hier ab 1?
 			sum += legpoly.weight(i) * f.evaluate(p * legpoly.root(i) + q);
 		}
@@ -74,15 +74,15 @@ private:
 	public:
 		LegendrePolynomial(size_t eDEGREE) :
 				eDEGREE(eDEGREE) {
-			_r = std::vector<SGPP::float_t>(eDEGREE + 1, 0.0); // TODO: die beiden waren (eDEGREE, 0.0), wie rum ist es richtig?
-			_w = std::vector<SGPP::float_t>(eDEGREE + 1, 0.0);
+			_r = std::vector<double>(eDEGREE + 1, 0.0); // TODO: die beiden waren (eDEGREE, 0.0), wie rum ist es richtig?
+			_w = std::vector<double>(eDEGREE + 1, 0.0);
 			// Solve roots and weights
 			for (size_t i = 0; i <= eDEGREE; ++i) { // TODO: war i <= eDEGREE, wie rum ist es richtig?
-				SGPP::float_t dr = 1;
+				double dr = 1;
 
 				// Find zero
 				Evaluation eval(cos(
-				M_PI * (static_cast<SGPP::float_t>(i) - 0.25) / (static_cast<SGPP::float_t>(eDEGREE) + 0.5)), eDEGREE);
+				M_PI * (static_cast<double>(i) - 0.25) / (static_cast<double>(eDEGREE) + 0.5)), eDEGREE);
 				do {
 					dr = eval.v() / eval.d();
 					eval.evaluate(eval.x() - dr);
@@ -93,15 +93,15 @@ private:
 			}
 		}
 
-		SGPP::float_t root(size_t i) const {
+		double root(size_t i) const {
 			return this->_r[i];
 		}
-		SGPP::float_t weight(size_t i) const {
+		double weight(size_t i) const {
 			return this->_w[i];
 		}
 	private:
-		std::vector<SGPP::float_t> _r;
-		std::vector<SGPP::float_t> _w;
+		std::vector<double> _r;
+		std::vector<double> _w;
 
 		/*
 		 * Evaluate the value *and* derivative of the
@@ -110,40 +110,40 @@ private:
 		class Evaluation {
 			size_t eDEGREE;
 		public:
-			explicit Evaluation(SGPP::float_t x, size_t eDEGREE) :
+			explicit Evaluation(double x, size_t eDEGREE) :
 					eDEGREE(eDEGREE), _x(x), _v(1), _d(0) {
 				this->evaluate(x);
 			}
 
-			void evaluate(SGPP::float_t x) {
+			void evaluate(double x) {
 				this->_x = x;
 
-				SGPP::float_t vsub1 = x;
-				SGPP::float_t vsub2 = 1;
-				SGPP::float_t f = 1 / (x * x - 1);
+				double vsub1 = x;
+				double vsub2 = 1;
+				double f = 1 / (x * x - 1);
 
 				for (size_t i = 2; i <= eDEGREE; ++i) { // TODO: wirklich hier ab 2?
-					this->_v = ((2 * static_cast<SGPP::float_t>(i) - 1) * x * vsub1 - (static_cast<SGPP::float_t>(i) - 1) * vsub2)
-							/ static_cast<SGPP::float_t>(i);
-					this->_d = static_cast<SGPP::float_t>(i) * f * (x * this->_v - vsub1);
+					this->_v = ((2 * static_cast<double>(i) - 1) * x * vsub1 - (static_cast<double>(i) - 1) * vsub2)
+							/ static_cast<double>(i);
+					this->_d = static_cast<double>(i) * f * (x * this->_v - vsub1);
 
 					vsub2 = vsub1;
 					vsub1 = this->_v;
 				}
 			}
 
-			SGPP::float_t v() const {
+			double v() const {
 				return this->_v;
 			}
-			SGPP::float_t d() const {
+			double d() const {
 				return this->_d;
 			}
-			SGPP::float_t x() const {
+			double x() const {
 				return this->_x;
 			}
 
 		private:
-			SGPP::float_t _x;SGPP::float_t _v;SGPP::float_t _d;
+			double _x;double _v;double _d;
 		};
 	};
 
@@ -154,7 +154,7 @@ private:
 	size_t eDEGREE;
 };
 
-SGPP::float_t gauss(LagrangePolynom polynom) {
+double gauss(LagrangePolynom polynom) {
 	size_t size = polynom.points.size() + 1;
 	GaussLegendreQuadrature quad(size); // TODO: kann man optimieren, indem man das nicht immer neu erstellt
 	return quad.integrate(0.0, 1.0, polynom);
@@ -163,7 +163,7 @@ SGPP::float_t gauss(LagrangePolynom polynom) {
 /**
  * Integrates the polynom
  */
-SGPP::float_t integrate(LagrangePolynom polynom) {
+double integrate(LagrangePolynom polynom) {
 	//return romberg2(polynom);
 	return gauss(polynom);
 }
@@ -171,7 +171,7 @@ SGPP::float_t integrate(LagrangePolynom polynom) {
 /**
  * Calculates the weight for the specific point
  */
-SGPP::float_t getWeight(std::vector<SGPP::float_t>& points, size_t point) {
+double getWeight(std::vector<double>& points, size_t point) {
 	LagrangePolynom p;
 	p.points = points;
 	p.point = point;
@@ -186,7 +186,7 @@ SGPP::float_t getWeight(std::vector<SGPP::float_t>& points, size_t point) {
  * it is recommended to clear the weight vector before calling this function to ensure that the weights are at the same position
  * as their points
  */
-void calculateWeights(std::vector<SGPP::float_t>& points, std::vector<FloatScalarVector>& weights) {
+void calculateWeights(std::vector<double>& points, std::vector<FloatScalarVector>& weights) {
 	// calc weight for each point
 	for (size_t i = 0; i < points.size(); ++i) {
 		weights.push_back(getWeight(points, i));
@@ -204,13 +204,13 @@ bool QuadratureEvaluator::needsParameter() {
 	return false;
 }
 
-void QuadratureEvaluator::setGridPoints(std::vector<SGPP::float_t> const &newXValues) {
+void QuadratureEvaluator::setGridPoints(std::vector<double> const &newXValues) {
 	xValues = newXValues;
 	weights.clear();
 	calculateWeights(xValues, weights);
 
 	if (normalizeWeights) {
-		float_t sum = 0.0;
+		double sum = 0.0;
 
 		// multiply the weights with the weight function
 		for (size_t i = 0; i < weights.size(); ++i) {
@@ -218,7 +218,7 @@ void QuadratureEvaluator::setGridPoints(std::vector<SGPP::float_t> const &newXVa
 			sum += weights[i].getValue();
 		}
 
-		float_t sumInv = 1.0 / sum;
+		double sumInv = 1.0 / sum;
 
 		for (size_t i = 0; i < weights.size(); ++i) {
 			weights[i].scalarMult(sumInv);
@@ -234,7 +234,7 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> > QuadratureEvaluator
 	return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(new QuadratureEvaluator(*this));
 }
 
-QuadratureEvaluator::QuadratureEvaluator(SGPP::combigrid::SingleFunction weight_function, bool normalizeWeights) :
+QuadratureEvaluator::QuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights) :
 		weight_function(weight_function), normalizeWeights(normalizeWeights) {
 
 }
@@ -248,4 +248,4 @@ void QuadratureEvaluator::setParameter(const FloatScalarVector& param) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

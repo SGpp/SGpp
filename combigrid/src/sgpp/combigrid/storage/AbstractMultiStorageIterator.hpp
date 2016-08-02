@@ -13,7 +13,7 @@
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename T> class AbstractMultiStorageIterator {
@@ -56,6 +56,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_ */

@@ -7,7 +7,7 @@
 
 #include "ExponentialLevelorderPermutationIterator.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 ExponentialLevelorderPermutationIterator::ExponentialLevelorderPermutationIterator(size_t level, size_t numPoints, size_t currentIndex)
@@ -66,4 +66,4 @@ std::shared_ptr<AbstractPermutationIterator> ExponentialLevelorderPermutationIte
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

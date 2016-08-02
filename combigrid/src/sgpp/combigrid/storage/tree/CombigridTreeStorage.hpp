@@ -19,7 +19,7 @@
 #include <functional>
 #include <string>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class CombigridTreeStorageImpl;
@@ -31,18 +31,18 @@ public:
 	CombigridTreeStorage(std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies, MultiFunction p_func);
 	virtual ~CombigridTreeStorage();
 
-	virtual std::shared_ptr<AbstractMultiStorageIterator<SGPP::float_t> > getGuidedIterator(MultiIndex const &level, MultiIndexIterator &iterator, std::vector<bool> orderingConfiguration);
+	virtual std::shared_ptr<AbstractMultiStorageIterator<double> > getGuidedIterator(MultiIndex const &level, MultiIndexIterator &iterator, std::vector<bool> orderingConfiguration);
 
 	virtual size_t getNumEntries();
 
 	virtual std::string serialize();
 	virtual void deserialize(std::string const &str);
 
-	virtual void set(MultiIndex const &level, MultiIndex const &index, float_t value);
+	virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
 };
 
 }
 /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_COMBIGRIDTREESTORAGE_HPP_ */

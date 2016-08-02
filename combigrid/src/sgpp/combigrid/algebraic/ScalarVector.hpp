@@ -1,9 +1,7 @@
-/*
- * ScalarVector.hpp
- *
- *  Created on: 11.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_
@@ -11,76 +9,49 @@
 #include <sgpp/globaldef.hpp>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace combigrid {
 
-template<typename Scalar> class ScalarVector {
-	Scalar val;
-public:
-	ScalarVector()
-		: val(Scalar()) {
+template <typename Scalar>
+class ScalarVector {
+  Scalar val;
 
-	}
+ public:
+  ScalarVector() : val(Scalar()) {}
 
-	ScalarVector(Scalar const &value)
-		: val(value) {
+  ScalarVector(Scalar const &value) : val(value) {}
 
-	}
+  ScalarVector(ScalarVector const &other) : val(other.val) {}
 
-	ScalarVector(ScalarVector const &other)
-		: val(other.val) {
+  ScalarVector<Scalar> &operator=(ScalarVector<Scalar> const &other) {
+    val = other.val;
+    return *this;
+  }
 
-	}
+  Scalar const &value() const { return val; }
 
-	ScalarVector<Scalar> &operator=(ScalarVector<Scalar> const &other) {
-		val = other.val;
-		return *this;
-	}
+  Scalar &value() { return val; }
 
-	Scalar const &value() const {
-		return val;
-	}
+  Scalar getValue() const { return val; }
 
-	Scalar &value() {
-		return val;
-	}
+  void add(ScalarVector<Scalar> const &other) { val += other.val; }
 
-	Scalar getValue() const {
-		return val;
-	}
+  void sub(ScalarVector<Scalar> const &other) { val -= other.val; }
 
-	void add(ScalarVector<Scalar> const &other) {
-		val += other.val;
-	}
+  void componentwiseMult(ScalarVector<Scalar> const &other) { val *= other.val; }
 
-	void sub(ScalarVector<Scalar> const &other) {
-		val -= other.val;
-	}
+  void scalarMult(Scalar const &factor) { val *= factor; }
 
-	void componentwiseMult(ScalarVector<Scalar> const &other) {
-		val *= other.val;
-	}
+  Scalar norm() const { return std::abs(val); }
 
-	void scalarMult(Scalar const &factor) {
-		val *= factor;
-	}
+  static ScalarVector<Scalar> zero() { return ScalarVector(Scalar(0)); }
 
-	Scalar norm() const {
-		return std::abs(val);
-	}
-
-	static ScalarVector<Scalar> zero() {
-		return ScalarVector(Scalar(0));
-	}
-
-	static ScalarVector<Scalar> one() {
-		return ScalarVector(Scalar(1));
-	}
+  static ScalarVector<Scalar> one() { return ScalarVector(Scalar(1)); }
 };
 
-typedef ScalarVector<SGPP::float_t> FloatScalarVector;
+typedef ScalarVector<double> FloatScalarVector;
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_ */

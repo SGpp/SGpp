@@ -10,7 +10,7 @@
 
 #include "AbstractPointDistribution.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -20,10 +20,10 @@ class ClenshawCurtisDistribution : public AbstractPointDistribution {
 public:
 	virtual ~ClenshawCurtisDistribution();
 
-	virtual SGPP::float_t compute(size_t numPoints, size_t j);
+	virtual double compute(size_t numPoints, size_t j);
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_CLENSHAWCURTISDISTRIBUTION_HPP_ */

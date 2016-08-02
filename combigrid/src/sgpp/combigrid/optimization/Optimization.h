@@ -11,7 +11,7 @@
 #include <vector>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 namespace optimize {
@@ -20,55 +20,55 @@ namespace optimize {
 
 	class func_base{
 	public:
-		virtual float_t operator() (float_t) = 0;
+		virtual double operator() (double) = 0;
 	};
 
 	class monicPoly : public func_base {
 	public:
-		std::vector<float_t> coeff;
-		virtual float_t operator() (float_t x);
+		std::vector<double> coeff;
+		virtual double operator() (double x);
 		// constructors:
 		monicPoly(const size_t degree)
 			: coeff(degree) {}
-		monicPoly(const std::vector<float_t>& v)
+		monicPoly(const std::vector<double>& v)
 			: coeff(v) {}
-		monicPoly(const float_t* c, size_t degree)
-			: coeff(std::vector<float_t>(c, c + degree)) {}
+		monicPoly(const double* c, size_t degree)
+			: coeff(std::vector<double>(c, c + degree)) {}
 	};
 
 	class Poly : public func_base {
 	public:
-		std::vector<float_t> coeff;    // a vector of size nterms i.e. 1+degree
-		virtual float_t operator() (float_t x);
+		std::vector<double> coeff;    // a vector of size nterms i.e. 1+degree
+		virtual double operator() (double x);
 		// constructors:
 		Poly(const size_t degree)
 			: coeff(1 + degree) {}
-		Poly(const std::vector<float_t>& v)
+		Poly(const std::vector<double>& v)
 			: coeff(v) {}
-		Poly(const float_t* c, size_t degree)
-			: coeff(std::vector<float_t>(c, 1 + c + degree)) {}
+		Poly(const double* c, size_t degree)
+			: coeff(std::vector<double>(c, 1 + c + degree)) {}
 	};
 
-	float_t glomin(float_t a, float_t b, float_t c, float_t m, float_t e, float_t t,
-		func_base& f, float_t &x);
-	float_t local_min(float_t a, float_t b, float_t t, func_base& f,
-		float_t &x);
-	float_t local_min_rc(float_t &a, float_t &b, int &status, float_t value);
-	float_t r8_abs(float_t x);
-	float_t r8_epsilon();
-	float_t r8_max(float_t x, float_t y);
-	float_t r8_sign(float_t x);
+	double glomin(double a, double b, double c, double m, double e, double t,
+		func_base& f, double &x);
+	double local_min(double a, double b, double t, func_base& f,
+		double &x);
+	double local_min_rc(double &a, double &b, int &status, double value);
+	double r8_abs(double x);
+	double r8_epsilon();
+	double r8_max(double x, double y);
+	double r8_sign(double x);
 	void timestamp();
 
 	// === simple wrapper functions
 	// === for convenience and/or compatibility
-	float_t glomin(float_t a, float_t b, float_t c, float_t m, float_t e, float_t t,
-		float_t f(float_t x), float_t &x);
-	float_t local_min(float_t a, float_t b, float_t t, float_t f(float_t x),
-		float_t &x);
+	double glomin(double a, double b, double c, double m, double e, double t,
+		double f(double x), double &x);
+	double local_min(double a, double b, double t, double f(double x),
+		double &x);
 
 }
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/
 #endif /* OPTIMIZATION_H_ */

@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class AbstractPermutationIterator {
@@ -32,6 +32,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_COMMON_ABSTRACTPERMUTATIONITERATOR_HPP_ */

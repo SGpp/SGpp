@@ -7,7 +7,7 @@
 
 #include "AbstractGrowthStrategy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AbstractGrowthStrategy::~AbstractGrowthStrategy() {
@@ -15,4 +15,4 @@ AbstractGrowthStrategy::~AbstractGrowthStrategy() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

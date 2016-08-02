@@ -16,7 +16,7 @@
 const double tolerance = 1e-12;
 
 BOOST_AUTO_TEST_CASE(testIntegration) {
-	SGPP::combigrid::QuadratureEvaluator eval;
+	sgpp::combigrid::QuadratureEvaluator eval;
 
 	std::vector<double> points;
 	std::vector<double> weights;
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(testIntegration) {
 }
 
 void testIntegrationWithPolynom() {
-	SGPP::combigrid::QuadratureEvaluator eval;
+	sgpp::combigrid::QuadratureEvaluator eval;
 
 	 std::vector<double> points;
 	 std::vector<double> weights;

@@ -8,7 +8,7 @@
 #include "IdentityPointOrdering.hpp"
 #include "SortedPermutationIterator.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 IdentityPointOrdering::IdentityPointOrdering(std::shared_ptr<AbstractGrowthStrategy> growthStrategy, bool isSorted)
@@ -28,7 +28,7 @@ size_t IdentityPointOrdering::numPoints(size_t level) {
 }
 
 std::shared_ptr<AbstractPermutationIterator> IdentityPointOrdering::getSortedPermutationIterator(size_t level,
-		const std::vector<SGPP::float_t>& points, size_t numPoints) {
+		const std::vector<double>& points, size_t numPoints) {
 	if(isSorted) {
 		return std::shared_ptr<AbstractPermutationIterator>(nullptr);
 	}
@@ -37,4 +37,4 @@ std::shared_ptr<AbstractPermutationIterator> IdentityPointOrdering::getSortedPer
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

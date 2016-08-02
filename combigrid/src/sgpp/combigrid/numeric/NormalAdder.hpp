@@ -9,22 +9,22 @@
 #define NORMALADDER_HPP_
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class NormalAdder {
-    SGPP::float_t sum = 0.0;
+    double sum = 0.0;
 public:
-    void add(SGPP::float_t x) {
+    void add(double x) {
         sum += x;
     }
 
-    SGPP::float_t value() const {
+    double value() const {
         return sum;
     }
 };
 
 }
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* NORMALADDER_HPP_ */

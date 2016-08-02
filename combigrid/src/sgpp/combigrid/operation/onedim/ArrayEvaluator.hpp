@@ -13,13 +13,13 @@
 #include <sgpp/combigrid/algebraic/ArrayVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename ScalarEvaluator> class ArrayEvaluator: public AbstractLinearEvaluator<FloatArrayVector> {
 	std::vector<ScalarEvaluator> evaluators;
 	std::vector<FloatArrayVector> basisCoefficients;
-	std::vector<SGPP::float_t> xValues;
+	std::vector<double> xValues;
 	bool doesNeedParameter;
 
 	void computeBasisCoefficients() {
@@ -57,7 +57,7 @@ public:
 		return basisCoefficients;
 	}
 
-	virtual void setGridPoints(std::vector<SGPP::float_t> const &xValues) {
+	virtual void setGridPoints(std::vector<double> const &xValues) {
 		this->xValues = xValues;
 		for(auto &eval : evaluators) {
 			eval.setGridPoints(xValues);
@@ -67,7 +67,7 @@ public:
 	}
 
 	// don't change return type back to the equivalent std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> or swig will give compile errors...
-	virtual std::shared_ptr<AbstractLinearEvaluator<ArrayVector<float_t, ScalarVector<float_t>>>> cloneLinear() {
+	virtual std::shared_ptr<AbstractLinearEvaluator<ArrayVector<double, ScalarVector<double>>>> cloneLinear() {
 		return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>(new ArrayEvaluator<ScalarEvaluator>(*this));
 	}
 
@@ -100,6 +100,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ARRAYEVALUATOR_HPP_ */

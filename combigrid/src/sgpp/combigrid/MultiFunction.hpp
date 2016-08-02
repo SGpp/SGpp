@@ -13,12 +13,12 @@
 
 #include <functional>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class MultiFunction {
 public:
-	typedef std::function<SGPP::float_t(base::DataVector const &)> function_type;
+	typedef std::function<double(base::DataVector const &)> function_type;
 
 private:
 	function_type func;
@@ -27,7 +27,7 @@ public:
 	/**
 	 * for function pointers
 	 */
-	MultiFunction(SGPP::float_t (*ptr)(base::DataVector const &));
+	MultiFunction(double (*ptr)(base::DataVector const &));
 
 	/**
 	 * for lambdas or function objects
@@ -36,11 +36,11 @@ public:
 
 	}
 
-	SGPP::float_t operator()(base::DataVector const &vec);
-	SGPP::float_t call(base::DataVector const &vec);
+	double operator()(base::DataVector const &vec);
+	double call(base::DataVector const &vec);
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_MULTIFUNCTION_HPP_ */

@@ -12,13 +12,13 @@
 #include <sgpp/combigrid/algebraic/ScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class LinearInterpolationEvaluator: public AbstractLinearEvaluator<FloatScalarVector> {
-	SGPP::float_t evaluationPoint;
+	double evaluationPoint;
 	std::vector<FloatScalarVector> basisCoefficients;
-	std::vector<SGPP::float_t> xValues;
+	std::vector<double> xValues;
 
 	void computeBasisCoefficients();
 
@@ -31,7 +31,7 @@ public:
 		return basisCoefficients;
 	}
 
-	virtual void setGridPoints(std::vector<SGPP::float_t> const &newXValues);
+	virtual void setGridPoints(std::vector<double> const &newXValues);
 	virtual std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear();
 	virtual bool needsOrderedPoints();
 	virtual bool needsParameter();
@@ -39,6 +39,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_LINEARINTERPOLATIONEVALUATOR_HPP_ */

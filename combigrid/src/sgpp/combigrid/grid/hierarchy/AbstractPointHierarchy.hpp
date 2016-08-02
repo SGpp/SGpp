@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 /**
@@ -33,13 +33,13 @@ public:
 	/**
 	 * @return Returns the grid point for the given level and index. (0 <= index < getNumPoints(level))
 	 */
-	virtual SGPP::float_t getPoint(size_t level, size_t index) = 0;
+	virtual double getPoint(size_t level, size_t index) = 0;
 
 	/**
 	 * @return Returns a vector with all points for the given level. If sorted == true, then the points returned are sorted.
 	 * Depending on the configured PointOrdering, this might be slower than not sorting the points.
 	 */
-	virtual std::vector<SGPP::float_t> getPoints(size_t level, bool sorted) = 0;
+	virtual std::vector<double> getPoints(size_t level, bool sorted) = 0;
 
 	/**
 	 * @return Returns the number of points in the given level.
@@ -60,6 +60,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTPOINTHIERARCHY_HPP_ */

@@ -7,7 +7,7 @@
 
 #include "ExponentialGrowthStrategy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 ExponentialGrowthStrategy::~ExponentialGrowthStrategy() {
@@ -19,4 +19,4 @@ size_t ExponentialGrowthStrategy::numPoints(size_t level) {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

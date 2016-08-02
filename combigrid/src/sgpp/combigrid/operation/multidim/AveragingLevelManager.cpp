@@ -7,7 +7,7 @@
 
 #include "AveragingLevelManager.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AveragingLevelManager::~AveragingLevelManager() {
@@ -15,4 +15,4 @@ AveragingLevelManager::~AveragingLevelManager() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

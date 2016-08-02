@@ -7,371 +7,323 @@
 
 #include "LevelManager.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace combigrid {
 
 void LevelManager::initAdaption() {
-	queue.clear();
-	levelData.reset(new TreeStorage<std::shared_ptr<LevelInfo>>(numDimensions));
+  queue.clear();
+  levelData.reset(new TreeStorage<std::shared_ptr<LevelInfo>>(numDimensions));
 
-	auto levelStructure = getLevelStructure();
-	auto it = levelStructure->getStoredDataIterator();
+  auto levelStructure = getLevelStructure();
+  auto it = levelStructure->getStoredDataIterator();
 
-	while (it->isValid()) {
-		auto level = it->getMultiIndex();
-		levelData->set(level, std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level)));
-		it->moveToNext();
-	}
+  while (it->isValid()) {
+    auto level = it->getMultiIndex();
+    levelData->set(level, std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level)));
+    it->moveToNext();
+  }
 
-	auto dataIt = levelData->getStoredDataIterator();
-	while (dataIt->isValid()) {
-		tryAddSuccessors(dataIt->getMultiIndex());
-		dataIt->moveToNext();
-	}
+  auto dataIt = levelData->getStoredDataIterator();
+  while (dataIt->isValid()) {
+    tryAddSuccessors(dataIt->getMultiIndex());
+    dataIt->moveToNext();
+  }
 
-	if (queue.empty()) {
-		// no difference has yet been computed, so add start value
-		MultiIndex startLevel(numDimensions, 0);
-		tryAddLevel(startLevel);
-	}
+  if (queue.empty()) {
+    // no difference has yet been computed, so add start value
+    MultiIndex startLevel(numDimensions, 0);
+    tryAddLevel(startLevel);
+  }
 }
 
-void LevelManager::tryAddSuccessors(const MultiIndex& level) {
-	for (auto succLevel : getSuccessors(level)) {
-		tryAddLevel(succLevel);
-	}
+void LevelManager::tryAddSuccessors(const MultiIndex &level) {
+  for (auto succLevel : getSuccessors(level)) {
+    tryAddLevel(succLevel);
+  }
 }
 
-void LevelManager::tryAddLevel(const MultiIndex& level) {
-	if (levelData->containsIndex(level)) {
-		return;
-	}
+void LevelManager::tryAddLevel(const MultiIndex &level) {
+  if (levelData->containsIndex(level)) {
+    return;
+  }
 
-	auto predecessors = getPredecessors(level);
-	size_t numPredecessors = predecessors.size();
-	size_t numMissingPredecessors = numPredecessors;
+  auto predecessors = getPredecessors(level);
+  size_t numPredecessors = predecessors.size();
+  size_t numMissingPredecessors = numPredecessors;
 
-	for (auto &predLevel : predecessors) {
-		if (levelData->containsIndex(predLevel)) {
-			--numMissingPredecessors;
-		}
-	}
+  for (auto &predLevel : predecessors) {
+    if (levelData->containsIndex(predLevel)) {
+      --numMissingPredecessors;
+    }
+  }
 
-	if (numMissingPredecessors > 0) {
-		return;
-	}
+  if (numMissingPredecessors > 0) {
+    return;
+  }
 
-	auto levelInfo = std::make_shared<LevelInfo>(numPredecessors);
+  auto levelInfo = std::make_shared<LevelInfo>(numPredecessors);
 
-	for (auto &predLevel : predecessors) {
-		auto predInfo = levelData->get(predLevel);
-		if (predInfo->computationStage == ComputationStage::TERMINATED) {
-			--levelInfo->numNotStartedPredecessors;
-			--levelInfo->numNotCompletedPredecessors;
-		} else if (predInfo->computationStage == ComputationStage::STARTED || predInfo->computationStage == ComputationStage::TERMINATED) {
-			--levelInfo->numNotStartedPredecessors;
-		}
-	}
+  for (auto &predLevel : predecessors) {
+    auto predInfo = levelData->get(predLevel);
+    if (predInfo->computationStage == ComputationStage::TERMINATED) {
+      --levelInfo->numNotStartedPredecessors;
+      --levelInfo->numNotCompletedPredecessors;
+    } else if (predInfo->computationStage == ComputationStage::STARTED ||
+               predInfo->computationStage == ComputationStage::TERMINATED) {
+      --levelInfo->numNotStartedPredecessors;
+    }
+  }
 
-	levelData->set(level, levelInfo);
+  levelData->set(level, levelInfo);
 
-	if (levelInfo->numNotStartedPredecessors == 0) {
-		// the new level may be started, so we can add it to the priority queue
-		addToQueue(level, levelInfo);
-	}
+  if (levelInfo->numNotStartedPredecessors == 0) {
+    // the new level may be started, so we can add it to the priority queue
+    addToQueue(level, levelInfo);
+  }
 }
 
-void LevelManager::addToQueue(const MultiIndex& level, std::shared_ptr<LevelInfo> levelInfo) {
-	float_t priority = computePriority(level);
-	size_t maxNewPoints = combiEval->maxNewPoints(level);
-	QueueEntry entry(level, priority, maxNewPoints);
-	auto handle = queue.push(entry);
-	levelInfo->handle = std::make_shared<MultiIndexQueue::handle_type>(handle);
+void LevelManager::addToQueue(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo) {
+  double priority = computePriority(level);
+  size_t maxNewPoints = combiEval->maxNewPoints(level);
+  QueueEntry entry(level, priority, maxNewPoints);
+  auto handle = queue.push(entry);
+  levelInfo->handle = std::make_shared<MultiIndexQueue::handle_type>(handle);
 }
 
-void LevelManager::beforeComputation(const MultiIndex& level) {
-	auto levelInfo = levelData->get(level);
-	levelInfo->computationStage = ComputationStage::STARTED;
-	levelInfo->handle = nullptr;
+void LevelManager::beforeComputation(const MultiIndex &level) {
+  auto levelInfo = levelData->get(level);
+  levelInfo->computationStage = ComputationStage::STARTED;
+  levelInfo->handle = nullptr;
 
-	auto successors = getSuccessors(level);
-	for (auto &succLevel : successors) {
-		if (levelData->containsIndex(succLevel)) {
-			auto succInfo = levelData->get(succLevel);
-			--succInfo->numNotStartedPredecessors;
+  auto successors = getSuccessors(level);
+  for (auto &succLevel : successors) {
+    if (levelData->containsIndex(succLevel)) {
+      auto succInfo = levelData->get(succLevel);
+      --succInfo->numNotStartedPredecessors;
 
-			if (succInfo->numNotStartedPredecessors == 0) {
-				// the new level may be started, so we can add it to the priority queue
-				addToQueue(succLevel, succInfo);
-			}
-		} else {
-			tryAddLevel(succLevel);
-		}
-	}
+      if (succInfo->numNotStartedPredecessors == 0) {
+        // the new level may be started, so we can add it to the priority queue
+        addToQueue(succLevel, succInfo);
+      }
+    } else {
+      tryAddLevel(succLevel);
+    }
+  }
 }
 
-void LevelManager::afterComputation(const MultiIndex& level) {
-	auto levelInfo = levelData->get(level);
-	levelInfo->computationStage = ComputationStage::TERMINATED;
+void LevelManager::afterComputation(const MultiIndex &level) {
+  auto levelInfo = levelData->get(level);
+  levelInfo->computationStage = ComputationStage::TERMINATED;
 
-	if (levelInfo->numNotCompletedPredecessors == 0) {
-		predecessorsCompleted(level);
-	}
+  if (levelInfo->numNotCompletedPredecessors == 0) {
+    predecessorsCompleted(level);
+  }
 }
 
-void LevelManager::predecessorsCompleted(const MultiIndex& level) {
-	auto levelInfo = levelData->get(level);
-	levelInfo->computationStage = ComputationStage::COMPLETED;
+void LevelManager::predecessorsCompleted(const MultiIndex &level) {
+  auto levelInfo = levelData->get(level);
+  levelInfo->computationStage = ComputationStage::COMPLETED;
 
-	bool validResult = combiEval->addLevel(level);
-	levelInfo->norm = validResult ? combiEval->getDifferenceNorm(level) : 0.0; // TODO: improve?
-	auto successors = getSuccessors(level);
-	for (auto &succLevel : successors) {
-		auto succInfo = levelData->get(succLevel);
-		--succInfo->numNotCompletedPredecessors;
-		if (succInfo->computationStage == ComputationStage::TERMINATED && succInfo->numNotCompletedPredecessors == 0) {
-			predecessorsCompleted(succLevel);
-		} else if (succInfo->handle != nullptr) {
-			updatePriority(succLevel, succInfo);
-		}
-	}
+  bool validResult = combiEval->addLevel(level);
+  levelInfo->norm = validResult ? combiEval->getDifferenceNorm(level) : 0.0;  // TODO: improve?
+  auto successors = getSuccessors(level);
+  for (auto &succLevel : successors) {
+    auto succInfo = levelData->get(succLevel);
+    --succInfo->numNotCompletedPredecessors;
+    if (succInfo->computationStage == ComputationStage::TERMINATED &&
+        succInfo->numNotCompletedPredecessors == 0) {
+      predecessorsCompleted(succLevel);
+    } else if (succInfo->handle != nullptr) {
+      updatePriority(succLevel, succInfo);
+    }
+  }
 }
 
-void LevelManager::updatePriority(const MultiIndex& level, std::shared_ptr<LevelInfo> levelInfo) {
-	float_t priority = computePriority(level);
-	levelInfo->setPriority(queue, priority);
+void LevelManager::updatePriority(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo) {
+  double priority = computePriority(level);
+  levelInfo->setPriority(queue, priority);
 }
 
-LevelManager::~LevelManager() {
-}
-
-// If a level has been computed, we try to add its successors to the queue if all of their predecessors are computed.
-void LevelManager::tryAddSuccessorsToQueue(MultiIndex const &index) {
-	for (size_t d = 0; d < numDimensions; ++d) {
-		MultiIndex nextIndex = index;
-		++nextIndex[d];
-
-		tryAddIndexToQueue(nextIndex);
-	}
-}
-
-// Adds a level to the queue if it is not in the CombigridEvaluator, but all of its predecessors are.
-void LevelManager::tryAddIndexToQueue(MultiIndex const &nextIndex) {
-	if (combiEval->containsLevel(nextIndex)) {
-		return;
-	}
-
-	// calculate estimated value...
-	std::vector<float_t> predecessorNorms;
-
-	bool hasAllPredecessors = true;
-
-	for (size_t prevDim = 0; prevDim < numDimensions; ++prevDim) {
-		if (nextIndex[prevDim] > 0) {
-			MultiIndex prevIndex = nextIndex;
-			--prevIndex[prevDim];
-
-			if (combiEval->containsLevel(prevIndex)) {
-				float_t norm = combiEval->getDifferenceNorm(prevIndex);
-				predecessorNorms.push_back(norm);
-			} else {
-				hasAllPredecessors = false; // add index later, not all predecessors are available
-				break;
-			}
-		}
-	}
-
-	if (hasAllPredecessors) {
-		size_t maxNewPoints = combiEval->maxNewPoints(nextIndex);
-		double priority = refinementStrategy.computePriority(predecessorNorms, maxNewPoints);
-
-		QueueEntry nextEntry(nextIndex, priority, maxNewPoints);
-		queue.push(nextEntry);
-	}
-}
+LevelManager::~LevelManager() {}
 
 std::vector<MultiIndex> LevelManager::getPredecessors(MultiIndex const &level) {
-	std::vector<MultiIndex> result;
+  std::vector<MultiIndex> result;
 
-	for (size_t prevDim = 0; prevDim < numDimensions; ++prevDim) {
-		if (level[prevDim] > 0) {
-			MultiIndex prevIndex = level;
-			--prevIndex[prevDim];
-			result.push_back(prevIndex);
-		}
-	}
+  for (size_t prevDim = 0; prevDim < numDimensions; ++prevDim) {
+    if (level[prevDim] > 0) {
+      MultiIndex prevIndex = level;
+      --prevIndex[prevDim];
+      result.push_back(prevIndex);
+    }
+  }
 
-	return result;
+  return result;
 }
 
 std::vector<MultiIndex> LevelManager::getSuccessors(MultiIndex const &level) {
-	std::vector<MultiIndex> result;
+  std::vector<MultiIndex> result;
 
-	for (size_t dim = 0; dim < numDimensions; ++dim) {
-		MultiIndex nextIndex = level;
-		++nextIndex[dim];
-		result.push_back(nextIndex);
-	}
+  for (size_t dim = 0; dim < numDimensions; ++dim) {
+    MultiIndex nextIndex = level;
+    ++nextIndex[dim];
+    result.push_back(nextIndex);
+  }
 
-	return result;
-}
-
-void LevelManager::setRefinementStrategy(AdaptiveRefinementStrategy strategy) {
-	refinementStrategy = strategy;
+  return result;
 }
 
 std::vector<MultiIndex> LevelManager::getRegularLevels(size_t q) {
-	std::vector<MultiIndex> result;
+  std::vector<MultiIndex> result;
 
-	BoundedSumMultiIndexIterator iterator(numDimensions, q);
+  BoundedSumMultiIndexIterator iterator(numDimensions, q);
 
-	while (iterator.isValid()) {
-		result.push_back(iterator.value());
-		iterator.moveToNext();
-	}
+  while (iterator.isValid()) {
+    result.push_back(iterator.value());
+    iterator.moveToNext();
+  }
 
-	return result;
+  return result;
 }
 
 std::vector<MultiIndex> LevelManager::getRegularLevelsByNumPoints(size_t maxNumPoints) {
-	std::vector<MultiIndex> result;
+  std::vector<MultiIndex> result;
 
-	size_t numPoints = 0;
+  size_t numPoints = 0;
 
-	size_t q = 0;
+  size_t q = 0;
 
-	while (true) {
-		BoundedSumMultiIndexIterator iterator(numDimensions, q);
+  while (true) {
+    BoundedSumMultiIndexIterator iterator(numDimensions, q);
 
-		while (iterator.isValid()) {
-			MultiIndex nextLevel = iterator.value();
+    while (iterator.isValid()) {
+      MultiIndex nextLevel = iterator.value();
 
-			size_t maxNewPoints = combiEval->maxNewPoints(nextLevel);
-			numPoints += maxNewPoints;
+      size_t maxNewPoints = combiEval->maxNewPoints(nextLevel);
+      numPoints += maxNewPoints;
 
-			if (numPoints > maxNumPoints) {
-				return result;
-			}
+      if (numPoints > maxNumPoints) {
+        return result;
+      }
 
-			result.push_back(nextLevel);
-			iterator.moveToNext();
-		}
+      result.push_back(nextLevel);
+      iterator.moveToNext();
+    }
 
-		++q;
-	}
+    ++q;
+  }
 }
 
-void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex>& levels, size_t numThreads) {
-	auto threadPool = std::make_shared<ThreadPool>(numThreads, ThreadPool::terminateWhenIdle);
-	for (auto &level : levels) {
-		threadPool->addTasks(combiEval->getLevelTasks(level, [](){}, managerMutex));
-	}
-	threadPool->start();
-	threadPool->join();
+void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &levels,
+                                            size_t numThreads) {
+  auto threadPool = std::make_shared<ThreadPool>(numThreads, ThreadPool::terminateWhenIdle);
+  for (auto &level : levels) {
+    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}, managerMutex));
+  }
+  threadPool->start();
+  threadPool->join();
 }
 
-void LevelManager::addLevels(const std::vector<MultiIndex>& levels) {
-	for (auto &level : levels) {
-		combiEval->addLevel(level);
-	}
+void LevelManager::addLevels(const std::vector<MultiIndex> &levels) {
+  for (auto &level : levels) {
+    combiEval->addLevel(level);
+  }
 }
 
 void LevelManager::addRegularLevelsParallel(size_t q, size_t numThreads) {
-	auto levels = getRegularLevels(q);
-	precomputeLevelsParallel(levels, numThreads);
-	addLevels(levels);
+  auto levels = getRegularLevels(q);
+  precomputeLevelsParallel(levels, numThreads);
+  addLevels(levels);
 }
 
 void LevelManager::addRegularLevelsByNumPointsParallel(size_t maxNumPoints, size_t numThreads) {
-	auto levels = getRegularLevelsByNumPoints(maxNumPoints);
-	precomputeLevelsParallel(levels, numThreads);
-	addLevels(levels);
+  auto levels = getRegularLevelsByNumPoints(maxNumPoints);
+  precomputeLevelsParallel(levels, numThreads);
+  addLevels(levels);
 }
 
 void LevelManager::addRegularLevels(size_t q) {
-	auto levels = getRegularLevels(q);
-	addLevels(levels);
+  auto levels = getRegularLevels(q);
+  addLevels(levels);
 }
 
 void LevelManager::addRegularLevelsByNumPoints(size_t maxNumPoints) {
-	auto levels = getRegularLevelsByNumPoints(maxNumPoints);
-	addLevels(levels);
+  auto levels = getRegularLevelsByNumPoints(maxNumPoints);
+  addLevels(levels);
 }
 
-size_t LevelManager::dim() const {
-	return numDimensions;
-}
+size_t LevelManager::dim() const { return numDimensions; }
 
 std::shared_ptr<TreeStorage<uint8_t>> LevelManager::getLevelStructure() const {
-	return combiEval->getLevelStructure();
+  return combiEval->getLevelStructure();
 }
 
 std::string LevelManager::getSerializedLevelStructure() const {
-	return TreeStorageSerializationStrategy<uint8_t>(numDimensions).serialize(getLevelStructure());
+  return TreeStorageSerializationStrategy<uint8_t>(numDimensions).serialize(getLevelStructure());
 }
 
 void LevelManager::addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage) {
-	auto it = storage->getStoredDataIterator();
+  auto it = storage->getStoredDataIterator();
 
-	while (it->isValid()) {
-		combiEval->addLevel(it->getMultiIndex());
-		it->moveToNext();
-	}
+  while (it->isValid()) {
+    combiEval->addLevel(it->getMultiIndex());
+    it->moveToNext();
+  }
 }
 
 void LevelManager::addLevelsFromSerializedStructure(std::string serializedStructure) {
-	addLevelsFromStructure(TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
+  addLevelsFromStructure(
+      TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
 }
 
 void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
-	initAdaption();
+  initAdaption();
 
-	size_t currentPointBound = 0;
+  size_t currentPointBound = 0;
 
-	while (!queue.empty()) {
-		QueueEntry entry = queue.top();
-		queue.pop();
+  while (!queue.empty()) {
+    QueueEntry entry = queue.top();
+    queue.pop();
 
-		currentPointBound += entry.maxNewPoints;
+    currentPointBound += entry.maxNewPoints;
 
-		if (currentPointBound > maxNumPoints) {
-			break;
-		}
+    if (currentPointBound > maxNumPoints) {
+      break;
+    }
 
-		beforeComputation(entry.level); // successors may be added here
-		afterComputation(entry.level); // the actual computation is done here, in addLevel() and the successors are updated here
-	}
+    beforeComputation(entry.level);  // successors may be added here
+    afterComputation(entry.level);   // the actual computation is done here, in addLevel() and the
+                                     // successors are updated here
+  }
 }
 
 void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads) {
-	initAdaption();
+  initAdaption();
 
-	size_t currentPointBound = 0;
+  size_t currentPointBound = 0;
 
-	auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
-		std::lock_guard<std::mutex> guard(managerMutex);
-		auto entry = queue.top();
-		queue.pop();
+  auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
+    std::lock_guard<std::mutex> guard(managerMutex);
+    auto entry = queue.top();
+    queue.pop();
 
-		currentPointBound += entry.maxNewPoints;
+    currentPointBound += entry.maxNewPoints;
 
-		if (currentPointBound > maxNumPoints) {
-			tp.triggerTermination();
-			return;
-		}
+    if (currentPointBound > maxNumPoints) {
+      tp.triggerTermination();
+      return;
+    }
 
-		beforeComputation(entry.level);
-		auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
-					// mutex will be locked when this callback is called
-					afterComputation(entry.level);
-				}, managerMutex);
-		tp.addTasks(tasks);
+    beforeComputation(entry.level);
+    auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
+      // mutex will be locked when this callback is called
+      afterComputation(entry.level);
+    }, managerMutex);
+    tp.addTasks(tasks);
+  });
 
-	});
-
-	threadPool->start();
-	threadPool->join();
+  threadPool->start();
+  threadPool->join();
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

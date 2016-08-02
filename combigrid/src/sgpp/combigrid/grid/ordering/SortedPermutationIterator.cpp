@@ -8,7 +8,7 @@
 #include "SortedPermutationIterator.hpp"
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 SortedPermutationIterator::SortedPermutationIterator(const std::vector<size_t>& permutation, size_t currentIndex)
@@ -16,7 +16,7 @@ SortedPermutationIterator::SortedPermutationIterator(const std::vector<size_t>& 
 	, currentIndex(currentIndex) {
 }
 
-SortedPermutationIterator::SortedPermutationIterator(const std::vector<SGPP::float_t>& points, size_t numPoints)
+SortedPermutationIterator::SortedPermutationIterator(const std::vector<double>& points, size_t numPoints)
 	: permutation(numPoints, 0)
 	, currentIndex(0) {
 	for(size_t i = 0; i < numPoints; ++i) {
@@ -48,4 +48,4 @@ std::shared_ptr<AbstractPermutationIterator> SortedPermutationIterator::clone() 
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

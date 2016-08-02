@@ -15,18 +15,18 @@
 #include <vector>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 class QuadratureEvaluator: public AbstractLinearEvaluator<FloatScalarVector> {
 
-	std::vector<SGPP::float_t> xValues;
+	std::vector<double> xValues;
 	std::vector<FloatScalarVector> weights;
-	SGPP::combigrid::SingleFunction weight_function;
+	sgpp::combigrid::SingleFunction weight_function;
 	bool normalizeWeights;
 
 public:
-	QuadratureEvaluator(SGPP::combigrid::SingleFunction weight_function = SGPP::combigrid::SingleFunction(constantFunction<float_t>(static_cast<float_t>(1.0))), bool normalizeWeights = false);
+	QuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function = sgpp::combigrid::SingleFunction(constantFunction<double>(static_cast<double>(1.0))), bool normalizeWeights = false);
 	QuadratureEvaluator(QuadratureEvaluator const &other);
 	virtual ~QuadratureEvaluator();
 
@@ -34,7 +34,7 @@ public:
 		return weights;
 	}
 
-	virtual void setGridPoints(std::vector<SGPP::float_t> const &newXValues);
+	virtual void setGridPoints(std::vector<double> const &newXValues);
 
 	virtual bool needsOrderedPoints();
 	virtual bool needsParameter();
@@ -46,4 +46,4 @@ public:
 #endif /* QUADRATUREEVALUATOR_HPP_ */
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

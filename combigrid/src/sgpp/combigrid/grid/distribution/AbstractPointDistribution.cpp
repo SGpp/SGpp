@@ -7,7 +7,7 @@
 
 #include "AbstractPointDistribution.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 AbstractPointDistribution::~AbstractPointDistribution() {
@@ -15,4 +15,4 @@ AbstractPointDistribution::~AbstractPointDistribution() {
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/

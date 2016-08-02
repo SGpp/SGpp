@@ -14,7 +14,7 @@
 #include <limits>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 template<typename T> class FloatSerializationStrategy : public AbstractSerializationStrategy<T> {
@@ -81,6 +81,6 @@ public:
 };
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_SERIALIZATION_FLOATSERIALIZATIONSTRATEGY_HPP_ */

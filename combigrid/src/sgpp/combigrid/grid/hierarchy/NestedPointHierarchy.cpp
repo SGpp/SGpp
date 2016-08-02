@@ -7,7 +7,7 @@
 
 #include "NestedPointHierarchy.hpp"
 
-namespace SGPP {
+namespace sgpp{
 namespace combigrid {
 
 NestedPointHierarchy::NestedPointHierarchy(std::shared_ptr<AbstractPointDistribution> pointDistribution,
@@ -18,7 +18,7 @@ NestedPointHierarchy::NestedPointHierarchy(std::shared_ptr<AbstractPointDistribu
 NestedPointHierarchy::~NestedPointHierarchy() {
 }
 
-SGPP::float_t NestedPointHierarchy::getPoint(size_t level, size_t index) {
+double NestedPointHierarchy::getPoint(size_t level, size_t index) {
 	while(getNumPoints(level) <= index) {
 		++level;
 	} // TODO: this is a bit hacky, but probably required for CombigridTreeStorage, since it does not store the level in the nested case and thus uses level 0 for all levels
@@ -38,7 +38,7 @@ bool NestedPointHierarchy::isNested() {
 	return true;
 }
 
-std::vector<SGPP::float_t>& NestedPointHierarchy::computePoints(size_t level) {
+std::vector<double>& NestedPointHierarchy::computePoints(size_t level) {
 	size_t numPoints = getNumPoints(level);
 
 	while (numPoints > points.size()) {
@@ -49,10 +49,10 @@ std::vector<SGPP::float_t>& NestedPointHierarchy::computePoints(size_t level) {
 	return points;
 }
 
-std::vector<SGPP::float_t> NestedPointHierarchy::getPoints(size_t level, bool sorted) {
+std::vector<double> NestedPointHierarchy::getPoints(size_t level, bool sorted) {
 	auto &points = computePoints(level); // could be more than just for this level
 	size_t numPoints = getNumPoints(level);
-	std::vector<SGPP::float_t> result(numPoints);
+	std::vector<double> result(numPoints);
 	if(sorted) {
 		auto it = getSortedPermutationIterator(level);
 		for(size_t i = 0; i < result.size(); ++i) {
@@ -79,4 +79,4 @@ std::shared_ptr<AbstractPermutationIterator> NestedPointHierarchy::getSortedPerm
 }
 
 } /* namespace combigrid */
-} /* namespace SGPP */
+} /* namespace sgpp*/
