@@ -30,8 +30,8 @@ class DataSourceBuilder {
   virtual std::unique_ptr<DataSource> assemble() = 0;
 
  protected:
-  size_t batchSize;
   size_t numBatches;
+  size_t batchSize;
 };
 
 } /* namespace datadriven */
