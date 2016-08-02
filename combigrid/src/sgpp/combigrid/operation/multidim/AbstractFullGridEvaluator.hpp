@@ -1,17 +1,16 @@
-/*
- * AbstractFullGridEvaluator.hpp
- *
- *  Created on: 11.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
-#include "../../definitions.hpp"
+#include <sgpp/combigrid/definitions.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
