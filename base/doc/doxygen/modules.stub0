@@ -1,14 +1,19 @@
 /**
-@page modules Description of Modules
+@page modules Modules
 
+To insure extendability and maintainability, SG++ is divided into a
+number of modules that implement different functionality. Different
+modules can be \ref linux_compilation_configuration "compiled independently from each other".
+
+
+<!--
 SG++ is grouped into several modules. This ensures
 - Modularity - not all parts are required for every task
 - Usability - not everything has to be compiled every time
 - Flexibility - only parts of SG++ can be shipped
 - Correctness - at least to some degree; if some part is modified, it will not influence others
 - …
-
-The modules correspond to the corresponding namespaces in C++. Roughly, all files belonging to a namespace belong to the respective module. But a module can contain files belonging to some another namespace, especially static factory methods in the namespace sgpp::op_factory.
+-->
 
 <!--
 @dot
