@@ -1,34 +1,36 @@
-/*
- * LevelManager.hpp
- *
- *  Created on: 22.07.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
+
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
+#include <sgpp/combigrid/algebraic/ScalarVector.hpp>                 // TODO(holzmudd): remove
+#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>  // TODO(holzmudd): remove
 
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <vector>
+#include <string>
 #include <unordered_set>
-#include "../../common/BoundedSumMultiIndexIterator.hpp"
-#include "../../definitions.hpp"
-#include "../../storage/AbstractMultiStorage.hpp"
-#include "../../storage/tree/TreeStorage.hpp"
-#include "AdaptiveRefinementStrategy.hpp"
-#include "LevelHelpers.hpp"
-
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>  // TODO: remove
-#include "CombigridEvaluator.hpp"                     // TODO: remove
 
 namespace sgpp {
 namespace combigrid {
 
-// TODO: put functions in cpp file
+// TODO(holzmudd): put functions in cpp file
 
 class LevelManager {
  protected:
@@ -81,7 +83,7 @@ class LevelManager {
   void addLevels(std::vector<MultiIndex> const &levels);
 
  public:
-  // TODO constructor
+  // TODO(holzmudd) constructor
 
   virtual ~LevelManager();
 
@@ -117,8 +119,7 @@ class LevelManager {
 
   virtual void addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads);
 };
-}
-/* namespace combigrid */
-} /* namespace sgpp*/
+}  // namespace combigrid
+}  // namespace sgpp
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_ */

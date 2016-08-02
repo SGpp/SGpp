@@ -184,7 +184,7 @@ double getWeight(std::vector<double>& points, size_t point) {
 void calculateWeights(std::vector<double>& points, std::vector<FloatScalarVector>& weights) {
   // calc weight for each point
   for (size_t i = 0; i < points.size(); ++i) {
-    weights.push_back(getWeight(points, i));
+    weights.push_back(FloatScalarVector(getWeight(points, i)));
   }
 }
 
