@@ -116,7 +116,7 @@ vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provid
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
-vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", "/usr/lib/x86_64-linux-gnu")
+vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -181,6 +181,9 @@ for moduleName in moduleNames:
 env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
+env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux-gnu"
+                                    if env["PLATFORM"] not in ["darwin", "win32"]
+                                    else "")
 
 # don't create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
