@@ -297,6 +297,13 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
   }
 }
 
+LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
+    : queue(),
+      levelData(),
+      numDimensions(levelEvaluator->dim()),
+      combiEval(levelEvaluator),
+      managerMutex() {}
+
 void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads) {
   initAdaption();
 
@@ -315,10 +322,12 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
     }
 
     beforeComputation(entry.level);
-    auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
-      // mutex will be locked when this callback is called
-      afterComputation(entry.level);
-    }, managerMutex);
+    auto tasks = combiEval->getLevelTasks(entry.level,
+                                          [=]() {
+                                            // mutex will be locked when this callback is called
+                                            afterComputation(entry.level);
+                                          },
+                                          managerMutex);
     tp.addTasks(tasks);
   });
 

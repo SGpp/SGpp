@@ -41,6 +41,7 @@
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>)
 
+%shared_ptr(sgpp::combigrid::AbstractLevelEvaluator)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
 
@@ -110,6 +111,7 @@ namespace combigrid {
 
 %include "combigrid/src/sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
