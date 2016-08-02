@@ -22,10 +22,10 @@
 %shared_ptr(sgpp::combigrid::AbstractPointHierarchy)
 %shared_ptr(sgpp::combigrid::NestedPointHierarchy)
 %shared_ptr(sgpp::combigrid::NonNestedPointHierarchy)
-%shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::ScalarVector<double>>)
-%shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>)
-%shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::ScalarVector<double>>)
-%shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>)
+%shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::BarycentricInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BarycentricInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::LinearInterpolationEvaluator)
@@ -36,16 +36,16 @@
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
 
-%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::ScalarVector<double>>)
-%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>)
-%shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::ScalarVector<double>>)
-%shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>)
 
-%shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::ScalarVector<double>>)
-%shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>)
+%shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
 
 
-// %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<ScalarVector<double>>)
+// %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<FloatScalarVector>)
 // %shared_ptr(sgpp::combigrid::AbstractPermutationIterator)
 // %shared_ptr(sgpp::combigrid::AbstractMultiStorage)
 // %shared_ptr(sgpp::combigrid::AbstractMultiStorageIterator)
@@ -57,9 +57,9 @@
 %include "combigrid/src/sgpp/combigrid/definitions.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp"
-%ignore sgpp::combigrid::ScalarVector::operator=;
-%ignore sgpp::combigrid::ArrayVector::operator=;
-%ignore sgpp::combigrid::ArrayVector::operator[];
+%ignore sgpp::combigrid::FloatScalarVector::operator=;
+%ignore sgpp::combigrid::FloatArrayVector::operator=;
+%ignore sgpp::combigrid::FloatArrayVector::operator[];
 %include "combigrid/src/sgpp/combigrid/algebraic/ScalarVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/ArrayVector.hpp"
 %include "combigrid/src/sgpp/combigrid/common/MultiIndexIterator.hpp"
@@ -92,19 +92,17 @@
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
-    %template(PyFloatScalarVector) ScalarVector<double>;
-    %template(PyFloatArrayVector) ArrayVector<double, ScalarVector<double>>;
-    %template(AbstractEvaluator_FloatScalarVector) AbstractEvaluator<ScalarVector<double>>;
-    %template(AbstractEvaluator_FloatArrayVector) AbstractEvaluator<ArrayVector<double, ScalarVector<double>>>;
-    %template(AbstractLinearEvaluator_FloatScalarVector) AbstractLinearEvaluator<ScalarVector<double>>;
-    %template(AbstractLinearEvaluator_FloatArrayVector) AbstractLinearEvaluator<ArrayVector<double, ScalarVector<double>>>;
-    %template(FloatArrayVectorMultiStorage) AbstractMultiStorage<ArrayVector<double, ScalarVector<double>>>;
-    %template(FloatScalarVectorMultiStorage) AbstractMultiStorage<ScalarVector<double>>;
-    %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<ArrayVector<double, ScalarVector<double>>>;
-    %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<ScalarVector<double>>;
-    
+    %template(AbstractEvaluator_FloatScalarVector) AbstractEvaluator<FloatScalarVector>;
+    %template(AbstractEvaluator_FloatArrayVector) AbstractEvaluator<FloatArrayVector>;
+    %template(AbstractLinearEvaluator_FloatScalarVector) AbstractLinearEvaluator<FloatScalarVector>;
+    %template(AbstractLinearEvaluator_FloatArrayVector) AbstractLinearEvaluator<FloatArrayVector>;
+    %template(FloatArrayVectorMultiStorage) AbstractMultiStorage<FloatArrayVector>;
+    %template(FloatScalarVectorMultiStorage) AbstractMultiStorage<FloatScalarVector>;
+    %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatArrayVector>;
+    %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
+
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
 }
@@ -124,32 +122,32 @@ namespace combigrid {
 
 namespace sgpp{
 namespace combigrid {
-    %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<ScalarVector<double>>;
-    %template(ArrayAbstractFullGridEvaluator) sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>;
+    %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
+    %template(ArrayAbstractFullGridEvaluator) sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>;
 
-    %template(ScalarFullGridTensorEvaluator) FullGridTensorEvaluator<ScalarVector<double>>;
-    %template(ArrayFullGridTensorEvaluator) sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>;
-    %template(ScalarCombigridEvaluator) CombigridEvaluator<ScalarVector<double>>;
-    %template(ArrayCombigridEvaluator) CombigridEvaluator<ArrayVector<double, ScalarVector<double>>>;
-    
+    %template(ScalarFullGridTensorEvaluator) FullGridTensorEvaluator<FloatScalarVector>;
+    %template(ArrayFullGridTensorEvaluator) sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>;
+    %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
+    %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
+
     %template(ArrayBarycentricInterpolationEvaluator) ArrayEvaluator<BarycentricInterpolationEvaluator>;
     %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
     %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
-    
+
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<uint8_t>>>;
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<uint8_t>;
     // %template(DefaultSerializationStrategy_uint8_t) DefaultSerializationStrategy<uint8_t>;
     // %template(LevelStructureSerializationStrategy) TreeStorageSerializationStrategy<uint8_t>;
-    
+
 }
 }
 
 namespace std {
 
-    %template(FloatScalarAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::ScalarVector<double>>>>;
-    %template(FloatArrayAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::ArrayVector<double, sgpp::combigrid::ScalarVector<double>>>>>;
+    %template(FloatScalarAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
+    %template(FloatArrayAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     %template(AbstractPointHierarchyVector) vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
-    
+
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
     // %template(MultidimFunction) std::function<double(sgpp::base::DataVector const &)>;
@@ -180,20 +178,20 @@ namespace combigrid
 template<typename Out, typename In> class PyFuncWrapper {
     PyObject *func;
     std::function<Out(In)> stdfunc;
-    
+
 public:
     PyFuncWrapper(PyObject *func, std::function<Out(In)> stdfunc) : func(func), stdfunc(stdfunc) {
         Py_INCREF(func);
     }
-    
+
     PyFuncWrapper(PyFuncWrapper<Out, In> const &other) : func(other.func), stdfunc(other.stdfunc) {
         Py_INCREF(func);
     }
-    
+
     ~PyFuncWrapper() {
         Py_DECREF(func);
     }
-    
+
     Out operator()(In param) {
         return stdfunc(param);
     }
@@ -201,8 +199,8 @@ public:
 
 /* This function has to match the type and parameters of the
  * C++ callback functions that are used. However, the
- * clientdata pointer is used for holding a reference to a 
- * Python callable object. 
+ * clientdata pointer is used for holding a reference to a
+ * Python callable object.
  */
 static double PythonCallBackFunc(int len, double* a, void *clientdata)
 {
@@ -240,7 +238,7 @@ static double PythonCallBackFunc(int len, double* a, void *clientdata)
      dres = PyFloat_AsDouble(result);
    }
    Py_XDECREF(result);
-   
+
    return dres;
 }
 
@@ -253,25 +251,25 @@ static sgpp::combigrid::MultiFunction multiFunc(PyObject *func) {
 
 /* This function has to match the type and parameters of the
  * C++ callback functions that are used. However, the
- * clientdata pointer is used for holding a reference to a 
- * Python callable object. 
+ * clientdata pointer is used for holding a reference to a
+ * Python callable object.
  */
 static double PythonSingleCallBackFunc(double a, void *clientdata)
 {
   PyObject *func, *arglist;
    PyObject *result;
    double    dres = 0;
-   
+
    // std::cout << "Call single func with parameter " << a << "\n";
 
    // get Python function
    func = (PyObject *) clientdata;
-   
+
    PyObject *param = PyFloat_FromDouble(a);
    if (!param) {
         PyErr_SetString(PyExc_TypeError, "Conversion error in singleFunc()");
    }
-   
+
    // build list of one Python object
    arglist = Py_BuildValue("(O)", param);
    // call Python
