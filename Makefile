@@ -9,9 +9,6 @@
 SRCDIR=./../../../src/sgpp
 #only for extensions:
 #####################
-# Intel Array Building Blocks
-ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
-ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
 CUDAINCLUDE = /usr/local/cuda/include
 CUDALIB = /usr/local/cuda/lib64
@@ -36,7 +33,7 @@ IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
 IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
 
 ###################################################################
-# Default Variables, overwirtten by CLI
+# Default Variables, overwritten by CLI
 ###################################################################	
 # use OpenMP Version 3
 OMP=1
@@ -51,7 +48,6 @@ CC=g++
 #  avx
 VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
-#       ArBB - Intel Array Building Blocks support
 #       AMDOCLGPU - AMD GPU OpenCL support
 #       INTELOCL - Intel CPU OpenCL support
 #       INTELOCLGPU - Intel GPU OpenCL support
@@ -143,10 +139,6 @@ endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
-endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
@@ -197,10 +189,6 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
-endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
 endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -openmp
@@ -312,10 +300,6 @@ endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
-endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
@@ -371,10 +355,6 @@ endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
-endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
@@ -420,10 +400,6 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
-endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
 endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
@@ -486,10 +462,6 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
-endif
-ifeq ($(EXT), ArBB)
-CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
-LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
 endif
 ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
