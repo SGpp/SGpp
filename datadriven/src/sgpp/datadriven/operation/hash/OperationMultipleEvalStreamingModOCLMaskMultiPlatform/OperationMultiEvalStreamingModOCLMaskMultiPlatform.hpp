@@ -7,21 +7,21 @@
 
 #include <omp.h>
 
-#include <chrono>
 #include <algorithm>
-#include <vector>
+#include <chrono>
 #include <mutex>
+#include <vector>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -122,8 +122,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
 
       multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                                queueLoadBalancerMult);
@@ -167,6 +168,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     std::once_flag onceFlag;
@@ -196,6 +198,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
 
@@ -237,6 +242,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     std::once_flag onceFlag;
@@ -266,6 +272,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
 
@@ -431,8 +440,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(commonPaddingRequiredment,
                                            kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt() *
@@ -448,8 +458,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node &kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+      json::Node &kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(
           commonPaddingRequiredment, kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt() *

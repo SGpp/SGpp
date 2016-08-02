@@ -163,6 +163,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     for (size_t i = 0; i < devices.size(); i++) {
@@ -191,6 +192,9 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
 
@@ -229,6 +233,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     std::once_flag onceFlag;
@@ -255,6 +260,9 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
 
