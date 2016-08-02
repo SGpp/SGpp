@@ -35,7 +35,7 @@ class PrewaveletGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
   /**
    * gets a reference to the GridStorage object

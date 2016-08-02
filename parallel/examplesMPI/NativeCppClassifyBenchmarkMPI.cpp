@@ -122,8 +122,6 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
               << std::endl;
     exit(-1);
 #endif
-  } else if (vecType == sgpp::parallel::ArBB) {
-    std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::Hybrid_X86SIMD_MIC) {
@@ -420,7 +418,7 @@ void printHelp() {
   std::cout << "  #points refined" << std::endl;
   std::cout << "  CG max. iterations, first refinement steps" << std::endl;
   std::cout << "  CG epsilon, first refinement steps" << std::endl;
-  std::cout << "  Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
+  std::cout << "  Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL; " << std::endl;
   std::cout << "    for classical sparse grid algorithms choose: REC" << std::endl
             << std::endl
             << std::endl;
@@ -540,8 +538,6 @@ int main(int argc, char* argv[]) {
       vecType = sgpp::parallel::OpenCL;
     } else if (vectorization == "HYBRID_X86SIMD_OCL") {
       vecType = sgpp::parallel::Hybrid_X86SIMD_OpenCL;
-    } else if (vectorization == "ArBB") {
-      vecType = sgpp::parallel::ArBB;
     } else if (vectorization == "MIC") {
       vecType = sgpp::parallel::MIC;
     } else if (vectorization == "HYBRID_X86SIMD_MIC") {
