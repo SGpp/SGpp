@@ -20,7 +20,7 @@ class MultiIndexIterator {
   /**
    * Precondition: all entries in multiBounds are > 0.
    */
-  MultiIndexIterator(MultiIndex const &multiBounds)
+  explicit MultiIndexIterator(MultiIndex const &multiBounds)
       : index(multiBounds.size(), 0), multiBounds(multiBounds), valid(true) {}
 
   void reset() {

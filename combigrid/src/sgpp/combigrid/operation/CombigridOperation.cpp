@@ -166,6 +166,5 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformLinearIn
           numDimensions, std::make_shared<LinearInterpolationEvaluator>()),
       func);
 }
-
 } /* namespace combigrid */
 } /* namespace sgpp*/

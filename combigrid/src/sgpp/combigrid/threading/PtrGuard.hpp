@@ -15,7 +15,7 @@ class PtrGuard {
   std::shared_ptr<std::mutex> mutexPtr;
 
  public:
-  PtrGuard(std::shared_ptr<std::mutex> mutexPtr) : mutexPtr(mutexPtr) {
+  explicit PtrGuard(std::shared_ptr<std::mutex> mutexPtr) : mutexPtr(mutexPtr) {
     if (mutexPtr) {
       mutexPtr->lock();
     }
