@@ -184,44 +184,54 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
 }
 
+BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
+  // Load correct results for comparison
+  std::vector<double> rhs_optimal_result;
+  std::ifstream rhs_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/rhs_erg_dim2_depth11.txt");
+  if (rhs_in) {
+    double value;
+    while (rhs_in >> value)
+      rhs_optimal_result.push_back(value);
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("Density multiplication result file is missing!"));
+  }
+
+  // Create OCL configuration
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+  sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationDensityOCL::load_default_parameters(parameters.get());
+
+  // Create OpenCL Manager
+  std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
+  manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
+
+  // Create grid for test scenario
+  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(11);
+  size_t gridsize = grid->getStorage().getSize();
+
+  // Load dataset for test scenario
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::
+      readARFF("/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/clustering_testdataset_dim2.arff");
+  sgpp::base::DataMatrix& dataset = data.getData();
+
+  // Create operation
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_rhs =
+      new sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationDensityOCLMultiPlatform<double>(*grid, 2, manager, parameters.get(), 0.001,
+                                               0, 0);
+
+  std::cout << "Test rhs kernel ..." << std::endl;
+  sgpp::base::DataVector b(gridsize);
+  operation_rhs->generateb(dataset, b);
+  for (size_t i = 0; i < gridsize; ++i) {
+    BOOST_CHECK_CLOSE(rhs_optimal_result[i], b[i], 0.001);
+  }
+  delete operation_rhs;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
-
-// BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
-//   // Load correct results for comparison
-//   std::vector<double> rhs_optimal_result;
-//   std::ifstream rhs_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/rhs_erg_dim2_depth11.txt");
-//   if (rhs_in) {
-//     double value;
-//     while (rhs_in >> value)
-//       rhs_optimal_result.push_back(value);
-//   } else {
-//     BOOST_THROW_EXCEPTION(std::runtime_error("Density multiplication result file is missing!"));
-//   }
-
-//   // Create OCL configuration
-//   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
-//       getConfigurationDefaultsSingleDevice();
-//   sgpp::datadriven::DensityOCLMultiPlatform::
-//       OperationDensityOCL::load_default_parameters(parameters.get());
-
-//   // Create OpenCL Manager
-//   std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
-//   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
-
-//   // Create grid for test scenario
-//   std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
-//   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-//   gridGen.regular(11);
-
-//   // Load dataset for test scenario
-//   sgpp::datadriven::Dataset data =
-//       sgpp::datadriven::ARFFTools::readARFF("/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/rhs_erg_dim2_depth11.txt");
-//   sgpp::base::DataMatrix& dataset = data.getData();
-//   dimension = dataset.getNcols();
-
-//   std::cout << "Test default kernel configuration..." << std::endl;
-//   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
-// }
-
-// BOOST_AUTO_TEST_SUITE_END()
 #endif
