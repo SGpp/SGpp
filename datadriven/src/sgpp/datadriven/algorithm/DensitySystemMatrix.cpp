@@ -20,8 +20,8 @@ namespace datadriven {
 DensitySystemMatrix::DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
                                          sgpp::base::OperationMatrix& C, double lambda)
     : lambda(lambda), C(C), data(trainData) {
-  A = op_factory::createOperationLTwoDotProduct(grid);
-  B = op_factory::createOperationMultipleEval(grid, data);
+  A.reset(op_factory::createOperationLTwoDotProduct(grid));
+  B.reset(op_factory::createOperationMultipleEval(grid, data));
 }
 
 DensitySystemMatrix::~DensitySystemMatrix() {}

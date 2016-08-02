@@ -48,118 +48,118 @@
 namespace sgpp {
 namespace base {
 
-std::unique_ptr<Grid> Grid::createLinearGridStencil(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearGridStencil(dim));
+Grid* Grid::createLinearGridStencil(size_t dim) {
+  return new LinearGridStencil(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModLinearGridStencil(size_t dim) {
-  return std::unique_ptr<Grid>(new ModLinearGridStencil(dim));
+Grid* Grid::createModLinearGridStencil(size_t dim) {
+  return new ModLinearGridStencil(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearGrid(dim));
+Grid* Grid::createLinearGrid(size_t dim) {
+  return new LinearGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearStretchedGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearStretchedGrid(dim));
+Grid* Grid::createLinearStretchedGrid(size_t dim) {
+  return new LinearStretchedGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
+Grid* Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
   if (boundaryLevel == 0) {
-    return std::unique_ptr<Grid>(new LinearL0BoundaryGrid(dim));
+    return new LinearL0BoundaryGrid(dim);
   } else {
-    return std::unique_ptr<Grid>(new LinearBoundaryGrid(dim, boundaryLevel));
+    return new LinearBoundaryGrid(dim, boundaryLevel);
   }
 }
 
-std::unique_ptr<Grid> Grid::createLinearStretchedBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearStretchedBoundaryGrid(dim));
+Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
+  return new LinearStretchedBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearClenshawCurtisGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearClenshawCurtisGrid(dim));
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) {
+  return new LinearClenshawCurtisGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModLinearGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new ModLinearGrid(dim));
+Grid* Grid::createModLinearGrid(size_t dim) {
+  return new ModLinearGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createPolyGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new PolyGrid(dim, degree));
+Grid* Grid::createPolyGrid(size_t dim, size_t degree) {
+  return new PolyGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new PolyBoundaryGrid(dim, degree));
+Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
+  return new PolyBoundaryGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createWaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new WaveletGrid(dim));
+Grid* Grid::createWaveletGrid(size_t dim) {
+  return new WaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createWaveletBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new WaveletBoundaryGrid(dim));
+Grid* Grid::createWaveletBoundaryGrid(size_t dim) {
+  return new WaveletBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModWaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new ModWaveletGrid(dim));
+Grid* Grid::createModWaveletGrid(size_t dim) {
+  return new ModWaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineGrid(dim, degree));
+Grid* Grid::createBsplineGrid(size_t dim, size_t degree) {
+  return new BsplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineBoundaryGrid(dim, degree));
+Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
+  return new BsplineBoundaryGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineClenshawCurtisGrid(dim, degree));
+Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new BsplineClenshawCurtisGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModBsplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModBsplineGrid(dim, degree));
+Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
+  return new ModBsplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(dim, degree));
+Grid* Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new ModBsplineClenshawCurtisGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new FundamentalSplineGrid(dim, degree));
+Grid* Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
+  return new FundamentalSplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModFundamentalSplineGrid(dim, degree));
+Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
+  return new ModFundamentalSplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createSquareRootGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new SquareRootGrid(dim));
+Grid* Grid::createSquareRootGrid(size_t dim) {
+  return new SquareRootGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createPrewaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new PrewaveletGrid(dim));
+Grid* Grid::createPrewaveletGrid(size_t dim) {
+  return new PrewaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearTruncatedBoundaryGrid(dim));
+Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
+  return new LinearTruncatedBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModPolyGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModPolyGrid(dim, degree));
+Grid* Grid::createModPolyGrid(size_t dim, size_t degree) {
+  return new ModPolyGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createPeriodicGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new PeriodicGrid(dim));
+Grid* Grid::createPeriodicGrid(size_t dim) {
+  return new PeriodicGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::unserialize(const std::string& istr) {
+Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
 
   return Grid::unserialize(istream);
 }
 
-std::unique_ptr<Grid> Grid::unserialize(std::istream& istr) {
+Grid* Grid::unserialize(std::istream& istr) {
   std::string gridtype;
   istr >> gridtype;
 
@@ -361,9 +361,9 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
 /**
  * Factory for everything we don't know.
  */
-std::unique_ptr<Grid> Grid::nullFactory(std::istream&) {
+Grid* Grid::nullFactory(std::istream&) {
   throw factory_exception("factory_exeception unserialize: unsupported gridtype");
-  return std::unique_ptr<Grid>(nullptr);
+  return nullptr;
 }
 
 Grid::Grid(std::istream& istr) : storage(istr) {}
