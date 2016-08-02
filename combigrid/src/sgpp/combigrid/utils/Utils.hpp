@@ -34,7 +34,7 @@ T pow(T base, size_t exponent) {
   return result;
 }
 
-long long binom(long long n, long long k);
+std::int64_t binom(std::int64_t n, std::int64_t k);
 
 std::vector<std::string> split(std::string str, std::string separator);
 std::string join(std::vector<std::string> const &elements, std::string const &separator);

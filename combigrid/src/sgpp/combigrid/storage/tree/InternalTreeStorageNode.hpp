@@ -108,8 +108,7 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
            children[index[depth]]->containsIndex(index, depth + 1);
   }
 };
-}
-/* namespace combigrid */
+}  // namespace combigrid
 } /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_INTERNALTREESTORAGENODE_HPP_ */

@@ -98,7 +98,8 @@ BOOST_AUTO_TEST_CASE(testCombigridTreeStorageSerialization) {
              std::make_shared<ClenshawCurtisDistribution>(),
              std::make_shared<ExponentialLevelorderPointOrdering>()));
 
-  CombigridTreeStorage storage(hierarchies, testFunc1);
+  MultiFunction testFunc1Multi(testFunc1);
+  CombigridTreeStorage storage(hierarchies, testFunc1Multi);
 
   MultiIndex level(2, 2);
   MultiIndex bounds(2, 5);
@@ -114,7 +115,8 @@ BOOST_AUTO_TEST_CASE(testCombigridTreeStorageSerialization) {
 
   std::string str = storage.serialize();
 
-  CombigridTreeStorage otherStorage(hierarchies, testFunc2);
+  MultiFunction testFunc2Multi(testFunc1);
+  CombigridTreeStorage otherStorage(hierarchies, testFunc2Multi);
 
   otherStorage.deserialize(str);
 

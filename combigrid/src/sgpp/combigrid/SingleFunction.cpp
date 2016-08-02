@@ -14,5 +14,7 @@ double SingleFunction::operator()(double param) { return func(param); }
 
 double SingleFunction::call(double param) { return func(param); }
 
+SingleFunction::function_type SingleFunction::getLambdaExpression() { return func; }
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
