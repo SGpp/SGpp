@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
 
   int level = 3;
   int dimension = 2;
-  std::unique_ptr<Grid> linearBoundaryGrid = Grid::createLinearBoundaryGrid(dimension);
+  std::unique_ptr<Grid> linearBoundaryGrid(Grid::createLinearBoundaryGrid(dimension));
   GridStorage& linearBoundaryGridStorageExact = linearBoundaryGrid->getStorage();
   linearBoundaryGrid->getGenerator().regular(level);
 

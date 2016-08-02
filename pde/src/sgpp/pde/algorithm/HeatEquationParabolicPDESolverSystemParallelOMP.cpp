@@ -37,16 +37,16 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
   this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new sgpp::base::DirichletGridConverter();
 
-  this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid).release();
-  this->OpMassBound = sgpp::op_factory::createOperationLTwoDotProduct(SparseGrid).release();
+  this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid);
+  this->OpMassBound = sgpp::op_factory::createOperationLTwoDotProduct(SparseGrid);
 
   // create the inner grid
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
                                                &this->InnerGrid, &this->alpha_inner);
 
   // Create needed operations, on inner grid
-  this->OpLaplaceInner = op_factory::createOperationLaplace(*this->InnerGrid).release();
-  this->OpMassInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpLaplaceInner = op_factory::createOperationLaplace(*this->InnerGrid);
+  this->OpMassInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
 
   // right hand side if System
   this->rhs = NULL;

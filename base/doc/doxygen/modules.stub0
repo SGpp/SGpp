@@ -19,6 +19,25 @@ digraph G {
 	
 	{ rank=same; datadriven; solver; combigrid; }
 
+	base [URL="@ref sg::base"];
+	pde [URL="@ref sg::pde"];
+	datadriven [URL="@ref sg::datadriven"];
+	finance [URL="@ref sg::finance"];
+	solver [URL="@ref sg::solver"];
+	parallel [URL="@ref sg::parallel"];
+	combigrid [URL=""];
+
+	pde -> base;
+	pde -> solver;
+	datadriven -> base;
+	finance -> pde;
+	finance -> base;
+	solver -> base;
+	parallel -> base;
+	parallel -> pde;
+	parallel -> finance;
+	parallel -> datadriven [constraint=false];
+	combigrid -> base;
 }
 @enddot
 -->

@@ -6,24 +6,24 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
 #include <zlib.h>
+#include <boost/test/unit_test.hpp>
 
-#include <random>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "test_datadrivenCommon.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
+#include "test_datadrivenCommon.hpp"
 
 using sgpp::datadriven::OperationMultipleEvalConfiguration;
 using sgpp::datadriven::OperationMultipleEvalType;
