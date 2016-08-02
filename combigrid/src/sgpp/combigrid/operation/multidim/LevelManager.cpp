@@ -10,6 +10,15 @@
 namespace sgpp {
 namespace combigrid {
 
+LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
+    : queue(),
+      levelData(),
+      numDimensions(levelEvaluator->dim()),
+      combiEval(levelEvaluator),
+      managerMutex(new std::mutex()) {}
+
+LevelManager::~LevelManager() {}
+
 void LevelManager::initAdaption() {
   queue.clear();
   levelData.reset(new TreeStorage<std::shared_ptr<LevelInfo>>(numDimensions));
@@ -145,8 +154,6 @@ void LevelManager::updatePriority(const MultiIndex &level, std::shared_ptr<Level
   levelInfo->setPriority(queue, priority);
 }
 
-LevelManager::~LevelManager() {}
-
 std::vector<MultiIndex> LevelManager::getPredecessors(MultiIndex const &level) {
   std::vector<MultiIndex> result;
 
@@ -217,11 +224,13 @@ std::vector<MultiIndex> LevelManager::getRegularLevelsByNumPoints(size_t maxNumP
 void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &levels,
                                             size_t numThreads) {
   auto threadPool = std::make_shared<ThreadPool>(numThreads, ThreadPool::terminateWhenIdle);
+  combiEval->setMutex(managerMutex);
   for (auto &level : levels) {
-    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}, managerMutex));
+    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}));
   }
   threadPool->start();
   threadPool->join();
+  combiEval->setMutex(nullptr);
 }
 
 void LevelManager::addLevels(const std::vector<MultiIndex> &levels) {
@@ -297,20 +306,15 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
   }
 }
 
-LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
-    : queue(),
-      levelData(),
-      numDimensions(levelEvaluator->dim()),
-      combiEval(levelEvaluator),
-      managerMutex() {}
-
 void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads) {
   initAdaption();
 
   size_t currentPointBound = 0;
 
+  combiEval->setMutex(managerMutex);
+
   auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
-    std::lock_guard<std::mutex> guard(managerMutex);
+    std::lock_guard<std::mutex> guard(*managerMutex);
     auto entry = queue.top();
     queue.pop();
 
@@ -322,17 +326,18 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
     }
 
     beforeComputation(entry.level);
-    auto tasks = combiEval->getLevelTasks(entry.level,
-                                          [=]() {
-                                            // mutex will be locked when this callback is called
-                                            afterComputation(entry.level);
-                                          },
-                                          managerMutex);
+    auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
+      // the mutex will be locked when this callback is called (except if it is called in
+      // afterComputation()
+      afterComputation(entry.level);
+    });
     tp.addTasks(tasks);
   });
 
   threadPool->start();
   threadPool->join();
+
+  combiEval->setMutex(nullptr);
 }
 
 } /* namespace combigrid */

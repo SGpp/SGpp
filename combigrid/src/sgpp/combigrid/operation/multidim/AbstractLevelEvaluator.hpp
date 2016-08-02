@@ -24,8 +24,8 @@ class AbstractLevelEvaluator {
 
   virtual bool addLevel(MultiIndex const &level) = 0;
   virtual std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level,
-                                                      ThreadPool::Task callback,
-                                                      std::mutex &lock) = 0;
+                                                      ThreadPool::Task callback) = 0;
+  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) = 0;
   virtual bool containsLevel(MultiIndex const &level) = 0;
   virtual size_t maxNewPoints(MultiIndex const &level) = 0;
   virtual double getDifferenceNorm(MultiIndex const &level) = 0;

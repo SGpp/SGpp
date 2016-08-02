@@ -5,10 +5,11 @@
 
 #include "CombigridTreeStorage.hpp"
 
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <sgpp/combigrid/threading/PtrGuard.hpp>
 
-#include <iostream>  // TODO(holzmudd): remove
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -23,19 +24,10 @@ class CombigridTreeStorageImpl {
       : func(p_func),
         pointHierarchies(p_pointHierarchies),
         storage(new TreeStorage<std::shared_ptr<TreeStorage<double>>>(
-            p_pointHierarchies.size(), [this](MultiIndex const &level) {
-              // capture level by copy because the reference might not be valid anymore at the time
-              // the lambda is called
-              return std::shared_ptr<TreeStorage<double>>(new TreeStorage<double>(
-                  pointHierarchies.size(), [level, this](MultiIndex const &index) -> double {
-                    size_t numDimensions = pointHierarchies.size();
-                    base::DataVector coordinates(numDimensions);
-                    for (size_t d = 0; d < numDimensions; ++d) {
-                      coordinates[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
-                    }
-                    return func(coordinates);
-                  }));
-            })) {  // TODO(holzmudd): we could use setFunctions() instead
+            p_pointHierarchies.size(),
+            [](MultiIndex const &level) { return std::shared_ptr<TreeStorage<double>>(nullptr); })),
+        mutexPtr(nullptr) {
+    setFunctions();
   }
 
   /**
@@ -43,12 +35,17 @@ class CombigridTreeStorageImpl {
    */
   void setFunctions() {
     auto innerLambda = [this](MultiIndex const &index, MultiIndex const &level) -> double {
-      size_t numDimensions = pointHierarchies.size();
-      base::DataVector coordinates(numDimensions);
-      for (size_t d = 0; d < numDimensions; ++d) {
-        coordinates[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
+      std::shared_ptr<base::DataVector> coordinates;
+      {
+        PtrGuard guard(this->mutexPtr);
+        size_t numDimensions = pointHierarchies.size();
+        coordinates = std::make_shared<base::DataVector>(numDimensions);
+        for (size_t d = 0; d < numDimensions; ++d) {
+          (*coordinates)[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
+        }
       }
-      return func(coordinates);
+
+      return func(*coordinates);
     };
 
     auto outerLambda = [innerLambda, this](MultiIndex const &level) {
@@ -73,6 +70,7 @@ class CombigridTreeStorageImpl {
   std::function<double(base::DataVector const &)> func;
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<TreeStorage<std::shared_ptr<TreeStorage<double>>>> storage;
+  std::shared_ptr<std::mutex> mutexPtr;
 };
 
 CombigridTreeStorage::CombigridTreeStorage(
@@ -157,3 +155,7 @@ void CombigridTreeStorage::set(const MultiIndex &level, const MultiIndex &index,
 }
 }  // namespace combigrid
 } /* namespace sgpp*/
+
+void sgpp::combigrid::CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {
+  impl->mutexPtr = mutexPtr;
+}

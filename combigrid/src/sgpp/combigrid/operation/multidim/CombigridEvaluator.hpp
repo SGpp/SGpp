@@ -1,9 +1,7 @@
-/*
- * CombigridEvaluator.hpp
- *
- *  Created on: 11.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
@@ -123,10 +121,11 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
-  std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback,
-                                              std::mutex &lock) {
-    return multiEval->getLevelTasks(level, callback, lock);
+  std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
+    return multiEval->getLevelTasks(level, callback);
   }
+
+  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) { multiEval->setMutex(mutexPtr); }
 
   std::shared_ptr<AbstractMultiStorage<V>> differences() const {
     return partialDifferences[numDimensions];
