@@ -46,31 +46,31 @@ double glomin(double a, double b, double c, double m, double e, double t, func_b
   //
   //    Output, double GLOMIN, the value F(X).
   //
-  double a0;
-  double a2;
-  double a3;
-  double d0;
-  double d1;
-  double d2;
-  double h;
-  int k;
-  double m2;
-  double macheps;
-  double p;
-  double q;
-  double qs;
-  double r;
-  double s;
-  double sc;
-  double y;
-  double y0;
-  double y1;
-  double y2;
-  double y3;
-  double yb;
-  double z0;
-  double z1;
-  double z2;
+  double a0 = 0.0;
+  double a2 = 0.0;
+  double a3 = 0.0;
+  double d0 = 0.0;
+  double d1 = 0.0;
+  double d2 = 0.0;
+  double h = 0.0;
+  int k = 0;
+  double m2 = 0.0;
+  double macheps = 0.0;
+  double p = 0.0;
+  double q = 0.0;
+  double qs = 0.0;
+  double r = 0.0;
+  double s = 0.0;
+  double sc = 0.0;
+  double y = 0.0;
+  double y0 = 0.0;
+  double y1 = 0.0;
+  double y2 = 0.0;
+  double y3 = 0.0;
+  double yb = 0.0;
+  double z0 = 0.0;
+  double z1 = 0.0;
+  double z2 = 0.0;
 
   a0 = b;
   x = a0;
@@ -266,25 +266,25 @@ double local_min(double a, double b, double t, func_base& f, double& x) {
   //
   //    Output, double LOCAL_MIN, the value F(X).
   //
-  double c;
-  double d;
-  double e;
-  double eps;
-  double fu;
-  double fv;
-  double fw;
-  double fx;
-  double m;
-  double p;
-  double q;
-  double r;
-  double sa;
-  double sb;
-  double t2;
-  double tol;
-  double u;
-  double v;
-  double w;
+  double c = 0.0;
+  double d = 0.0;
+  double e = 0.0;
+  double eps = 0.0;
+  double fu = 0.0;
+  double fv = 0.0;
+  double fw = 0.0;
+  double fx = 0.0;
+  double m = 0.0;
+  double p = 0.0;
+  double q = 0.0;
+  double r = 0.0;
+  double sa = 0.0;
+  double sb = 0.0;
+  double t2 = 0.0;
+  double tol = 0.0;
+  double u = 0.0;
+  double v = 0.0;
+  double w = 0.0;
   //
   //  C is the square of the inverse of the golden ratio.
   //
@@ -415,7 +415,7 @@ double r8_abs(double x) {
   //    Input, double X, the quantity whose absolute value is desired.
   //
   //    Output, double R8_ABS, the absolute value of X.
-  double value;
+  double value = 0.0;
 
   if (0.0 <= x) {
     value = x;
@@ -452,7 +452,7 @@ double r8_max(double x, double y) {
   //    Input, double X, Y, the quantities to compare.
   //
   //    Output, double R8_MAX, the maximum of X and Y.
-  double value;
+  double value = 0.0;
 
   if (y < x) {
     value = x;
@@ -471,7 +471,7 @@ double r8_sign(double x) {
   //
   //    Output, double R8_SIGN, the sign of X.
   //
-  double value;
+  double value = 0.0;
 
   if (x < 0.0) {
     value = -1.0;

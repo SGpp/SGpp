@@ -82,7 +82,7 @@ class LevelManager {
   void addLevels(std::vector<MultiIndex> const &levels);
 
  public:
-  LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
 
   virtual ~LevelManager();
 
