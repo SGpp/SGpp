@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerRegular) {
 
   auto levelManager = std::make_shared<AveragingLevelManager>(combiGridEval);
 
-  size_t maxLevelSum = 3;
+  //  size_t maxLevelSum = 3;
 
   std::vector<FloatScalarVector> parameters(2);
   parameters[0] = FloatScalarVector(0.378934);
