@@ -49,7 +49,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
         gridSize(grid.getStorage().getSize()),
         devices(manager->getDevices()),
         manager(manager), lambda(lambda) {
-    verbose = true;
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
@@ -92,6 +91,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
+        if (firstKernelConfig["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }
