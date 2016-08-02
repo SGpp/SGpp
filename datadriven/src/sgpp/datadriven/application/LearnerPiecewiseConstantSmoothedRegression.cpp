@@ -135,10 +135,10 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
 
   if (regularizationConfig.regType_ ==
       sgpp::datadriven::RegularizationType::Identity) {
-    C = sgpp::op_factory::createOperationIdentity(grid).release();
+    C = sgpp::op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ ==
              sgpp::datadriven::RegularizationType::Laplace) {
-    C = sgpp::op_factory::createOperationLaplace(grid).release();
+    C = sgpp::op_factory::createOperationLaplace(grid);
   } else {
     throw application_exception("LearnerDensityRegression::train : unknown regularization type");
   }

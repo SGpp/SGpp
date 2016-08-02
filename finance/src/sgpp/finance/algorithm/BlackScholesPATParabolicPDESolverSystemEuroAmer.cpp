@@ -101,12 +101,12 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 
   // Create operations
   this->OpLaplaceInner =
-      sgpp::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda).release();
+      sgpp::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda);
   this->OpLaplaceBound =
-      sgpp::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
+      sgpp::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
 
-  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
-  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;

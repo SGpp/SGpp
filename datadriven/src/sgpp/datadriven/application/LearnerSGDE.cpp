@@ -313,8 +313,8 @@ void LearnerSGDE::cov(base::DataMatrix& cov) {
   base::DataVector means(ndim);
   base::DataVector variances(ndim);
 
-  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg =
-      op_factory::createOperationDensityMargTo1D(*grid);
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
 
   base::Grid* marginalizedGrid = NULL;
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
@@ -569,9 +569,9 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   std::unique_ptr<base::OperationMatrix> C;
 
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
-    C = op_factory::createOperationIdentity(grid);
+    C.reset(op_factory::createOperationIdentity(grid));
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
-    C = op_factory::createOperationLaplace(grid);
+    C.reset(op_factory::createOperationLaplace(grid));
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }
