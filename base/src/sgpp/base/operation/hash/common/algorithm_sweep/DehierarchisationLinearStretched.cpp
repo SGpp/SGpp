@@ -35,8 +35,8 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
   double fm = source[seq];
 
   // dehierarchisation
-  GridStorage::index_type::level_type current_level;
-  GridStorage::index_type::index_type current_index;
+  level_t current_level;
+  index_t current_index;
   index.get(dim, current_level, current_index);
 
   // get the positions of the current index as
@@ -56,14 +56,14 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
     // descend left
     index.leftChild(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.end(index.seq())) {
+    if (!storage.isValidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

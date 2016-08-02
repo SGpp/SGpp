@@ -479,7 +479,7 @@ class SPMICLinear : public SPMICKernelBase {
                                        const size_t start_index_grid, const size_t end_index_grid,
                                        const size_t start_index_data, const size_t end_index_data) {
     if (start_index_grid >= end_index_grid) {
-      // special handling for grid index (prefetch for last item)
+      // special handling for grid point (prefetch for last item)
       // so we have to check it here
       return;
     }

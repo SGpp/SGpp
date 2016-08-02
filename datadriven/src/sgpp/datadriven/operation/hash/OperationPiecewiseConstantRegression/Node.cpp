@@ -230,7 +230,7 @@ double Node::evaluate(std::vector<double>& point) {
   return sum;
 }
 
-double Node::integrate(sgpp::base::GridIndex& gridPoint, size_t& integratedNodes,
+double Node::integrate(sgpp::base::GridPoint& gridPoint, size_t& integratedNodes,
                         size_t levelLimit) {
   if (levelLimit == 0) {
     integratedNodes = 1;
@@ -272,7 +272,7 @@ double Node::integrate(sgpp::base::GridIndex& gridPoint, size_t& integratedNodes
     // integrate left side of triangle
     double integral1D = 0.0;
 
-    double gridPointHat = gridPoint.getCoord(d);
+    double gridPointHat = gridPoint.getStandardCoordinate(d);
 
     double gridPointH = (1.0 / static_cast<double>(1 << gridPoint.getLevel(d)));
 

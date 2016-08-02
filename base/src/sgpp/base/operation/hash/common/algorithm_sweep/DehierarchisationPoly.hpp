@@ -24,8 +24,8 @@ namespace base {
 class DehierarchisationPoly {
  protected:
   typedef GridStorage::grid_iterator grid_iterator;
-  typedef GridStorage::index_type::level_type level_type;
-  typedef GridStorage::index_type::index_type index_type;
+  typedef level_t level_type;
+  typedef index_t index_type;
 
   /// the grid object
   GridStorage& storage;

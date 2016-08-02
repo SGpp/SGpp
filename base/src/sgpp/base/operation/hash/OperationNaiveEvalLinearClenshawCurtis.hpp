@@ -22,9 +22,8 @@ class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
    *
    * @param storage       storage of the sparse grid
    */
-  OperationNaiveEvalLinearClenshawCurtis(
-    GridStorage& storage)
-    : storage(storage) {
+  explicit OperationNaiveEvalLinearClenshawCurtis(GridStorage& storage) :
+    storage(storage), pointInUnitCube(storage.getDimension()) {
   }
 
   /**
@@ -53,6 +52,8 @@ class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
   GridStorage& storage;
   /// 1D linear basis
   SLinearClenshawCurtisBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

@@ -27,7 +27,7 @@ using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
-using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridPoint;
 using sgpp::base::OperationMatrix;
 using sgpp::base::SurplusRefinementFunctor;
 
@@ -260,11 +260,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   alpha.setAll(1.0);
 
   laplace->mult(alpha, result);
-  HashGridIndex::index_type idx;
-  HashGridIndex::level_type lvl;
+  HashGridPoint::index_type idx;
+  HashGridPoint::level_type lvl;
 
   for (size_t seq = 0; seq < storage.getSize(); seq++) {
-    storage.get(seq)->get(0, lvl, idx);
+    storage.getPoint(seq).get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<double>(lvl + 1)),
                       0.0);
   }
@@ -306,11 +306,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   alpha.setAll(1.0);
 
   laplace->mult(alpha, result);
-  HashGridIndex::index_type idx;
-  HashGridIndex::level_type lvl;
+  HashGridPoint::index_type idx;
+  HashGridPoint::level_type lvl;
 
   for (size_t seq = 0; seq < storage.getSize(); seq++) {
-    storage.get(seq)->get(0, lvl, idx);
+    storage.getPoint(seq).get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<double>(lvl + 1)),
                       0.0);
   }

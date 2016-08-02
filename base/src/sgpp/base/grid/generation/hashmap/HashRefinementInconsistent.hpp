@@ -26,9 +26,9 @@ class HashRefinementInconsistent: public HashRefinement {
    * children are needed in other dimensions.
    *
    * @param storage hashmap that stores the gridpoints
-   * @param index The point that should be inserted
+   * @param point The point that should be inserted
    */
-  void createGridpoint(GridStorage& storage, index_type& index) override;
+  void createGridpoint(GridStorage& storage, GridPoint& point) override;
 };
 
 }  // namespace base

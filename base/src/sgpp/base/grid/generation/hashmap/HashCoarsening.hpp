@@ -30,10 +30,7 @@ namespace base {
  */
 class HashCoarsening {
  public:
-  typedef GridStorage::index_type index_type;
-  typedef index_type::index_type index_t;
-  typedef index_type::level_type level_t;
-  typedef std::pair<size_t, CoarseningFunctor::value_type> GridPoint;
+  typedef std::pair<size_t, CoarseningFunctor::value_type> GridPointPair;
 
   /**
    * Performs coarsening on grid. It's possible to remove a certain number
@@ -66,7 +63,7 @@ class HashCoarsening {
     // create an array that will contain the GridPoints
     // (pair of the grid Point's index and its surplus)
     // that should be removed
-    GridPoint* removePoints = new GridPoint[remove_num];
+    GridPointPair* removePoints = new GridPointPair[remove_num];
 
     // init the removePoints array:
     // set initial surplus and set all indices to zero
@@ -81,9 +78,9 @@ class HashCoarsening {
 
     // assure that only the first numFirstPoints are checked for coarsening
     for (size_t z = 0; z < numFirstPoints; z++) {
-      index_type* index = storage.get(z);
+      GridPoint& point = storage.getPoint(z);
 
-      if (index->isLeaf() && index->isInnerPoint()) {
+      if (point.isLeaf() && point.isInnerPoint()) {
         CoarseningFunctor::value_type current_value = functor(storage, z);
 
         if (current_value < removePoints[max_idx].second) {
@@ -184,15 +181,15 @@ class HashCoarsening {
       throw generation_exception("storage empty");
     }
 
-    index_type index;
+    GridPoint point;
     GridStorage::grid_map_iterator end_iter = storage.end();
 
     for (GridStorage::grid_map_iterator iter = storage.begin();
          iter != end_iter;
          iter++) {
-      index = *(iter->first);
+      point = *(iter->first);
 
-      if (index.isLeaf()) {
+      if (point.isLeaf()) {
         counter++;
       }
     }

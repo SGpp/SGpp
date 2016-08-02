@@ -77,6 +77,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 // #include <sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 /*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>

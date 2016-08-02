@@ -10,6 +10,7 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
+#include <mutex>
 
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
@@ -168,25 +169,43 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     omp_set_num_threads(static_cast<int>(devices.size()));
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
-                                       this->kernelDataset, alphaArray, resultArray, gridFrom,
-                                       gridTo, datasetFrom, datasetTo);
+
+      try {
+        this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
+                                         this->kernelDataset, alphaArray, resultArray, gridFrom,
+                                         gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-
-    if (verbose) {
-      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMult<T> &kernel : multKernels) {
+      this->duration -= kernel.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   void multTranspose(sgpp::base::DataVector &source, sgpp::base::DataVector &result) override {
@@ -220,25 +239,44 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     omp_set_num_threads(static_cast<int>(devices.size()));
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
 
-      this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->mask, this->offset, this->kernelDataset, sourceArray,
-          resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      try {
+        this->multTransposeKernels[threadId].multTranspose(
+            this->level, this->index, this->mask, this->offset, this->kernelDataset, sourceArray,
+            resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    if (verbose) {
-      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T> &kernelTranspose :
+         multTransposeKernels) {
+      this->duration -= kernelTranspose.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   double getDuration() { return this->duration; }
@@ -309,8 +347,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // size for distributing schedules of different size
     this->gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
 
-    sgpp::base::HashGridIndex::level_type curLevel;
-    sgpp::base::HashGridIndex::index_type curIndex;
+    sgpp::base::HashGridPoint::level_type curLevel;
+    sgpp::base::HashGridPoint::index_type curIndex;
 
     this->level = std::vector<T>(gridSizeBuffers * this->dims);
     this->index = std::vector<T>(gridSizeBuffers * this->dims);
@@ -319,7 +357,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage.get(i)->get(dim, curLevel, curIndex);
+        storage.getPoint(i).get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->level[i * this->dims + dim] = 0.0;
@@ -344,7 +382,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           }
           this->offset[i * this->dims + dim] = 2.0;
         } else if (curIndex ==
-                   static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                   static_cast<sgpp::base::HashGridPoint::level_type>(((1 << curLevel) - 1))) {
           this->level[i * this->dims + dim] = static_cast<T>(1 << curLevel);
           this->index[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {

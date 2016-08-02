@@ -71,7 +71,7 @@ class Node {
 
   double evaluate(std::vector<double>& point);
 
-  double integrate(sgpp::base::GridIndex& gridPoint, size_t& integratedNodes,
+  double integrate(sgpp::base::GridPoint& gridPoint, size_t& integratedNodes,
                     size_t levelLimit = 0);
 
   uint64_t getChildCount();

@@ -11,6 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -28,7 +30,12 @@ BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim, size_t degree,
       generator(storage, boundaryLevel),
       degree(degree),
       basis_(new SBsplineClenshawCurtisBase(degree)),
-      boundaryLevel(boundaryLevel) {}
+      boundaryLevel(boundaryLevel) {
+  std::vector<BoundingBox1D> boundingBox1Ds(dim, BoundingBox1D());
+  std::vector<Stretching1D> stretching1Ds(dim, Stretching1D("cc"));
+  Stretching stretching(boundingBox1Ds, stretching1Ds);
+  storage.setStretching(stretching);
+}
 
 BsplineClenshawCurtisGrid::~BsplineClenshawCurtisGrid() {}
 

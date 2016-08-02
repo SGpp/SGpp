@@ -6,14 +6,14 @@
 #include <random>
 #include <string>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 void doAllRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha) {
@@ -42,12 +42,14 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman2_4d_300000.arff";
+  //  std::string fileName = "debugging.arff";
+  //  std::string fileName = "friedman2_4d_300000.arff";
+  std::string fileName = "friedman1_10d_150000.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 6;
+  uint32_t level = 8;
 
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -56,11 +58,11 @@ int main(int argc, char** argv) {
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  sgpp::base::OCLOperationConfiguration parameters("reproduce.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLUNIFIED, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
   sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating result" << std::endl;
 
-  for (size_t i = 0; i < 5; i++) {
+  for (size_t i = 0; i < 1; i++) {
     std::cout << "repeated mult: " << i << std::endl;
     eval->mult(alpha, dataSizeVectorResult);
   }

@@ -28,7 +28,10 @@ class OperationNaiveEvalGradientBsplineBoundary : public
    * @param degree    B-spline degree
    */
   OperationNaiveEvalGradientBsplineBoundary(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree) {
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -63,6 +66,10 @@ class OperationNaiveEvalGradientBsplineBoundary : public
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base

@@ -61,7 +61,7 @@ class HullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
   /// number of points the are coarsened in each coarsening-step
   int numCoarsenPoints;
   /// max. level for refinement during solving
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
   /// variable to store needed solving iterations
 
  public:

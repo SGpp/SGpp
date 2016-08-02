@@ -7,7 +7,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from pysgpp import Grid, HashRefinementInconsistent, HashGridIndex, \
+from pysgpp import Grid, HashRefinementInconsistent, HashGridPoint, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
     ANOVARefinement, SurplusCoarseningFunctor
 

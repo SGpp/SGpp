@@ -84,6 +84,8 @@ struct AdpativityConfiguration {
   size_t noPoints_;
   /// max. percent of points to be refined
   double percent_;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedRefinement = false;
 };
 
 /**
@@ -344,17 +346,17 @@ class Grid {
    * Constructor initializing the grid storage with the given
    * BoundingBox.
    *
-   * @param BB BoundingBox of the grid
+   * @param boundingBox BoundingBox of the grid
    */
-  explicit Grid(BoundingBox& BB);
+  explicit Grid(BoundingBox& boundingBox);
 
   /**
    * Constructor initializing the grid storage with the given
    * Stretching.
    *
-   * @param BB Stretching of the grid
+   * @param stretching Stretching of the grid
    */
-  explicit Grid(Stretching& BB);
+  explicit Grid(Stretching& stretching);
 
  public:
   /**
@@ -388,14 +390,14 @@ class Grid {
    *
    * @return pointer to the GridStorage's BoundingsBox object
    */
-  virtual void setBoundingBox(BoundingBox& bb);
+  virtual void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
    *
    * @return pointer to the GridStorage's Stretching object
    */
-  virtual void setStretching(Stretching& bb);
+  virtual void setStretching(Stretching& stretching);
 
   /**
    * @return reference to a GridGenerator object

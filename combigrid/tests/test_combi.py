@@ -53,7 +53,7 @@ def testFG(obj, grid, level, function):
         fg=fgs.at(i)  
         m=fg.getSize()
         for j in xrange(m):
-             points=fg.getCoordsString(j).split()        
+             points=fg.getStandardCoordinatesString(j).split()        
              d=evalFunction(function, points)          
              fg.set(j,d) 
     fgs.reCompose(storage,node_values)     
