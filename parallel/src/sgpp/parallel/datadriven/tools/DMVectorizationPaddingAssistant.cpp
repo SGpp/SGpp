@@ -30,11 +30,7 @@ size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType) 
     return OCLKernelImplBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
-
 #endif
-  } else if (vecType == ArBB) {
-    return 16;
-
 #ifdef USEMIC
   } else if (vecType == MIC) {
     return MICKernelBase::getChunkDataPoints();
@@ -66,8 +62,6 @@ size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType
     return OCLKernelImplBase::getChunkDataPoints();
 
 #endif
-  } else if (vecType == ArBB) {
-    return 16;
 
 #ifdef USECUDA
   } else if (vecType == CUDA) {

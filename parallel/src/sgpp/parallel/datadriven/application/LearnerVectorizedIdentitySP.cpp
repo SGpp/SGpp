@@ -88,9 +88,7 @@ sgpp::base::DataVectorSP LearnerVectorizedIdentitySP::predict(
 
   classesComputed.setAll(0.0);
 
-  if (this->vecType_ != ArBB) {
-    tmpDataSet.transpose();
-  }
+  tmpDataSet.transpose();
 
   sgpp::parallel::OperationMultipleEvalVectorizedSP* MultEval =
       sgpp::op_factory::createOperationMultipleEvalVectorizedSP(*grid_, vecType_,

@@ -36,12 +36,6 @@
 #include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
-#ifdef USEARBB
-#ifdef USE_MPI
-#error "MPI compilation is not support when compiling multiple evaluation for ArBB"
-#endif
-#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp>
-#endif
 
 #ifdef USECUDA
 #ifdef USE_MPI
@@ -100,11 +94,7 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPArBBLinear(&grid.getStorage(), dataset));
-#endif
+
 #ifdef USECUDA
     } else if (vecType == parallel::CUDA) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
@@ -148,12 +138,6 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
           new parallel::OperationMultipleEvalIterativeSP<parallel::SPOCLCPUHybridKernel<
               parallel::SPX86SimdLinear, parallel::OCLLinear<float> > >(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
-
-#endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPArBBLinear(&grid.getStorage(), dataset));
 
 #endif
 #ifdef USECUDA

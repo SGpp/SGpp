@@ -71,26 +71,13 @@ OCLOnlyFiles = [
     "OperationLTwoDotProductVectorizedLinearOCL.cpp"
 ]
 
-#-I$(ARBBINCLUDE) -DUSEARBB
-#-L$(ARBBLIB) -larbb -ltbb
-ArBBOnlyFiles = [
-    "OperationMultipleEvalIterativeArBBLinear.cpp",
-    "OperationMultipleEvalIterativeSPArBBLinear.cpp",
-    "OperationMultipleEvalIterativeArBBModLinear.cpp",
-    "OperationMultipleEvalIterativeSPArBBModLinear.cpp",
-    "ArBBKernels.cpp",
-    "ArBBKernels2D.cpp",
-    "ArBBKernels4D.cpp",
-    "ArBBKernels5D.cpp",
-    "ArBBKernels10D.cpp"
-]
 
 MICOnlyFiles = [
     "MICKernelImpl.cpp",
     "SPMICKernelImpl.cpp"
 ]
 
-excludeFiles = OCLOnlyFiles + ArBBOnlyFiles
+excludeFiles = OCLOnlyFiles
 if not "USE_MPI" in env["CPPDEFINES"]:
   excludeFiles += MPIOnlyFiles
 
