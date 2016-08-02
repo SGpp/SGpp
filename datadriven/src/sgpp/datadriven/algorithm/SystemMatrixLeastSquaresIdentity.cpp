@@ -20,8 +20,8 @@ SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(base::Grid& g
                                                                    double lambda)
     : DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
   this->instances = this->dataset_.getNrows();
-  this->B = op_factory::createOperationMultipleEval(grid, this->dataset_,
-                                                    this->implementationConfiguration);
+  this->B.reset(op_factory::createOperationMultipleEval(grid, this->dataset_,
+                                                        this->implementationConfiguration));
 
   // padded during Operator construction, fetch new size
   this->paddedInstances = this->dataset_.getNrows();
@@ -60,8 +60,8 @@ void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
 void SystemMatrixLeastSquaresIdentity::setImplementation(
     datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
   this->implementationConfiguration = operationConfiguration;
-  this->B = op_factory::createOperationMultipleEval(this->grid, this->dataset_,
-                                                    this->implementationConfiguration);
+  this->B.reset(op_factory::createOperationMultipleEval(this->grid, this->dataset_,
+                                                        this->implementationConfiguration));
 }
 
 }  // namespace datadriven

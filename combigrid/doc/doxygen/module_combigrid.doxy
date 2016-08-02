@@ -1,9 +1,13 @@
 /**
 @page module_combigrid Module sgpp::combigrid
 
+@short Combination technique functionality.
+
+The functionality of the module include
 - combination technique
 - special variants
 - data structures and algorithms
 - dimensional adaptivity
- 
+
+Please refer to \ref examples_cpp_module_combigrid "usage examples".
 **/

@@ -41,7 +41,7 @@ namespace op_factory {
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
-std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(
+base::OperationHierarchisation* createOperationHierarchisation(
   base::Grid& grid);
 /**
  * Factory method, returning an OperationQuadrature for the grid at hand.
@@ -50,7 +50,7 @@ std::unique_ptr<base::OperationHierarchisation> createOperationHierarchisation(
  * @param grid Grid which is to be used for quadrature
  * @return Pointer to the new OperationQuadrature for the Grid grid
  */
-std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid& grid);
+base::OperationQuadrature* createOperationQuadrature(base::Grid& grid);
 /**
  * Factory method, returning an OperationFirstMoment for the grid at hand.
  * Note: object has to be freed after use.
@@ -58,7 +58,7 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
  * @param grid Grid which is to be used for quadrature
  * @return Pointer to the new OperationFirstMoment for the Grid grid
  */
-std::unique_ptr<base::OperationFirstMoment> createOperationFirstMoment(base::Grid& grid);
+base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid);
 /**
  * Factory method, returning an OperationSecondMoment for the grid at hand.
  * Note: object has to be freed after use.
@@ -66,7 +66,7 @@ std::unique_ptr<base::OperationFirstMoment> createOperationFirstMoment(base::Gri
  * @param grid Grid which is to be used for quadrature
  * @return Pointer to the new OperationSecondMoment for the Grid grid
  */
-std::unique_ptr<base::OperationSecondMoment> createOperationSecondMoment(base::Grid& grid);
+base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid);
 /**
  * Factory method, returning an OperationConvert for the grid at hand.
  * Note: object has to be freed after use.
@@ -74,7 +74,7 @@ std::unique_ptr<base::OperationSecondMoment> createOperationSecondMoment(base::G
  * @param grid Grid which is to be used for conversion
  * @return Pointer to the new OperationConvert object for the Grid grid
  */
-std::unique_ptr<base::OperationConvert> createOperationConvert(base::Grid& grid);
+base::OperationConvert* createOperationConvert(base::Grid& grid);
 /**
  * Factory method, returning an OperationIdentity for the grid at hand.
  * Note: object has to be freed after use.
@@ -83,7 +83,7 @@ std::unique_ptr<base::OperationConvert> createOperationConvert(base::Grid& grid)
  *
  * @return Pointer to the new OperationIdentity object
  */
-std::unique_ptr<base::OperationMatrix> createOperationIdentity(base::Grid& grid);
+base::OperationMatrix* createOperationIdentity(base::Grid& grid);
 /**
  * Factory method, returning an OperationEval for the grid at hand.
  * Note: object has to be freed after use.
@@ -91,7 +91,7 @@ std::unique_ptr<base::OperationMatrix> createOperationIdentity(base::Grid& grid)
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEval object for the Grid grid
  */
-std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid);
+base::OperationEval* createOperationEval(base::Grid& grid);
 /**
  * Factory method, returning an OperationMultipleEval for the grid at hand.
  * Note: object has to be freed after use.
@@ -101,7 +101,7 @@ std::unique_ptr<base::OperationEval> createOperationEval(base::Grid& grid);
  * the sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
-std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::Grid& grid,
+base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
     base::DataMatrix& dataset);
 /**
  * Factory method, returning an OperationNaiveEval for the grid at hand.
@@ -110,7 +110,7 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(base::G
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationNaiveEval object for the Grid grid
  */
-std::unique_ptr<base::OperationNaiveEval> createOperationNaiveEval(base::Grid& grid);
+base::OperationNaiveEval* createOperationNaiveEval(base::Grid& grid);
 /**
  * Factory method, returning an OperationNaiveEvalGradient for the grid at hand.
  * Note: object has to be freed after use.
@@ -118,7 +118,7 @@ std::unique_ptr<base::OperationNaiveEval> createOperationNaiveEval(base::Grid& g
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationNaiveEvalGradient object for the Grid grid
  */
-std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradient(
+base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(
   base::Grid& grid);
 /**
  * Factory method, returning an OperationNaiveEvalHessian for the grid at hand.
@@ -127,7 +127,7 @@ std::unique_ptr<base::OperationNaiveEvalGradient> createOperationNaiveEvalGradie
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationNaiveEvalHessian object for the Grid grid
  */
-std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian(
+base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(
   base::Grid& grid);
 /**
  * Factory method, returning an OperationNaiveEvalPartialDerivative for the grid at hand.
@@ -136,7 +136,7 @@ std::unique_ptr<base::OperationNaiveEvalHessian> createOperationNaiveEvalHessian
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationNaiveEvalPartialDerivative object for the Grid grid
  */
-std::unique_ptr<base::OperationNaiveEvalPartialDerivative>
+base::OperationNaiveEvalPartialDerivative*
 createOperationNaiveEvalPartialDerivative(base::Grid& grid);
 
 }  // namespace op_factory
