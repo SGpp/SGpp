@@ -89,6 +89,7 @@ class Module(object):
 
     # append headers to install list
     for hpp in self.hpps:
+      if len(os.path.relpath(hpp).split(os.sep)) < 2: continue
       headerSourceList.append(os.path.join(moduleName, hpp))
       headerDestList.append(os.path.relpath(hpp).split(os.sep, 1)[1])
 
