@@ -60,7 +60,7 @@ class DMSystemMatrixVectorizedIdentityMPIBase : public sgpp::datadriven::DMSyste
     // handle unsupported vector extensions
     if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC &&
         this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL &&
-        this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+        this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
       throw sgpp::base::operation_exception(
           "DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
     }
@@ -73,9 +73,7 @@ class DMSystemMatrixVectorizedIdentityMPIBase : public sgpp::datadriven::DMSyste
               << std::endl;
     this->tempData = new sgpp::base::DataVector(this->numPatchedTrainingInstances_);
 
-    if (this->vecMode_ != ArBB) {
-      this->dataset_.transpose();
-    }
+    this->dataset_.transpose();
 
     this->result_tmp = new sgpp::base::DataVector(storage_.getSize());
   }

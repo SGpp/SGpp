@@ -23,11 +23,9 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
     this->vecWidth = 128;
   } else if (this->vecMode == parallel::Hybrid_X86SIMD_OpenCL) {
     this->vecWidth = 128;
-  } else if (this->vecMode == parallel::ArBB) {
-    this->vecWidth = 16;
   } else {  // should not happen because this exception should have been thrown some lines upwards!
     throw sgpp::base::operation_exception(
-        "DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are "
+        "DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or HYBRID_X86SIMD_OCL are "
         "supported vector extensions!");
   }
 
@@ -61,14 +59,14 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
 
   numPatchedTrainingInstances = data->getNrows();
 
-  if (this->vecMode != OpenCL && this->vecMode != ArBB && this->vecMode != Hybrid_X86SIMD_OpenCL) {
+  if (this->vecMode != OpenCL && this->vecMode != Hybrid_X86SIMD_OpenCL) {
     data->transpose();
   }
 
   this->myTimer = new sgpp::base::SGppStopwatch();
 
-  this->B = sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
-                                                                    this->data);
+  this->B.reset(sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
+                                                                        this->data));
 }
 
 DMWeightMatrixVectorizedIdentity::~DMWeightMatrixVectorizedIdentity() {
