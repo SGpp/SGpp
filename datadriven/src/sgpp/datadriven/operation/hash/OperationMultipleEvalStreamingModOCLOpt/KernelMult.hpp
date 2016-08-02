@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "SourceBuilderMult.hpp"
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -81,8 +81,8 @@ class KernelMult {
       std::stringstream errorString;
       errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
                      "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
-                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
-                  << std::endl;
+                     "set, was set to "
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << std::endl;
       throw sgpp::base::operation_exception(errorString.str());
     }
 
@@ -281,7 +281,8 @@ class KernelMult {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in mult)! Error code: " << err << std::endl;
+                         "queue (or crash in mult)! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -291,7 +292,8 @@ class KernelMult {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: " << err << std::endl;
+                         "queue! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 

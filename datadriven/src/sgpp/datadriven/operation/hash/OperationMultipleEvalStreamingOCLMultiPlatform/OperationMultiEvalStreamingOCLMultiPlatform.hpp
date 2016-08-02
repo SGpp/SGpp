@@ -7,21 +7,21 @@
 
 #include <omp.h>
 
-#include <chrono>
-#include <vector>
 #include <algorithm>
+#include <chrono>
 #include <mutex>
+#include <vector>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -193,11 +193,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     }
 
     this->duration = this->myTimer.stop();
-    
-    for (StreamingOCLMultiPlatform::KernelMult<T> &kernel: multKernels) {
+
+    for (StreamingOCLMultiPlatform::KernelMult<T> &kernel : multKernels) {
       this->duration -= kernel.getBuildDuration();
     }
-    
+
     if (verbose) {
       std::cout << "duration mult ocl: " << this->duration << std::endl;
     }
@@ -258,7 +258,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     this->duration = this->myTimer.stop();
 
-    for (StreamingOCLMultiPlatform::KernelMultTranspose<T> &kernelTranspose: multTransposeKernels) {
+    for (StreamingOCLMultiPlatform::KernelMultTranspose<T> &kernelTranspose :
+         multTransposeKernels) {
       this->duration -= kernelTranspose.getBuildDuration();
     }
 
@@ -318,13 +319,10 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     base::HashGridPoint::level_type curLevel;
     base::HashGridPoint::index_type curIndex;
 
-    /// pointer to index_type
-    base::HashGridStorage::point_pointer gridPoint;
-
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.getPoint(i);
+      base::HashGridPoint &gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
-        gridPoint->get(dim, curLevel, curIndex);
+        gridPoint.get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);
         index[i * dims + dim] = static_cast<T>(curIndex);
       }

@@ -43,7 +43,6 @@
 #endif
 
 #ifdef USE_OCL
-#include "operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
@@ -282,16 +281,6 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 #else
           throw base::factory_exception(
               "Error creating function: the library wasn't compiled with AVX");
-#endif
-        }
-      } else if (configuration.getType() == datadriven::OperationMultipleEvalType::ADAPTIVE) {
-        if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-#ifdef USE_OCL
-          return std::unique_ptr<base::OperationMultipleEval>(
-              datadriven::createAdaptiveOCLConfigured(grid, dataset, configuration));
-#else
-          throw base::factory_exception(
-              "Error creating function: the library wasn't compiled with OpenCL support");
 #endif
         }
       }
