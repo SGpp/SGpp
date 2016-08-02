@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerRegular) {
 
   fullGridEval->setParameters(parameters);
   // levelManager->addRegularLevelsParallel(maxLevelSum, 4);
-  levelManager->addLevelsAdaptiveParallel(300, 4);
+  levelManager->addLevelsAdaptiveParallel(300, 2);
 
   std::cout << "test_level_manager: ";
   std::cout << std::abs(combiGridEval->getValue().getValue() -
