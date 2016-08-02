@@ -315,6 +315,12 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
 
   auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
     CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
+    if (queue.empty()) {
+      std::cout << "Error: queue is empty\n";
+      CGLOG("leave guard(*managerMutex)");
+      return;
+    }
+
     auto entry = queue.top();
     queue.pop();
 
@@ -322,15 +328,19 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
 
     if (currentPointBound > maxNumPoints) {
       tp.triggerTermination();
+      CGLOG("leave guard(*managerMutex)");
       return;
     }
 
+    CGLOG("before beforeComputation()");
+
     beforeComputation(entry.level);
+    CGLOG("before getLevelTasks()");
     auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
-      // the mutex will be locked when this callback is called (except if it is called in
-      // afterComputation()
+      // the mutex will be locked when this callback is called
       afterComputation(entry.level);
     });
+    CGLOG("before addTasks()");
     tp.addTasks(tasks);
     CGLOG("leave guard(*managerMutex)");
   });
