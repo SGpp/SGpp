@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   data.set(80, 1, 0.9);
   error.set(80, 0.80);
 
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
 
   grid->getGenerator().regular(level);
   //  GridStorage& storage = grid->getStorage();

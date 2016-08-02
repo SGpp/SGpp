@@ -48,7 +48,7 @@ class DMWeightMatrixSPVectorizedIdentity : public sgpp::base::OperationMatrixSP 
   size_t numTrainingInstances;
   /// Number of patched and used training instances
   size_t numPatchedTrainingInstances;
-  /// vectorization mode, possible values are SSE, AVX, OCL, ArBB
+  /// vectorization mode, possible values are SSE, AVX, OCL
   VectorizationType vecMode;
   /// vector width, class internal variable to enable padding and patching of vectors
   size_t vecWidth;
@@ -72,7 +72,7 @@ class DMWeightMatrixSPVectorizedIdentity : public sgpp::base::OperationMatrixSP 
    * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    * @param w the weights to the training data
-   * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
+   * @param vecMode vectorization mode, possible values are X86SIMD, OCL, HYBRID_X86SIMD_OCL
    */
   DMWeightMatrixSPVectorizedIdentity(sgpp::base::Grid& SparseGrid,
                                      sgpp::base::DataMatrixSP& trainData, float lambda,

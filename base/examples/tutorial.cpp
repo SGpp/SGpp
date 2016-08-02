@@ -72,7 +72,7 @@ int main() {
    * sgpp::base::Grid.createLinearGrid().
    */
   size_t dim = 2;
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
 
   /**
    * Then we obtain a reference to the grid's
