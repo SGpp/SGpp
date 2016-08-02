@@ -1,0 +1,61 @@
+/*
+ * AbstractMultiStorageIterator.hpp
+ *
+ *  Created on: 12.12.2015
+ *      Author: david
+ */
+
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_
+
+#include <sgpp/globaldef.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <cstddef>
+
+namespace SGPP {
+namespace combigrid {
+
+template<typename T> class AbstractMultiStorageIterator {
+public:
+	virtual ~AbstractMultiStorageIterator(){}
+
+	/**
+	 * @return Returns the difference of the greatest dimension and the lowest updated dimension,
+	 * i. e. the lowest dimension where the corresponding multi-index changed.
+	 * This will be mostly be zero, if the last dimension has many points.
+	 * Returns -1 if the next entry is invalid.
+	 */
+	virtual int moveToNext() = 0;
+
+	/**
+	 * @return Returns a reference to the value the iterator points to
+	 */
+	virtual T &value() = 0;
+
+	/**
+	 * @return Returns true iff the iterator points to a valid position.
+	 */
+	virtual bool isValid() = 0;
+
+	/**
+	 * @return Returns the index in the given dimension that the iterator points to.
+	 * If this iterator was configured with a certain policy to permute the indices it accesses, this does not affect the index returned.
+	 * For example, in the beginning, indexAt(0) will always return 0, even if the index is 5 after the permutation.
+	 */
+	virtual size_t indexAt(size_t d) const = 0;
+
+	/**
+	 * @return Returns the MultiIndex containing the components that can be retrieved using indexAt().
+	 */
+	virtual MultiIndex getMultiIndex() const = 0;
+
+	virtual bool computationRequested() = 0;
+
+	virtual std::function<T()> requestComputationTask() = 0;
+};
+
+} /* namespace combigrid */
+} /* namespace SGPP */
+
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_ */
