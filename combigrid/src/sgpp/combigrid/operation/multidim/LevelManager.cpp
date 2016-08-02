@@ -332,6 +332,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
       afterComputation(entry.level);
     });
     tp.addTasks(tasks);
+    CGLOG("leave guard(*managerMutex)");
   });
 
   threadPool->start();

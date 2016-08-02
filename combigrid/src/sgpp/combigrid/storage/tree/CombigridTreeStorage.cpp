@@ -43,6 +43,7 @@ class CombigridTreeStorageImpl {
         for (size_t d = 0; d < numDimensions; ++d) {
           (*coordinates)[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
         }
+        CGLOG("leave guard(this->mutexPtr) in CGStorage");
       }
 
       return func(*coordinates);
