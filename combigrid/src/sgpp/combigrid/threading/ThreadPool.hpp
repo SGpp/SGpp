@@ -18,43 +18,42 @@
 #include <vector>
 #include <condition_variable>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 class ThreadPool {
-public:
+ public:
+  typedef std::function<void()> Task;
+  typedef std::function<void(ThreadPool &)> IdleCallback;
 
-	typedef std::function<void()> Task;
-	typedef std::function<void(ThreadPool&)> IdleCallback;
+ private:
+  size_t numThreads;
+  std::vector<std::shared_ptr<std::thread>> threads;
+  std::deque<Task> tasks;
+  std::mutex poolMutex;
+  std::mutex idleMutex;
+  bool terminateFlag;
+  bool useIdleCallback;
+  IdleCallback idleCallback;
 
-private:
+ public:
+  ThreadPool(size_t numThreads);
+  ThreadPool(size_t numThreads, IdleCallback idleCallback);
+  ~ThreadPool();
 
-	size_t numThreads;
-	std::vector<std::shared_ptr<std::thread>> threads;
-	std::deque<Task> tasks;
-	std::mutex poolMutex;
-	std::mutex idleMutex;
-	bool terminateFlag;
-	bool useIdleCallback;
-	IdleCallback idleCallback;
+  void addTask(Task const &task);
+  void addTasks(std::vector<Task> const &newTasks);
 
-public:
-	ThreadPool(size_t numThreads);
-	ThreadPool(size_t numThreads, IdleCallback idleCallback);
-	~ThreadPool();
+  void start();
 
-	void addTask(Task const &task);
-	void addTasks(std::vector<Task> const &newTasks);
+  void triggerTermination();
+  void join();
 
-	void start();
-
-	void triggerTermination();
-	void join();
-
-	/**
-	 * This function can be used as a parameter to the constructor if the threads shall terminate as soon as there are no tasks left.
-	 */
-	static void terminateWhenIdle(ThreadPool &tp);
+  /**
+   * This function can be used as a parameter to the constructor if the threads shall terminate as
+   * soon as there are no tasks left.
+   */
+  static void terminateWhenIdle(ThreadPool &tp);
 };
 
 } /* namespace combigrid */

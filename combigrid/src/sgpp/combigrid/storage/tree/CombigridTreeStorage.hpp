@@ -9,7 +9,7 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_COMBIGRIDTREESTORAGE_HPP_
 
 #include "TreeStorage.hpp"
-#include "../AbstractCombigridStorage.hpp"
+#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -19,30 +19,32 @@
 #include <functional>
 #include <string>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 class CombigridTreeStorageImpl;
 
-class CombigridTreeStorage: public AbstractCombigridStorage {
-	std::unique_ptr<CombigridTreeStorageImpl> impl;
+class CombigridTreeStorage : public AbstractCombigridStorage {
+  std::unique_ptr<CombigridTreeStorageImpl> impl;
 
-public:
-	CombigridTreeStorage(std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies, MultiFunction p_func);
-	virtual ~CombigridTreeStorage();
+ public:
+  CombigridTreeStorage(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
+      MultiFunction p_func);
+  virtual ~CombigridTreeStorage();
 
-	virtual std::shared_ptr<AbstractMultiStorageIterator<double> > getGuidedIterator(MultiIndex const &level, MultiIndexIterator &iterator, std::vector<bool> orderingConfiguration);
+  virtual std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
+      MultiIndex const &level, MultiIndexIterator &iterator,
+      std::vector<bool> orderingConfiguration);
 
-	virtual size_t getNumEntries();
+  virtual size_t getNumEntries();
 
-	virtual std::string serialize();
-	virtual void deserialize(std::string const &str);
+  virtual std::string serialize();
+  virtual void deserialize(std::string const &str);
 
-	virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
+  virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
 };
-
-}
-/* namespace combigrid */
+}  // namespace combigrid
 } /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_COMBIGRIDTREESTORAGE_HPP_ */

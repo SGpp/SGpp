@@ -12,44 +12,46 @@
 namespace sgpp {
 namespace combigrid {
 
-template <typename Scalar>
-class ScalarVector {
-  Scalar val;
+class FloatScalarVector {
+  double val;
 
  public:
-  ScalarVector() : val(Scalar()) {}
+  FloatScalarVector() : val(double()) {}
 
-  ScalarVector(Scalar const &value) : val(value) {}
+  explicit FloatScalarVector(double const &value) : val(value) {}
 
-  ScalarVector(ScalarVector const &other) : val(other.val) {}
+  FloatScalarVector(FloatScalarVector const &other) : val(other.val) {}
 
-  ScalarVector<Scalar> &operator=(ScalarVector<Scalar> const &other) {
+  FloatScalarVector &operator=(FloatScalarVector const &other) {
     val = other.val;
     return *this;
   }
 
-  Scalar const &value() const { return val; }
+  FloatScalarVector &operator=(double const &value) {
+    val = value;
+    return *this;
+  }
 
-  Scalar &value() { return val; }
+  double const &value() const { return val; }
 
-  Scalar getValue() const { return val; }
+  double &value() { return val; }
 
-  void add(ScalarVector<Scalar> const &other) { val += other.val; }
+  double getValue() const { return val; }
 
-  void sub(ScalarVector<Scalar> const &other) { val -= other.val; }
+  void add(FloatScalarVector const &other) { val += other.val; }
 
-  void componentwiseMult(ScalarVector<Scalar> const &other) { val *= other.val; }
+  void sub(FloatScalarVector const &other) { val -= other.val; }
 
-  void scalarMult(Scalar const &factor) { val *= factor; }
+  void componentwiseMult(FloatScalarVector const &other) { val *= other.val; }
 
-  Scalar norm() const { return std::abs(val); }
+  void scalarMult(double const &factor) { val *= factor; }
 
-  static ScalarVector<Scalar> zero() { return ScalarVector(Scalar(0)); }
+  double norm() const { return std::abs(val); }
 
-  static ScalarVector<Scalar> one() { return ScalarVector(Scalar(1)); }
+  static FloatScalarVector zero() { return FloatScalarVector(0.0); }
+
+  static FloatScalarVector one() { return FloatScalarVector(1.0); }
 };
-
-typedef ScalarVector<double> FloatScalarVector;
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

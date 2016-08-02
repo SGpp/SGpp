@@ -6,22 +6,22 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/combigrid/algebraic/ScalarVector.hpp>
+
 #include <vector>
 #include <algorithm>
-#include <sgpp/globaldef.hpp>
-#include "ScalarVector.hpp"
 #include <cmath>
 
 namespace sgpp {
 namespace combigrid {
 
-template <typename Scalar, typename V>
-class ArrayVector {
-  std::vector<V> values;
+class FloatArrayVector {
+  std::vector<FloatScalarVector> values;
 
   void ensureMinimumSize(size_t minSize) {
     if (values.size() == 0) {
-      values.push_back(V::zero());
+      values.push_back(FloatScalarVector::zero());
     }
     while (values.size() < minSize) {
       values.push_back(values.back());
@@ -29,29 +29,29 @@ class ArrayVector {
   }
 
  public:
-  ArrayVector(std::vector<V> const &values) : values(values) {}
+  explicit FloatArrayVector(std::vector<FloatScalarVector> const &values) : values(values) {}
 
-  ArrayVector(V value) : values(1, value) {}
+  explicit FloatArrayVector(FloatScalarVector value) : values(1, value) {}
 
-  ArrayVector() : values() {}
+  FloatArrayVector() : values() {}
 
-  ArrayVector(ArrayVector<Scalar, V> const &other) : values(other.values) {}
+  FloatArrayVector(FloatArrayVector const &other) : values(other.values) {}
 
-  ArrayVector<Scalar, V> &operator=(ArrayVector<Scalar, V> const &other) {
+  FloatArrayVector &operator=(FloatArrayVector const &other) {
     values = other.values;
     return *this;
   }
 
-  std::vector<V> const &getValues() const { return values; }
+  std::vector<FloatScalarVector> const &getValues() const { return values; }
 
-  V get(size_t i) const { return (*this)[i]; }
+  FloatScalarVector get(size_t i) const { return (*this)[i]; }
 
-  V &at(size_t i) {
+  FloatScalarVector &at(size_t i) {
     ensureMinimumSize(i + 1);
     return values[i];
   }
 
-  V &operator[](size_t i) {
+  FloatScalarVector &operator[](size_t i) {
     ensureMinimumSize(i + 1);
     return values[i];
   }
@@ -59,11 +59,11 @@ class ArrayVector {
   /**
    * This operator is unsafe because it does no range checking
    */
-  V const &operator[](size_t i) const { return values[i]; }
+  FloatScalarVector const &operator[](size_t i) const { return values[i]; }
 
   size_t size() const { return values.size(); }
 
-  void add(ArrayVector<Scalar, V> const &other) {
+  void add(FloatArrayVector const &other) {
     ensureMinimumSize(other.size());
 
     size_t otherSize = other.size();
@@ -76,7 +76,7 @@ class ArrayVector {
     }
   }
 
-  void sub(ArrayVector<Scalar, V> const &other) {
+  void sub(FloatArrayVector const &other) {
     ensureMinimumSize(other.size());
 
     size_t otherSize = other.size();
@@ -89,7 +89,7 @@ class ArrayVector {
     }
   }
 
-  void componentwiseMult(ArrayVector<Scalar, V> const &other) {
+  void componentwiseMult(FloatArrayVector const &other) {
     ensureMinimumSize(other.size());
 
     size_t otherSize = other.size();
@@ -102,29 +102,27 @@ class ArrayVector {
     }
   }
 
-  void scalarMult(Scalar const &factor) {
+  void scalarMult(double const &factor) {
     for (size_t i = 0; i < values.size(); ++i) {
       values[i].scalarMult(factor);
     }
   }
 
-  Scalar norm() const {
-    Scalar result = Scalar();
+  double norm() const {
+    double result = 0.0;
 
     for (auto &val : values) {
-      Scalar n = val.norm();
+      double n = val.norm();
       result += n * n;
     }
 
-    return sqrt(result);
+    return std::sqrt(result);
   }
 
-  static ArrayVector<Scalar, V> zero() { return ArrayVector<Scalar, V>(V::zero()); }
+  static FloatArrayVector zero() { return FloatArrayVector(FloatScalarVector(0.0)); }
 
-  static ArrayVector<Scalar, V> one() { return ArrayVector<Scalar, V>(V::one()); }
+  static FloatArrayVector one() { return FloatArrayVector(FloatScalarVector(1.0)); }
 };
-
-typedef ArrayVector<double, FloatScalarVector> FloatArrayVector;
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

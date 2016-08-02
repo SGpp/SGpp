@@ -490,7 +490,7 @@ double r8_sign(double x) {
 // === instead of a c++ functor.  In all cases, the
 // === input and output of F() are of type double.
 
-typedef double doubleOfdouble(double);
+typedef double doubleOfdouble(double x);
 
 class func_wrapper : public func_base {
   doubleOfdouble* func;
