@@ -37,7 +37,7 @@ class CombigridTreeStorageImpl {
     auto innerLambda = [this](MultiIndex const &index, MultiIndex const &level) -> double {
       std::shared_ptr<base::DataVector> coordinates;
       {
-        PtrGuard guard(this->mutexPtr);
+        CGLOG_SURROUND(PtrGuard guard(this->mutexPtr));
         size_t numDimensions = pointHierarchies.size();
         coordinates = std::make_shared<base::DataVector>(numDimensions);
         for (size_t d = 0; d < numDimensions; ++d) {

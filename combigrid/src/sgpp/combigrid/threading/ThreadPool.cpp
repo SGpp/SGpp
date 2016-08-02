@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <chrono>
+#include <sgpp/combigrid/definitions.hpp>
 
 #include <vector>
 
@@ -35,12 +36,12 @@ ThreadPool::~ThreadPool() {
 }
 
 void ThreadPool::addTask(const Task& task) {
-  std::lock_guard<std::mutex> guard(poolMutex);
+  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
   tasks.push_back(task);
 }
 
 void ThreadPool::addTasks(const std::vector<Task>& newTasks) {
-  std::lock_guard<std::mutex> guard(poolMutex);
+  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
   tasks.insert(tasks.cend(), newTasks.begin(), newTasks.end());
 }
 
@@ -53,7 +54,7 @@ void ThreadPool::start() {
         // wait for terminate or next task
         while (true) {
           {
-            std::lock_guard<std::mutex> guard(this->poolMutex);
+            CGLOG_SURROUND(std::lock_guard<std::mutex> guard(this->poolMutex));
             if (this->terminateFlag) {
               return;
             }
@@ -67,10 +68,13 @@ void ThreadPool::start() {
           // no tasks, so acquire tasks
 
           if (useIdleCallback) {
-            std::unique_lock<std::mutex> idleLock(idleMutex);
+            CGLOG_SURROUND(std::lock_guard<std::mutex> idleLock(idleMutex));
 
-            if (this->terminateFlag || !this->tasks.empty()) {
-              continue;
+            {
+              CGLOG_SURROUND(std::lock_guard<std::mutex> guard(this->poolMutex));
+              if (this->terminateFlag || !this->tasks.empty()) {
+                continue;
+              }
             }
 
             idleCallback(*this);
@@ -87,7 +91,7 @@ void ThreadPool::start() {
 }
 
 void ThreadPool::triggerTermination() {
-  std::lock_guard<std::mutex> guard(poolMutex);
+  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
   terminateFlag = true;
 }
 
