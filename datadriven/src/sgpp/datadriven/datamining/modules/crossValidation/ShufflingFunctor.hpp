@@ -23,16 +23,17 @@ class ShufflingFunctor {
   ShufflingFunctor() {
     std::random_device rd;
     seed = rd();
-    generator = std::mt19937(seed);
+    seed = 1;
+    generator = std::mt19937(rd());
   };
+  virtual ~ShufflingFunctor(){};
 
-  virtual void shuffle(std::vector<size_t>& indices) const = 0;
+  virtual void shuffle(std::vector<size_t>& indices) = 0;
   int64_t getSeed() const { return seed; }
   void setSeed(int64_t seed) {
     this->seed = seed;
     generator = std::mt19937(seed);
   }
-  virtual ~ShufflingFunctor();
 
  protected:
   int64_t seed;
