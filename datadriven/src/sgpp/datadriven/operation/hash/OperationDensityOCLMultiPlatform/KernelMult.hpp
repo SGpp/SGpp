@@ -436,14 +436,14 @@ class KernelDensityMult {
         }
 
         if (kernelNode.contains("USE_IMPLICIT") == false) {
-          kernelNode.addIDAttr("USE_IMPLICIT", true);
+          kernelNode.addIDAttr("USE_IMPLICIT", false);
         }
 
         if (kernelNode.contains("USE_FABS") == false) {
-          kernelNode.addIDAttr("USE_FABS", true);
+          kernelNode.addIDAttr("USE_FABS", false);
         }
         if (kernelNode.contains("PREPROCESS_POSITIONS") == false) {
-          kernelNode.addIDAttr("PREPROCESS_POSITIONS", true);
+          kernelNode.addIDAttr("PREPROCESS_POSITIONS", false);
         }
       }
     }

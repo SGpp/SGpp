@@ -538,7 +538,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
     for (auto block = 0; block < dataBlockSize; ++block) {
-      if (!use_fabs_instead_of_fmax)
+      if (!use_fabs_instead_of_fmax || preprocess_positions)
         sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
                      <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;
       else
