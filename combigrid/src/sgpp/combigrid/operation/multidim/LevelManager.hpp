@@ -22,107 +22,111 @@
 #include <limits>
 #include <mutex>
 
-#include "CombigridEvaluator.hpp" // TODO: remove
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp> // TODO: remove
+#include "CombigridEvaluator.hpp"                     // TODO: remove
+#include <sgpp/combigrid/algebraic/ScalarVector.hpp>  // TODO: remove
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 // TODO: put functions in cpp file
 
 class LevelManager {
-protected:
-	// data structures for adaptive refinement
-	MultiIndexQueue queue;
-	std::shared_ptr<TreeStorage<std::shared_ptr<LevelInfo>>> levelData;
-	size_t numDimensions;
-	std::shared_ptr<CombigridEvaluator<FloatScalarVector>> combiEval;
-	std::mutex managerMutex;
+ protected:
+  // data structures for adaptive refinement
+  MultiIndexQueue queue;
+  std::shared_ptr<TreeStorage<std::shared_ptr<LevelInfo>>> levelData;
+  size_t numDimensions;
+  std::shared_ptr<CombigridEvaluator<FloatScalarVector>> combiEval;
+  std::mutex managerMutex;
 
-	/**
-	 * By implementing this method in a derived class, the adaption can be customized.
-	 */
-	virtual double computePriority(MultiIndex const &level) = 0;
+  /**
+   * By implementing this method in a derived class, the adaption can be customized.
+   */
+  virtual double computePriority(MultiIndex const &level) = 0;
 
-	/**
-	 * Initializes the data structures for adaptive level generation
-	 */
-	virtual void initAdaption();
+  /**
+   * Initializes the data structures for adaptive level generation
+   */
+  virtual void initAdaption();
 
-	virtual void tryAddSuccessors(MultiIndex const &level);
+  virtual void tryAddSuccessors(MultiIndex const &level);
 
-	virtual void tryAddLevel(MultiIndex const &level);
+  virtual void tryAddLevel(MultiIndex const &level);
 
-	virtual void addToQueue(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
+  virtual void addToQueue(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
 
-	virtual std::vector<MultiIndex> getPredecessors(MultiIndex const &level);
+  virtual std::vector<MultiIndex> getPredecessors(MultiIndex const &level);
 
-	virtual std::vector<MultiIndex> getSuccessors(MultiIndex const &level);
+  virtual std::vector<MultiIndex> getSuccessors(MultiIndex const &level);
 
-	virtual void beforeComputation(MultiIndex const &level);
+  virtual void beforeComputation(MultiIndex const &level);
 
-	virtual void afterComputation(MultiIndex const &level);
+  virtual void afterComputation(MultiIndex const &level);
 
-	virtual void predecessorsCompleted(MultiIndex const &level);
+  virtual void predecessorsCompleted(MultiIndex const &level);
 
-	virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
+  virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
 
-	//---------- old methods ----------
+  //---------- old methods ----------
 
-	// If a level has been computed, we try to add its successors to the queue if all of their predecessors are computed.
-	virtual void tryAddSuccessorsToQueue(MultiIndex const &index);
+  // If a level has been computed, we try to add its successors to the queue if all of their
+  // predecessors are computed.
+  virtual void tryAddSuccessorsToQueue(MultiIndex const &index);
 
-	// Adds a level to the queue if it is not in the CombigridEvaluator, but all of its predecessors are.
-	virtual void tryAddIndexToQueue(MultiIndex const &nextIndex);
+  // Adds a level to the queue if it is not in the CombigridEvaluator, but all of its predecessors
+  // are.
+  virtual void tryAddIndexToQueue(MultiIndex const &nextIndex);
 
-	/**
-	 * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as in most papers).
-	 * If you have a norm w with levels starting from 1, simply use q = w - dim().
-	 */
-	std::vector<MultiIndex> getRegularLevels(size_t q);
+  /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   */
+  std::vector<MultiIndex> getRegularLevels(size_t q);
 
-	std::vector<MultiIndex> getRegularLevelsByNumPoints(size_t maxNumPoints);
+  std::vector<MultiIndex> getRegularLevelsByNumPoints(size_t maxNumPoints);
 
-	void precomputeLevelsParallel(std::vector<MultiIndex> const &levels, size_t numThreads);
+  void precomputeLevelsParallel(std::vector<MultiIndex> const &levels, size_t numThreads);
 
-	void addLevels(std::vector<MultiIndex> const &levels);
+  void addLevels(std::vector<MultiIndex> const &levels);
 
-public:
-	// TODO constructor
+ public:
+  // TODO constructor
 
-	virtual ~LevelManager();
+  virtual ~LevelManager();
 
-	/**
-	 * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as in most papers).
-	 * If you have a norm w with levels starting from 1, simply use q = w - dim().
-	 */
-	void addRegularLevels(size_t q);
+  /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   */
+  void addRegularLevels(size_t q);
 
-	void addRegularLevelsByNumPoints(size_t maxNumPoints);
+  void addRegularLevelsByNumPoints(size_t maxNumPoints);
 
-	/**
-	 * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as in most papers).
-	 * If you have a norm w with levels starting from 1, simply use q = w - dim().
-	 */
-	void addRegularLevelsParallel(size_t q, size_t numThreads);
+  /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   */
+  void addRegularLevelsParallel(size_t q, size_t numThreads);
 
-	void addRegularLevelsByNumPointsParallel(size_t maxNumPoints, size_t numThreads);
+  void addRegularLevelsByNumPointsParallel(size_t maxNumPoints, size_t numThreads);
 
-	virtual size_t dim() const;
+  virtual size_t dim() const;
 
-	std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() const;
+  std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() const;
 
-	std::string getSerializedLevelStructure() const;
+  std::string getSerializedLevelStructure() const;
 
-	void addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage);
+  void addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage);
 
-	void addLevelsFromSerializedStructure(std::string serializedStructure);
+  void addLevelsFromSerializedStructure(std::string serializedStructure);
 
-	virtual void addLevelsAdaptive(size_t maxNumPoints);
+  virtual void addLevelsAdaptive(size_t maxNumPoints);
 
-	virtual void addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads);
+  virtual void addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads);
 };
-
 }
 /* namespace combigrid */
 } /* namespace sgpp*/
