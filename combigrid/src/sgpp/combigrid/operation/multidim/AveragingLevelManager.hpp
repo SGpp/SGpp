@@ -16,7 +16,7 @@ class AveragingLevelManager : public LevelManager {
   virtual double computePriority(MultiIndex const &level);
 
  public:
-  AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
 
   virtual ~AveragingLevelManager();
 };
