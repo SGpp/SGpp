@@ -6,11 +6,10 @@
 #ifndef OPERATIONMULTIPLEEVALMODWAVELET_HPP
 #define OPERATIONMULTIPLEEVALMODWAVELET_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -26,9 +25,8 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
    * @param grid grid
    * @param dataset data
    */
-  OperationMultipleEvalModWavelet(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
-  }
+  OperationMultipleEvalModWavelet(Grid& grid, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
@@ -37,6 +35,8 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object
