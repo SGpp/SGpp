@@ -1,20 +1,18 @@
-/*
- * TreeStorage.hpp
- *
- *  Created on: 14.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGE_HPP_
 
-#include "../AbstractMultiStorage.hpp"
-#include "AbstractTreeStorageNode.hpp"
-#include "LowestTreeStorageNode.hpp"
-#include "InternalTreeStorageNode.hpp"
-#include "TreeStorageContext.hpp"
-#include "TreeStorageStoredDataIterator.hpp"
-#include "TreeStorageGuidedIterator.hpp"
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
+#include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
+#include <sgpp/combigrid/storage/tree/InternalTreeStorageNode.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorageContext.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorageStoredDataIterator.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorageGuidedIterator.hpp>
 
 #include <memory>
 #include <stdexcept>
@@ -53,7 +51,7 @@ class TreeStorage : public AbstractMultiStorage<T> {
    * computed once.
    * If no function is specified, the default constructor of the stored type is used.
    */
-  TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
+  explicit TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
       : context(numDimensions, func), root(nullptr) {
     MultiIndex index;
     if (numDimensions <= 1) {

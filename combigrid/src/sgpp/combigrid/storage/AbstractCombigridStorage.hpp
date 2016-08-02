@@ -1,20 +1,21 @@
-/*
- * AbstractCombigridStorage.hpp
- *
- *  Created on: 29.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTCOMBIGRIDSTORAGE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTCOMBIGRIDSTORAGE_HPP_
 
-#include <memory>
-#include <mutex>
-#include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include "AbstractMultiStorageIterator.hpp"
+#include <sgpp/combigrid/common/MultiIndexIterator.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
 
-namespace sgpp {
+#include <memory>
+#include <string>
+#include <vector>
+#include <mutex>
+
+namespace sgpp{
 namespace combigrid {
 
 class AbstractCombigridStorage {

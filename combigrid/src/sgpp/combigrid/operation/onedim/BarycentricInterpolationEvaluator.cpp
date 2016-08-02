@@ -6,6 +6,7 @@
 #include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
 #include <limits>
 #include <cmath>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

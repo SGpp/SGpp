@@ -1,25 +1,18 @@
-/*
- * MultiFunction.cpp
- *
- *  Created on: 13.01.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "MultiFunction.hpp"
+#include <sgpp/combigrid/MultiFunction.hpp>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
-MultiFunction::MultiFunction(double (*ptr)(const base::DataVector&)) : func(ptr) {
-}
+MultiFunction::MultiFunction(double (*ptr)(const base::DataVector&)) : func(ptr) {}
 
-double MultiFunction::operator ()(const base::DataVector& vec) {
-	return func(vec);
-}
+double MultiFunction::operator()(const base::DataVector& vec) { return func(vec); }
 
-double MultiFunction::call(const base::DataVector& vec) {
-	return func(vec);
-}
+double MultiFunction::call(const base::DataVector& vec) { return func(vec); }
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

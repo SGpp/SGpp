@@ -1,18 +1,14 @@
-/*
- * AbstractPointHierarchy.cpp
- *
- *  Created on: 04.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include "AbstractPointHierarchy.hpp"
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
-AbstractPointHierarchy::~AbstractPointHierarchy() {
-	// TODO Auto-generated destructor stub
-}
+AbstractPointHierarchy::~AbstractPointHierarchy() {}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

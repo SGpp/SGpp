@@ -24,8 +24,8 @@ double NestedPointHierarchy::getPoint(size_t level, size_t index) {
   while (getNumPoints(level) <= index) {
     ++level;
   }  // TODO(holzmudd): this is a bit hacky, but probably required for CombigridTreeStorage, since
-     // it does not
-     // store the level in the nested case and thus uses level 0 for all levels
+  // it does not
+  // store the level in the nested case and thus uses level 0 for all levels
   return computePoints(level)[index];
 }
 

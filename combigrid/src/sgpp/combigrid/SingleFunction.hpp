@@ -1,9 +1,7 @@
-/*
- * SingleFunction.hpp
- *
- *  Created on: 27.02.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_SINGLEFUNCTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_SINGLEFUNCTION_HPP_
@@ -25,7 +23,7 @@ class SingleFunction {
   /**
    * for function pointers
    */
-  SingleFunction(double (*ptr)(double));
+  explicit SingleFunction(double (*ptr)(double));
 
   /**
    * for lambdas or function objects
@@ -36,6 +34,8 @@ class SingleFunction {
 
   double operator()(double param);
   double call(double param);
+
+  function_type getLambdaExpression();
 };
 
 } /* namespace combigrid */

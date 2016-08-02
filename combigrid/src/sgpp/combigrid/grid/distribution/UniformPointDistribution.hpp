@@ -1,26 +1,24 @@
-/*
- * UniformPointDistribution.hpp
- *
- *  Created on: 04.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMPOINTDISTRIBUTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMPOINTDISTRIBUTION_HPP_
 
 #include "AbstractPointDistribution.hpp"
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 /**
  * provides uniform points, i. e. {k/(n-1) for k = 0, ..., n-1} if n >= 2 or {0.5} if n = 1.
  */
 class UniformPointDistribution : public AbstractPointDistribution {
-public:
-	virtual ~UniformPointDistribution();
+ public:
+  virtual ~UniformPointDistribution();
 
-	virtual double compute(size_t numPoints, size_t j);
+  virtual double compute(size_t numPoints, size_t j);
 };
 
 } /* namespace combigrid */
