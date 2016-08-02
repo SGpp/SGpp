@@ -264,6 +264,10 @@ class KernelCreateGraph {
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", UINT64_C(102400));
         }
+
+        if (kernelNode.contains("USE_SELECT") == false) {
+          kernelNode.addIDAttr("USE_SELECT", false);
+        }
       }
     }
   }

@@ -75,8 +75,8 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     } else {
       for (size_t i = 1; i < k; i++) {
         if (use_select) {
-          output << this->indent[2] << "maxindex = select(" << i
-                 << ",maxindex,k_dists[maxindex] > k_dists["
+          output << this->indent[2] << "maxindex = select(maxindex, " << i
+                 << ", k_dists[maxindex] < k_dists["
                  << i << "]);" << std::endl;
         } else {
           output << this->indent[2] << "if (k_dists[maxindex] < k_dists[" << i << "])" << std::endl;
