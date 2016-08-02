@@ -108,23 +108,23 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
   // Test All The Grids!
   std::vector<std::unique_ptr<Grid>> grids;
-  grids.push_back(Grid::createBsplineGrid(d, p));
-  grids.push_back(Grid::createBsplineBoundaryGrid(d, p));
-  grids.push_back(Grid::createBsplineClenshawCurtisGrid(d, p));
-  grids.push_back(Grid::createModBsplineGrid(d, p));
-  grids.push_back(Grid::createModBsplineClenshawCurtisGrid(d, p));
-  grids.push_back(Grid::createFundamentalSplineGrid(d, p));
-  grids.push_back(Grid::createModFundamentalSplineGrid(d, p));
-  grids.push_back(Grid::createLinearGrid(d));
-  grids.push_back(Grid::createLinearBoundaryGrid(d));
-  grids.push_back(Grid::createLinearClenshawCurtisGrid(d));
-  grids.push_back(Grid::createModLinearGrid(d));
-  grids.push_back(Grid::createWaveletGrid(d));
-  grids.push_back(Grid::createWaveletBoundaryGrid(d));
-  grids.push_back(Grid::createModWaveletGrid(d));
-  grids.push_back(Grid::createPolyGrid(d, p));
-  grids.push_back(Grid::createPolyBoundaryGrid(d, p));
-  grids.push_back(Grid::createModPolyGrid(d, p));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModWaveletGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModPolyGrid(d, p)));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBase(p)));
@@ -184,9 +184,10 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     std::unique_ptr<OperationNaiveEvalPartialDerivative> opEvalPartialDerivative(nullptr);
 
     if (hasGradients) {
-      opEvalGradient = sgpp::op_factory::createOperationNaiveEvalGradient(grid);
-      opEvalHessian = sgpp::op_factory::createOperationNaiveEvalHessian(grid);
-      opEvalPartialDerivative = sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid);
+      opEvalGradient.reset(sgpp::op_factory::createOperationNaiveEvalGradient(grid));
+      opEvalHessian.reset(sgpp::op_factory::createOperationNaiveEvalHessian(grid));
+      opEvalPartialDerivative.reset(
+          sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid));
     }
 
     // test vector version (single coefficient vector)

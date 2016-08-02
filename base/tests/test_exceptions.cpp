@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_FileException) {
 
 BOOST_AUTO_TEST_CASE(test_GenerationException) {
   size_t dimension = 2;
-  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
+  std::unique_ptr<Grid> linearGrid(Grid::createLinearGrid(dimension));
   GridStorage& linearGridStorage = linearGrid->getStorage();
 
   PeriodicGridGenerator gridGen(linearGridStorage);
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_GenerationException) {
 
 BOOST_AUTO_TEST_CASE(test_OperationException) {
   size_t dimension = 7;
-  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
+  std::unique_ptr<Grid> linearGrid(Grid::createLinearGrid(dimension));
   DataMatrix dummyMatrix(10, 7);
   std::unique_ptr<OperationMultipleEval> opEval(
       sgpp::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix));
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 
 BOOST_AUTO_TEST_CASE(test_ToolException) {
   size_t dimension = 4;
-  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
+  std::unique_ptr<Grid> linearGrid(Grid::createLinearGrid(dimension));
   GridPrinter gridPrinter(*linearGrid);
 
   tool_exception expectedException(
