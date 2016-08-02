@@ -14,39 +14,38 @@ namespace combigrid {
 
 namespace optimize {
 
-double glomin(double a, double b, double c, double m, double e, double t, func_base& f, double& x)
-//    GLOMIN seeks a global minimum of a function F(X) in an interval [A,B].
-//
-//  Discussion:
-//
-//    This function assumes that F(X) is twice continuously differentiable
-//    over [A,B] and that F''(X) <= M for all X in [A,B].
-//
-//  Parameters:
-//
-//    Input, double A, B, the endpoints of the interval.
-//    It must be the case that A < B.
-//
-//    Input, double C, an initial guess for the global
-//    minimizer.  If no good guess is known, C = A or B is acceptable.
-//
-//    Input, double M, the bound on the second derivative.
-//
-//    Input, double E, a positive tolerance, a bound for the
-//    absolute error in the evaluation of F(X) for any X in [A,B].
-//
-//    Input, double T, a positive error tolerance.
-//
-//    Input, func_base& F, a user-supplied c++ functor whose
-//    global minimum is being sought.  The input and output
-//    of F() are of type double.
-//
-//    Output, double &X, the estimated value of the abscissa
-//    for which F attains its global minimum value in [A,B].
-//
-//    Output, double GLOMIN, the value F(X).
-//
-{
+double glomin(double a, double b, double c, double m, double e, double t, func_base& f, double& x) {
+  //    GLOMIN seeks a global minimum of a function F(X) in an interval [A,B].
+  //
+  //  Discussion:
+  //
+  //    This function assumes that F(X) is twice continuously differentiable
+  //    over [A,B] and that F''(X) <= M for all X in [A,B].
+  //
+  //  Parameters:
+  //
+  //    Input, double A, B, the endpoints of the interval.
+  //    It must be the case that A < B.
+  //
+  //    Input, double C, an initial guess for the global
+  //    minimizer.  If no good guess is known, C = A or B is acceptable.
+  //
+  //    Input, double M, the bound on the second derivative.
+  //
+  //    Input, double E, a positive tolerance, a bound for the
+  //    absolute error in the evaluation of F(X) for any X in [A,B].
+  //
+  //    Input, double T, a positive error tolerance.
+  //
+  //    Input, func_base& F, a user-supplied c++ functor whose
+  //    global minimum is being sought.  The input and output
+  //    of F() are of type double.
+  //
+  //    Output, double &X, the estimated value of the abscissa
+  //    for which F attains its global minimum value in [A,B].
+  //
+  //    Output, double GLOMIN, the value F(X).
+  //
   double a0;
   double a2;
   double a3;
@@ -134,7 +133,7 @@ double glomin(double a, double b, double c, double m, double e, double t, func_b
         }
         k = ((1611 * k) % 1048576);
         q = 1.0;
-        r = (b - a) * 0.00001 * (double)(k);
+        r = (b - a) * 0.00001 * static_cast<double>(k);
 
         if (z2 <= r) {
           break;
@@ -143,7 +142,7 @@ double glomin(double a, double b, double c, double m, double e, double t, func_b
     } else {
       k = ((1611 * k) % 1048576);
       q = 1.0;
-      r = (b - a) * 0.00001 * (double)(k);
+      r = (b - a) * 0.00001 * static_cast<double>(k);
 
       while (r < z2) {
         if (q * (r * (yb - y2) + z2 * q * ((y2 - y) + t)) < z2 * m2 * r * (z2 * q - r)) {
@@ -157,7 +156,7 @@ double glomin(double a, double b, double c, double m, double e, double t, func_b
         }
         k = ((1611 * k) % 1048576);
         q = 1.0;
-        r = (b - a) * 0.00001 * (double)(k);
+        r = (b - a) * 0.00001 * static_cast<double>(k);
       }
     }
 
@@ -229,45 +228,44 @@ double glomin(double a, double b, double c, double m, double e, double t, func_b
   return y;
 }
 
-double local_min(double a, double b, double t, func_base& f, double& x)
-//    LOCAL_MIN seeks a local minimum of a function F(X) in an interval [A,B].
-//
-//  Discussion:
-//
-//    The method used is a combination of golden section search and
-//    successive parabolic interpolation.  Convergence is never much slower
-//    than that for a Fibonacci search.  If F has a continuous second
-//    derivative which is positive at the minimum (which is not at A or
-//    B), then convergence is superlinear, and usually of the order of
-//    about 1.324....
-//
-//    The values EPS and T define a tolerance TOL = EPS * abs ( X ) + T.
-//    F is never evaluated at two points closer than TOL.
-//
-//    If F is a unimodal function and the computed values of F are always
-//    unimodal when separated by at least SQEPS * abs ( X ) + (T/3), then
-//    LOCAL_MIN approximates the abscissa of the global minimum of F on the
-//    interval [A,B] with an error less than 3*SQEPS*abs(LOCAL_MIN)+T.
-//
-//    If F is not unimodal, then LOCAL_MIN may approximate a local, but
-//    perhaps non-global, minimum to the same accuracy.
-//
-//  Parameters:
-//
-//    Input, double A, B, the endpoints of the interval.
-//
-//    Input, double T, a positive absolute error tolerance.
-//
-//    Input, func_base& F, a user-supplied c++ functor whose
-//    local minimum is being sought.  The input and output
-//    of F() are of type double.
-//
-//    Output, double &X, the estimated value of an abscissa
-//    for which F attains a local minimum value in [A,B].
-//
-//    Output, double LOCAL_MIN, the value F(X).
-//
-{
+double local_min(double a, double b, double t, func_base& f, double& x) {
+  //    LOCAL_MIN seeks a local minimum of a function F(X) in an interval [A,B].
+  //
+  //  Discussion:
+  //
+  //    The method used is a combination of golden section search and
+  //    successive parabolic interpolation.  Convergence is never much slower
+  //    than that for a Fibonacci search.  If F has a continuous second
+  //    derivative which is positive at the minimum (which is not at A or
+  //    B), then convergence is superlinear, and usually of the order of
+  //    about 1.324....
+  //
+  //    The values EPS and T define a tolerance TOL = EPS * abs ( X ) + T.
+  //    F is never evaluated at two points closer than TOL.
+  //
+  //    If F is a unimodal function and the computed values of F are always
+  //    unimodal when separated by at least SQEPS * abs ( X ) + (T/3), then
+  //    LOCAL_MIN approximates the abscissa of the global minimum of F on the
+  //    interval [A,B] with an error less than 3*SQEPS*abs(LOCAL_MIN)+T.
+  //
+  //    If F is not unimodal, then LOCAL_MIN may approximate a local, but
+  //    perhaps non-global, minimum to the same accuracy.
+  //
+  //  Parameters:
+  //
+  //    Input, double A, B, the endpoints of the interval.
+  //
+  //    Input, double T, a positive absolute error tolerance.
+  //
+  //    Input, func_base& F, a user-supplied c++ functor whose
+  //    local minimum is being sought.  The input and output
+  //    of F() are of type double.
+  //
+  //    Output, double &X, the estimated value of an abscissa
+  //    for which F attains a local minimum value in [A,B].
+  //
+  //    Output, double LOCAL_MIN, the value F(X).
+  //
   double c;
   double d;
   double e;
@@ -350,11 +348,10 @@ double local_min(double a, double b, double t, func_base& f, double& x)
           d = -tol;
         }
       }
-    }
-    //
-    //  A golden-section step.
-    //
-    else {
+    } else {
+      //
+      //  A golden-section step.
+      //
       if (x < m) {
         e = sb - x;
       } else {
@@ -410,15 +407,14 @@ double local_min(double a, double b, double t, func_base& f, double& x)
   return fx;
 }
 
-double r8_abs(double x)
-//    R8_ABS returns the absolute value of an R8.
-//
-//  Parameters:
-//
-//    Input, double X, the quantity whose absolute value is desired.
-//
-//    Output, double R8_ABS, the absolute value of X.
-{
+double r8_abs(double x) {
+  //    R8_ABS returns the absolute value of an R8.
+  //
+  //  Parameters:
+  //
+  //    Input, double X, the quantity whose absolute value is desired.
+  //
+  //    Output, double R8_ABS, the absolute value of X.
   double value;
 
   if (0.0 <= x) {
@@ -429,35 +425,33 @@ double r8_abs(double x)
   return value;
 }
 
-double r8_epsilon()
-//    R8_EPSILON returns the R8 roundoff unit.
-//
-//  Discussion:
-//
-//    The roundoff unit is a number R which is a power of 2 with the
-//    property that, to the precision of the computer's arithmetic,
-//      1 < 1 + R
-//    but
-//      1 = ( 1 + R / 2 )
-//
-//  Parameters:
-//
-//    Output, double R8_EPSILON, the R8 round-off unit.
-{
+double r8_epsilon() {
+  //    R8_EPSILON returns the R8 roundoff unit.
+  //
+  //  Discussion:
+  //
+  //    The roundoff unit is a number R which is a power of 2 with the
+  //    property that, to the precision of the computer's arithmetic,
+  //      1 < 1 + R
+  //    but
+  //      1 = ( 1 + R / 2 )
+  //
+  //  Parameters:
+  //
+  //    Output, double R8_EPSILON, the R8 round-off unit.
   const double value = 2.220446049250313E-016;
 
   return value;
 }
 
-double r8_max(double x, double y)
-//    R8_MAX returns the maximum of two R8's.
-//
-//  Parameters:
-//
-//    Input, double X, Y, the quantities to compare.
-//
-//    Output, double R8_MAX, the maximum of X and Y.
-{
+double r8_max(double x, double y) {
+  //    R8_MAX returns the maximum of two R8's.
+  //
+  //  Parameters:
+  //
+  //    Input, double X, Y, the quantities to compare.
+  //
+  //    Output, double R8_MAX, the maximum of X and Y.
   double value;
 
   if (y < x) {
@@ -468,16 +462,15 @@ double r8_max(double x, double y)
   return value;
 }
 
-double r8_sign(double x)
-//    R8_SIGN returns the sign of an R8.
-//
-//  Parameters:
-//
-//    Input, double X, the number whose sign is desired.
-//
-//    Output, double R8_SIGN, the sign of X.
-//
-{
+double r8_sign(double x) {
+  //    R8_SIGN returns the sign of an R8.
+  //
+  //  Parameters:
+  //
+  //    Input, double X, the number whose sign is desired.
+  //
+  //    Output, double R8_SIGN, the sign of X.
+  //
   double value;
 
   if (x < 0.0) {
@@ -497,17 +490,19 @@ double r8_sign(double x)
 // === instead of a c++ functor.  In all cases, the
 // === input and output of F() are of type double.
 
-typedef double doubleOfdouble(double);
+typedef double doubleOfdouble(double x);
 
 class func_wrapper : public func_base {
   doubleOfdouble* func;
 
  public:
-  func_wrapper(doubleOfdouble* f) { func = f; }
+  explicit func_wrapper(doubleOfdouble* f) { func = f; }
+  virtual ~func_wrapper() {}
+
   virtual double operator()(double x) { return func(x); }
 };
 
-//****************************************************************************80
+// ****************************************************************************80
 
 double glomin(double a, double b, double c, double m, double e, double t, double f(double x),
               double& x) {
@@ -515,7 +510,7 @@ double glomin(double a, double b, double c, double m, double e, double t, double
   return glomin(a, b, c, m, e, t, foo, x);
 }
 
-//****************************************************************************80
+// ****************************************************************************80
 
 double local_min(double a, double b, double t, double f(double x), double& x) {
   func_wrapper foo(f);
@@ -528,7 +523,7 @@ double local_min(double a, double b, double t, double f(double x), double& x) {
 
 double monicPoly::operator()(double x) {
   double rslt(1);
-  for (size_t ii = coeff.size() - 1; ii >= 0; ii--) {
+  for (int ii = static_cast<int>(coeff.size()) - 1; ii >= 0; ii--) {
     rslt *= x;
     rslt += coeff[ii];
   }
@@ -538,13 +533,13 @@ double monicPoly::operator()(double x) {
 // Similarly, evaluate a general polynomial (not necessarily monic):
 double Poly::operator()(double x) {
   double rslt(0);
-  for (int ii = coeff.size() - 1; ii >= 0; ii--) {
+  for (int ii = static_cast<int>(coeff.size()) - 1; ii >= 0; ii--) {
     rslt *= x;
     rslt += coeff[ii];
   }
   return rslt;
 }
 
-}  // end namespace optimize
-}
+}  // namespace optimize
+}  // namespace combigrid
 } /* namespace sgpp*/

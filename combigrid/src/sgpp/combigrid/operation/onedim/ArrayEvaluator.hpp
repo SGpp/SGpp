@@ -1,102 +1,95 @@
-/*
- * ArrayEvaluator.hpp
- *
- *  Created on: 04.01.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ARRAYEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ARRAYEVALUATOR_HPP_
 
-#include "AbstractLinearEvaluator.hpp"
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/algebraic/ScalarVector.hpp>
 #include <sgpp/combigrid/algebraic/ArrayVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
-namespace sgpp{
+#include <vector>
+
+namespace sgpp {
 namespace combigrid {
 
-template<typename ScalarEvaluator> class ArrayEvaluator: public AbstractLinearEvaluator<FloatArrayVector> {
-	std::vector<ScalarEvaluator> evaluators;
-	std::vector<FloatArrayVector> basisCoefficients;
-	std::vector<double> xValues;
-	bool doesNeedParameter;
+template <typename ScalarEvaluator>
+class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
+  std::vector<ScalarEvaluator> evaluators;
+  std::vector<FloatArrayVector> basisCoefficients;
+  std::vector<double> xValues;
+  bool doesNeedParameter;
 
-	void computeBasisCoefficients() {
-		basisCoefficients = std::vector<FloatArrayVector>(xValues.size(), FloatArrayVector::zero());
+  void computeBasisCoefficients() {
+    basisCoefficients = std::vector<FloatArrayVector>(xValues.size(), FloatArrayVector::zero());
 
-		for(size_t i = 0; i < evaluators.size(); ++i) {
-			auto coeff = evaluators[i].getBasisCoefficients();
-			for(size_t j = 0; j < coeff.size(); ++j) {
-				basisCoefficients[j].at(i) = coeff[j];
-			}
-		}
-	}
+    for (size_t i = 0; i < evaluators.size(); ++i) {
+      auto coeff = evaluators[i].getBasisCoefficients();
+      for (size_t j = 0; j < coeff.size(); ++j) {
+        basisCoefficients[j].at(i) = coeff[j];
+      }
+    }
+  }
 
-public:
-	ArrayEvaluator(bool doesNeedParameter, ScalarEvaluator evaluatorPrototype = ScalarEvaluator())
-		: evaluators(1, evaluatorPrototype)
-		, basisCoefficients()
-		, xValues()
-		, doesNeedParameter(doesNeedParameter) {
-	}
+ public:
+  explicit ArrayEvaluator(bool doesNeedParameter,
+                          ScalarEvaluator evaluatorPrototype = ScalarEvaluator())
+      : evaluators(1, evaluatorPrototype),
+        basisCoefficients(),
+        xValues(),
+        doesNeedParameter(doesNeedParameter) {}
 
-	ArrayEvaluator(ArrayEvaluator<ScalarEvaluator> const &other)
-		: evaluators(other.evaluators)
-		, basisCoefficients(other.basisCoefficients)
-		, xValues(other.xValues)
-		, doesNeedParameter(other.doesNeedParameter) {
+  ArrayEvaluator(ArrayEvaluator<ScalarEvaluator> const &other)
+      : evaluators(other.evaluators),
+        basisCoefficients(other.basisCoefficients),
+        xValues(other.xValues),
+        doesNeedParameter(other.doesNeedParameter) {}
 
-	}
+  ~ArrayEvaluator() {}
 
-	~ArrayEvaluator() {
+  virtual std::vector<FloatArrayVector> getBasisCoefficients() { return basisCoefficients; }
 
-	}
+  virtual void setGridPoints(std::vector<double> const &xValues) {
+    this->xValues = xValues;
+    for (auto &eval : evaluators) {
+      eval.setGridPoints(xValues);
+    }
 
-	virtual std::vector<FloatArrayVector> getBasisCoefficients() {
-		return basisCoefficients;
-	}
+    computeBasisCoefficients();
+  }
 
-	virtual void setGridPoints(std::vector<double> const &xValues) {
-		this->xValues = xValues;
-		for(auto &eval : evaluators) {
-			eval.setGridPoints(xValues);
-		}
+  // don't change return type back to the equivalent
+  // std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> or swig will give compile errors...
+  virtual std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() {
+    return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>(
+        new ArrayEvaluator<ScalarEvaluator>(*this));
+  }
 
-		computeBasisCoefficients();
-	}
+  virtual bool needsOrderedPoints() { return evaluators[0].needsOrderedPoints(); }
 
-	// don't change return type back to the equivalent std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> or swig will give compile errors...
-	virtual std::shared_ptr<AbstractLinearEvaluator<ArrayVector<double, ScalarVector<double>>>> cloneLinear() {
-		return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>(new ArrayEvaluator<ScalarEvaluator>(*this));
-	}
+  virtual bool needsParameter() { return doesNeedParameter; }
 
-	virtual bool needsOrderedPoints() {
-		return evaluators[0].needsOrderedPoints();
-	}
+  virtual void setParameter(FloatArrayVector const &param) {
+    if (evaluators.size() > param.size()) {
+      evaluators.resize(param.size());
+    } else {
+      if (evaluators.size() == 0) {
+        evaluators.emplace_back();
+        evaluators.back().setGridPoints(xValues);
+      }
+      while (evaluators.size() < param.size()) {
+        evaluators.push_back(evaluators.back());
+      }
+    }
+    for (size_t i = 0; i < param.size(); ++i) {
+      evaluators[i].setParameter(param[i]);
+    }
 
-	virtual bool needsParameter() {
-		return doesNeedParameter;
-	}
-
-	virtual void setParameter(FloatArrayVector const &param) {
-		if(evaluators.size() > param.size()) {
-			evaluators.resize(param.size());
-		} else {
-			if(evaluators.size() == 0) {
-				evaluators.emplace_back();
-				evaluators.back().setGridPoints(xValues);
-			}
-			while(evaluators.size() < param.size()) {
-				evaluators.push_back(evaluators.back());
-			}
-		}
-		for(size_t i = 0; i < param.size(); ++i) {
-			evaluators[i].setParameter(param[i]);
-		}
-
-		computeBasisCoefficients();
-	}
+    computeBasisCoefficients();
+  }
 };
 
 } /* namespace combigrid */
