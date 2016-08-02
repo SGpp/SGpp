@@ -70,11 +70,11 @@ class MPIWorkerGridBase : virtual public MPIWorkerBase {
     gridpoints = new int[gridsize * 2 * dimensions];
     size_t pointscount = 0;
     for (int i = 0; i < gridsize; i++) {
-      sgpp::base::HashGridIndex *point = gridStorage.get(i);
+      sgpp::base::HashGridPoint &point = gridStorage.getPoint(i);
       pointscount++;
       for (size_t d = 0; d < dimensions; d++) {
-        gridpoints[i * 2 * dimensions + 2 * d] = point->getIndex(d);
-        gridpoints[i * 2 * dimensions + 2 * d + 1] = point->getLevel(d);
+        gridpoints[i * 2 * dimensions + 2 * d] = point.getIndex(d);
+        gridpoints[i * 2 * dimensions + 2 * d + 1] = point.getLevel(d);
       }
     }
 

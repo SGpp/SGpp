@@ -54,11 +54,11 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
     for (int i = 0; i < gridSize; i++) {
-      sgpp::base::HashGridIndex *point = gridStorage.get(i);
+      sgpp::base::HashGridPoint &point = gridStorage.getPoint(i);
       pointscount++;
       for (int d = 0; d < dims; d++) {
-        points.push_back(point->getIndex(d));
-        points.push_back(point->getLevel(d));
+        points.push_back(point.getIndex(d));
+        points.push_back(point.getLevel(d));
       }
     }
     if (verbose)
