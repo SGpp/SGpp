@@ -152,7 +152,14 @@ void CombigridTreeStorage::deserialize(const std::string &str) {
 }
 
 void CombigridTreeStorage::set(const MultiIndex &level, const MultiIndex &index, double value) {
-  impl->storage->get(level)->set(index, value);
+  MultiIndex reducedLevel = level;
+  size_t numDimensions = impl->pointHierarchies.size();
+  for (size_t d = 0; d < numDimensions; ++d) {
+    if (impl->pointHierarchies[d]->isNested()) {
+      reducedLevel[d] = 0;
+    }
+  }
+  impl->storage->get(reducedLevel)->set(index, value);
 }
 }  // namespace combigrid
 } /* namespace sgpp*/

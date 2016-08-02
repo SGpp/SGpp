@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include "LevelManager.hpp"
+
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -62,7 +64,10 @@ void LevelManager::tryAddLevel(const MultiIndex &level) {
 
   for (auto &predLevel : predecessors) {
     if (levelData->containsIndex(predLevel)) {
-      --numMissingPredecessors;
+      auto levelInfo = levelData->get(predLevel);
+      if (levelInfo->computationStage >= ComputationStage::STARTED) {
+        --numMissingPredecessors;
+      }
     }
   }
 
@@ -74,7 +79,7 @@ void LevelManager::tryAddLevel(const MultiIndex &level) {
 
   for (auto &predLevel : predecessors) {
     auto predInfo = levelData->get(predLevel);
-    if (predInfo->computationStage == ComputationStage::TERMINATED) {
+    if (predInfo->computationStage == ComputationStage::COMPLETED) {
       --levelInfo->numNotStartedPredecessors;
       --levelInfo->numNotCompletedPredecessors;
     } else if (predInfo->computationStage == ComputationStage::STARTED ||
@@ -138,6 +143,9 @@ void LevelManager::predecessorsCompleted(const MultiIndex &level) {
       validResult ? combiEval->getDifferenceNorm(level) : 0.0;  // TODO(holzmudd): improve?
   auto successors = getSuccessors(level);
   for (auto &succLevel : successors) {
+    if (!levelData->containsIndex(succLevel)) {
+      continue;
+    }
     auto succInfo = levelData->get(succLevel);
     --succInfo->numNotCompletedPredecessors;
     if (succInfo->computationStage == ComputationStage::TERMINATED &&
