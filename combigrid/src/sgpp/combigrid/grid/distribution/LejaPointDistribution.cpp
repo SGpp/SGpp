@@ -12,26 +12,21 @@
 #include "sgpp/combigrid/optimization/Optimization.h"
 #include <cmath>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 const double epsilon = 0.00001;
 
-class leja_f: public optimize::func_base {
-public:
-	virtual ~leja_f() {
-	}
+class leja_f : public optimize::func_base {
+ public:
+  virtual ~leja_f() {}
 
-	leja_f(std::function<double(double)> f) {
-		this->func = f;
-	}
+  leja_f(std::function<double(double)> f) { this->func = f; }
 
-	double operator()(double x) {
-		return func(x);
-	}
+  double operator()(double x) { return func(x); }
 
-private:
-	std::function<double(double)> func;
+ private:
+  std::function<double(double)> func;
 };
 
 /**
@@ -43,68 +38,66 @@ private:
  * @param upper_bound upper bound for the range of the points
  * @param weight_func the weight function
  */
-void calc_leja_points(std::vector<double>& sortedPoints,
-		std::vector<double> &points, int number, double lower_bound,
-		double upper_bound, std::function<double(double)> weight_func) {
-	// calculates the next NUMBER leja points
-	for (int i = 0; i < number; ++i) {
-		std::vector<double> tries;
-		std::vector<double> values;
+void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points, int number,
+                      double lower_bound, double upper_bound,
+                      std::function<double(double)> weight_func) {
+  // calculates the next NUMBER leja points
+  for (int i = 0; i < number; ++i) {
+    std::vector<double> tries;
+    std::vector<double> values;
 
-		double low, up;
-		for (size_t j = 0; j <= sortedPoints.size(); ++j) {
+    double low, up;
+    for (size_t j = 0; j <= sortedPoints.size(); ++j) {
+      low = (j == 0) ? lower_bound : sortedPoints.at(j - 1);
+      up = (j == sortedPoints.size()) ? upper_bound : sortedPoints.at(j);
 
-			low = (j == 0) ? lower_bound : sortedPoints.at(j - 1);
-			up = (j == sortedPoints.size()) ? upper_bound : sortedPoints.at(j);
+      std::function<double(double)> leja_func = [sortedPoints, weight_func](double x) {
+        double prod = 1;
+        for (size_t i = 0; i < sortedPoints.size(); ++i) {
+          prod *= std::abs(x - sortedPoints.at(i));
+        }
+        return (-1) * prod * weight_func(x);
+      };
 
-			std::function<double(double)> leja_func =
-					[sortedPoints, weight_func](double x) {
-						double prod = 1;
-						for (size_t i = 0; i < sortedPoints.size(); ++i) {
-							prod *= std::abs(x - sortedPoints.at(i));
-						}
-						return (-1) * prod * weight_func(x);
-					};
+      double x_val = (low + up) / 2;
 
-			double x_val = (low + up) / 2;
+      leja_f f(leja_func);
+      double y_val = optimize::local_min(low, up, epsilon, f, x_val);
 
-			leja_f f(leja_func);
-			double y_val = optimize::local_min(low, up, epsilon, f, x_val);
+      tries.push_back(x_val);
+      values.push_back(y_val);
+    }
 
-			tries.push_back(x_val);
-			values.push_back(y_val);
-		}
+    double min_val = 100;
+    size_t idx = 0;
+    for (size_t j = 0; j < values.size(); ++j) {
+      if (values.at(j) < min_val) {
+        min_val = values.at(j);
+        idx = j;
+      }
+    }
 
-		double min_val = 100;
-		size_t idx = 0;
-		for (size_t j = 0; j < values.size(); ++j) {
-			if (values.at(j) < min_val) {
-				min_val = values.at(j);
-				idx = j;
-			}
-		}
-
-		double next_point = tries.at(idx);
-		points.push_back(next_point);
-		// insertion sort
-		for (size_t j = 0; j < sortedPoints.size(); ++j) {
-			if (sortedPoints.at(j) > next_point) {
-				sortedPoints.insert(sortedPoints.begin() + j, next_point);
-				break;
-			}
-		}
-		if (sortedPoints.at(sortedPoints.size() - 1) < next_point) {
-			sortedPoints.push_back(next_point);
-		}
-	}
+    double next_point = tries.at(idx);
+    points.push_back(next_point);
+    // insertion sort
+    for (size_t j = 0; j < sortedPoints.size(); ++j) {
+      if (sortedPoints.at(j) > next_point) {
+        sortedPoints.insert(sortedPoints.begin() + j, next_point);
+        break;
+      }
+    }
+    if (sortedPoints.at(sortedPoints.size() - 1) < next_point) {
+      sortedPoints.push_back(next_point);
+    }
+  }
 }
 
 /**
  * normal distribution for the calculation of the starting point
  */
 double normalDistributionFunc(double x) {
-	const double factor = 0.2;
-	return exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
+  const double factor = 0.2;
+  return exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
 }
 
 /**
@@ -112,38 +105,36 @@ double normalDistributionFunc(double x) {
  * and searching via optimizer for the maximum
  */
 double LejaPointDistribution::calcStartingPoint() {
-	// weight the weight function with the normal distribution
-	std::function<double(double)> w =
-			[&](double x) {return -(this->normalDistribution(x) * this->weightFunction(x));};
+  // weight the weight function with the normal distribution
+  std::function<double(double)> w = [&](double x) {
+    return -(this->normalDistribution(x) * this->weightFunction(x));
+  };
 
-	// optimize it
-	leja_f f(w);
-	// starting x value
-	double x_val = 0.5;
-	optimize::local_min(0.0, 1.0, epsilon, f, x_val);
+  // optimize it
+  leja_f f(w);
+  // starting x value
+  double x_val = 0.5;
+  optimize::local_min(0.0, 1.0, epsilon, f, x_val);
 
-	return x_val;
+  return x_val;
 }
 
-LejaPointDistribution::LejaPointDistribution(
-		SingleFunction weightFunction) :
-		weightFunction(weightFunction), startingPoint(), normalDistribution(normalDistributionFunc) {
-	startingPoint = calcStartingPoint();
-	points.push_back(this->startingPoint);
-	sortedPoints.push_back(this->startingPoint);
+LejaPointDistribution::LejaPointDistribution(SingleFunction weightFunction)
+    : weightFunction(weightFunction), startingPoint(), normalDistribution(normalDistributionFunc) {
+  startingPoint = calcStartingPoint();
+  points.push_back(this->startingPoint);
+  sortedPoints.push_back(this->startingPoint);
 }
 
-LejaPointDistribution::~LejaPointDistribution() {
-}
+LejaPointDistribution::~LejaPointDistribution() {}
 
 double LejaPointDistribution::compute(size_t numPoints, size_t j) {
-	if (points.size() <= j) {
-		calc_leja_points(sortedPoints, points,
-				static_cast<int>(j + 1 - points.size()), 0.0, 1.0,
-				weightFunction);
-	}
+  if (points.size() <= j) {
+    calc_leja_points(sortedPoints, points, static_cast<int>(j + 1 - points.size()), 0.0, 1.0,
+                     weightFunction);
+  }
 
-	return points[j];
+  return points[j];
 }
 
 } /* namespace combigrid */

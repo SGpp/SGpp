@@ -1,11 +1,11 @@
-/*
- * LevelManager.cpp
- *
- *  Created on: 22.07.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include "LevelManager.hpp"
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -125,7 +125,8 @@ void LevelManager::predecessorsCompleted(const MultiIndex &level) {
   levelInfo->computationStage = ComputationStage::COMPLETED;
 
   bool validResult = combiEval->addLevel(level);
-  levelInfo->norm = validResult ? combiEval->getDifferenceNorm(level) : 0.0;  // TODO: improve?
+  levelInfo->norm =
+      validResult ? combiEval->getDifferenceNorm(level) : 0.0;  // TODO(holzmudd): improve?
   auto successors = getSuccessors(level);
   for (auto &succLevel : successors) {
     auto succInfo = levelData->get(succLevel);

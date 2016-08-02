@@ -1,29 +1,38 @@
-/*
- * test_serialization.cpp
- *
- *  Created on: 26.01.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
-#include "../src/sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp"
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+
 #include <cmath>
 #include <limits>
 #include <iostream>
+#include <string>
+#include <vector>
 
-using namespace sgpp::combigrid;
-using namespace sgpp;
+using sgpp::combigrid::FloatSerializationStrategy;
+using sgpp::combigrid::FunctionLookupTable;
+using sgpp::combigrid::MultiFunction;
+using sgpp::combigrid::AbstractPointHierarchy;
+using sgpp::combigrid::NonNestedPointHierarchy;
+using sgpp::combigrid::ClenshawCurtisDistribution;
+using sgpp::combigrid::ExponentialLevelorderPointOrdering;
+using sgpp::combigrid::MultiIndexIterator;
+using sgpp::combigrid::MultiIndex;
+using sgpp::combigrid::CombigridTreeStorage;
 
-double testFunc1(sgpp::base::DataVector const &x) { return sqrt(x[0]) * exp(x[1]); }
+double testFunc1(sgpp::base::DataVector const &x) { return std::sqrt(x[0]) * std::exp(x[1]); }
 
 double testFunc2(sgpp::base::DataVector const &x) { return -1.0; }
 
@@ -37,8 +46,8 @@ void checkDoubleSerialization(double x) {
 }
 
 BOOST_AUTO_TEST_CASE(testFloatSerialization) {
-  checkDoubleSerialization(sqrt(2));
-  checkDoubleSerialization(-sqrt(2));
+  checkDoubleSerialization(std::sqrt(2));
+  checkDoubleSerialization(-std::sqrt(2));
   checkDoubleSerialization(1.0);
   checkDoubleSerialization(0.0000000001234567891);
   checkDoubleSerialization(0.0);
@@ -49,7 +58,7 @@ BOOST_AUTO_TEST_CASE(testFloatSerialization) {
   checkDoubleSerialization(std::numeric_limits<double>::infinity());
   checkDoubleSerialization(-std::numeric_limits<double>::infinity());
   checkDoubleSerialization(1.0 / 0.0);
-  checkDoubleSerialization(sqrt(-1.0));
+  checkDoubleSerialization(std::sqrt(-1.0));
 }
 
 BOOST_AUTO_TEST_CASE(testFunctionLookupTableSerialization) {

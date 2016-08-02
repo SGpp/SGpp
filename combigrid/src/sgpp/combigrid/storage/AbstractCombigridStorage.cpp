@@ -7,11 +7,11 @@
 
 #include "AbstractCombigridStorage.hpp"
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 AbstractCombigridStorage::~AbstractCombigridStorage() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 } /* namespace combigrid */
