@@ -8,6 +8,8 @@
 
 #include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 

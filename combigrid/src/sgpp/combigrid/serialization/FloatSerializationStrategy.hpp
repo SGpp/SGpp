@@ -12,6 +12,7 @@
 #include <cmath>
 #include <sstream>
 #include <limits>
+#include <string>
 
 namespace sgpp {
 namespace combigrid {
