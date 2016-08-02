@@ -33,12 +33,15 @@ ModelFittingBase::~ModelFittingBase() {}
 
 double ModelFittingBase::evaluate(DataVector& sample) {
   // TODO(lettrich): write test
+
+  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(*alpha);
   auto opEval(op_factory::createOperationEval(*grid));
   return opEval->eval(*alpha, sample);
 }
 
 std::unique_ptr<DataVector> ModelFittingBase::evaluate(DataMatrix& samples) {
   // TODO(lettrich): write test
+  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(*alpha);
   auto opMultEval(op_factory::createOperationMultipleEval(*grid, samples));
   auto result = std::make_unique<DataVector>(samples.getNrows());
   opMultEval->eval(*alpha, *result);

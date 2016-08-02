@@ -17,7 +17,7 @@ class RandomShufflingFunctor : public ShufflingFunctor {
  public:
   RandomShufflingFunctor() : ShufflingFunctor(){};
   virtual ~RandomShufflingFunctor(){};
-  virtual void shuffle(std::vector<size_t>& indices) const {
+  virtual void shuffle(std::vector<size_t>& indices) {
     std::shuffle(indices.begin(), indices.end(), generator);
   };
 };
