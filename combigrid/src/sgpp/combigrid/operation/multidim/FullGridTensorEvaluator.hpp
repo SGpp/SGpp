@@ -1,9 +1,7 @@
-/*
- * FullGridTensorEvaluator.hpp
- *
- *  Created on: 03.01.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_
@@ -15,7 +13,9 @@
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
-#include "AbstractFullGridEvaluator.hpp"
+#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -72,7 +72,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
         evaluators(evaluatorPrototypes.size()),
         pointHierarchies(pointHierarchies),
         parameters(evaluatorPrototypes.size()) {
-    // TODO: check for dimension equality
+    // TODO(holzmudd): check for dimension equality
   }
 
   virtual ~FullGridTensorEvaluator() {}
@@ -226,7 +226,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
         } else {
           // more than the last index have changed, thus update partialProducts
           for (size_t d = lastDim - h; d < lastDim; ++d) {
-            auto pp = partialProducts[d];  // TODO: could probably be optimized...
+            auto pp = partialProducts[d];  // TODO(holzmudd): could probably be optimized...
             pp.componentwiseMult(basisValues[d][it.indexAt(d)]);
             partialProducts[d + 1] = pp;
           }
@@ -266,7 +266,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
           eval->setParameter(params[paramIndex]);
         }
 
-        ++paramIndex;  // TODO: check bounds
+        ++paramIndex;  // TODO(holzmudd): check bounds
       }
     }
   }
@@ -288,8 +288,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
     return result;
   }
 };
-}
-/* namespace combigrid */
+}  // namespace combigrid
 } /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_ */
