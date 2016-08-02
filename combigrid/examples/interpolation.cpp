@@ -3,19 +3,35 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp_combigrid.hpp>
+
 #include <cmath>
 #include <iostream>
 #include <memory>
-#include <sgpp_combigrid.hpp>
 #include <vector>
 
-using namespace sgpp;
-using namespace sgpp::combigrid;
+using sgpp::base::DataVector;
+using sgpp::combigrid::MultiFunction;
+using sgpp::combigrid::CombigridOperation;
+using sgpp::combigrid::AbstractPointHierarchy;
+using sgpp::combigrid::NestedPointHierarchy;
+using sgpp::combigrid::LejaPointDistribution;
+using sgpp::combigrid::IdentityPointOrdering;
+using sgpp::combigrid::LinearGrowthStrategy;
+using sgpp::combigrid::AbstractLinearEvaluator;
+using sgpp::combigrid::FloatArrayVector;
+using sgpp::combigrid::FloatScalarVector;
+using sgpp::combigrid::ArrayEvaluator;
+using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::CombigridTreeStorage;
+using sgpp::combigrid::FullGridTensorEvaluator;
+using sgpp::combigrid::FunctionLookupTable;
+using sgpp::combigrid::CombigridEvaluator;
 
 /**
  * The function we want to interpolate
  */
-double f_2D(base::DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
+double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
 void simpleInterpolation() {
   size_t numDimensions = 2;
@@ -27,7 +43,7 @@ void simpleInterpolation() {
   size_t maxLevelSum = 2;
   double result = operation->evaluate(
       maxLevelSum,
-      base::DataVector(std::vector<double>{
+      DataVector(std::vector<double>{
           0.5, 0.7}));  // creates levels (0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2)
 
   std::cout << result << "\n";
@@ -36,9 +52,9 @@ void simpleInterpolation() {
 void multistageInterpolation() {
   size_t numDimensions = 2;
 
-  std::vector<base::DataVector> gridPoints;
+  std::vector<DataVector> gridPoints;
 
-  auto dummyFunc = [&](base::DataVector const &param) -> double {
+  auto dummyFunc = [&](DataVector const &param) -> double {
     gridPoints.push_back(param);
     return 0.0;
   };
@@ -91,8 +107,7 @@ void multistageInterpolation() {
   }
 
   auto realStorage = std::make_shared<CombigridTreeStorage>(
-      pointHierarchies,
-      MultiFunction([&](base::DataVector const &param) { return funcLookup(param); }));
+      pointHierarchies, MultiFunction([&](DataVector const &param) { return funcLookup(param); }));
 
   auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);

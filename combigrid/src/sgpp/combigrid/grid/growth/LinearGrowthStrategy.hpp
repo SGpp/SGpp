@@ -6,7 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_LINEARGROWTHSTRATEGY_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_LINEARGROWTHSTRATEGY_HPP_
 
-#include "AbstractGrowthStrategy.hpp"
+#include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -18,7 +18,7 @@ class LinearGrowthStrategy : public AbstractGrowthStrategy {
   size_t factor;
 
  public:
-  LinearGrowthStrategy(size_t factor);
+  explicit LinearGrowthStrategy(size_t factor);
   virtual ~LinearGrowthStrategy();
 
   virtual size_t numPoints(size_t level);
