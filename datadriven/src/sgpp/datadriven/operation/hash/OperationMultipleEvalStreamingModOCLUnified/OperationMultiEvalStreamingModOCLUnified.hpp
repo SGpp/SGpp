@@ -296,19 +296,16 @@ class OperationMultiEvalStreamingModOCLUnified : public base::OperationMultipleE
     index = std::vector<T>(gridSizeBuffers * dims);
     scaling = std::vector<T>(gridSizeBuffers);
 
-    base::HashGridIndex::level_type curLevel;
-    base::HashGridIndex::index_type curIndex;
-
-    /// pointer to index_type
-    base::HashGridStorage::index_pointer gridPoint;
+    base::HashGridPoint::level_type curLevel;
+    base::HashGridPoint::index_type curIndex;
 
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.get(i);
+      base::HashGridPoint &gridPoint = storage.getPoint(i);
       //      std::cout << "--------------" << std::endl;
 
       T scalingFactor = 1.0;
       for (size_t d = 0; d < dims; d++) {
-        gridPoint->get(d, curLevel, curIndex);
+        gridPoint.get(d, curLevel, curIndex);
         //        std::cout << "level: " << curLevel << " index: " << curIndex << std::endl;
 
         // handle the special cases for the extrapolating grid points first
