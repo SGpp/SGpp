@@ -6,8 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_INTERNALTREESTORAGENODE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_INTERNALTREESTORAGENODE_HPP_
 
-#include "AbstractTreeStorageNode.hpp"
-#include "LowestTreeStorageNode.hpp"
+#include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
+#include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
+
 #include <vector>
 
 namespace sgpp {
