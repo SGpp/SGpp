@@ -250,7 +250,7 @@ EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
 # don't configure if we're cleaning:
-if not env.GetOption("clean"):
+if (not env.GetOption("clean")) and (not env.GetOption("help")):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
@@ -392,7 +392,7 @@ env.Export("headerDestList")
 flattenedDependencyGraph = []
 
 for moduleFolder in moduleFolders:
-  if not env["SG_" + moduleFolder.upper()]:
+  if (not env["SG_" + moduleFolder.upper()]) or env.GetOption("help"):
     continue
 
   Helper.printInfo("Preparing to build module: {}".format(moduleFolder))
@@ -481,7 +481,7 @@ installLibSGpp = env.Alias("install-lib-sgpp",
 
 headerFinalDestList = []
 for headerDest in headerDestList:
-  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), headerDest))
+  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), os.path.relpath(headerDest).split(os.sep, 2)[2]))
 
 installIncSGpp = env.Alias("install-inc-sgpp",
                            env.InstallAs(headerFinalDestList, headerSourceList))
@@ -518,12 +518,14 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
-if not env.GetOption("clean"):
+if env.GetOption("help"):
+  finalMessagePrinter.disable()
+elif env.GetOption("clean"):
+  env.Default(finalStepDependencies + ["clean"])
+  finalMessagePrinter.disable()
+else:
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
     finalMessagePrinter.disable()
   elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
-else:
-  env.Default(finalStepDependencies + ["clean"])
-  finalMessagePrinter.disable()

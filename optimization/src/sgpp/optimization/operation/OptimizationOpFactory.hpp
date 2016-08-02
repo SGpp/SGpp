@@ -23,7 +23,7 @@ namespace op_factory {
  * @return      pointer to a OperationMultipleHierarchisation object
  *              for the grid
  */
-std::unique_ptr<optimization::OperationMultipleHierarchisation>
+optimization::OperationMultipleHierarchisation*
 createOperationMultipleHierarchisation(base::Grid& grid);
 }  // namespace op_factory
 }  // namespace sgpp
