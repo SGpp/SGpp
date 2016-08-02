@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <chrono>
-#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <sgpp/combigrid/definitions.hpp>
 
+#include <chrono>
 #include <vector>
 
 namespace sgpp {

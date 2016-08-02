@@ -35,7 +35,7 @@ class ThreadPool {
   IdleCallback idleCallback;
 
  public:
-  ThreadPool(size_t numThreads);
+  explicit ThreadPool(size_t numThreads);
   ThreadPool(size_t numThreads, IdleCallback idleCallback);
   ~ThreadPool();
 

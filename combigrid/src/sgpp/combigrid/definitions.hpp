@@ -6,13 +6,15 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_
 
+#include <sgpp/globaldef.hpp>
+
 #include <cstddef>
 #include <functional>
 #include <sgpp/globaldef.hpp>
 #include <vector>
 
-//#define CGLOG(str)
-//#define CGLOG_SURROUnD(cmd) cmd
+// #define CGLOG(str)
+// #define CGLOG_SURROUnD(cmd) cmd
 #include <iostream>
 #define CGLOG(str) std::cout << str << "\n"
 #define CGLOG_SURROUND(cmd)                                                 \
