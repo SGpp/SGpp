@@ -347,7 +347,7 @@ void LearnerBase::predict(sgpp::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset);
   MultEval->mult(*alpha, classesComputed);
   delete MultEval;
 }
@@ -357,7 +357,7 @@ void LearnerBase::multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::Dat
   result.resize(grid->getSize());
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, dataset).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid, dataset);
   MultEval->multTranspose(multiplier, result);
   delete MultEval;
 }

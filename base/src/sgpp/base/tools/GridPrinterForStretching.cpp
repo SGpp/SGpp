@@ -48,7 +48,7 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval(sgpp::op_factory::createOperationEval(*myGrid));
 
       dimOne = GridArea.getBoundary(0);
       dimTwo = GridArea.getBoundary(1);
@@ -95,7 +95,7 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval(sgpp::op_factory::createOperationEval(*myGrid));
 
       if (myGrid->getDimension() == 1) {
         dimOne = myGrid->getStretching().getBoundary(0);
