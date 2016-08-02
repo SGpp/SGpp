@@ -314,7 +314,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   combiEval->setMutex(managerMutex);
 
   auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
-    std::lock_guard<std::mutex> guard(*managerMutex);
+    CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
     auto entry = queue.top();
     queue.pop();
 
