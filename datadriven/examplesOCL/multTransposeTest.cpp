@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
   bool modLinear = true;
   std::unique_ptr<sgpp::base::Grid> grid(nullptr);
   if (modLinear) {
-    grid = sgpp::base::Grid::createModLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   } else {
-    grid = sgpp::base::Grid::createLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -96,7 +96,8 @@ int main(int argc, char** argv) {
 
   std::cout << "creating operation with unrefined grid" << std::endl;
   std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+      std::unique_ptr<sgpp::base::OperationMultipleEval>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   doAllRefinements(adaptConfig, *grid, gridGen, mt, dist);
 
@@ -120,7 +121,8 @@ int main(int argc, char** argv) {
   std::cout << "calculating comparison values..." << std::endl;
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
+      std::unique_ptr<sgpp::base::OperationMultipleEval>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
 
