@@ -8,6 +8,8 @@ import os
 import subprocess
 import re
 
+import SCons.Script
+
 import Helper
 
 def doConfigure(env, moduleFolders, languageWrapperFolders):
@@ -22,8 +24,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   # compiler setup should be always after checking headers and flags,
   # as they can make the checks invalid, e.g., by setting "-Werror"
 
-  # TODO(pfandedd): discuss with julian
-#   if env["PLATFORM"] not in ["cygwin", "win32"]:
   if env["OPT"] == True:
     env.Append(CPPFLAGS=["-O3", "-g"])
   else:
@@ -89,8 +89,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCpp11(config)
-  checkDoxygen(config)
-  checkDot(config)
+  if "doxygen" in SCons.Script.BUILD_TARGETS:
+    checkDoxygen(config)
+    checkDot(config)
   checkOpenCL(config)
   checkBoostTests(config)
   checkSWIG(config)
@@ -122,8 +123,6 @@ def checkCpp11(config):
   config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
 def checkDoxygen(config):
-  if not config.env["DOC"]:
-    return
   # check whether Doxygen installed
   if not config.CheckExec("doxygen"):
     Helper.printWarning("Doxygen cannot be found.",
@@ -134,9 +133,6 @@ def checkDoxygen(config):
        r"[0-9.]*[0-9]+", subprocess.check_output(["doxygen", "--version"]))[0] + ".")
 
 def checkDot(config):
-  if not config.env["DOC"]:
-    return
-  
   # check whether dot installed
   if not config.CheckExec("dot"):
     Helper.printWarning("dot (Graphviz) cannot be found.",
@@ -168,16 +164,16 @@ def checkOpenCL(config):
     if not config.CheckLib("OpenCL", language="c++", autoadd=1):
       Helper.printErrorAndExit("libOpenCL not found, but required for OpenCL")
 
-    # TODO: continue - add boost include path!
-    config.env.AppendUnique(LIBPATH="C:\\boost_1_60_0\stage\lib")    
-
     if not config.CheckLib("boost_program_options", language="c++", autoadd=0):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
-    config.env["CPPDEFINES"]["USE_OCL"] = "1"
-  else:
-    Helper.printInfo("OpenCL is not enabled")
+      config.env["CPPDEFINES"]["USE_OCL"] = "1"
+    else:
+      Helper.printInfo("OpenCL is not enabled")
+      
+    # add a define
+    config.env.AppendUnique(CPPFLAGS=["-DUSE_OCL=1"])
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -216,7 +212,7 @@ def checkSWIG(config):
     if swigVersionTuple < (3, 0, 0):
       Helper.printErrorAndExit("SWIG version too old! At least 3.0 required.")
 
-    Helper.printInfo("Using SWIG " + swigVersion + ".")
+    Helper.printInfo("Using SWIG {}".format(swigVersion))
 
 def checkPython(config):
   if config.env["SG_PYTHON"]:
@@ -240,7 +236,7 @@ def checkPython(config):
       numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
-        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path))
+        Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ".")
         if config.env["RUN_PYTHON_TESTS"]:
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
@@ -296,7 +292,8 @@ def configureGNUCompiler(config):
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
-  Helper.printInfo("Using {} ({})".format(config.env["CXX"], versionString))
+  version = config.env._get_major_minor_revision(versionString)
+  Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
@@ -317,13 +314,16 @@ def configureGNUCompiler(config):
   #     ensure you also compile with -fno-strict-aliasing"
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
-      "-funroll-loops", "-mfpmath=sse",
-      "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
+      "-funroll-loops", "-mfpmath=sse"])
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
 
   # required for profiling
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
+
+  # GCC has support for colored output since 4.9
+  if (version >= (4, 9, 0)) and Helper.terminalSupportsColors():
+    config.env.Append(CPPFLAGS=["-fdiagnostics-color=always"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -377,8 +377,6 @@ def configureClangCompiler(config):
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
   #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
-  config.env.Append(CPPFLAGS=allWarnings + [
-      "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4"])
   config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
   config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
@@ -410,7 +408,6 @@ def configureIntelCompiler(config):
                                     "-fno-strict-aliasing",
                                     "-ip", "-ipo", "-funroll-loops",
                                     "-ansi-alias", "-fp-speculation=safe",
-                                    "-DDEFAULT_RES_THRESHOLD=-1.0", "-DTASKS_PARALLEL_UPDOWN=4",
                                     "-no-offload"])
   if config.env["COMPILER"] == "intel.mpi":
     config.env["CC"] = ("mpiicc")

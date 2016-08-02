@@ -29,4 +29,10 @@ public class ExampleFunction extends sgpp.OptScalarFunction {
       return Double.POSITIVE_INFINITY;
     }
   }
+
+  /**
+   * Dummy method needed for SWIG, which provides the actual method body.
+   */
+  public void clone(sgpp.SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ScalarFunction_t clone) {
+  }
 }

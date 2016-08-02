@@ -15,9 +15,8 @@ namespace sgpp {
 namespace base {
 
 
-void HashRefinementInconsistent::createGridpoint(GridStorage& storage,
-    index_type& index) {
-  storage.insert(index);
+void HashRefinementInconsistent::createGridpoint(GridStorage& storage, GridPoint& point) {
+  storage.insert(point);
 }
 
 }  // namespace base

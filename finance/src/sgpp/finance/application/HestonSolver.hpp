@@ -84,7 +84,7 @@ class HestonSolver : public sgpp::pde::ParabolicPDESolver {
   bool useLogTransform;
 
   /// Max. level for refinement during solving
-  sgpp::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridPoint::level_type refineMaxLevel;
 
   /// Variable to store needed solving iterations
   size_t nNeededIterations;
@@ -209,7 +209,7 @@ class HestonSolver : public sgpp::pde::ParabolicPDESolver {
   virtual void refineInitialGridWithPayoffToMaxLevel(sgpp::base::DataVector& alpha, double strike,
                                                      std::string payoffType,
                                                      double dStrikeDistance,
-                                                     sgpp::base::GridIndex::level_type maxLevel);
+                                                     sgpp::base::GridPoint::level_type maxLevel);
 
   /**
    * In order to solve the multi dimensional Heston Equation you have to provided
@@ -298,7 +298,7 @@ class HestonSolver : public sgpp::pde::ParabolicPDESolver {
    *  @param refineThreshold Threshold needed to determine if a grid point should be refined
    */
   virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
-                                       sgpp::base::GridIndex::level_type refineMaxLevel,
+                                       sgpp::base::GridPoint::level_type refineMaxLevel,
                                        int numCoarsenPoints, double coarsenThreshold,
                                        double refineThreshold);
 
@@ -340,7 +340,7 @@ class HestonSolver : public sgpp::pde::ParabolicPDESolver {
    * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
    * @return number of gridpoints at money
    */
-  virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+  virtual size_t getPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * gets the number needed iterations to solve the Heston Equation

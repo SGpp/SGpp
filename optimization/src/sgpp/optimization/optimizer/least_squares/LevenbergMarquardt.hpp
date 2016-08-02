@@ -44,7 +44,7 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param acceptanceThreshold     acceptance threshold
    * @param effectivenessThreshold  effectiveness threshold
    */
-  LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+  LevenbergMarquardt(const VectorFunction& phi, const VectorFunctionGradient& phiGradient,
                      size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
                      double initialDamping = DEFAULT_INITIAL_DAMPING,
                      double acceptanceThreshold = DEFAULT_ACCEPTANCE_THRESHOLD,
@@ -65,9 +65,17 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param sleSolver               reference to linear solver
    *                                for solving the linear systems
    */
-  LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient, size_t maxItCount,
+  LevenbergMarquardt(const VectorFunction& phi, const VectorFunctionGradient& phiGradient,
+                     size_t maxItCount,
                      double tolerance, double initialDamping, double acceptanceThreshold,
                      double effectivenessThreshold, const sle_solver::SLESolver& sleSolver);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  LevenbergMarquardt(const LevenbergMarquardt& other);
 
   /**
    * Destructor.
@@ -128,7 +136,7 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
 
  protected:
   /// phi gradient
-  VectorFunctionGradient& phiGradient;
+  std::unique_ptr<VectorFunctionGradient> phiGradient;
   /// tolerance
   double tol;
   /// initial damping

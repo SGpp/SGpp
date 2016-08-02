@@ -35,37 +35,45 @@ class OperationNaiveEvalPartialDerivative {
   }
 
   /**
-   * @param alpha     coefficient vector
-   * @param point     evaluation point
-   * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
-   * @return          value of the partial derivative of the linear combination
+   * @param       alpha               coefficient vector
+   * @param       point               evaluation point
+   * @param       derivDim            dimension in which the partial derivative should be taken
+   *                                  (0, ..., d-1)
+   * @param[out]  partialDerivative   value of the partial derivative of the linear combination
+   * @return                          value of the linear combination
    */
   virtual double evalPartialDerivative(const DataVector& alpha,
                                         const DataVector& point,
-                                        size_t derivDim) = 0;
+                                        size_t derivDim,
+                                        double& partialDerivative) = 0;
 
   /**
    * @param       alpha               coefficient matrix (each column is a coefficient vector)
    * @param       point               evaluation point
    * @param       derivDim            dimension in which the partial derivative should be taken
    *                                  (0, ..., d-1)
+   * @param[out]  value               values of the linear combination
    * @param[out]  partialDerivative   values of the partial derivatives of the linear combination
    *                                  (the j-th entry corresponds to the j-th column of alpha)
    */
   virtual void evalPartialDerivative(const DataMatrix& alpha,
                                      const DataVector& point,
                                      size_t derivDim,
+                                     DataVector& value,
                                      DataVector& partialDerivative) {
     const size_t m = alpha.getNcols();
     DataVector curAlpha(alpha.getNrows());
 
+    value.resize(m);
     partialDerivative.resize(m);
 
     for (size_t j = 0; j < m; j++) {
       alpha.getColumn(j, curAlpha);
-      partialDerivative[j] = evalPartialDerivative(curAlpha, point, derivDim);
+      value[j] = evalPartialDerivative(curAlpha, point, derivDim, partialDerivative[j]);
     }
   }
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
 };
 
 }  // namespace base

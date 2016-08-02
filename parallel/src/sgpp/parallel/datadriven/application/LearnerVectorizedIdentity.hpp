@@ -71,7 +71,11 @@ class LearnerVectorizedIdentity : public sgpp::datadriven::LearnerBase {
    */
   virtual ~LearnerVectorizedIdentity();
 
-  virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix& testDataset);
+  void predict(sgpp::base::DataMatrix& testDataset,
+               sgpp::base::DataVector& classesComputed) override;
+
+  void multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
+                     sgpp::base::DataVector& result) override;
 };
 
 }  // namespace parallel

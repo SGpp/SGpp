@@ -7,20 +7,20 @@
 
 #include <omp.h>
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <vector>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -323,8 +323,8 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     // size for distributing schedules of different size
     gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
 
-    sgpp::base::HashGridIndex::level_type curLevel;
-    sgpp::base::HashGridIndex::index_type curIndex;
+    sgpp::base::HashGridPoint::level_type curLevel;
+    sgpp::base::HashGridPoint::index_type curIndex;
 
     this->levelMask = std::vector<T>(gridSizeBuffers * this->dims);
     this->indexMask = std::vector<T>(gridSizeBuffers * this->dims);
@@ -333,7 +333,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage.get(i)->get(dim, curLevel, curIndex);
+        storage.getPoint(i).get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->levelMask[i * this->dims + dim] = 0.0;
@@ -359,7 +359,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
           }
           this->offsetMask[i * this->dims + dim] = 2.0;
         } else if (curIndex ==
-                   static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                   static_cast<sgpp::base::HashGridPoint::level_type>(((1 << curLevel) - 1))) {
           this->levelMask[i * this->dims + dim] = static_cast<T>(1 << curLevel);
           this->indexMask[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {
@@ -418,16 +418,13 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     levelFast = std::vector<T>(gridSize * dims);
     indexFast = std::vector<T>(gridSize * dims);
 
-    base::HashGridIndex::level_type curLevel;
-    base::HashGridIndex::index_type curIndex;
-
-    /// pointer to index_type
-    base::HashGridStorage::index_pointer gridPoint;
+    base::HashGridPoint::level_type curLevel;
+    base::HashGridPoint::index_type curIndex;
 
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.get(i);
+      base::HashGridPoint &gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
-        gridPoint->get(dim, curLevel, curIndex);
+        gridPoint.get(dim, curLevel, curIndex);
         levelFast[i * dims + dim] = static_cast<T>(1 << curLevel);
         indexFast[i * dims + dim] = static_cast<T>(curIndex);
       }

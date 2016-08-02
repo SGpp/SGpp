@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_2D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_2D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_2D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_3D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_3D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_3D(coords);  // evaluate f on the corresponding point.
       }
     }
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureRule) {
     if (grid->getFullGrid(i)->isActive()) {
       fgrid = grid->getFullGrid(i)->fg();
       for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
-        fgrid->getCoords(j, coords);                  // working on unit square ...
+        fgrid->getStandardCoordinates(j, coords);                  // working on unit square ...
         fgrid->getElementVector()[j] = f_3D(coords);  // evaluate f on the corresponding point.
       }
     }

@@ -32,7 +32,10 @@ class OperationNaiveEvalHessianBsplineBoundary : public
    * @param degree    B-spline degree
    */
   OperationNaiveEvalHessianBsplineBoundary(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree) {
+    storage(storage),
+    base(degree),
+    pointInUnitCube(storage.getDimension()),
+    innerDerivative(storage.getDimension()) {
   }
 
   /**
@@ -71,6 +74,10 @@ class OperationNaiveEvalHessianBsplineBoundary : public
   GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
+  /// untransformed evaluation point (temporary vector)
+  DataVector pointInUnitCube;
+  /// inner derivative (temporary vector)
+  DataVector innerDerivative;
 };
 
 }  // namespace base

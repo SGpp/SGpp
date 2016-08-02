@@ -5,7 +5,7 @@ sgpp::optimization -- SG++ module for optimization of smooth sparse grid interpo
 \section overview Overview
 
 This SG++ module was developed as part of a Master's thesis with the translated title
-"Hierarchical optimization with gradient-based methods on sparse grid functions".
+"Hierarchical Optimization with Gradient-Based Methods on Sparse Grid Functions".
 In the thesis, a new approach for minimizing objective functions
 \f$f\colon [0, 1]^d \to \mathbb{R}\f$ is developed.
 It can be summarized in three steps:
@@ -20,12 +20,7 @@ It can be summarized in three steps:
    gradient-based as well gradient-free ones, are implemented for optimizating the sparse grid
    surrogate.
 
-If you use the module in publications, you can cite the Master's thesis as follows:
-
-Julian Valentin: Hierarchische Optimierung mit Gradientenverfahren auf Dünngitterfunktionen.
-IPVS, SGS Department, University of Stuttgart, 2014.
-
-Please refer to \ref code_examples_optimization for example code.
+Please refer to \ref example_optimization_cpp for example code.
 */
 
 /**
@@ -36,22 +31,8 @@ See \ref module_optimization for more details.
 */
 
 /**
-\namespace sgpp::optimization::function
-Namespace containing abstract classes for objective and interpolant functions.
-
-See \ref module_optimization for more details.
-*/
-
-/**
-\namespace sgpp::optimization::test_functions
-Namespace containing analytical test functions.
-
-See \ref module_optimization for more details.
-*/
-
-/**
 \namespace sgpp::optimization::optimizer
-Namespace containing methods for gradient-based and gradient-free optimization
+Namespace containing methods for gradient-based and gradient-free optimization.
 
 See \ref module_optimization for more details.
 */
@@ -59,6 +40,13 @@ See \ref module_optimization for more details.
 /**
 \namespace sgpp::optimization::sle_solver
 Namespace containing classes for solving linear systems.
+
+See \ref module_optimization for more details.
+*/
+
+/**
+\namespace sgpp::optimization::test_problems
+Namespace containing explicit test problems.
 
 See \ref module_optimization for more details.
 */

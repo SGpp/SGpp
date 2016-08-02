@@ -521,13 +521,11 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 
       // Weight surplus with function evaluation at grid points
       std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(grid));
-      base::GridIndex* gp;
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
       for (size_t i = 0; i < grid.getSize(); i++) {
-        gp = gridStorage.get(i);
-        gp->getCoords(p);
+        gridStorage.getPoint(i).getStandardCoordinates(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
