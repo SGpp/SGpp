@@ -36,10 +36,12 @@ void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha, base::DataV
   this->myTimer_->start();
   this->B->mult(alpha, temp);
   this->completeTimeMult_ += this->myTimer_->stop();
+  this->computeTimeMult_ += this->B->getDuration();
 
   this->myTimer_->start();
   this->B->multTranspose(temp, result);
   this->completeTimeMultTrans_ += this->myTimer_->stop();
+  this->computeTimeMultTrans_ += this->B->getDuration();
 
   result.axpy(static_cast<double>(this->instances) * this->lambda_, alpha);
 }
@@ -50,6 +52,7 @@ void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector& classes, base
   this->myTimer_->start();
   this->B->multTranspose(myClasses, b);
   this->completeTimeMultTrans_ += this->myTimer_->stop();
+  this->computeTimeMultTrans_ += this->B->getDuration();
 }
 
 void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
