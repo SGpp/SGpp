@@ -71,7 +71,7 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
   this->currentRefinementStep = 0;
 
   // TODO(pfandedd): don't use grid serialization to not have to implement a copy constructor!
-  grid = sgpp::base::Grid::unserialize(copyMe.grid->serialize());
+  grid.reset(sgpp::base::Grid::unserialize(copyMe.grid->serialize()));
   alpha = std::make_unique<sgpp::base::DataVector>(*(copyMe.alpha));
 }
 

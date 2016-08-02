@@ -48,7 +48,7 @@ double parabola(DataVector& input) {
 
 Grid* hierarchize(std::uint32_t dim, std::uint32_t level, DataVector& alpha,
                   double (*func)(DataVector&)) {
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   alpha.resize(grid->getSize());
 
