@@ -1,18 +1,14 @@
-/*
- * AbstractPointOrdering.cpp
- *
- *  Created on: 18.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include "AbstractPointOrdering.hpp"
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
-AbstractPointOrdering::~AbstractPointOrdering() {
-	// TODO Auto-generated destructor stub
-}
+AbstractPointOrdering::~AbstractPointOrdering() {}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

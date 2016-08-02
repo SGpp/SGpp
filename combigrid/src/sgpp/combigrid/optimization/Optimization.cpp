@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/optimization/Optimization.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <ctime>
-#include "Optimization.h"
 
 namespace sgpp {
 namespace combigrid {

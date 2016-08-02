@@ -1,15 +1,13 @@
-/*
- * LejaPointDistribution.cpp
- *
- *  Created on: 04.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "LejaPointDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
+#include <sgpp/combigrid/optimization/Optimization.hpp>
 #include <functional>
 #include <vector>
 #include <algorithm>
-#include "sgpp/combigrid/optimization/Optimization.h"
 #include <cmath>
 
 namespace sgpp {
@@ -19,9 +17,8 @@ const double epsilon = 0.00001;
 
 class leja_f : public optimize::func_base {
  public:
+  explicit leja_f(std::function<double(double)> f) { this->func = f; }
   virtual ~leja_f() {}
-
-  leja_f(std::function<double(double)> f) { this->func = f; }
 
   double operator()(double x) { return func(x); }
 
@@ -93,21 +90,15 @@ void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& po
 }
 
 /**
- * normal distribution for the calculation of the starting point
- */
-double normalDistributionFunc(double x) {
-  const double factor = 0.2;
-  return exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
-}
-
-/**
  * Calculates the Starting Point by weighting the weight function with a wide normal distribution
  * and searching via optimizer for the maximum
  */
 double LejaPointDistribution::calcStartingPoint() {
   // weight the weight function with the normal distribution
   std::function<double(double)> w = [&](double x) {
-    return -(this->normalDistribution(x) * this->weightFunction(x));
+    const double factor = 0.2;
+    double evalNormal = std::exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
+    return -(evalNormal * this->weightFunction(x));
   };
 
   // optimize it
@@ -120,7 +111,7 @@ double LejaPointDistribution::calcStartingPoint() {
 }
 
 LejaPointDistribution::LejaPointDistribution(SingleFunction weightFunction)
-    : weightFunction(weightFunction), startingPoint(), normalDistribution(normalDistributionFunc) {
+    : weightFunction(weightFunction), startingPoint() {
   startingPoint = calcStartingPoint();
   points.push_back(this->startingPoint);
   sortedPoints.push_back(this->startingPoint);
@@ -131,7 +122,7 @@ LejaPointDistribution::~LejaPointDistribution() {}
 double LejaPointDistribution::compute(size_t numPoints, size_t j) {
   if (points.size() <= j) {
     calc_leja_points(sortedPoints, points, static_cast<int>(j + 1 - points.size()), 0.0, 1.0,
-                     weightFunction);
+                     weightFunction.getLambdaExpression());
   }
 
   return points[j];
