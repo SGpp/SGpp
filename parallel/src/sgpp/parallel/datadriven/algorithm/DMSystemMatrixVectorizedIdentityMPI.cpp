@@ -26,7 +26,7 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(
       m_grid(SparseGrid) {
   // handle unsupported vector extensions
   if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC &&
-      this->vecMode_ != OpenCL && this->vecMode_ != ArBB &&
+      this->vecMode_ != OpenCL &&
       this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
     throw sgpp::base::operation_exception(
         "DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
@@ -37,9 +37,8 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(
   this->numPatchedTrainingInstances_ =
       sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(this->dataset_, vecMode_);
 
-  if (this->vecMode_ != ArBB) {
-    this->dataset_.transpose();
-  }
+  this->dataset_.transpose();
+
 
   size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
   size_t mpi_rank = sgpp::parallel::myGlobalMPIComm->getMyRank();

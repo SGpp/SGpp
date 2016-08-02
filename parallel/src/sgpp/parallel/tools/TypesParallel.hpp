@@ -18,8 +18,7 @@ enum VectorizationType {
   Hybrid_X86SIMD_OpenCL,
   MIC,
   Hybrid_X86SIMD_MIC,
-  CUDA,
-  ArBB
+  CUDA
 };
 
 enum MPIType {
