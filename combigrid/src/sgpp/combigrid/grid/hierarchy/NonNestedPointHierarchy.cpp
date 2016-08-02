@@ -1,11 +1,10 @@
-/*
- * NonNestedPointHierarchy.cpp
- *
- *  Created on: 18.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include "NonNestedPointHierarchy.hpp"
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
