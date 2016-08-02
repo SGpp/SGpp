@@ -36,7 +36,7 @@ int main() {
             << dataset.getNrows() << " datapoints." << std::endl;
 
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dimension);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(11);
   size_t gridsize = grid->getStorage().getSize();
