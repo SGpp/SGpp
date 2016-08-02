@@ -90,7 +90,7 @@ class Module(object):
     # append headers to install list
     for hpp in self.hpps:
       headerSourceList.append(os.path.join(moduleName, hpp))
-      headerDestList.append(hpp.split(os.sep, 1)[1])
+      headerDestList.append(os.path.relpath(hpp).split(os.sep, 1)[1])
 
   def buildLibrary(self):
     """Build the module.
