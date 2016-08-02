@@ -1,41 +1,40 @@
-/*
- * ExponentialLevelorderPermutationIterator.hpp
- *
- *  Created on: 19.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALLEVELORDERPERMUTATIONITERATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALLEVELORDERPERMUTATIONITERATOR_HPP_
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
-class ExponentialLevelorderPermutationIterator: public AbstractPermutationIterator {
-	size_t currentIndex;
-	size_t level;
-	size_t numPoints;
+class ExponentialLevelorderPermutationIterator : public AbstractPermutationIterator {
+  size_t currentIndex;
+  size_t level;
+  size_t numPoints;
 
-public:
-	ExponentialLevelorderPermutationIterator(size_t level, size_t numPoints, size_t currentIndex = 0);
+ public:
+  ExponentialLevelorderPermutationIterator(size_t level, size_t numPoints, size_t currentIndex = 0);
 
-	virtual ~ExponentialLevelorderPermutationIterator();
+  virtual ~ExponentialLevelorderPermutationIterator();
 
-	/**
-	 * Sets the iterator back to the start
-	 */
-	virtual void reset();
+  /**
+   * Sets the iterator back to the start
+   */
+  virtual void reset();
 
-	virtual size_t value();
+  virtual size_t value();
 
-	virtual void moveToNext();
+  virtual void moveToNext();
 
-	virtual std::shared_ptr<AbstractPermutationIterator> clone();
+  virtual std::shared_ptr<AbstractPermutationIterator> clone();
 };
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALLEVELORDERPERMUTATIONITERATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALLEVELORDERPERMUTATIONITERATOR_HPP_ \
+          */

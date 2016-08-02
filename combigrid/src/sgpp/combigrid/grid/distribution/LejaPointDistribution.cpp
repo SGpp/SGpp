@@ -1,15 +1,13 @@
-/*
- * LejaPointDistribution.cpp
- *
- *  Created on: 04.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "LejaPointDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
+#include <sgpp/combigrid/optimization/Optimization.hpp>
 #include <functional>
 #include <vector>
 #include <algorithm>
-#include "sgpp/combigrid/optimization/Optimization.h"
 #include <cmath>
 
 namespace sgpp {
@@ -19,9 +17,8 @@ const double epsilon = 0.00001;
 
 class leja_f : public optimize::func_base {
  public:
+  explicit leja_f(std::function<double(double)> f) { this->func = f; }
   virtual ~leja_f() {}
-
-  leja_f(std::function<double(double)> f) { this->func = f; }
 
   double operator()(double x) { return func(x); }
 

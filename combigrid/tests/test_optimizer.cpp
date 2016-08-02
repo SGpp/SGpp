@@ -7,7 +7,7 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <sgpp/combigrid/optimization/Optimization.h>
+#include <sgpp/combigrid/optimization/Optimization.hpp>
 
 #include <cstdlib>
 #include <cmath>
