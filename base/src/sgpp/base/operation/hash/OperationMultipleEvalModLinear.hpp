@@ -6,11 +6,10 @@
 #ifndef OPERATIONMULTIPLEEVALMODLINEAR_HPP
 #define OPERATIONMULTIPLEEVALMODLINEAR_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -27,9 +26,8 @@ class OperationMultipleEvalModLinear : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModLinear(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
-  }
+  OperationMultipleEvalModLinear(Grid& grid, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
@@ -38,6 +36,8 @@ class OperationMultipleEvalModLinear : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object

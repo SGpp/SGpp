@@ -61,9 +61,9 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
              j += ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
                    static_cast<double>
                    (PointsPerDimension))) {
-          std::vector<double> point;
-          point.push_back(i);
-          point.push_back(j);
+          DataVector point(2);
+          point[0] = i;
+          point[1] = j;
           fileout << i << " " << j << " " << myEval->eval(alpha, point) <<
                   std::endl;
         }
@@ -106,8 +106,7 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
         size_t points = PointsPerDimension;
 
         for (size_t i = 0; i < points; i++) {
-          std::vector<double> point;
-          point.push_back(((static_cast<double>(i))*inc_x));
+          DataVector point(1, (static_cast<double>(i))*inc_x);
           fileout << ((static_cast<double>(i))*inc_x) << " " << myEval->eval(alpha,
                   point) << std::endl;
         }
@@ -126,9 +125,9 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
 
         for (size_t i = 0; i < points; i++) {
           for (size_t j = 0; j < points; j++) {
-            std::vector<double> point;
-            point.push_back(offset_x + ((static_cast<double>(i))*inc_x));
-            point.push_back(offset_y + ((static_cast<double>(j))*inc_y));
+            DataVector point(2);
+            point[0] = offset_x + ((static_cast<double>(i))*inc_x);
+            point[1] = offset_y + ((static_cast<double>(j))*inc_y);
             fileout << (offset_x + (static_cast<double>(i))*inc_x) << " " <<
                     (offset_y + (static_cast<double>(j))*inc_y) << " " <<
                     myEval->eval(alpha, point) << std::endl;

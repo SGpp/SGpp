@@ -79,11 +79,7 @@ class OperationMultipleEval {
    */
   virtual void prepare() {}
 
-  virtual double getDuration() {
-    std::cerr << "warning: OperationMultipleEval::getDuration(): "
-                 "not implemented for this kernel, returning 0.0";
-    return 0.0;
-  }
+  virtual double getDuration() = 0;
 
   /**
    * Name of this implementation of the operation.

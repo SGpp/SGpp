@@ -116,7 +116,7 @@ vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provid
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
-vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", "/usr/lib/x86_64-linux-gnu")
+vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -181,6 +181,9 @@ for moduleName in moduleNames:
 env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
+env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux-gnu"
+                                    if env["PLATFORM"] not in ["darwin", "win32"]
+                                    else "")
 
 # don't create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
@@ -250,7 +253,7 @@ EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
 # don't configure if we're cleaning:
-if not env.GetOption("clean"):
+if (not env.GetOption("clean")) and (not env.GetOption("help")):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
@@ -392,7 +395,7 @@ env.Export("headerDestList")
 flattenedDependencyGraph = []
 
 for moduleFolder in moduleFolders:
-  if not env["SG_" + moduleFolder.upper()]:
+  if (not env["SG_" + moduleFolder.upper()]) or env.GetOption("help"):
     continue
 
   Helper.printInfo("Preparing to build module: {}".format(moduleFolder))
@@ -481,7 +484,7 @@ installLibSGpp = env.Alias("install-lib-sgpp",
 
 headerFinalDestList = []
 for headerDest in headerDestList:
-  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), headerDest))
+  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), os.path.relpath(headerDest).split(os.sep, 2)[2]))
 
 installIncSGpp = env.Alias("install-inc-sgpp",
                            env.InstallAs(headerFinalDestList, headerSourceList))
@@ -518,12 +521,14 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
-if not env.GetOption("clean"):
+if env.GetOption("help"):
+  finalMessagePrinter.disable()
+elif env.GetOption("clean"):
+  env.Default(finalStepDependencies + ["clean"])
+  finalMessagePrinter.disable()
+else:
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
     finalMessagePrinter.disable()
   elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
-else:
-  env.Default(finalStepDependencies + ["clean"])
-  finalMessagePrinter.disable()
