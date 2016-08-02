@@ -10,6 +10,7 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
+#include <mutex>
 
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
@@ -168,25 +169,43 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     omp_set_num_threads(static_cast<int>(devices.size()));
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
-                                       this->kernelDataset, alphaArray, resultArray, gridFrom,
-                                       gridTo, datasetFrom, datasetTo);
+
+      try {
+        this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset,
+                                         this->kernelDataset, alphaArray, resultArray, gridFrom,
+                                         gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-
-    if (verbose) {
-      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMult<T> &kernel : multKernels) {
+      this->duration -= kernel.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   void multTranspose(sgpp::base::DataVector &source, sgpp::base::DataVector &result) override {
@@ -220,25 +239,44 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     omp_set_num_threads(static_cast<int>(devices.size()));
 
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
+
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
 
-      this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->mask, this->offset, this->kernelDataset, sourceArray,
-          resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      try {
+        this->multTransposeKernels[threadId].multTranspose(
+            this->level, this->index, this->mask, this->offset, this->kernelDataset, sourceArray,
+            resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
+    }
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    if (verbose) {
-      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
-    }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
     this->duration = this->myTimer.stop();
+
+    for (StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T> &kernelTranspose :
+         multTransposeKernels) {
+      this->duration -= kernelTranspose.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
+    }
   }
 
   double getDuration() { return this->duration; }

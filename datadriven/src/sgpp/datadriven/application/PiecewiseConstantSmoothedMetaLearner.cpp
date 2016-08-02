@@ -211,11 +211,11 @@ base::Grid* PiecewiseConstantSmoothedRegressionMetaLearner::createRegularGrid(
 
   // load grid
   if (gridConfig.type_ == base::GridType::Linear) {
-    grid = base::Grid::createLinearGrid(dim).release();
+    grid = base::Grid::createLinearGrid(dim);
   } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim, 0).release();
+    grid = base::Grid::createLinearBoundaryGrid(dim, 0);
   } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim).release();
+    grid = base::Grid::createLinearBoundaryGrid(dim);
   } else {
     throw base::application_exception("DensityRegressionMetaLearner::initialize : grid type is "
       "not supported");
@@ -232,7 +232,7 @@ double PiecewiseConstantSmoothedRegressionMetaLearner::calculateMSE(
   bool verbose) {
   double mse = 0.0;
 
-  std::unique_ptr<base::OperationEval> opEval = sgpp::op_factory::createOperationEval(grid);
+  std::unique_ptr<base::OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
 
   for (size_t i = 0; i < testSubset.getNrows(); i++) {
     base::DataVector point(dim);
