@@ -49,10 +49,8 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretchedBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPoly.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModWavelet.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
@@ -62,10 +60,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretchedBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPoly.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModWavelet.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
@@ -168,7 +164,7 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
   } else {
     throw base::factory_exception(
-        "OperationHierarchisation is not implemented for this grid type.");
+        "createOperationHierarchisation is not implemented for this grid type.");
   }
 }
 
@@ -185,7 +181,8 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
   } else {
-    throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
+    throw base::factory_exception(
+        "createOperationQuadrature is not implemented for this grid type.");
   }
 }
 
@@ -193,7 +190,8 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationFirstMomentLinear(grid.getStorage());
   } else {
-    throw base::factory_exception("OperationFirstMoment is not implemented for this grid type.");
+    throw base::factory_exception(
+        "createOperationFirstMoment is not implemented for this grid type.");
   }
 }
 
@@ -201,7 +199,8 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationSecondMomentLinear(grid.getStorage());
   } else {
-    throw base::factory_exception("OperationSecondMoment is not implemented for this grid type.");
+    throw base::factory_exception(
+        "createOperationSecondMoment is not implemented for this grid type.");
   }
 }
 
@@ -210,7 +209,7 @@ base::OperationConvert* createOperationConvert(base::Grid& grid) {
     return new base::OperationConvertPrewavelet(grid.getStorage(),
                                                 ((base::PrewaveletGrid*)&grid)->getShadowStorage());
   } else {
-    throw base::factory_exception("OperationConvert is not implemented for this grid type.");
+    throw base::factory_exception("createOperationConvert is not implemented for this grid type.");
   }
 }
 
@@ -237,11 +236,6 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationEvalModPoly(grid.getStorage(),
                                           dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return new base::OperationEvalModBspline(
-        grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModWavelet) {
-    return new base::OperationEvalModWavelet(grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationEvalPrewavelet(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
@@ -251,7 +245,8 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::Periodic) {
     return new base::OperationEvalPeriodic(grid.getStorage());
   } else {
-    throw base::factory_exception("OperationEval is not implemented for this grid type.");
+    throw base::factory_exception("createOperationEval is not implemented for this grid type. "
+                                  "Try createOperationEvalNaive instead.");
   }
 }
 
@@ -273,11 +268,6 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationMultipleEvalModPoly(
         grid, dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return new base::OperationMultipleEvalModBspline(
-        grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::ModWavelet) {
-    return new base::OperationMultipleEvalModWavelet(grid, dataset);
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationMultipleEvalPrewavelet(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearStretched) {
@@ -287,7 +277,8 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::Periodic) {
     return new base::OperationMultipleEvalPeriodic(grid, dataset);
   } else {
-    throw base::factory_exception("OperationMultipleEval is not implemented for this grid type.");
+    throw base::factory_exception(
+        "createOperationMultipleEval is not implemented for this grid type.");
   }
 }
 
@@ -337,7 +328,8 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalModPolyNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else {
-    throw base::factory_exception("OperationEvalNaive is not implemented for this grid type.");
+    throw base::factory_exception("createOperationEval is not implemented for this grid type."
+                                  "Try createOperationEvalNaive instead.");
   }
 }
 
@@ -371,7 +363,7 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
-        "OperationEvalGradientNaive is not implemented for this grid type.");
+        "createOperationEvalGradient is not implemented for this grid type.");
   }
 }
 
@@ -405,7 +397,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
-        "OperationEvalHessianNaive is not implemented for this grid type.");
+        "createOperationEvalHessian is not implemented for this grid type.");
   }
 }
 
@@ -440,7 +432,7 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
-        "OperationEvalPartialDerivativeNaive is not implemented for "
+        "createOperationEvalPartialDerivative is not implemented for "
         "this grid type.");
   }
 }
