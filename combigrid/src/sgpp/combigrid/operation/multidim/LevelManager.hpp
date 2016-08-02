@@ -8,22 +8,22 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
 
-#include "../../definitions.hpp"
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <unordered_set>
 #include "../../common/BoundedSumMultiIndexIterator.hpp"
+#include "../../definitions.hpp"
 #include "../../storage/AbstractMultiStorage.hpp"
 #include "../../storage/tree/TreeStorage.hpp"
 #include "AdaptiveRefinementStrategy.hpp"
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include "LevelHelpers.hpp"
-#include <memory>
-#include <queue>
-#include <unordered_set>
-#include <cmath>
-#include <limits>
-#include <mutex>
 
-#include "CombigridEvaluator.hpp"                     // TODO: remove
 #include <sgpp/combigrid/algebraic/ScalarVector.hpp>  // TODO: remove
+#include "CombigridEvaluator.hpp"                     // TODO: remove
 
 namespace sgpp {
 namespace combigrid {
@@ -66,16 +66,6 @@ class LevelManager {
   virtual void predecessorsCompleted(MultiIndex const &level);
 
   virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
-
-  //---------- old methods ----------
-
-  // If a level has been computed, we try to add its successors to the queue if all of their
-  // predecessors are computed.
-  virtual void tryAddSuccessorsToQueue(MultiIndex const &index);
-
-  // Adds a level to the queue if it is not in the CombigridEvaluator, but all of its predecessors
-  // are.
-  virtual void tryAddIndexToQueue(MultiIndex const &nextIndex);
 
   /**
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
