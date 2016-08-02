@@ -20,14 +20,15 @@ class MCIntegrator {
   std::function<base::DataVector(std::vector<base::DataVector> const &)> func;
 
  public:
-  MCIntegrator(std::function<double(base::DataVector const &)> func);
-  MCIntegrator(std::function<base::DataVector(std::vector<base::DataVector> const &)> func);
+  explicit MCIntegrator(std::function<double(base::DataVector const &)> func);
+  explicit MCIntegrator(
+      std::function<base::DataVector(std::vector<base::DataVector> const &)> func);
 
   double integrate(std::vector<std::pair<double, double>> domain, size_t num_samples);
 
   double average(std::vector<std::pair<double, double>> domain, size_t num_samples);
 };
-}
+}  // namespace combigrid
 } /* namespace sgpp*/
 
 #endif /* MCINTEGRATOR_HPP_ */
