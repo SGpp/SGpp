@@ -12,9 +12,9 @@
 
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/crossValidation/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/crossValidation/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/crossValidation/ShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/crossValidation/crossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
