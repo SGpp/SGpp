@@ -1,9 +1,7 @@
-/*
- * MultiFunction.hpp
- *
- *  Created on: 13.01.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_MULTIFUNCTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_MULTIFUNCTION_HPP_
@@ -13,31 +11,31 @@
 
 #include <functional>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 class MultiFunction {
-public:
-	typedef std::function<double(base::DataVector const &)> function_type;
+ public:
+  typedef std::function<double(base::DataVector const &)> function_type;
 
-private:
-	function_type func;
+ private:
+  function_type func;
 
-public:
-	/**
-	 * for function pointers
-	 */
-	MultiFunction(double (*ptr)(base::DataVector const &));
+ public:
+  /**
+   * for function pointers
+   */
+  MultiFunction(double (*ptr)(base::DataVector const &));
 
-	/**
-	 * for lambdas or function objects
-	 */
-	template<typename T> explicit MultiFunction(T f) : func(f) {
+  /**
+   * for lambdas or function objects
+   */
+  template <typename T>
+  explicit MultiFunction(T f)
+      : func(f) {}
 
-	}
-
-	double operator()(base::DataVector const &vec);
-	double call(base::DataVector const &vec);
+  double operator()(base::DataVector const &vec);
+  double call(base::DataVector const &vec);
 };
 
 } /* namespace combigrid */
