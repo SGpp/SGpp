@@ -120,15 +120,15 @@ BOOST_AUTO_TEST_CASE(testLevelManagerRegular) {
 
   auto levelManager = std::make_shared<AveragingLevelManager>(combiGridEval);
 
-  //  size_t maxLevelSum = 3;
+  size_t maxLevelSum = 3;
 
   std::vector<FloatScalarVector> parameters(2);
   parameters[0] = FloatScalarVector(0.378934);
   parameters[1] = FloatScalarVector(0.89340273);
 
   fullGridEval->setParameters(parameters);
-  // levelManager->addRegularLevelsParallel(maxLevelSum, 4);
-  levelManager->addLevelsAdaptiveParallel(300, 2);
+  levelManager->addRegularLevelsParallel(maxLevelSum, 4);
+  levelManager->addLevelsAdaptiveParallel(300, 4);
 
   std::cout << "test_level_manager: ";
   std::cout << std::abs(combiGridEval->getValue().getValue() -

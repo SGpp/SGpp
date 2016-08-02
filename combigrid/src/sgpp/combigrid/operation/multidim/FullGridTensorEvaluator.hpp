@@ -115,8 +115,8 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
       auto counter = std::make_shared<size_t>(computationTasks.size());
 
       for (size_t i = 0; i < computationTasks.size(); ++i) {
-        auto &compTask = computationTasks[i];
-        auto &index = multiIndices[i];
+        auto compTask = computationTasks[i];
+        auto index = multiIndices[i];
 
         tasks.push_back([compTask, index, counter, callback, this, level]() {
           auto result = compTask();

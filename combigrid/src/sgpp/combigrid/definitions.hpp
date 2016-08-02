@@ -12,14 +12,14 @@
 #include <functional>
 #include <vector>
 
-// #define CGLOG(str)
-// #define CGLOG_SURROUnD(cmd) cmd
-#include <iostream>
+#define CGLOG(str)
+#define CGLOG_SURROUND(cmd) cmd
+/*#include <iostream>
 #define CGLOG(str) std::cout << str << "\n"
 #define CGLOG_SURROUND(cmd)                                                 \
   std::cout << #cmd << " before: " << __FILE__ << ", " << __LINE__ << "\n"; \
   cmd;                                                                      \
-  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"
+  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"*/
 
 namespace sgpp {
 namespace combigrid {

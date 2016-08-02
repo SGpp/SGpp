@@ -6,15 +6,15 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
-#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
 #include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmuedd): remove
 
@@ -22,8 +22,8 @@
 #include <limits>
 #include <memory>
 #include <queue>
-#include <unordered_set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace sgpp {
