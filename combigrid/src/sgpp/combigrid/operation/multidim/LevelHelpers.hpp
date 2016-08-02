@@ -1,21 +1,22 @@
-/*
- * LevelHelpers.hpp
- *
- *  Created on: 22.07.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELHELPERS_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELHELPERS_HPP_
 
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
 #include <boost/heap/binomial_heap.hpp>
 #include <memory>
 #include <queue>
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <functional>
 #include <unordered_set>
-#include "../../definitions.hpp"
-#include "../../storage/AbstractMultiStorage.hpp"
-#include "../../storage/tree/TreeStorage.hpp"
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -63,7 +64,7 @@ class LevelInfo {
   /**
    * Creates a new level in its earliest stage. This means that it is not ready for computation yet.
    */
-  LevelInfo(size_t numPredecessors)
+  explicit LevelInfo(size_t numPredecessors)
       : numNotStartedPredecessors(numPredecessors),
         numNotCompletedPredecessors(numPredecessors),
         terminationListeners(),
@@ -74,7 +75,7 @@ class LevelInfo {
   /**
    * Creates a new level in its latest stage, where everything has already been computed.
    */
-  LevelInfo(double norm)
+  explicit LevelInfo(double norm)
       : numNotStartedPredecessors(0),
         numNotCompletedPredecessors(0),
         terminationListeners(),

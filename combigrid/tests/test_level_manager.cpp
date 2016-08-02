@@ -45,9 +45,18 @@ using sgpp::combigrid::CombigridMultiOperation;
 using sgpp::combigrid::MultiFunction;
 using sgpp::combigrid::Stopwatch;
 using sgpp::combigrid::MCIntegrator;
-
-using namespace sgpp;
-using namespace sgpp::combigrid;
+using sgpp::combigrid::AbstractPointHierarchy;
+using sgpp::combigrid::CombigridEvaluator;
+using sgpp::combigrid::FloatScalarVector;
+using sgpp::combigrid::NestedPointHierarchy;
+using sgpp::combigrid::LejaPointDistribution;
+using sgpp::combigrid::IdentityPointOrdering;
+using sgpp::combigrid::LinearGrowthStrategy;
+using sgpp::combigrid::AbstractLinearEvaluator;
+using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::FullGridTensorEvaluator;
+using sgpp::combigrid::CombigridTreeStorage;
+using sgpp::combigrid::AveragingLevelManager;
 
 double testFunction(DataVector const &coordinates);
 
@@ -123,6 +132,6 @@ BOOST_AUTO_TEST_CASE(testLevelManagerRegular) {
 
   std::cout << "test_level_manager: ";
   std::cout << std::abs(combiGridEval->getValue().getValue() -
-                        func(base::DataVector(std::vector<double>{0.378934, 0.89340273})))
+                        func(DataVector(std::vector<double>{0.378934, 0.89340273})))
             << "\n";
 }

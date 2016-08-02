@@ -6,10 +6,11 @@
 #ifndef QUADRATUREEVALUATOR_HPP_
 #define QUADRATUREEVALUATOR_HPP_
 
-#include "AbstractLinearEvaluator.hpp"
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/algebraic/ScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
+
 #include <vector>
 #include <functional>
 
