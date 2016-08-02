@@ -1,50 +1,83 @@
 /**
-@mainpage SG++ Documentation
-
-Welcome to the SG++ documentation.<br/>
-The current version of SG++ can be found at @subpage downloads.
-
-<div style="border-style:double; max-width:40em; padding:1em; margin:1em auto;">
-    If you use any part of the software or any resource of this webpage and/or
-    documentation, you implicitly accept the copyright (see the \ref copyright).
-    This includes that you have to cite one of the papers dealing
-    with sparse grids when publishing work with the help of SG++ (see below).
-</div>
-
-@image html teaser.gif "Images taken from [1]"
-
-[1] D. Pfl&uuml;ger,
-Spatially Adaptive Sparse Grids for Higher-Dimensional Problems.
-Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
+@mainpage SG++: General Sparse Grid Toolbox
 
 
 
 <!-- ############################################################# -->
-@section mainpage_overview Overview
+<!--@section mainpage_overview Overview-->
 
-SG++ is a toolbox allowing to employ spatially adaptive sparse grids
-straightforward, flexibly, and without the vast initial overhead that
-has to be spent when implementing sparse grids and the corresponding
-algorithms. To be able to deal with different kinds
-of problems in a spatially adaptive way—ranging from interpolation
-and quadrature via the solution of differential equations to
-regression, classification, and more—a main motivation behind the
-development and all considerations was to create a toolbox which can
-be used in a very flexible and modular way by different users in
-different applications.
+SG++ is a universal toolbox for spatially adaptive sparse grid methods
+and the combination technique. It provides various low-level and
+high-level sparse grid functionality allowing one to start using
+sparse grids with minimal initial implementation effort.  The \ref
+mainpage_features "functionality" ranges from interpolation and quadrature via
+the solution of differential equations to regression, classification,
+and \ref mainpage_features "more". The SG++ toolbox  supports
+multiple operating systems and multiple programming languages. You can
+use SG++ with Python, MATLAB, Java, and C++.
 
-The main features of the sparse grid toolbox are efficiency and
-flexibility, both of which can sometimes be nasty rivals, for example
-if the reusability of an algorithm for different purposes requires
-extra data structures or control mechanisms, thus slowing down special
-algorithmic variants. To ensure performance at run-time, we use C++
-for all performance critical parts. Considering flexibility, we have
-spent a great deal in ensuring modularity, reusability and the
-separation of data structures and algorithms. Furthermore, we provide
-the means to use the SG++ toolbox from within Python, MATLAB, Java,
-and C++, of course.
+Our development focuses on providing an efficient and flexible sparse
+grid toolbox to support a broad spectrum of users and
+applications. To ensure <b>efficiency</b> at run-time, we use C++ for
+all performance critical parts. Considering <b>flexibility</b>, the
+software architecture of the SG++ toolbox ensures \ref modules
+"modularity", reusability, and encapsulation of data structures and
+algorithms.
 
-To name a few special features:
+SG++ is an open source software and delivered as source code. If you
+use any parts of the software or any resources of this webpage and/or
+documentation, you implicitly accept the copyright (see the \ref
+copyright). In this case, please give us credit by citing the SG++
+toolbox in your publications. For the appropriate citation of SG++ in
+your publications, please refer to the section \ref mainpage_literature.
+
+The current version of SG++ can be found at @subpage downloads and
+the online version of this documentation at
+http://sgpp.sparsegrids.org.
+
+
+@section mainpage_installation Getting Started
+
+Start by reading the <b>installation instructions</b> for your
+operating system: \ref linux or \ref mingw.
+
+If you are going to use SG++ in your application, please consult the
+\ref manual for an \ref modules "overview" of the toolbox structure
+and helpful \ref examples "examples".
+
+If you are going to extend and develop SG++, please consult the \ref
+development to get familiar with the coding guidelines and
+conventions.  The Development Manual contains the styleguide, the references to useful
+tools and utilities, as well as a collection of some current issues.
+
+<!--
+The documentation of the SG++ toolbox is structured in two main parts.
+The first one, @ref manual, is dedicated to users of SG++.
+For example, installation instructions are provided as well
+as short use cases as a quick start to using SG++.
+
+The second one, @ref development, addresses all those who
+want to contribute to SG++ or who are involved in its
+development. There, the styleguide can be found, references to useful
+tools and utilities are provided, and a few current issues are gathered.
+-->
+
+You can find these pages and more in the <b>menu to the left</b>.  If
+you do not see a menu, please <b>activate the JavaScript support</b>
+in your web-browser.
+
+
+@section mainpage_features Features
+
+Functionality of the toolbox include
+- function interpolation,
+- quadrature,
+- partial differential equations,
+- data mining and machine learning,
+- uncertainty quantification,
+- function optimization.
+
+Technical features include:
 - Different types of basis functions are supported which enable to
 cope with the characteristics of special applications.
 - Modern shared-memory multi-core systems are supported to
@@ -57,27 +90,8 @@ is encapsulated so that it can be exchanged by other choices.
 algorithms are provided that make use of the tensor product structure of the
 underlying basis.
 
-SG++ is open source software and delivered as source code. For
-questions, contributions, and requests, please <a
-href="mailto:dirk.pflueger@ipvs.informatik.uni-stuttgart.de">contact us</a>.
+<!--
 
-The documentation of the SG++ toolbox is structured in two main parts.
-The first one, @ref manual, is dedicated to users of SG++.
-For example, installation instructions are provided as well
-as short use cases as a quick start to using SG++.
-
-The second one, @ref development, addresses all those who
-want to contribute to SG++ or who are involved in its
-development. There, the styleguide can be found, references to useful
-tools and utilities are provided, and a few current issues are gathered.
-
-You can find these pages and more in the <b>menu to the left</b>.
-If you do not see a menu, JavaScript is deactivated. 
-
-Though we do not guarantee for anything, and though we do not have the
-money to provide quick and fast support,
-we are happy about any comments, recommendations,
-hints on missing information, …
 
 See also:
 - @subpage manual
@@ -85,11 +99,39 @@ See also:
 - @subpage copyright
 - @ref downloads
 - Online version of this documentation at http://sgpp.sparsegrids.org
+-->
+
+@section mainpage_issues Questions and Issues
+
+- The best place for questions and discussions about SG++ is the <a
+  href="mailto:sgpp@ipvs.uni-stuttgart.de">mailing
+  list</a>.
+
+- Alternatively, you may directly contact <a
+  href="mailto:dirk.pflueger@ipvs.informatik.uni-stuttgart.de">Dirk
+  Pflüger</a>.
+
+We appreciate any feedback regarding the improvement of documentation,
+user experience, and application support.
 
 
+<!--
+<div style="border-style:double; max-width:40em; padding:1em; margin:1em auto;">
+    If you use any part of the software or any resource of this webpage and/or
+    documentation, you implicitly accept the copyright (see the \ref copyright).
+    This includes that you have to cite one of the papers dealing
+    with sparse grids when publishing work with the help of SG++ (see below).
+</div>
+
+@image html teaser.gif "Images taken from [1]"
+
+[1] D. Pfl&uuml;ger,
+Spatially Adaptive Sparse Grids for Higher-Dimensional Problems.
+Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
+-->
 
 <!-- ############################################################# -->
-@section mainpage_literature Literature
+@section mainpage_literature How to Cite
 
 Please cite one of the corresponding publications (BibTeX snippets below):
 

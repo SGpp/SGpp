@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+%:
+	scons $@
+
+clean:
+	scons -c
+
+build:
+	scons -j8 COMPILE_BOOST_TESTS=0
+
+install:
+	scons install

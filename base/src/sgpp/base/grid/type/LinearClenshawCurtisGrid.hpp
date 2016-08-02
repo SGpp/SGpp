@@ -44,7 +44,7 @@ class LinearClenshawCurtisGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
   void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
