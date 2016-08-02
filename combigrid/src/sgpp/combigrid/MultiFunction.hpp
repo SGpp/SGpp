@@ -25,7 +25,7 @@ class MultiFunction {
   /**
    * for function pointers
    */
-  MultiFunction(double (*ptr)(base::DataVector const &));
+  explicit MultiFunction(double (*ptr)(base::DataVector const &));
 
   /**
    * for lambdas or function objects

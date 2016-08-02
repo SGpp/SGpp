@@ -55,7 +55,7 @@ class FunctionLookupTable {
   std::mutex tableMutex;
 
  public:
-  FunctionLookupTable(MultiFunction func);
+  explicit FunctionLookupTable(MultiFunction func);
 
   double operator()(base::DataVector const &x);
 

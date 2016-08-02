@@ -6,8 +6,9 @@
 #ifndef STOPWATCH_HPP_
 #define STOPWATCH_HPP_
 
-#include <chrono>
 #include <sgpp/globaldef.hpp>
+
+#include <chrono>
 
 namespace sgpp {
 namespace combigrid {

@@ -51,7 +51,7 @@ class TreeStorage : public AbstractMultiStorage<T> {
    * computed once.
    * If no function is specified, the default constructor of the stored type is used.
    */
-  TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
+  explicit TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
       : context(numDimensions, func), root(nullptr) {
     MultiIndex index;
     if (numDimensions <= 1) {

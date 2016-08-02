@@ -11,6 +11,8 @@
 #include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

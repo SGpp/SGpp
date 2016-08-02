@@ -13,6 +13,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/MultiFunction.hpp>
 
+#include <vector>
 #include <memory>
 #include <functional>
 #include <string>
