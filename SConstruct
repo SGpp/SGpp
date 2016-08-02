@@ -481,7 +481,7 @@ installLibSGpp = env.Alias("install-lib-sgpp",
 
 headerFinalDestList = []
 for headerDest in headerDestList:
-  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), headerDest))
+  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), os.path.relpath(headerDest).split(os.sep, 2)[2]))
 
 installIncSGpp = env.Alias("install-inc-sgpp",
                            env.InstallAs(headerFinalDestList, headerSourceList))
