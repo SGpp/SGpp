@@ -1,9 +1,7 @@
-/*
- * ThreadPool.hpp
- *
- *  Created on: 20.06.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_

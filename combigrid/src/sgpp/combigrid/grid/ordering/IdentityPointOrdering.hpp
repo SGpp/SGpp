@@ -9,6 +9,8 @@
 #include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 #include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
