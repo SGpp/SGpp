@@ -15,7 +15,7 @@
 #include <vector>
 #include <mutex>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 class AbstractCombigridStorage {

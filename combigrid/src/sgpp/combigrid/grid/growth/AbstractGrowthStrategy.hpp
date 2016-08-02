@@ -6,8 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTGROWTHSTRATEGY_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTGROWTHSTRATEGY_HPP_
 
-#include <cstddef>
 #include <sgpp/globaldef.hpp>
+
+#include <cstddef>
 
 namespace sgpp {
 namespace combigrid {

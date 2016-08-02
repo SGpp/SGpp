@@ -10,7 +10,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <sgpp/globaldef.hpp>
 #include <vector>
 
 // #define CGLOG(str)

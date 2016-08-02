@@ -7,9 +7,9 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTPOINTHIERARCHY_HPP_
 
 #include <sgpp/globaldef.hpp>
-#include <cstddef>
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 
+#include <cstddef>
 #include <vector>
 
 namespace sgpp {
