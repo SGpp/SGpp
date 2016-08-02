@@ -13,7 +13,7 @@
 %newobject sgpp::op_factory::createOperationIdentity(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationEval(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationMultipleEval(sgpp::base::Grid& grid);
-%newobject sgpp::op_factory::createOperationNaiveEval(sgpp::base::Grid& grid);
-%newobject sgpp::op_factory::createOperationNaiveEvalGradient(sgpp::base::Grid& grid);
-%newobject sgpp::op_factory::createOperationNaiveEvalHessian(sgpp::base::Grid& grid);
-%newobject sgpp::op_factory::createOperationNaiveEvalPartialDerivative(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationEvalNaive(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationEvalGradientNaive(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationEvalHessianNaive(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationEvalPartialDerivativeNaive(sgpp::base::Grid& grid);
