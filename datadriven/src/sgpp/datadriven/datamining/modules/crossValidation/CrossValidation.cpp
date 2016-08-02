@@ -125,13 +125,17 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
   }
 
   // calculate final score as AVG
-  double avgScore = std::accumulate(scores.begin(), scores.end(), 0);
-  avgScore /= static_cast<double>(foldNumber);
+  double avgScore = 0;
+  for (auto i : scores) {
+    avgScore += i;
+  }
+  avgScore = avgScore / static_cast<double>(foldNumber);
 
   // calculate std deviation if desired
   if (stdDeviation) {
-    *stdDeviation = std::accumulate(scores.begin(), scores.end(), 0,
-                                    [avgScore](double a, double b) { return a + (b - avgScore); });
+    for (auto i : scores) {
+      *stdDeviation += std::pow(i - avgScore, 2);
+    }
     *stdDeviation = sqrt((*stdDeviation) / (static_cast<double>(foldNumber) - 1.0));
   }
 
