@@ -11,6 +11,19 @@
 #include <cmath>
 #include <ctime>
 
+using sgpp::combigrid::optimize::r8_epsilon;
+using sgpp::combigrid::optimize::local_min;
+using sgpp::combigrid::optimize::glomin;
+using sgpp::combigrid::optimize::Poly;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+// using sgpp::combigrid::optimize::;
+
 const double check_tolerance(1e-15);
 
 void test_local_min_all();
@@ -85,8 +98,8 @@ void test_glomin_all() {
   double m;
   double t;
 
-  e = sqrt(r8_epsilon());
-  t = sqrt(r8_epsilon());
+  e = std::sqrt(r8_epsilon());
+  t = std::sqrt(r8_epsilon());
 
   a = 7.0;
   b = 9.0;

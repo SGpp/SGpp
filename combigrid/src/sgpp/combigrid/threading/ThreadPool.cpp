@@ -4,8 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
-#include <chrono>
 #include <sgpp/combigrid/definitions.hpp>
+
+#include <chrono>
 
 #include <vector>
 
