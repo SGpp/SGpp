@@ -6,12 +6,11 @@
 #ifndef OPERATIONMULTIPLEEVALMODBSPLINE_HPP
 #define OPERATIONMULTIPLEEVALMODBSPLINE_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -20,7 +19,7 @@ namespace base {
  * This class implements OperationMultipleEval for a grid with modified Bspline basis functions
  *
  */
-class OperationMultipleEvalModBspline: public OperationMultipleEval {
+class OperationMultipleEvalModBspline : public OperationMultipleEval {
  public:
   /**
    * Constructor
@@ -29,18 +28,18 @@ class OperationMultipleEvalModBspline: public OperationMultipleEval {
    * @param degree the Bspline's degree
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModBspline(Grid& grid, size_t degree, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
-  }
+  OperationMultipleEvalModBspline(Grid& grid, size_t degree, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {}
 
   /**
    * Destructor
    */
-  ~OperationMultipleEvalModBspline() override {
-  }
+  ~OperationMultipleEvalModBspline() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object

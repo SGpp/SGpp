@@ -7,27 +7,24 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBspline.hpp>
 
-
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalModBspline::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalModBspline::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SBsplineModifiedBase> op;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalModBspline::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalModBspline::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SBsplineModifiedBase> op;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalModBspline::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp
