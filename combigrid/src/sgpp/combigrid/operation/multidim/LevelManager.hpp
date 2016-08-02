@@ -8,24 +8,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
-#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>  // TODO(holzmudd): remove
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>                 // TODO(holzmudd): remove
-#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>  // TODO(holzmudd): remove
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <vector>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -38,7 +37,7 @@ class LevelManager {
   MultiIndexQueue queue;
   std::shared_ptr<TreeStorage<std::shared_ptr<LevelInfo>>> levelData;
   size_t numDimensions;
-  std::shared_ptr<CombigridEvaluator<FloatScalarVector>> combiEval;
+  std::shared_ptr<AbstractLevelEvaluator> combiEval;
   std::mutex managerMutex;
 
   /**
@@ -83,7 +82,7 @@ class LevelManager {
   void addLevels(std::vector<MultiIndex> const &levels);
 
  public:
-  // TODO(holzmudd) constructor
+  LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
 
   virtual ~LevelManager();
 
