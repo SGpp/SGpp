@@ -234,8 +234,8 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(sgpp::base::DataVector& alpha
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw sgpp::base::application_exception(

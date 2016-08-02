@@ -846,13 +846,13 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
   }
 
   // Test call @ the money
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     if (isLogSolve == true) {
-      point.push_back(log(dStrike));
+      point[i] = log(dStrike);
     } else {
-      point.push_back(dStrike);
+      point[i] = dStrike;
     }
   }
 
@@ -1094,13 +1094,13 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(d);
 
     for (size_t j = 0; j < d; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 
@@ -1458,13 +1458,13 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(dim);
 
     for (int j = 0; j < dim; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 
@@ -1924,13 +1924,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
     }
   }
 
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     if (isLogSolve == true) {
-      point.push_back(log(dStrike));
+      point[i] = log(dStrike);
     } else {
-      point.push_back(dStrike);
+      point[i] = dStrike;
     }
   }
 

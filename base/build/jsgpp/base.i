@@ -28,7 +28,6 @@ namespace std {
 %template(SBasis) sgpp::base::Basis<unsigned int, unsigned int>;
 %include "GridFactory.i"
 %include "OpFactory.i"
-//%include "Operations.i"
 
 %include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
 
@@ -83,10 +82,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationConvert.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEval.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalGradient.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalHessian.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
 %include "base/src/sgpp/base/tools/OperationQuadratureMC.hpp"

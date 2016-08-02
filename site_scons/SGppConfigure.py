@@ -168,12 +168,8 @@ def checkOpenCL(config):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
-      config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    else:
-      Helper.printInfo("OpenCL is not enabled")
-      
-    # add a define
-    config.env.AppendUnique(CPPFLAGS=["-DUSE_OCL=1"])
+    config.env["CPPDEFINES"]["USE_OCL"] = "1"
+    
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
