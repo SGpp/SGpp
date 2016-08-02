@@ -36,9 +36,7 @@
 #include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
-#ifdef USEARBB
-#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp>
-#endif
+
 
 // #ifdef USE_MPI
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp>
@@ -105,12 +103,6 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
               parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double>>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 #endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterativeArBBLinear(&grid.getStorage(), dataset));
-
-#endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
@@ -149,12 +141,7 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterativeArBBLinear(&grid.getStorage(), dataset));
 
-#endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
