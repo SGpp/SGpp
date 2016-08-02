@@ -65,8 +65,8 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
 
   this->myTimer = new sgpp::base::SGppStopwatch();
 
-  this->B = sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
-                                                                    this->data);
+  this->B.reset(sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
+                                                                        this->data));
 }
 
 DMWeightMatrixVectorizedIdentity::~DMWeightMatrixVectorizedIdentity() {

@@ -29,8 +29,8 @@ const SBasis& PolyGrid::getBasis() { return *basis_; }
 
 size_t PolyGrid::getDegree() const { return this->degree; }
 
-std::unique_ptr<Grid> PolyGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new PolyGrid(istr));
+Grid* PolyGrid::unserialize(std::istream& istr) {
+  return new PolyGrid(istr);
 }
 
 void PolyGrid::serialize(std::ostream& ostr, int version) {

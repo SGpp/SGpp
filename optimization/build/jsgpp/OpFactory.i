@@ -3,15 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+%include "optimization/src/sgpp/optimization/operation/OptimizationOpFactory.hpp"
+
 %newobject sgpp::op_factory::createOperationMultipleHierarchisation(
     sgpp::base::Grid& grid);
-
-%{
-sgpp::optimization::OperationMultipleHierarchisation*
-createOperationMultipleHierarchisation(sgpp::base::Grid& grid) {
-    return sgpp::op_factory::createOperationMultipleHierarchisation(grid).release();
-}
-%}
-
-sgpp::optimization::OperationMultipleHierarchisation*
-createOperationMultipleHierarchisation(sgpp::base::Grid& grid);

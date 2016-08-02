@@ -42,8 +42,8 @@ const SBasis& ModBsplineClenshawCurtisGrid::getBasis() { return *basis_; }
 
 size_t ModBsplineClenshawCurtisGrid::getDegree() { return this->degree; }
 
-std::unique_ptr<Grid> ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(istr));
+Grid* ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return new ModBsplineClenshawCurtisGrid(istr);
 }
 
 void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr, int version) {
