@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <chrono>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <vector>
 
@@ -63,6 +63,7 @@ void ThreadPool::start() {
               tasks.pop_front();
               break;
             }
+            CGLOG("leave outer guard(this->poolMutex)");
           }
 
           // no tasks, so acquire tasks
@@ -73,11 +74,14 @@ void ThreadPool::start() {
             {
               CGLOG_SURROUND(std::lock_guard<std::mutex> guard(this->poolMutex));
               if (this->terminateFlag || !this->tasks.empty()) {
+                CGLOG("leave inner guard(this->poolMutex)");
                 continue;
               }
+              CGLOG("leave inner guard(this->poolMutex)");
             }
 
             idleCallback(*this);
+            CGLOG("leave idleLock(idleMutex)");
           } else {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
           }

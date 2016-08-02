@@ -9,11 +9,11 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
+#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
 
 #include <vector>
 
@@ -127,6 +127,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
           if (*counter == 0) {
             callback();
           }
+          CGLOG("leave guard(this->mutexPtr) in FGEval");
         });
       }
     }

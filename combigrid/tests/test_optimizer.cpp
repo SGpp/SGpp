@@ -7,8 +7,8 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/combigrid/optimization/Optimization.hpp>
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <ctime>
 
 const double check_tolerance(1e-15);
