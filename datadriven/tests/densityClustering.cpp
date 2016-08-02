@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
 
   // Create grid for test scenario
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(11);
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
 
   // Create grid for test scenario
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(11);
   size_t gridsize = grid->getStorage().getSize();
@@ -256,12 +256,6 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL)  {
   // Create OpenCL Manager
   std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
-
-  // Create grid for test scenario
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
-  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(11);
-  size_t gridsize = grid->getStorage().getSize();
 
   // Load dataset for test scenario
   sgpp::datadriven::Dataset data =

@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   // dumdum.start_operation();
 
   // Create Grid
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(11);
   size_t gridsize = grid->getStorage().getSize();
