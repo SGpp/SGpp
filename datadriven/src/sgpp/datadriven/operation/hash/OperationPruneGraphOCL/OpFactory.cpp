@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OpFactory.hpp"
-#include "KernelPruneGraph.hpp"
+#include "OperationPruneGraphOCL.hpp"
 namespace sgpp {
 namespace datadriven {
 
@@ -23,22 +23,8 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "float");
-  }
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
+
+  DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -71,22 +57,7 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "float");
-  }
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
+  DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -119,22 +90,7 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
-  parameters->serialize("MyOCLConfDebug.cfg");
-  if (parameters->contains("INTERNAL_PRECISION") == false) {
-    std::cout << "Warning! No internal precision setting detected."
-              << " Using double precision from now on!" << std::endl;
-    parameters->addIDAttr("INTERNAL_PRECISION", "float");
-  }
-  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<float>::augmentDefaultParameters(*parameters);
-  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    DensityOCLMultiPlatform::KernelPruneGraph<double>::augmentDefaultParameters(*parameters);
-  } else {
-    std::stringstream errorString;
-    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
-                << " invalid value for parameter \"INTERNAL_PRECISION\"";
-    throw base::factory_exception(errorString.str().c_str());
-  }
+  DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
   size_t platformid = 0;
