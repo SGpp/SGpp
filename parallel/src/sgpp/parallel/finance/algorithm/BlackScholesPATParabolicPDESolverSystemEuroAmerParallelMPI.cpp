@@ -457,8 +457,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
     if (this->option_type == "std_amer_put") {
       double current_time = static_cast<double>(this->nExecTimesteps) * this->TimestepSize;
 
-      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
+      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid));
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
       size_t dim = this->BoundGrid->getStorage().getDimension();
 

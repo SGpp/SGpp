@@ -171,6 +171,9 @@ def checkOpenCL(config):
       config.env["CPPDEFINES"]["USE_OCL"] = "1"
     else:
       Helper.printInfo("OpenCL is not enabled")
+      
+    # add a define
+    config.env.AppendUnique(CPPFLAGS=["-DUSE_OCL=1"])
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
