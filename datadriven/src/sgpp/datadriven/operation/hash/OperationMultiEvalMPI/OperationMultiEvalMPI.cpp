@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#define MPICH_SKIP_MPICXX
+#define OMPI_SKIP_MPICXX
 #include <mpi.h>
 #include <omp.h>
 #include <algorithm>
