@@ -59,29 +59,36 @@ class LevelInfo {
   ComputationStage computationStage;
   std::shared_ptr<MultiIndexQueue::handle_type> handle;
   double norm;
+  size_t maxNewPoints;
+  size_t numPoints;
+
   // TODO(holzmudd): add priority/num points
 
   /**
    * Creates a new level in its earliest stage. This means that it is not ready for computation yet.
    */
-  explicit LevelInfo(size_t numPredecessors)
+  explicit LevelInfo(size_t numPredecessors, size_t maxNewPoints, size_t numPoints)
       : numNotStartedPredecessors(numPredecessors),
         numNotCompletedPredecessors(numPredecessors),
         terminationListeners(),
         computationStage(ComputationStage::NOT_STARTED),
         handle(nullptr),
-        norm(0.0) {}
+        norm(0.0),
+        maxNewPoints(maxNewPoints),
+        numPoints(numPoints) {}
 
   /**
    * Creates a new level in its latest stage, where everything has already been computed.
    */
-  explicit LevelInfo(double norm)
+  explicit LevelInfo(double norm, size_t maxNewPoints, size_t numPoints)
       : numNotStartedPredecessors(0),
         numNotCompletedPredecessors(0),
         terminationListeners(),
         computationStage(ComputationStage::COMPLETED),
         handle(nullptr),
-        norm(norm) {}
+        norm(norm),
+        maxNewPoints(maxNewPoints),
+        numPoints(numPoints) {}
 
   void setPriority(MultiIndexQueue &queue, double priority) {
     auto entry = *(*handle);
