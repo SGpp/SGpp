@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include "ExponentialChebyshevPermutationIterator.hpp"
+#include "ExponentialLevelorderPermutationIterator.hpp"  // TODO(holzmudd)
 
 namespace sgpp {
 namespace combigrid {
@@ -49,8 +50,8 @@ size_t ExponentialChebyshevPermutationIterator::value() {
 
   // two boundary points, offset 2^l - 1 (= sum_{k=0}^{l-1} 2^k), dividedIndex starts from 1, so we
   // have to subtract 1
-//  return 2 + ((1L << (currentLevel - 1)) - 1) + dividedIndex;
-  return "?";
+  //  return 2 + ((1L << (currentLevel - 1)) - 1) + dividedIndex;
+  return 0;  // TODO(holzmudd): implement methods
 }
 
 void ExponentialChebyshevPermutationIterator::moveToNext() { ++currentIndex; }

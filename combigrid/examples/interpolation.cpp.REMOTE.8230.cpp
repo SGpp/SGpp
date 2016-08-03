@@ -32,14 +32,24 @@ using sgpp::combigrid::WeightedRatioLevelManager;
 /**
  * The function we want to interpolate
  */
-double f_2D(DataVector v) { 
-  return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); 
+double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
+
+void simpleInterpolation() {
+  size_t numDimensions = 2;
+  MultiFunction wrapper(
+      f_2D);  // create a function object taking a data vector and returning a double
+  auto operation =
+      CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
+
+  size_t maxLevelSum = 2;
+  double result = operation->evaluate(
+      maxLevelSum,
+      DataVector(std::vector<double>{
+          0.5, 0.7}));  // creates levels (0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2)
+
+  std::cout << result << "\n";
 }
 
-<<<<<<< HEAD
-void interpolation() {
-  // dimension of the interpolation problem
-=======
 void adaptiveInterpolation() {
   size_t numDimensions = 2;
   MultiFunction wrapper(
@@ -61,7 +71,6 @@ void adaptiveInterpolation() {
 }
 
 void multistageInterpolation() {
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
@@ -71,13 +80,9 @@ void multistageInterpolation() {
     return 0.0;
   };
 
-  // create grid points hierarchies for all dimensions
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(numDimensions);
-
-  // in this case, the grid points grow linearly with the level
-  size_t growthFactor = 2; 
-
-  // create a point hierarchy of nested points (Leja points), which are already ordered in the
+  size_t growthFactor = 2;  // use n = 1 + 2 * level points
+  // create a point hierarchy of nested points (leja points), which are already ordered in the
   // nesting order
   pointHierarchies[0] = std::make_shared<NestedPointHierarchy>(
       std::make_shared<LejaPointDistribution>(),
@@ -85,10 +90,10 @@ void multistageInterpolation() {
                                               false));  // not yet sorted
   pointHierarchies[1] = pointHierarchies[0];
 
-  // evaluators, i.e. interpolation operators
+  // CREATE EVALUATORS
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(numDimensions);
   evaluators[0] = std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(
-      true);  // true means that the operator needs a parameter
+      true);  // true means that the operator needs a parameter (the interpolation point)
   evaluators[1] = evaluators[0];
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(dummyFunc));
@@ -108,14 +113,14 @@ void multistageInterpolation() {
       std::vector<FloatScalarVector>{FloatScalarVector(0.7), FloatScalarVector(0.27)});
 
   fullGridEval->setParameters(parameters);
-
-  // here, the callback function inserts the grid points to gridPoints
-  combiGridEval->addRegularLevels(maxLevelSum);  
+  combiGridEval->addRegularLevels(
+      maxLevelSum);  // here, the callback function inserts the grid points to gridPoints
 
   // ----- EVAL FUNCTION
+
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
 
-  std::cout << "Grid points:\n";
+  std::cout << "grid points:\n";
 
   for (auto &gridPoint : gridPoints) {
     std::cout << gridPoint[0] << ", " << gridPoint[1] << "\n";
@@ -144,13 +149,7 @@ void multistageInterpolation() {
 }
 
 int main() {
-<<<<<<< HEAD
-  interpolation();
-
-  return 0;
-=======
   simpleInterpolation();
   adaptiveInterpolation();
   multistageInterpolation();
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
 }

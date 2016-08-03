@@ -27,7 +27,6 @@ using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::FullGridTensorEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
-using sgpp::combigrid::WeightedRatioLevelManager;
 
 /**
  * The function we want to interpolate
@@ -36,32 +35,8 @@ double f_2D(DataVector v) {
   return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); 
 }
 
-<<<<<<< HEAD
 void interpolation() {
   // dimension of the interpolation problem
-=======
-void adaptiveInterpolation() {
-  size_t numDimensions = 2;
-  MultiFunction wrapper(
-      f_2D);  // create a function object taking a data vector and returning a double
-  auto operation =
-      CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
-
-  size_t maxLevelSum = 2;
-  DataVector param(std::vector<double>{0.5, 0.7});
-  auto levelManager = std::make_shared<WeightedRatioLevelManager>();
-
-  operation->setParameters(param);
-  operation->setLevelManager(levelManager);
-  operation->getLevelManager()->addLevelsAdaptive(300);
-
-  double result = operation->getResult();
-
-  std::cout << result << "\n";
-}
-
-void multistageInterpolation() {
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
@@ -144,13 +119,7 @@ void multistageInterpolation() {
 }
 
 int main() {
-<<<<<<< HEAD
   interpolation();
 
   return 0;
-=======
-  simpleInterpolation();
-  adaptiveInterpolation();
-  multistageInterpolation();
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
 }

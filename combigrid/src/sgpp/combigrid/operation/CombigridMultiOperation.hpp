@@ -11,6 +11,7 @@
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -34,11 +35,12 @@ class CombigridMultiOperation {
   CombigridMultiOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-      MultiFunction func);
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func);
 
   CombigridMultiOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractCombigridStorage> storage);
 
   // TODO(holzmudd): add extra functions, for example for configuring the storage
@@ -63,6 +65,8 @@ class CombigridMultiOperation {
   base::DataVector evaluateAdaptive(
       size_t maxNumPoints,
       std::vector<base::DataVector> const &params);  // TODO(holzmudd): maybe change to DataMatrix?
+
+  std::shared_ptr<LevelManager> getLevelManager();
 
   std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> getDifferences();
 

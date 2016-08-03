@@ -167,6 +167,8 @@ namespace std {
 
 %include "combigrid/src/sgpp/combigrid/numeric/KahanAdder.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/LevelManager.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
 
