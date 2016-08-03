@@ -24,6 +24,8 @@ class AbstractFullGridEvaluator {
 
   virtual size_t maxNewPoints(MultiIndex const &level) = 0;
 
+  virtual size_t numPoints(MultiIndex const &level) = 0;
+
   virtual std::shared_ptr<AbstractCombigridStorage> getStorage() = 0;
 
   virtual std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level,
