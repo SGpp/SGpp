@@ -6,17 +6,17 @@
 #ifndef OPERATIONMULTIPLEEVALPERIODIC_HPP
 #define OPERATIONMULTIPLEEVALPERIODIC_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
 /**
- * This class implements OperationMultipleEval for a grids with periodic linear basis ansatzfunctions
+ * This class implements OperationMultipleEval for a grids with periodic linear basis
+ * ansatzfunctions
  *
  */
 class OperationMultipleEvalPeriodic : public OperationMultipleEval {
@@ -27,9 +27,8 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalPeriodic(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
-  }
+  OperationMultipleEvalPeriodic(Grid& grid, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
@@ -38,6 +37,8 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object
