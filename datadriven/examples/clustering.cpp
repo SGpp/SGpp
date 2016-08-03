@@ -54,6 +54,7 @@ int main() {
   operation_mult->mult(alpha, result);
 
   std::ofstream out_mult("mult_erg_dim2_depth11.txt");
+  out_mult.precision(17);
   for (size_t i = 0; i < gridsize; ++i) {
     out_mult << result[i] << " ";
   }
@@ -66,6 +67,7 @@ int main() {
     std::cout << b[i] << " ";
   std::cout << std::endl;
   std::ofstream out_rhs("rhs_erg_dim2_depth11.txt");
+  out_rhs.precision(17);
   for (size_t i = 0; i < gridsize; ++i) {
     out_rhs << b[i] << " ";
   }
@@ -79,6 +81,7 @@ int main() {
     alpha[i] = alpha[i]*1.0/(max-min);
 
   std::ofstream out_alpha("alpha_erg_dim2_depth11.txt");
+  out_alpha.precision(17);
   for (size_t i = 0; i < gridsize; ++i) {
     out_alpha << alpha[i] << " ";
   }

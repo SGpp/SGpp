@@ -12,6 +12,7 @@
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <random>
 #include <fstream>
 #include <iostream>
@@ -185,6 +186,79 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+}
+
+BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
+  // Load correct results for comparison
+  std::vector<double> alpha_optimal_result;
+  std::ifstream alpha_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/alpha_erg_dim2_depth11.txt");
+  if (alpha_in) {
+    double value;
+    while (alpha_in >> value)
+      alpha_optimal_result.push_back(value);
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("Alpha result file is missing!"));
+  }
+  alpha_in.close();
+
+  // Create grid for test scenario
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(11);
+  size_t gridsize = grid->getStorage().getSize();
+
+  // Load rhs vector
+  sgpp::base::DataVector b(gridsize);
+  std::ifstream rhs_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/rhs_erg_dim2_depth11.txt");
+  if (rhs_in) {
+    double value;
+    int counter;
+    while (rhs_in >> value) {
+      b[counter] = value;
+      counter++;
+    }
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("Density rhs result file is missing!"));
+  }
+  rhs_in.close();
+
+  // Create OCL configuration
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+  sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationDensityOCL::load_default_parameters(parameters.get());
+
+  // Create OpenCL Manager
+  std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
+  manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(true);
+
+  // Create operation
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* mult_operation =
+      new sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationDensityOCLMultiPlatform<double>(*grid, 2, manager, parameters.get(), 0.001,
+                                               0, 0);
+
+  // Create solver
+  sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(100, 0.001);
+  sgpp::base::DataVector alpha(gridsize);
+  alpha.setAll(1.0);
+
+  // Solve
+  solver->solve(*mult_operation, alpha, b, false, false);
+  // Scaling
+  double max = alpha.max();
+  double min = alpha.min();
+  for (size_t i = 0; i < gridsize; i++)
+    alpha[i] = alpha[i]*1.0/(max-min);
+
+  // Compare results with correct results
+  for (size_t i = 0; i < gridsize; ++i) {
+    BOOST_CHECK_CLOSE(alpha_optimal_result[i], alpha[i], 0.001);
+  }
+
+  // Cleanup
+  delete mult_operation;
+  delete solver;
 }
 
 BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
