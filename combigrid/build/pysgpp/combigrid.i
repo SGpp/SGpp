@@ -61,8 +61,8 @@
 %ignore sgpp::combigrid::FloatScalarVector::operator=;
 %ignore sgpp::combigrid::FloatArrayVector::operator=;
 %ignore sgpp::combigrid::FloatArrayVector::operator[];
-%include "combigrid/src/sgpp/combigrid/algebraic/ScalarVector.hpp"
-%include "combigrid/src/sgpp/combigrid/algebraic/ArrayVector.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/FloatScalarVector.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/FloatArrayVector.hpp"
 %include "combigrid/src/sgpp/combigrid/common/MultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/AbstractPermutationIterator.hpp"
@@ -117,6 +117,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/Configurations.hpp"
 
 // %include "combigrid/src/sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp"
 // %include "combigrid/src/sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp"

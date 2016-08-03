@@ -3,23 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
-#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
+#include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
+#include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
-#include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
-#include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
-#include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 
 #include <iostream>
 #include <vector>
@@ -59,8 +60,7 @@ CombigridMultiOperation::CombigridMultiOperation(
     std::shared_ptr<AbstractCombigridStorage> storage)
     : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, storage)) {}
 
-base::DataVector CombigridMultiOperation::evaluate(size_t q,
-                                                   std::vector<base::DataVector> const &params) {
+void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
   // TODO(holzmudd): check dimensionalities and sizes...
   std::vector<FloatArrayVector> vecs(params[0].getSize());
 
@@ -73,8 +73,22 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
 
   impl->fullGridEval->setParameters(vecs);
   impl->combiEval->clear();
-  impl->combiEval->addRegularLevels(q);
+}
 
+void CombigridMultiOperation::setParameters(const base::DataMatrix &params) {
+  std::vector<FloatArrayVector> vecs(params.getNcols());
+
+  for (size_t i = 0; i < params.getNrows(); ++i) {
+    for (size_t j = 0; j < params.getNcols(); ++j) {
+      vecs[j].at(i) = params(i, j);
+    }
+  }
+
+  impl->fullGridEval->setParameters(vecs);
+  impl->combiEval->clear();
+}
+
+base::DataVector CombigridMultiOperation::getResult() {
   auto values = impl->combiEval->getValue().getValues();
 
   base::DataVector result(values.size());
@@ -83,38 +97,26 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
     result[i] = values[i].getValue();
   }
 
-  std::cout << "Storage Entries: " << impl->fullGridEval->getStorage()->getNumEntries() << "\n";
-
   return result;
+}
+
+base::DataVector CombigridMultiOperation::evaluate(size_t q,
+                                                   std::vector<base::DataVector> const &params) {
+  setParameters(params);
+
+  impl->combiEval->addRegularLevels(q);
+
+  return getResult();
 }
 
 base::DataVector CombigridMultiOperation::evaluateAdaptive(
     size_t maxNumPoints, std::vector<base::DataVector> const &params) {
   // TODO(holzmudd): check dimensionalities and sizes...
-  std::vector<FloatArrayVector> vecs(params[0].getSize());
+  setParameters(params);
 
-  for (size_t i = 0; i < params.size(); ++i) {
-    auto &param = params[i];
-    for (size_t j = 0; j < param.getSize(); ++j) {
-      vecs[j].at(i) = param[j];
-    }
-  }
-
-  impl->fullGridEval->setParameters(vecs);
-  impl->combiEval->clear();
   impl->combiEval->addLevelsAdaptive(maxNumPoints);
 
-  auto values = impl->combiEval->getValue().getValues();
-
-  base::DataVector result(values.size());
-
-  for (size_t i = 0; i < values.size(); ++i) {
-    result[i] = values[i].getValue();
-  }
-
-  // std::cout << "Storage Entries: " << impl->fullGridEval->getStorage()->getNumEntries() << "\n";
-
-  return result;
+  return getResult();
 }
 
 std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> CombigridMultiOperation::getDifferences() {
@@ -125,12 +127,10 @@ std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                         MultiFunction func) {
   return std::make_shared<CombigridMultiOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, std::make_shared<NestedPointHierarchy>(
-                             std::make_shared<ClenshawCurtisDistribution>(),
-                             std::make_shared<ExponentialLevelorderPointOrdering>())),
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expClenshawCurtis()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(true)),
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
       func);
 }
 
@@ -144,7 +144,7 @@ CombigridMultiOperation::createLinearClenshawCurtisPolynomialInterpolation(size_
                              std::make_shared<IdentityPointOrdering>(
                                  std::make_shared<LinearGrowthStrategy>(2), true))),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(true)),
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
       func);
 }
 
@@ -152,13 +152,10 @@ std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpLejaPolynomialInterpolation(size_t numDimensions,
                                                               MultiFunction func) {
   return std::make_shared<CombigridMultiOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, std::make_shared<NestedPointHierarchy>(
-                             std::make_shared<LejaPointDistribution>(),
-                             std::make_shared<IdentityPointOrdering>(
-                                 std::make_shared<ExponentialGrowthStrategy>(), false))),
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expLeja()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(true)),
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
       func);
 }
 
@@ -168,12 +165,9 @@ CombigridMultiOperation::createLinearLejaPolynomialInterpolation(size_t numDimen
                                                                  size_t growthFactor) {
   return std::make_shared<CombigridMultiOperation>(
       std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, std::make_shared<NestedPointHierarchy>(
-                             std::make_shared<LejaPointDistribution>(),
-                             std::make_shared<IdentityPointOrdering>(
-                                 std::make_shared<LinearGrowthStrategy>(growthFactor), false))),
+          numDimensions, CombiHierarchies::linearLeja(growthFactor)),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(true)),
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
       func);
 }
 
@@ -181,12 +175,9 @@ std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearLe
     size_t numDimensions, MultiFunction func, size_t growthFactor) {
   return std::make_shared<CombigridMultiOperation>(
       std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, std::make_shared<NestedPointHierarchy>(
-                             std::make_shared<LejaPointDistribution>(),
-                             std::make_shared<IdentityPointOrdering>(
-                                 std::make_shared<LinearGrowthStrategy>(growthFactor), false))),
+          numDimensions, CombiHierarchies::linearLeja(growthFactor)),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(false)),
+          numDimensions, CombiEvaluators::multiQuadrature()),
       func);
 }
 
@@ -194,12 +185,10 @@ std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimensions,
                                                              MultiFunction func) {
   return std::make_shared<CombigridMultiOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, std::make_shared<NestedPointHierarchy>(
-                             std::make_shared<UniformPointDistribution>(),
-                             std::make_shared<ExponentialLevelorderPointOrdering>())),
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniform()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, std::make_shared<ArrayEvaluator<LinearInterpolationEvaluator>>(true)),
+          numDimensions, CombiEvaluators::multiLinearInterpolation()),
       func);
 }
 

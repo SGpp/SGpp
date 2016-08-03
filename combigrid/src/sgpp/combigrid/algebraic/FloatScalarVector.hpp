@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 
 #include <sgpp/globaldef.hpp>
 #include <cmath>
@@ -56,4 +56,4 @@ class FloatScalarVector {
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_SCALARVECTOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_ */
