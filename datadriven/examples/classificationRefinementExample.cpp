@@ -22,6 +22,8 @@
 #include <iomanip>
 
 /**
+ * \page example_classificationRefinementExample_cpp Classification Example
+ * 
  * This example shows how classification specific refinement strategies
  * are used. To do classification, for each class a PDF is approximated with
  * LearnerSGDE and the class with the highest probability gets assigned for
