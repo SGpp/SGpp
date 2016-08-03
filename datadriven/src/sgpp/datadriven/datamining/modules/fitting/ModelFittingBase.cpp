@@ -73,6 +73,8 @@ void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig)
         gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_)));
   } else if (gridConfig.type_ == GridType::LinearBoundary) {
     grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
+  } else if (gridConfig.type_ == GridType::ModLinear) {
+    grid = std::shared_ptr<Grid>(Grid::createModLinearGrid(gridConfig.dim_));
   } else {
     throw application_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
   }
