@@ -92,8 +92,14 @@ class KernelDensityMult {
     devicePoints.intializeTo(points, 1, 0, points.size());
 
     // Check whether to calculate h_n on the host side (true) or in the opencl kernel (false)
-    if (kernelConfiguration.contains("USE_LEVEL_CACHE"))
+    if (kernelConfiguration.contains("USE_LEVEL_CACHE")) {
       use_level_cache = kernelConfiguration["USE_LEVEL_CACHE"].getBool();
+      // Do not use level cache if preprocessed positions are enabled
+      if (kernelConfiguration.contains("PREPROCESS_POSITIONS")) {
+        if (kernelConfiguration["PREPROCESS_POSITIONS"].getBool())
+          use_level_cache = false;
+      }
+    }
     if (use_level_cache) {
       // Find biggest level
       int maxlevel = 1;
