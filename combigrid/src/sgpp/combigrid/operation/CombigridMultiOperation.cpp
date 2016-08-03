@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
@@ -25,6 +26,8 @@
 #include <iostream>
 #include <vector>
 
+typedef sgpp::combigrid::AveragingLevelManager StandardLevelManager;  // TODO(holzmudd)
+
 namespace sgpp {
 namespace combigrid {
 
@@ -33,23 +36,26 @@ class CombigridMultiOperationImpl {
   CombigridMultiOperationImpl(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-      std::shared_ptr<AbstractCombigridStorage> storage)
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
       : storage(storage),
         fullGridEval(new FullGridTensorEvaluator<FloatArrayVector>(storage, evaluatorPrototypes,
                                                                    pointHierarchies)),
-        combiEval(new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), fullGridEval)) {
+        combiEval(new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), fullGridEval)),
+        levelManager(levelManager) {
+    levelManager->setLevelEvaluator(combiEval);
   }
 
   std::shared_ptr<AbstractCombigridStorage> storage;
   std::shared_ptr<FullGridTensorEvaluator<FloatArrayVector>> fullGridEval;
   std::shared_ptr<CombigridEvaluator<FloatArrayVector>> combiEval;
+  std::shared_ptr<LevelManager> levelManager;
 };
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    MultiFunction func)
-    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, MultiFunction func)
+    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
                                            std::shared_ptr<AbstractCombigridStorage>(
                                                new CombigridTreeStorage(pointHierarchies, func)))) {
 }
@@ -57,8 +63,9 @@ CombigridMultiOperation::CombigridMultiOperation(
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<AbstractCombigridStorage> storage)
-    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, storage)) {}
+    std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
+    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
+                                           storage)) {}
 
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
   // TODO(holzmudd): check dimensionalities and sizes...
@@ -131,7 +138,7 @@ CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(size_t n
                                                            CombiHierarchies::expClenshawCurtis()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 std::shared_ptr<CombigridMultiOperation>
@@ -145,7 +152,7 @@ CombigridMultiOperation::createLinearClenshawCurtisPolynomialInterpolation(size_
                                  std::make_shared<LinearGrowthStrategy>(2), true))),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 std::shared_ptr<CombigridMultiOperation>
@@ -156,7 +163,7 @@ CombigridMultiOperation::createExpLejaPolynomialInterpolation(size_t numDimensio
                                                            CombiHierarchies::expLeja()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 std::shared_ptr<CombigridMultiOperation>
@@ -168,7 +175,7 @@ CombigridMultiOperation::createLinearLejaPolynomialInterpolation(size_t numDimen
           numDimensions, CombiHierarchies::linearLeja(growthFactor)),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearLejaQuadrature(
@@ -178,7 +185,7 @@ std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearLe
           numDimensions, CombiHierarchies::linearLeja(growthFactor)),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiQuadrature()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 std::shared_ptr<CombigridMultiOperation>
@@ -189,7 +196,7 @@ CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimension
                                                            CombiHierarchies::expUniform()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiLinearInterpolation()),
-      func);
+      std::make_shared<StandardLevelManager>(), func);
 }
 
 } /* namespace combigrid */

@@ -5,23 +5,23 @@
 
 #pragma once
 
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/MultiFunction.hpp>
-#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
-
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
+#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cstddef>
 #include <memory>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
-#include <sgpp/globaldef.hpp>
 #include <vector>
 
 namespace sgpp {
@@ -39,11 +39,12 @@ class CombigridOperation {
   CombigridOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
-      MultiFunction func);
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func);
 
   CombigridOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractCombigridStorage> storage);
 
   // TODO(holzmudd): add extra functions, for example for configuring the storage
