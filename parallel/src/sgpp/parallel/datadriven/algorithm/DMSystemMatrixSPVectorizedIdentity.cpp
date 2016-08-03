@@ -5,8 +5,8 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/parallel/operation/SPParallelOpFactory.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -23,8 +23,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(
       numPatchedTrainingInstances_(0) {
   // handle unsupported vector extensions
   if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC &&
-      this->vecMode_ != OpenCL &&
-      this->vecMode_ != Hybrid_X86SIMD_OpenCL && this->vecMode_ != CUDA) {
+      this->vecMode_ != OpenCL && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
     throw sgpp::base::operation_exception(
         "DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
   }

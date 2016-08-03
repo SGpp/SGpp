@@ -13,8 +13,8 @@
 // We only need the header for dealing with the grid itself here
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <string>
 #include <iostream>
+#include <string>
 
 using sgpp::base::Grid;
 
