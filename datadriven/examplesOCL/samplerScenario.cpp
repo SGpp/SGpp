@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
   //  std::string scenarioFileName =
   //      baseFolder + "friedman2_4d_300000_StreamingModOCLOpt_float.scenario";
 
-  std::string parameterFile("friedman2_4d_300000_StreamingOCLMultiPlatform_float_tuned.cfg");
+  std::string parameterFile("friedman2_4d_300000_StreamingOCLMultiPlatform_doubleuned.cfg");
 
   sgpp::base::OCLOperationConfiguration parameters(parameterFile);
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
