@@ -21,6 +21,14 @@ LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluato
 
 LevelManager::~LevelManager() {}
 
+LevelManager::LevelManager()
+    : queue(), levelData(), numDimensions(0), combiEval(nullptr), managerMutex(new std::mutex()) {}
+
+void LevelManager::setLevelEvaluator(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator) {
+  combiEval = levelEvaluator;
+  numDimensions = levelEvaluator->dim();
+}
+
 void LevelManager::initAdaption() {
   queue.clear();
   levelData.reset(new TreeStorage<std::shared_ptr<LevelInfo>>(numDimensions));

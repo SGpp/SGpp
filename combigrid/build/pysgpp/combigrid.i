@@ -117,6 +117,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/Configurations.hpp"
 
 // %include "combigrid/src/sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp"
 // %include "combigrid/src/sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp"
