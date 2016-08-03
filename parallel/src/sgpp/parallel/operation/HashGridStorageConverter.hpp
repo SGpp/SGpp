@@ -5,8 +5,8 @@
 
 #pragma once
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -15,18 +15,18 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
-#include <sgpp/parallel/tools/TypesParallel.hpp>
 #include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <stdint.h>
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <sstream>
 #include <exception>
 #include <list>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace sgpp {
 namespace parallel {
@@ -91,7 +91,7 @@ class HashGridStorageConverter {
   /**
    * Converts the storage from AOS (array of structures) to SOA (structure of array)
    * with modification to speed up iterative Laplace Calculations: the level
-   * won't contain the levels, it contains 2 to the neagative power of the level.
+   * won't contain the levels, it contains 2 to the negative power of the level.
    * Additional blocking for better TLB usage is provided.
    *
    * @param storage GridStorage, which should be converted
