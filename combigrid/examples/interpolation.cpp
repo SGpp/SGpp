@@ -32,12 +32,7 @@ using sgpp::combigrid::WeightedRatioLevelManager;
 /**
  * The function we want to interpolate
  */
-double f_2D(DataVector v) { 
-  return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); 
-}
-
-void interpolation() {
-  // dimension of the interpolation problem
+double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
 void adaptiveInterpolation() {
   size_t numDimensions = 2;
@@ -46,7 +41,6 @@ void adaptiveInterpolation() {
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
-  size_t maxLevelSum = 2;
   DataVector param(std::vector<double>{0.5, 0.7});
   auto levelManager = std::make_shared<WeightedRatioLevelManager>();
 
@@ -64,7 +58,7 @@ void multistageInterpolation() {
 
   std::vector<DataVector> gridPoints;
 
-  auto dummyFunc = [&](DataVector const &param) -> double {
+  auto dummyFunc = [&gridPoints](DataVector const &param) -> double {
     gridPoints.push_back(param);
     return 0.0;
   };
@@ -73,7 +67,7 @@ void multistageInterpolation() {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(numDimensions);
 
   // in this case, the grid points grow linearly with the level
-  size_t growthFactor = 2; 
+  size_t growthFactor = 2;
 
   // create a point hierarchy of nested points (Leja points), which are already ordered in the
   // nesting order
@@ -108,7 +102,7 @@ void multistageInterpolation() {
   fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
-  combiGridEval->addRegularLevels(maxLevelSum);  
+  combiGridEval->addRegularLevels(maxLevelSum);
 
   // ----- EVAL FUNCTION
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
@@ -121,7 +115,8 @@ void multistageInterpolation() {
   }
 
   auto realStorage = std::make_shared<CombigridTreeStorage>(
-      pointHierarchies, MultiFunction([&](DataVector const &param) { return funcLookup(param); }));
+      pointHierarchies,
+      MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
   auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);
@@ -142,7 +137,7 @@ void multistageInterpolation() {
 }
 
 int main() {
-  interpolation();
+  adaptiveInterpolation();
 
   return 0;
 }
