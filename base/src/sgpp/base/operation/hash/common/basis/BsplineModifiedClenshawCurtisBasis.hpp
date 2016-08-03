@@ -382,7 +382,12 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   inline size_t getDegree() const {
     return degree;
   }
-
+  
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      integreal of the basis function
+   */
   double getIntegral(LT l, IT i){
     if(l == 1){
       return 1.0;
