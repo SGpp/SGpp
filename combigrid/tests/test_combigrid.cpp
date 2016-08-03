@@ -147,14 +147,14 @@ void printDifferences(size_t d, std::shared_ptr<AbstractMultiStorage<FloatArrayV
 }
 
 void printCTResults(size_t d, size_t q) {
-  auto func = testFunctionAtan;
+  auto func = testFunction3;
   const size_t samples = 100;
   auto ctInterpolator = CombigridMultiOperation::createLinearLejaPolynomialInterpolation(d, func);
   auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
 
   MCIntegrator integrator([&](std::vector<DataVector> const &params) -> DataVector {
-    // auto result = ctInterpolator->evaluate(q, params);
-    auto result = ctInterpolator->evaluateAdaptive(q * 5, params);
+    auto result = ctInterpolator->evaluate(q, params);
+    //auto result = ctInterpolator->evaluateAdaptive(q * number, params);
 
     // printDifferences(d, ctInterpolator->getDifferences());
 
@@ -171,7 +171,7 @@ void printCTResults(size_t d, size_t q) {
 }
 
 BOOST_AUTO_TEST_CASE(testInterpolation) {
-  for (size_t d = 2; d <= 2; ++d) {
+  for (size_t d = 2; d <= 5; ++d) {
     for (size_t w = 2; w <= 8; ++w) {
       Stopwatch stopwatch;
       printCTResults(d, w);
