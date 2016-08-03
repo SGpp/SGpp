@@ -90,14 +90,14 @@ int main() {
   std::vector<int> graph(dataset.getNrows()*k);
   operation_graph->create_graph(graph);
 
-  std::ofstream out1("graph_erg_dim2_depth11.txt");
+  std::ofstream out("graph_erg_dim2_depth11.txt");
   for (size_t i = 0; i < dataset.getNrows(); ++i) {
     for (size_t j = 0; j < k; ++j) {
-      out1 << graph[i * k + j] << " ";
+      out << graph[i * k + j] << " ";
     }
-    out1 << std::endl;
+    out << std::endl;
   }
-  out1.close();
+  out.close();
 
   std::cout << "Starting graph pruning" << std::endl;
   sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
@@ -105,13 +105,19 @@ int main() {
                                                             treshold, k, "MyOCLConf.cfg");
   operation_prune->prune_graph(graph);
 
-  sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
-  std::ofstream out("graph_pruned_erg_dim2_depth11.txt");
+  out.open("graph_pruned_erg_dim2_depth11.txt");
   for (size_t i = 0; i < dataset.getNrows(); ++i) {
     for (size_t j = 0; j < k; ++j) {
       out << graph[i * k + j] << " ";
     }
     out << std::endl;
+  }
+  out.close();
+  std::vector<size_t> cluster_assignments =
+      sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
+  out.open("cluster_erg.txt");
+  for (size_t datapoint : cluster_assignments) {
+    out << datapoint << " ";
   }
   // cleanup
   delete operation_mult;
