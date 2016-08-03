@@ -69,7 +69,9 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   }
 
   // hierarchize
-  sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
+  std::unique_ptr<sgpp::base::OperationHierarchisation> opHier(
+      sgpp::op_factory::createOperationHierarchisation(grid));
+  opHier->doHierarchisation(alpha);
 
   // refine adaptively
   for (size_t step = 0; step < refnums; step++) {
@@ -86,7 +88,9 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
     }
 
     // hierarchize
-    sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> opHier(
+        sgpp::op_factory::createOperationHierarchisation(grid));
+    opHier->doHierarchisation(alpha);
     if (verbose) {
       std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
                 << std::endl;
@@ -112,8 +116,9 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   // force the function to be positive
   Grid* limitedGrid = nullptr;
   DataVector limitedAlpha(alpha);
-  auto opLimit = sgpp::op_factory::createOperationLimitFunctionValueRange(
-      grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose);
+  std::unique_ptr<sgpp::base::OperationLimitFunctionValueRange> opLimit(
+      sgpp::op_factory::createOperationLimitFunctionValueRange(
+          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
 
   if (side == 0) {
     if (verbose) {
