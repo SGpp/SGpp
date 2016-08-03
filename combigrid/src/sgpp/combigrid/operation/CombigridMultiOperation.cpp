@@ -125,16 +125,6 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
   return getResult();
 }
 
-base::DataVector CombigridMultiOperation::evaluateAdaptive(
-    size_t maxNumPoints, std::vector<base::DataVector> const &params) {
-  // TODO(holzmudd): check dimensionalities and sizes...
-  setParameters(params);
-
-  impl->combiEval->addLevelsAdaptive(maxNumPoints);
-
-  return getResult();
-}
-
 std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> CombigridMultiOperation::getDifferences() {
   return impl->combiEval->differences();
 }

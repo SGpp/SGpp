@@ -28,6 +28,23 @@ class CombigridMultiOperationImpl;
 // we use pimpl for not having to include all the template stuff
 // in the header
 
+/**
+ * Interface class for simple usage of the combigrid module. Via a CombigridMultiOperation, the
+ * evaluation (at multiple interpolation points at once) of the computation pipeline can be easily
+ * managed.
+ * There are two main ways to create this class:
+ * - The point hierarchies and evaluators etc. are created by the user and passed to the
+ * constructor
+ * - One of the static methods is used. They provide some sensible isotropic configurations.
+ *
+ * Via the LevelManager, which can be get and set, one can control which adaptivity criterion might
+ * be used. For easy evaluation, there is an evaluate()-method, which does all the work at once and
+ * generates a regular level structure. To get more control over the level structure, one may
+ * proceed as follows:
+ * - Set the parameters for interpolation via setParameters()
+ * - add combigrid levels via getLevelManager()->some_add_levels_function()
+ * - fetch the result via getResult().
+ */
 class CombigridMultiOperation {
   std::shared_ptr<CombigridMultiOperationImpl> impl;  // unique_ptr causes SWIG errors
 
@@ -53,18 +70,13 @@ class CombigridMultiOperation {
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
-   * computed data)
+   * computed data). The evaluation points are assumed to be the columns of the matrix.
    */
   void setParameters(base::DataMatrix const &params);
 
   base::DataVector getResult();
 
-  base::DataVector evaluate(
-      size_t q,
-      std::vector<base::DataVector> const &params);  // TODO(holzmudd): maybe change to DataMatrix?
-  base::DataVector evaluateAdaptive(
-      size_t maxNumPoints,
-      std::vector<base::DataVector> const &params);  // TODO(holzmudd): maybe change to DataMatrix?
+  base::DataVector evaluate(size_t q, std::vector<base::DataVector> const &params);
 
   std::shared_ptr<LevelManager> getLevelManager();
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
@@ -84,8 +96,6 @@ class CombigridMultiOperation {
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
   static std::shared_ptr<CombigridMultiOperation> createExpUniformLinearInterpolation(
       size_t numDimensions, MultiFunction func);
-  // static std::shared_ptr<CombigridOperation> createLejaLinearPolynomialInterpolation(size_t
-  // numDimensions); // TODO(holzmudd)
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/
