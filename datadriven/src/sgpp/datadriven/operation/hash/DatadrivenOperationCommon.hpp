@@ -14,7 +14,7 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class OperationMultipleEvalType { DEFAULT, STREAMING, SUBSPACELINEAR, ADAPTIVE };
+enum class OperationMultipleEvalType { DEFAULT, STREAMING, SUBSPACELINEAR, ADAPTIVE, MORTONORDER };
 
 enum class OperationMultipleEvalSubType {
   DEFAULT,
@@ -25,7 +25,8 @@ enum class OperationMultipleEvalSubType {
   OCLMP,
   OCLMASKMP,
   OCLOPT,
-  OCLUNIFIED
+  OCLUNIFIED,
+  CUDA
 };
 
 enum class OperationMultipleEvalMPIType { NONE, MASTERSLAVE };
