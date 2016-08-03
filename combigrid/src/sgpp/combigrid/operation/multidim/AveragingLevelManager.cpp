@@ -12,7 +12,7 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
   auto predecessors = getPredecessors(level);
 
   if (predecessors.empty()) {
-    return 1.0;
+    return 0.0;
   }
 
   double sum = 0.0;

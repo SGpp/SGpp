@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATARRAYVECTOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATARRAYVECTOR_HPP_
 
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>
-
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -127,4 +126,4 @@ class FloatArrayVector {
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_ARRAYVECTOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATARRAYVECTOR_HPP_ */
