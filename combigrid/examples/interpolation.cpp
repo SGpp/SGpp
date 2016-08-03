@@ -62,7 +62,7 @@ using sgpp::combigrid::WeightedRatioLevelManager;
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
 /**
-* Compact version of non-adaptive interpolation
+* Compact version of non-adaptive interpolation using Leja points and Lagrange polynomials
 */
 void simpleInterpolation() {
   size_t numDimensions = 2;
