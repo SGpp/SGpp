@@ -75,7 +75,7 @@ void multistageInterpolation() {
 
   std::vector<DataVector> gridPoints;
 
-  auto dummyFunc = [&](DataVector const &param) -> double {
+  auto dummyFunc = [&gridPoints](DataVector const &param) -> double {
     gridPoints.push_back(param);
     return 0.0;
   };
@@ -128,7 +128,8 @@ void multistageInterpolation() {
   }
 
   auto realStorage = std::make_shared<CombigridTreeStorage>(
-      pointHierarchies, MultiFunction([&](DataVector const &param) { return funcLookup(param); }));
+      pointHierarchies,
+      MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
   auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);
