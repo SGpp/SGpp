@@ -15,17 +15,17 @@
 namespace sgpp {
 namespace base {
 
-class OperationMultipleEvalModBsplineNaive: public OperationMultipleEval {
+class OperationMultipleEvalModBsplineNaive : public OperationMultipleEval {
  public:
-  OperationMultipleEvalModBsplineNaive(Grid& grid, size_t degree, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
-  }
+  OperationMultipleEvalModBsplineNaive(Grid& grid, size_t degree, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {}
 
-  ~OperationMultipleEvalModBsplineNaive() override {
-  }
+  ~OperationMultipleEvalModBsplineNaive() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// storage of the sparse grid

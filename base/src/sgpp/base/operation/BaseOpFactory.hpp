@@ -102,6 +102,19 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  */
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
                                                          base::DataMatrix& dataset);
+
+/**
+ * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
+ * the sparse grid function
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
+                                                              base::DataMatrix& dataset);
+
 /**
  * Factory method, returning an OperationEval for the grid at hand.
  * In contrast to OperationEval, implementations of OperationEval
@@ -155,7 +168,7 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMakePositive object for the Grid grid
  */
-std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
+base::OperationMakePositive* createOperationMakePositive(
     base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                           base::MakePositiveCandidateSearchAlgorithm::Intersections,
     base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
@@ -169,7 +182,7 @@ std::unique_ptr<base::OperationMakePositive> createOperationMakePositive(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
  */
-std::unique_ptr<base::OperationLimitFunctionValueRange> createOperationLimitFunctionValueRange(
+base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                           base::MakePositiveCandidateSearchAlgorithm::Intersections,
     base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =

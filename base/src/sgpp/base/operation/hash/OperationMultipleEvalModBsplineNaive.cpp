@@ -73,5 +73,7 @@ void OperationMultipleEvalModBsplineNaive::multTranspose(DataVector& alpha, Data
   }
 }
 
+double OperationMultipleEvalModBsplineNaive::getDuration() { return 0.0; }
+
 }  // namespace base
 }  // namespace sgpp
