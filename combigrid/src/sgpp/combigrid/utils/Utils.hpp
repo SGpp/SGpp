@@ -15,6 +15,9 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Exponentiation function for inter types with exact precision. Uses square-and-multiply.
+ */
 template <typename T>
 T pow(T base, size_t exponent) {
   T result = 1;
@@ -34,12 +37,39 @@ T pow(T base, size_t exponent) {
   return result;
 }
 
+/**
+ * Returns the binomial coefficient n over k.
+ */
 std::int64_t binom(std::int64_t n, std::int64_t k);
 
+/**
+ * Splits the string str at every occurrence of separator and returns the parts (without the
+ * separator) in a vector.
+ */
 std::vector<std::string> split(std::string str, std::string separator);
+
+/**
+ * Concatenates the strings in elements and inserts the separator at the concatenation points. This
+ * operation is inverse to split when the same separator is used.
+ */
 std::string join(std::vector<std::string> const &elements, std::string const &separator);
+
+/**
+ * Escapes in str each occurrence of a character in avoidCharacters with the escape character and
+ * the corresponding character in replaceCharacters.
+ * avoidCharacters and replaceCharacters must have the same length and use disjoint sets of
+ * characters. The escapeCharacter is replaced with twice itself.
+ * The escape character must differ from all characters in avoidCharacters and in replaceCharacters.
+ * The resulting string will not contain any of the characters in avoidCharacters, which can be
+ * useful for serialization.
+ */
 std::string escape(std::string str, char escapeCharacter, std::string avoidCharacters,
                    std::string replaceCharacters);
+
+/**
+ * Reverses the effect of the function escape(). The parameters have to fulfill the same
+ * requirements as in escape() and the string str should have been generated with escape().
+ */
 std::string unescape(std::string str, char escapeCharacter, std::string avoidCharacters,
                      std::string replaceCharacters);
 }  // namespace combigrid

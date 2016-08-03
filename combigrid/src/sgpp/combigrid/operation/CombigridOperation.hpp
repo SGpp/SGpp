@@ -31,6 +31,23 @@ class CombigridOperationImpl;
 // we use pimpl for not having to include all the template stuff in
 // the header
 
+/**
+ * Interface class for simple usage of the combigrid module. Via a CombigridOperation, the
+ * evaluation (interpolation at a single point or quadrature) of the computation pipeline can be
+ * easily managed.
+ * There are two main ways to create this class:
+ * - The point hierarchies and evaluators etc. are created by the user and passed to the
+ * constructor
+ * - One of the static methods is used. They provide some sensible isotropic configurations.
+ *
+ * Via the LevelManager, which can be get and set, one can control which adaptivity criterion might
+ * be used. For easy evaluation, there is an evaluate()-method, which does all the work at once and
+ * generates a regular level structure. To get more control over the level structure, one may
+ * proceed as follows:
+ * - Set the parameters for interpolation via setParameters()
+ * - add combigrid levels via getLevelManager()->some_add_levels_function()
+ * - fetch the result via getResult().
+ */
 class CombigridOperation {
   std::shared_ptr<CombigridOperationImpl>
       impl;  // unique_ptr would be possible, but gives SWIG errors

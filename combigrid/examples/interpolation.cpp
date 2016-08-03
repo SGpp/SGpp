@@ -57,7 +57,6 @@ void adaptiveInterpolation() {
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
-  size_t maxLevelSum = 2;
   DataVector param(std::vector<double>{0.5, 0.7});
   auto levelManager = std::make_shared<WeightedRatioLevelManager>();
 
