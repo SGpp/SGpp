@@ -4,10 +4,10 @@
 // sgpp.sparsegrids.org
 
 /**
-   * \page example_dataVectorSerializeDemo_cpp dataVectorSerializeDemo.cpp
-   *
-   * This example shows how to initialize, serialize, and deserialize a DataVector object.
-   */
+* \page example_dataVectorSerializeDemo_cpp dataVectorSerializeDemo.cpp
+*
+* This example shows how to initialize, serialize, and deserialize a DataVector object.
+*/
 
 #include <iostream>
 
@@ -16,28 +16,26 @@
 using sgpp::base::DataVector;
 
 int main() {
-
   /**
-     * We create a DataVector with 3 elements and initialize the values.
-     */
+   * We create a DataVector with 3 elements and initialize the values.
+   */
   DataVector v;
   v.append(1.0);
   v.append(2.0);
   v.append(3.0);
 
   /**
-     * Store it to a file using the toFile() method
-     */
+   * Store it to a file using the toFile() method
+   */
   v.toFile("dataVectorTest.vec");
 
   /**
-     * Restore it from a file using the fromFile() class method.
-     */
+   * Restore it from a file using the fromFile() class method.
+   */
   DataVector w = DataVector::fromFile("dataVectorTest.vec");
 
-
   /**
-     * Store again (for no reason).
-     */
+   * Store again (for no reason).
+   */
   w.toFile("dataVectorTest2.vec");
 }
