@@ -34,6 +34,22 @@ using sgpp::combigrid::WeightedRatioLevelManager;
  */
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
+void simpleInterpolation() {
+  size_t numDimensions = 2;
+  MultiFunction wrapper(
+      f_2D);  // create a function object taking a data vector and returning a double
+  auto operation =
+      CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
+
+  size_t maxLevelSum = 2;
+  double result = operation->evaluate(
+      maxLevelSum,
+      DataVector(std::vector<double>{
+          0.5, 0.7}));  // creates levels (0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2)
+
+  std::cout << result << "\n";
+}
+
 void adaptiveInterpolation() {
   size_t numDimensions = 2;
   MultiFunction wrapper(
@@ -41,6 +57,7 @@ void adaptiveInterpolation() {
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
+  size_t maxLevelSum = 2;
   DataVector param(std::vector<double>{0.5, 0.7});
   auto levelManager = std::make_shared<WeightedRatioLevelManager>();
 
@@ -137,7 +154,8 @@ void multistageInterpolation() {
 }
 
 int main() {
+  simpleInterpolation();
   adaptiveInterpolation();
-
+  multistageInterpolation();
   return 0;
 }
