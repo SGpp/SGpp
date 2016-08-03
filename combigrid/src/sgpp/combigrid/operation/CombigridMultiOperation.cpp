@@ -111,6 +111,11 @@ std::shared_ptr<LevelManager> CombigridMultiOperation::getLevelManager() {
   return impl->levelManager;
 }
 
+void CombigridMultiOperation::setLevelManager(std::shared_ptr<LevelManager> levelManager) {
+  levelManager->setLevelEvaluator(impl->combiEval);
+  impl->levelManager = levelManager;
+}
+
 base::DataVector CombigridMultiOperation::evaluate(size_t q,
                                                    std::vector<base::DataVector> const &params) {
   setParameters(params);

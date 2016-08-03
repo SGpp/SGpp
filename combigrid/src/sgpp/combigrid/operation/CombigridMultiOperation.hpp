@@ -67,6 +67,7 @@ class CombigridMultiOperation {
       std::vector<base::DataVector> const &params);  // TODO(holzmudd): maybe change to DataMatrix?
 
   std::shared_ptr<LevelManager> getLevelManager();
+  void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
   std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> getDifferences();
 
