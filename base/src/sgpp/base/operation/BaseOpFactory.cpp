@@ -67,6 +67,9 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
+
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>
@@ -245,8 +248,9 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::Periodic) {
     return new base::OperationEvalPeriodic(grid.getStorage());
   } else {
-    throw base::factory_exception("createOperationEval is not implemented for this grid type. "
-                                  "Try createOperationEvalNaive instead.");
+    throw base::factory_exception(
+        "createOperationEval is not implemented for this grid type. "
+        "Try createOperationEvalNaive instead.");
   }
 }
 
@@ -279,6 +283,20 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else {
     throw base::factory_exception(
         "createOperationMultipleEval is not implemented for this grid type.");
+  }
+}
+
+base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
+                                                              base::DataMatrix& dataset) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationMultipleEvalBsplineNaive(
+        grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationMultipleEvalModBsplineNaive(
+        grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalNaive is not implemented for this grid type.");
   }
 }
 
@@ -328,8 +346,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalModPolyNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else {
-    throw base::factory_exception("createOperationEval is not implemented for this grid type."
-                                  "Try createOperationEvalNaive instead.");
+    throw base::factory_exception(
+        "createOperationEval is not implemented for this grid type."
+        "Try createOperationEvalNaive instead.");
   }
 }
 
@@ -401,8 +420,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
   }
 }
 
-base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
-    base::Grid& grid) {
+base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationEvalPartialDerivativeBsplineNaive(
         grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
@@ -433,6 +451,32 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
   } else {
     throw base::factory_exception(
         "createOperationEvalPartialDerivative is not implemented for "
+        "this grid type.");
+  }
+}
+
+base::OperationMakePositive* createOperationMakePositive(
+    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new base::OperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm,
+                                           verbose);
+  } else {
+    throw base::factory_exception(
+        "OperationMakePositive is not implemented for "
+        "this grid type.");
+  }
+}
+
+base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
+    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new base::OperationLimitFunctionValueRange(grid, candidateSearchAlgorithm,
+                                                      interpolationAlgorithm, verbose);
+  } else {
+    throw base::factory_exception(
+        "OperationLimitFunctionValueRange is not implemented for "
         "this grid type.");
   }
 }
