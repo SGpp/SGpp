@@ -83,8 +83,11 @@ class LevelManager {
 
  public:
   explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  LevelManager();
 
   virtual ~LevelManager();
+
+  void setLevelEvaluator(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
 
   /**
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
