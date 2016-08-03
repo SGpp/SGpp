@@ -34,6 +34,7 @@ EnsureSConsVersion(2, 1)
 Helper.printInfo("Platform: {}".format(", ".join(platform.uname())))
 Helper.printInfo("Using SCons {} on Python {}".format(SCons.__version__, platform.python_version()))
 Helper.printInfo("SCons command line: {}".format(" ".join([pipes.quote(arg) for arg in sys.argv])))
+Helper.printInfo("LD_LIBRARY_PATH: " + os.environ.get("LD_LIBRARY_PATH"));
 
 sconsVersion = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
 if sconsVersion < (2, 3, 0):
