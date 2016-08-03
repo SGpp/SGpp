@@ -28,6 +28,8 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
     : LevelManager(levelEvaluator) {}
 
+AveragingLevelManager::AveragingLevelManager() : LevelManager() {}
+
 AveragingLevelManager::~AveragingLevelManager() {}
 
 } /* namespace combigrid */

@@ -8,20 +8,20 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <memory>
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::AbstractMultiStorage;
@@ -149,12 +149,13 @@ void printDifferences(size_t d, std::shared_ptr<AbstractMultiStorage<FloatArrayV
 void printCTResults(size_t d, size_t q) {
   auto func = testFunction3;
   const size_t samples = 100;
-  auto ctInterpolator = CombigridMultiOperation::createLinearLejaPolynomialInterpolation(d, func);
+  auto ctInterpolator =
+      CombigridMultiOperation::createLinearLejaPolynomialInterpolation(d, MultiFunction(func));
   auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
 
   MCIntegrator integrator([&](std::vector<DataVector> const &params) -> DataVector {
     auto result = ctInterpolator->evaluate(q, params);
-    //auto result = ctInterpolator->evaluateAdaptive(q * number, params);
+    // auto result = ctInterpolator->evaluateAdaptive(q * number, params);
 
     // printDifferences(d, ctInterpolator->getDifferences());
 
