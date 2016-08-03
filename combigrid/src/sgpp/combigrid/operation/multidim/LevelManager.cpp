@@ -329,7 +329,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
       return;
     }
 
-    auto entry = queue.top();
+    QueueEntry entry = queue.top();
     queue.pop();
 
     currentPointBound += entry.maxNewPoints;

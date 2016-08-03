@@ -5,19 +5,20 @@
 
 #pragma once
 
-#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>
-#include <sgpp/combigrid/algebraic/ArrayVector.hpp>
-#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
-#include <sgpp/combigrid/MultiFunction.hpp>
-#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/combigrid/MultiFunction.hpp>
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cstddef>
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -41,6 +42,20 @@ class CombigridMultiOperation {
       std::shared_ptr<AbstractCombigridStorage> storage);
 
   // TODO(holzmudd): add extra functions, for example for configuring the storage
+
+  /**
+   * Sets the parameters for upcoming computations and clears the data structures (removes old
+   * computed data)
+   */
+  void setParameters(std::vector<base::DataVector> const &params);
+
+  /**
+   * Sets the parameters for upcoming computations and clears the data structures (removes old
+   * computed data)
+   */
+  void setParameters(base::DataMatrix const &params);
+
+  base::DataVector getResult();
 
   base::DataVector evaluate(
       size_t q,
