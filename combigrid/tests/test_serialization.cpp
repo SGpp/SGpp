@@ -5,19 +5,19 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
+#include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
-#include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
-#include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cmath>
-#include <limits>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -98,10 +98,11 @@ BOOST_AUTO_TEST_CASE(testCombigridTreeStorageSerialization) {
              std::make_shared<ClenshawCurtisDistribution>(),
              std::make_shared<ExponentialLevelorderPointOrdering>()));
 
-  CombigridTreeStorage storage(hierarchies, testFunc1);
+  MultiFunction testFunc1Multi(testFunc1);
+  CombigridTreeStorage storage(hierarchies, testFunc1Multi);
 
   MultiIndex level(2, 2);
-  MultiIndex bounds(2, 5);
+  MultiIndex bounds(2, 3);
   MultiIndexIterator mIt(bounds);
   std::vector<bool> orderingConfiguration(2, false);
 
@@ -114,7 +115,8 @@ BOOST_AUTO_TEST_CASE(testCombigridTreeStorageSerialization) {
 
   std::string str = storage.serialize();
 
-  CombigridTreeStorage otherStorage(hierarchies, testFunc2);
+  MultiFunction testFunc2Multi(testFunc2);
+  CombigridTreeStorage otherStorage(hierarchies, testFunc2Multi);
 
   otherStorage.deserialize(str);
 

@@ -24,7 +24,7 @@ class func_base {
 
 class monicPoly : public func_base {
  public:
-  virtual ~monicPoly(){};
+  virtual ~monicPoly() {}
   std::vector<double> coeff;
   virtual double operator()(double x);
   // constructors:

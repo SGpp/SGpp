@@ -7,7 +7,10 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_SERIALIZATION_DEFAULTSERIALIZATIONSTRATEGY_HPP_
 
 #include <sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp>
+
 #include <sstream>
+#include <vector>
+#include <string>
 
 namespace sgpp {
 namespace combigrid {

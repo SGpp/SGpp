@@ -12,6 +12,7 @@
 #include <cmath>
 #include <sstream>
 #include <limits>
+#include <string>
 
 namespace sgpp {
 namespace combigrid {
@@ -28,7 +29,7 @@ class FloatSerializationStrategy : public AbstractSerializationStrategy<T> {
  public:
   virtual ~FloatSerializationStrategy() {}
 
-  // TODO: handle nan and inf
+  // TODO(holzmudd): handle nan and inf
   virtual std::string serialize(T const &value) {
     if (std::isnan(value)) {
       return std::string(1, nanPrefix);

@@ -7,13 +7,19 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_
 
 #include <sgpp/globaldef.hpp>
-#include <vector>
+
 #include <cstddef>
 #include <functional>
+#include <vector>
 
 #define CGLOG(str)
-// #include <iostream>
-// #define CGLOG(str) std::cout << str << "\n"
+#define CGLOG_SURROUND(cmd) cmd
+/*#include <iostream>
+#define CGLOG(str) std::cout << str << "\n"
+#define CGLOG_SURROUND(cmd)                                                 \
+  std::cout << #cmd << " before: " << __FILE__ << ", " << __LINE__ << "\n"; \
+  cmd;                                                                      \
+  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"*/
 
 namespace sgpp {
 namespace combigrid {
@@ -29,6 +35,6 @@ template <typename Out>
 std::function<Out(MultiIndex const &)> multiIndexToDefaultValue(Out fixedValue = Out()) {
   return constantFunction<MultiIndex const &, Out>(fixedValue);
 }
-}
-}
+}  // namespace combigrid
+}  // namespace sgpp
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_ */

@@ -1,9 +1,7 @@
-/*
- * test_threading.cpp
- *
- *  Created on: 18.07.2016
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <boost/test/unit_test.hpp>
 #include <sgpp/globaldef.hpp>
@@ -21,62 +19,67 @@
 #include <vector>
 #include <algorithm>
 
-using namespace sgpp::combigrid;
-using namespace sgpp::base;
+using sgpp::base::DataVector;
+using sgpp::combigrid::ThreadPool;
 
 int counter = 0;
 std::vector<int> data;
 std::mutex dataMutex;
 
 void idleCallback(ThreadPool &tp) {
-	if (counter < 100) {
-		int local_counter = counter;
-		tp.addTask([=]() {std::lock_guard<std::mutex> guard(dataMutex); data.push_back(local_counter);});
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		++counter;
-	} else {
-		tp.triggerTermination();
-	}
+  if (counter < 100) {
+    int local_counter = counter;
+    tp.addTask([=]() {
+      std::lock_guard<std::mutex> guard(dataMutex);
+      data.push_back(local_counter);
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    ++counter;
+  } else {
+    tp.triggerTermination();
+  }
 }
 
 void checkCorrectness() {
-	std::sort(data.begin(), data.end());
-	bool correct = true;
+  std::sort(data.begin(), data.end());
+  bool correct = true;
 
-	for (size_t i = 0; i < data.size(); ++i) {
-		if (data[i] != int(i)) {
-			correct = false;
-			std::cout << i << ", " << data[i] << "\n";
-		}
-	}
+  for (size_t i = 0; i < data.size(); ++i) {
+    if (data[i] != static_cast<int>(i)) {
+      correct = false;
+      std::cout << i << ", " << data[i] << "\n";
+    }
+  }
 
-	BOOST_CHECK(correct);
+  BOOST_CHECK(correct);
 }
 
 BOOST_AUTO_TEST_CASE(testThreading) {
-	auto tp = std::make_shared<ThreadPool>(4);
-	data.clear();
+  auto tp = std::make_shared<ThreadPool>(4);
+  data.clear();
 
-	for (int i = 0; i < 100; ++i) {
-		tp->addTask([=]() {std::lock_guard<std::mutex> guard(dataMutex); data.push_back(i);});
-	}
+  for (int i = 0; i < 100; ++i) {
+    tp->addTask([=]() {
+      std::lock_guard<std::mutex> guard(dataMutex);
+      data.push_back(i);
+    });
+  }
 
-	tp->start();
+  tp->start();
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-	tp->triggerTermination();
-	tp->join();
+  tp->triggerTermination();
+  tp->join();
 
-	checkCorrectness();
+  checkCorrectness();
 }
 
 BOOST_AUTO_TEST_CASE(testThreadingWithCallback) {
-	auto tp = std::make_shared<ThreadPool>(4, idleCallback);
-	data.clear();
-	tp->start();
-	tp->join();
+  auto tp = std::make_shared<ThreadPool>(4, idleCallback);
+  data.clear();
+  tp->start();
+  tp->join();
 
-	checkCorrectness();
+  checkCorrectness();
 }
-

@@ -23,7 +23,7 @@ class SingleFunction {
   /**
    * for function pointers
    */
-  SingleFunction(double (*ptr)(double));
+  explicit SingleFunction(double (*ptr)(double));
 
   /**
    * for lambdas or function objects
@@ -34,6 +34,8 @@ class SingleFunction {
 
   double operator()(double param);
   double call(double param);
+
+  function_type getLambdaExpression();
 };
 
 } /* namespace combigrid */

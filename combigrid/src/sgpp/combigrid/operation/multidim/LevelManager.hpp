@@ -38,7 +38,7 @@ class LevelManager {
   std::shared_ptr<TreeStorage<std::shared_ptr<LevelInfo>>> levelData;
   size_t numDimensions;
   std::shared_ptr<AbstractLevelEvaluator> combiEval;
-  std::mutex managerMutex;
+  std::shared_ptr<std::mutex> managerMutex;
 
   /**
    * By implementing this method in a derived class, the adaption can be customized.
@@ -82,7 +82,7 @@ class LevelManager {
   void addLevels(std::vector<MultiIndex> const &levels);
 
  public:
-  LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
 
   virtual ~LevelManager();
 

@@ -6,7 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_CUSTOMGROWTHSTRATEGY_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_CUSTOMGROWTHSTRATEGY_HPP_
 
-#include "AbstractGrowthStrategy.hpp"
+#include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 
 #include <functional>
 
@@ -20,7 +20,7 @@ class CustomGrowthStrategy : public AbstractGrowthStrategy {
   std::function<size_t(size_t)> func;
 
  public:
-  CustomGrowthStrategy(std::function<size_t(size_t)> func);
+  explicit CustomGrowthStrategy(std::function<size_t(size_t)> func);
   virtual ~CustomGrowthStrategy();
 
   virtual size_t numPoints(size_t level);

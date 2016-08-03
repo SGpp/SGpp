@@ -1,33 +1,32 @@
-/*
- * TreeStorageContext.hpp
- *
- *  Created on: 12.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGECONTEXT_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGECONTEXT_HPP_
 
-#include "../../definitions.hpp"
+#include <sgpp/combigrid/definitions.hpp>
 
 #include <mutex>
 
-namespace sgpp{
+namespace sgpp {
 namespace combigrid {
 
 /**
- * Context for the TreeStorage class. Contains context information about the number of dimensions and the function to generate default entries for the storage.
+ * Context for the TreeStorage class. Contains context information about the number of dimensions
+ * and the function to generate default entries for the storage.
  * The context is referenced by all nodes.
  */
-template<typename T> class TreeStorageContext {
-public:
-	typedef std::function<T(MultiIndex const &)> function_type;
-	TreeStorageContext(size_t numDimensions, function_type func) : numDimensions(numDimensions), func(func) {
+template <typename T>
+class TreeStorageContext {
+ public:
+  typedef std::function<T(MultiIndex const &)> function_type;
+  TreeStorageContext(size_t numDimensions, function_type func)
+      : numDimensions(numDimensions), func(func) {}
 
-	}
-
-	size_t numDimensions;
-	function_type func;
+  size_t numDimensions;
+  function_type func;
 };
 
 } /* namespace combigrid */
