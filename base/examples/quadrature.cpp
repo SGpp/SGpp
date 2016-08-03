@@ -78,13 +78,12 @@ int main() {
     alpha[i] = f(2, p, NULL);
   }
 
-  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-    alpha);
+  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
   /**
      * Now we compute and compare the quadrature using four different methods available in SG++.
      */
-  
+
   // direct quadrature
   std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
       sgpp::op_factory::createOperationQuadrature(*grid));
