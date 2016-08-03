@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -46,7 +46,7 @@ class OperationMultipleEval {
   virtual ~OperationMultipleEval() {}
 
   /**
-   * Multiplication of @f$B@f$ with vector @f$\alpha@f$
+   * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
    *
    * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
    * @param result the result vector of the matrix vector multiplication
@@ -54,7 +54,7 @@ class OperationMultipleEval {
   virtual void mult(DataVector& alpha, DataVector& result) = 0;
 
   /**
-   * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
+   * Multiplication of @f$B@f$ with vector @f$\alpha@f$
    *
    * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
    * @param result the result vector of the matrix vector multiplication
@@ -79,11 +79,7 @@ class OperationMultipleEval {
    */
   virtual void prepare() {}
 
-  virtual double getDuration() {
-    throw sgpp::base::operation_exception(
-        "error: OperationMultipleEval::getDuration(): "
-        "not implemented for this kernel");
-  }
+  virtual double getDuration() = 0;
 
   /**
    * Name of this implementation of the operation.

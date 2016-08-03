@@ -859,8 +859,8 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(sgpp::base::DataVector& 
       delete[] dblFuncValues;
     }
 
-    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
@@ -910,8 +910,8 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(base::DataVector& a
       delete[] dblFuncValues;
     }
 
-    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
@@ -973,8 +973,8 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(base::DataVector& a
       delete[] dblFuncValues;
     }
 
-    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
@@ -1008,8 +1008,8 @@ double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point,
     }
   }
 
-  std::unique_ptr<sgpp::base::OperationEval> myEval =
-      sgpp::op_factory::createOperationEval(*this->myGrid);
+  std::unique_ptr<sgpp::base::OperationEval> myEval(
+      sgpp::op_factory::createOperationEval(*this->myGrid));
   double result = myEval->eval(alpha, trans_eval);
 
   // discounting, if PAT is used
@@ -1057,8 +1057,8 @@ void BlackScholesSolverMPI::printSparseGridPAT(sgpp::base::DataVector& alpha, st
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    std::unique_ptr<base::OperationHierarchisation> myHier =
-        sgpp::op_factory::createOperationHierarchisation(*myGrid);
+    std::unique_ptr<base::OperationHierarchisation> myHier(
+        sgpp::op_factory::createOperationHierarchisation(*myGrid));
     myHier->doDehierarchisation(temp);
   }
 

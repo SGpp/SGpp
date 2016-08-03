@@ -45,7 +45,7 @@ class WaveletBoundaryGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
  protected:
   /// grid generator

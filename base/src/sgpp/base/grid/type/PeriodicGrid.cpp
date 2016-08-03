@@ -32,8 +32,8 @@ sgpp::base::GridType PeriodicGrid::getType() {
   return sgpp::base::GridType::Periodic;
 }
 
-std::unique_ptr<Grid> PeriodicGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new PeriodicGrid(istr));
+Grid* PeriodicGrid::unserialize(std::istream& istr) {
+  return new PeriodicGrid(istr);
 }
 
 SBasis& PeriodicGrid::getBasis() {

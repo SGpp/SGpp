@@ -11,11 +11,12 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
@@ -337,21 +338,31 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 double LearnerSGDE::pdf(base::DataVector& x) {
-  return op_factory::createOperationNaiveEval(*grid)->eval(*alpha, x);
+  auto opEval = op_factory::createOperationEval(*grid)
+  double ret = opEval->eval(*alpha, x);
+  delete opEval;
+  return ret;
 }
 
 void LearnerSGDE::pdf(base::DataMatrix& points, base::DataVector& res) {
-  computeMultipleEvalMatrix(*grid, points)->eval(*alpha, res);
+  auto opEval = op_factory::createOperationMultipleEval(*grid, points);
+  opEval->eval(*alpha, res);
+  delete opEval;
 }
 
 double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
-  return op_factory::createOperationFirstMoment(grid)->doQuadrature(alpha);
+  auto opFirstMoment = op_factory::createOperationFirstMoment(grid);
+  double ret = opFirstMoment->doQuadrature(alpha);
+  delete opFirstMoment;
+  return ret;
 }
 
 double LearnerSGDE::mean() { return mean(*grid, *alpha); }
 
 double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
-  double secondMoment = op_factory::createOperationSecondMoment(grid)->doQuadrature(alpha);
+  auto opSecondMoment = op_factory::createOperationSecondMoment(grid);
+  double secondMoment = opSecondMoment->doQuadrature(alpha);
+  delete opSecondMoment;
 
   // use Steiners translation theorem to compute the variance
   double firstMoment = mean();
@@ -376,8 +387,8 @@ void LearnerSGDE::cov(base::DataMatrix& cov) {
   base::DataVector means(ndim);
   base::DataVector variances(ndim);
 
-  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg =
-      op_factory::createOperationDensityMargTo1D(*grid);
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
 
   base::Grid* marginalizedGrid = NULL;
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
@@ -441,18 +452,18 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-    uGrid = base::Grid::unserialize(content);
+    uGrid.reset(base::Grid::unserialize(content));
   } else {
     if (gridConfig.type_ == base::GridType::Linear) {
-      uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
+      uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
     } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0);
+      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0));
     } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-      uGrid = base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1);
+      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1));
     } else if (gridConfig.type_ == base::GridType::Bspline) {
-      uGrid = base::Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      uGrid.reset(base::Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_));
     } else if (gridConfig.type_ == base::GridType::ModBspline) {
-      uGrid = base::Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      uGrid.reset(base::Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_));
     } else {
       throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
     }
@@ -586,7 +597,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       }
 
       // Weight surplus with function evaluation at grid points
-      auto opEval = op_factory::createOperationNaiveEval(grid);
+      std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(grid));
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
@@ -651,12 +662,12 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   std::unique_ptr<base::OperationMatrix> C;
 
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
-    C = op_factory::createOperationIdentity(grid);
+    C.reset(op_factory::createOperationIdentity(grid));
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
     if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
-      C = op_factory::createOperationLaplaceExplicit(grid);
+      C.reset(op_factory::createOperationLaplaceExplicit(grid));
     } else {
-      C = op_factory::createOperationLaplace(grid);
+      C.reset(op_factory::createOperationLaplace(grid));
     }
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");

@@ -56,7 +56,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  std::unique_ptr<Grid> grid = Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createModLinearGrid(dim));
   GridStorage& gridStorage = grid->getStorage();
   std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 

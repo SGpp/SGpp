@@ -1,4 +1,9 @@
 
+The modules correspond to the C++ namespaces. Roughly speaking, all files
+from one namespace belong to the respective module. But a module
+can contain files belonging to some another namespace, i.e.
+static factory methods in the namespace sgpp::op_factory.
+
 @section modules__structure Folder structure
 
 Please note that the modularization results in a somewhat unconventional
@@ -16,7 +21,4 @@ once again:
 
 
 
-@section modules__creatingnew Creating new modules
-
-T.b.d.
 */
