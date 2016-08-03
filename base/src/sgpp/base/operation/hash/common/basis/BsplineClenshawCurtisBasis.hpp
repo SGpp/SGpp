@@ -258,6 +258,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline size_t getDegree() const {
     return bsplineBasis.getDegree();
   }
+  
   /**
    * @param l     level of basis function
    * @param i     index of basis function
