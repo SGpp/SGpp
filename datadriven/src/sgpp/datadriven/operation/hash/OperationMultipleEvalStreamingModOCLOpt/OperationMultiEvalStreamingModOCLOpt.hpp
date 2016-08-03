@@ -107,9 +107,6 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     overallGridBlockingSize = calculateCommonGridPadding();
     overallDataBlockingSize = calculateCommonDatasetPadding();
 
-    std::cout << "overallDataBlockingSize: " << overallDataBlockingSize << std::endl;
-    std::cout << "overallGridBlockingSize: " << overallGridBlockingSize << std::endl;
-
     queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
     queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
 
