@@ -95,7 +95,7 @@ void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& po
  */
 double LejaPointDistribution::calcStartingPoint() {
   // weight the weight function with the normal distribution
-  std::function<double(double)> w = [&](double x) {
+  std::function<double(double)> w = [this](double x) {
     const double factor = 0.2;
     double evalNormal = std::exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
     return -(evalNormal * this->weightFunction(x));

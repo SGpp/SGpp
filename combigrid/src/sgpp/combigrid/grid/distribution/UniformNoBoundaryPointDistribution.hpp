@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMNOBOUNDARYPOINTDISTRIBUTION_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMNOBOUNDARYPOINTDISTRIBUTION_HPP_
+#pragma once
 
 #include "AbstractPointDistribution.hpp"
 
@@ -23,5 +22,3 @@ class UniformNoBoundaryPointDistribution : public AbstractPointDistribution {
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMNOBOUNDARYPOINTDISTRIBUTION_HPP_ */

@@ -29,7 +29,7 @@ std::mutex dataMutex;
 void idleCallback(ThreadPool &tp) {
   if (counter < 100) {
     int local_counter = counter;
-    tp.addTask([=]() {
+    tp.addTask([local_counter]() {
       std::lock_guard<std::mutex> guard(dataMutex);
       data.push_back(local_counter);
     });
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(testThreading) {
   data.clear();
 
   for (int i = 0; i < 100; ++i) {
-    tp->addTask([=]() {
+    tp->addTask([i]() {
       std::lock_guard<std::mutex> guard(dataMutex);
       data.push_back(i);
     });

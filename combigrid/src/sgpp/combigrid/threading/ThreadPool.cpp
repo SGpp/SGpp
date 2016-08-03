@@ -47,7 +47,7 @@ void ThreadPool::addTasks(const std::vector<Task>& newTasks) {
 
 void ThreadPool::start() {
   for (size_t i = 0; i < numThreads; ++i) {
-    threads.push_back(std::make_shared<std::thread>([=]() {
+    threads.push_back(std::make_shared<std::thread>([this]() {
       while (true) {
         Task nextTask;
 
