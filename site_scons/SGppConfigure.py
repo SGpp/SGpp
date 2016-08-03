@@ -99,7 +99,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkJava(config)
 
   if env["USE_CUDA"] == True:
-    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    if 'CUDA_TOOLKIT_PATH' in config.env["ENV"]:
+      config.env['CUDA_TOOLKIT_PATH'] = config.env["ENV"]['CUDA_TOOLKIT_PATH']
+    else:   
+      config.env['CUDA_TOOLKIT_PATH'] = '/usr/local/cuda/cuda-7.5/'
+    config.env.AppendUnique(LIBPATH=[os.path.join(config.env["CUDA_TOOLKIT_PATH"], "lib64")])
+    print "Cuda Toolkit: " + config.env['CUDA_TOOLKIT_PATH']
     config.env['CUDA_SDK_PATH'] = ''
     config.env.Tool('cuda')
     # clean up the flags to forward
