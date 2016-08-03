@@ -24,8 +24,6 @@ namespace datadriven {
  */
 class DensitySystemMatrix : public base::OperationMatrix {
  private:
-  /// the lambda, the regularisation parameter
-  double lambda;
   /// Operation A for calculating the data matrix
   /// (L2 Dot-Product of basis functions)
   std::unique_ptr<base::OperationMatrix> A;
@@ -33,6 +31,8 @@ class DensitySystemMatrix : public base::OperationMatrix {
   std::unique_ptr<base::OperationMultipleEval> B;
   /// OperationMatrix, the regularisation method
   std::unique_ptr<base::OperationMatrix> C;
+  /// the lambda, the regularisation parameter
+  double lambda;
   /// number of training samples
   size_t numSamples;
 
@@ -46,10 +46,8 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param lambda the regression parameter
    * @param numSamples number of data samples
    */
-  DensitySystemMatrix(std::unique_ptr<sgpp::base::OperationMatrix> &A,
-                      std::unique_ptr<sgpp::base::OperationMultipleEval> &B,
-                      std::unique_ptr<sgpp::base::OperationMatrix> &C, double lambda,
-                      size_t numSamples);
+  DensitySystemMatrix(sgpp::base::OperationMatrix* A, sgpp::base::OperationMultipleEval* B,
+                      sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
 
   /**
    * Generates the left hand side of the classification equation

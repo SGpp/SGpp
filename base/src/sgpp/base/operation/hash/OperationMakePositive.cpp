@@ -69,7 +69,7 @@ void OperationMakePositive::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
 
-  newGrid = base::Grid::createLinearGrid(numDims).release();
+  newGrid = base::Grid::createLinearGrid(numDims);
   base::HashGridStorage& newGridStorage = newGrid->getStorage();
 
   // run through grid and add points to newGrid

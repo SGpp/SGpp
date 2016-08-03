@@ -163,8 +163,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual size_t getNsamples();
 
   /**
-         * returns the surpluses
-         */
+   * returns the surpluses
+   */
   virtual std::shared_ptr<base::DataVector> getSurpluses();
 
   virtual std::shared_ptr<base::Grid> getGrid();
@@ -212,21 +212,20 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * generates the L^2 dot product matrix
    * @param grid grid
    */
-  std::unique_ptr<base::OperationMatrix> computeLTwoDotProductMatrix(base::Grid& grid);
+  base::OperationMatrix* computeLTwoDotProductMatrix(base::Grid& grid);
 
   /**
    * generates the MultipleEval matrix
    * @param grid grid
    * @param train training data
    */
-  std::unique_ptr<base::OperationMultipleEval> computeMultipleEvalMatrix(base::Grid& grid,
-                                                                         base::DataMatrix& train);
+  base::OperationMultipleEval* computeMultipleEvalMatrix(base::Grid& grid, base::DataMatrix& train);
 
   /**
    * generates the regularization matrix
    * @param grid grid
    */
-  std::unique_ptr<base::OperationMatrix> computeRegularizationMatrix(base::Grid& grid);
+  base::OperationMatrix* computeRegularizationMatrix(base::Grid& grid);
 
   /**
    * generates the density system matrix
@@ -234,7 +233,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param train train
    * @param lambdaReg regularization parameter
    */
-  std::unique_ptr<datadriven::DensitySystemMatrix> computeDensitySystemMatrix(
+  std::shared_ptr<datadriven::DensitySystemMatrix> computeDensitySystemMatrix(
       base::Grid& grid, base::DataMatrix& train, double lambdaReg);
 
   /**

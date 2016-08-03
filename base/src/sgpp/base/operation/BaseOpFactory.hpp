@@ -18,6 +18,8 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+#include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -27,7 +29,6 @@
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
-
 
 namespace sgpp {
 
@@ -40,8 +41,7 @@ namespace op_factory {
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
-base::OperationHierarchisation* createOperationHierarchisation(
-  base::Grid& grid);
+base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
 /**
  * Factory method, returning an OperationQuadrature for the grid at hand.
  * Note: object has to be freed after use.
@@ -101,7 +101,7 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
-    base::DataMatrix& dataset);
+                                                         base::DataMatrix& dataset);
 /**
  * Factory method, returning an OperationEval for the grid at hand.
  * In contrast to OperationEval, implementations of OperationEval
@@ -124,8 +124,7 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalGradient object for the Grid grid
  */
-base::OperationEvalGradient* createOperationEvalGradientNaive(
-  base::Grid& grid);
+base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalHessian for the grid at hand.
  * Implementations of OperationEvalHessianNaive returned by this function should
@@ -136,8 +135,7 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalHessian object for the Grid grid
  */
-base::OperationEvalHessian* createOperationEvalHessianNaive(
-  base::Grid& grid);
+base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalPartialDerivative for the grid at hand.
  * Implementations of OperationEvalPartialDerivativeNaive returned by this function should
@@ -148,10 +146,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalPartialDerivative object for the Grid grid
  */
-base::OperationEvalPartialDerivative*
-createOperationEvalPartialDerivativeNaive(base::Grid& grid);
-
-
+base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationMakePositive for the grid at hand.

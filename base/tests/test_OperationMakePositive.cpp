@@ -169,11 +169,12 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
   size_t level = 4;
   size_t refIterations = 0;
   size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        grid.reset(Grid::createLinearGrid(idim));
         testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
                          MakePositiveCandidateSearchAlgorithm::FullGrid, &normal);
       }
@@ -187,11 +188,12 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        grid.reset(Grid::createLinearGrid(idim));
         testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
                          MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
       }

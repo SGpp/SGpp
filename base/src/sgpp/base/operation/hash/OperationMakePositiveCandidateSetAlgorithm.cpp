@@ -253,7 +253,7 @@ OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCa
     base::Grid& grid) {
   base::HashGridStorage& gridStorage = grid.getStorage();
 
-  fullGrid = Grid::createLinearGrid(gridStorage.getDimension());
+  fullGrid.reset(Grid::createLinearGrid(gridStorage.getDimension()));
   fullGrid->getGenerator().full(gridStorage.getMaxLevel());
 }
 

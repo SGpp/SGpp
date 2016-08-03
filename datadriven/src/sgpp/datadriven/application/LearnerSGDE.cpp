@@ -338,7 +338,7 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 double LearnerSGDE::pdf(base::DataVector& x) {
-  auto opEval = op_factory::createOperationEval(*grid)
+  auto opEval = op_factory::createOperationEval(*grid);
   double ret = opEval->eval(*alpha, x);
   delete opEval;
   return ret;
@@ -576,8 +576,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   }
 
   for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
-    std::unique_ptr<datadriven::DensitySystemMatrix> sMatrix =
-        computeDensitySystemMatrix(grid, train, lambdaReg);
+    auto sMatrix = computeDensitySystemMatrix(grid, train, lambdaReg);
     sMatrix->generateb(rhs);
 
     if (!crossvalidationConfig.silent_) {
@@ -629,8 +628,7 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
                                     base::DataMatrix& test, double lambdaReg) {
   base::DataVector rhs(grid.getSize());
   base::DataVector res(grid.getSize());
-  std::unique_ptr<datadriven::DensitySystemMatrix> sMatrix =
-      computeDensitySystemMatrix(grid, test, lambdaReg);
+  auto sMatrix = computeDensitySystemMatrix(grid, test, lambdaReg);
   sMatrix->generateb(rhs);
 
   sMatrix->mult(alpha, res);
@@ -641,7 +639,7 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
   return res.l2Norm();
 }
 
-std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
+base::OperationMatrix* LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
     return op_factory::createOperationLTwoDotExplicit(grid);
   } else {
@@ -649,25 +647,26 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeLTwoDotProductMatrix(
   }
 }
 
-std::unique_ptr<base::OperationMultipleEval> LearnerSGDE::computeMultipleEvalMatrix(
-    base::Grid& grid, base::DataMatrix& train) {
-  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
-    return op_factory::createOperationMultipleEvalNaive(grid, train);
-  } else {
-    return op_factory::createOperationMultipleEval(grid, train);
-  }
+base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& grid,
+                                                                    base::DataMatrix& train) {
+  //  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline)
+  //  {
+  //    return op_factory::createOperationMultipleEvalNaive(grid, train);
+  //  } else {
+  return op_factory::createOperationMultipleEval(grid, train);
+  //  }
 }
 
-std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(base::Grid& grid) {
-  std::unique_ptr<base::OperationMatrix> C;
+base::OperationMatrix* LearnerSGDE::computeRegularizationMatrix(base::Grid& grid) {
+  base::OperationMatrix* C;
 
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
-    C.reset(op_factory::createOperationIdentity(grid));
+    C = op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
     if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
-      C.reset(op_factory::createOperationLaplaceExplicit(grid));
+      C = op_factory::createOperationLaplaceExplicit(grid);
     } else {
-      C.reset(op_factory::createOperationLaplace(grid));
+      C = op_factory::createOperationLaplace(grid);
     }
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
@@ -676,13 +675,13 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
   return C;
 }
 
-std::unique_ptr<datadriven::DensitySystemMatrix> LearnerSGDE::computeDensitySystemMatrix(
+std::shared_ptr<datadriven::DensitySystemMatrix> LearnerSGDE::computeDensitySystemMatrix(
     base::Grid& grid, base::DataMatrix& train, double lambdaReg) {
   auto A = computeLTwoDotProductMatrix(grid);
   auto B = computeMultipleEvalMatrix(grid, train);
   auto C = computeRegularizationMatrix(grid);
 
-  return std::make_unique<datadriven::DensitySystemMatrix>(A, B, C, lambdaReg, train.getNrows());
+  return std::make_shared<datadriven::DensitySystemMatrix>(A, B, C, lambdaReg, train.getNrows());
 }
 
 void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,

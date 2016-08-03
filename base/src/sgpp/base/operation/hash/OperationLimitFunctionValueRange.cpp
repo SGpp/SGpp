@@ -94,7 +94,7 @@ void OperationLimitFunctionValueRange::copyGrid(base::Grid& grid, base::Grid*& n
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
 
-  newGrid = base::Grid::createLinearGrid(numDims).release();
+  newGrid = base::Grid::createLinearGrid(numDims);
   base::HashGridStorage& newGridStorage = newGrid->getStorage();
 
   // run through grid g and add points to mg

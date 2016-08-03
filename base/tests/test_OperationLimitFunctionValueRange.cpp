@@ -179,11 +179,12 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        grid.reset(Grid::createLinearGrid(idim));
         testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 0,
                                     MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
                                     0.8);
@@ -198,11 +199,12 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        grid.reset(Grid::createLinearGrid(idim));
         testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 1,
                                     MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
                                     0.8);
@@ -217,11 +219,12 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        std::unique_ptr<Grid> grid = Grid::createLinearGrid(idim);
+        grid.reset(Grid::createLinearGrid(idim));
         testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 2,
                                     MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
                                     0.8);
