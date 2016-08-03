@@ -22,43 +22,24 @@ using sgpp::combigrid::AbstractLinearEvaluator;
 using sgpp::combigrid::FloatArrayVector;
 using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
-using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::QuadratureEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::FullGridTensorEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
-using sgpp::combigrid::WeightedRatioLevelManager;
 
 /**
- * The function we want to interpolate
+ * The function we want to integrate
  */
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
-void adaptiveInterpolation() {
-  size_t numDimensions = 2;
-  MultiFunction wrapper(
-      f_2D);  // create a function object taking a data vector and returning a double
-  auto operation =
-      CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
-
-  DataVector param(std::vector<double>{0.5, 0.7});
-  auto levelManager = std::make_shared<WeightedRatioLevelManager>();
-
-  operation->setParameters(param);
-  operation->setLevelManager(levelManager);
-  operation->getLevelManager()->addLevelsAdaptive(300);
-
-  double result = operation->getResult();
-
-  std::cout << result << "\n";
-}
-
-void multistageInterpolation() {
+void quadrature() {
+  // dimension of the integration problem
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
 
-  auto dummyFunc = [&gridPoints](DataVector const &param) -> double {
+  auto dummyFunc = [&](DataVector const &param) -> double {
     gridPoints.push_back(param);
     return 0.0;
   };
@@ -67,7 +48,7 @@ void multistageInterpolation() {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(numDimensions);
 
   // in this case, the grid points grow linearly with the level
-  size_t growthFactor = 2;
+  size_t growthFactor = 2; 
 
   // create a point hierarchy of nested points (Leja points), which are already ordered in the
   // nesting order
@@ -77,9 +58,9 @@ void multistageInterpolation() {
                                               false));  // not yet sorted
   pointHierarchies[1] = pointHierarchies[0];
 
-  // evaluators, i.e. interpolation operators
+  // evaluators, i.e. quadrature operators
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(numDimensions);
-  evaluators[0] = std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(
+  evaluators[0] = std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
       true);  // true means that the operator needs a parameter
   evaluators[1] = evaluators[0];
 
@@ -102,7 +83,7 @@ void multistageInterpolation() {
   fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
-  combiGridEval->addRegularLevels(maxLevelSum);
+  combiGridEval->addRegularLevels(maxLevelSum);  
 
   // ----- EVAL FUNCTION
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
@@ -115,8 +96,7 @@ void multistageInterpolation() {
   }
 
   auto realStorage = std::make_shared<CombigridTreeStorage>(
-      pointHierarchies,
-      MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
+      pointHierarchies, MultiFunction([&](DataVector const &param) { return funcLookup(param); }));
 
   auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);
@@ -137,7 +117,7 @@ void multistageInterpolation() {
 }
 
 int main() {
-  adaptiveInterpolation();
+  quadrature();
 
   return 0;
 }
