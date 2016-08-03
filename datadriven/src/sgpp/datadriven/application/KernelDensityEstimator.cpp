@@ -298,8 +298,8 @@ void KernelDensityEstimator::cov(base::DataMatrix& cov) {
   std::vector<double> means(ndim);
   std::vector<double> variances(ndim);
 
-  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg =
-      op_factory::createOperationDensityMarginalizeKDE(*this);
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg(
+      op_factory::createOperationDensityMarginalizeKDE(*this));
   KernelDensityEstimator kdeMarginalized;
 
   for (size_t idim = 0; idim < ndim; idim++) {
