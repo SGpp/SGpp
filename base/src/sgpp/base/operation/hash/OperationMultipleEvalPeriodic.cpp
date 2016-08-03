@@ -5,32 +5,29 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
-
-
+#include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalPeriodic::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalPeriodic::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SLinearPeriodicBasis> op;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalPeriodic::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalPeriodic::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SLinearPeriodicBasis> op;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalPeriodic::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

@@ -20,7 +20,6 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
 using sgpp::base::OperationEval;
 using sgpp::base::OperationHierarchisation;
-using sgpp::base::OperationNaiveEval;
 using sgpp::base::Stretching;
 using sgpp::base::Stretching1D;
 
@@ -44,22 +43,18 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
       sgpp::op_factory::createOperationHierarchisation(grid));
   hierarchisation->doHierarchisation(alpha);
 
+  std::unique_ptr<OperationEval> op;
+
   if (naiveOp == true) {
-    std::unique_ptr<OperationNaiveEval> op(sgpp::op_factory::createOperationNaiveEval(grid));
-
-    for (size_t n = 0; n < gridStore.getSize(); n++) {
-      gridStore.getCoordinates(gridStore[n], coords);
-      double eval = op->eval(alpha, coords);
-      BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
-    }
+    op.reset(sgpp::op_factory::createOperationEvalNaive(grid));
   } else {
-    std::unique_ptr<OperationEval> op(sgpp::op_factory::createOperationEval(grid));
+    op.reset(sgpp::op_factory::createOperationEval(grid));
+  }
 
-    for (size_t n = 0; n < gridStore.getSize(); n++) {
-      gridStore.getCoordinates(gridStore[n], coords);
-      double eval = op->eval(alpha, coords);
-      BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
-    }
+  for (size_t n = 0; n < gridStore.getSize(); n++) {
+    gridStore.getCoordinates(gridStore[n], coords);
+    double eval = op->eval(alpha, coords);
+    BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
   }
 
   DataVector node_values_back = DataVector(alpha);

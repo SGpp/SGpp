@@ -5,13 +5,10 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPoly.hpp>
-
-
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -22,12 +19,13 @@ void OperationMultipleEvalPoly::mult(DataVector& alpha, DataVector& result) {
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalPoly::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalPoly::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SPolyBase> op;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalPoly::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp
