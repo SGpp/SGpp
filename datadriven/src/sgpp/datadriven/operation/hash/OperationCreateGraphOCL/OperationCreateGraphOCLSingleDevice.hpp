@@ -40,9 +40,8 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                       sgpp::base::OCLOperationConfiguration *parameters,
                                       size_t k, size_t platform_id, size_t device_id) :
-      OperationCreateGraphOCL(), dims(dimensions),
+      OperationCreateGraphOCL(), dims(dimensions), verbose(false),
       devices(manager->getDevices()), manager(manager), dataVector(data.getSize()) {
-    verbose = true;
     // put data into an vector with chosen precision
     double *data_raw = data.getPointer();
     for (size_t i = 0; i < data.getSize(); i++)
@@ -72,6 +71,8 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
         json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
         graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
                                                 manager, configuration);
+        if (configuration["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }
@@ -91,9 +92,8 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
                                       sgpp::base::OCLOperationConfiguration *parameters,
                                       size_t k, size_t platform_id,
                                        size_t device_id) :
-      OperationCreateGraphOCL(), dims(dimensions),
+      OperationCreateGraphOCL(), dims(dimensions), verbose(false),
       devices(manager->getDevices()), manager(manager), dataVector(datasize) {
-    verbose = true;
     // put data into an vector with chosen precision
     for (size_t i = 0; i < datasize; i++)
       dataVector[i] = static_cast<T>(dataset[i]);
@@ -122,6 +122,8 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
         json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
         graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
                                                 manager, configuration);
+        if (configuration["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }

@@ -150,7 +150,6 @@ class KernelDensityMult {
       devicehInverse.intializeTo(hs_inverse, 1, 0, points.size()/2);
       devicehs.intializeTo(hs, 1, 0, points.size()/2);
       devicePositions.intializeTo(positions, 1, 0, points.size()/2);
-      std::cout << positions.size() << "\n";
     }
 
     // Finish writing all buffers

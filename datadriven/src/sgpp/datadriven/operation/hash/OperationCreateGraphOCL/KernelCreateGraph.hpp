@@ -51,7 +51,7 @@ class KernelCreateGraph {
       device(dev), dims(dims), k(k), err(CL_SUCCESS),
       deviceData(device), deviceResultData(device), kernel(nullptr),
       kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
-      deviceTimingMult(0.0),
+      deviceTimingMult(0.0), verbose(false),
       kernelConfiguration(kernelConfiguration), data(data) {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
