@@ -9,10 +9,10 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -35,7 +35,7 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
   InterpolantScalarFunctionGradient(base::Grid& grid, const base::DataVector& alpha)
       : ScalarFunctionGradient(grid.getDimension()),
         grid(grid),
-        opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
+        opEvalGradient(op_factory::createOperationEvalGradientNaive(grid)),
         alpha(alpha) {}
 
   /**
@@ -83,7 +83,7 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
   /// sparse grid
   base::Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationNaiveEvalGradient> opEvalGradient;
+  std::unique_ptr<base::OperationEvalGradient> opEvalGradient;
   /// coefficient vector
   base::DataVector alpha;
 };
