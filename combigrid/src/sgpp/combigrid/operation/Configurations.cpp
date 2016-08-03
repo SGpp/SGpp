@@ -16,8 +16,8 @@
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 
 namespace sgpp {
@@ -51,7 +51,7 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expClenshawCurtis() {
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CombiEvaluators::polynomialInterpolation() {
-  return std::make_shared<BarycentricInterpolationEvaluator>();
+  return std::make_shared<PolynomialInterpolationEvaluator>();
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::linearInterpolation() {
@@ -64,7 +64,7 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::qua
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::multiPolynomialInterpolation() {
-  return std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(true);
+  return std::make_shared<ArrayEvaluator<PolynomialInterpolationEvaluator>>(true);
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>

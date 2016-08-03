@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <limits>
 #include <cmath>
 #include <vector>
@@ -11,19 +11,19 @@
 namespace sgpp {
 namespace combigrid {
 
-BarycentricInterpolationEvaluator::BarycentricInterpolationEvaluator(
-    BarycentricInterpolationEvaluator const &other)
+PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator(
+    PolynomialInterpolationEvaluator const &other)
     : evaluationPoint(other.evaluationPoint),
       basisCoefficients(other.basisCoefficients),
       wValues(other.wValues),
       xValues(other.xValues) {}
 
-BarycentricInterpolationEvaluator::BarycentricInterpolationEvaluator()
+PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator()
     : evaluationPoint(0.0), basisCoefficients(), wValues(), xValues() {}
 
-BarycentricInterpolationEvaluator::~BarycentricInterpolationEvaluator() {}
+PolynomialInterpolationEvaluator::~PolynomialInterpolationEvaluator() {}
 
-void BarycentricInterpolationEvaluator::setGridPoints(std::vector<double> const &newXValues) {
+void PolynomialInterpolationEvaluator::setGridPoints(std::vector<double> const &newXValues) {
   this->xValues = newXValues;
   size_t numPoints = xValues.size();
   wValues.resize(numPoints);
@@ -47,16 +47,16 @@ void BarycentricInterpolationEvaluator::setGridPoints(std::vector<double> const 
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
-BarycentricInterpolationEvaluator::cloneLinear() {
+PolynomialInterpolationEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(
-      new BarycentricInterpolationEvaluator(*this));
+      new PolynomialInterpolationEvaluator(*this));
 }
 
-bool BarycentricInterpolationEvaluator::needsOrderedPoints() { return false; }
+bool PolynomialInterpolationEvaluator::needsOrderedPoints() { return false; }
 
-bool BarycentricInterpolationEvaluator::needsParameter() { return true; }
+bool PolynomialInterpolationEvaluator::needsParameter() { return true; }
 
-void BarycentricInterpolationEvaluator::computeBasisCoefficients() {
+void PolynomialInterpolationEvaluator::computeBasisCoefficients() {
   double sum = 0.0;
   const double minDeviation =
       std::numeric_limits<double>::min() / std::numeric_limits<double>::epsilon();
@@ -85,7 +85,7 @@ void BarycentricInterpolationEvaluator::computeBasisCoefficients() {
   }
 }
 
-void BarycentricInterpolationEvaluator::setParameter(const FloatScalarVector &param) {
+void PolynomialInterpolationEvaluator::setParameter(const FloatScalarVector &param) {
   evaluationPoint = param.value();
   computeBasisCoefficients();
 }

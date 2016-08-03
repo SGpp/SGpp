@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
-
 #include <iomanip>
 #include <vector>
 
