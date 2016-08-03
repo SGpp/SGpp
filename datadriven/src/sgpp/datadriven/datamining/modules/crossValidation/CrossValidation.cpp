@@ -37,11 +37,6 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     randomizedIndices[i] = i;
   }
 
-  //  for (size_t i : randomizedIndices) {
-  //    std::cout << i << ", ";
-  //  }
-  std::cout << std::endl;
-
   shuffling->shuffle(randomizedIndices);
 
   // perform actual folding
@@ -73,23 +68,16 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     size_t targetIdx = 0;
     // before test portion
 
-    // std::cout << std::endl << "filling training portion" << std::endl << std::endl;
-
     for (size_t i = 0; i < test_begin; i++) {
-      //      std::cout << "i=" << i << " with random index:" << randomizedIndices[i] << std::endl;
       dataset.getData().getRow(randomizedIndices[i], tmpRow);
       trainDataset->getData().setRow(i, tmpRow);
       tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
       trainDataset->getTargets().set(i, tmpEntry);
     }
 
-    //    std::cout << std::endl << "filling test portion" << std::endl << std::endl;
-
     // test portion
     targetIdx = 0;
     for (size_t i = test_begin; i < test_end; i++) {
-      // std::cout << "i=" << targetIdx << " with random index:" << randomizedIndices[i] <<
-      // std::endl;
       dataset.getData().getRow(randomizedIndices[i], tmpRow);
       testDataset->getData().setRow(targetIdx, tmpRow);
       tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
@@ -97,13 +85,9 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
       targetIdx++;
     }
 
-    //    std::cout << std::endl << "continue training portion" << std::endl << std::endl;
-
     // after test portion
     targetIdx = test_begin;
     for (size_t i = test_end; i < dataset.getNumberInstances(); i++) {
-      //      std::cout << "i=" << targetIdx << " with random index:" << randomizedIndices[i] <<
-      //      std::endl;
       dataset.getData().getRow(randomizedIndices[i], tmpRow);
       trainDataset->getData().setRow(targetIdx, tmpRow);
       tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
@@ -121,7 +105,7 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     // set score
     scores[fold] = (*metric)(*predictedValues, testDataset->getTargets());
     std::cout << "accuracy of fit:" << scores[fold] << std::endl;
-    predictedValues.release();
+    predictedValues.reset();
   }
 
   // calculate final score as AVG
