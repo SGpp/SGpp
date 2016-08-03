@@ -36,6 +36,9 @@ if env["USE_OCL"]:
       additionalExampleDependencies=["boost_program_options",
                                      "boost_filesystem",
                                      "boost_system"])
+  if (env["COMPILER"].lower() == "openmpi") or (env["COMPILER"].lower() == "mpich") or \
+     (env["COMPILER"].lower() == "intel.mpi"):
+      module.buildExamples("examplesMPI")
 
 module.runPythonTests()
 module.buildBoostTests()

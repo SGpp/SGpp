@@ -1,0 +1,16 @@
+
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+import ModuleHelper
+
+Import("*")
+
+if (env["USE_OCL"]) and (env["COMPILER"].lower() == "openmpi"):
+  module.scanSource(".")
+if (env["USE_OCL"]) and (env["COMPILER"].lower() == "mpich"):
+  module.scanSource(".")
+if (env["USE_OCL"]) and (env["COMPILER"].lower() == "intel.mpi"):
+  module.scanSource(".")
