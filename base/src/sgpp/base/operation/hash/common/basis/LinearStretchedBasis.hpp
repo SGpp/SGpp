@@ -39,6 +39,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
   {
     return 1.0 - fabs((1<<level) * p - index);
   }
+  */
 
   /*
    * evaluate a basis function
