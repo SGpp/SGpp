@@ -1,29 +1,30 @@
-/*
- * CombigridEvaluator.hpp
- *
- *  Created on: 11.12.2015
- *      Author: david
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
+
+#include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmuedd): remove
 
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <queue>
-#include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
+#include <string>
 #include <unordered_set>
-#include "../../common/BoundedSumMultiIndexIterator.hpp"
-#include "../../definitions.hpp"
-#include "../../storage/AbstractMultiStorage.hpp"
-#include "../../storage/tree/TreeStorage.hpp"
-#include "AbstractFullGridEvaluator.hpp"
-#include "AbstractLevelEvaluator.hpp"
-#include "AdaptiveRefinementStrategy.hpp"
-#include "FullGridTensorEvaluator.hpp"
-
-#include "LevelHelpers.hpp"  // TODO: remove
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -123,10 +124,11 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
-  std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback,
-                                              std::mutex &lock) {
-    return multiEval->getLevelTasks(level, callback, lock);
+  std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
+    return multiEval->getLevelTasks(level, callback);
   }
+
+  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) { multiEval->setMutex(mutexPtr); }
 
   std::shared_ptr<AbstractMultiStorage<V>> differences() const {
     return partialDifferences[numDimensions];
@@ -328,8 +330,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 };
-
-} /* namespace combigrid */
+}  // namespace combigrid
 } /* namespace sgpp*/
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_ */

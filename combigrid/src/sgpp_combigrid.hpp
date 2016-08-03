@@ -7,13 +7,12 @@
 #define COMBIGRID_HPP_
 
 // --------- put here the header files of the combigrid package -----------
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/MultiFunction.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
-#include <sgpp/combigrid/algebraic/ArrayVector.hpp>
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>
-
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "ArrayVector.hpp"
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

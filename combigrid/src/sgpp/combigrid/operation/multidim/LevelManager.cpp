@@ -4,11 +4,22 @@
 // sgpp.sparsegrids.org
 
 #include "LevelManager.hpp"
+
+#include <iostream>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
+
+LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
+    : queue(),
+      levelData(),
+      numDimensions(levelEvaluator->dim()),
+      combiEval(levelEvaluator),
+      managerMutex(new std::mutex()) {}
+
+LevelManager::~LevelManager() {}
 
 void LevelManager::initAdaption() {
   queue.clear();
@@ -53,7 +64,10 @@ void LevelManager::tryAddLevel(const MultiIndex &level) {
 
   for (auto &predLevel : predecessors) {
     if (levelData->containsIndex(predLevel)) {
-      --numMissingPredecessors;
+      auto levelInfo = levelData->get(predLevel);
+      if (levelInfo->computationStage >= ComputationStage::STARTED) {
+        --numMissingPredecessors;
+      }
     }
   }
 
@@ -65,7 +79,7 @@ void LevelManager::tryAddLevel(const MultiIndex &level) {
 
   for (auto &predLevel : predecessors) {
     auto predInfo = levelData->get(predLevel);
-    if (predInfo->computationStage == ComputationStage::TERMINATED) {
+    if (predInfo->computationStage == ComputationStage::COMPLETED) {
       --levelInfo->numNotStartedPredecessors;
       --levelInfo->numNotCompletedPredecessors;
     } else if (predInfo->computationStage == ComputationStage::STARTED ||
@@ -129,6 +143,9 @@ void LevelManager::predecessorsCompleted(const MultiIndex &level) {
       validResult ? combiEval->getDifferenceNorm(level) : 0.0;  // TODO(holzmudd): improve?
   auto successors = getSuccessors(level);
   for (auto &succLevel : successors) {
+    if (!levelData->containsIndex(succLevel)) {
+      continue;
+    }
     auto succInfo = levelData->get(succLevel);
     --succInfo->numNotCompletedPredecessors;
     if (succInfo->computationStage == ComputationStage::TERMINATED &&
@@ -144,8 +161,6 @@ void LevelManager::updatePriority(const MultiIndex &level, std::shared_ptr<Level
   double priority = computePriority(level);
   levelInfo->setPriority(queue, priority);
 }
-
-LevelManager::~LevelManager() {}
 
 std::vector<MultiIndex> LevelManager::getPredecessors(MultiIndex const &level) {
   std::vector<MultiIndex> result;
@@ -217,11 +232,13 @@ std::vector<MultiIndex> LevelManager::getRegularLevelsByNumPoints(size_t maxNumP
 void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &levels,
                                             size_t numThreads) {
   auto threadPool = std::make_shared<ThreadPool>(numThreads, ThreadPool::terminateWhenIdle);
+  combiEval->setMutex(managerMutex);
   for (auto &level : levels) {
-    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}, managerMutex));
+    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}));
   }
   threadPool->start();
   threadPool->join();
+  combiEval->setMutex(nullptr);
 }
 
 void LevelManager::addLevels(const std::vector<MultiIndex> &levels) {
@@ -297,42 +314,49 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
   }
 }
 
-LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
-    : queue(),
-      levelData(),
-      numDimensions(levelEvaluator->dim()),
-      combiEval(levelEvaluator),
-      managerMutex() {}
-
 void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads) {
   initAdaption();
 
   size_t currentPointBound = 0;
 
+  combiEval->setMutex(managerMutex);
+
   auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
-    std::lock_guard<std::mutex> guard(managerMutex);
-    auto entry = queue.top();
+    CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
+    if (queue.empty()) {
+      std::cout << "Error: queue is empty\n";
+      CGLOG("leave guard(*managerMutex)");
+      return;
+    }
+
+    QueueEntry entry = queue.top();
     queue.pop();
 
     currentPointBound += entry.maxNewPoints;
 
     if (currentPointBound > maxNumPoints) {
       tp.triggerTermination();
+      CGLOG("leave guard(*managerMutex)");
       return;
     }
 
+    CGLOG("before beforeComputation()");
+
     beforeComputation(entry.level);
-    auto tasks = combiEval->getLevelTasks(entry.level,
-                                          [=]() {
-                                            // mutex will be locked when this callback is called
-                                            afterComputation(entry.level);
-                                          },
-                                          managerMutex);
+    CGLOG("before getLevelTasks()");
+    auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
+      // the mutex will be locked when this callback is called
+      afterComputation(entry.level);
+    });
+    CGLOG("before addTasks()");
     tp.addTasks(tasks);
+    CGLOG("leave guard(*managerMutex)");
   });
 
   threadPool->start();
   threadPool->join();
+
+  combiEval->setMutex(nullptr);
 }
 
 } /* namespace combigrid */
