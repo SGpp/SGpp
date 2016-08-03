@@ -3,6 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+
+/**
+ *
+ * The following example shows how to integrate a function using Leja quadrature via the
+ * combination technique. We first interpolate the function and afterwards we integrate 
+ * the interpolant. The entire functionality is implemented in the function quadrature()
+ * 
+ *
+ * We use the two dimensional test function
+ * \f[
+ *   f\colon [0, 1]^2 \to \mathbb{R},\quad
+ *   f(x_0, x_1) := 4 x_0 **2 x_1 (1 - x_1)
+ * \f]
+ *
+ * For instructions on how to compile and run the example, please see \ref installation.
+ *
+ *
+ * This example can be found in the file quadrature.cpp
+ */
+
+// include all combigrid headers
 #include <sgpp_combigrid.hpp>
 
 #include <cmath>
@@ -33,6 +54,10 @@ using sgpp::combigrid::CombigridEvaluator;
  */
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
+/**
+*  Function that implements Leja quadrature. First, it interpolates the function
+*  on Leja points using Lagrange polynomials and afterwards in integrates the interpolant
+*/
 void quadrature() {
   // dimension of the integration problem
   size_t numDimensions = 2;
