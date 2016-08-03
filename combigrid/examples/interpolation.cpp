@@ -3,6 +3,32 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ *
+ * The following example shows how to interpolate a function using Leja points via the
+ * combination technique. We implement both standard and adaptive interpolation.
+ *
+ *
+ * We use the two dimensional test function
+ * \f[
+ *   f\colon [0, 1]^2 \to \mathbb{R},\quad
+ *   f(x_0, x_1) := 4 x_0 **2 x_1 (1 - x_1)
+ * \f]
+ *
+ * For instructions on how to compile and run the example, please see \ref installation.
+ *
+ * We consider three functions for implementing the interpolation.
+ * The functions simpleInterpolation() and multistageInterpolation() perform
+ * non-adaptive interpolation. The difference is that the first one is more compact,
+ * whereas in the second we present the interface in more detail.
+ * The function adaptiveInterpolation() performs the adaptive interpolation using
+ * a strategy that relates the influence of the error in comparison to the work
+ * (see Griebel, Gerstner 2003, Dimension-Adaptive Tensor-Product Quadrature for more details).
+ *
+ * This example can be found in the file interpolation.cpp
+ */
+
+// include all combigrid headers
 #include <sgpp_combigrid.hpp>
 
 #include <cmath>
@@ -34,14 +60,20 @@ using sgpp::combigrid::WeightedRatioLevelManager;
  */
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
+/**
+* Compact version of non-adaptive interpolation using Leja points and Lagrange polynomials
+*/
 void simpleInterpolation() {
   size_t numDimensions = 2;
   MultiFunction wrapper(
       f_2D);  // create a function object taking a data vector and returning a double
+
+  // interpolation the given function using Leja points
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
   size_t maxLevelSum = 2;
+  // evaluate the interpolant at (0.5, 0.7)
   double result = operation->evaluate(
       maxLevelSum,
       DataVector(std::vector<double>{
@@ -50,14 +82,22 @@ void simpleInterpolation() {
   std::cout << result << "\n";
 }
 
+/**
+* Adaptive interpolation based on Griebel, Gerstner 2003
+*/
 void adaptiveInterpolation() {
   size_t numDimensions = 2;
   MultiFunction wrapper(
       f_2D);  // create a function object taking a data vector and returning a double
+
+  // interpolation the given function using Leja points
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
+  // point to evaluate the interpolant at (0.5, 0.7)  
   DataVector param(std::vector<double>{0.5, 0.7});
+
+  // perform adaptivity
   auto levelManager = std::make_shared<WeightedRatioLevelManager>();
 
   operation->setParameters(param);
@@ -69,6 +109,9 @@ void adaptiveInterpolation() {
   std::cout << result << "\n";
 }
 
+/**
+* Detailed version of non-adaptive interpolation
+*/
 void multistageInterpolation() {
   size_t numDimensions = 2;
 

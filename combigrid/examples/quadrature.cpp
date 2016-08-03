@@ -3,6 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ *
+ * The following example shows how to integrate a function using Leja quadrature via the
+ * combination technique. We first interpolate the function and afterwards we integrate
+ * the interpolant. The entire functionality is implemented in the function quadrature()
+ *
+ *
+ * We use the two dimensional test function
+ * \f[
+ *   f\colon [0, 1]^2 \to \mathbb{R},\quad
+ *   f(x_0, x_1) := 4 x_0 **2 x_1 (1 - x_1)
+ * \f]
+ *
+ * For instructions on how to compile and run the example, please see \ref installation.
+ *
+ *
+ * This example can be found in the file quadrature.cpp
+ */
+
+// include all combigrid headers
 #include <sgpp_combigrid.hpp>
 
 #include <cmath>
@@ -33,13 +53,17 @@ using sgpp::combigrid::CombigridEvaluator;
  */
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
+/**
+*  Function that implements Leja quadrature. First, it interpolates the function
+*  on Leja points using Lagrange polynomials and afterwards in integrates the interpolant
+*/
 void quadrature() {
   // dimension of the integration problem
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
 
-  auto dummyFunc = [&](DataVector const &param) -> double {
+  auto dummyFunc = [&gridPoints](DataVector const &param) -> double {
     gridPoints.push_back(param);
     return 0.0;
   };
@@ -48,7 +72,7 @@ void quadrature() {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(numDimensions);
 
   // in this case, the grid points grow linearly with the level
-  size_t growthFactor = 2; 
+  size_t growthFactor = 2;
 
   // create a point hierarchy of nested points (Leja points), which are already ordered in the
   // nesting order
@@ -83,7 +107,7 @@ void quadrature() {
   fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
-  combiGridEval->addRegularLevels(maxLevelSum);  
+  combiGridEval->addRegularLevels(maxLevelSum);
 
   // ----- EVAL FUNCTION
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
@@ -96,7 +120,8 @@ void quadrature() {
   }
 
   auto realStorage = std::make_shared<CombigridTreeStorage>(
-      pointHierarchies, MultiFunction([&](DataVector const &param) { return funcLookup(param); }));
+      pointHierarchies,
+      MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
   auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);

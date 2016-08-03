@@ -153,19 +153,20 @@ void printCTResults(size_t d, size_t q) {
       CombigridMultiOperation::createLinearLejaPolynomialInterpolation(d, MultiFunction(func));
   auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
 
-  MCIntegrator integrator([&](std::vector<DataVector> const &params) -> DataVector {
-    auto result = ctInterpolator->evaluate(q, params);
-    // auto result = ctInterpolator->evaluateAdaptive(q * number, params);
+  MCIntegrator integrator(
+      [&ctInterpolator, q, func](std::vector<DataVector> const &params) -> DataVector {
+        auto result = ctInterpolator->evaluate(q, params);
+        // auto result = ctInterpolator->evaluateAdaptive(q * number, params);
 
-    // printDifferences(d, ctInterpolator->getDifferences());
+        // printDifferences(d, ctInterpolator->getDifferences());
 
-    for (size_t i = 0; i < params.size(); ++i) {
-      double diff = func(params[i]) - result[i];
-      result[i] = diff * diff;
-    }
+        for (size_t i = 0; i < params.size(); ++i) {
+          double diff = func(params[i]) - result[i];
+          result[i] = diff * diff;
+        }
 
-    return result;
-  });
+        return result;
+      });
 
   std::cout << "d = " << d << ", q = " << q << ": "
             << std::sqrt(integrator.average(domain, samples)) << std::endl;
