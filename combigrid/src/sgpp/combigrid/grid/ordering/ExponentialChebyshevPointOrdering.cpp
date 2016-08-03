@@ -5,9 +5,9 @@
 
 #include <sgpp/combigrid/grid/ordering/ExponentialChebyshevPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialChebyshevPermutationIterator.hpp>
+#include <sgpp/combigrid/utils/Utils.hpp>
 
 #include <vector>
-#include <cmath>
 
 namespace sgpp {
 namespace combigrid {
@@ -15,7 +15,7 @@ namespace combigrid {
 ExponentialChebyshevPointOrdering::~ExponentialChebyshevPointOrdering() {}
 
 size_t ExponentialChebyshevPointOrdering::convertIndex(size_t level, size_t numPoints,
-                                                     	 size_t index) {
+                                                       size_t index) {
   size_t lastIndex = numPoints - 1;
 
   if (level == 0) {
@@ -42,21 +42,20 @@ size_t ExponentialChebyshevPointOrdering::convertIndex(size_t level, size_t numP
     ++resultingLevel;
   }
 
-//  size_t levelHalfPointDistance = (1L << (level - resultingLevel));
-//  size_t indexInLevel = index - ((1L << (resultingLevel - 1)) + 1);
-//
-//  return levelHalfPointDistance + 2 * levelHalfPointDistance * indexInLevel;
+  //  size_t levelHalfPointDistance = (1L << (level - resultingLevel));
+  //  size_t indexInLevel = index - ((1L << (resultingLevel - 1)) + 1);
+  //
+  //  return levelHalfPointDistance + 2 * levelHalfPointDistance * indexInLevel;
+
+  return 0;
 }
 
-size_t ExponentialChebyshevPointOrdering::numPoints(size_t level) {
-
-  return pow(3, level);
-}
+size_t ExponentialChebyshevPointOrdering::numPoints(size_t level) { return pow(3, level); }
 
 std::shared_ptr<AbstractPermutationIterator>
 ExponentialChebyshevPointOrdering::getSortedPermutationIterator(size_t level,
-                                                                 const std::vector<double>& points,
-                                                                 size_t numPoints) {
+                                                                const std::vector<double>& points,
+                                                                size_t numPoints) {
   return std::shared_ptr<AbstractPermutationIterator>(
       new ExponentialChebyshevPermutationIterator(level, numPoints));
 }

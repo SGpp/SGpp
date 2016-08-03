@@ -10,6 +10,8 @@
 namespace sgpp {
 namespace combigrid {
 
+WeightedRatioLevelManager::WeightedRatioLevelManager(double w) : LevelManager(), w(w) {}
+
 WeightedRatioLevelManager::WeightedRatioLevelManager(
     std::shared_ptr<AbstractLevelEvaluator> levelEvaluator, double w)
     : LevelManager(levelEvaluator), w(w) {}

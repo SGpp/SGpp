@@ -19,6 +19,7 @@ class WeightedRatioLevelManager : public LevelManager {
   virtual double computePriority(MultiIndex const &level);
 
  public:
+  explicit WeightedRatioLevelManager(double w = 0.8);
   explicit WeightedRatioLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
                                      double w = 0.8);
   virtual ~WeightedRatioLevelManager();

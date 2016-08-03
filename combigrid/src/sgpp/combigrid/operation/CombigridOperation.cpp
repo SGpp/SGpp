@@ -80,6 +80,11 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
 
 std::shared_ptr<LevelManager> CombigridOperation::getLevelManager() { return impl->levelManager; }
 
+void CombigridOperation::setLevelManager(std::shared_ptr<LevelManager> levelManager) {
+  levelManager->setLevelEvaluator(impl->combiEval);
+  impl->levelManager = levelManager;
+}
+
 std::shared_ptr<CombigridOperation>
 CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                    MultiFunction func) {
