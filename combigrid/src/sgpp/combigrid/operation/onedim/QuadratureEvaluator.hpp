@@ -7,7 +7,7 @@
 #define QUADRATUREEVALUATOR_HPP_
 
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <sgpp/combigrid/algebraic/ScalarVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
 
