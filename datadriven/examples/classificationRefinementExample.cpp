@@ -23,7 +23,7 @@
 
 /**
  * \page example_classificationRefinementExample_cpp Classification Example
- * 
+ *
  * This example shows how classification specific refinement strategies
  * are used. To do classification, for each class a PDF is approximated with
  * LearnerSGDE and the class with the highest probability gets assigned for
@@ -40,7 +40,7 @@
  */
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda);
-/*
+/**
  * Helper to evaluate the classifiers
  */
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
@@ -152,10 +152,12 @@ int main() {
                                                           numRefinements,
                                                           levelPenalize,
                                                           preCompute);
-  // Data-based refinement. Needs a problem dependent coeffA. The values
-  // were determined by testing (aim at ~10 % of the training data is
-  // to be marked relevant. Cross-validation or similar can/should be employed
-  // to determine this value.
+  /**
+   * Data-based refinement. Needs a problem dependent coeffA. The values
+   * were determined by testing (aim at ~10 % of the training data is
+   * to be marked relevant. Cross-validation or similar can/should be employed
+   * to determine this value.
+   */
   std::vector<double> coeffA;
   coeffA.push_back(1.2);
   coeffA.push_back(1.2);
@@ -215,12 +217,9 @@ int main() {
 
 
 
-/*
- *
- *
- * HELPER
- *
- *
+/**
+ * Helper function
+ * It configures and creates a SGDE learner with meaningful parameters
  */
 
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
@@ -270,6 +269,10 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
   return learner;
 }
 
+/**
+ * Helper function
+ * it does the classification, gets the predictions and generates some error-output
+ */
 
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                                           std::vector<sgpp::base::DataVector*> alphas,

@@ -16,9 +16,8 @@
 using sgpp::base::DataMatrix;
 
 int main() {
-
   /**
-     * We create a 2-by-2 matrix and fill it with values using the set() function.
+   * We create a 2-by-2 matrix and fill it with values using the set() function.
    */
   DataMatrix m(2, 2);
   m.set(0, 0, 1.0);
@@ -33,7 +32,7 @@ int main() {
 
   /**
      * We load a DataMatrix from a file and store it again (for no particular reason).
-     */ 
+     */
   DataMatrix m2 = DataMatrix::fromFile("dataMatrixTest.mat");
 
   m2.toFile("dataMatrixTest2.mat");
