@@ -66,6 +66,8 @@ class CombigridMultiOperation {
       size_t maxNumPoints,
       std::vector<base::DataVector> const &params);  // TODO(holzmudd): maybe change to DataMatrix?
 
+  std::shared_ptr<LevelManager> getLevelManager();
+
   std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> getDifferences();
 
   // TODO(holzmudd): add static constructor functions
