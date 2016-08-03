@@ -82,7 +82,9 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   }
 
   // hierarchize
-  sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
+  std::unique_ptr<sgpp::base::OperationHierarchisation> opHier(
+      sgpp::op_factory::createOperationHierarchisation(grid));
+  opHier->doHierarchisation(alpha);
 
   // refine adaptively 5 times
   for (size_t step = 0; step < refnums; step++) {
@@ -99,7 +101,9 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
     }
 
     // hierarchize
-    sgpp::op_factory::createOperationHierarchisation(grid)->doHierarchisation(alpha);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> opHier(
+        sgpp::op_factory::createOperationHierarchisation(grid));
+    opHier->doHierarchisation(alpha);
     if (verbose) {
       std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
                 << std::endl;
@@ -125,9 +129,11 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   // force the function to be positive
   Grid* positiveGrid = nullptr;
   DataVector positiveAlpha(alpha);
-  sgpp::op_factory::createOperationMakePositive(
-      grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose)
-      ->makePositive(positiveGrid, positiveAlpha);
+  std::unique_ptr<sgpp::base::OperationMakePositive> opMakePositive(
+      sgpp::op_factory::createOperationMakePositive(
+          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
+  opMakePositive->makePositive(positiveGrid, positiveAlpha);
+
   if (verbose) {
     std::cout << "(" << gridStorage.getDimension() << "," << level
               << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
@@ -148,8 +154,9 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
   fullGrid->getStorage().getCoordinateArrays(coordinates);
-  sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates)
-      ->mult(positiveAlpha, nodalValues);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
+      sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates));
+  opEval->mult(positiveAlpha, nodalValues);
   if (verbose) {
     std::cout << "check for positivity: ";
   }
