@@ -54,6 +54,7 @@ class CombigridOperation {
 
   double evaluate(size_t q, base::DataVector const &param = base::DataVector(0));
   std::shared_ptr<LevelManager> getLevelManager();
+  void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
   // TODO(holzmudd): add static constructor functions
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(
