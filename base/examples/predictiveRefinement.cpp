@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-// All SG++ headers
-// #include <sgpp_base.hpp>
+/**
+   * \page example_predictiveRefinement_cpp Spatially-Dimension-Adaptive Refinement in C++
+   *
+   */
 
-// Or, better!, include only those that are required
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -88,11 +89,24 @@ int main() {
     }
   }
 
-  // refine adaptively 20 times
+  /**
+     * We refine adaptively 20 times
+     */ 
   for (int step = 0; step < 20; step++) {
+
+    /**
+       * Now we need to calculate the surplus vector alpha. In data
+       * mining with do it by solving a regression problem as shown in
+       * example \ref example_classificationRefinementExample_cpp.
+       * Here, the function can be evaluated at any point. Hence. we
+       * simply evaluate it at the coordinates of the grid points to
+       * obtain the nodal values. Then we use hierarchization to
+       * obtain the surplus value.
+       *
+       */
+
     // set function values in alpha
     DataVector gridPointCoordinates(dim);
-
     for (size_t i = 0; i < gridStorage.getSize(); i++) {
       gridStorage.getPoint(i).getStandardCoordinates(gridPointCoordinates);
       alpha[i] = f(gridPointCoordinates[0], gridPointCoordinates[1]);
