@@ -10,6 +10,15 @@
   * of the grid points directly.
   * We start with a regular sparse grid of level 3 with linear basis functions and refine five
   * times. In each refinement step, we refine the grid point with the highest absolute surplus.
+  *
+  * The following example interpolates the (non-symmetric) function
+  * f : [0,1]x[0,1] -> R, f(x,y) := 16 (x-1) * x * (y-1) * y
+  *
+  * The number of grid points is printed in each iteration.
+  * After refinement, the surplusses have to be set for all new grid
+  * points, i.e., the alpha-Vector has to be extended.
+  *
+  * For instructions on how to run the example, please see \ref installation.
   */
 
 
@@ -31,7 +40,7 @@ using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
 
 /**
-  * function to interpolate. This is a two-dimensional parabola.
+  * function to interpolate. This is a two-dimensional parabola. - nonsymmetric(!)
   */
 double f(double x0, double x1) {
   return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
@@ -39,7 +48,7 @@ double f(double x0, double x1) {
 
 int main() {
   /**
-    * create a two-dimensional piecewise bilinear grid
+    * create a two-dimensional piecewise bi-linear grid
     */
   size_t dim = 2;
   std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
@@ -97,3 +106,20 @@ int main() {
     alpha.resize(gridStorage.getSize());
   }
 }
+
+/**
+ * This results in the following output:
+ * \verbinclude refinement.output.txt
+ *
+ * There are clearly more efficient approaches than to set the function
+ * values for all grid points and to hierarchize the whole grid each
+ * time. But this works even where no efficient alternatives are
+ * available and suffices for demonstration purposes.
+ *
+ * This use of the SurplusRefinementFunctor takes as arguments the
+ * coefficient vector (it doesn't have to be the coefficient vector, it
+ * could be something modified!) and the number of grid points to refine
+ * (if available). It bases its refinement decision on the absolute
+ * values of the vector's entries, choosing the largest ones. Other
+ * refinement functors are available or can be implemented.
+ */
