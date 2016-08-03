@@ -62,6 +62,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("Density multiplication result file is missing!"));
   }
+  mult_in.close();
 
   // Create OCL configuration
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
@@ -197,6 +198,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("Density rhs result file is missing!"));
   }
+  rhs_in.close();
 
   // Create OCL configuration
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
@@ -240,12 +242,13 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL)  {
   std::vector<int> graph_optimal_result;
   std::ifstream graph_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/graph_erg_dim2_depth11.txt");
   if (graph_in) {
-    double value;
+    int value;
     while (graph_in >> value)
       graph_optimal_result.push_back(value);
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("knn graph result file is missing!"));
   }
+  graph_in.close();
 
   // Create OCL configuration
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
@@ -356,24 +359,25 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL)  {
   std::vector<int> graph;
   std::ifstream graph_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/graph_erg_dim2_depth11.txt");
   if (graph_in) {
-    double value;
+    int value;
     while (graph_in >> value)
       graph.push_back(value);
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("knn graph result file is missing!"));
   }
+  graph_in.close();
 
   // Load optimal results for comparison
   std::vector<int> graph_optimal_result;
   std::ifstream graph_result( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/graph_pruned_erg_dim2_depth11.txt");
   if (graph_result) {
-    double value;
+    int value;
     while (graph_result >> value)
       graph_optimal_result.push_back(value);
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("knn pruned graph result file is missing!"));
   }
-  std::cerr << "Loaded graphs" << std::endl;
+  graph_result.close();
 
   // Create grid for test scenario
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
@@ -429,6 +433,40 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL)  {
     BOOST_CHECK(graph[i] == graph_optimal_result[i]);
   }
   delete operation_prune;
+}
+
+BOOST_AUTO_TEST_CASE(KNNClusterSearch)  {
+  // Load input
+  std::vector<int> graph;
+  std::ifstream graph_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/graph_pruned_erg_dim2_depth11.txt");
+  if (graph_in) {
+    int value;
+    while (graph_in >> value)
+      graph.push_back(value);
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("Pruned knn graph result file is missing!"));
+  }
+  graph_in.close();
+
+  std::vector<size_t> optimal_cluster_assignement;
+  std::ifstream assignement_in( "/media/DatenPartition/Programmieren/ipvs/SGpp/datadriven/tests/datasets/cluster_erg.txt");
+  if (assignement_in) {
+    size_t value;
+    while (assignement_in >> value)
+      optimal_cluster_assignement.push_back(value);
+  } else {
+    BOOST_THROW_EXCEPTION(std::runtime_error("Pruned knn graph result file is missing!"));
+  }
+  assignement_in.close();
+
+  std::vector<size_t> cluster_assignement = sgpp::datadriven::DensityOCLMultiPlatform::
+                        OperationCreateGraphOCL::find_clusters(graph, 8);
+  BOOST_CHECK(optimal_cluster_assignement.size() == cluster_assignement.size());
+  if (optimal_cluster_assignement.size() == cluster_assignement.size()) {
+    for (int i = 0; i < cluster_assignement.size(); ++i) {
+      BOOST_CHECK(optimal_cluster_assignement[i] == cluster_assignement[i]);
+    }
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
