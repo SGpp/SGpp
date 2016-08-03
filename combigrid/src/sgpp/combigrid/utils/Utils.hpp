@@ -9,8 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

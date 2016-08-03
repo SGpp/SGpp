@@ -332,37 +332,38 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
 
   combiEval->setMutex(managerMutex);
 
-  auto threadPool = std::make_shared<ThreadPool>(numThreads, [&](ThreadPool &tp) {
-    CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
-    if (queue.empty()) {
-      std::cout << "Error: queue is empty\n";
-      CGLOG("leave guard(*managerMutex)");
-      return;
-    }
+  auto threadPool = std::make_shared<ThreadPool>(
+      numThreads, [&currentPointBound, maxNumPoints, this](ThreadPool &tp) {
+        CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
+        if (queue.empty()) {
+          std::cout << "Error: queue is empty\n";
+          CGLOG("leave guard(*managerMutex)");
+          return;
+        }
 
-    QueueEntry entry = queue.top();
-    queue.pop();
+        QueueEntry entry = queue.top();
+        queue.pop();
 
-    currentPointBound += entry.maxNewPoints;
+        currentPointBound += entry.maxNewPoints;
 
-    if (currentPointBound > maxNumPoints) {
-      tp.triggerTermination();
-      CGLOG("leave guard(*managerMutex)");
-      return;
-    }
+        if (currentPointBound > maxNumPoints) {
+          tp.triggerTermination();
+          CGLOG("leave guard(*managerMutex)");
+          return;
+        }
 
-    CGLOG("before beforeComputation()");
+        CGLOG("before beforeComputation()");
 
-    beforeComputation(entry.level);
-    CGLOG("before getLevelTasks()");
-    auto tasks = combiEval->getLevelTasks(entry.level, [=]() {
-      // the mutex will be locked when this callback is called
-      afterComputation(entry.level);
-    });
-    CGLOG("before addTasks()");
-    tp.addTasks(tasks);
-    CGLOG("leave guard(*managerMutex)");
-  });
+        beforeComputation(entry.level);
+        CGLOG("before getLevelTasks()");
+        auto tasks = combiEval->getLevelTasks(entry.level, [this, entry]() {
+          // the mutex will be locked when this callback is called
+          afterComputation(entry.level);
+        });
+        CGLOG("before addTasks()");
+        tp.addTasks(tasks);
+        CGLOG("leave guard(*managerMutex)");
+      });
 
   threadPool->start();
   threadPool->join();
