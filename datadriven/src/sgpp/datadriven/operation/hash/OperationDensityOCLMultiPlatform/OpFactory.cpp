@@ -17,7 +17,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, base::OCLOperationConfiguration *parameters,
                                         size_t platform_id, size_t device_id) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("testdebug.cfg");
 
   DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
@@ -47,7 +47,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
   DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -76,7 +76,7 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
   DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -104,7 +104,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
   DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
 
   size_t platformid = 0;
   if (parameters->contains("USE_PLATFORM") == true) {

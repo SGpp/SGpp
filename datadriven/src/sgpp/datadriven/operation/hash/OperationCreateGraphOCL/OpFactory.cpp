@@ -22,7 +22,7 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
@@ -54,7 +54,7 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
@@ -84,7 +84,7 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 

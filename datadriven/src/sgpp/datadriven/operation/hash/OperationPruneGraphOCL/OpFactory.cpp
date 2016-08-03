@@ -22,7 +22,7 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
 
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
@@ -56,7 +56,7 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 
@@ -89,7 +89,7 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   sgpp::base::OCLOperationConfiguration *parameters =
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
-  manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
   parameters->serialize("MyOCLConf.cfg");
 

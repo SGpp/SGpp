@@ -48,6 +48,10 @@
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+
+#include "operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
+#include "operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
+#include "operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
