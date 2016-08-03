@@ -12,14 +12,13 @@
   * times. In each refinement step, we refine the grid point with the highest absolute surplus.
   */
 
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 
 #include <iostream>
 
@@ -33,9 +32,7 @@ using sgpp::base::SurplusRefinementFunctor;
 /**
   * function to interpolate. This is a two-dimensional parabola.
   */
-double f(double x0, double x1) {
-  return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
-}
+double f(double x0, double x1) { return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1; }
 
 int main() {
   /**
@@ -75,8 +72,7 @@ int main() {
       * Each time, we have to hierarchize the grid again, because in the previous interation,
       * new grid points have been added.
       */
-    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-      alpha);
+    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
     /**
       * Refine a single grid point each time.
@@ -87,7 +83,7 @@ int main() {
     SurplusRefinementFunctor functor(alpha, 1);
     grid->getGenerator().refine(functor);
     std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-         << std::endl;
+              << std::endl;
 
     /**
       * Extend alpha vector (new entries uninitialized). Note that right now, the surplus vector
