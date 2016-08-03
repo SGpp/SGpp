@@ -1,6 +1,7 @@
 /**
 \page module_optimization Module sgpp::optimization
-sgpp::optimization -- SG++ module for optimization of smooth sparse grid interpolants.
+
+@short SG++ module for optimization of smooth sparse grid interpolants.
 
 \section overview Overview
 

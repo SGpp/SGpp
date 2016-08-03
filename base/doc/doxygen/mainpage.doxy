@@ -39,7 +39,7 @@ http://sgpp.sparsegrids.org.
 @section mainpage_installation Getting Started
 
 Start by reading the <b>installation instructions</b> for your
-operating system: \ref linux or \ref mingw.
+operating system: \ref linux, \ref mac, or \ref mingw.
 
 If you are going to use SG++ in your application, please consult the
 \ref manual for an \ref modules "overview" of the toolbox structure
@@ -112,7 +112,9 @@ See also:
   Pflüger</a>.
 
 We appreciate any feedback regarding the improvement of documentation,
-user experience, and application support.
+user experience, and application support. We are always looking for
+new collaborations to extend functionality and include new
+applications.
 
 
 <!--
