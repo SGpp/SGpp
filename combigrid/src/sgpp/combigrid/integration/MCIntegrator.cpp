@@ -14,7 +14,7 @@ namespace sgpp {
 namespace combigrid {
 
 MCIntegrator::MCIntegrator(std::function<double(const base::DataVector &)> func)
-    : func([=](const std::vector<base::DataVector> &vec) -> base::DataVector {
+    : func([func](const std::vector<base::DataVector> &vec) -> base::DataVector {
         base::DataVector result(vec.size());
         for (size_t i = 0; i < vec.size(); ++i) {
           result[i] = func(vec[i]);

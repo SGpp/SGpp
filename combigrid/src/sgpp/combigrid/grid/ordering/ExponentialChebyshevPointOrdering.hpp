@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SRC_SGPP_COMBIGRID_GRID_ORDERING_EXPONENTIALCHEBYSHEVPOINTORDERING_HPP_
-#define SRC_SGPP_COMBIGRID_GRID_ORDERING_EXPONENTIALCHEBYSHEVPOINTORDERING_HPP_
+#pragma once
 
 #include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -25,5 +26,3 @@ class ExponentialChebyshevPointOrdering : public AbstractPointOrdering {
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* SRC_SGPP_COMBIGRID_GRID_ORDERING_EXPONENTIALCHEBYSHEVPOINTORDERING_HPP_ */

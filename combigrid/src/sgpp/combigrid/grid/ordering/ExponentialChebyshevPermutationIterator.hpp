@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALCHEBYSHEVPERMUTATIONITERATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALCHEBYSHEVPERMUTATIONITERATOR_HPP_
+#pragma once
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 
@@ -35,6 +34,3 @@ class ExponentialChebyshevPermutationIterator : public AbstractPermutationIterat
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_EXPONENTIALCHEBYSHEVPERMUTATIONITERATOR_HPP_ \
-          */

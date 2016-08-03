@@ -14,7 +14,6 @@
 #include <deque>
 #include <functional>
 #include <vector>
-#include <condition_variable>
 
 namespace sgpp {
 namespace combigrid {
