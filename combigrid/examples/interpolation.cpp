@@ -36,10 +36,9 @@ double f_2D(DataVector v) {
   return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); 
 }
 
-<<<<<<< HEAD
 void interpolation() {
   // dimension of the interpolation problem
-=======
+
 void adaptiveInterpolation() {
   size_t numDimensions = 2;
   MultiFunction wrapper(
@@ -61,7 +60,6 @@ void adaptiveInterpolation() {
 }
 
 void multistageInterpolation() {
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
@@ -144,13 +142,7 @@ void multistageInterpolation() {
 }
 
 int main() {
-<<<<<<< HEAD
   interpolation();
 
   return 0;
-=======
-  simpleInterpolation();
-  adaptiveInterpolation();
-  multistageInterpolation();
->>>>>>> a13a88f9147a1cf7af9f587bc77bd937079fd9a4
 }
