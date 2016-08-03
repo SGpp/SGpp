@@ -48,6 +48,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       : OperationDensityOCL(), dims(dimensions),
         gridSize(grid.getStorage().getSize()),
         devices(manager->getDevices()),
+        verbose(false),
         manager(manager), lambda(lambda) {
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -60,9 +61,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
         points.push_back(point.getLevel(d));
       }
     }
-    if (verbose)
-      std::cout << "Grid stored into integer array! Number of gridpoints: "
-                << pointscount << std::endl;
 
     // look for the chosen platform and device and create kernel with it
     size_t platformcounter = 0;
@@ -114,8 +112,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       OperationDensityOCL(), dims(dimensions),
       gridSize(gridsize),
       devices(manager->getDevices()),
+      verbose(false),
       manager(manager), lambda(lambda) {
-    verbose = false;
     for (int i = 0; i < gridSize; i++) {
       for (int d = 0; d < dims; d++) {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
@@ -149,6 +147,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                         points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
+        if (firstKernelConfig["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }

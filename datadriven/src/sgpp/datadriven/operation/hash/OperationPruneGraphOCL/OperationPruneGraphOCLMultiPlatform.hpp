@@ -52,10 +52,9 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
                                       sgpp::base::OCLOperationConfiguration *parameters,
                                       T treshold, size_t k, size_t platform_id,
                                       size_t device_id) :
-      OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage().getSize()),
+      OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage().getSize()), verbose(false),
       dataSize(data.getSize()),  devices(manager->getDevices()),
       manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
-    verbose = true;
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
@@ -67,9 +66,6 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
         pointsVector.push_back(point.getLevel(d));
       }
     }
-    if (verbose)
-      std::cout << "Grid stored into integer array! Number of gridpoints: "
-                << pointscount << std::endl;
     for (size_t i = 0; i < gridSize; i++)
       alphaVector[i] = static_cast<T>(alpha[i]);
     double *data_raw = data.getPointer();
@@ -100,6 +96,8 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
         graph_kernel = new KernelPruneGraph<T>(devices[counter], dims, treshold, k, manager,
                                                configuration, pointsVector, alphaVector,
                                                dataVector);
+        if (configuration["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }
@@ -121,10 +119,9 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
                                       sgpp::base::OCLOperationConfiguration *parameters,
                                       T treshold, size_t k, size_t platform_id,
                                       size_t device_id) :
-      OperationPruneGraphOCL(), dims(dimensions), gridSize(gridSize),
+      OperationPruneGraphOCL(), dims(dimensions), gridSize(gridSize), verbose(false),
       dataSize(data.getSize()),  devices(manager->getDevices()),
       manager(manager), alphaVector(gridSize), dataVector(data.getSize()) {
-    verbose = true;
     // Store Grid in a opencl compatible buffer
     std::vector<int> points;
     for (size_t i = 0; i < gridSize; i++) {
@@ -170,6 +167,8 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
         graph_kernel = new KernelPruneGraph<T>(devices[counter], dims, treshold, k, manager,
                                                configuration, points, alphaVector,
                                                dataVector);
+        if (configuration["VERBOSE"].getBool())
+          verbose = true;
         success = true;
         break;
       }

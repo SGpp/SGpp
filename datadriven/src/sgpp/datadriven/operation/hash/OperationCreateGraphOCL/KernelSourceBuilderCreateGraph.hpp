@@ -133,7 +133,6 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     }
     if (kernelConfiguration.contains("APPROX_REG_COUNT"))
       approxRegCount = kernelConfiguration["APPROX_REG_COUNT"].getUInt();
-    std::cout << "Local Size: " << localWorkgroupSize << "  Use: " << useLocalMemory << std::endl;
   }
 
   std::string generateSource(size_t dimensions, size_t k, size_t dataSize, size_t problemsize) {
