@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
   std::cout << "Testing default kernel configuration..." << std::endl;
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
 
-  std::cout << "Testing with preprocessed positions:" << std::endl;
+  std::cout << "Testing with preprocessed positions..." << std::endl;
   for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
     json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
     for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -105,6 +105,21 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
       kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", true);
       kernelNode.replaceIDAttr("USE_FABS", true);
       kernelNode.replaceIDAttr("USE_IMPLICIT", true);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", true);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", true);
+      kernelNode.replaceIDAttr("USE_FABS", true);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", true);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
@@ -120,6 +135,74 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
       kernelNode.replaceIDAttr("USE_FABS", false);
       kernelNode.replaceIDAttr("USE_IMPLICIT", false);
       kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+
+  std::cout << "Testing with branchless mutliplication kernel with fabs modifications..."
+            << std::endl;
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
+      kernelNode.replaceIDAttr("USE_FABS", true);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", false);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+  std::cout << "Testing with branchless mutliplication kernel with level cache..."
+            << std::endl;
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
+      kernelNode.replaceIDAttr("USE_FABS", true);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", false);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+
+  std::cout << "Testing with branchless mutliplication kernel with implicit modifications..."
+            << std::endl;
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
+      kernelNode.replaceIDAttr("USE_FABS", false);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", true);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+
+  std::cout << "Testing with branchless mutliplication kernel with "
+            << "all modifications..." << std::endl;
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
+      kernelNode.replaceIDAttr("USE_FABS", true);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", true);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", false);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", true);
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
@@ -135,6 +218,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
       kernelNode.replaceIDAttr("USE_FABS", true);
       kernelNode.replaceIDAttr("USE_IMPLICIT", false);
       kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", true);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
@@ -150,22 +234,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
       kernelNode.replaceIDAttr("USE_FABS", false);
       kernelNode.replaceIDAttr("USE_IMPLICIT", true);
       kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", true);
-    }
-  }
-  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
-
-  std::cout << "Testing default multiplcation kernel with implicit and fabs modifications..."
-            << std::endl;
-  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
-    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
-    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
-      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
-      const std::string &kernelName = "multdensity";
-      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
-      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
-      kernelNode.replaceIDAttr("USE_FABS", true);
-      kernelNode.replaceIDAttr("USE_IMPLICIT", true);
-      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", true);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", false);
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
@@ -186,6 +255,24 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
     }
   }
   multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+
+  std::cout << "Testing default multiplcation kernel with all modifications..."
+            << std::endl;
+  for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
+    json::Node &platformNode = (*parameters)["PLATFORMS"][platformName];
+    for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+      json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+      const std::string &kernelName = "multdensity";
+      json::Node &kernelNode = deviceNode["KERNELS"][kernelName];
+      kernelNode.replaceIDAttr("PREPROCESS_POSITIONS", false);
+      kernelNode.replaceIDAttr("USE_FABS", true);
+      kernelNode.replaceIDAttr("USE_IMPLICIT", true);
+      kernelNode.replaceIDAttr("USE_LESS_OPERATIONS", true);
+      kernelNode.replaceIDAttr("USE_LEVEL_CACHE", true);
+    }
+  }
+  multiply_and_test(parameters.get(), mult_optimal_result, manager, *grid);
+
 }
 
 BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {

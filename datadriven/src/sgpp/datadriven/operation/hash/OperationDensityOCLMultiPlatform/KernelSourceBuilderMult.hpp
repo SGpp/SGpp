@@ -283,6 +283,9 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       use_fabs_instead_of_fmax = kernelConfiguration["USE_FABS"].getBool();
     if (kernelConfiguration.contains("PREPROCESS_POSITIONS")) {
       preprocess_positions = kernelConfiguration["PREPROCESS_POSITIONS"].getBool();
+      // These two options are not compatible
+      if (preprocess_positions)
+        use_level_cache = false;
     }
     if (kernelConfiguration.contains("UNROLL_DIM")) {
       unroll_dim = kernelConfiguration["UNROLL_DIM"].getBool();
