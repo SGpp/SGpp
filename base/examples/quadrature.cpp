@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_quadrature_cpp quadrature.cpp
+ * \page example_quadrature_cpp Quadrature in C++
  *
  * The following example shows how to integrate in SG++, using both
  * direct integration of a sparse grid function and the use of
@@ -25,6 +25,8 @@
  * First, the dimensionality (int),
  * then a double* with the coordinates of the grid point \f$\in[0,1]^d\f$,
  * and finally a void* with clientdata for the function, see \ref sgpp::base::FUNC.
+ *
+ * This example can be found in the file quadrature.cpp
  */
 
 // include all SG++ base headers
@@ -44,7 +46,9 @@ double f(int dim, double* x, void* clientdata) {
 }
 
 int main() {
-  // create a two-dimensional piecewise bi-linear grid
+  /**
+     * Create a two-dimensional piecewise bi-linear grid with level 3
+     */
   int dim = 2;
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -55,7 +59,15 @@ int main() {
   grid->getGenerator().regular(level);
   std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
-  // create coefficient vector
+  /**
+   * Calculate the surplus vector alpha for the interpolant of \f$
+   * f(x)\f$.  Since the function can be evaluated at any
+   * point. Hence. we simply evaluate it at the coordinates of the
+   * grid points to obtain the nodal values. Then we use
+   * hierarchization to obtain the surplus value.
+   *
+   */
+
   sgpp::base::DataVector alpha(gridStorage.getSize());
   double p[2];
 
@@ -69,6 +81,10 @@ int main() {
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
     alpha);
 
+  /**
+     * Now we compute and compare the quadrature using four different methods available in SG++.
+     */
+  
   // direct quadrature
   std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
       sgpp::op_factory::createOperationQuadrature(*grid));
