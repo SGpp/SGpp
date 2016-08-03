@@ -166,10 +166,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
-    for (size_t i = 0; i < devices.size(); i++) {
-      std::cout << devices[i]->deviceName << std::endl;
-    }
-
     std::once_flag onceFlag;
     std::exception_ptr exceptionPtr;
 
