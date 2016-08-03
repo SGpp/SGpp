@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BARYCENTRICINTERPOLATIONEVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BARYCENTRICINTERPOLATIONEVALUATOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_POLYNOMIALINTERPOLATIONEVALUATOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_POLYNOMIALINTERPOLATIONEVALUATOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace combigrid {
 
-class BarycentricInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
+class PolynomialInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double evaluationPoint;
   std::vector<FloatScalarVector> basisCoefficients;
   std::vector<double> wValues;
@@ -24,9 +24,9 @@ class BarycentricInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
   void computeBasisCoefficients();
 
  public:
-  BarycentricInterpolationEvaluator();
-  virtual ~BarycentricInterpolationEvaluator();
-  BarycentricInterpolationEvaluator(BarycentricInterpolationEvaluator const &other);
+  PolynomialInterpolationEvaluator();
+  virtual ~PolynomialInterpolationEvaluator();
+  PolynomialInterpolationEvaluator(PolynomialInterpolationEvaluator const &other);
 
   virtual std::vector<FloatScalarVector> getBasisCoefficients() { return basisCoefficients; }
 
@@ -42,4 +42,4 @@ class BarycentricInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BARYCENTRICINTERPOLATIONEVALUATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_POLYNOMIALINTERPOLATIONEVALUATOR_HPP_ */

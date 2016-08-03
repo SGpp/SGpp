@@ -26,8 +26,8 @@
 %shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
-%shared_ptr(sgpp::combigrid::BarycentricInterpolationEvaluator)
-%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BarycentricInterpolationEvaluator>)
+%shared_ptr(sgpp::combigrid::PolynomialInterpolationEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::LinearInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::LinearInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::QuadratureEvaluator)
@@ -113,7 +113,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
@@ -133,7 +133,7 @@ namespace combigrid {
     %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
     %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
 
-    %template(ArrayBarycentricInterpolationEvaluator) ArrayEvaluator<BarycentricInterpolationEvaluator>;
+    %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
     %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
     %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
 

@@ -23,7 +23,7 @@
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BarycentricInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
@@ -53,7 +53,7 @@ using sgpp::combigrid::LejaPointDistribution;
 using sgpp::combigrid::IdentityPointOrdering;
 using sgpp::combigrid::LinearGrowthStrategy;
 using sgpp::combigrid::AbstractLinearEvaluator;
-using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::FullGridTensorEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::AveragingLevelManager;
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
 
   // CREATE EVALUATORS
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
-      numDimensions, std::make_shared<BarycentricInterpolationEvaluator>());
+      numDimensions, std::make_shared<PolynomialInterpolationEvaluator>());
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(func));
 
