@@ -30,7 +30,9 @@ void LevelManager::initAdaption() {
 
   while (it->isValid()) {
     auto level = it->getMultiIndex();
-    levelData->set(level, std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level)));
+    levelData->set(level, std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level),
+                                                      combiEval->maxNewPoints(level),
+                                                      combiEval->numPoints(level)));
     it->moveToNext();
   }
 
@@ -75,7 +77,8 @@ void LevelManager::tryAddLevel(const MultiIndex &level) {
     return;
   }
 
-  auto levelInfo = std::make_shared<LevelInfo>(numPredecessors);
+  auto levelInfo = std::make_shared<LevelInfo>(numPredecessors, combiEval->maxNewPoints(level),
+                                               combiEval->numPoints(level));
 
   for (auto &predLevel : predecessors) {
     auto predInfo = levelData->get(predLevel);

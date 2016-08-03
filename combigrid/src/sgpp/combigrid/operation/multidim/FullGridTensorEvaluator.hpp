@@ -288,6 +288,18 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 
     return result;
   }
+
+  virtual size_t numPoints(MultiIndex const &level) {
+    size_t result = 1;
+
+    for (size_t d = 0; d < pointHierarchies.size(); ++d) {
+      size_t currentLevel = level[d];
+      size_t levelPoints = pointHierarchies[d]->getNumPoints(currentLevel);
+      result *= levelPoints;
+    }
+
+    return result;
+  }
 };
 }  // namespace combigrid
 } /* namespace sgpp*/
