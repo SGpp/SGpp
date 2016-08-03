@@ -142,6 +142,8 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
 
   size_t maxNewPoints(MultiIndex const &level) { return multiEval->maxNewPoints(level); }
 
+  size_t numPoints(MultiIndex const &level) { return multiEval->numPoints(level); }
+
   double getDifferenceNorm(MultiIndex const &level) {
     return partialDifferences[numDimensions]->get(level).norm();
   }
