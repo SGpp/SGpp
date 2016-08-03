@@ -43,8 +43,8 @@ SBasis& WaveletBoundaryGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> WaveletBoundaryGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new WaveletBoundaryGrid(istr));
+Grid* WaveletBoundaryGrid::unserialize(std::istream& istr) {
+  return new WaveletBoundaryGrid(istr);
 }
 
 /**

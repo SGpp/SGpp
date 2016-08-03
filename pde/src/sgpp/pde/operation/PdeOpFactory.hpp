@@ -26,8 +26,7 @@ namespace op_factory {
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLaplace(base::Grid& grid);
-
+base::OperationMatrix* createOperationLaplace(base::Grid& grid);
 /**
  * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -36,7 +35,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(base::Grid& grid);
  * @param coef Coefficient vector for OperationLaplace
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLaplace(
+base::OperationMatrix* createOperationLaplace(
     base::Grid& grid, sgpp::base::DataVector& coef);
 
 /**
@@ -46,7 +45,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid& grid);
+base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid);
 
 /**
    * Factory method, returning an OperationLaplaceExplicit (OperationMatrix) for the grid at hand.
@@ -57,7 +56,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid
    * @param m DataMatrix in which the data is stored
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(
+base::OperationMatrix* createOperationLaplaceExplicit(
     base::DataMatrix* m, base::Grid& grid);
 
 /**
@@ -67,7 +66,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProduct(base::Grid& grid);
+base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
 
 /**
    * Factory method, returning an OperationLTwoDotExplicit (OperationMatrix) for the grid at hand.
@@ -76,7 +75,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProduct(base::Grid&
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid& grid);
+base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid);
 
 /**
    * Factory method, returning an OperationLTwoDotExplicit (OperationMatrix) for the grid at hand.
@@ -87,7 +86,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid
    * @param m DataMatrix in which the data is stored
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(
+base::OperationMatrix* createOperationLTwoDotExplicit(
     base::DataMatrix* m, base::Grid& grid);
 
 /**
@@ -99,7 +98,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(base::Grid& grid);
+base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
@@ -111,7 +110,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(base::Grid
  * @param coef Coefficient vector for OperationLaplace
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(
+base::OperationMatrix* createOperationLaplaceEnhanced(
     base::Grid& grid, sgpp::base::DataVector& coef);
 }  // namespace op_factory
 }  // namespace sgpp

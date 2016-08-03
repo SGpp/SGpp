@@ -13,6 +13,8 @@
 *.so
 *.exe
 *.a
+*.dylib
+*.dSYM
 
 #ignoring cpplint files
 *.lint

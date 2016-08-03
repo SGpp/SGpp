@@ -17,12 +17,11 @@
 namespace sgpp {
 namespace datadriven {
 
-DensitySystemMatrix::DensitySystemMatrix(std::unique_ptr<sgpp::base::OperationMatrix>& A,
-                                         std::unique_ptr<sgpp::base::OperationMultipleEval>& B,
-                                         std::unique_ptr<sgpp::base::OperationMatrix>& C,
-                                         double lambda,
-                                         size_t numSamples)
-    : lambda(lambda), A(std::move(A)), B(std::move(B)), C(std::move(C)), numSamples(numSamples) {
+DensitySystemMatrix::DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
+                                         sgpp::base::OperationMatrix& C, double lambda)
+    : lambda(lambda), C(C), data(trainData) {
+  A.reset(op_factory::createOperationLTwoDotProduct(grid));
+  B.reset(op_factory::createOperationMultipleEval(grid, data));
 }
 
 DensitySystemMatrix::~DensitySystemMatrix() {}
@@ -35,7 +34,7 @@ void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVe
 
   // C * alpha
   base::DataVector tmp(result.getSize());
-  C->mult(alpha, tmp);
+  C.mult(alpha, tmp);
 
   // A * alpha + lambda * C * alpha
   result.axpy(lambda, tmp);
@@ -43,12 +42,12 @@ void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVe
 
 // Matrix-Multiplikation verwenden
 void DensitySystemMatrix::generateb(sgpp::base::DataVector& rhs) {
-  sgpp::base::DataVector y(numSamples);
+  sgpp::base::DataVector y(data.getNrows());
   y.setAll(1.0);
   // Bt * 1
   B->multTranspose(y, rhs);
-  // 1 / M * Bt * 1
-  rhs.mult(1. / static_cast<double>(numSamples));
+  // 1 / 2M * Bt * 1
+  rhs.mult(1. / static_cast<double>(data.getNrows()));
 }
 
 }  // namespace datadriven

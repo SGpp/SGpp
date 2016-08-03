@@ -18,7 +18,7 @@ using sgpp::base::OperationEval;
 
 int main() {
   size_t dim = 4;
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   grid->getGenerator().regular(5);
 
   std::filebuf fb;
@@ -29,6 +29,6 @@ int main() {
 
   std::ifstream ifs("/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid");
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-  std::unique_ptr<Grid> new_grid = Grid::unserialize(content);
+  std::unique_ptr<Grid> new_grid(Grid::unserialize(content));
   std::cout << new_grid->getSize() << std::endl;
 }

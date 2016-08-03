@@ -41,8 +41,8 @@ SBasis& LinearClenshawCurtisGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new LinearClenshawCurtisGrid(istr));
+Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return new LinearClenshawCurtisGrid(istr);
 }
 
 void LinearClenshawCurtisGrid::serialize(std::ostream& ostr, int version) {

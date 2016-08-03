@@ -40,166 +40,129 @@ namespace sgpp {
 
 namespace op_factory {
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplace(base::Grid& grid) {
+base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinear(&grid.getStorage()));
+    return new pde::OperationLaplaceLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinearBoundary(&grid.getStorage()));
+    return new pde::OperationLaplaceLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceModLinear(&grid.getStorage()));
+    return new pde::OperationLaplaceModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplacePrewavelet(
-            &grid.getStorage(), &((base::PrewaveletGrid*)&grid)->getShadowStorage()));
+    return new pde::OperationLaplacePrewavelet(
+            &grid.getStorage(), &((base::PrewaveletGrid*)&grid)->getShadowStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinearStretched(&grid.getStorage()));
+    return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinearStretchedBoundary(&grid.getStorage()));
+    return new pde::OperationLaplaceLinearStretchedBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplace(
+base::OperationMatrix* createOperationLaplace(
     base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinear(&grid.getStorage(), coef));
+    return new pde::OperationLaplaceLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceLinearBoundary(&grid.getStorage(), coef));
+    return new pde::OperationLaplaceLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception(
         "OperationLaplace (with coefficients) is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(base::Grid& grid) {
+base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceExplicitBspline(&grid));
+    return new pde::OperationLaplaceExplicitBspline(&grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new pde::OperationLaplaceExplicitModBspline(&grid));
+      return new pde::OperationLaplaceExplicitModBspline(&grid);
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceExplicit(
+base::OperationMatrix* createOperationLaplaceExplicit(
     base::DataMatrix* m, base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceExplicitBspline(m, &grid));
+    return new pde::OperationLaplaceExplicitBspline(m, &grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new pde::OperationLaplaceExplicitModBspline(m, &grid));
+      return new pde::OperationLaplaceExplicitModBspline(m, &grid);
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProduct(base::Grid& grid) {
+base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLTwoDotProductLinear(&grid.getStorage()));
+    return new pde::OperationLTwoDotProductLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLTwoDotProductLinearBoundary(&grid.getStorage()));
+    return new pde::OperationLTwoDotProductLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLTwoDotProductLinearStretched(&grid.getStorage()));
+    return new pde::OperationLTwoDotProductLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLTwoDotProductLinearStretchedBoundary(&grid.getStorage()));
+    return new pde::OperationLTwoDotProductLinearStretchedBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Periodic) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotPeriodic(&grid.getStorage()));
+    return new pde::OperationMatrixLTwoDotPeriodic(&grid.getStorage());
   } else {
-    throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type. "
-        "You could try createOperationLTwoDotExplicit (if you're lucky).");
+    throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(base::Grid& grid) {
+base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitLinear(&grid));
+    return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
   } else if (grid.getType() == base::GridType::LinearL0Boundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid));
+    return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   } else if (grid.getType() == base::GridType::Periodic) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid));
-  } else if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitBspline(&grid));
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitModBspline(&grid));
-  } else {
-    throw base::factory_exception(
-        "OperationLTwoDotExplicit is not implemented for this grid type. "
-        "You could try createOperationLTwoDotProduct (if you're lucky).");
-  }
-}
-
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotExplicit(
-    base::DataMatrix* m, base::Grid& grid) {
-  if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid));
-  } else if (grid.getType() == base::GridType::LinearL0Boundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid));
-  } else if (grid.getType() == base::GridType::Periodic) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid));
-  } else if (grid.getType() == base::GridType::Bspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitBspline(m, &grid));
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationMatrixLTwoDotExplicitModBspline(m, &grid));
+    return new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(base::Grid& grid) {
+base::OperationMatrix* createOperationLTwoDotExplicit(
+    base::DataMatrix* m, base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceEnhancedLinear(&grid.getStorage()));
+    return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
+  } else if (grid.getType() == base::GridType::LinearL0Boundary) {
+    return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
+  } else if (grid.getType() == base::GridType::Periodic) {
+    return new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new pde::OperationMatrixLTwoDotExplicitBspline(m, &grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new pde::OperationMatrixLTwoDotExplicitModBspline(m, &grid);
+  } else {
+    throw base::factory_exception(
+        "OperationLTwoDotExplicit is not implemented for this grid type.");
+  }
+}
+
+base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new pde::OperationLaplaceEnhancedLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceEnhancedLinearBoundary(&grid.getStorage()));
+    return new pde::OperationLaplaceEnhancedLinearBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception(
         "OperationLaplaceEnhanced is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(
+base::OperationMatrix* createOperationLaplaceEnhanced(
     base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef));
+    return new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new pde::OperationLaplaceEnhancedLinearBoundary(&grid.getStorage(), coef));
+    return new pde::OperationLaplaceEnhancedLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception(
         "OperationLaplaceEnhanced is not implemented for this grid type.");

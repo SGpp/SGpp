@@ -46,8 +46,8 @@ SBasis& LinearGridStencil::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> LinearGridStencil::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new LinearGridStencil(istr));
+Grid* LinearGridStencil::unserialize(std::istream& istr) {
+  return new LinearGridStencil(istr);
 }
 
 /**
