@@ -4,23 +4,23 @@
 // sgpp.sparsegrids.org
 
 /**
-   * \page example_predictiveRefinement_cpp Spatially-Dimension-Adaptive Refinement in C++
-   *
-   */
+* \page example_predictiveRefinement_cpp Spatially-Dimension-Adaptive Refinement in C++
+*
+*/
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -33,12 +33,10 @@ using sgpp::base::PredictiveRefinement;
 using sgpp::base::PredictiveRefinementIndicator;
 
 // function to interpolate
-double f(double x0, double x1) {
-  return sin(x0 * M_PI);
-}
+double f(double x0, double x1) { return sin(x0 * M_PI); }
 
-DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
-                           const DataVector& alpha, DataVector& error) {
+DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVector& alpha,
+                           DataVector& error) {
   std::cout << "calculating error" << std::endl;
 
   // traverse dataSet
@@ -47,8 +45,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);
-    error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha,
-                   vec), 2);
+    error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha, vec), 2);
   }
 
   return error;
@@ -91,9 +88,8 @@ int main() {
 
   /**
      * We refine adaptively 20 times
-     */ 
+     */
   for (int step = 0; step < 20; step++) {
-
     /**
        * Now we need to calculate the surplus vector alpha. In data
        * mining with do it by solving a regression problem as shown in
@@ -113,8 +109,7 @@ int main() {
     }
 
     // hierarchize
-    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-      alpha);
+    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
     // calculate squared offset
     DataVector errorVector(dataSet.getNrows());
@@ -125,12 +120,12 @@ int main() {
     PredictiveRefinement decorator(&refinement);
 
     // refine a single grid point each time
-    std::cout << "Error over all = "  << errorVector.sum() << std::endl;
+    std::cout << "Error over all = " << errorVector.sum() << std::endl;
     PredictiveRefinementIndicator indicator(*grid, dataSet, errorVector, 1);
     decorator.free_refine(gridStorage, indicator);
 
-    std::cout << "Refinement step " << step + 1 << ", new grid size: " <<
-         gridStorage.getSize() << std::endl;
+    std::cout << "Refinement step " << step + 1 << ", new grid size: " << gridStorage.getSize()
+              << std::endl;
 
     // plot grid
 
