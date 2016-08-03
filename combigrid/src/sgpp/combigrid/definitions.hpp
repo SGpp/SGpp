@@ -28,7 +28,7 @@ typedef std::vector<size_t> MultiIndex;
 
 template <typename In, typename Out>
 std::function<Out(In)> constantFunction(Out fixedValue = Out()) {
-  return [=](In value) { return fixedValue; };
+  return [fixedValue](In value) { return fixedValue; };
 }
 
 template <typename Out>

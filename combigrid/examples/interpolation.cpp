@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 /**
  *
  * The following example shows how to interpolate a function using Leja points via the
  * combination technique. We implement both standard and adaptive interpolation.
- * 
+ *
  *
  * We use the two dimensional test function
  * \f[
@@ -18,7 +17,7 @@
  *
  * For instructions on how to compile and run the example, please see \ref installation.
  *
- * We consider three functions for implementing the interpolation. 
+ * We consider three functions for implementing the interpolation.
  * The functions simpleInterpolation() and multistageInterpolation() perform
  * non-adaptive interpolation. The difference is that the first one is more compact,
  * whereas in the second we present the interface in more detail.

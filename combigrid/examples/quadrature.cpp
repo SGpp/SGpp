@@ -3,13 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 /**
  *
  * The following example shows how to integrate a function using Leja quadrature via the
- * combination technique. We first interpolate the function and afterwards we integrate 
+ * combination technique. We first interpolate the function and afterwards we integrate
  * the interpolant. The entire functionality is implemented in the function quadrature()
- * 
+ *
  *
  * We use the two dimensional test function
  * \f[
