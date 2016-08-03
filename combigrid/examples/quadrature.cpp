@@ -22,21 +22,19 @@ using sgpp::combigrid::AbstractLinearEvaluator;
 using sgpp::combigrid::FloatArrayVector;
 using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
-using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::QuadratureEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::FullGridTensorEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 
 /**
- * The function we want to interpolate
+ * The function we want to integrate
  */
-double f_2D(DataVector v) { 
-  return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); 
-}
+double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
-void interpolation() {
-  // dimension of the interpolation problem
+void quadrature() {
+  // dimension of the integration problem
   size_t numDimensions = 2;
 
   std::vector<DataVector> gridPoints;
@@ -60,9 +58,9 @@ void interpolation() {
                                               false));  // not yet sorted
   pointHierarchies[1] = pointHierarchies[0];
 
-  // evaluators, i.e. interpolation operators
+  // evaluators, i.e. quadrature operators
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(numDimensions);
-  evaluators[0] = std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(
+  evaluators[0] = std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
       true);  // true means that the operator needs a parameter
   evaluators[1] = evaluators[0];
 
@@ -119,7 +117,7 @@ void interpolation() {
 }
 
 int main() {
-  interpolation();
+  quadrature();
 
   return 0;
 }
