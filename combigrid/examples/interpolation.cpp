@@ -48,7 +48,7 @@ using sgpp::combigrid::AbstractLinearEvaluator;
 using sgpp::combigrid::FloatArrayVector;
 using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
-using sgpp::combigrid::BarycentricInterpolationEvaluator;
+using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::FullGridTensorEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
@@ -138,7 +138,7 @@ void multistageInterpolation() {
 
   // evaluators, i.e. interpolation operators
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(numDimensions);
-  evaluators[0] = std::make_shared<ArrayEvaluator<BarycentricInterpolationEvaluator>>(
+  evaluators[0] = std::make_shared<ArrayEvaluator<PolynomialInterpolationEvaluator>>(
       true);  // true means that the operator needs a parameter
   evaluators[1] = evaluators[0];
 
