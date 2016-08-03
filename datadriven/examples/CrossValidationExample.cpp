@@ -33,6 +33,7 @@ using sgpp::datadriven::MSE;
 using sgpp::datadriven::SimpleSplittingScorer;
 using sgpp::datadriven::CrossValidation;
 using sgpp::datadriven::RandomShufflingFunctor;
+using sgpp::base::GridType;
 
 int main(int argc, char **argv) {
   // input
@@ -52,8 +53,11 @@ int main(int argc, char **argv) {
   auto config = std::make_shared<DataMiningConfigurationLeastSquares>();
   // set grid dim
   auto gridConfig = config->getGridConfig();
+  gridConfig.level_ = 2;
+  gridConfig.type_ = GridType::ModLinear;
   gridConfig.dim_ = dataset->getDimension();
   config->setGridConfig(gridConfig);
+  config->setLambda(10e-1);
 
   std::cout << "starting 5 fold cross validation with seed 42" << std::endl;
   auto model = std::make_shared<ModelFittingLeastSquares>(config);
