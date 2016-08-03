@@ -55,7 +55,8 @@ using sgpp::combigrid::CombigridEvaluator;
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
 /**
-*  Function that implements Leja quadrature
+*  Function that implements Leja quadrature. First, it interpolates the function
+*  on Leja points using Lagrange polynomials and afterwards in integrates the interpolant
 */
 void quadrature() {
   // dimension of the integration problem
