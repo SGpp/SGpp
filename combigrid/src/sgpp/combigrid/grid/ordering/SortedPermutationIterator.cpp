@@ -23,7 +23,7 @@ SortedPermutationIterator::SortedPermutationIterator(const std::vector<double>& 
   }
 
   std::sort(permutation.begin(), permutation.begin() + numPoints,
-            [&](size_t i, size_t j) -> bool { return points[i] < points[j]; });
+            [&points](size_t i, size_t j) -> bool { return points[i] < points[j]; });
 }
 
 SortedPermutationIterator::~SortedPermutationIterator() {}
