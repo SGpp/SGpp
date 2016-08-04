@@ -157,6 +157,10 @@ class PolyBasis: public Basis<LT, IT> {
       id >>= 1;
     }
 
+    return eval;
+  }
+
+  double evalSave(LT level, IT index, double p) {
     // spacing on current level
     double h = 1.0f / static_cast<double>(1 << level);
 
@@ -165,12 +169,7 @@ class PolyBasis: public Basis<LT, IT> {
         (p >= h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
-  
-    return eval;
-  }
-
-  double evalSave(LT level, IT index, double p) {
-    return eval(level, index, p);      
+      return eval(level, index, p);      
     }
   }
 
