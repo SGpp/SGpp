@@ -62,8 +62,8 @@ The following software can be installed for full functionality:
 
 @subsection osx_dependencies_installation Installation
 
-For some of the above applications, binaries for Mac OSX are available. 
-Most packages would need to be installed by hand. To simplify this, package 
+For some of the above applications, binaries for Mac OSX are available.
+Most packages would need to be installed by hand. To simplify this, package
 management is recomended. We will relly on the commonly used on <a href="http://brew.sh/" target="_blank">Homebrew</a> for package management in the following .
 
 In order for things to work propperly, you should keep to the order proposed below:
@@ -76,10 +76,13 @@ In order for things to work propperly, you should keep to the order proposed bel
 - Dot: @verbatim brew install graphviz @endverbatim
 - NumPy: use the python package manager PIP @verbatim pip install numpy @endverbatim
 - Boost: Here comes the tricky part. In order for boost to be compatible with C++11 headers, we have to compile the Boost package using GCC.
-First @verbatim export HOMEBREW_CC=gcc-5 @endverbatim and @verbatim export HOMEBREW_CXX=g++-5 @endverbatim (may differ from which version your GCC actually is), 
+First @verbatim export HOMEBREW_CC=gcc-5 @endverbatim and @verbatim export HOMEBREW_CXX=g++-5 @endverbatim (may differ from which version your GCC actually is),
 then install boost using @verbatim brew install boost --c++11 @endverbatim
-- Add @verbatim export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)" @endverbatim in your @verbatim~/.bash_profile @endverbatim. 
-Note that the version has to correspond to an installed version.
+- Add @verbatim export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)" @endverbatim in your <tt>~/.bash_profile</tt> If the Java headers (jni.h, for example) are located somewhere else on your system, export the following variable manually
+@verbatim
+export JNI_CPPINCLUDE=/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers
+@endverbatim
+The path itself can vary on your system. Note that the version has to correspond to an installed version.
 
 
 @section osx_compilation Compilation with SCons
@@ -87,11 +90,11 @@ Note that the version has to correspond to an installed version.
 Apple has installed a prehistoric version of GCC on your Mac.
 But it is there and it will cause you trouble, because scons thinks
 this is the GCC you want to use. You need to tell it the correct paths.
-Do so by appending  
+Do so by appending
 @verbatim
-CC=/usr/local/bin/gcc-5 CC=/usr/local/bin/g++-5 
+CC=/usr/local/bin/gcc-5 CC=/usr/local/bin/g++-5
 @endverbatim
-to EVERY SINGLE CALL of scons (again name of the executable may be different for newer versions). 
+to EVERY SINGLE CALL of scons (again name of the executable may be different for newer versions).
 Do this even when calling the help function. Else scons will complain it can't find any c++11 compilers.
 Compilation of the C++ libraries is done with SCons. Execute
 @verbatim
@@ -271,16 +274,16 @@ or by installing pysgpp in the local @c site-packages folder:
 @verbatim
 python setup.py install --user
 @endverbatim
-To run your Python program, don't forget to update the @c DYLD_FALLBACK_LIBRARY_PATH 
+To run your Python program, don't forget to update the @c DYLD_FALLBACK_LIBRARY_PATH
 environment variable in any case:
 @verbatim
 export DYLD_FALLBACK_LIBRARY_PATH ="/PATH_TO_SGPP/lib/sgpp:$DYLD_FALLBACK_LIBRARY_PATH "
 python tutorial.py
 @endverbatim
 
-@subsection osx_misc Misc 
+@subsection osx_misc Misc
 
 Other options as specified in the linux tutorial may work in Mac OSX but have not been tested so far.
-Share your success stories and issues with us to make this documentation more complete. 
+Share your success stories and issues with us to make this documentation more complete.
 
 */
