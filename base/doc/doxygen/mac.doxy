@@ -69,16 +69,16 @@ management is recomended. We will relly on the commonly used on <a href="http://
 In order for things to work propperly, you should keep to the order proposed below:
 - Install the Java JDK from <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">the Oracle webpage </a>
 - python 2.7 is already part of Mac OSX
-- Install GCC <tt> brew install gcc</tt>
-- SCons: <tt>brew install scons</tt>
-- SWIG: <tt>brew install swig</tt>
-- Doxygen: <tt>brew install doxygen --with-graphviz</tt>
-- Dot: <tt>brew install graphviz</tt>
-- NumPy: use the python package manager PIP <tt>pip install numpy</tt>
+- Install GCC @verbatim brew install gcc @endverbatim
+- SCons: @verbatim brew install scons @endverbatim
+- SWIG: @verbatim brew install swig @endverbatim
+- Doxygen: @verbatim brew install doxygen --with-graphviz @endverbatim
+- Dot: @verbatim brew install graphviz @endverbatim
+- NumPy: use the python package manager PIP @verbatim pip install numpy @endverbatim
 - Boost: Here comes the tricky part. In order for boost to be compatible with C++11 headers, we have to compile the Boost package using GCC.
-First <tt>export HOMEBREW_CC=gcc-5</tt> and <tt>export HOMEBREW_CXX=g++-5</tt> (may differ from which version your GCC actually is), 
-then install boost using  <tt>brew install boost --c++11</tt>
-- Add <tt>export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"</tt> in your <tt>~/.bash_profile</tt>. 
+First @verbatim export HOMEBREW_CC=gcc-5 @endverbatim and @verbatim export HOMEBREW_CXX=g++-5 @endverbatim (may differ from which version your GCC actually is), 
+then install boost using @verbatim brew install boost --c++11 @endverbatim
+- Add @verbatim export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)" @endverbatim in your @verbatim~/.bash_profile @endverbatim. 
 Note that the version has to correspond to an installed version.
 
 
