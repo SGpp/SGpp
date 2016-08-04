@@ -45,19 +45,17 @@ double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i
   SPolyBoundaryBase* polyBoundaryBasis = dynamic_cast<SPolyBoundaryBase*>(&basis);
 
   if (polyBasis != nullptr) {
-    return polyBasis->evalSave(l, i, x);
+    return polyBasis->eval(l, i, x);
   } else if (polyBoundaryBasis != nullptr) {
-    return polyBoundaryBasis->evalSave(l, i, x);
+    return polyBoundaryBasis->eval(l, i, x);
   } else if (polyModBasis != nullptr) {
-    return polyModBasis->evalSave(l, i, x);
+    return polyModBasis->eval(l, i, x);
   } else {
     return basis.eval(l, i, x);
   }
 }
 
-void checkClose(double x, double y, double tol = 1e-8) {
-  BOOST_CHECK_CLOSE(x, y, tol);
-}
+void checkClose(double x, double y, double tol = 1e-8) { BOOST_CHECK_CLOSE(x, y, tol); }
 
 void checkClose(const DataVector& x, const DataVector& y, double tol = 1e-8) {
   BOOST_CHECK_EQUAL(x.getSize(), y.getSize());
@@ -165,7 +163,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
     const size_t n = grid.getSize();
 
     // set random bounding box
-    BoundingBox &boundingBox = grid.getBoundingBox();
+    BoundingBox& boundingBox = grid.getBoundingBox();
     DataVector innerDerivative(d);
 
     for (size_t t = 0; t < d; t++) {
@@ -237,8 +235,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
             for (size_t t = 0; t < d; t++) {
               if (t == j) {
-                val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                    innerDerivative[t];
+                val *=
+                    basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
               } else {
                 val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
               }
@@ -255,10 +253,10 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
               for (size_t t = 0; t < d; t++) {
                 if ((t == j) && (t == k)) {
                   val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t] * innerDerivative[t];
+                         innerDerivative[t] * innerDerivative[t];
                 } else if ((t == j) || (t == k)) {
-                  val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t];
+                  val *=
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -352,8 +350,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
               for (size_t t = 0; t < d; t++) {
                 if (t == j) {
-                  val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t];
+                  val *=
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -370,10 +368,10 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
                 for (size_t t = 0; t < d; t++) {
                   if ((t == j) && (t == k)) {
                     val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                        innerDerivative[t] * innerDerivative[t];
+                           innerDerivative[t] * innerDerivative[t];
                   } else if ((t == j) || (t == k)) {
                     val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                        innerDerivative[t];
+                           innerDerivative[t];
                   } else {
                     val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                   }

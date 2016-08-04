@@ -80,16 +80,16 @@ KernelDensityEstimator::KernelDensityEstimator(const KernelDensityEstimator& kde
   initializeKernel(kde.kernel->getType());
 }
 
-KernelDensityEstimator::~KernelDensityEstimator() { delete kernel; }
+KernelDensityEstimator::~KernelDensityEstimator() {}
 // ----------------------------------------------------------------------
 
 void KernelDensityEstimator::initializeKernel(KernelType kernelType) {
   switch (kernelType) {
     case KernelType::GAUSSIAN:
-      kernel = new GaussianKernel();
+      kernel.reset(new GaussianKernel());
       break;
     case KernelType::EPANECHNIKOV:
-      kernel = new EpanechnikovKernel();
+      kernel.reset(new EpanechnikovKernel());
       break;
     default:
       break;

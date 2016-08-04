@@ -8,8 +8,7 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalPolyBoundaryNaive::eval(const DataVector& alpha,
-    const DataVector& point) {
+double OperationEvalPolyBoundaryNaive::eval(const DataVector& alpha, const DataVector& point) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -22,7 +21,7 @@ double OperationEvalPolyBoundaryNaive::eval(const DataVector& alpha,
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.evalSave(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
 
       if (val1d == 0.0) {
         curValue = 0.0;
@@ -38,8 +37,7 @@ double OperationEvalPolyBoundaryNaive::eval(const DataVector& alpha,
   return result;
 }
 
-void OperationEvalPolyBoundaryNaive::eval(const DataMatrix& alpha,
-                                          const DataVector& point,
+void OperationEvalPolyBoundaryNaive::eval(const DataMatrix& alpha, const DataVector& point,
                                           DataVector& value) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
@@ -56,7 +54,7 @@ void OperationEvalPolyBoundaryNaive::eval(const DataMatrix& alpha,
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.evalSave(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
 
       if (val1d == 0.0) {
         curValue = 0.0;

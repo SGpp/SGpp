@@ -115,7 +115,7 @@ class KernelDensityEstimator : public DensityEstimator {
   std::vector<std::shared_ptr<base::DataVector>> samplesVec;
 
   /// kernel
-  Kernel* kernel;
+  std::unique_ptr<Kernel> kernel;
 
   size_t nsamples;
   size_t ndim;
