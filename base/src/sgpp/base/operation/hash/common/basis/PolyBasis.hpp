@@ -169,7 +169,7 @@ class PolyBasis: public Basis<LT, IT> {
         (p >= h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
-      return eval(level, index, p);
+      return eval(level, index, p);      
     }
   }
 
