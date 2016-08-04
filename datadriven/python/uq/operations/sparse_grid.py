@@ -1,5 +1,5 @@
 from pysgpp import (createOperationHierarchisation,
-                    createOperationEval, createOperationMultipleEval,
+                    createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
                     DataVector, DataMatrix,
                     HashGridPoint,
@@ -525,7 +525,10 @@ def evalSGFunction(grid, alpha, p):
     if len(p.shape) == 1:
         p_vec = DataVector(p)
         alpha_vec = DataVector(alpha)
-        return createOperationEval(grid).eval(alpha_vec, p_vec)
+        if grid.getType() == GridType_Bspline:
+            return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
+        else:
+            return createOperationEval(grid).eval(alpha_vec, p_vec)
     else:
         return evalSGFunctionMulti(grid, alpha, p)
 
