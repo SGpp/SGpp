@@ -6,14 +6,14 @@
 #ifndef LEARNERDENSITYBASED_HPP_
 #define LEARNERDENSITYBASED_HPP_
 
-#include <sgpp/datadriven/application/LearnerBase.hpp>
-#include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/datadriven/application/Learner.hpp>
+#include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <map>
 #include <vector>
@@ -24,11 +24,11 @@ namespace datadriven {
 class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
  protected:
   // Mapping from class index to class number:
-  std::map<int, double> index_to_class_;
+  std::map<int, double> indexToClass;
   // Stores the coefficients for every class
-  std::vector<sgpp::base::DataVector> alphaVec_;
+  std::vector<sgpp::base::DataVector> alphaVec;
   /// regularization mode
-  sgpp::datadriven::RegularizationType CMode_;
+  sgpp::datadriven::RegularizationType CMode;
   // with prior
   bool withPrior;
   // number of classes
@@ -36,9 +36,9 @@ class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
   // prior of data
   std::vector<double> prior;
   // vectors of grids
-  std::vector<sgpp::base::Grid*> gridVec_;
+  std::vector<sgpp::base::Grid*> gridVec;
   // vector of regterms
-  std::vector<sgpp::base::OperationMatrix*> CVec_;
+  std::vector<sgpp::base::OperationMatrix*> CVec;
 
  public:
   LearnerDensityBased(sgpp::datadriven::RegularizationType&, const bool isRegression,
@@ -77,11 +77,6 @@ class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
   /// construct system matrix
   std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset, double lambda) override;
-
-  /**
-   * Returns the execution time
-   */
-  time_t getExecTime();
 
   /**
    * Returns number of grid points for the density
