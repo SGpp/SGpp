@@ -81,15 +81,15 @@ class LearnerDensityBasedReg : public LearnerBase {
 
  protected:
   /// regularization mode
-  sgpp::datadriven::RegularizationType CMode_;
+  sgpp::datadriven::RegularizationType CMode;
   /// regularization operator
-  std::unique_ptr<sgpp::base::OperationMatrix> C_;
+  std::unique_ptr<sgpp::base::OperationMatrix> C;
   /// maximum value (used for de-normalization)
-  double maxValue_;
+  double maxValue;
   /// minimum value (used for de-normalization)
-  double minValue_;
+  double minValue;
   /// border for normalization of the class vector
-  double border_;
+  double border;
 
   /**
    * inherited from LearnerBase, but not used
