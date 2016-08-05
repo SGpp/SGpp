@@ -31,16 +31,7 @@ LearnerDensityBased::LearnerDensityBased(datadriven::RegularizationType& regular
 }
 
 LearnerDensityBased::~LearnerDensityBased() {
-  if (!CVec.empty()) {
-    for (size_t i = 0; i < CVec.size(); i++) delete CVec[i];
-  }
-
   CVec.clear();
-
-  if (!gridVec.empty()) {
-    for (size_t i = 0; i < gridVec.size(); i++) delete gridVec[i];
-  }
-
   gridVec.clear();
   alphaVec.clear();
 }
@@ -58,25 +49,18 @@ void LearnerDensityBased::InitializeGrid(const base::RegularGridConfiguration& G
         "set!");
   }
 
-  if (!gridVec.empty()) {
-    for (size_t i = 0; i < gridVec.size(); i++) delete gridVec[i];
-  }
-
   gridVec.clear();
-
-  if (!alphaVec.empty()) {
-    alphaVec.clear();
-  }
+  alphaVec.clear();
 
   for (size_t i = 0; i < nrClasses; i++) {
     if (GridConfig.type_ == base::GridType::LinearBoundary) {
-      gridVec.push_back(new base::LinearBoundaryGrid(GridConfig.dim_));
+      gridVec.push_back(std::make_unique<base::LinearBoundaryGrid>(GridConfig.dim_));
     } else if (GridConfig.type_ == base::GridType::ModLinear) {
-      gridVec.push_back(new base::ModLinearGrid(GridConfig.dim_));
+      gridVec.push_back(std::make_unique<base::ModLinearGrid>(GridConfig.dim_));
     } else if (GridConfig.type_ == base::GridType::Linear) {
-      gridVec.push_back(new base::LinearGrid(GridConfig.dim_));
+      gridVec.push_back(std::make_unique<base::LinearGrid>(GridConfig.dim_));
     } else {
-      gridVec.push_back(NULL);
+      gridVec.push_back(nullptr);
       throw base::application_exception(
           "LearnerDensityBased::InitializeGrid: An unsupported grid "
           "type was chosen!");
@@ -106,13 +90,14 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
 
   double oldAcc = 0.0;
 
-  solver::SLESolver* myCG;
+  std::unique_ptr<solver::SLESolver> myCG;
 
   if (SolverConfigRefine.type_ == solver::SLESolverType::CG) {
-    myCG =
-        new solver::ConjugateGradients(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
+    myCG = std::make_unique<solver::ConjugateGradients>(SolverConfigRefine.maxIterations_,
+                                                        SolverConfigRefine.eps_);
   } else if (SolverConfigRefine.type_ == solver::SLESolverType::BiCGSTAB) {
-    myCG = new solver::BiCGStab(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
+    myCG = std::make_unique<solver::BiCGStab>(SolverConfigRefine.maxIterations_,
+                                              SolverConfigRefine.eps_);
   } else {
     throw base::application_exception(
         "LearnerDensityBased::train: An unsupported SLE solver type was chosen!");
@@ -120,7 +105,7 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
 
   if (isVerbose) std::cout << "Starting Learning...." << std::endl;
 
-  base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
+  auto myStopwatch = std::make_unique<base::SGppStopwatch>();
 
   size_t dim = trainDataset.getNcols();
 
@@ -168,8 +153,7 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
     trainDataClasses[classIndeces[classLabel]].appendRow(vec);
   }
 
-  // Construct Grid
-  if (!alphaVec.empty()) alphaVec.clear();
+  alphaVec.clear();
 
   if (isTrained == true) isTrained = false;
 
@@ -203,19 +187,15 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
     }
 
     // Create regularization operator
-    if (!CVec.empty()) {
-      for (size_t ii = 0; ii < CVec.size(); ii++) {
-        delete CVec[ii];
-      }
+    CVec.clear();
 
-      CVec.clear();
-    }
-
-    for (size_t ii = 0; ii < classIndeces.size(); ii++) {
+    for (size_t j = 0; j < classIndeces.size(); j++) {
       if (CMode == datadriven::RegularizationType::Laplace) {
-        CVec.push_back(op_factory::createOperationLaplace(*this->gridVec[ii]));
+        CVec.push_back(std::unique_ptr<base::OperationMatrix>(
+            op_factory::createOperationLaplace(*this->gridVec[j])));
       } else if (CMode == datadriven::RegularizationType::Identity) {
-        CVec.push_back(op_factory::createOperationIdentity(*this->gridVec[ii]));
+        CVec.push_back(std::unique_ptr<base::OperationMatrix>(
+            op_factory::createOperationIdentity(*this->gridVec[j])));
       } else {
         throw base::application_exception(
             "LearnerDensityBased::train: Unknown regularization "
@@ -290,9 +270,6 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
   }
 
   isTrained = true;
-
-  delete myStopwatch;
-  delete myCG;
 
   timing.timeComplete_ = execTime;
   timing.GFlop_ = GFlop;
