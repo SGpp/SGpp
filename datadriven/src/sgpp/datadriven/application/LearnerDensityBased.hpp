@@ -21,14 +21,14 @@
 namespace sgpp {
 namespace datadriven {
 
-class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
+class LearnerDensityBased : public datadriven::LearnerBase {
  protected:
   // Mapping from class index to class number:
   std::map<int, double> indexToClass;
   // Stores the coefficients for every class
-  std::vector<sgpp::base::DataVector> alphaVec;
+  std::vector<base::DataVector> alphaVec;
   /// regularization mode
-  sgpp::datadriven::RegularizationType CMode;
+  datadriven::RegularizationType CMode;
   // with prior
   bool withPrior;
   // number of classes
@@ -36,12 +36,12 @@ class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
   // prior of data
   std::vector<double> prior;
   // vectors of grids
-  std::vector<sgpp::base::Grid*> gridVec;
+  std::vector<std::unique_ptr<base::Grid>> gridVec;
   // vector of regterms
-  std::vector<sgpp::base::OperationMatrix*> CVec;
+  std::vector<std::unique_ptr<base::OperationMatrix>> CVec;
 
  public:
-  LearnerDensityBased(sgpp::datadriven::RegularizationType&, const bool isRegression,
+  LearnerDensityBased(datadriven::RegularizationType&, const bool isRegression,
                       const bool isVerbose = true);
   virtual ~LearnerDensityBased();
 
@@ -50,7 +50,7 @@ class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
    *
    * @param GridConfig grid config
    */
-  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig);
+  virtual void InitializeGrid(const base::RegularGridConfiguration& GridConfig);
 
   /**
    * Learning a dataset with spatially adaptive sparse grids
@@ -66,17 +66,17 @@ class LearnerDensityBased : public sgpp::datadriven::LearnerBase {
    *   refinement step
    * @param lambda regularization parameter lambda
    */
-  virtual LearnerTiming train(sgpp::base::DataMatrix& testDataset, sgpp::base::DataVector& classes,
-                              const sgpp::base::RegularGridConfiguration& GridConfig,
-                              const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
-                              const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdpativityConfiguration& AdaptConfig,
+  virtual LearnerTiming train(base::DataMatrix& testDataset, base::DataVector& classes,
+                              const base::RegularGridConfiguration& GridConfig,
+                              const solver::SLESolverConfiguration& SolverConfigRefine,
+                              const solver::SLESolverConfiguration& SolverConfigFinal,
+                              const base::AdpativityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const double lambda);
 
-  virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix& testDataset);
+  virtual base::DataVector predict(base::DataMatrix& testDataset);
   /// construct system matrix
-  std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(
-      sgpp::base::DataMatrix& trainDataset, double lambda) override;
+  std::unique_ptr<datadriven::DMSystemMatrixBase> createDMSystem(base::DataMatrix& trainDataset,
+                                                                 double lambda) override;
 
   /**
    * Returns number of grid points for the density
