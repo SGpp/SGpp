@@ -39,9 +39,12 @@ LearnerSVM::~LearnerSVM() {}
 
 // -----------------------------------------------------------------------
 
-void LearnerSVM::initialize(base::DataMatrix& pTrainData, sgpp::base::DataVector& pTrainLabels) {
+void LearnerSVM::initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
+                            base::DataMatrix& pTestData, base::DataVector& pTestLabels) {
   trainData = std::make_shared<base::DataMatrix>(pTrainData);
   trainLabels = std::make_shared<base::DataVector>(pTrainLabels);
+  testData = std::make_shared<base::DataMatrix>(pTestData);
+  testLabels = std::make_shared<base::DataVector>(pTestLabels);
   gridConfig.dim_ = trainData->getNcols();
   grid = createRegularGrid();
 
@@ -96,6 +99,9 @@ void LearnerSVM::train() {
   bool doRefine = false;      // set true by monitor to trigger refinement
   size_t refSteps = 0;
 
+  // for error plotting
+  sgpp::base::DataVector error;
+
   while (numIterations < maxIterations) {			//shuffle dataset after each iteration
     for (size_t i = 0; i < trainData->getNrows(); i++) {
       // Get next training sample x and its label y
@@ -103,7 +109,7 @@ void LearnerSVM::train() {
       sgpp::base::DataVector x(dim);					// declare outside of loop
       //trainData->getRow((size_t)idx, x);
       trainData->getRow((size_t)i, x);
-      double y = trainLabels->get(i);                           // declare outside of loop, float_t y ?
+      double y = trainLabels->get(i);                           // declare outside of loop
 	  
       t += 1; 
       eta = 1.0 / (lambda * static_cast<double>(t));
@@ -130,31 +136,48 @@ void LearnerSVM::train() {
         predict(*(svm->svs), svsClassesComputed);
 
         HashRefinement refinement;
-        //ForwardSelectorRefinement decorator(&refinement);
-        ImpurityRefinement decorator(&refinement);
+        ForwardSelectorRefinement decorator(&refinement);
+        //ImpurityRefinement decorator(&refinement);
 
         // refine points according to indicator
           
-        //ForwardSelectorRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
-        //                                             *(svm->w2), betaRef, threshold, numPoints);        
-        ImpurityRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
-                                              *(svm->w2), svsClassesComputed, threshold, numPoints);
+        ForwardSelectorRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
+                                                     *(svm->w2), betaRef, threshold, numPoints);        
+        //ImpurityRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
+        //                                      *(svm->w2), svsClassesComputed, threshold, numPoints);
 
         decorator.free_refine(gridStorage, indicator);
         
         std::cout << "refinement step: " << refSteps+1 << std::endl;
-        //std::cout << "new grid size: " << gridStorage.getSize() << std::endl;
-        std::cout << "size of w :" << svm->w->getSize() << std::endl;
+        //std::cout << "size of w :" << svm->w->getSize() << std::endl;
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
         refSteps++;
         doRefine = false;
         //}
       }
-
+      // for plotting only
+      //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
+      double acc = getAccuracy(*testData, *testLabels, 0.0);
+      error.append(1.0 - acc);
     }
     refSteps = 0;
     numIterations++;
+
+    //write error evaluation to .csv
+    std::ofstream output;
+    //output.open("home/maierjo/ripley_predicted.csv");
+    output.open("ripley_err_rate_fwrdSel.csv");
+    //output.open("ripley_predicted.csv");
+    if (output.fail()) {
+      std::cout << "failed to create .csv file!" << std::endl;  
+    }
+    else {
+      for (size_t i = 0; i < error.getSize(); i++) {					
+        output << error.get(i) << ";" << std::endl;
+      }
+      output.close();
+    }
   }
 }
 
@@ -167,14 +190,21 @@ double LearnerSVM::getAccuracy(sgpp::base::DataMatrix& testDataset,
   predict(testDataset, classesComputed);
 
   //write computed classes to .csv
-/*  std::ofstream output;
-  output.open("home/maierjo/ripley_predicted.csv");
-  for (size_t i = 0; i < classesComputed.getSize(); i++) {
-    sgpp::base::DataVector x(2);					
-    testDataset.getRow((size_t)i, x);
-    output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
+  /*std::ofstream output;
+  //output.open("home/maierjo/ripley_predicted.csv");
+  output.open("banana_predicted.csv");
+  //output.open("ripley_predicted.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
   }
-  output.close();*/
+  else {
+    for (size_t i = 0; i < classesComputed.getSize(); i++) {
+      sgpp::base::DataVector x(2);					
+      testDataset.getRow((size_t)i, x);
+      output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
+    }
+    output.close();
+  }*/
 
   return getAccuracy(classesComputed, classesReference, threshold);
 }
@@ -186,7 +216,7 @@ double LearnerSVM::getAccuracy(const sgpp::base::DataVector& classesComputed,
 
   if (classesComputed.getSize() != classesReference.getSize()) {
     throw base::application_exception(
-        "LearnerBase::getAccuracy: lengths of classes vectors do not match!");
+        "LearnerSVM::getAccuracy: lengths of classes vectors do not match!");
   }
 
   size_t correct = 0;

@@ -195,7 +195,7 @@ void ForwardSelectorRefinement::refineGridpointsCollection(
     //if (pair.second > functor.start() && pair.second >= threshold) {
     //}
 
-    std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
+    //std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
 
     //this->refineGridpoint1D(storage, key->getPoint(), key->getDim());
     //this->refineGridpoint(storage, storage.getSequenceNumber(point), );

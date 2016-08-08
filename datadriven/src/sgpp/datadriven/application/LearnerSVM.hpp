@@ -23,6 +23,8 @@ class LearnerSVM {
   std::shared_ptr<base::Grid> grid;
   std::shared_ptr<base::DataMatrix> trainData;
   std::shared_ptr<base::DataVector> trainLabels;
+  std::shared_ptr<base::DataMatrix> testData;
+  std::shared_ptr<base::DataVector> testLabels;
   
   std::shared_ptr<PrimalDualSVM> svm;
 
@@ -45,7 +47,8 @@ class LearnerSVM {
   
   virtual ~LearnerSVM();
   
-  virtual void initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels);
+  virtual void initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
+                          base::DataMatrix& pTestData, base::DataVector& pTestLabels);
 
   /**
    * Implements support vector learning with sparse grid kernels.

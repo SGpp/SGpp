@@ -17,7 +17,7 @@
 int main(int argc, char** argv) {
   std::string filename = "../tests/data/ripleyGarcke.train.arff";
   //std::string filename = "../tests/data/banana.train.arff";
-  ///std::string filename = "../tests/data/banana.arff";
+  //std::string filename = "../tests/data/banana.arff";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
   sgpp::datadriven::LearnerSVM learner(gridConfig);
 
   // initialize learner
-  learner.initialize(trainData, trainLabels);
+  learner.initialize(trainData, trainLabels, testData, testLabels);
 
   // train learner
   std::cout << "# start training the learner" << std::endl;

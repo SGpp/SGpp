@@ -86,7 +86,8 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
-vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
+#vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
+vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", False))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
@@ -124,8 +125,10 @@ vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Currently only buildable with OpenCL enabled", False))
 vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
+#vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
+#                                         "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
-                                         "(only if COMPILE_BOOST_TESTS is true)", True))
+                                         "(only if COMPILE_BOOST_TESTS is true)", False))
 vars.Add(BoolVariable("RUN_CPPLINT",
                       "Check compliance to Google's style guide using cpplint", True))
 
