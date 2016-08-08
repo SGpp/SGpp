@@ -20,7 +20,7 @@ PrimalDualSVM::PrimalDualSVM(size_t dim, size_t dataDim, int B, bool useBias) //
     : svs(new sgpp::base::DataMatrix(0,dataDim)),       
       alphas(new sgpp::base::DataVector(0)),
       norms(new sgpp::base::DataVector(0)), 
-      w(new sgpp::base::DataVector(dim, 0.0)),    // dim of transformed feature space (grid size), w needs to be resized if grid gets refined !!!
+      w(new sgpp::base::DataVector(dim, 0.0)),    // dim of transformed feature space (grid size), w needs to be resized if grid gets resized !!!
       w2(new sgpp::base::DataVector(dim, 0.0)), 
       b(0.0),
       B(B),

@@ -141,7 +141,7 @@ void ImpurityRefinement::refineGridpointsCollection(
 
     GridPoint& point = key->getPoint();
 
-    std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
+    //std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
 
     storage[storage.getSequenceNumber(point)].setLeaf(false);
     //point.setLeaf(false);

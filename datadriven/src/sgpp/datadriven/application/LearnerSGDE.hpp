@@ -96,7 +96,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    *
    * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
    */
-  virtual void initialize(base::DataMatrix& samples);
+  virtual void initialize(base::DataMatrix& samples); 
 
   /**
    * This methods evaluates the sparse grid density at a single point
@@ -148,8 +148,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual size_t getNsamples();
 
   /**
-         * returns the surpluses
-         */
+  * returns the surpluses
+  */
   virtual std::shared_ptr<base::DataVector> getSurpluses();
 
   virtual std::shared_ptr<base::Grid> getGrid();
@@ -162,8 +162,24 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param train sample set
    * @param lambdaReg regularization parameter
    */
-  virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
+  virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
                      double lambdaReg);
+  
+  virtual void train();
+
+  virtual void trainOnline(base::DataVector& plabels);
+
+  virtual void predict(base::DataMatrix& testData,
+                       base::DataVector& computedLabels,
+                       bool usePrior = false);
+  
+  virtual double getAccuracy(base::DataMatrix& testDataset,
+                             const base::DataVector& classesReference,
+                             const double threshold);
+
+  virtual double getAccuracy(const base::DataVector& classesComputed,
+                             const base::DataVector& classesReference,
+                             const double threshold);
 
  protected:
   /**
@@ -213,8 +229,19 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   double mean(base::Grid& grid, base::DataVector& alpha);
 
   std::shared_ptr<base::Grid> grid;
+  // mapping of grids to labels
+  std::map<int, std::shared_ptr<base::Grid>> grids;  
   std::shared_ptr<base::DataVector> alpha;
-  std::shared_ptr<base::DataMatrix> samples;
+  // mapping of current alpha vectors to labels
+  std::map<int, std::shared_ptr<base::DataVector>> alphas;  
+  // mapping previous alpha vectors (stored in a queue) to labels -> needed for weighting
+  //std::map<int, std::deque<std::shared_ptr<base::DataVector>>> alphaStorage;  
+  // mapping of number of appeared samples to labels
+  std::map<int, size_t> appearances;  
+  std::shared_ptr<base::DataMatrix> trainData;
+  std::shared_ptr<base::DataVector> labels;
+
+  double lambdaReg;
 
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;

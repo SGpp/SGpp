@@ -12,8 +12,8 @@
 #include "sgpp/datadriven/application/LearnerSGDE.hpp"
 #include "sgpp/base/grid/Grid.hpp"
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/application/GaussianKDE.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+//#include "sgpp/datadriven/application/GaussianKDE.hpp"
+//#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -21,44 +21,49 @@ using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
 
-void randu(DataVector& rvar, std::mt19937& generator) {
-  std::uniform_real_distribution<double> distribution(0.0, 1.0);
-  for (size_t j = 0; j < rvar.getSize(); ++j) {
-    rvar[j] = distribution(generator);
-  }
-}
-
-void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
-  size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
-
-  std::mt19937 generator(seedValue);
-  DataVector sample(ndim);
-  for (size_t i = 0; i < nsamples; ++i) {
-    randu(sample, generator);
-    rvar.setRow(i, sample);
-  }
-}
 
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/friedman_4d_2000.arff";
+  //std::string filename = "../tests/data/ripleyGarcke.train.arff";
+  std::string filename = "../tests/data/banana.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& samples = dataset.getData();
+  sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& trainData = trainDataset.getData();
+
+  //normalize - banana
+  trainData.normalizeDimension(0);
+  trainData.normalizeDimension(1);
+
+  // extract train classes
+  sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
+
+  //filename = "../tests/data/ripleyGarcke.test.arff";
+  filename = "../tests/data/banana.arff";
+  // load test samples
+  std::cout << "# loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& testData = testDataset.getData();
+
+  //normalize - banana
+  testData.normalizeDimension(0);
+  testData.normalizeDimension(1);
+
+  // extract test classes
+  sgpp::base::DataVector& testLabels = testDataset.getTargets();
 
   // configure grid
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
-  gridConfig.dim_ = dataset.getDimension();
+  gridConfig.dim_ = trainDataset.getDimension();
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
-  //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
+  //gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.noPoints_ = 10;
+  adaptConfig.numRefinements_ = 5;
+  adaptConfig.noPoints_ = 4;
 
   // configure solver
   std::cout << "# create solver config" << std::endl;
@@ -71,17 +76,18 @@ int main(int argc, char** argv) {
   // configure regularization
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  //regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 3;
+  crossvalidationConfig.kfold_ = 5;
   crossvalidationConfig.lambda_ = 3.16228e-06;
   crossvalidationConfig.lambdaStart_ = 1e-1;
   crossvalidationConfig.lambdaEnd_ = 1e-10;
-  crossvalidationConfig.lambdaSteps_ = 3;
+  crossvalidationConfig.lambdaSteps_ = 5;
   crossvalidationConfig.logScale_ = true;
   crossvalidationConfig.shuffle_ = true;
   crossvalidationConfig.seed_ = 1234567;
@@ -90,10 +96,19 @@ int main(int argc, char** argv) {
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
-  learner.initialize(samples);
-  learner.train();
+  learner.initialize(trainData);
+  std::cout << "# start training the learner" << std::endl;
+  learner.trainOnline(trainLabels);
 
-  sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
+  std::cout << "# finished training" << std::endl;
+
+  // test learner
+  double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
+  std::cout << "Acc (train): " << accTrain << std::endl;
+  double accTest = learner.getAccuracy(testData, testLabels, 0.0);
+  std::cout << "Acc (test): " << accTest << std::endl;
+
+  /*sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
   learner.cov(covSgde);
   std::cout << covSgde.toString() << std::endl;
 
@@ -146,5 +161,5 @@ int main(int argc, char** argv) {
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << points.toString() << std::endl;
+  std::cout << points.toString() << std::endl;*/
 }
