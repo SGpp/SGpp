@@ -17,14 +17,19 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Base class for density multiplication operation
 class OperationDensityOCL: public base::OperationMatrix {
  public:
   OperationDensityOCL()  {
   }
+  /// Execute one matrix-vector multiplication with the density matrix
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
+  /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
   virtual void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) = 0;
+  /// Generates the right hand side vector for the density equation
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) = 0;
+  /// Generate the default parameters in die json configuration
   static void load_default_parameters(base::OCLOperationConfiguration *parameters) {
   if (parameters->contains("INTERNAL_PRECISION") == false) {
     std::cout << "Warning! No internal precision setting detected."

@@ -14,14 +14,17 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL source builder for density right hand side vector
 template<typename real_type>
 class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
  private:
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
-
+  /// Dimensions of grid
   size_t dims;
-
+  /// Used workgroupsize for opencl kernel execution
   size_t localWorkgroupSize;
+  /// Using local memory?
   bool useLocalMemory;
   size_t dataBlockSize;
   size_t transGridBlockSize;
@@ -49,6 +52,7 @@ class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
       kernelConfiguration(kernelConfiguration), dims(dims) {
   }
 
+  /// Generates the opencl source code for the density right hand side vector
   std::string generateSource(size_t dimensions, size_t datapoints) {
     if (kernelConfiguration.contains("REUSE_SOURCE")) {
       if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
