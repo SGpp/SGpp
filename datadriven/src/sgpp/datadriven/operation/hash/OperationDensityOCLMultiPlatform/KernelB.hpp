@@ -21,9 +21,11 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Class for the OpenCL density matrix vector multiplication
 template<typename T>
 class KernelDensityB {
  private:
+  /// Used opencl device
   std::shared_ptr<base::OCLDevice> device;
 
   size_t dims;
@@ -32,18 +34,23 @@ class KernelDensityB {
 
   cl_int err;
 
+  /// Buffer for the grid points
   base::OCLBufferWrapperSD<int> devicePoints;
+  /// Buffer for the used dataset
   base::OCLBufferWrapperSD<T> deviceData;
+  /// Buffer for the result vector
   base::OCLBufferWrapperSD<T> deviceResultData;
 
   cl_kernel kernelB;
 
+  /// Source builder for the kernel opencl source code
   sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderB<T> kernelSourceBuilder;
-
+  /// OpenCL manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   double deviceTimingMult;
 
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
 
 
@@ -93,9 +100,7 @@ class KernelDensityB {
     }
   }
 
-  void resetKernel() {
-  }
-
+  /// Generates part of the right hand side density vector
   double rhs(std::vector<T> &data, std::vector<T> &result,
              size_t startid = 0, size_t chunksize = 0) {
     if (verbose) {
@@ -237,6 +242,7 @@ class KernelDensityB {
     this->deviceTimingMult += time;
     return 0;
   }
+  /// Adds the possible building parameters to the configuration if they do not exist yet
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters){
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

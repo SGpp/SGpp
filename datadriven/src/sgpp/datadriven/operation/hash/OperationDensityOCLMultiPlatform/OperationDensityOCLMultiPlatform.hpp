@@ -27,20 +27,29 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Class for opencl density multiplication and density right hand side vector
 template<typename T>
 class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
  private:
   size_t dims;
   size_t gridSize;
+  /// OpenCL kernel which executes the matrix-vector density multiplications
   sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
+  /// OpenCL kernel which generates the right hand side vector of the density equation
   sgpp::datadriven::DensityOCLMultiPlatform::KernelDensityB<T> *bKernel;
+  /// Vector with all OpenCL devices
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
+  /// Verbosity
   bool verbose;
+  /// Contains all levels and indices of the sparse grid
   std::vector<int> points;
+  /// OpenCL Manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  /// Lambda for the density multiplication
   T lambda;
 
  public:
+  /// Normal constructor
   OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    sgpp::base::OCLOperationConfiguration *parameters,
@@ -105,6 +114,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       throw base::operation_exception(errorString.str());
     }
   }
+  /// Constructor for mpi nodes - accepts grid als integer array
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    sgpp::base::OCLOperationConfiguration *parameters,
@@ -169,6 +179,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     delete bKernel;
   }
 
+  /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
   void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) override {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(chunksize);
@@ -194,7 +205,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       result[i] = resultVector[i];
   }
 
-  /// Density Multiplication
+  /// Execute one matrix-vector multiplication with the density matrix
   void mult(base::DataVector& alpha, base::DataVector& result) override {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(gridSize);
@@ -217,6 +228,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       result[i] = resultVector[i];
   }
 
+  /// Generates the right hand side vector for the density equation
   void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                  size_t start_id = 0, size_t chunksize = 0) override {
     std::chrono::time_point<std::chrono::system_clock> start, end;

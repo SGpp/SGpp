@@ -20,9 +20,11 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Class for the OpenCL density matrix vector multiplication
 template<typename T>
 class KernelDensityMult {
  private:
+  /// Used opencl device
   std::shared_ptr<base::OCLDevice> device;
 
   size_t dims;
@@ -31,19 +33,31 @@ class KernelDensityMult {
 
   cl_int err;
 
+  /// Buffer for the grid points
   base::OCLBufferWrapperSD<int> devicePoints;
+  /// Buffer for the alpha vector
   base::OCLBufferWrapperSD<T> deviceAlpha;
+  /// Buffer for the result vector
   base::OCLBufferWrapperSD<T> deviceResultData;
+  /// Buffer for the preprocessed levels (if used)
   base::OCLBufferWrapperSD<T> deviceLevels;
+  /// Buffer for the preprocessed inversed levels (if used)
   base::OCLBufferWrapperSD<T> deviceDivisors;
+  /// Buffer for the preprocessed h^{-1} (if used)
   base::OCLBufferWrapperSD<int> devicehInverse;
+  /// Buffer for the preprocessed h (if used)
   base::OCLBufferWrapperSD<T> devicehs;
+  /// Buffer for the preprocessed h (if used)
   base::OCLBufferWrapperSD<T> devicePositions;
 
   cl_kernel kernelMult;
+  /// Source builder for the opencl source code of the kernel
   SourceBuilderMult<T> kernelSourceBuilder;
+  /// OpenCL manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  /// Stores the running time of the kernel
   double deviceTimingMult;
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
   bool verbose;
 
@@ -52,9 +66,13 @@ class KernelDensityMult {
   size_t scheduleSize;
   size_t totalBlockSize;
 
+  /// Use a cache for the 2^l values? Configuration parameter is USE_LEVEL_CACHE
   bool use_level_cache;
+  /// Use a calculation scheme with less operations but more branching?
   bool use_less;
+  /// Use ternary operator for branching? Configuration parameter is USE_LESS_OPERATIONS
   bool do_not_use_ternary;
+  /// Use preprocessed grid positions? Configuration parameter is PREPROCESSED_POSITIONS
   bool preprocess_positions;
 
  public:
@@ -170,9 +188,7 @@ class KernelDensityMult {
     }
   }
 
-  void resetKernel() {
-  }
-
+  /// Executes part of one matrix-vector density multiplication from startid to startid + chunksize
   double mult(std::vector<T> &alpha, std::vector<T> &result, size_t startid, size_t chunksize) {
     if (verbose) {
       std::cout << "entering mult, device: " << device->deviceName << " ("
@@ -385,6 +401,7 @@ class KernelDensityMult {
     this->deviceTimingMult += time;
     return 0;
   }
+  /// Adds the possible building parameters to the configuration if they do not exist yet
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

@@ -15,22 +15,33 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL source builder for density matrix vector multiplication
 template<typename real_type>
 class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
  private:
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
+  /// Dimensions of grid
   size_t dims;
+  /// Used workgroupsize for opencl kernel execution
   size_t localWorkgroupSize;
+  /// Using local memory?
   bool useLocalMemory;
   size_t dataBlockSize;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
 
+  /// Use a cache for the 2^l values? Configuration parameter is USE_LEVEL_CACHE
   bool use_level_cache;
+  /// Use a calculation scheme with less operations but more branching?
   bool use_less;
+  /// Use ternary operator for branching? Configuration parameter is USE_LESS_OPERATIONS
   bool do_not_use_ternary;
+  /// Avoid branching even at the cost of more operations? Configuration parameter is USE_IMPLICIT
   bool use_implicit_zero;
+  /// Avoid using fmax? Configuration parameter is USE_FABS
   bool use_fabs_instead_of_fmax;
+  /// Use preprocessed grid positions? Configuration parameter is PREPROCESSED_POSITIONS
   bool preprocess_positions;
   bool unroll_dim;
 
