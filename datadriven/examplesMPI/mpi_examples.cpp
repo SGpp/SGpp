@@ -66,13 +66,13 @@ int main(int argc, char *argv[]) {
 
 
   // Create right hand side vector
-  sgpp::base::DataVector rhs(gridsize);
-  sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
-  std::cin.get();
-  rhs_op.generate_b(rhs);
-  for (auto i = 0; i < 100; ++i) {
-    std::cout << rhs[i] << " ";
-    }
+  // sgpp::base::DataVector rhs(gridsize);
+  // sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
+  // std::cin.get();
+  // rhs_op.generate_b(rhs);
+  // for (auto i = 0; i < 100; ++i) {
+  //   std::cout << rhs[i] << " ";
+  //   }
 
   // Solve for alpha vector via CG solver
   /*sgpp::base::DataVector alpha(gridsize);
@@ -87,14 +87,16 @@ int main(int argc, char *argv[]) {
     alpha[i] = alpha[i]*1.0/(max-min);
 */
   // Create and prune knn graph
-  /*sgpp::datadriven::clusteringmpi::OperationCreatePrunedGraph prune_op(*grid, alpha,  dataset, 12);
-  std::vector<int> pruned_graph = prune_op.createPrunedGraph(0.7);
+  std::cin.get();
+  sgpp::datadriven::clusteringmpi::OperationGraphCreationMPI graph_op(dataset, 12);
+  std::vector<int> knn_graph;
+  graph_op.create_graph(knn_graph);
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
-      std::cout << pruned_graph[i * 12 + node] << " ";
+      std::cout << knn_graph[i * 12 + node] << " ";
     }
     std::cout << "\n";
-    }*/
+    }
 
   std::cin.get();
   // Cleanup MPI enviroment
