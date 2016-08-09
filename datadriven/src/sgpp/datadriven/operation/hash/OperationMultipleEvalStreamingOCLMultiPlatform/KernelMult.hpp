@@ -23,6 +23,18 @@ namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
+/**
+ * Kernel that provide the MultiEval \f$v:= B^T \alpha\f$ operation for a single OpenCL device.
+ * This class manages the OpenCL data structures required for a OpenCL kernel invocation.
+ * To that end, it makes heavy use of OpenCL buffer abstraction.
+ * It makes use of a queue of work packages to find out whether still device has any remaining work
+ * available.
+ * For the creation of the device-side compute kernel code, a code generator is used.
+ *
+ * @see base::OCLBufferWrapperSD
+ * @see base::QueueLoadBalancer
+ * @see SourceBuilderMultTranspose
+ */
 template <typename T>
 class KernelMult {
  private:
@@ -61,6 +73,15 @@ class KernelMult {
   double buildDuration;
 
  public:
+  /**
+   * Constructs a new KernelMult object.
+   *
+   * @param device The OpenCL device this kernel instance manages
+   * @param dims Dimensionality of the problem
+   * @param manager The OpenCL manager to reduce OpenCL boilerplate
+   * @param kernelConfiguration The configuration of this specific device
+   * @param queueBalancerMult Load balance for query work from for the device
+   */
   KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
              std::shared_ptr<base::OCLManagerMultiPlatform> manager,
              json::Node &kernelConfiguration,
@@ -98,6 +119,9 @@ class KernelMult {
     totalBlockSize = dataBlockSize * localSize;
   }
 
+  /**
+   * Destructor
+   */
   ~KernelMult() {
     if (kernelMult != nullptr) {
       clReleaseKernel(kernelMult);
@@ -105,11 +129,23 @@ class KernelMult {
     }
   }
 
-  void resetKernel() {
-    // leads to a reallocation before next kernel execution
-    //    releaseGridBuffers();
-  }
-
+  /**
+   * Perform the MultiEval operator with the device this kernel manages.
+   * Has additional, currently unused parameters to enable further MPI parallelization in the
+   * future.
+   *
+   * @param level Vector containing the d-dimensional levels of the grid, the order matches the
+   * index vector
+   * @param index Vector containing the d-dimensional indices of the grid, the order matches the
+   * level vector
+   * @param dataset Vector containing the d-dimensional data points
+   * @param alpha Vector containing the surpluses, the order matches level and index
+   * @param result The MultiEval results in the order of the data points of the dataset
+   * @param start_index_grid start of range of grid points to work on, currently not used
+   * @param end_index_grid end of range of grid points to work on, currently not used
+   * @param start_index_data start of range of data points to work on, currently not used
+   * @param end_index_data end of range of data points to work on, currently not used
+   */
   double mult(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
               std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid,
               const size_t end_index_grid, const size_t start_index_data,
@@ -321,9 +357,22 @@ class KernelMult {
     return this->deviceTimingMult;
   }
 
+  /**
+   * @return The time it took to compile the OpenCL kernel code
+   */
   double getBuildDuration() { return this->buildDuration; }
 
  private:
+  /**
+   * Initializes the device buffers that belong to the grid on the device.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param level Levels vectors of the grid
+   * @param index Index vectors of the grid
+   * @param alpha Surpluses of the grid
+   * @param kernelStartGrid start of the range to be processed by the device
+   * @param kernelEndGrid End of the range to be processed by the device
+   */
   void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha,
                        size_t kernelStartGrid, size_t kernelEndGrid) {
     deviceLevel.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);
@@ -331,10 +380,25 @@ class KernelMult {
     deviceAlpha.intializeTo(alpha, 1, kernelStartGrid, kernelEndGrid);
   }
 
+  /**
+   * Initializes the device buffers that belong to the dataset on the device.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param dataset The dataset to be processed
+   * @param kernelStartData Start of the range to be processed by the device
+   * @param kernelEndData End of the range to be processed by the device
+   */
   void initDatasetBuffers(std::vector<T> &dataset, size_t kernelStartData, size_t kernelEndData) {
     deviceData.intializeTo(dataset, dims, kernelStartData, kernelEndData, true);
   }
 
+  /**
+   * Initializes the device buffers that contain the result of the mult operation.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param kernelStartData Start of the range to be processed by the device
+   * @param kernelEndData End of the range to be processed by the device
+   */
   void initDatasetResultBuffers(size_t kernelStartData, size_t kernelEndData) {
     size_t range = kernelEndData - kernelStartData;
 

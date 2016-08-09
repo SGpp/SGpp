@@ -314,6 +314,9 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
 
+  #   # limit the number of errors display to something reasonable (useful for templated code)
+  #   config.env.Append(CPPFLAGS=["-fmax-errors=5"])
+
   # required for profiling
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
 

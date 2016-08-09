@@ -7,24 +7,37 @@
 
 #include <CL/cl.h>
 
-#include <string>
-#include <limits>
-#include <vector>
 #include <chrono>
+#include <limits>
+#include <string>
+#include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
 #include "SourceBuilderMultTranspose.hpp"
 #include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
+#include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
+/**
+ * Kernel that provide the transposed MultiEval operation \f$v':= B v\f$ for a single OpenCL
+ * device.
+ * This class manages the OpenCL data structures required for a OpenCL kernel invocation.
+ * To that end, it makes heavy use of OpenCL buffer abstraction.
+ * It makes use of a queue of work packages to find out whether still device has any remaining work
+ * available.
+ * For the creation of the device-side compute kernel code, a code generator is used.
+ *
+ * @see base::OCLBufferWrapperSD
+ * @see base::QueueLoadBalancer
+ * @see SourceBuilderMultTranspose
+ */
 template <typename T>
 class KernelMultTranspose {
  private:
@@ -63,6 +76,15 @@ class KernelMultTranspose {
   double buildDuration;
 
  public:
+  /**
+   * Constructs a new KernelMultTranspose object.
+   *
+   * @param device The OpenCL device this kernel instance manages
+   * @param dims Dimensionality of the problem
+   * @param manager The OpenCL manager to reduce OpenCL boilerplate
+   * @param kernelConfiguration The configuration of this specific device
+   * @param queueBalancerMultTranspose Load balance for query work from for the device
+   */
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
@@ -87,8 +109,8 @@ class KernelMultTranspose {
       std::stringstream errorString;
       errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
                      "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
-                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
-                  << std::endl;
+                     "set, was set to "
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << std::endl;
       throw sgpp::base::operation_exception(errorString.str());
     }
 
@@ -100,6 +122,9 @@ class KernelMultTranspose {
     totalBlockSize = localSize * gridBlockSize;
   }
 
+  /**
+   * Destructor
+   */
   ~KernelMultTranspose() {
     if (this->kernelMultTranspose != nullptr) {
       clReleaseKernel(this->kernelMultTranspose);
@@ -107,12 +132,23 @@ class KernelMultTranspose {
     }
   }
 
-  void resetKernel() {
-    //    releaseGridBuffersTranspose();
-    //    releaseDataBuffersTranspose();
-    //    releaseGridResultBufferTranspose();
-  }
-
+  /**
+   * Perform the transposed MultiEval operator \f$v':= B v\f$ with the device this kernel manages.
+   * Has additional, currently unused parameters to enable further MPI parallelization in the
+   * future.
+   *
+   * @param level Vector containing the d-dimensional levels of the grid, the order matches the
+   * index vector
+   * @param index Vector containing the d-dimensional indices of the grid, the order matches the
+   * level vector
+   * @param dataset Vector containing the d-dimensional data points
+   * @param source Vector \f$v\f
+   * @param result The results vector \f$v'\f$ of the operation
+   * @param start_index_grid start of range of grid points to work on, currently not used
+   * @param end_index_grid end of range of grid points to work on, currently not used
+   * @param start_index_data start of range of data points to work on, currently not used
+   * @param end_index_data end of range of data points to work on, currently not used
+   */
   double multTranspose(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
                        std::vector<T> &source, std::vector<T> &result,
                        const size_t start_index_grid, const size_t end_index_grid,
@@ -278,7 +314,8 @@ class KernelMultTranspose {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in multTranspose)! Error code: " << err << std::endl;
+                         "queue (or crash in multTranspose)! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -288,7 +325,8 @@ class KernelMultTranspose {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: " << err << std::endl;
+                         "queue! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -312,21 +350,50 @@ class KernelMultTranspose {
     return this->deviceTimingMultTranspose;
   }
 
+  /**
+   * @return The time it took to compile the OpenCL kernel code
+   */
   double getBuildDuration() { return this->buildDuration; }
 
  private:
+  /**
+   * Initializes the device buffers that belong to the grid on the device.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param level Levels vectors of the grid
+   * @param index Index vectors of the grid
+   * @param alpha Surpluses of the grid
+   * @param kernelStartGrid start of the range to be processed by the device
+   * @param kernelEndGrid End of the range to be processed by the device
+   */
   void initGridBuffersTranspose(std::vector<T> &level, std::vector<T> &index,
                                 size_t kernelStartGrid, size_t kernelEndGrid) {
     deviceLevelTranspose.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);
     deviceIndexTranspose.intializeTo(index, dims, kernelStartGrid, kernelEndGrid);
   }
 
+  /**
+   * Initializes the device buffers that belong to the dataset on the device.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param dataset The dataset to be processed
+   * @param source The input vector \f$v\f$ that is transferred to the device as well
+   * @param kernelStartData Start of the range to be processed by the device
+   * @param kernelEndData End of the range to be processed by the device
+   */
   void initDatasetBuffersTranspose(std::vector<T> &dataset, std::vector<T> &source,
                                    size_t kernelStartData, size_t kernelEndData) {
     deviceDataTranspose.intializeTo(dataset, dims, kernelStartData, kernelEndData, true);
     deviceSourceTranspose.intializeTo(source, 1, kernelStartData, kernelEndData);
   }
 
+  /**
+   * Initializes the device buffers that contain the result of the multTranspose operation.
+   * This is expensive, as it triggers host to device memory copies.
+   *
+   * @param kernelStartData Start of the range to be processed by the device
+   * @param kernelEndData End of the range to be processed by the device
+   */
   void initGridResultBuffersTranspose(size_t kernelStartGrid, size_t kernelEndGrid) {
     size_t range = kernelEndGrid - kernelStartGrid;
 
