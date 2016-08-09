@@ -401,7 +401,7 @@ class KernelDensityMult {
     this->deviceTimingMult += time;
     return 0;
   }
-  /// Adds the possible building parameters to the configuration if they do not exist yet
+  /// Adds all possible building parameters to the configuration if they do not exist yet
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

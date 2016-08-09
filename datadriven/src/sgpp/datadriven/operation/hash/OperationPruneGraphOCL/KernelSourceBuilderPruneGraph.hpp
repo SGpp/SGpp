@@ -15,40 +15,28 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL source builder for density based graph pruning
 template<typename real_type>
 class SourceBuilderPruneGraph: public base::KernelSourceBuilderBase<real_type> {
  private:
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
-
+  /// Dimensions of grid
   size_t dims;
-
+  /// Used workgroupsize for opencl kernel execution
   size_t localWorkgroupSize;
+  /// Using local memory?
   bool useLocalMemory;
   size_t dataBlockSize;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
-
-  std::string getData(std::string dim, size_t dataBlockingIndex) {
-    std::stringstream output;
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-      output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-      output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
-      output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim
-             << ") + " << dataBlockingIndex << "]";
-    } else {
-      std::string error("OCL Error: Illegal value for parameter \"KERNEL_STORE_DATA\"");
-      throw new base::operation_exception(error.c_str());
-    }
-    return output.str();
-  }
 
  public:
   SourceBuilderPruneGraph(json::Node &kernelConfiguration, size_t dims) :
       kernelConfiguration(kernelConfiguration), dims(dims) {
   }
 
+  /// Generates the whole opencl kernel code used for the pruning of a graph
   std::string generateSource(size_t dimensions, size_t gridSize, size_t k, real_type treshold) {
     if (kernelConfiguration.contains("REUSE_SOURCE")) {
       if (kernelConfiguration["REUSE_SOURCE"].getBool()) {

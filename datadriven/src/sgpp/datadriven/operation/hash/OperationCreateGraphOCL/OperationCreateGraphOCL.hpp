@@ -19,8 +19,10 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Pure virtual base class for the k nearest neighbor opencl operation
 class OperationCreateGraphOCL {
  protected:
+  /// Recursive function for traversing the k nearest neighbor graph
   static size_t find_neighbors(size_t index, std::vector<int> &nodes, size_t cluster, size_t k,
                                std::vector<size_t> &clusterList,
                                bool overwrite = false) {
@@ -72,8 +74,10 @@ class OperationCreateGraphOCL {
   OperationCreateGraphOCL()  {
   }
 
+  /// Pure virtual function to create the k nearest neighbor graph for some datapoints of a dataset
   virtual void create_graph(std::vector<int> &resultVector, int startid = 0,
                             int chunksize = 0) = 0;
+  /// Assign a clusterindex for each datapoint using the connected components of the graph
   static std::vector<size_t> find_clusters(std::vector<int> &graph, size_t k) {
     std::vector<size_t> clusters(graph.size()/k);
     size_t clustercount = 0;
@@ -92,6 +96,7 @@ class OperationCreateGraphOCL {
   }
 
   virtual ~OperationCreateGraphOCL(void) {}
+  /// Add the default parameters to the the configuration
   static void load_default_parameters(base::OCLOperationConfiguration *parameters) {
     if (parameters->contains("INTERNAL_PRECISION") == false) {
       std::cout << "Warning! No internal precision setting detected."

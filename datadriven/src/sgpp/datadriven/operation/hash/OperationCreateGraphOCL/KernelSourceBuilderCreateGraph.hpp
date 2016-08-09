@@ -15,39 +15,29 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL source builder for k nearest neighbors graph creation
 template<typename real_type>
 class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> {
  private:
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
-
+  /// Dimensions of the used dataset
   size_t dims;
-
+  /// Used workgroupsize for opencl kernel execution
   size_t localWorkgroupSize;
+  /// Using local memory?
   bool useLocalMemory;
   size_t dataBlockSize;
   size_t transGridBlockSize;
   uint64_t maxDimUnroll;
+  /// Use select statements instead of if branches? Configuration parameter is USE_SELECT
   bool use_select;
+  /// Create a approximation instead of an exact graph? Configuration parameter is USE_APPROX
   bool use_approx;
+  /// Number of bins used for the approximation if use_approx is true
   size_t approxRegCount;
 
-
-  std::string getData(std::string dim, size_t dataBlockingIndex) {
-    std::stringstream output;
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-      output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-      output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
-      output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim
-             << ") + " << dataBlockingIndex << "]";
-    } else {
-      std::string error("OCL Error: Illegal value for parameter \"KERNEL_STORE_DATA\"");
-      throw new base::operation_exception(error.c_str());
-    }
-    return output.str();
-  }
-
+  /// Writes the source code for initialization of the k neighbor registers
   std::string init_k_registers(size_t k) {
     std::stringstream output;
     output << this->indent[0] << "__private int k_reg["<< k << "];" << std::endl;
@@ -64,6 +54,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
       }*/
     return output.str();
   }
+  /// Writes the source code for finding the current maximum of all neighbors
   std::string find_max_index(size_t k, bool unroll) {
     std::stringstream output;
     if (!unroll) {
@@ -92,6 +83,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
       }*/
     return output.str();
   }
+  /// Writes the source code for copying the current datapoint to private memory
   std::string save_from_global_to_private(size_t dimensions) {
     std::stringstream output;
     output << this->indent[0] << "__private " << this->floatType() << " datapoint["
@@ -102,6 +94,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
     }
     return output.str();
   }
+  /// Writes the source code for copying the results back into the global memory
   std::string copy_k_registers_into_global(size_t k) {
     std::stringstream output;
     for (size_t i = 0; i < k; i++) {
@@ -135,6 +128,7 @@ class SourceBuilderCreateGraph: public base::KernelSourceBuilderBase<real_type> 
       approxRegCount = kernelConfiguration["APPROX_REG_COUNT"].getUInt();
   }
 
+  /// Generates the whole opencl kernel code for the creation of a k nearest neighbor graph
   std::string generateSource(size_t dimensions, size_t k, size_t dataSize, size_t problemsize) {
     if (kernelConfiguration.contains("REUSE_SOURCE")) {
       if (kernelConfiguration["REUSE_SOURCE"].getBool()) {

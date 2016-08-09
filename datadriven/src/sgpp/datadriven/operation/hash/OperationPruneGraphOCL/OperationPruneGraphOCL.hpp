@@ -18,11 +18,14 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Pure virtual base class for the graph pruning operation
 class OperationPruneGraphOCL {
  public:
   OperationPruneGraphOCL()  {
   }
 
+
+  /// Deletes all nodes and edges within areas of low density which are in the given graph chunk
   virtual void prune_graph(std::vector<int> &graph, size_t startid = 0, size_t chunksize = 0) = 0;
   virtual ~OperationPruneGraphOCL(void) {}
   static void load_default_parameters(base::OCLOperationConfiguration *parameters) {
