@@ -17,12 +17,12 @@ DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, base::OCLOperationConfiguration *parameters,
                                         size_t platform_id, size_t device_id);
-/// Generates opencl density multiplication operation with a given opencl device and configuration file
+/// Generates opencl density multiplication operation given opencl device and configuration file
 sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf, size_t platform_id,
                                         size_t device_id);
-/// Generates opencl density multiplication operation with a given opencl device and a serialized grid
+/// Generates opencl density multiplication operation given opencl device and a serialized grid
 sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
                                         double lambda, std::string opencl_conf,

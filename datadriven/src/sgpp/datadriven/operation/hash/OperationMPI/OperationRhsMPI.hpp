@@ -23,7 +23,6 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
   MPI_Comm &master_worker_comm;
   MPI_Comm &sub_worker_comm;
   void divide_workpackages(int *package, double *erg) {
-
     // Divide into more work packages
     int packagesize = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getInt();
     double *package_result = new double[packagesize];
@@ -49,6 +48,7 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
     }
     delete [] package_result;
   }
+
  public:
   DensityRhsWorker()
       : MPIWorkerBase("DensityRHSWorker"),
