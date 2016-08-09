@@ -27,6 +27,23 @@ namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
+/**
+ * This class provides an operation for evaluating multiple grid points in the domain and doing
+ * least squares data mining.
+ * This algorithmic variant uses the streaming algorithm for evaluation.
+ * It uses high performance OpenCL kernels and is well-suited for large irregular datasets and
+ * grids.
+ * This class manages one OpenCL kernel for each devices configured using the
+ * OCLOperationConfiguration.
+ * When a operation is called it triggers the device work by using OpenMP and delegating the work to
+ * instances of the kernels.
+ * Furthermore, this class converts the received grid and dataset into a representation that is
+ * suited for the streaming algorithm.
+ *
+ * @see base::OperationMultipleEval
+ * @see StreamingOCLMultiPlatform::KernelMult
+ * @see StreamingOCLMultiPlatform::KernelMultTranspose
+ */
 template <typename T>
 class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultipleEval {
  protected:
@@ -70,7 +87,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   std::vector<StreamingOCLMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingOCLMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  json::Node &configuration;
+  //  json::Node &configuration;
 
   bool verbose;
 
@@ -78,20 +95,31 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   size_t commonGridPadding;
 
  public:
+  /**
+   * Creates a new instance of the OperationMultiEvalStreamingOCLMultiPlatform class.
+   * This class should not be created directly, instead the datadriven operator factory should be
+   * used or at least the factory method.
+   *
+   * @see createStreamingOCLMultiPlatformConfigured
+   *
+   * @param grid The grid to evaluate
+   * @param dataset The datapoints to evaluate
+   * @param manager The OpenCL manager that manages OpenCL internels for this kernel
+   * @param parameters The configuration of the kernel leading to different compute kernels
+   */
   OperationMultiEvalStreamingOCLMultiPlatform(
       base::Grid &grid, base::DataMatrix &dataset,
       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node &configuration)
+      std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(parameters),
         myTimer(base::SGppStopwatch()),
         duration(-1.0),
         manager(manager),
-        devices(manager->getDevices()),
-        configuration(configuration) {
+        devices(manager->getDevices()) {
     this->dims = dataset.getNcols();  // be aware of transpose!
-    this->verbose = configuration["VERBOSE"].getBool();
+    this->verbose = (*parameters)["VERBOSE"].getBool();
 
     this->commonDatasetPadding = calculateCommonDatasetPadding();
     this->commonGridPadding = calculateCommonGridPadding();
@@ -136,10 +164,21 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     this->prepare();
   }
 
+  /**
+   * Destructor
+   */
   ~OperationMultiEvalStreamingOCLMultiPlatform() {}
 
+  /**
+   * Performs the MultiEval operation \f$v:= B^T \alpha\f$.
+   *
+   * @param alpha The surpluses of the grid
+   * @param result A vector that contains the result in the order of the dataset
+   */
   void mult(base::DataVector &alpha, base::DataVector &result) override {
     this->myTimer.start();
+
+    this->prepare();
 
     size_t gridFrom = 0;
     size_t gridTo = this->gridSizePadded;
@@ -203,10 +242,17 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     }
   }
 
+  /**
+   * Performs the transposed MultiEval operation  \f$v':= B v\f$.
+   *
+   * @param source The vector \f$v\f$
+   * @param result The result of the matrix vector multiplication in the order of grid (of the alpha
+   * vector)
+   */
   void multTranspose(base::DataVector &source, base::DataVector &result) override {
-    this->prepare();
-
     this->myTimer.start();
+
+    this->prepare();
 
     size_t gridFrom = 0;
     size_t gridTo = this->gridSizePadded;
@@ -272,18 +318,22 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     }
   }
 
+  /**
+   * @return The duration of the last call to mult or multTranspose
+   */
   double getDuration() override { return this->duration; }
 
-  void prepare() override {
-    this->recalculateLevelAndIndex();
-
-    for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
-      this->multKernels[deviceIndex].resetKernel();
-      this->multTransposeKernels[deviceIndex].resetKernel();
-    }
-  }
+  /**
+   * Creates the internal data structures used by the algorithm. Needs to be called every time the
+   * grid changes e.g., due to refinement.
+   */
+  void prepare() override { this->recalculateLevelAndIndex(); }
 
  private:
+  /**
+   * Pads the dataset according to the requirement of the parameter configuration
+   * @param dataset The dataset to be padded
+   */
   void padDataset(base::DataMatrix &dataset) {
     // Assure that data has a even number of instances -> padding might be
     // needed
@@ -303,6 +353,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     }
   }
 
+  /**
+   * Creates the internal grid data structure which consists of two lists, one for the level and one
+   * for the index values.
+   * Has to be recalculated via prepare whenever the grid is changed.
+   */
   void recalculateLevelAndIndex() {
     base::GridStorage &storage = grid.getStorage();
 
@@ -340,6 +395,10 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     }
   }
 
+  /**
+   * Calculates the padding requirements of the dataset according to the configuration.
+   * Takes into account the configuration of individual devices.
+   */
   size_t calculateCommonDatasetPadding() {
     size_t commonPaddingRequiredment = 1;
     for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
@@ -357,6 +416,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     return commonPaddingRequiredment;
   }
 
+  /**
+   * Calculates the padding requirements of the internal grid data structure according to the
+   * configuration.
+   * Takes into account the configuration of individual devices.
+   */
   size_t calculateCommonGridPadding() {
     size_t commonPaddingRequiredment = 1;
     for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {

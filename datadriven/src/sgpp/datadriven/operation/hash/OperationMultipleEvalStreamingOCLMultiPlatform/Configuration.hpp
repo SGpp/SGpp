@@ -14,16 +14,32 @@ namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
+/**
+ * Configuration class for the operation OperationMultiEvalStreamingOCLMultiPlatform.
+ * This class provides a name and a default configuration for the operation.
+ *
+ * @see OperationMultiEvalStreamingOCLMultiPlatform
+ */
 class Configuration {
  private:
   Configuration() = default;
 
  public:
+  /**
+   * @return The name of the kernel
+   */
   static const std::string &getKernelName() {
     static std::string kernelName = "StreamingOCLMultiPlatform";
     return kernelName;
   }
 
+  /**
+   * Takes a configuration and checks whether parameters are missing.
+   * Missing parameters are added and initialized with their default values.
+   * This function only configures devices that are specified in the configuration.
+   *
+   * @param parameters Set of parameters to augment with default parameters
+   */
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -22,23 +23,11 @@ class KernelSourceBuilderBase {
 
   static const size_t MAX_INDENT_LEVEL = 10;
 
-  //    std::string indent2;
-  //
-  //    std::string indent3;
-  //
-  //    std::string indent4;
-  //
-  //    std
-
-  std::string floatType() {
-    return std::is_same<T, float>::value ? "float" : "double";
-  }
+  std::string floatType() { return std::is_same<T, float>::value ? "float" : "double"; }
 
   std::string constSuffix() { return std::is_same<T, float>::value ? "f" : ""; }
 
-  std::string intType() {
-    return std::is_same<T, float>::value ? "uint" : "ulong";
-  }
+  std::string intType() { return std::is_same<T, float>::value ? "uint" : "ulong"; }
 
   std::string reuseSource(std::string fileName) {
     std::stringstream sourceStream;
@@ -54,8 +43,7 @@ class KernelSourceBuilderBase {
 
       file.close();
     } else {
-      throw base::operation_exception(
-          "OCL error: file to reuse not found\n");
+      throw base::operation_exception("OCL error: file to reuse not found\n");
     }
 
     return sourceStream.str();

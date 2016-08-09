@@ -314,7 +314,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     // excluding the additional padding for irregular schedules
     datasetSizePadded = dataset.getNrows() + padding;
-    // totol size for buffer allocation
+    // total size for buffer allocation
     datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     sgpp::base::DataVector lastRow(dataset.getNcols());
