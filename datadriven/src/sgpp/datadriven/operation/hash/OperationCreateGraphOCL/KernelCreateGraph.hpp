@@ -21,25 +21,34 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL kernel class for operation to create a k nearest neighbor graph
 template<typename T>
 class KernelCreateGraph {
  private:
+  /// Used opencl device
   std::shared_ptr<base::OCLDevice> device;
   size_t dims;
   size_t k;
   cl_int err;
+  /// OpenCL buffer for the dataset
   base::OCLBufferWrapperSD<T> deviceData;
+  /// OpenCL Buffer for the result vector
   base::OCLBufferWrapperSD<int> deviceResultData;
   cl_kernel kernel;
+  /// Source builder for the opencl source code of the kernel
   sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderCreateGraph<T> kernelSourceBuilder;
+  /// OpenCL manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  /// Stores the running time of the kernel
   double deviceTimingMult;
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
   bool verbose;
   size_t localSize;
   size_t dataBlockingSize;
   size_t scheduleSize;
   size_t totalBlockSize;
+  /// Host side buffer for the dataset
   std::vector<T> &data;
   size_t unpadded_datasize;
 
@@ -99,6 +108,7 @@ class KernelCreateGraph {
     }
   }
 
+  /// Runs the opencl kernel to find the k nearest neighbors of all datapoints in the given chunk
   double create_graph(std::vector<int> &result, size_t startid, size_t chunksize) {
     if (verbose) {
       std::cout << "entering graph, device: " << device->deviceName
@@ -220,6 +230,7 @@ class KernelCreateGraph {
     this->deviceTimingMult += time;
     return 0;
   }
+  /// Adds all possible building parameters to the configuration if they do not exist yet
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

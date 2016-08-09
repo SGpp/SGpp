@@ -27,25 +27,33 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// Operation for density based graph pruning
 template<typename T>
 class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
  private:
   size_t dims;
   size_t gridSize;
   size_t dataSize;
+  /// OpenCL kernel which executes the graph creation
   sgpp::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T> *graph_kernel;
+  /// Vector with all OpenCL devices
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
+  /// OpenCL Manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
+  /// Copy of the grid used for the density estimation
   std::vector<int> pointsVector;
+  /// Copy of the alpha vector used for the density estimation
   std::vector<T> alphaVector;
+  /// Copy of the dataset
   std::vector<T> dataVector;
 
   size_t start_id;
   size_t chunksize;
 
  public:
+  /// Constructor using a DataMatrix
   OperationPruneGraphOCLMultiPlatform(base::Grid& grid, base::DataVector& alpha,
                                       base::DataMatrix &data, size_t dims,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -113,6 +121,7 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
       throw base::operation_exception(errorString.str());
     }
   }
+  /// Constructor using a double vector as a dataset and a serialized grid
   OperationPruneGraphOCLMultiPlatform(int *gridpoints, size_t gridSize, size_t dimensions,
                                       double *alpha, base::DataMatrix &data,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -189,6 +198,7 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     delete graph_kernel;
   }
 
+  /// Deletes all nodes and edges within areas of low density which are in the given graph chunk
   virtual void prune_graph(std::vector<int> &graph, size_t startid = 0, size_t chunksize = 0) {
     if (verbose)
       std::cout << "Pruning graph for" << graph.size() << " nodes" << std::endl;

@@ -24,18 +24,23 @@
 namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
-
+/// Operation for creation of a k nearest neighbors graph using a dataset
 template<typename T>
 class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
  private:
   size_t dims;
+  /// OpenCL kernel which executes the graph creation
   KernelCreateGraph<T> *graph_kernel;
+  /// Vector with all OpenCL devices
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
   bool verbose;
+  /// OpenCL Manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  /// Copy of the dataset
   std::vector<T> dataVector;
 
  public:
+  /// Constructor using a DataMatrix
   OperationCreateGraphOCLSingleDevice(base::DataMatrix& data, size_t dimensions,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                       sgpp::base::OCLOperationConfiguration *parameters,
@@ -87,6 +92,7 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
       throw base::operation_exception(errorString.str());
     }
   }
+  /// Constructor which accepts double vector instead of a DataMatrix
   OperationCreateGraphOCLSingleDevice(double *dataset, size_t datasize, size_t dimensions,
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                       sgpp::base::OCLOperationConfiguration *parameters,
@@ -148,6 +154,7 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
     this->chunksize = chunksize;
   }
 
+  /// Creates part of the k nearest neighbor graph (or all of it with the default parameters)
   void create_graph(std::vector<int> &resultVector, int startid = 0, int chunksize = 0) {
     if (verbose)
       std::cout << "Creating graph for " << dataVector.size() << " datapoints" << std::endl;

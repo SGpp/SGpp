@@ -21,9 +21,11 @@ namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
+/// OpenCL kernel for density based pruning of a graph
 template<typename T>
 class KernelPruneGraph {
  private:
+  /// Used opencl device
   std::shared_ptr<base::OCLDevice> device;
 
   size_t dims;
@@ -34,19 +36,23 @@ class KernelPruneGraph {
 
   cl_int err;
 
+  /// OpenCL buffer for the grid points
   base::OCLBufferWrapperSD<int> devicePoints;
+  /// OpenCL buffer for the alpha vector used to calculate the density
   base::OCLBufferWrapperSD<T> deviceAlpha;
+  /// OpenCL buffer for the dataset
   base::OCLBufferWrapperSD<T> deviceData;
+  /// OpenCL buffer for the graph
   base::OCLBufferWrapperSD<int> deviceGraph;
 
   cl_kernel kernel;
-
+  /// Source builder for the opencl source code of the kernel
   sgpp::datadriven::DensityOCLMultiPlatform::SourceBuilderPruneGraph<T> kernelSourceBuilder;
-
+  /// OpenCL manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-
+  /// Stores the running time of the kernel
   double deviceTimingMult;
-
+  /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
 
 
@@ -102,9 +108,7 @@ class KernelPruneGraph {
     }
   }
 
-  void resetKernel() {
-  }
-
+  /// Deletes nodes and edges in areas of low density
   double prune_graph(std::vector<int> &graph, size_t startid, size_t chunksize) {
     if (verbose)
       std::cout << "entering prune graph, device: " << device->deviceName
@@ -227,6 +231,7 @@ class KernelPruneGraph {
     this->deviceTimingMult += time;
     return 0;
   }
+  /// Adds all possible building parameters to the configuration if they do not exist yet
   static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];

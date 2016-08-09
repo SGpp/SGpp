@@ -12,7 +12,7 @@
 namespace sgpp {
 namespace datadriven {
 
-/// Generates opencl density multiplication operation with a given opencl device and configuration
+
 DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, base::OCLOperationConfiguration *parameters,
