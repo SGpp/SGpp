@@ -45,7 +45,8 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
                                  size_t side,
                                  MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                  double (*f)(DataVector&), double ylower, double yupper,
-                                 double tol = 1e-12, bool verbose = false) {
+                                 bool generateConsistentGrid = true, double tol = 1e-12,
+                                 bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
@@ -120,7 +121,8 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   DataVector limitedAlpha(alpha);
   std::unique_ptr<sgpp::datadriven::OperationLimitFunctionValueRange> opLimit(
       sgpp::op_factory::createOperationLimitFunctionValueRange(
-          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
+          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero,
+          generateConsistentGrid, verbose));
 
   if (side == 0) {
     if (verbose) {
@@ -227,6 +229,27 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
   }
 }
 
+// BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpperInconsistent) {
+//  // parameters
+//  size_t numDims = 4;
+//  size_t level = 4;
+//  size_t refIterations = 2;
+//  size_t refnums = 5;
+//  std::unique_ptr<Grid> grid;
+//
+//  for (size_t idim = 2; idim <= numDims; idim++) {
+//    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+//      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+//        grid.reset(Grid::createLinearGrid(idim));
+//        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 1,
+//                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin,
+//                                    -0.8,
+//                                    0.8, false);
+//      }
+//    }
+//  }
+//}
+
 BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
   // parameters
   size_t numDims = 4;
@@ -246,5 +269,26 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
     }
   }
 }
+
+// BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSidesInconsistent) {
+//  // parameters
+//  size_t numDims = 4;
+//  size_t level = 4;
+//  size_t refIterations = 2;
+//  size_t refnums = 5;
+//  std::unique_ptr<Grid> grid;
+//
+//  for (size_t idim = 2; idim <= numDims; idim++) {
+//    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+//      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+//        grid.reset(Grid::createLinearGrid(idim));
+//        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 2,
+//                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin,
+//                                    -0.8,
+//                                    0.8, false);
+//      }
+//    }
+//  }
+//}
 
 BOOST_AUTO_TEST_SUITE_END()
