@@ -50,6 +50,7 @@ struct SGDEConfiguration {
   bool makePositive_;  // force the density to be positive
   base::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
   base::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
+  bool makePositive_generateConsistentGrid_;
   bool makePositive_verbose_;
   bool unitIntegrand_;  // force unit integrand
 };

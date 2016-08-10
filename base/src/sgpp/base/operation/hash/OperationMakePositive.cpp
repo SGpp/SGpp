@@ -21,12 +21,14 @@ namespace base {
 
 OperationMakePositive::OperationMakePositive(
     base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose)
+    MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
+    bool verbose)
     : grid(grid),
       minimumLevelSum(0),
       maximumLevelSum(0),
       numNewGridPointsForPositivity(0),
       numNewGridPoints(0),
+      generateConsistentGrid(generateConsistentGrid),
       verbose(verbose) {
   // set range of level sums for candidate search
   base::HashGridStorage& gridStorage = grid.getStorage();
@@ -84,7 +86,7 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
                                                             std::vector<size_t>& newGridPoints,
                                                             double tol) {
   base::HashGridStorage& gridStorage = grid.getStorage();
-  auto opEval = op_factory::createOperationEval(grid);
+  auto opEval = op_factory::createOperationEvalNaive(grid);
   DataVector x(gridStorage.getDimension());
   for (size_t i : newGridPoints) {
     gridStorage.getPoint(i).getStandardCoordinates(x);
@@ -128,7 +130,12 @@ void OperationMakePositive::addFullGridPoints(
   // insert the negative ones to the grid
   for (size_t i = 0; i < candidates.size(); ++i) {
     if (nodalValues[i] < tol) {
-      gridStorage.insert(*candidates[i], addedGridPoints);
+      if (generateConsistentGrid) {
+        gridStorage.insert(*candidates[i], addedGridPoints);
+      } else {
+        size_t ix = gridStorage.insert(*candidates[i]);
+        addedGridPoints.push_back(ix);
+      }
       numNewGridPointsForPositivity++;
     }
   }
@@ -157,10 +164,11 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
       delete newGrid;
     }
     newGrid = grid.clone();
+
+    // force the nodal values of the initial grid to be positive
+    makeCurrentNodalValuesPositive(newAlpha);
   }
 
-  // force the nodal values of the initial grid to be positive
-  makeCurrentNodalValuesPositive(newAlpha);
   size_t currentLevelSum = minimumLevelSum;
 
   std::vector<size_t> addedGridPoints;

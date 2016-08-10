@@ -24,7 +24,7 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
   // to zero
   base::HashGridStorage& gridStorage = grid.getStorage();
 
-  auto opEval = op_factory::createOperationEval(grid);
+  auto opEval = op_factory::createOperationEvalNaive(grid);
   base::DataVector x(gridStorage.getDimension());
 
   for (auto& i : addedGridPoints) {

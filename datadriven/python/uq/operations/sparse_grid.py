@@ -525,10 +525,7 @@ def evalSGFunction(grid, alpha, p):
     if len(p.shape) == 1:
         p_vec = DataVector(p)
         alpha_vec = DataVector(alpha)
-        if grid.getType() == GridType_Bspline:
-            return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
-        else:
-            return createOperationEval(grid).eval(alpha_vec, p_vec)
+        return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
     else:
         return evalSGFunctionMulti(grid, alpha, p)
 

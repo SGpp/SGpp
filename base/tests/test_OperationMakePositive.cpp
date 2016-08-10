@@ -56,7 +56,8 @@ double sin(DataVector& x) {
 
 void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
                       MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                      double (*f)(DataVector&), double tol = -1e-12, bool verbose = false) {
+                      double (*f)(DataVector&), bool generateConsistentGrid = true,
+                      double tol = -1e-12, bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
@@ -130,8 +131,9 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   Grid* positiveGrid = nullptr;
   DataVector positiveAlpha(alpha);
   std::unique_ptr<sgpp::base::OperationMakePositive> opMakePositive(
-      sgpp::op_factory::createOperationMakePositive(
-          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
+      sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm,
+                                                    MakePositiveInterpolationAlgorithm::SetToZero,
+                                                    generateConsistentGrid, verbose));
   opMakePositive->makePositive(positiveGrid, positiveAlpha);
 
   if (verbose) {
@@ -203,6 +205,25 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
         grid.reset(Grid::createLinearGrid(idim));
         testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
                          MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
+      }
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersectionsInconsistentGrid) {
+  // parameters
+  size_t numDims = 4;
+  size_t level = 4;
+  size_t refIterations = 2;
+  size_t refnums = 5;
+  std::unique_ptr<Grid> grid;
+
+  for (size_t idim = 2; idim <= numDims; idim++) {
+    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+        grid.reset(Grid::createLinearGrid(idim));
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false);
       }
     }
   }

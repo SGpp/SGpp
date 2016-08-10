@@ -43,7 +43,7 @@ class OperationMakePositive {
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
-                                 bool verbose = false);
+                                 bool generateConsistentGrid = true, bool verbose = false);
 
   /**
    * Descrutor
@@ -136,6 +136,9 @@ class OperationMakePositive {
   /// candidate search algorithm
   std::shared_ptr<base::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
   std::shared_ptr<base::OperationMakePositiveInterpolationAlgorithm> interpolationMethod;
+
+  /// sets if a consistent grid is computed or not
+  bool generateConsistentGrid;
 
   /// verbosity
   bool verbose;
