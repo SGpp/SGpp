@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
+#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -37,9 +39,9 @@ void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
   }
 
   addConst(*newGrid, newAlpha, 1.0, -ylower);
-  op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
-                                          verbose)
-      ->makePositive(newGrid, newAlpha, false);
+  std::unique_ptr<base::OperationMakePositive> opPositive(op_factory::createOperationMakePositive(
+      *newGrid, candidateSearch, interpolationAlgorithm, true, verbose));
+  opPositive->makePositive(newGrid, newAlpha, false);
   // f(x) = g(x) + ylower
   addConst(*newGrid, newAlpha, 1.0, ylower);
 }
@@ -54,9 +56,9 @@ void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
   }
 
   addConst(*newGrid, newAlpha, -1.0, yupper);
-  op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
-                                          verbose)
-      ->makePositive(newGrid, newAlpha, false);
+  std::unique_ptr<base::OperationMakePositive> opPositive(op_factory::createOperationMakePositive(
+      *newGrid, candidateSearch, interpolationAlgorithm, true, verbose));
+  opPositive->makePositive(newGrid, newAlpha, false);
   // f(x) = -g(x) + yupper
   addConst(*newGrid, newAlpha, -1.0, yupper);
 }

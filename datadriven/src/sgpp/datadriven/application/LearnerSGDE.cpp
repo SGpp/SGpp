@@ -126,6 +126,9 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     }
     if (this->contains("sgde_makePositive_verbose"))
       sgdeConfig.makePositive_verbose_ = (*this)["sgde_makePositive_verbose"].getBool();
+    if (this->contains("sgde_makePositive_generateConsistentGrid"))
+      sgdeConfig.makePositive_generateConsistentGrid_ =
+          (*this)["sgde_makePositive_generateConsistentGrid"].getBool();
     if (this->contains("sgde_unitIntegrand"))
       sgdeConfig.unitIntegrand_ = (*this)["sgde_unitIntegrand"].getBool();
   } catch (json::json_exception& e) {
@@ -173,6 +176,7 @@ void LearnerSGDEConfiguration::initConfig() {
       base::MakePositiveCandidateSearchAlgorithm::Intersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       base::MakePositiveInterpolationAlgorithm::SetToZero;
+  sgdeConfig.makePositive_generateConsistentGrid_ = true;
   sgdeConfig.makePositive_verbose_ = false;
 
   sgdeConfig.unitIntegrand_ = false;
@@ -327,7 +331,8 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
     base::Grid* positiveGrid = nullptr;
     op_factory::createOperationMakePositive(
         *grid, sgdeConfig.makePositive_candidateSearchAlgorithm_,
-        sgdeConfig.makePositive_interpolationAlgorithm_, sgdeConfig.makePositive_verbose_)
+        sgdeConfig.makePositive_interpolationAlgorithm_,
+        sgdeConfig.makePositive_generateConsistentGrid_, sgdeConfig.makePositive_verbose_)
         ->makePositive(positiveGrid, *alpha);
     grid = std::shared_ptr<base::Grid>(positiveGrid);
   }

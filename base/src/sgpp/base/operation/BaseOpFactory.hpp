@@ -30,7 +30,6 @@
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
 
-
 namespace sgpp {
 
 namespace op_factory {
@@ -174,7 +173,7 @@ base::OperationMakePositive* createOperationMakePositive(
                           base::MakePositiveCandidateSearchAlgorithm::Intersections,
     base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         base::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false);
+    bool generateConsistentGrid = true, bool verbose = false);
 
 /**
  * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.

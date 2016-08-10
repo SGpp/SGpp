@@ -49,8 +49,8 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationLaplaceModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
-    return new pde::OperationLaplacePrewavelet(
-            &grid.getStorage(), &((base::PrewaveletGrid*)&grid)->getShadowStorage());
+    return new pde::OperationLaplacePrewavelet(&grid.getStorage(),
+                                               &((base::PrewaveletGrid*)&grid)->getShadowStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
     return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
@@ -60,8 +60,7 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   }
 }
 
-base::OperationMatrix* createOperationLaplace(
-    base::Grid& grid, sgpp::base::DataVector& coef) {
+base::OperationMatrix* createOperationLaplace(base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationLaplaceLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
@@ -77,19 +76,18 @@ base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationLaplaceExplicitBspline(&grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
-      return new pde::OperationLaplaceExplicitModBspline(&grid);
+    return new pde::OperationLaplaceExplicitModBspline(&grid);
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
   }
 }
 
-base::OperationMatrix* createOperationLaplaceExplicit(
-    base::DataMatrix* m, base::Grid& grid) {
+base::OperationMatrix* createOperationLaplaceExplicit(base::DataMatrix* m, base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationLaplaceExplicitBspline(m, &grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
-      return new pde::OperationLaplaceExplicitModBspline(m, &grid);
+    return new pde::OperationLaplaceExplicitModBspline(m, &grid);
   } else {
     throw base::factory_exception(
         "OperationLaplaceExplicit is not implemented for this grid type.");
@@ -120,14 +118,17 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new pde::OperationMatrixLTwoDotExplicitBspline(&grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new pde::OperationMatrixLTwoDotExplicitModBspline(&grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
   }
 }
 
-base::OperationMatrix* createOperationLTwoDotExplicit(
-    base::DataMatrix* m, base::Grid& grid) {
+base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
   } else if (grid.getType() == base::GridType::LinearL0Boundary) {
@@ -156,8 +157,8 @@ base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
   }
 }
 
-base::OperationMatrix* createOperationLaplaceEnhanced(
-    base::Grid& grid, sgpp::base::DataVector& coef) {
+base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid,
+                                                      sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
