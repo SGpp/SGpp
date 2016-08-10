@@ -19,7 +19,6 @@
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
-
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
@@ -30,6 +29,8 @@
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
@@ -42,6 +43,9 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 

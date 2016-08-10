@@ -107,10 +107,10 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       std::string candidateSearchStr = (*this)["sgde_makePositive_candidateSearchAlgorithm"].get();
       if ((strcmp(candidateSearchStr.c_str(), "intersections") == 0)) {
         sgdeConfig.makePositive_candidateSearchAlgorithm_ =
-            base::MakePositiveCandidateSearchAlgorithm::Intersections;
+            datadriven::MakePositiveCandidateSearchAlgorithm::Intersections;
       } else if ((strcmp(candidateSearchStr.c_str(), "fullGrid") == 0)) {
         sgdeConfig.makePositive_candidateSearchAlgorithm_ =
-            base::MakePositiveCandidateSearchAlgorithm::FullGrid;
+            datadriven::MakePositiveCandidateSearchAlgorithm::FullGrid;
       } else {
         throw sgpp::base::application_exception("candidate search algorithm is unknown");
       }
@@ -119,7 +119,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       std::string candidateSearchStr = (*this)["sgde_makePositive_interpolationAlgorithm"].get();
       if ((strcmp(candidateSearchStr.c_str(), "setToZero") == 0)) {
         sgdeConfig.makePositive_interpolationAlgorithm_ =
-            base::MakePositiveInterpolationAlgorithm::SetToZero;
+            datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
       } else {
         throw sgpp::base::application_exception("interpolation algorithm is unknown");
       }
@@ -173,9 +173,9 @@ void LearnerSGDEConfiguration::initConfig() {
   // configure learner
   sgdeConfig.makePositive_ = false;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
-      base::MakePositiveCandidateSearchAlgorithm::Intersections;
+      datadriven::MakePositiveCandidateSearchAlgorithm::Intersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
-      base::MakePositiveInterpolationAlgorithm::SetToZero;
+      datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
   sgdeConfig.makePositive_generateConsistentGrid_ = true;
   sgdeConfig.makePositive_verbose_ = false;
 

@@ -7,16 +7,15 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositiveCandidateSetAlgorithm.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositiveInterpolationAlgorithm.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <map>
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 enum class MakePositiveCandidateSearchAlgorithm { FullGrid, Intersections };
 enum class MakePositiveInterpolationAlgorithm { SetToZero };
@@ -78,9 +77,11 @@ class OperationMakePositive {
    * which are not are set to zero. For this function we need the hierarchization and
    * dechierarchization operations.
    *
+   * @param grid grid
    * @param alpha coefficient vector
    */
-  void makeCurrentNodalValuesPositive(base::DataVector& alpha, double tol = -1e-14);
+  void makeCurrentNodalValuesPositive(base::Grid& grid, base::DataVector& alpha,
+                                      double tol = -1e-14);
 
   /**
    * Enforce the function values at the new grid points to be positive. It is similar to the
@@ -105,7 +106,7 @@ class OperationMakePositive {
    * their level sum is equal to currentLevelSum
    */
   void extractNonExistingCandidatesByLevelSum(
-      Grid& newGrid, std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
+      base::Grid& newGrid, std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
       size_t currentLevelSum, std::vector<std::shared_ptr<base::HashGridPoint>>& finalCandidates);
 
   /**
@@ -134,8 +135,8 @@ class OperationMakePositive {
   size_t numNewGridPoints;
 
   /// candidate search algorithm
-  std::shared_ptr<base::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
-  std::shared_ptr<base::OperationMakePositiveInterpolationAlgorithm> interpolationMethod;
+  std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
+  std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolationMethod;
 
   /// sets if a consistent grid is computed or not
   bool generateConsistentGrid;
@@ -144,5 +145,5 @@ class OperationMakePositive {
   bool verbose;
 };
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

@@ -3,19 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
+
 #include <string>
 #include <random>
-
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/operation/hash/OperationMakePositive.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/datadriven/application/LearnerSGDE.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/application/KernelDensityEstimator.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -96,9 +97,9 @@ int main(int argc, char** argv) {
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
   sgdeConfig.makePositive_ = false;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
-      sgpp::base::MakePositiveCandidateSearchAlgorithm::Intersections;
+      sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::Intersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
-      sgpp::base::MakePositiveInterpolationAlgorithm::SetToZero;
+      sgpp::datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
   sgdeConfig.makePositive_verbose_ = false;
   sgdeConfig.unitIntegrand_ = false;
 

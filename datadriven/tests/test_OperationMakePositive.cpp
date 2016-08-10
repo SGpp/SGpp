@@ -14,9 +14,11 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-#include <string>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -26,24 +28,39 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
-using sgpp::base::MakePositiveCandidateSearchAlgorithm;
-using sgpp::base::MakePositiveInterpolationAlgorithm;
+using sgpp::datadriven::MakePositiveCandidateSearchAlgorithm;
+using sgpp::datadriven::MakePositiveInterpolationAlgorithm;
 
-BOOST_AUTO_TEST_SUITE(TestOperationLimitFunctionValueRange)
+BOOST_AUTO_TEST_SUITE(TestOperationMakePositive)
+
+double normal(DataVector& input) {
+  double result = 1.;
+
+  double mean = 0.5;
+  double sigma = 0.02;
+  size_t numDims = input.getSize();
+
+  double norm = 1. / std::sqrt(std::pow(2 * M_PI, numDims) * std::pow(sigma, numDims));
+
+  for (size_t i = 0; i < numDims; i++) {
+    double x = (input[i] - mean);
+    result *= std::exp(-0.5 * (x * x) / sigma);
+  }
+  return norm * result;
+}
 
 double sin(DataVector& x) {
   double result = 0;
   for (size_t i = 0; i < x.getSize(); i++) {
-    result += std::sin(M_PI * (2 * x[i] - 1.0));
+    result += std::sin(M_PI * (2 * x[i] - 1.0)) + 0.8;
   }
   return result;
 }
 
-void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_t refnums,
-                                 size_t side,
-                                 MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                                 double (*f)(DataVector&), double ylower, double yupper,
-                                 double tol = 1e-12, bool verbose = false) {
+void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
+                      MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+                      double (*f)(DataVector&), bool generateConsistentGrid = true,
+                      double tol = -1e-12, bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
@@ -73,7 +90,7 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
       sgpp::op_factory::createOperationHierarchisation(grid));
   opHier->doHierarchisation(alpha);
 
-  // refine adaptively
+  // refine adaptively 5 times
   for (size_t step = 0; step < refnums; step++) {
     // refine a single grid point each time
     SurplusRefinementFunctor functor(alpha, 1);
@@ -114,32 +131,17 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   }
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
-  Grid* limitedGrid = nullptr;
-  DataVector limitedAlpha(alpha);
-  std::unique_ptr<sgpp::base::OperationLimitFunctionValueRange> opLimit(
-      sgpp::op_factory::createOperationLimitFunctionValueRange(
-          grid, candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
-
-  if (side == 0) {
-    if (verbose) {
-      std::cout << "side: lower" << std::endl;
-    }
-    opLimit->doLowerLimitation(limitedGrid, limitedAlpha, ylower);
-  } else if (side == 1) {
-    if (verbose) {
-      std::cout << "side: upper" << std::endl;
-    }
-    opLimit->doUpperLimitation(limitedGrid, limitedAlpha, yupper);
-  } else {  // both
-    if (verbose) {
-      std::cout << "side: [lower, upper]" << std::endl;
-    }
-    opLimit->doLimitation(limitedGrid, limitedAlpha, ylower, yupper);
-  }
+  Grid* positiveGrid = nullptr;
+  DataVector positiveAlpha(alpha);
+  std::unique_ptr<sgpp::datadriven::OperationMakePositive> opMakePositive(
+      sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm,
+                                                    MakePositiveInterpolationAlgorithm::SetToZero,
+                                                    generateConsistentGrid, verbose));
+  opMakePositive->makePositive(positiveGrid, positiveAlpha);
 
   if (verbose) {
     std::cout << "(" << gridStorage.getDimension() << "," << level
-              << ") : #grid points = " << grid.getSize() << " -> " << limitedGrid->getSize()
+              << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
               << " < " << numFullGridPoints << std::endl;
   }
 
@@ -152,37 +154,38 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
 
   if (verbose) {
     std::cout << fullGrid->getSize() << std::endl;
-    std::cout << "  evaluate at all grid points" << std::endl;
+    std::cout << "evaluate at all grid points" << std::endl;
   }
   DataMatrix coordinates;
   DataVector nodalValues(fullGrid->getStorage().getSize());
   fullGrid->getStorage().getCoordinateArrays(coordinates);
-  sgpp::op_factory::createOperationMultipleEval(*limitedGrid, coordinates)
-      ->mult(limitedAlpha, nodalValues);
+
+  // use streaming eval to support inconsistent grids
+  sgpp::datadriven::OperationMultipleEvalConfiguration evalConfig(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
+      sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates, evalConfig));
+  opEval->mult(positiveAlpha, nodalValues);
+
   if (verbose) {
-    std::cout << "  check range: ";
+    std::cout << "check for positivity: ";
   }
   for (size_t i = 0; i < nodalValues.getSize(); ++i) {
-    if (side == 0 || side == 2) {
-      BOOST_CHECK_GE(nodalValues[i], ylower - tol);
-    }
-    if (side == 1 || side == 2) {
-      BOOST_CHECK_LE(nodalValues[i], yupper + tol);
-    }
+    BOOST_CHECK_GE(nodalValues[i], tol);
   }
 
   if (verbose) {
     std::cout << "Done" << std::endl;
   }
-
-  delete limitedGrid;
+  delete positiveGrid;
 }
 
-BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refIterations = 2;
+  size_t refIterations = 0;
   size_t refnums = 5;
   std::unique_ptr<Grid> grid;
 
@@ -190,15 +193,14 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 0,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::FullGrid, &normal);
       }
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
@@ -210,15 +212,14 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 1,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
       }
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersectionsInconsistentGrid) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
@@ -230,9 +231,8 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 2,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false);
       }
     }
   }

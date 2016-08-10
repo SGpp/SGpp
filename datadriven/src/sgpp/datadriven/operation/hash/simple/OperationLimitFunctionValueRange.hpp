@@ -7,23 +7,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
 #include <limits>
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 class OperationLimitFunctionValueRange {
  public:
-  OperationLimitFunctionValueRange(base::Grid& grid,
-                                   base::MakePositiveCandidateSearchAlgorithm candiateSearch =
-                                       MakePositiveCandidateSearchAlgorithm::Intersections,
-                                   base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-                                       MakePositiveInterpolationAlgorithm::SetToZero,
-                                   bool verbose = false);
+  OperationLimitFunctionValueRange(
+      base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candiateSearch =
+                            MakePositiveCandidateSearchAlgorithm::Intersections,
+      datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+          MakePositiveInterpolationAlgorithm::SetToZero,
+      bool generateConsistentGrid = true, bool verbose = false);
   virtual ~OperationLimitFunctionValueRange();
 
   void doLowerLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower,
@@ -36,10 +36,11 @@ class OperationLimitFunctionValueRange {
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   base::Grid& grid;
-  base::MakePositiveCandidateSearchAlgorithm candidateSearch;
-  base::MakePositiveInterpolationAlgorithm interpolationAlgorithm;
+  datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch;
+  datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm;
+  bool generateConsistentGrid;
   bool verbose;
 };
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

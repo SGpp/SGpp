@@ -3,27 +3,30 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <limits>
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 OperationLimitFunctionValueRange::OperationLimitFunctionValueRange(
-    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearch,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose)
+    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+    bool generateConsistentGrid, bool verbose)
     : grid(grid),
       candidateSearch(candidateSearch),
       interpolationAlgorithm(interpolationAlgorithm),
+      generateConsistentGrid(generateConsistentGrid),
       verbose(verbose) {}
 
 OperationLimitFunctionValueRange::~OperationLimitFunctionValueRange() {}
@@ -35,12 +38,12 @@ void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
   // f(x) >= ylower => g(x) := f(x) - ylower >= 0
   if (resetGrid) {
     newGrid = grid.clone();
-    resetGrid = false;
   }
 
   addConst(*newGrid, newAlpha, 1.0, -ylower);
-  std::unique_ptr<base::OperationMakePositive> opPositive(op_factory::createOperationMakePositive(
-      *newGrid, candidateSearch, interpolationAlgorithm, true, verbose));
+  std::unique_ptr<datadriven::OperationMakePositive> opPositive(
+      op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
+                                              generateConsistentGrid, verbose));
   opPositive->makePositive(newGrid, newAlpha, false);
   // f(x) = g(x) + ylower
   addConst(*newGrid, newAlpha, 1.0, ylower);
@@ -56,8 +59,9 @@ void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
   }
 
   addConst(*newGrid, newAlpha, -1.0, yupper);
-  std::unique_ptr<base::OperationMakePositive> opPositive(op_factory::createOperationMakePositive(
-      *newGrid, candidateSearch, interpolationAlgorithm, true, verbose));
+  std::unique_ptr<datadriven::OperationMakePositive> opPositive(
+      op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
+                                              generateConsistentGrid, verbose));
   opPositive->makePositive(newGrid, newAlpha, false);
   // f(x) = -g(x) + yupper
   addConst(*newGrid, newAlpha, -1.0, yupper);
@@ -91,5 +95,5 @@ void OperationLimitFunctionValueRange::addConst(base::Grid& grid, base::DataVect
   opHier->doHierarchisation(alpha);
 }
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

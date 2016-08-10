@@ -12,10 +12,10 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -48,8 +48,8 @@ struct MakePositiveConfiguration {};
 
 struct SGDEConfiguration {
   bool makePositive_;  // force the density to be positive
-  base::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
-  base::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
+  datadriven::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
+  datadriven::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
   bool makePositive_generateConsistentGrid_;
   bool makePositive_verbose_;
   bool unitIntegrand_;  // force unit integrand

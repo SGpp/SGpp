@@ -292,5 +292,34 @@ base::OperationMultipleEval* createOperationMultipleEval(
 
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
 }
+
+datadriven::OperationMakePositive* createOperationMakePositive(
+    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+    bool generateConsistentGrid, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new datadriven::OperationMakePositive(
+        grid, candidateSearchAlgorithm, interpolationAlgorithm, generateConsistentGrid, verbose);
+  } else {
+    throw base::factory_exception(
+        "OperationMakePositive is not implemented for "
+        "this grid type.");
+  }
+}
+
+datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
+    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+    bool generateConsistentGrid, bool verbose) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new datadriven::OperationLimitFunctionValueRange(
+        grid, candidateSearchAlgorithm, interpolationAlgorithm, generateConsistentGrid, verbose);
+  } else {
+    throw base::factory_exception(
+        "OperationLimitFunctionValueRange is not implemented for "
+        "this grid type.");
+  }
+}
+
 }  // namespace op_factory
 }  // namespace sgpp

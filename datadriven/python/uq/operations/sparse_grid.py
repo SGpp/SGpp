@@ -1,6 +1,7 @@
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
+                    OperationMultipleEvalConfiguration, OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT,
                     DataVector, DataMatrix,
                     HashGridPoint,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
@@ -489,19 +490,6 @@ def isRefineable(grid, gp):
 
     return False
 
-#
-# def evalSGFunctionMultiVectorized(grid, alpha, A, vecMode=X86SIMD):
-#     if not isinstance(A, DataMatrix):
-#         raise AttributeError('A has to be a DataMatrix')
-#     size = A.getNrows()
-#     numPatchedInstances = DMVectorizationPaddingAssistant_padDataset(A, vecMode)
-#     A.transpose()
-#     opMEval = createOperationMultipleEvalVectorized(grid, vecMode, A)
-#     tmp = DataVector(numPatchedInstances)
-#     opMEval.multVectorized(alpha, tmp)
-#     tmp.resize(size)
-#     return tmp
-
 
 def evalSGFunctionMulti(grid, alpha, samples):
     if len(samples.shape) == 1:
@@ -513,7 +501,9 @@ def evalSGFunctionMulti(grid, alpha, samples):
     if grid.getType() == GridType_Bspline:
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
-        opEval = createOperationMultipleEval(grid, samples_matrix)
+        # use streaming approach for multiple eval
+        evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
+        opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
 
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)

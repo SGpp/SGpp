@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMakePositiveCandidateSetAlgorithm.hpp"
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <vector>
@@ -15,7 +16,7 @@
 #endif
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm()
     : verbose(false) {}
@@ -33,8 +34,8 @@ void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficien
   }
 }
 
-bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(HashGridPoint& gpi,
-                                                                        HashGridPoint& gpj,
+bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::HashGridPoint& gpi,
+                                                                        base::HashGridPoint& gpj,
                                                                         size_t dim) {
   size_t leveli = gpi.getLevel(dim), indexi = gpi.getIndex(dim);
   size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
@@ -47,8 +48,8 @@ bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(HashGrid
     return gpj.isHierarchicalAncestor(gpi, dim);
 }
 
-bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(HashGridPoint& gpi,
-                                                                        HashGridPoint& gpj) {
+bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::HashGridPoint& gpi,
+                                                                        base::HashGridPoint& gpj) {
   size_t idim = 0;
   size_t numDims = gpi.getDimension();
 
@@ -78,7 +79,8 @@ void OperationMakePositiveFindIntersectionCandidates::computeIntersection(
 }
 
 bool OperationMakePositiveFindIntersectionCandidates::compareGridPointsByHash(
-    const std::shared_ptr<HashGridPoint>& lhs, const std::shared_ptr<HashGridPoint>& rhs) {
+    const std::shared_ptr<base::HashGridPoint>& lhs,
+    const std::shared_ptr<base::HashGridPoint>& rhs) {
   return lhs->getHash() < rhs->getHash();
 }
 
@@ -88,8 +90,9 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
 
   // prepare the intersection list for pair wise interactions
   for (auto& iseq : negativeGridPoints) {
-    auto gpi = std::make_shared<HashGridPoint>(gridStorage.getPoint(iseq));
-    intersections[gpi->getHash()] = std::make_shared<std::vector<std::shared_ptr<HashGridPoint>>>();
+    auto gpi = std::make_shared<base::HashGridPoint>(gridStorage.getPoint(iseq));
+    intersections[gpi->getHash()] =
+        std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
     currentIntersections.insert(std::make_pair(gpi->getHash(), gpi));
   }
 
@@ -124,7 +127,7 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
 
 void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     base::Grid& grid, size_t levelSum,
-    std::unordered_map<size_t, std::shared_ptr<HashGridPoint>>& res) {
+    std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
 
@@ -140,7 +143,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
         auto gpj = (*overlappingGridPoints)[j];
 
         // find intersection and store it
-        auto gpintersection = std::make_shared<HashGridPoint>(numDims);
+        auto gpintersection = std::make_shared<base::HashGridPoint>(numDims);
         computeIntersection(*gpi, *gpj, *gpintersection);
 
         // check if the intersection has already been found
@@ -156,7 +159,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
           auto jintersections = intersections[gpj->getHash()];
 
           // compute intersection of both overlapping candidate list
-          std::vector<std::shared_ptr<HashGridPoint>> commonIntersections;
+          std::vector<std::shared_ptr<base::HashGridPoint>> commonIntersections;
           std::set_intersection(iintersections->begin(), iintersections->end(),
                                 jintersections->begin(), jintersections->end(),
                                 std::back_inserter(commonIntersections), compareGridPointsByHash);
@@ -164,7 +167,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
           // store the result if the common candidates overlap with the current intersection
           // initialize the grid points that need to be considered
           auto commonOverlappingIntersections =
-              std::make_shared<std::vector<std::shared_ptr<HashGridPoint>>>();
+              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
           for (auto& gpk : commonIntersections) {
             if (haveOverlappingSupport(*gpk, *gpintersection)) {
               commonOverlappingIntersections->push_back(gpk);
@@ -202,7 +205,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 
 void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
-    std::vector<std::shared_ptr<HashGridPoint>>& candidates) {
+    std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
   if (iteration == 0) {
     // find all the grid points with negative coefficient
     std::vector<size_t> negativeGridPoints;
@@ -253,7 +256,7 @@ OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCa
     base::Grid& grid) {
   base::HashGridStorage& gridStorage = grid.getStorage();
 
-  fullGrid.reset(Grid::createLinearGrid(gridStorage.getDimension()));
+  fullGrid.reset(base::Grid::createLinearGrid(gridStorage.getDimension()));
   fullGrid->getGenerator().full(gridStorage.getMaxLevel());
 }
 
@@ -261,11 +264,11 @@ OperationMakePositiveLoadFullGridCandidates::~OperationMakePositiveLoadFullGridC
 
 void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
-    std::vector<std::shared_ptr<HashGridPoint>>& candidates) {
+    std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
   base::HashGridStorage& fullGridStorage = fullGrid->getStorage();
   candidates.clear();
   for (size_t i = 0; i < fullGridStorage.getSize(); ++i) {
-    auto gp = std::make_shared<HashGridPoint>(fullGridStorage.getPoint(i));
+    auto gp = std::make_shared<base::HashGridPoint>(fullGridStorage.getPoint(i));
     if (gp->getLevelSum() == levelSum) {
       candidates.push_back(gp);
     }
@@ -274,5 +277,5 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
 
 size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return fullGrid->getSize(); }
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */
