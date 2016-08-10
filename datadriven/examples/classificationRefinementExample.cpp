@@ -117,10 +117,10 @@ int main() {
    */
   std::vector<sgpp::base::Grid*> grids;
   std::vector<sgpp::base::DataVector*> alphas;
-  grids.push_back(learner1.getGrid().get());
-  grids.push_back(learner2.getGrid().get());
-  alphas.push_back(learner1.getSurpluses().get());
-  alphas.push_back(learner2.getSurpluses().get());
+  grids.push_back(&learner1.getGrid());
+  grids.push_back(&learner2.getGrid());
+  alphas.push_back(&learner1.getSurpluses());
+  alphas.push_back(&learner2.getSurpluses());
 
   /**
    * Create refinement functors

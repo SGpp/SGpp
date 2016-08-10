@@ -303,6 +303,10 @@ LearnerSGDE::~LearnerSGDE() {}
 void LearnerSGDE::initialize(base::DataMatrix& psamples) {
   samples = std::make_shared<base::DataMatrix>(psamples);
   gridConfig.dim_ = psamples.getNcols();
+  if (gridConfig.dim_ == 0) {
+    throw base::application_exception(
+        "LearnerSGDE::initialize - the data is corrupted -> no columns available");
+  }
   grid = createRegularGrid();
   alpha = std::make_shared<base::DataVector>(grid->getSize());
 
@@ -440,39 +444,16 @@ size_t LearnerSGDE::getDim() { return gridConfig.dim_; }
 
 size_t LearnerSGDE::getNsamples() { return samples->getNrows(); }
 
-std::shared_ptr<base::DataVector> LearnerSGDE::getSurpluses() { return alpha; }
+base::DataVector& LearnerSGDE::getSurpluses() { return *alpha; }
 
-std::shared_ptr<base::Grid> LearnerSGDE::getGrid() { return grid; }
+base::Grid& LearnerSGDE::getGrid() { return *grid; }
 
 // ---------------------------------------------------------------------------
 
 std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   // load grid
-  std::unique_ptr<base::Grid> uGrid;
-  if (gridConfig.filename_.length() > 0) {
-    std::ifstream ifs(gridConfig.filename_);
-    std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-    uGrid.reset(base::Grid::unserialize(content));
-  } else {
-    if (gridConfig.type_ == base::GridType::Linear) {
-      uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
-    } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 0));
-    } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-      uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1));
-    } else if (gridConfig.type_ == base::GridType::Bspline) {
-      uGrid.reset(base::Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_));
-    } else if (gridConfig.type_ == base::GridType::ModBspline) {
-      uGrid.reset(base::Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_));
-    } else {
-      throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
-    }
-    uGrid->getGenerator().regular(gridConfig.level_);
-  }
-
-  // move the grid to be shared
-  std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
-
+  std::shared_ptr<base::Grid> sGrid(base::Grid::createGrid(gridConfig));
+  sGrid->getGenerator().regular(gridConfig.level_);
   return sGrid;
 }
 

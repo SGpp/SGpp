@@ -165,9 +165,12 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   /**
    * returns the surpluses
    */
-  virtual std::shared_ptr<base::DataVector> getSurpluses();
+  virtual base::DataVector& getSurpluses();
 
-  virtual std::shared_ptr<base::Grid> getGrid();
+  /**
+   * returns the grid
+   */
+  virtual base::Grid& getGrid();
 
   /**
    * Does the learning step on a given grid, training set and regularization parameter lambda
@@ -251,6 +254,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   std::shared_ptr<base::Grid> grid;
   std::shared_ptr<base::DataVector> alpha;
+
   std::shared_ptr<base::DataMatrix> samples;
 
   sgpp::base::RegularGridConfiguration gridConfig;

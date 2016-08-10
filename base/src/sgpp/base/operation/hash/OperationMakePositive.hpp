@@ -74,14 +74,6 @@ class OperationMakePositive {
 
  private:
   /**
-   * copies the grid
-   *
-   * @param grid Grid to be copied
-   * @param newGrid Grid to be copied to
-   */
-  void copyGrid(base::Grid& grid, base::Grid*& newGrid);
-
-  /**
    * Enforce the function values at each grid point to larger than the specified tolerance. The ones
    * which are not are set to zero. For this function we need the hierarchization and
    * dechierarchization operations.
