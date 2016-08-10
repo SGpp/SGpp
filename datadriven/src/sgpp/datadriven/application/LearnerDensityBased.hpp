@@ -50,7 +50,7 @@ class LearnerDensityBased : public datadriven::LearnerBase {
    *
    * @param GridConfig grid config
    */
-  virtual void InitializeGrid(const base::RegularGridConfiguration& GridConfig) override;
+  void InitializeGrid(const base::RegularGridConfiguration& GridConfig) override;
 
   /**
    * Learning a dataset with spatially adaptive sparse grids
