@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 class OperationMakePositiveInterpolationAlgorithm {
  public:
@@ -33,5 +33,5 @@ class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolation
                                        double tol = -1e-14) override;
 };
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

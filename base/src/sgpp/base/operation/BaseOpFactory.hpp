@@ -18,14 +18,8 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
-#include <sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp>
-
-/*
- * This file contains factory methods for operations.
- */
-
 #include <sgpp/globaldef.hpp>
+
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
@@ -160,34 +154,6 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
  * @return Pointer to the new OperationEvalPartialDerivative object for the Grid grid
  */
 base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid);
-
-/**
- * Factory method, returning an OperationMakePositive for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationMakePositive object for the Grid grid
- */
-base::OperationMakePositive* createOperationMakePositive(
-    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                          base::MakePositiveCandidateSearchAlgorithm::Intersections,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-        base::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool generateConsistentGrid = true, bool verbose = false);
-
-/**
- * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
- */
-base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                          base::MakePositiveCandidateSearchAlgorithm::Intersections,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-        base::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false);
 
 }  // namespace op_factory
 }  // namespace sgpp

@@ -71,16 +71,6 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
-%rename("makePositive_cpp") makePositive(base::Grid*&, base::DataVector&, bool);
-%ignore makePositive(base::Grid*&, base::DataVector&, bool);
-%include "base/src/sgpp/base/operation/hash/OperationMakePositive.hpp"
-%rename("doLowerLimitation_cpp") doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
-%rename("doUpperLimitation_cpp") doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
-%rename("doLimitation_cpp") doLimitation(base::Grid*&, base::DataVector&, double, double);
-%ignore doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
-%ignore doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
-%ignore doLimitation(base::Grid*&, base::DataVector&, double, double);
-%include "base/src/sgpp/base/operation/hash/OperationLimitFunctionValueRange.hpp"
 %include "OperationQuadratureMC.i"
 
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
@@ -198,32 +188,4 @@ namespace std {
         gps[i] = gs.get(i).hash()
       return hashlib.sha512(str(gps)).hexdigest()
     %}
-}
-
-%extend sgpp::base::OperationMakePositive {
-  sgpp::base::Grid* makePositive(base::DataVector& newAlpha) {
-    sgpp::base::Grid* grid = nullptr;
-    $self->makePositive(grid, newAlpha);
-    return grid;
-  }
-}
-
-%extend sgpp::base::OperationLimitFunctionValueRange {
-  sgpp::base::Grid* doLowerLimitation(base::DataVector& newAlpha, double ylower, bool resetGrid) {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doLowerLimitation(grid, newAlpha, ylower, resetGrid);
-    return grid;
-  }
-
-  sgpp::base::Grid* doUpperLimitation(sgpp::base::DataVector& newAlpha, double yupper, bool resetGrid)  {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doUpperLimitation(grid, newAlpha, yupper, resetGrid);
-    return grid;
-  }
-
-  sgpp::base::Grid* doLimitation(sgpp::base::DataVector& newAlpha, double ylower, double yupper)  {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doLimitation(grid, newAlpha, ylower, yupper);
-    return grid;
-  }
 }

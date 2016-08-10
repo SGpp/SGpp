@@ -3,13 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMakePositiveInterpolationAlgorithm.hpp"
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <vector>
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 OperationMakePositiveInterpolationAlgorithm::OperationMakePositiveInterpolationAlgorithm() {}
 
@@ -36,5 +37,5 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
   }
 }
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

@@ -3,12 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationMakePositive.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositiveCandidateSetAlgorithm.hpp>
-#include <sgpp/base/operation/hash/OperationMakePositiveInterpolationAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <vector>
 
@@ -17,7 +19,7 @@
 #endif
 
 namespace sgpp {
-namespace base {
+namespace datadriven {
 
 OperationMakePositive::OperationMakePositive(
     base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
@@ -40,15 +42,16 @@ OperationMakePositive::OperationMakePositive(
   // set the candidate search algorithm
   switch (candidateSearchAlgorithm) {
     case MakePositiveCandidateSearchAlgorithm::FullGrid:
-      candidateSearch = std::make_shared<base::OperationMakePositiveLoadFullGridCandidates>(grid);
+      candidateSearch =
+          std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(grid);
       break;
     case MakePositiveCandidateSearchAlgorithm::Intersections:
       candidateSearch =
-          std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>(grid);
+          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>(grid);
       break;
     default:
       candidateSearch =
-          std::make_shared<base::OperationMakePositiveFindIntersectionCandidates>(grid);
+          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>(grid);
       break;
   }
   candidateSearch->setVerbose(verbose);
@@ -56,17 +59,18 @@ OperationMakePositive::OperationMakePositive(
   // set the interpolation algorithm
   switch (interpolationAlgorithm) {
     case MakePositiveInterpolationAlgorithm::SetToZero:
-      interpolationMethod = std::make_shared<base::OperationMakePositiveSetToZero>();
+      interpolationMethod = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
     default:
-      interpolationMethod = std::make_shared<base::OperationMakePositiveSetToZero>();
+      interpolationMethod = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
   }
 }
 
 OperationMakePositive::~OperationMakePositive() {}
 
-void OperationMakePositive::makeCurrentNodalValuesPositive(base::DataVector& alpha, double tol) {
+void OperationMakePositive::makeCurrentNodalValuesPositive(base::Grid& grid,
+                                                           base::DataVector& alpha, double tol) {
   // dehierarchize the grid
   auto opHier = op_factory::createOperationHierarchisation(grid);
   opHier->doDehierarchisation(alpha);
@@ -87,7 +91,7 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
                                                             double tol) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto opEval = op_factory::createOperationEvalNaive(grid);
-  DataVector x(gridStorage.getDimension());
+  base::DataVector x(gridStorage.getDimension());
   for (size_t i : newGridPoints) {
     gridStorage.getPoint(i).getStandardCoordinates(x);
     double nodalValue = opEval->eval(alpha, x);
@@ -98,7 +102,7 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
 }
 
 void OperationMakePositive::extractNonExistingCandidatesByLevelSum(
-    Grid& newGrid, std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
+    base::Grid& newGrid, std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
     size_t currentLevelSum, std::vector<std::shared_ptr<base::HashGridPoint>>& finalCandidates) {
   base::HashGridStorage& gridStorage = newGrid.getStorage();
   for (auto& candidate : candidates) {
@@ -115,17 +119,23 @@ void OperationMakePositive::addFullGridPoints(
   base::HashGridStorage& gridStorage = grid.getStorage();
   size_t numDims = gridStorage.getDimension();
   size_t numCandidates = candidates.size();
-  DataVector x(numDims);
+  base::DataVector x(numDims);
 
   // compute the function values of the new candidates
-  DataMatrix data(numCandidates, numDims);
+  base::DataMatrix data(numCandidates, numDims);
   for (size_t i = 0; i < candidates.size(); ++i) {
     candidates[i]->getStandardCoordinates(x);
     data.setRow(i, x);
   }
 
-  DataVector nodalValues(numCandidates);
-  op_factory::createOperationMultipleEval(grid, data)->mult(alpha, nodalValues);
+  // use streaming eval to support inconsistent grids
+  base::DataVector nodalValues(numCandidates);
+  datadriven::OperationMultipleEvalConfiguration evalConfig(
+      datadriven::OperationMultipleEvalType::STREAMING,
+      datadriven::OperationMultipleEvalSubType::DEFAULT);
+  std::unique_ptr<base::OperationMultipleEval> opEval(
+      op_factory::createOperationMultipleEval(grid, data));
+  opEval->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
   for (size_t i = 0; i < candidates.size(); ++i) {
@@ -164,15 +174,15 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
       delete newGrid;
     }
     newGrid = grid.clone();
-
-    // force the nodal values of the initial grid to be positive
-    makeCurrentNodalValuesPositive(newAlpha);
   }
+
+  // force the nodal values of the initial grid to be positive
+  makeCurrentNodalValuesPositive(*newGrid, newAlpha);
 
   size_t currentLevelSum = minimumLevelSum;
 
   std::vector<size_t> addedGridPoints;
-  std::vector<std::shared_ptr<HashGridPoint>> candidates;
+  std::vector<std::shared_ptr<base::HashGridPoint>> candidates;
 
   while (currentLevelSum <= maximumLevelSum) {
     if (verbose) {
@@ -237,5 +247,5 @@ size_t OperationMakePositive::numAddedGridPointsForPositivity() {
   return numNewGridPointsForPositivity;
 }
 
-} /* namespace base */
+} /* namespace datadriven */
 } /* namespace sgpp */

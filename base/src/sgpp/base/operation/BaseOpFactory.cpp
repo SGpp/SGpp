@@ -475,32 +475,5 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
   }
 }
 
-base::OperationMakePositive* createOperationMakePositive(
-    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
-    bool verbose) {
-  if (grid.getType() == base::GridType::Linear) {
-    return new base::OperationMakePositive(grid, candidateSearchAlgorithm, interpolationAlgorithm,
-                                           generateConsistentGrid, verbose);
-  } else {
-    throw base::factory_exception(
-        "OperationMakePositive is not implemented for "
-        "this grid type.");
-  }
-}
-
-base::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    base::Grid& grid, base::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    base::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
-  if (grid.getType() == base::GridType::Linear) {
-    return new base::OperationLimitFunctionValueRange(grid, candidateSearchAlgorithm,
-                                                      interpolationAlgorithm, verbose);
-  } else {
-    throw base::factory_exception(
-        "OperationLimitFunctionValueRange is not implemented for "
-        "this grid type.");
-  }
-}
-
 }  // namespace op_factory
 }  // namespace sgpp

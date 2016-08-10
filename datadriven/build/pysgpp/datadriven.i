@@ -10,7 +10,6 @@
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 
-
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -40,6 +39,8 @@
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point };
 
+%include "datadriven/src/sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp"
@@ -53,6 +54,17 @@
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
+
+%rename("makePositive_cpp") makePositive(base::Grid*&, base::DataVector&, bool);
+%ignore makePositive(base::Grid*&, base::DataVector&, bool);
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
+%rename("doLowerLimitation_cpp") doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
+%rename("doUpperLimitation_cpp") doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
+%rename("doLimitation_cpp") doLimitation(base::Grid*&, base::DataVector&, double, double);
+%ignore doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
+%ignore doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
+%ignore doLimitation(base::Grid*&, base::DataVector&, double, double);
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
@@ -98,3 +110,31 @@ public:
 */
 }
 //- end namespace datadriven ------------------------------------------
+
+%extend sgpp::datadriven::OperationMakePositive {
+  sgpp::base::Grid* makePositive(base::DataVector& newAlpha) {
+    sgpp::base::Grid* grid = nullptr;
+    $self->makePositive(grid, newAlpha);
+    return grid;
+  }
+}
+
+%extend sgpp::datadriven::OperationLimitFunctionValueRange {
+  sgpp::base::Grid* doLowerLimitation(base::DataVector& newAlpha, double ylower, bool resetGrid) {
+    sgpp::base::Grid* grid = nullptr;
+    $self->doLowerLimitation(grid, newAlpha, ylower, resetGrid);
+    return grid;
+  }
+
+  sgpp::base::Grid* doUpperLimitation(sgpp::base::DataVector& newAlpha, double yupper, bool resetGrid)  {
+    sgpp::base::Grid* grid = nullptr;
+    $self->doUpperLimitation(grid, newAlpha, yupper, resetGrid);
+    return grid;
+  }
+
+  sgpp::base::Grid* doLimitation(sgpp::base::DataVector& newAlpha, double ylower, double yupper)  {
+    sgpp::base::Grid* grid = nullptr;
+    $self->doLimitation(grid, newAlpha, ylower, yupper);
+    return grid;
+  }
+}
