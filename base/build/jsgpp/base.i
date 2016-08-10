@@ -5,16 +5,6 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
-// -------------------------------------------------------
-// shared pointer declarations
-// this needs to be done before the declarations of the types themselves
-%include <std_shared_ptr.i>
-%shared_ptr(sgpp::base::Grid)
-%shared_ptr(sgpp::base::DataVector)
-%shared_ptr(sgpp::base::DataMatrix)
-// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
-// -------------------------------------------------------
-
 namespace std {
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;

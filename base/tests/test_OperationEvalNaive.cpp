@@ -40,22 +40,12 @@ using sgpp::base::SPolyBoundaryBase;
 using sgpp::base::SPolyModifiedBase;
 
 double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i, double x) {
-  SPolyBase* polyBasis = dynamic_cast<SPolyBase*>(&basis);
-  SPolyModifiedBase* polyModBasis = dynamic_cast<SPolyModifiedBase*>(&basis);
-  SPolyBoundaryBase* polyBoundaryBasis = dynamic_cast<SPolyBoundaryBase*>(&basis);
-
-  if (polyBasis != nullptr) {
-    return polyBasis->eval(l, i, x);
-  } else if (polyBoundaryBasis != nullptr) {
-    return polyBoundaryBasis->eval(l, i, x);
-  } else if (polyModBasis != nullptr) {
-    return polyModBasis->eval(l, i, x);
-  } else {
-    return basis.eval(l, i, x);
-  }
+  return basis.eval(l, i, x);
 }
 
-void checkClose(double x, double y, double tol = 1e-8) { BOOST_CHECK_CLOSE(x, y, tol); }
+void checkClose(double x, double y, double tol = 1e-8) {
+  BOOST_CHECK_CLOSE(x, y, tol);
+}
 
 void checkClose(const DataVector& x, const DataVector& y, double tol = 1e-8) {
   BOOST_CHECK_EQUAL(x.getSize(), y.getSize());
