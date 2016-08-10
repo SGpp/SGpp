@@ -205,7 +205,8 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
 
     // Solve the system for every class and store coefficients:
     for (size_t j = 0; j < trainDataClasses.size(); j++) {
-      datadriven::DensitySystemMatrix DMatrix(*gridVec[j], trainDataClasses[j], *(CVec[j]), lambda);
+      datadriven::DensitySystemMatrix DMatrix(*gridVec[j], trainDataClasses[j], CVec[j].release(),
+                                              lambda);
       base::DataVector rhs(gridVec[j]->getSize());
       base::DataVector alpha(gridVec[j]->getSize());
       alpha.setAll(0.0);

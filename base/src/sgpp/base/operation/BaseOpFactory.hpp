@@ -30,6 +30,7 @@
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
 
+
 namespace sgpp {
 
 namespace op_factory {

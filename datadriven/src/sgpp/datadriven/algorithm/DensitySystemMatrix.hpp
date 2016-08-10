@@ -50,6 +50,17 @@ class DensitySystemMatrix : public base::OperationMatrix {
                       sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
 
   /**
+   * Std-Constructor
+   *
+   * @param grid  reference to the sparse grid
+   * @param trainData reference to DataVector that contains the training data
+   * @param C the regression functional
+   * @param lambda the regression parameter
+   */
+  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix* C,
+                      double lambda);
+
+  /**
    * Generates the left hand side of the classification equation
    *
    * @param alpha parameters for the sparse grid functions

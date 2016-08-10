@@ -23,6 +23,14 @@ DensitySystemMatrix::DensitySystemMatrix(sgpp::base::OperationMatrix* A,
                                          size_t numSamples)
     : A(A), B(B), C(C), lambda(lambda), numSamples(numSamples) {}
 
+DensitySystemMatrix::DensitySystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
+                                         sgpp::base::OperationMatrix* pC, double lambda)
+    : lambda(lambda), numSamples(trainData.getNrows()) {
+  A.reset(op_factory::createOperationLTwoDotProduct(grid));
+  B.reset(op_factory::createOperationMultipleEval(grid, trainData));
+  C.reset(pC);
+}
+
 DensitySystemMatrix::~DensitySystemMatrix() {}
 
 void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
