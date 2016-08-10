@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  std::cin.get();
   // sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
   // std::cin.get();
 
@@ -90,6 +89,7 @@ int main(int argc, char *argv[]) {
   std::cin.get();
   sgpp::datadriven::clusteringmpi::OperationGraphCreationMPI graph_op(dataset, 12);
   std::vector<int> knn_graph;
+  std::cin.get();
   graph_op.create_graph(knn_graph);
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
