@@ -14,7 +14,6 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/QueueLoadBalancer.hpp>
 
-#include <omp.h>
 #include <chrono>
 #include <vector>
 #include <string>

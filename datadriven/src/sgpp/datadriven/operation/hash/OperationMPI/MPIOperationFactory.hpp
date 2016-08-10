@@ -15,20 +15,6 @@ namespace clusteringmpi {
 
 MPIWorkerBase* create_mpi_operation(int masternode,
                                         base::OperationConfiguration conf, char *classname) {
-  std::cout << classname << std::endl;
-  /*if (std::strcmp(classname, "OperationCreateGraphSlave")
-      == 0)  {
-    return OperationCreateGraphMPI::create_slave(conf);
-  }
-  if (std::strcmp(classname, "OperationRhsSlave") == 0)  {
-    return OperationRhsMPI::create_slave(conf);
-    }*/
-  /*if (std::strcmp(classname, "OperationDensitySlave") == 0)  {
-    return OperationDensityMPI::create_slave(masternode, conf);
-    }*/
-  /*if (std::strcmp(classname, "OperationCreatePrunedGraphSlave") == 0)  {
-    return OperationCreatePrunedGraph::create_slave(conf);
-    }*/
   if (std::strcmp(classname, "OPDummy") == 0)  {
     return new WorkerDummy(classname);
   }
@@ -37,6 +23,9 @@ MPIWorkerBase* create_mpi_operation(int masternode,
   }
   if (std::strcmp(classname, "DensityRHSWorker") == 0)  {
     return new DensityRhsWorker();
+  }
+  if (std::strcmp(classname, "GraphCreationWorker") == 0)  {
+    return new GraphCreationWorker();
   }
   return NULL;
 }

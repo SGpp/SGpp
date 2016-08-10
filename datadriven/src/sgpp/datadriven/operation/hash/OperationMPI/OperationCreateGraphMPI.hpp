@@ -124,7 +124,7 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
 class OperationGraphCreationMPI : public GraphCreationWorker {
  public:
   OperationGraphCreationMPI(sgpp::base::DataMatrix &data, size_t k) :
-      MPIWorkerBase("DensityRHSWorker"), GraphCreationWorker(data, k) {
+      MPIWorkerBase("GraphCreationWorker"), GraphCreationWorker(data, k) {
   }
   virtual ~OperationGraphCreationMPI() {}
   virtual void create_graph(std::vector<int> &result) {
