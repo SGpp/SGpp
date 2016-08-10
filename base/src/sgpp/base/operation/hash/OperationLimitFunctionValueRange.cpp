@@ -32,7 +32,7 @@ void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
   // limit the function values from below
   // f(x) >= ylower => g(x) := f(x) - ylower >= 0
   if (resetGrid) {
-    copyGrid(grid, newGrid);
+    newGrid = grid.clone();
     resetGrid = false;
   }
 
@@ -50,7 +50,7 @@ void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
   // limit the function from above
   // f(x) <= yupper => -f(x) >= -yupper => g(x) := -f(x) + yupper >= 0
   if (resetGrid) {
-    copyGrid(grid, newGrid);
+    newGrid = grid.clone();
   }
 
   addConst(*newGrid, newAlpha, -1.0, yupper);
@@ -87,23 +87,6 @@ void OperationLimitFunctionValueRange::addConst(base::Grid& grid, base::DataVect
   }
   // hierarchize the result
   opHier->doHierarchisation(alpha);
-}
-
-void OperationLimitFunctionValueRange::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
-  // create grid of dimensions d - 1 of the same type
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-
-  newGrid = base::Grid::createLinearGrid(numDims);
-  base::HashGridStorage& newGridStorage = newGrid->getStorage();
-
-  // run through grid g and add points to mg
-  base::GridPoint gridPoint(numDims);
-
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    newGridStorage.insert(gridStorage.getPoint(i));
-  }
-  newGridStorage.recalcLeafProperty();
 }
 
 } /* namespace base */

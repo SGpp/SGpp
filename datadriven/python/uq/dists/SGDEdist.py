@@ -92,7 +92,14 @@ class SGDEdist(EstimatedDist):
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)
 
-        return cls(learner.getGrid(), learner.getSurpluses(), samples, bounds, config)
+        # copy grid and coefficient vector
+        grid = learner.getGrid().copy()
+        alpha = DataVector(learner.getSurpluses())
+
+        # load sgde distribution
+        ans = cls(grid, alpha, samples, bounds, config)
+
+        return ans
 
 
     @classmethod

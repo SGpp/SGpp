@@ -42,7 +42,7 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
 }
 
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/friedman_4d_2000.arff";
+  std::string filename = "../../parallel/tests/data/friedman_4d_2000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "--------------------------------------------------------" << std::endl;
-  std::cout << learner.getSurpluses()->getSize() << " -> " << learner.getSurpluses()->sum()
+  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum()
             << std::endl;
   std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
             << std::endl;
@@ -138,8 +138,8 @@ int main(int argc, char** argv) {
   std::cout << "------------------------------------------------------" << std::endl;*/
 
   // inverse Rosenblatt transformation
-  /*auto opInvRos =
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
+  auto opInvRos =
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(learner.getGrid());
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
@@ -147,13 +147,13 @@ int main(int argc, char** argv) {
   std::cout << points.toString() << std::endl;
 
   sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
-  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
+  opInvRos->doTransformation(&learner.getSurpluses(), &points, &pointsCdf);
 
   points.setAll(0.0);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
-  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
+  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(learner.getGrid());
+  opRos->doTransformation(&learner.getSurpluses(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << points.toString() << std::endl;*/
+  std::cout << points.toString() << std::endl;
 }

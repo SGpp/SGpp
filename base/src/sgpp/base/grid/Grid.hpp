@@ -65,7 +65,7 @@ struct RegularGridConfiguration {
   /// max. polynomial degree for poly basis
   size_t maxDegree_;
   /// level of boundary grid
-  size_t boundaryLevel_;
+  level_t boundaryLevel_;
   /// string to serialized grid
   std::string filename_;
 };
@@ -96,11 +96,17 @@ struct AdpativityConfiguration {
 class Grid {
  public:
   /**
-   * creates a stencil for a linear grid without boundaries
-   *
-   * @param dim the grid's dimension
-   * @return grid
+   * delete copy constructor
+   * @param other
    */
+  Grid(const Grid& other) = delete;
+
+  /**
+ * creates a stencil for a linear grid without boundaries
+ *
+ * @param dim the grid's dimension
+ * @return grid
+ */
   static Grid* createLinearGridStencil(size_t dim);
 
   /**
@@ -310,6 +316,14 @@ class Grid {
   static Grid* createPeriodicGrid(size_t dim);
 
   /**
+   * Creates a grid from a regular grid configuration
+   *
+   * @param gridConfig grid configuration
+   * @return grid
+   */
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
+
+  /**
    * reads a grid out of a string
    *
    * @param istr string that contains the grid information
@@ -363,6 +377,11 @@ class Grid {
    * Desctructor
    */
   virtual ~Grid();
+
+  /**
+   * copies a grid
+   */
+  Grid* clone();
 
   /**
    * gets a reference to the GridStorage object

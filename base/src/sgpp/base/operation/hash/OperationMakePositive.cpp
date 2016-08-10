@@ -64,23 +64,6 @@ OperationMakePositive::OperationMakePositive(
 
 OperationMakePositive::~OperationMakePositive() {}
 
-void OperationMakePositive::copyGrid(base::Grid& grid, base::Grid*& newGrid) {
-  // create grid of the same type
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-
-  newGrid = base::Grid::createLinearGrid(numDims);
-  base::HashGridStorage& newGridStorage = newGrid->getStorage();
-
-  // run through grid and add points to newGrid
-  base::GridPoint gridPoint(numDims);
-
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    newGridStorage.insert(gridStorage.getPoint(i));
-  }
-  newGridStorage.recalcLeafProperty();
-}
-
 void OperationMakePositive::makeCurrentNodalValuesPositive(base::DataVector& alpha, double tol) {
   // dehierarchize the grid
   auto opHier = op_factory::createOperationHierarchisation(grid);
@@ -173,7 +156,7 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
     if (newGrid != nullptr) {
       delete newGrid;
     }
-    copyGrid(grid, newGrid);
+    newGrid = grid.clone();
   }
 
   // force the nodal values of the initial grid to be positive

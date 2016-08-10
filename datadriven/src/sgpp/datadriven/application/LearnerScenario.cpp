@@ -54,9 +54,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setTestsetConfiguration(testsetConfig);
 }
 
-bool LearnerScenario::isInitialized() const {
-  return initialized;
-}
+bool LearnerScenario::isInitialized() const { return initialized; }
 
 void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
   (*this).replaceTextAttr("datasetFileName", datasetFileName);
@@ -106,7 +104,8 @@ void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) 
 
 base::RegularGridConfiguration LearnerScenario::getGridConfig() {
   base::RegularGridConfiguration gridConfig;
-  gridConfig.boundaryLevel_ = (*this)["grid"]["boundaryLevel"].getUInt();
+  gridConfig.boundaryLevel_ =
+      static_cast<base::level_t>((*this)["grid"]["boundaryLevel"].getUInt());
   gridConfig.dim_ = (*this)["grid"]["dim"].getUInt();
   gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getInt());
   gridConfig.maxDegree_ = (*this)["grid"]["maxDegree"].getUInt();
@@ -194,8 +193,7 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
 void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints",
-                                      static_cast<uint64_t>(adaptConfig.noPoints_));
+  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.noPoints_));
   (*this)["adaptivity"].replaceIDAttr("numRefinements",
                                       static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);

@@ -53,7 +53,7 @@ void DensitySystemMatrix::generateb(sgpp::base::DataVector& rhs) {
   y.setAll(1.0);
   // Bt * 1
   B->multTranspose(y, rhs);
-  // 1 / 2M * Bt * 1
+  // 1 / M * Bt * 1
   rhs.mult(1. / static_cast<double>(numSamples));
 }
 

@@ -33,8 +33,6 @@ class OperationLimitFunctionValueRange {
   void doLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower, double yupper);
 
  private:
-  void copyGrid(base::Grid& grid, base::Grid*& newGrid);
-
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   base::Grid& grid;
