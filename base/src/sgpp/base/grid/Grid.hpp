@@ -102,11 +102,19 @@ class Grid {
   Grid(const Grid& other) = delete;
 
   /**
- * creates a stencil for a linear grid without boundaries
- *
- * @param dim the grid's dimension
- * @return grid
- */
+   * creates a grid defined by the grid configuration
+   *
+   * @param gridConfig grid configuration
+   * @return grid
+   */
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
+
+  /**
+   * creates a stencil for a linear grid without boundaries
+   *
+   * @param dim the grid's dimension
+   * @return grid
+   */
   static Grid* createLinearGridStencil(size_t dim);
 
   /**
@@ -314,14 +322,6 @@ class Grid {
    * @return grid
    */
   static Grid* createPeriodicGrid(size_t dim);
-
-  /**
-   * Creates a grid from a regular grid configuration
-   *
-   * @param gridConfig grid configuration
-   * @return grid
-   */
-  static Grid* createGrid(RegularGridConfiguration gridConfig);
 
   /**
    * reads a grid out of a string
