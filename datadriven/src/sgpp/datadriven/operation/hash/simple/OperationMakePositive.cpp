@@ -22,36 +22,27 @@ namespace sgpp {
 namespace datadriven {
 
 OperationMakePositive::OperationMakePositive(
-    base::Grid& grid, MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
     bool verbose)
-    : grid(grid),
-      minimumLevelSum(0),
+    : minimumLevelSum(0),
       maximumLevelSum(0),
       numNewGridPointsForPositivity(0),
       numNewGridPoints(0),
       generateConsistentGrid(generateConsistentGrid),
       verbose(verbose) {
-  // set range of level sums for candidate search
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-  auto maxLevel = gridStorage.getMaxLevel();
-  minimumLevelSum = numDims;
-  maximumLevelSum = maxLevel * numDims;
-
   // set the candidate search algorithm
   switch (candidateSearchAlgorithm) {
     case MakePositiveCandidateSearchAlgorithm::FullGrid:
-      candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(grid);
+      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>();
       break;
     case MakePositiveCandidateSearchAlgorithm::Intersections:
       candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>(grid);
+          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>();
       break;
     default:
       candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>(grid);
+          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>();
       break;
   }
   candidateSearch->setVerbose(verbose);
@@ -68,6 +59,18 @@ OperationMakePositive::OperationMakePositive(
 }
 
 OperationMakePositive::~OperationMakePositive() {}
+
+void OperationMakePositive::initialize(base::Grid& grid) {
+  // set range of level sums for candidate search
+  base::HashGridStorage& gridStorage = grid.getStorage();
+  auto numDims = gridStorage.getDimension();
+  auto maxLevel = gridStorage.getMaxLevel();
+  minimumLevelSum = numDims;
+  maximumLevelSum = maxLevel * numDims;
+
+  // reset the candidate search
+  candidateSearch->initialize(grid);
+}
 
 void OperationMakePositive::makeCurrentNodalValuesPositive(base::Grid& grid,
                                                            base::DataVector& alpha, double tol) {
@@ -165,21 +168,18 @@ void OperationMakePositive::addFullGridPoints(
   alpha.resizeZero(gridStorage.getSize());
 }
 
-void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector& newAlpha,
-                                         bool resetGrid) {
-  // copy the current grid
-  if (resetGrid) {
-    // delete the current grid if the pointer is not null
-    if (newGrid != nullptr) {
-      delete newGrid;
-    }
-    newGrid = grid.clone();
+void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alpha,
+                                         bool forcePositiveNodalValues) {
+  // initialize the operation with the current parameter setting
+  initialize(grid);
+
+  if (forcePositiveNodalValues) {
+    // force the nodal values of the initial grid to be positive
+    makeCurrentNodalValuesPositive(grid, alpha);
   }
 
-  // force the nodal values of the initial grid to be positive
-  makeCurrentNodalValuesPositive(*newGrid, newAlpha);
-
   size_t currentLevelSum = minimumLevelSum;
+  size_t oldGridSize = grid.getSize();
 
   std::vector<size_t> addedGridPoints;
   std::vector<std::shared_ptr<base::HashGridPoint>> candidates;
@@ -191,7 +191,7 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
     }
 
     // search the next candidate set
-    candidateSearch->nextCandidates(*newGrid, newAlpha, currentLevelSum, candidates);
+    candidateSearch->nextCandidates(grid, alpha, currentLevelSum, candidates);
 
     if (verbose) {
       std::cout << "# candidates found    : " << candidates.size();
@@ -200,8 +200,7 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
     if (candidates.size() > 0) {
       // remove existing candidates from the candidate set and sort the rest by level sum
       std::vector<std::shared_ptr<base::HashGridPoint>> finalCandidates;
-      extractNonExistingCandidatesByLevelSum(*newGrid, candidates, currentLevelSum,
-                                             finalCandidates);
+      extractNonExistingCandidatesByLevelSum(grid, candidates, currentLevelSum, finalCandidates);
 
       if (verbose) {
         std::cout << " >= " << finalCandidates.size() << " / " << candidateSearch->numCandidates()
@@ -209,15 +208,15 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
       }
 
       // add the those candidates for which the sparse grid function is negative
-      addFullGridPoints(*newGrid, newAlpha, finalCandidates, addedGridPoints);
+      addFullGridPoints(grid, alpha, finalCandidates, addedGridPoints);
 
       if (verbose) {
         std::cout << "# new grid points     : " << addedGridPoints.size() << " -> "
-                  << newGrid->getSize() << std::endl;
+                  << grid.getSize() << std::endl;
       }
 
       // update the hierarchical coefficients for the new points
-      interpolationMethod->computeHierarchicalCoefficients(*newGrid, newAlpha, addedGridPoints);
+      interpolationMethod->computeHierarchicalCoefficients(grid, alpha, addedGridPoints);
     } else {
       if (verbose) {
         std::cout << std::endl;
@@ -236,7 +235,7 @@ void OperationMakePositive::makePositive(base::Grid*& newGrid, base::DataVector&
   if (verbose) {
     std::cout << "# added grid points   : " << numNewGridPointsForPositivity << " + "
               << (numNewGridPoints - numNewGridPointsForPositivity) << " = " << numNewGridPoints
-              << " + " << grid.getSize() << " = " << newGrid->getSize() << std::endl;
+              << " + " << oldGridSize << " = " << grid.getSize() << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
   }
 }

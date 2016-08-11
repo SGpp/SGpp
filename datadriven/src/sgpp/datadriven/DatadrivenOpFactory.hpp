@@ -196,8 +196,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * @return Pointer to the new OperationMakePositive object for the Grid grid
  */
 datadriven::OperationMakePositive* createOperationMakePositive(
-    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                          datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool generateConsistentGrid = true, bool verbose = false);
@@ -210,11 +210,11 @@ datadriven::OperationMakePositive* createOperationMakePositive(
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
  */
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                          datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool generateConsistentGrid = true, bool verbose = false);
+    bool verbose = false);
 
 }  // namespace op_factory
 }  // namespace sgpp

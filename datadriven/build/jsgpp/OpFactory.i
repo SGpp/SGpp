@@ -37,10 +37,10 @@
     sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityConditionalKDE(
     sgpp::datadriven::KernelDensityEstimator& kde);
-%newobject createOperationMakePositive(sgpp::base::Grid& grid, sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+%newobject createOperationMakePositive(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                        sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
                                        bool generateConsistentGrid, bool verbose);
-%newobject createOperationLimitFunctionValueRange(sgpp::base::Grid& grid, sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+%newobject createOperationLimitFunctionValueRange(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                                   sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
                                                   bool generateConsistentGrid, bool verbose);
 %newobject sgpp::op_factory::createOperationMultipleEval(

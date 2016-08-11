@@ -131,16 +131,16 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   }
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
-  Grid* positiveGrid = nullptr;
-  DataVector positiveAlpha(alpha);
   std::unique_ptr<sgpp::datadriven::OperationMakePositive> opMakePositive(
-      sgpp::op_factory::createOperationMakePositive(grid, candidateSearchAlgorithm,
+      sgpp::op_factory::createOperationMakePositive(candidateSearchAlgorithm,
                                                     MakePositiveInterpolationAlgorithm::SetToZero,
                                                     generateConsistentGrid, verbose));
-  opMakePositive->makePositive(positiveGrid, positiveAlpha);
+  std::unique_ptr<Grid> positiveGrid(grid.clone());
+  DataVector positiveAlpha(alpha);
+  opMakePositive->makePositive(*positiveGrid, positiveAlpha);
 
   if (verbose) {
-    std::cout << "(" << gridStorage.getDimension() << "," << level
+    std::cout << "(" << gridStorage.getDimension() << ", " << level << ", " << refnums
               << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
               << " < " << numFullGridPoints << std::endl;
   }
@@ -149,7 +149,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   if (verbose) {
     std::cout << "check full grid for success: ";
   }
-  auto fullGrid = sgpp::base::Grid::createLinearGrid(numDims);
+  std::unique_ptr<sgpp::base::Grid> fullGrid(sgpp::base::Grid::createLinearGrid(numDims));
   fullGrid->getGenerator().full(maxLevel);
 
   if (verbose) {
@@ -178,61 +178,59 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   if (verbose) {
     std::cout << "Done" << std::endl;
   }
-  delete positiveGrid;
 }
 
-BOOST_AUTO_TEST_CASE(testOperationMakePositiveFullGridSearch) {
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
-  size_t refIterations = 0;
-  size_t refnums = 5;
-  std::unique_ptr<Grid> grid;
+  size_t refIterations = 2;
+  size_t refnums = 3;
+
+  std::unique_ptr<Grid> gridIntersections;
+  std::unique_ptr<Grid> gridFull;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        grid.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::FullGrid, &normal);
+        // check whether both candidate search algorithms lead to the same consistent grid
+        gridIntersections.reset(Grid::createLinearGrid(idim));
+        testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, true);
+        if (irefIteration == 0) {
+          gridFull.reset(Grid::createLinearGrid(idim));
+          testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
+                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, true);
+          BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
+        }
       }
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersections) {
+BOOST_AUTO_TEST_CASE(testOperationMakePositiveInconsistent) {
   // parameters
   size_t numDims = 4;
   size_t level = 4;
   size_t refIterations = 2;
-  size_t refnums = 5;
-  std::unique_ptr<Grid> grid;
+  size_t refnums = 3;
+
+  std::unique_ptr<Grid> gridIntersections;
+  std::unique_ptr<Grid> gridFull;
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
       for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        grid.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal);
-      }
-    }
-  }
-}
-
-BOOST_AUTO_TEST_CASE(testOperationMakePositiveIntersectionsInconsistentGrid) {
-  // parameters
-  size_t numDims = 4;
-  size_t level = 4;
-  size_t refIterations = 2;
-  size_t refnums = 5;
-  std::unique_ptr<Grid> grid;
-
-  for (size_t idim = 2; idim <= numDims; idim++) {
-    for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        grid.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*grid, idim, ilevel, irefIteration * refnums,
+        // check whether both candidate search algorithms lead to the same inconsistent grid
+        gridIntersections.reset(Grid::createLinearGrid(idim));
+        testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
                          MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false);
+        if (irefIteration == 0) {
+          gridFull.reset(Grid::createLinearGrid(idim));
+          testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
+                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, false);
+          BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
+        }
       }
     }
   }

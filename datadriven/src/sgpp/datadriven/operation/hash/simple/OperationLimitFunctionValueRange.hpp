@@ -19,26 +19,30 @@ namespace datadriven {
 class OperationLimitFunctionValueRange {
  public:
   OperationLimitFunctionValueRange(
-      base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candiateSearch =
-                            MakePositiveCandidateSearchAlgorithm::Intersections,
+      datadriven::MakePositiveCandidateSearchAlgorithm candiateSearch =
+          MakePositiveCandidateSearchAlgorithm::Intersections,
       datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
           MakePositiveInterpolationAlgorithm::SetToZero,
-      bool generateConsistentGrid = true, bool verbose = false);
+      bool verbose = false);
+
   virtual ~OperationLimitFunctionValueRange();
 
-  void doLowerLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower,
-                         bool resetGrid = true);
-  void doUpperLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double yupper,
-                         bool resetGrid = true);
-  void doLimitation(base::Grid*& newGrid, base::DataVector& newAlpha, double ylower, double yupper);
+  void doLowerLimitation(base::Grid& grid, base::DataVector& alpha, double ylower,
+                         bool limitNodalValues = true);
+  void doUpperLimitation(base::Grid& grid, base::DataVector& alpha, double yupper,
+                         bool limitNodalValues = true);
+  void doLimitation(base::Grid& grid, base::DataVector& alpha, double ylower, double yupper,
+                    bool limitNodalValues = true);
 
  private:
+  void prepareForLowerLimitation(base::Grid& grid, base::DataVector& alpha, double ylower);
+  void inverseFromLowerLimitation(base::Grid& grid, base::DataVector& alpha, double ylower);
+  void prepareForUpperLimitation(base::Grid& grid, base::DataVector& alpha, double yupper);
+  void inverseFromUpperLimitation(base::Grid& grid, base::DataVector& alpha, double yupper);
+
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
-  base::Grid& grid;
-  datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch;
-  datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm;
-  bool generateConsistentGrid;
+  std::unique_ptr<datadriven::OperationMakePositive> opPositive;
   bool verbose;
 };
 

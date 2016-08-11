@@ -32,13 +32,14 @@ class OperationMakePositive {
   /**
    * Constructor
    *
-   * @param grid Grid
    * @param candidateSearchAlgorithm defines how to generate the full grid candidate set
    * @param interpolationAlgorithm defines how to compute the coefficients for the new grid points
+   * @param tol tolerance for positivity
+   * @param generateConsistentGrid define if the hierarchical ancestors of all new grid points are
+   * inserted as well
    * @param verbose print information or not
    */
-  explicit OperationMakePositive(base::Grid& grid,
-                                 MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+  explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
@@ -50,6 +51,13 @@ class OperationMakePositive {
   virtual ~OperationMakePositive();
 
   /**
+   * initializes the operation
+   *
+   * @param grid Grid
+   */
+  void initialize(base::Grid& grid);
+
+  /**
    * Make the sparse grid function defined by grid and coefficient vector positive.
    *
    * @param newGrid Grid where the new grid is stored
@@ -57,7 +65,19 @@ class OperationMakePositive {
    * @param resetGrid if set, the grid in newGrid is deleted and a copy of the object variable is
    * used
    */
-  void makePositive(base::Grid*& newGrid, base::DataVector& newAlpha, bool resetGrid = true);
+  void makePositive(base::Grid& grid, base::DataVector& alpha,
+                    bool forcePositiveNodalValues = false);
+
+  /**
+   * Enforce the function values at each grid point to larger than the specified tolerance. The ones
+   * which are not are set to zero. For this function we need the hierarchization and
+   * dechierarchization operations.
+   *
+   * @param grid grid
+   * @param alpha coefficient vector
+   */
+  void makeCurrentNodalValuesPositive(base::Grid& grid, base::DataVector& alpha,
+                                      double tol = -1e-14);
 
   /**
    *
@@ -72,17 +92,6 @@ class OperationMakePositive {
   size_t numAddedGridPointsForPositivity();
 
  private:
-  /**
-   * Enforce the function values at each grid point to larger than the specified tolerance. The ones
-   * which are not are set to zero. For this function we need the hierarchization and
-   * dechierarchization operations.
-   *
-   * @param grid grid
-   * @param alpha coefficient vector
-   */
-  void makeCurrentNodalValuesPositive(base::Grid& grid, base::DataVector& alpha,
-                                      double tol = -1e-14);
-
   /**
    * Enforce the function values at the new grid points to be positive. It is similar to the
    * ´makeCurrentNodalValuesPositive´ but does the hierarchization directly.
@@ -121,9 +130,6 @@ class OperationMakePositive {
   void addFullGridPoints(base::Grid& grid, base::DataVector& alpha,
                          std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
                          std::vector<size_t>& addedGridPoints, double tol = -1e-14);
-
-  /// grid
-  base::Grid& grid;
 
   /// range for level sums to be tested
   size_t minimumLevelSum;

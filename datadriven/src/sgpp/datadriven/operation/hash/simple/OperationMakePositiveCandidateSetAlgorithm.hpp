@@ -21,6 +21,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
   OperationMakePositiveCandidateSetAlgorithm();
   virtual ~OperationMakePositiveCandidateSetAlgorithm();
 
+  virtual void initialize(base::Grid& grid) = 0;
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) = 0;
 
@@ -32,17 +33,17 @@ class OperationMakePositiveCandidateSetAlgorithm {
                                          std::vector<size_t>& negativeGridPoints,
                                          double tol = -1e-14);
 
-  bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
-  bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj);
-
+  size_t iteration;
   bool verbose;
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  explicit OperationMakePositiveFindIntersectionCandidates(base::Grid& grid);
+  OperationMakePositiveFindIntersectionCandidates();
   virtual ~OperationMakePositiveFindIntersectionCandidates();
+
+  void initialize(base::Grid& grid) override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
@@ -50,6 +51,9 @@ class OperationMakePositiveFindIntersectionCandidates
   size_t numCandidates() override;
 
  private:
+  bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
+  bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj);
+
   void findIntersections(base::Grid& grid, size_t levelSum,
                          std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
 
@@ -61,7 +65,6 @@ class OperationMakePositiveFindIntersectionCandidates
   static bool compareGridPointsByHash(const std::shared_ptr<base::HashGridPoint>& lhs,
                                       const std::shared_ptr<base::HashGridPoint>& rhs);
 
-  size_t iteration;
   std::unordered_map<size_t, std::shared_ptr<std::vector<std::shared_ptr<base::HashGridPoint>>>>
       intersections;
   std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> currentIntersections;
@@ -74,8 +77,10 @@ class OperationMakePositiveFindIntersectionCandidates
 class OperationMakePositiveLoadFullGridCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  explicit OperationMakePositiveLoadFullGridCandidates(base::Grid& grid);
+  OperationMakePositiveLoadFullGridCandidates();
   virtual ~OperationMakePositiveLoadFullGridCandidates();
+
+  void initialize(base::Grid& grid) override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
