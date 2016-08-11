@@ -27,14 +27,13 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
   MPI_Comm &sub_worker_comm;
   void divide_workpackages(int *package, std::vector<int> &graph) {
     // Divide into more work packages
-    int packagesize = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getInt();
+    int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
+                                       ["PREFERED_PACKAGESIZE"].getInt());
     int *partial_result = new int[package[1] * k];
     SimpleQueue<int> workitem_queue(package[0], package[1], packagesize,
                                        sub_worker_comm,
                                        MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
-    if (package[0] < 0)
-      throw std::logic_error("wat");
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
       // Store result
@@ -70,7 +69,7 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
     op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
                                               "MyOCLConf.cfg", 0, 0);
   }
-  GraphCreationWorker(sgpp::base::DataMatrix &data, size_t k)
+  GraphCreationWorker(sgpp::base::DataMatrix &data, int k)
       : MPIWorkerBase("GraphCreationWorker"),
         MPIWorkerGraphBase("GraphCreationWorker", data, k),
         opencl_node(false), overseer_node(false),
@@ -123,7 +122,7 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
 };
 class OperationGraphCreationMPI : public GraphCreationWorker {
  public:
-  OperationGraphCreationMPI(sgpp::base::DataMatrix &data, size_t k) :
+  OperationGraphCreationMPI(sgpp::base::DataMatrix &data, int k) :
       MPIWorkerBase("GraphCreationWorker"), GraphCreationWorker(data, k) {
   }
   virtual ~OperationGraphCreationMPI() {}

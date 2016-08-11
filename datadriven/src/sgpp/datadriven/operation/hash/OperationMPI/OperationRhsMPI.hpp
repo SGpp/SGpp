@@ -24,14 +24,13 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
   MPI_Comm &sub_worker_comm;
   void divide_workpackages(int *package, double *erg) {
     // Divide into more work packages
-    int packagesize = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getInt();
+    int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
+                                       ["PREFERED_PACKAGESIZE"].getInt());
     double *package_result = new double[packagesize];
     SimpleQueue<double> workitem_queue(package[0], package[1], packagesize,
                                        sub_worker_comm,
                                        MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
-    if (package[0] < 0)
-      throw std::logic_error("wat");
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
       // Store result
@@ -137,7 +136,7 @@ class OperationDensityRhsMPI : public DensityRhsWorker {
     DensityRhsWorker::MPIWorkerGridBase::start_sub_workers();
     int datainfo[2];
     datainfo[0] = 0;
-    datainfo[1] = b.getSize();
+    datainfo[1] = static_cast<int>(b.getSize());
     divide_workpackages(datainfo, b.getPointer());
     int exitmessage[2] = {-2, -2};
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)

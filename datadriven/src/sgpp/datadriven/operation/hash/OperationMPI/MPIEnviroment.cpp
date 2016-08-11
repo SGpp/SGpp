@@ -233,7 +233,8 @@ void MPIEnviroment::init_communicator(base::OperationConfiguration conf) {
   // Create Comm
   MPI_Group world_group;
   MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-  MPI_Group_incl(world_group, neighbor_list.size(), neighbor_list.data(), &node_neighbors);
+  MPI_Group_incl(world_group, static_cast<int>(neighbor_list.size()),
+                 neighbor_list.data(), &node_neighbors);
 
   std::cout << "Created comm on " << MPIEnviroment::get_node_rank() << "\n";
   MPI_Comm_create(MPI_COMM_WORLD, node_neighbors, &communicator);
