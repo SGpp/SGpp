@@ -93,6 +93,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "base/src/sgpp/base/grid/generation/hashmap/ANOVAHashRefinement.hpp"
 %feature("director") sgpp::base::SubspaceRefinement;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
@@ -106,6 +107,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
