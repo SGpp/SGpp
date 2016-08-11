@@ -26,15 +26,15 @@ class SampleProvider {
   /**
    * Selects a certain number of samples
    * @param howMany number of samples to return
-   * @return std::unique_ptr<Dataset> A smart pointer to a Dataset containing all samples.
+   * @return Dataset* pointer to a Dataset containing all samples.
    */
-  virtual std::unique_ptr<Dataset> getNextSamples(size_t howMany) = 0;
+  virtual Dataset* getNextSamples(size_t howMany) = 0;
 
   /**
    * Returns all samples
    * @return std::unique_ptr<Dataset> A smart pointer to a Dataset.
    */
-  virtual std::unique_ptr<Dataset> getAllSamples() = 0;
+  virtual Dataset* getAllSamples() = 0;
 
   /**
    * Returns the dimensionality of the data source

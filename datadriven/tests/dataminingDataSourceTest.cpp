@@ -17,7 +17,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
@@ -27,10 +27,11 @@
 #include <string>
 
 using sgpp::datadriven::DataSource;
+using sgpp::datadriven::Dataset;
 using sgpp::datadriven::SampleProvider;
 using sgpp::datadriven::GzipFileSampleDecorator;
 using sgpp::datadriven::ArffFileSampleProvider;
-using sgpp::datadriven::DataSourceState;
+using sgpp::datadriven::DataSourceConfig;
 using sgpp::datadriven::DataSourceStateConfig;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -59,16 +60,13 @@ struct State {
 BOOST_FIXTURE_TEST_SUITE(dataSourceGetNextSamplesAllTest, State)
 
 BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
-  auto sampleProvider = std::unique_ptr<SampleProvider>(
-      new GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>())));
+  SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
   DataSourceStateConfig config;
   config.filePath = path;
   config.numBatches = 1;
-  auto state = std::make_shared<DataSourceState>(config);
 
-  DataSource dataSource = DataSource(state, std::move(sampleProvider));
-
-  auto dataset = dataSource.getNextSamples();
+  DataSource dataSource = DataSource(config, sampleProvider);
+  auto dataset = std::unique_ptr<Dataset>(dataSource.getNextSamples());
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();
@@ -97,16 +95,15 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
 }
 
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
-  auto sampleProvider = std::unique_ptr<SampleProvider>(
-      new GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>())));
+  SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
   DataSourceStateConfig config;
   config.filePath = path;
   config.numBatches = 1;
-  auto state = std::make_shared<DataSourceState>(config);
 
-  DataSource dataSource = DataSource(state, std::move(sampleProvider));
+  DataSource dataSource = DataSource(config, sampleProvider);
 
-  for (auto dataset : dataSource) {
+  for (auto dsPtr : dataSource) {
+    auto dataset = std::unique_ptr<Dataset>(dsPtr);
     DataVector& classes = dataset->getTargets();
     DataMatrix& data = dataset->getData();
 
@@ -114,8 +111,9 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
     BOOST_CHECK_EQUAL(10, classes.getSize());
     BOOST_CHECK_EQUAL(10, data.getNrows());
     BOOST_CHECK_EQUAL(3, data.getNcols());
+    //    dataset.reset();
   }
-  BOOST_CHECK_EQUAL(1, state->getCurrentIteration());
+  BOOST_CHECK_EQUAL(1, dataSource.getConfig().getCurrentIteration());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

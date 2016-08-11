@@ -11,8 +11,8 @@
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
@@ -27,18 +27,17 @@ class DataSourceIterator;
 
 class DataSource {
  public:
-  DataSource(std::shared_ptr<DataSourceState> state,
-             std::unique_ptr<SampleProvider> sampleProvider);
-  DataSource(DataSource&& ds);
+  DataSource(DataSourceConfig config, SampleProvider* sampleProvider);
   virtual ~DataSource();
 
-  std::unique_ptr<Dataset> getNextSamples();
+  DataSourceConfig& getConfig();
+  Dataset* getNextSamples();
   DataSourceIterator begin();
   DataSourceIterator end();
 
  protected:
-  std::shared_ptr<DataSourceState> state;
-  std::unique_ptr<SampleProvider> sampleProvider;
+  DataSourceConfig config;
+  std::shared_ptr<SampleProvider> sampleProvider;
 };
 
 } /* namespace datadriven */

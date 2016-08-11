@@ -23,34 +23,33 @@
 namespace sgpp {
 namespace datadriven {
 
-DataSource::DataSource(std::shared_ptr<DataSourceState> state, std::unique_ptr<SampleProvider> sp)
-    : state(state), sampleProvider(std::move(sp)) {
+DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
+    : config(conf), sampleProvider(std::shared_ptr<SampleProvider>(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
-  if (!this->state->getFilePath().empty()) {
-    FileSampleProvider* fileProvider = dynamic_cast<FileSampleProvider*>(sampleProvider.get());
-    fileProvider->readFile(this->state->getFilePath());
+  if (!this->config.getFilePath().empty()) {
+    auto fileProvider = std::static_pointer_cast<FileSampleProvider>(sampleProvider);
+    fileProvider->readFile(this->config.getFilePath());
   }
 }
-
-DataSource::DataSource(DataSource&& ds)
-    : state(ds.state), sampleProvider(std::move(ds.sampleProvider)) {}
 
 DataSource::~DataSource() {}
 
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
-DataSourceIterator DataSource::end() { return DataSourceIterator(*this, state->getNumBatches()); }
+DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.getNumBatches()); }
 
-std::unique_ptr<Dataset> DataSource::getNextSamples() {
+Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
-  if (state->getNumBatches() == 1 && state->getBatchSize() == 0) {
-    state->incrementCurrentIteration();
+  if (config.getNumBatches() == 1 && config.getBatchSize() == 0) {
+    config.incrementCurrentIteration();
     return sampleProvider->getAllSamples();
   } else {
-    state->incrementCurrentIteration();
-    return sampleProvider->getNextSamples(state->getBatchSize());
+    config.incrementCurrentIteration();
+    return sampleProvider->getNextSamples(config.getBatchSize());
   }
 }
+
+DataSourceConfig& sgpp::datadriven::DataSource::getConfig() { return config; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -22,15 +22,15 @@ struct DataSourceStateConfig {
   size_t numBatches = 0;
 };
 
-class DataSourceState {
+class DataSourceConfig {
  public:
-  DataSourceState() : filePath(""), batchSize(0), numBatches(0), currentIteration(0) {}
-  DataSourceState(const DataSourceStateConfig& config)
+  DataSourceConfig() : filePath(""), batchSize(0), numBatches(0), currentIteration(0) {}
+  DataSourceConfig(const DataSourceStateConfig& config)
       : filePath(config.filePath),
         batchSize(config.batchSize),
         numBatches(config.numBatches),
         currentIteration(0) {}
-  virtual ~DataSourceState(){};
+  virtual ~DataSourceConfig(){};
 
   size_t getBatchSize() const { return batchSize; }
 

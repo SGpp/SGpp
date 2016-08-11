@@ -22,22 +22,16 @@
 namespace sgpp {
 namespace datadriven {
 
-GzipFileSampleDecorator::GzipFileSampleDecorator(
-    std::unique_ptr<FileSampleProvider> fileSampleProvider)
-    : FileSampleDecorator(std::move(fileSampleProvider)) {}
-
-GzipFileSampleDecorator::GzipFileSampleDecorator(GzipFileSampleDecorator&& d)
-    : FileSampleDecorator(std::move(d)) {}
+GzipFileSampleDecorator::GzipFileSampleDecorator(FileSampleProvider* fileSampleProvider)
+    : FileSampleDecorator(fileSampleProvider) {}
 
 GzipFileSampleDecorator::~GzipFileSampleDecorator() {}
 
-std::unique_ptr<Dataset> GzipFileSampleDecorator::getNextSamples(size_t howMany) {
+Dataset* GzipFileSampleDecorator::getNextSamples(size_t howMany) {
   return fileSampleProvider->getNextSamples(howMany);
 }
 
-std::unique_ptr<Dataset> GzipFileSampleDecorator::getAllSamples() {
-  return fileSampleProvider->getAllSamples();
-}
+Dataset* GzipFileSampleDecorator::getAllSamples() { return fileSampleProvider->getAllSamples(); }
 
 size_t GzipFileSampleDecorator::getDim() { return fileSampleProvider->getDim(); }
 

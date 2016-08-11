@@ -20,15 +20,13 @@ namespace datadriven {
 
 class GzipFileSampleDecorator : public FileSampleDecorator {
  public:
-  explicit GzipFileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider);
-
-  GzipFileSampleDecorator(GzipFileSampleDecorator&& d);
+  explicit GzipFileSampleDecorator(FileSampleProvider* fileSampleProvider);
 
   virtual ~GzipFileSampleDecorator();
 
-  std::unique_ptr<Dataset> getNextSamples(size_t howMany);
+  Dataset* getNextSamples(size_t howMany);
 
-  std::unique_ptr<Dataset> getAllSamples();
+  Dataset* getAllSamples();
 
   size_t getDim();
 

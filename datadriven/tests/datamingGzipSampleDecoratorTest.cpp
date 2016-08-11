@@ -35,6 +35,7 @@ using sgpp::datadriven::GzipFileSampleDecorator;
 using sgpp::datadriven::ArffFileSampleProvider;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::datadriven::Dataset;
 
 BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
   double testPoints[10][3] = {{0.307143, 0.130137, 0.050000}, {0.365584, 0.105479, 0.050000},
@@ -45,10 +46,9 @@ BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-  GzipFileSampleDecorator sampleProvider =
-      GzipFileSampleDecorator(std::move(std::make_unique<ArffFileSampleProvider>()));
+  GzipFileSampleDecorator sampleProvider = GzipFileSampleDecorator(new ArffFileSampleProvider());
   sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
-  auto dataset = sampleProvider.getAllSamples();
+  auto dataset = std::unique_ptr<Dataset>(sampleProvider.getAllSamples());
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();

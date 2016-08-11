@@ -20,14 +20,12 @@ namespace datadriven {
 
 class FileSampleDecorator : public FileSampleProvider {
  public:
-  explicit FileSampleDecorator(std::unique_ptr<FileSampleProvider> fileSampleProvider)
-      : fileSampleProvider(std::move(fileSampleProvider)) {}
-  FileSampleDecorator(FileSampleDecorator&& f)
-      : fileSampleProvider(std::move(f.fileSampleProvider)) {}
+  explicit FileSampleDecorator(FileSampleProvider* fileSampleProvider)
+      : fileSampleProvider(std::shared_ptr<FileSampleProvider>(fileSampleProvider)) {}
   virtual ~FileSampleDecorator() {}
 
  protected:
-  std::unique_ptr<FileSampleProvider> fileSampleProvider;
+  std::shared_ptr<FileSampleProvider> fileSampleProvider;
 };
 
 } /* namespace datadriven */

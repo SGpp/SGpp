@@ -47,7 +47,7 @@ void ArffFileSampleProvider::readFile(const std::string& fileName) {
   dataset = ARFFTools::readARFF(fileName);
 }
 
-std::unique_ptr<Dataset> ArffFileSampleProvider::getNextSamples(size_t howMany) {
+Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
   if ((dataset.getDimension() != 0) && (counter + howMany) < dataset.getNumberInstances()) {
     return splitDataset(howMany);
   } else {
@@ -55,11 +55,9 @@ std::unique_ptr<Dataset> ArffFileSampleProvider::getNextSamples(size_t howMany) 
   }
 }
 
-std::unique_ptr<Dataset> ArffFileSampleProvider::getAllSamples() {
+Dataset* ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    auto tmpDataset = std::make_unique<Dataset>();
-    (*tmpDataset) = dataset;
-    return tmpDataset;
+    return new Dataset(dataset);
   } else {
     throw base::file_exception("No dataset loaded.");
   }
@@ -69,7 +67,7 @@ void ArffFileSampleProvider::readString(const std::string& input) {
   dataset = ARFFTools::readARFFFromString(input);
 }
 
-std::unique_ptr<Dataset> ArffFileSampleProvider::splitDataset(size_t howMany) {
+Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
   auto tmpDataset = std::make_unique<Dataset>(howMany, dataset.getDimension());
 
   base::DataMatrix& srcSamples = dataset.getData();
@@ -87,7 +85,7 @@ std::unique_ptr<Dataset> ArffFileSampleProvider::splitDataset(size_t howMany) {
   }
   counter = counter + howMany;
 
-  return tmpDataset;
+  return tmpDataset.release();
 }
 
 } /* namespace datadriven */
