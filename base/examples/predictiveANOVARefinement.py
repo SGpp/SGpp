@@ -1,9 +1,30 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 #!/usr/bin/python
+
+## \page example_predictiveANOVARefinement_py Spatially-Dimension-Adaptive Refinement of ANOVA Components in Python
+## 
+## 
+## We compute the sparse grid interpolant of the function \f$ f(x) =
+## \sin(\pi x).\f$ We perform spatially-dimension-adaptive
+## refinement of the sparse grid model, which means we refine a
+## particular grid point (locality) only in some dimensions
+## (dimensionality).
+## 
+## For details on spatially-dimension-adaptive refinement see
+## \verbatim
+##  V. Khakhutskyy and M. Hegland: Spatially-Dimension-Adaptive Sparse Grids for Online Learning.
+##  Pflüger and J. Garcke (ed.), Sparse Grids and Applications - Stuttgart 2014, Volume 109 of LNCSE, p. 133–162. Springer International Publishing, March 2016.
+## \endverbatim
+## 
+## 
+## 
+## The example can be found in the file `predictiveANOVARefinement.py`.
+
 
 # import modules
 import sys
