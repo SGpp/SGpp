@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <omp.h>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>

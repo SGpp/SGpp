@@ -20,7 +20,6 @@ MPIWorkerBase::MPIWorkerBase(std::string operationName) : object_index(index),
                                                            operationName(operationName) {
   std::cout << "In Base cstr" << std::endl;
   std::cout << "Creating operation on " << MPIEnviroment::get_node_rank() << std::endl;
-  index++;
   if (MPIEnviroment::get_configuration().contains("VERBOSE"))
     verbose = MPIEnviroment::get_configuration()["VERBOSE"].getBool();
 
@@ -41,7 +40,7 @@ MPIWorkerBase::MPIWorkerBase(std::string operationName) : object_index(index),
   delete [] class_message;
   if (verbose) {
     std::cout << "Created Worker on node " << MPIEnviroment::get_node_rank() << " with operation "
-              << operationName << std::endl;
+              << operationName << " and workerindex" << object_index << std::endl;
   }
 }
 
