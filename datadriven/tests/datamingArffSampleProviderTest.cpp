@@ -45,6 +45,7 @@
 using sgpp::datadriven::ArffFileSampleProvider;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
+using sgpp::datadriven::Dataset;
 
 BOOST_AUTO_TEST_SUITE(datamingArffSampleProviderTest)
 
@@ -63,7 +64,7 @@ const double tolerance = 1E-5;
 BOOST_AUTO_TEST_CASE(arffTestReadFile) {
   auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath);
-  auto dataset = sampleProvider.getAllSamples();
+  auto dataset = std::unique_ptr<Dataset>(sampleProvider.getAllSamples());
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();
@@ -108,7 +109,7 @@ BOOST_AUTO_TEST_CASE(arffTestGetNextSamples) {
   auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath);
 
-  auto dataset = sampleProvider.getNextSamples(sampleSize1);
+  auto dataset = std::unique_ptr<Dataset>(sampleProvider.getNextSamples(sampleSize1));
   DataVector& classesSample1 = dataset->getTargets();
   DataMatrix& dataSample1 = dataset->getData();
   size_t nrows = dataSample1.getNrows();
@@ -135,7 +136,7 @@ BOOST_AUTO_TEST_CASE(arffTestGetNextSamples) {
   dataset.reset();
 
   // check if we get the correct samples in a second run
-  dataset = sampleProvider.getNextSamples(sampleSize2);
+  dataset = std::unique_ptr<Dataset>(sampleProvider.getNextSamples(sampleSize2));
   DataVector& classesSample2 = dataset->getTargets();
   DataMatrix& dataSample2 = dataset->getData();
   nrows = dataSample2.getNrows();

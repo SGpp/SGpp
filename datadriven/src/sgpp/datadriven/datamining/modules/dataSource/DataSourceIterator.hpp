@@ -30,7 +30,7 @@ class DataSourceIterator {
 
   const DataSourceIterator& operator++();
 
-  std::unique_ptr<Dataset> operator*() const;
+  Dataset* operator*() const;
 
  private:
   DataSource& sampleProvider;

@@ -24,6 +24,7 @@
 #include <string>
 
 using sgpp::datadriven::DataSourceBuilder;
+using sgpp::datadriven::DataSource;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
@@ -41,9 +42,9 @@ int main(int argc, char **argv) {
     path = std::string(argv[1]);
   }
 
-  auto dataSource = DataSourceBuilder().withPath(path).assemble();
+  auto dataSource = std::unique_ptr<DataSource>(DataSourceBuilder().withPath(path).assemble());
   std::cout << "reading input file: " << path << std::endl;
-  auto dataset = dataSource->getNextSamples();
+  auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   double threshold = 0;
   size_t maxRefinenum = 4;

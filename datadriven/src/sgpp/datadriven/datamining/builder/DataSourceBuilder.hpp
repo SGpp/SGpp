@@ -12,11 +12,10 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
-
 #include <memory.h>
 #include <string>
 #include <vector>
+#include "../modules/dataSource/DataSourceConfig.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -32,7 +31,7 @@ class DataSourceBuilder {
   DataSourceBuilder& withFileType(std::string fileType);
   DataSourceBuilder& inBatches(size_t howMany);
   DataSourceBuilder& withBatchSize(size_t batchSize);
-  virtual std::unique_ptr<DataSource> assemble();
+  virtual DataSource* assemble();
 
  private:
   void grabTypeInfoFromFilePath();

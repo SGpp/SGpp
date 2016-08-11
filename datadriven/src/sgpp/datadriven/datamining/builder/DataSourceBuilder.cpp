@@ -14,7 +14,7 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceState.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 
@@ -65,11 +65,12 @@ DataSourceBuilder& DataSourceBuilder::withPath(std::string filePath) {
   return *this;
 }
 
-std::unique_ptr<DataSource> DataSourceBuilder::assemble() {
-  std::unique_ptr<FileSampleProvider> fileSampleProvider;
+DataSource* DataSourceBuilder::assemble() {
+  SampleProvider* sampleProvider;
+
   switch (fileType) {
     case ARFF:
-      fileSampleProvider = std::make_unique<ArffFileSampleProvider>();
+      sampleProvider = new ArffFileSampleProvider;
       break;
     case NONE:
     default:
@@ -78,12 +79,10 @@ std::unique_ptr<DataSource> DataSourceBuilder::assemble() {
   }
 
   if (isCompressed) {
-    fileSampleProvider = std::make_unique<GzipFileSampleDecorator>(std::move(fileSampleProvider));
+    sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
   }
 
-  auto state = std::make_shared<DataSourceState>(config);
-  std::unique_ptr<SampleProvider> sampleProvider = std::move(fileSampleProvider);
-  return std::make_unique<DataSource>(state, std::move(sampleProvider));
+  return new DataSource(config, sampleProvider);
 }
 
 void DataSourceBuilder::grabTypeInfoFromFilePath() {

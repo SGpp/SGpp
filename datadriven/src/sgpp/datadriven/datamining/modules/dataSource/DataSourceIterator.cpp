@@ -25,7 +25,7 @@ const DataSourceIterator& DataSourceIterator::operator++() {
   return *this;
 }
 
-std::unique_ptr<Dataset> DataSourceIterator::operator*() const {
+Dataset* DataSourceIterator::operator*() const {
   return sampleProvider.getNextSamples();
 }
 
