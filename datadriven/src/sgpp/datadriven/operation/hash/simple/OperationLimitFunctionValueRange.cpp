@@ -20,65 +20,92 @@ namespace sgpp {
 namespace datadriven {
 
 OperationLimitFunctionValueRange::OperationLimitFunctionValueRange(
-    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose)
-    : grid(grid),
-      candidateSearch(candidateSearch),
-      interpolationAlgorithm(interpolationAlgorithm),
-      generateConsistentGrid(generateConsistentGrid),
-      verbose(verbose) {}
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose)
+    : verbose(verbose) {
+  opPositive.reset(op_factory::createOperationMakePositive(candidateSearch, interpolationAlgorithm,
+                                                           true, verbose));
+}
 
 OperationLimitFunctionValueRange::~OperationLimitFunctionValueRange() {}
 
-void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid*& newGrid,
-                                                         base::DataVector& newAlpha, double ylower,
-                                                         bool resetGrid) {
-  // limit the function values from below
+void OperationLimitFunctionValueRange::prepareForLowerLimitation(base::Grid& grid,
+                                                                 base::DataVector& alpha,
+                                                                 double ylower) {
   // f(x) >= ylower => g(x) := f(x) - ylower >= 0
-  if (resetGrid) {
-    newGrid = grid.clone();
-  }
+  addConst(grid, alpha, 1.0, -ylower);
+}
 
-  addConst(*newGrid, newAlpha, 1.0, -ylower);
-  std::unique_ptr<datadriven::OperationMakePositive> opPositive(
-      op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
-                                              generateConsistentGrid, verbose));
-  opPositive->makePositive(newGrid, newAlpha, false);
+void OperationLimitFunctionValueRange::inverseFromLowerLimitation(base::Grid& grid,
+                                                                  base::DataVector& alpha,
+                                                                  double ylower) {
   // f(x) = g(x) + ylower
-  addConst(*newGrid, newAlpha, 1.0, ylower);
+  addConst(grid, alpha, 1.0, ylower);
 }
 
-void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid*& newGrid,
-                                                         base::DataVector& newAlpha, double yupper,
-                                                         bool resetGrid) {
-  // limit the function from above
+void OperationLimitFunctionValueRange::prepareForUpperLimitation(base::Grid& grid,
+                                                                 base::DataVector& alpha,
+                                                                 double yupper) {
   // f(x) <= yupper => -f(x) >= -yupper => g(x) := -f(x) + yupper >= 0
-  if (resetGrid) {
-    newGrid = grid.clone();
+  addConst(grid, alpha, -1.0, yupper);
+}
+
+void OperationLimitFunctionValueRange::inverseFromUpperLimitation(base::Grid& grid,
+                                                                  base::DataVector& alpha,
+                                                                  double yupper) {
+  // f(x) = -g(x) + yupper
+  addConst(grid, alpha, -1.0, yupper);
+}
+
+void OperationLimitFunctionValueRange::doLowerLimitation(base::Grid& grid, base::DataVector& alpha,
+                                                         double ylower, bool limitNodalValues) {
+  // limit the function values from below
+  prepareForLowerLimitation(grid, alpha, ylower);
+  opPositive->makePositive(grid, alpha, limitNodalValues);
+  inverseFromLowerLimitation(grid, alpha, ylower);
+}
+
+void OperationLimitFunctionValueRange::doUpperLimitation(base::Grid& grid, base::DataVector& alpha,
+                                                         double yupper, bool limitNodalValues) {
+  // limit the function from above
+  prepareForUpperLimitation(grid, alpha, yupper);
+  opPositive->makePositive(grid, alpha, limitNodalValues);
+  inverseFromUpperLimitation(grid, alpha, yupper);
+}
+
+void OperationLimitFunctionValueRange::doLimitation(base::Grid& grid, base::DataVector& alpha,
+                                                    double ylower, double yupper,
+                                                    bool limitNodalValues) {
+  // limit the nodal values at the grid points
+  if (limitNodalValues) {
+    // limit the nodal values to the lower range
+    prepareForLowerLimitation(grid, alpha, ylower);
+    opPositive->makeCurrentNodalValuesPositive(grid, alpha);
+    inverseFromLowerLimitation(grid, alpha, ylower);
+
+    // limit the nodal values to the upper range
+    prepareForUpperLimitation(grid, alpha, yupper);
+    opPositive->makeCurrentNodalValuesPositive(grid, alpha);
+    inverseFromUpperLimitation(grid, alpha, yupper);
   }
 
-  addConst(*newGrid, newAlpha, -1.0, yupper);
-  std::unique_ptr<datadriven::OperationMakePositive> opPositive(
-      op_factory::createOperationMakePositive(*newGrid, candidateSearch, interpolationAlgorithm,
-                                              generateConsistentGrid, verbose));
-  opPositive->makePositive(newGrid, newAlpha, false);
-  // f(x) = -g(x) + yupper
-  addConst(*newGrid, newAlpha, -1.0, yupper);
-}
-
-void OperationLimitFunctionValueRange::doLimitation(base::Grid*& newGrid,
-                                                    base::DataVector& newAlpha, double ylower,
-                                                    double yupper) {
-  size_t newGridSize = grid.getSize();
   size_t oldGridSize = 0;
-  size_t iteration = 0;
-  while (oldGridSize < newGridSize) {
-    oldGridSize = newGridSize;
-    doLowerLimitation(newGrid, newAlpha, ylower, iteration == 0);
-    doUpperLimitation(newGrid, newAlpha, yupper, false);
-    newGridSize = newGrid->getSize();
-    iteration++;
+  while (true) {
+    // limit the function values from below
+    oldGridSize = grid.getSize();
+    doLowerLimitation(grid, alpha, ylower, false);
+
+    if (oldGridSize == grid.getSize()) {
+      break;
+    }
+
+    // limit the function values from above
+    oldGridSize = grid.getSize();
+    doUpperLimitation(grid, alpha, yupper, false);
+
+    if (oldGridSize == grid.getSize()) {
+      break;
+    }
   }
 }
 

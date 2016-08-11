@@ -1,4 +1,4 @@
-// Copyright (C) 2008-today The SG++ project
+// Copyright (sC) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
@@ -6,6 +6,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <vector>
 #include <map>
@@ -19,7 +20,7 @@ namespace sgpp {
 namespace datadriven {
 
 OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm()
-    : verbose(false) {}
+    : iteration(0), verbose(false) {}
 
 OperationMakePositiveCandidateSetAlgorithm::~OperationMakePositiveCandidateSetAlgorithm() {}
 
@@ -34,9 +35,24 @@ void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficien
   }
 }
 
-bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::HashGridPoint& gpi,
-                                                                        base::HashGridPoint& gpj,
-                                                                        size_t dim) {
+// -------------------------------------------------------------------------------------------
+OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates()
+    : costs(0) {}
+
+OperationMakePositiveFindIntersectionCandidates::
+    ~OperationMakePositiveFindIntersectionCandidates() {}
+
+void OperationMakePositiveFindIntersectionCandidates::initialize(base::Grid& grid) {
+  candidates.clear();
+  currentIntersections.clear();
+  nextIntersections.clear();
+  intersections.clear();
+  costs = 0;
+  iteration = 0;
+}
+
+bool OperationMakePositiveFindIntersectionCandidates::haveOverlappingSupport(
+    base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim) {
   size_t leveli = gpi.getLevel(dim), indexi = gpi.getIndex(dim);
   size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
 
@@ -48,8 +64,8 @@ bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::Ha
     return gpj.isHierarchicalAncestor(gpi, dim);
 }
 
-bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::HashGridPoint& gpi,
-                                                                        base::HashGridPoint& gpj) {
+bool OperationMakePositiveFindIntersectionCandidates::haveOverlappingSupport(
+    base::HashGridPoint& gpi, base::HashGridPoint& gpj) {
   size_t idim = 0;
   size_t numDims = gpi.getDimension();
 
@@ -58,14 +74,6 @@ bool OperationMakePositiveCandidateSetAlgorithm::haveOverlappingSupport(base::Ha
   // check whether the supports are overlapping in all dimensions
   return idim == numDims;
 }
-
-// -------------------------------------------------------------------------------------------
-OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates(
-    base::Grid& grid)
-    : iteration(0), costs(0) {}
-
-OperationMakePositiveFindIntersectionCandidates::
-    ~OperationMakePositiveFindIntersectionCandidates() {}
 
 void OperationMakePositiveFindIntersectionCandidates::computeIntersection(
     base::HashGridPoint& gpi, base::HashGridPoint& gpj, base::HashGridPoint& gpintersection) {
@@ -206,6 +214,11 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
+  if (grid.getType() != base::GridType::Linear) {
+    throw base::factory_exception(
+        "OperationMakePositiveFindIntersectionCandidates is not implemented for this grid type");
+  }
+
   if (iteration == 0) {
     // find all the grid points with negative coefficient
     std::vector<size_t> negativeGridPoints;
@@ -252,19 +265,26 @@ size_t OperationMakePositiveFindIntersectionCandidates::numCandidates() {
 }
 
 // -------------------------------------------------------------------------------------------
-OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCandidates(
-    base::Grid& grid) {
-  base::HashGridStorage& gridStorage = grid.getStorage();
-
-  fullGrid.reset(base::Grid::createLinearGrid(gridStorage.getDimension()));
-  fullGrid->getGenerator().full(gridStorage.getMaxLevel());
-}
+OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCandidates() {}
 
 OperationMakePositiveLoadFullGridCandidates::~OperationMakePositiveLoadFullGridCandidates() {}
+
+void OperationMakePositiveLoadFullGridCandidates::initialize(base::Grid& grid) {
+  size_t numDims = grid.getStorage().getDimension();
+  size_t maxLevel = grid.getStorage().getMaxLevel();
+  fullGrid.reset(base::Grid::createLinearGrid(numDims));
+  fullGrid->getGenerator().full(maxLevel);
+
+  iteration = 0;
+}
 
 void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
+  if (iteration == 0) {
+    initialize(grid);
+  }
+
   base::HashGridStorage& fullGridStorage = fullGrid->getStorage();
   candidates.clear();
   for (size_t i = 0; i < fullGridStorage.getSize(); ++i) {
@@ -273,6 +293,8 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
       candidates.push_back(gp);
     }
   }
+
+  iteration++;
 }
 
 size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return fullGrid->getSize(); }

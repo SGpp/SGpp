@@ -328,13 +328,11 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 
   // make the density positive
   if (sgdeConfig.makePositive_) {
-    base::Grid* positiveGrid = nullptr;
-    op_factory::createOperationMakePositive(
-        *grid, sgdeConfig.makePositive_candidateSearchAlgorithm_,
-        sgdeConfig.makePositive_interpolationAlgorithm_,
-        sgdeConfig.makePositive_generateConsistentGrid_, sgdeConfig.makePositive_verbose_)
-        ->makePositive(positiveGrid, *alpha);
-    grid = std::shared_ptr<base::Grid>(positiveGrid);
+    op_factory::createOperationMakePositive(sgdeConfig.makePositive_candidateSearchAlgorithm_,
+                                            sgdeConfig.makePositive_interpolationAlgorithm_,
+                                            sgdeConfig.makePositive_generateConsistentGrid_,
+                                            sgdeConfig.makePositive_verbose_)
+        ->makePositive(*grid, *alpha);
   }
 
   // force the integral to be 1
@@ -347,31 +345,28 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 double LearnerSGDE::pdf(base::DataVector& x) {
-  auto opEval = op_factory::createOperationEval(*grid);
-  double ret = opEval->eval(*alpha, x);
-  delete opEval;
-  return ret;
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+  return opEval->eval(*alpha, x);
 }
 
 void LearnerSGDE::pdf(base::DataMatrix& points, base::DataVector& res) {
-  auto opEval = op_factory::createOperationMultipleEval(*grid, points);
+  std::unique_ptr<base::OperationMultipleEval> opEval(
+      op_factory::createOperationMultipleEval(*grid, points));
   opEval->eval(*alpha, res);
-  delete opEval;
 }
 
 double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
-  auto opFirstMoment = op_factory::createOperationFirstMoment(grid);
-  double ret = opFirstMoment->doQuadrature(alpha);
-  delete opFirstMoment;
-  return ret;
+  std::unique_ptr<base::OperationFirstMoment> opFirstMoment(
+      op_factory::createOperationFirstMoment(grid));
+  return opFirstMoment->doQuadrature(alpha);
 }
 
 double LearnerSGDE::mean() { return mean(*grid, *alpha); }
 
 double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
-  auto opSecondMoment = op_factory::createOperationSecondMoment(grid);
+  std::unique_ptr<base::OperationSecondMoment> opSecondMoment(
+      op_factory::createOperationSecondMoment(grid));
   double secondMoment = opSecondMoment->doQuadrature(alpha);
-  delete opSecondMoment;
 
   // use Steiners translation theorem to compute the variance
   double firstMoment = mean();

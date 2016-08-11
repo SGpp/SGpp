@@ -48,15 +48,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
-%rename("makePositive_cpp") makePositive(base::Grid*&, base::DataVector&, bool);
-%ignore makePositive(base::Grid*&, base::DataVector&, bool);
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
-%rename("doLowerLimitation_cpp") doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
-%rename("doUpperLimitation_cpp") doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
-%rename("doLimitation_cpp") doLimitation(base::Grid*&, base::DataVector&, double, double);
-%ignore doLowerLimitation(base::Grid*&, base::DataVector&, double, bool);
-%ignore doUpperLimitation(base::Grid*&, base::DataVector&, double, bool);
-%ignore doLimitation(base::Grid*&, base::DataVector&, double, double);
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
 
@@ -100,23 +92,3 @@ public:
 */
 }
 //- end namespace datadriven ------------------------------------------
-
-%extend sgpp::datadriven::OperationLimitFunctionValueRange {
-  sgpp::base::Grid* doLowerLimitation(base::DataVector& newAlpha, double ylower, bool resetGrid) {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doLowerLimitation(grid, newAlpha, ylower, resetGrid);
-    return grid;
-  }
-
-  sgpp::base::Grid* doUpperLimitation(sgpp::base::DataVector& newAlpha, double yupper, bool resetGrid)  {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doUpperLimitation(grid, newAlpha, yupper, resetGrid);
-    return grid;
-  }
-
-  sgpp::base::Grid* doLimitation(sgpp::base::DataVector& newAlpha, double ylower, double yupper)  {
-    sgpp::base::Grid* grid = nullptr;
-    $self->doLimitation(grid, newAlpha, ylower, yupper);
-    return grid;
-  }
-}

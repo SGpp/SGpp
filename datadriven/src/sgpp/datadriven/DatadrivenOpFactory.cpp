@@ -294,31 +294,18 @@ base::OperationMultipleEval* createOperationMultipleEval(
 }
 
 datadriven::OperationMakePositive* createOperationMakePositive(
-    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
     bool generateConsistentGrid, bool verbose) {
-  if (grid.getType() == base::GridType::Linear) {
-    return new datadriven::OperationMakePositive(
-        grid, candidateSearchAlgorithm, interpolationAlgorithm, generateConsistentGrid, verbose);
-  } else {
-    throw base::factory_exception(
-        "OperationMakePositive is not implemented for "
-        "this grid type.");
-  }
+  return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
+                                               generateConsistentGrid, verbose);
 }
 
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    base::Grid& grid, datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose) {
-  if (grid.getType() == base::GridType::Linear) {
-    return new datadriven::OperationLimitFunctionValueRange(
-        grid, candidateSearchAlgorithm, interpolationAlgorithm, generateConsistentGrid, verbose);
-  } else {
-    throw base::factory_exception(
-        "OperationLimitFunctionValueRange is not implemented for "
-        "this grid type.");
-  }
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+  return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
+                                                          interpolationAlgorithm, verbose);
 }
 
 }  // namespace op_factory
