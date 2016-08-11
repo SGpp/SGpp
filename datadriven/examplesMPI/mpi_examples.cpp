@@ -41,18 +41,17 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  // sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
-  // std::cin.get();
+  sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
 
-  // sgpp::base::DataVector alpha(gridsize);
-  // sgpp::base::DataVector result(gridsize);
-  // alpha.setAll(1.0);
-  // mult_op.mult(alpha, result);
-  // std::cout << std::endl << std::endl;
-  // for (size_t i = 0; i < 100; ++i) {
-  //   std::cout << result[i] << " ";
-  // }
-  // std::cout << std::endl << std::endl;
+  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector result(gridsize);
+  alpha.setAll(1.0);
+  mult_op.mult(alpha, result);
+  std::cout << std::endl << std::endl;
+  for (size_t i = 0; i < 100; ++i) {
+    std::cout << result[i] << " ";
+  }
+  std::cout << std::endl << std::endl;
 
 
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
@@ -65,31 +64,29 @@ int main(int argc, char *argv[]) {
 
 
   // Create right hand side vector
-  // sgpp::base::DataVector rhs(gridsize);
-  // sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
-  // std::cin.get();
-  // rhs_op.generate_b(rhs);
-  // for (auto i = 0; i < 100; ++i) {
-  //   std::cout << rhs[i] << " ";
-  //   }
+  sgpp::base::DataVector rhs(gridsize);
+  sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
+  rhs_op.generate_b(rhs);
+  for (auto i = 0; i < 100; ++i) {
+    std::cout << rhs[i] << " ";
+    }
 
   // Solve for alpha vector via CG solver
-  /*sgpp::base::DataVector alpha(gridsize);
-  sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
   sgpp::solver::ConjugateGradients solver(1000, 0.001);
-  sgpp::datadriven::clusteringmpi::OperationDensityMPI mult_op(*grid, 0.001, 1280);
+  //sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
   solver.solve(mult_op, alpha, rhs, false, true);
   double max = alpha.max();
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
     alpha[i] = alpha[i]*1.0/(max-min);
-*/
+
   // Create and prune knn graph
   std::cin.get();
-  sgpp::datadriven::clusteringmpi::OperationGraphCreationMPI graph_op(dataset, 12);
-  std::vector<int> knn_graph;
+  sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
+                                                                            dataset, 12, 0.7);
   std::cin.get();
+  std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
@@ -98,7 +95,6 @@ int main(int argc, char *argv[]) {
     std::cout << "\n";
     }
 
-  std::cin.get();
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
   return 0;

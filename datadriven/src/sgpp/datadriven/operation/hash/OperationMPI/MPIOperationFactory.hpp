@@ -27,6 +27,9 @@ MPIWorkerBase* create_mpi_operation(int masternode,
   if (std::strcmp(classname, "GraphCreationWorker") == 0)  {
     return new GraphCreationWorker();
   }
+  if (std::strcmp(classname, "PrunedGraphCreationWorker") == 0)  {
+    return new PrunedGraphCreationWorker();
+  }
   return NULL;
 }
 

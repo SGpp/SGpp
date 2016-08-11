@@ -172,7 +172,8 @@ void MPIEnviroment::slave_mainloop(void) {
     } else if (message[0] >= 10) {
       // run operation here
       if (verbose) {
-        std::cout << "Node " << rank << ": Starting slave operation " << std::endl;
+        std::cout << "Node " << rank << ": Starting slave operation " << " with index "
+                  << message[0] << std::endl;
       }
       if (slave_ops[message[0] - 10] == NULL)
         throw std::logic_error("Trying to run an non existing slave operation!");
