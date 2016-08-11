@@ -52,9 +52,11 @@ class DensityWorker : public MPIWorkerGridBase {
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
 
     // Create opencl operation
-    op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
-                                                 (2 * grid_dimensions), grid_dimensions,
-                                                 lambda, "MyOCLConf.cfg", 0, 0);
+    if (opencl_node) {
+      op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
+                                                   (2 * grid_dimensions), grid_dimensions,
+                                                   lambda, "MyOCLConf.cfg", 0, 0);
+    }
     if (verbose) {
       std::cout << "Created mpi opencl density operation on "
                 << MPIEnviroment::get_node_rank() << std::endl;
@@ -127,7 +129,11 @@ class DensityWorker : public MPIWorkerGridBase {
     }while(true);
     delete [] alpha;
   }
-  virtual ~DensityWorker() {}
+  virtual ~DensityWorker() {
+    if (opencl_node) {
+      delete op;
+    }
+  }
 
  protected:
   void send_alpha(double **alpha) {

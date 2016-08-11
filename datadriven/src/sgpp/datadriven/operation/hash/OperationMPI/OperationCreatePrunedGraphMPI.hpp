@@ -19,6 +19,9 @@ namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
 class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
+ private:
+  bool delete_alpha;
+
  protected:
   bool opencl_node;
   bool overseer_node;
@@ -36,8 +39,8 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
                                        ["PREFERED_PACKAGESIZE"].getInt());
     int *partial_result = new int[package[1] * k];
     SimpleQueue<int> workitem_queue(package[0], package[1], packagesize,
-                                       sub_worker_comm,
-                                       MPIEnviroment::get_sub_worker_count());
+                                    sub_worker_comm,
+                                    MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
@@ -61,6 +64,7 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
       : MPIWorkerBase("PrunedGraphCreationWorker"),
         MPIWorkerGridBase("PrunedGraphCreationWorker"),
         MPIWorkerGraphBase("PrunedGraphCreationWorker"),
+        delete_alpha(true),
         opencl_node(false), overseer_node(false),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {
@@ -104,20 +108,22 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
       MPI_Send(&treshold, static_cast<int>(1),
                MPI_DOUBLE, dest, 1, sub_worker_comm);
     // Create opencl operation
-    op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
-                                              "MyOCLConf.cfg", 0, 0);
-    op_prune = pruneNearestNeighborGraphConfigured(gridpoints, complete_gridsize /
-                                                   (2 * grid_dimensions),
-                                                   grid_dimensions, alpha,
-                                                   data_matrix, treshold, k,
-                                                   "MyOCLConf.cfg", 0, 0);
-
+    if (opencl_node) {
+      op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
+                                                "MyOCLConf.cfg", 0, 0);
+      op_prune = pruneNearestNeighborGraphConfigured(gridpoints, complete_gridsize /
+                                                     (2 * grid_dimensions),
+                                                     grid_dimensions, alpha,
+                                                     data_matrix, treshold, k,
+                                                     "MyOCLConf.cfg", 0, 0);
+    }
   }
   PrunedGraphCreationWorker(base::Grid &grid, base::DataVector &alpha, base::DataMatrix &data,
                             int k, double treshold)
       : MPIWorkerBase("PrunedGraphCreationWorker"),
         MPIWorkerGridBase("PrunedGraphCreationWorker", grid),
         MPIWorkerGraphBase("PrunedGraphCreationWorker", data, k),
+        delete_alpha(false),
         opencl_node(false), overseer_node(false), treshold(treshold), alpha(alpha.getPointer()),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {
@@ -129,6 +135,15 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&treshold, static_cast<int>(1),
                MPI_DOUBLE, dest, 1, sub_worker_comm);
+  }
+  virtual ~PrunedGraphCreationWorker(void) {
+    if (delete_alpha) {
+      delete [] alpha;
+    }
+    if (opencl_node) {
+      delete op;
+      delete op_prune;
+    }
   }
   void start_worker_main(void) {
     base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);

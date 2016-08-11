@@ -63,9 +63,11 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
       opencl_node = true;
     }
     // Create opencl operation
+    if (opencl_node) {
     op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                  (2 * grid_dimensions), grid_dimensions,
                                                  0.0, "MyOCLConf.cfg", 0, 0);
+    }
   }
   DensityRhsWorker(base::Grid &grid, sgpp::base::DataMatrix &data)
       : MPIWorkerBase("DensityRHSWorker"),
@@ -74,6 +76,10 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase {
         opencl_node(false), overseer_node(false),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {}
+  virtual ~DensityRhsWorker(void) {
+    if (opencl_node)
+      delete op;
+  }
   void start_worker_main(void) {
     base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);
     // Receive alpha

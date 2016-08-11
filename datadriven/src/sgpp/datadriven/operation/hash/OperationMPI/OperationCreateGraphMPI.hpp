@@ -31,8 +31,8 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
                                        ["PREFERED_PACKAGESIZE"].getInt());
     int *partial_result = new int[package[1] * k];
     SimpleQueue<int> workitem_queue(package[0], package[1], packagesize,
-                                       sub_worker_comm,
-                                       MPIEnviroment::get_sub_worker_count());
+                                    sub_worker_comm,
+                                    MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
@@ -66,8 +66,10 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
       opencl_node = true;
     }
     // Create opencl operation
-    op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
-                                              "MyOCLConf.cfg", 0, 0);
+    if (opencl_node) {
+      op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
+                                                "MyOCLConf.cfg", 0, 0);
+    }
   }
   GraphCreationWorker(sgpp::base::DataMatrix &data, int k)
       : MPIWorkerBase("GraphCreationWorker"),
@@ -75,6 +77,11 @@ class GraphCreationWorker : public MPIWorkerGraphBase {
         opencl_node(false), overseer_node(false),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
         sub_worker_comm(MPIEnviroment::get_communicator()) {}
+  virtual ~GraphCreationWorker(void) {
+    if (opencl_node) {
+      delete op;
+    }
+  }
   void start_worker_main(void) {
     base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);
     // Receive alpha
