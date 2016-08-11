@@ -92,7 +92,7 @@ class SimpleQueue {
     received_packageindex = 0;
     packagecount = static_cast<unsigned int>(workitem_count / packagesize) + 1;
     startindices = new unsigned int[commsize];
-    packageinfo[0] = startindex;
+    packageinfo[0] = static_cast<int>(startindex);
     packageinfo[1] = static_cast<int>(packagesize);
 
     // Returnvector type

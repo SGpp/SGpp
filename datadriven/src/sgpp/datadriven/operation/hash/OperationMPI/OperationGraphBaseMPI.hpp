@@ -23,9 +23,10 @@ class MPIWorkerGraphBase : virtual public MPIWorkerBase {
   int dimensions;
 
   MPIWorkerGraphBase(std::string operationName, sgpp::base::DataMatrix &data,
-                     size_t k) : MPIWorkerBase(operationName), dataset(data.getPointer()),
-                                 dataset_size(data.getSize()), k(k),
-                                 dimensions(data.getNcols()), delete_dataset(true) {
+                     int k) : MPIWorkerBase(operationName), dataset(data.getPointer()),
+                                 dataset_size(static_cast<int>(data.getSize())), k(k),
+                                 dimensions(static_cast<int>(data.getNcols())),
+                                 delete_dataset(true) {
       std::cout << "Node " << MPIEnviroment::get_node_rank() << ": Received dataset (size "
                 << dataset_size / dimensions << " datapoints) and graph parameters"
                 << std::endl;
@@ -33,9 +34,10 @@ class MPIWorkerGraphBase : virtual public MPIWorkerBase {
     delete_dataset = false;
   }
   MPIWorkerGraphBase(sgpp::base::DataMatrix &data,
-                     size_t k) : MPIWorkerBase(), dataset(data.getPointer()),
-                                 dataset_size(data.getSize()), k(k),
-                                 dimensions(data.getNcols()), delete_dataset(true) {
+                     int k) : MPIWorkerBase(), dataset(data.getPointer()),
+                                 dataset_size(static_cast<int>(data.getSize())), k(k),
+                                 dimensions(static_cast<int>(data.getNcols())),
+                                 delete_dataset(true) {
     send_dataset();
     delete_dataset = false;
   }

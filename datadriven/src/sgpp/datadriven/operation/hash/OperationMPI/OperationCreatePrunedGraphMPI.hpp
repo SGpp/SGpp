@@ -32,14 +32,13 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
   MPI_Comm &sub_worker_comm;
   void divide_workpackages(int *package, std::vector<int> &graph) {
     // Divide into more work packages
-    int packagesize = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getInt();
+    int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
+                                       ["PREFERED_PACKAGESIZE"].getInt());
     int *partial_result = new int[package[1] * k];
     SimpleQueue<int> workitem_queue(package[0], package[1], packagesize,
                                        sub_worker_comm,
                                        MPIEnviroment::get_sub_worker_count());
     int chunkid = package[0];
-    if (package[0] < 0)
-      throw std::logic_error("wat");
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
       // Store result
@@ -115,7 +114,7 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
 
   }
   PrunedGraphCreationWorker(base::Grid &grid, base::DataVector &alpha, base::DataMatrix &data,
-                            size_t k, double treshold)
+                            int k, double treshold)
       : MPIWorkerBase("PrunedGraphCreationWorker"),
         MPIWorkerGridBase("PrunedGraphCreationWorker", grid),
         MPIWorkerGraphBase("PrunedGraphCreationWorker", data, k),
@@ -180,7 +179,7 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
 class OperationPrunedGraphCreationMPI : public PrunedGraphCreationWorker {
  public:
   OperationPrunedGraphCreationMPI(base::Grid &grid, base::DataVector &alpha,
-                                  base::DataMatrix &data, size_t k, double treshold) :
+                                  base::DataMatrix &data, int k, double treshold) :
       MPIWorkerBase("PrunedGraphCreationWorker"),
       PrunedGraphCreationWorker(grid, alpha, data, k, treshold) {
   }
