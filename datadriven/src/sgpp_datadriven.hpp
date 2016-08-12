@@ -51,9 +51,16 @@
 /* ************************
  * datamining
  * ************************/
+// configuration
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
+
+// builders
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
+
+// modules
 
 // datasource
-#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
@@ -62,5 +69,18 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
+
+// fitting
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+
+// scoring
+#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+
+// crossValidation
+#include <sgpp/datadriven/datamining/modules/crossValidation/CrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/crossValidation/RandomShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/crossValidation/ShufflingFunctor.hpp>
 
 #endif /* DATADRIVEN_HPP */
