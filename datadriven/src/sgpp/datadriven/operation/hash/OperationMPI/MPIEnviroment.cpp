@@ -266,18 +266,18 @@ void MPIEnviroment::init_worker(int workerid, int source) {
       // Send init_comm message
       MPI_Send(message, static_cast<int>(1), MPI_INT, neighbor_list[workerid +1],
                1, MPI_COMM_WORLD);
-    json::Node& slave = configuration["SLAVES"][slaveName];
-    std::ostringstream sstream;
-    slave.serialize(sstream, 0);
-    std::string serialized_conf = sstream.str();
-    char *conf_message = new char[serialized_conf.length() + 1];
-    std::copy(serialized_conf.begin(), serialized_conf.end(), conf_message);
-    conf_message[serialized_conf.size()] = '\0';
-    // Send configuration
-    MPI_Send(conf_message, static_cast<int>(serialized_conf.size() + 1),
-             MPI_CHAR, neighbor_list[workerid + 1], 1, MPI_COMM_WORLD);
+      json::Node& slave = configuration["SLAVES"][slaveName];
+      std::ostringstream sstream;
+      slave.serialize(sstream, 0);
+      std::string serialized_conf = sstream.str();
+      char *conf_message = new char[serialized_conf.length() + 1];
+      std::copy(serialized_conf.begin(), serialized_conf.end(), conf_message);
+      conf_message[serialized_conf.size()] = '\0';
+      // Send configuration
+      MPI_Send(conf_message, static_cast<int>(serialized_conf.size() + 1),
+               MPI_CHAR, neighbor_list[workerid + 1], 1, MPI_COMM_WORLD);
 
-    delete [] conf_message;
+      delete [] conf_message;
     }
 
     workercounter++;
@@ -346,6 +346,71 @@ int MPIEnviroment::get_node_count(void) {
 }
 
 MPIEnviroment::~MPIEnviroment(void) {
+}
+
+base::OperationConfiguration MPIEnviroment::createMPIConfiguration(int compute_nodes,
+                                                                   int opencl_devices_per_node) {
+  base::OperationConfiguration conf;
+  conf.addIDAttr("PACKAGE_BUFFERING", false);
+  conf.addIDAttr("VERBOSE", false);
+  conf.addIDAttr("PACKAGE_SIZE", UINT64_C(10240));
+  std::unique_ptr<json::Node> workers(new json::DictNode);
+  for (int i = 0; i < compute_nodes; ++i) {
+    std::unique_ptr<json::Node> node_worker(new json::DictNode);
+    node_worker->addIDAttr("VERBOSE", false);
+    node_worker->addIDAttr("PACKAGE_SIZE", UINT64_C(2560));
+    std::unique_ptr<json::Node> device_workers(new json::DictNode);
+    for (int device = 0; device < opencl_devices_per_node; device++) {
+      std::unique_ptr<json::Node> device_worker(new json::DictNode);
+      device_worker->addIDAttr("VERBOSE", false);
+      device_worker->addIDAttr("OPENCL_PLATFORM", UINT64_C(0));
+      device_worker->addIDAttr("OPENCL_DEVICE", static_cast<int64_t>(device));
+      std::string id = std::string("OPENCL_WORKER") + std::to_string(device);
+      device_workers->addAttribute(id, std::move(device_worker));
+    }
+    node_worker->addAttribute("SLAVES", std::move(device_workers));
+    std::string id = std::string("WORKER") + std::to_string(i);
+    workers->addAttribute(id, std::move(node_worker));
+  }
+  conf.addAttribute("SLAVES", std::move(workers));
+  return conf;
+}
+base::OperationConfiguration MPIEnviroment::createMPIConfiguration(int compute_nodes,
+                                                                   base::
+                                                                   OCLOperationConfiguration
+                                                                   node_opencl_conf) {
+  base::OperationConfiguration conf;
+  conf.addIDAttr("PACKAGE_BUFFERING", false);
+  conf.addIDAttr("VERBOSE", false);
+  conf.addIDAttr("PACKAGE_SIZE", UINT64_C(10240));
+  std::unique_ptr<json::Node> workers(new json::DictNode);
+  for (int i = 0; i < compute_nodes; ++i) {
+    std::unique_ptr<json::Node> node_worker(new json::DictNode);
+    node_worker->addIDAttr("VERBOSE", false);
+    node_worker->addIDAttr("PACKAGE_SIZE", UINT64_C(2560));
+    std::unique_ptr<json::Node> device_workers(new json::DictNode);
+    int platform = 0;
+    for (std::string &platformName : node_opencl_conf["PLATFORMS"].keys()) {
+      int device = 0;
+      json::Node &platformNode = node_opencl_conf["PLATFORMS"][platformName];
+      for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+        std::unique_ptr<json::Node> device_worker(new json::DictNode);
+        device_worker->addIDAttr("VERBOSE", false);
+        device_worker->addIDAttr("OPENCL_PLATFORM", static_cast<int64_t>(platform));
+        device_worker->addIDAttr("OPENCL_DEVICE", static_cast<int64_t>(device));
+        std::string id = std::string("OPENCL_WORKER_") + platformName +
+                         std::string("_") + deviceName;
+        device_workers->addAttribute(id, std::move(device_worker));
+        device++;
+      }
+      platform++;
+    }
+    node_worker->addAttribute("SLAVES", std::move(device_workers));
+    std::string id = std::string("WORKER") + std::to_string(i);
+    workers->addAttribute(id, std::move(node_worker));
+  }
+  conf.addAttribute("SLAVES", std::move(workers));
+  return conf;
 }
 
 }  // namespace clusteringmpi
