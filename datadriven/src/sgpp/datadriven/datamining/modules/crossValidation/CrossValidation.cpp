@@ -19,16 +19,16 @@ namespace datadriven {
 
 CrossValidation::~CrossValidation() {}
 
-CrossValidation::CrossValidation(std::shared_ptr<Metric> metric,
-                                 std::shared_ptr<ShufflingFunctor> shuffling, int64_t seed)
-    : metric(metric), shuffling(shuffling) {
+CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
+    : metric(std::shared_ptr<Metric>(metric)),
+      shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)) {
   if (seed != -1) {
     shuffling->setSeed(seed);
   }
 }
 
 double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset, size_t foldNumber,
-                                       std::shared_ptr<double> stdDeviation) {
+                                       double* stdDeviation) {
   std::vector<double> scores(foldNumber);
 
   // perform randomization of indices
@@ -100,8 +100,10 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     model.fit(*trainDataset);
 
     // calculate testing error
-    auto predictedValues = model.evaluate(testDataset->getData());
+    // auto predictedValues = model.evaluate(testDataset->getData());
 
+    auto predictedValues = std::make_unique<DataVector>(testDataset->getNumberInstances());
+    model.evaluate(testDataset->getData(), *predictedValues);
     // set score
     scores[fold] = (*metric)(*predictedValues, testDataset->getTargets());
     std::cout << "accuracy of fit:" << scores[fold] << std::endl;

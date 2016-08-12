@@ -26,45 +26,35 @@ using base::Grid;
 using base::GridPoint;
 using base::application_exception;
 using base::GridGenerator;
+using base::RegularGridConfiguration;
 
 ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {}
 
 ModelFittingBase::~ModelFittingBase() {}
 
 double ModelFittingBase::evaluate(DataVector& sample) {
-  // TODO(lettrich): write test
-
-  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(*alpha);
-  auto opEval(op_factory::createOperationEval(*grid));
+  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEval(*grid));
   return opEval->eval(*alpha, sample);
 }
 
-std::unique_ptr<DataVector> ModelFittingBase::evaluate(DataMatrix& samples) {
-  // TODO(lettrich): write test
-  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(*alpha);
-  auto opMultEval(op_factory::createOperationMultipleEval(*grid, samples));
-  auto result = std::make_unique<DataVector>(samples.getNrows());
-  opMultEval->eval(*alpha, *result);
-  return result;
+void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& results) const {
+  auto opMultEval = std::unique_ptr<base::OperationMultipleEval>(
+      op_factory::createOperationMultipleEval(*grid, samples));
+  opMultEval->eval(*alpha, results);
 }
 
-std::shared_ptr<OperationMatrix> ModelFittingBase::getRegularizationMatrix(
-    sgpp::datadriven::RegularizationType regType) {
-  std::shared_ptr<OperationMatrix> C;
-
-  if (regType == sgpp::datadriven::RegularizationType::Identity) {
-    C = std::shared_ptr<OperationMatrix>(sgpp::op_factory::createOperationIdentity(*grid));
-  } else if (regType == sgpp::datadriven::RegularizationType::Laplace) {
-    C = std::shared_ptr<OperationMatrix>(sgpp::op_factory::createOperationLaplace(*grid));
+OperationMatrix* ModelFittingBase::getRegularizationMatrix(datadriven::RegularizationType regType) {
+  if (regType == datadriven::RegularizationType::Identity) {
+    return op_factory::createOperationIdentity(*grid);
+  } else if (regType == datadriven::RegularizationType::Laplace) {
+    return op_factory::createOperationLaplace(*grid);
   } else {
-    throw base::application_exception(
+    throw application_exception(
         "ModelFittingBase::getRegularizationMatrix - unknown regularization type");
   }
-
-  return C;
 }
 
-void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig) {
+void ModelFittingBase::initializeGrid(RegularGridConfiguration gridConfig) {
   // load grid
   if (gridConfig.type_ == GridType::Linear) {
     grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
@@ -83,9 +73,9 @@ void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig)
   gridGen.regular(gridConfig.level_);
 }
 
-std::shared_ptr<sgpp::base::Grid> ModelFittingBase::getGrid() { return grid; }
+const Grid& ModelFittingBase::getGrid() const { return *grid; }
 
-std::shared_ptr<sgpp::base::DataVector> ModelFittingBase::getSurpluses() { return alpha; }
+const DataVector& ModelFittingBase::getSurpluses() const { return *alpha; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */

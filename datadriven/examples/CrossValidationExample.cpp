@@ -31,7 +31,7 @@ using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
 using sgpp::datadriven::MSE;
-using sgpp::datadriven::SimpleSplittingScorer;
+// using sgpp::datadriven::SimpleSplittingScorer;
 using sgpp::datadriven::CrossValidation;
 using sgpp::datadriven::RandomShufflingFunctor;
 using sgpp::base::GridType;
@@ -51,25 +51,24 @@ int main(int argc, char **argv) {
   auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   // regression
-  auto config = std::make_shared<DataMiningConfigurationLeastSquares>();
+  auto config = DataMiningConfigurationLeastSquares();
   // set grid dim
-  auto gridConfig = config->getGridConfig();
+  auto gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;
   gridConfig.type_ = GridType::ModLinear;
   gridConfig.dim_ = dataset->getDimension();
-  config->setGridConfig(gridConfig);
-  config->setLambda(10e-1);
+  config.setGridConfig(gridConfig);
+  config.setLambda(10e-1);
 
   std::cout << "starting 5 fold cross validation with seed 42" << std::endl;
-  auto model = std::make_shared<ModelFittingLeastSquares>(config);
-  auto metric = std::make_shared<MSE>();
-  auto shuffling = std::make_shared<RandomShufflingFunctor>();
-  auto stdDeviation = std::make_shared<double>();
-  CrossValidation crossValidation(metric, shuffling, 42);
-  double score = crossValidation.calculateScore(*model, *dataset, 5, stdDeviation);
+  auto model = std::make_unique<ModelFittingLeastSquares>(config);
+  auto metric = std::make_unique<MSE>();
+  auto shuffling = std::make_unique<RandomShufflingFunctor>();
+  double stdDeviation;
+  CrossValidation crossValidation(metric.release(), shuffling.release(), 42);
+  double score = crossValidation.calculateScore(*model, *dataset, 5, &stdDeviation);
 
-  std::cout << "Score = " << score << " with stdDeviation " << *stdDeviation << std::endl;
-
+  std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
 
   return 0;
 }

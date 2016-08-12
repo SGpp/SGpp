@@ -37,7 +37,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    *
    * @param config configuration
    */
-  ModelFittingLeastSquares(std::shared_ptr<DataMiningConfigurationLeastSquares> config);
+  ModelFittingLeastSquares(DataMiningConfigurationLeastSquares config);
 
   /**
    * Destructor
@@ -61,18 +61,17 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   //  }
 
  protected:
-  virtual std::unique_ptr<DMSystemMatrixBase> buildSystemMatrix(DataMatrix& trainDataset,
-                                                                double lambda);
+  virtual DMSystemMatrixBase* buildSystemMatrix(DataMatrix& trainDataset, double lambda);
 
-  virtual std::unique_ptr<SLESolver> buildSolver(DataMiningConfigurationLeastSquares& config);
+  virtual SLESolver* buildSolver(DataMiningConfigurationLeastSquares& config);
 
   void configureSolver(DataMiningConfigurationLeastSquares& config, SLESolver& solver,
                        FittingSolverState solverState);
 
  private:
-  std::shared_ptr<DataMiningConfigurationLeastSquares> config;
-  std::unique_ptr<DMSystemMatrixBase> systemMatrix;
-  std::unique_ptr<SLESolver> solver;
+  DataMiningConfigurationLeastSquares config;
+  std::shared_ptr<DMSystemMatrixBase> systemMatrix;
+  std::shared_ptr<SLESolver> solver;
   OperationMultipleEvalConfiguration implementationConfig;
 };
 }
