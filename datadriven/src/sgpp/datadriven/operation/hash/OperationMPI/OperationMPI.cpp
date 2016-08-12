@@ -16,8 +16,8 @@ namespace datadriven {
 namespace clusteringmpi {
 
 MPIWorkerBase::MPIWorkerBase(std::string operationName) : object_index(index),
-                                                           verbose(false),
-                                                           operationName(operationName) {
+                                                          operationName(operationName),
+                                                          verbose(false) {
   std::cout << "In Base cstr" << std::endl;
   std::cout << "Creating operation on " << MPIEnviroment::get_node_rank() << std::endl;
   if (MPIEnviroment::get_configuration().contains("VERBOSE"))

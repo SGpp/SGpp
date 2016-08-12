@@ -7,6 +7,7 @@
 
 #include <mpi.h>
 #include <sgpp/base/tools/OperationConfiguration.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -55,6 +56,11 @@ class MPIEnviroment {
   {return singleton_instance->configuration;}
   static int get_sub_worker_count(void) {return singleton_instance->worker_count;}
   static MPI_Comm& get_input_communicator(void) {return singleton_instance->input_communicator;}
+  static base::OperationConfiguration createMPIConfiguration(int compute_nodes,
+                                                             int opencl_devices_per_compute_node);
+  static base::OperationConfiguration createMPIConfiguration(int compute_nodes,
+                                                             base::OCLOperationConfiguration
+                                                             node_opencl_configuration);
   ~MPIEnviroment();
 };
 

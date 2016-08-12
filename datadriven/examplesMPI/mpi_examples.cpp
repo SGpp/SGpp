@@ -24,8 +24,19 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main(int argc, char *argv[]) {
+
   // Init MPI enviroment - always has to be done first
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
+
+  // Create Sample config
+  sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
+                                            MPIEnviroment::createMPIConfiguration(2, 4);
+  conf.serialize("testconf.cfg");
+  sgpp::base::OCLOperationConfiguration ocl_conf("MyOCLConf.cfg");
+  sgpp::base::OperationConfiguration conf_ocl = sgpp::datadriven::clusteringmpi::
+                                                MPIEnviroment::createMPIConfiguration(2,
+                                                                                      ocl_conf);
+  conf_ocl.serialize("testconf2.cfg");
 
   // MPI_Init(&argc, &argv);
   sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
