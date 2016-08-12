@@ -14,6 +14,12 @@
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
+
+using sgpp::base::OperationMatrix;
+using sgpp::base::Grid;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+
 namespace datadriven {
 
 enum class FittingSolverState { refine, solve };
@@ -25,13 +31,13 @@ class ModelFittingBase {
   virtual ~ModelFittingBase();
 
   /// new grid and new data set
-  virtual void fit(datadriven::Dataset& dataset) = 0;
+  virtual void fit(Dataset& dataset) = 0;
 
   /// reuse the grid and assume old data set
   virtual void refine() = 0;
 
   /// reuse grid and new data set
-  virtual void update(datadriven::Dataset& dataset) = 0;
+  virtual void update(Dataset& dataset) = 0;
 
   /**
    *
@@ -46,14 +52,13 @@ class ModelFittingBase {
    * @param result
    * @return
    */
-  virtual std::unique_ptr<base::DataVector> evaluate(sgpp::base::DataMatrix& samples);
+  virtual void evaluate(base::DataMatrix& samples, base::DataVector& results) const;
 
-  virtual std::shared_ptr<base::Grid> getGrid();
-  virtual std::shared_ptr<base::DataVector> getSurpluses();
+  virtual const base::Grid& getGrid() const;
+  virtual const base::DataVector& getSurpluses() const;
 
  protected:
-  std::shared_ptr<base::OperationMatrix> getRegularizationMatrix(
-      sgpp::datadriven::RegularizationType regType);
+  OperationMatrix* getRegularizationMatrix(RegularizationType regType);
   void initializeGrid(base::RegularGridConfiguration gridConfig);
 
   std::shared_ptr<base::Grid> grid;
