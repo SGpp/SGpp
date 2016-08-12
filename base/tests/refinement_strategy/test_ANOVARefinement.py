@@ -8,16 +8,14 @@
 
 import unittest
 
-import sys
-sys.path.append('/home/perun/Documents/workspace/SGpp/lib')
 
 from pysgpp import Grid, HashRefinement, HashGridPoint, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
     ANOVAHashRefinement
 
 
-class Test_ANOVARefinement(unittest.TestCase):
-
+class TestANOVARefinement(unittest.TestCase):
+    
     """ Test different classes and class interactions used in spatial and
     dimensionality refinement (ANOVA) routines.
     
@@ -187,7 +185,7 @@ class Test_ANOVARefinement(unittest.TestCase):
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         # refine one point
         functor = SurplusRefinementFunctor(alpha, 1, 0.0)
-        anova_refinement = ANOVARefinement()
+        anova_refinement = ANOVAHashRefinement()
         #refinement_strategy = ANOVARefinement(hash_refinement)
         anova_refinement.free_refine(self.grid_storage, functor)
         
@@ -232,7 +230,7 @@ class Test_ANOVARefinement(unittest.TestCase):
         # refine one point
         functor = SurplusVolumeRefinementFunctor(alpha, 1, 0.0)
         hash_refinement = HashRefinement()
-        refinement_strategy = ANOVARefinement(hash_refinement)
+        refinement_strategy = ANOVAHashRefinement()
         refinement_strategy.free_refine(self.grid_storage, functor)
         
         # check if only the children along x1 direction were inserted

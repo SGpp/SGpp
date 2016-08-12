@@ -34,8 +34,8 @@
 #define OUT_FILENAME "results.csv"
 // #define REFINEMENT_POINTS 100
 
-// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-//        "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
+// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman2_4d_10000.arff.gz",
+//        "datadriven/tests/data/friedman1_10d_2000.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
 //
 // std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 //
