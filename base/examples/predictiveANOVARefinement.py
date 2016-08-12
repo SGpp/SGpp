@@ -137,7 +137,7 @@ for refnum in range(20):
     calculateError(dataSet, f, grid, alpha, errorVector)
 
     #refinement  stuff
-    refinement = HashRefinement()
+    refinement = ANOVAHashRefinement()
     decorator = PredictiveANOVARefinement(refinement)
     # refine a single grid point each time
     print "Error over all = %s" % errorVector.sum()
