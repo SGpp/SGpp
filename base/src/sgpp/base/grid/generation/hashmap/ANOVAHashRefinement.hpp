@@ -14,8 +14,8 @@ namespace sgpp {
 namespace base {
 
 /*
- * SubspaceRefinement inserts complete hierarchical subspaces to the sparse
- * grid instead of individual grid points.
+ * ANOVAHashRefinement inserts creates children only in the dimensions where the
+ * level is greater than 1.
  */
 class ANOVAHashRefinement : public HashRefinement {
  public:
