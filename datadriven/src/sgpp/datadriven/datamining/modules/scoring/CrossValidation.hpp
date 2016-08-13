@@ -10,9 +10,9 @@
  */
 
 #pragma once
-#include <sgpp/datadriven/datamining/modules/crossValidation/ShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <memory>

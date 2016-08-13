@@ -12,7 +12,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/datadriven/datamining/modules/crossValidation/CrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 
 BOOST_AUTO_TEST_SUITE(crossValidationTest)
 BOOST_AUTO_TEST_SUITE_END()
