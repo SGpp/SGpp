@@ -166,8 +166,7 @@ void ew_varianz(){
   DataVector alpha(gridStorage.getSize());
   DataVector p(dim);
 
-
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+for (size_t i = 0; i < gridStorage.getSize(); i++) {
     GridPoint& gp = gridStorage.getPoint(i);
     p = gridStorage.getCoordinates(gp);
     alpha[i] = u(p[0], p[1]);
@@ -338,5 +337,9 @@ void integrate(){
 int main(int argc, char **argv) {
   // optimize();
   // ew_varianz();
-  integrate();
+  // integrate();
+  double h = std::pow(2, -1);
+  std::cout << h << std::endl;
+  h = std::pow(2, -2);
+  std::cout << h << std::endl;
 }
