@@ -75,12 +75,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
 // scoring
+#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-
-// crossValidation
-#include <sgpp/datadriven/datamining/modules/crossValidation/CrossValidation.hpp>
-#include <sgpp/datadriven/datamining/modules/crossValidation/RandomShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/crossValidation/ShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
 #endif /* DATADRIVEN_HPP */
