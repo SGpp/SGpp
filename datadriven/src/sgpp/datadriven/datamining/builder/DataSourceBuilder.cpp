@@ -23,9 +23,6 @@
 #include <string>
 #include <vector>
 
-const std::string arff = "arff";
-const std::string gz = "gz";
-
 namespace sgpp {
 namespace datadriven {
 
@@ -34,7 +31,8 @@ DataSourceBuilder::DataSourceBuilder() : config() {}
 DataSourceBuilder::~DataSourceBuilder() {}
 
 DataSourceBuilder& DataSourceBuilder::withFileType(const std::string& fileType) {
-  if (arff.compare(fileType) == 0) {
+  auto ftParser = DataSourceFileTypeParser();
+  if (ftParser(fileType) == DataSourceFileType::ARFF) {
     config.fileType = DataSourceFileType::ARFF;
   } else {
     base::data_exception("Unknown file type");
@@ -97,9 +95,14 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
     config.isCompressed = true;
   }
 
-  // check if we can find ARFF
-  if (std::find(tokens.begin(), tokens.end(), arff) != tokens.end()) {
-    config.fileType = DataSourceFileType::ARFF;
+  // check if we can find file type
+  auto parser = DataSourceFileTypeParser();
+  DataSourceFileType type;
+  for (auto t : tokens) {
+    type = parser(t);
+    if (type != DataSourceFileType::NONE) {
+      config.fileType = type;
+    }
   }
 }
 
