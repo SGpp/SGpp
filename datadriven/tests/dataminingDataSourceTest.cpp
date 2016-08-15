@@ -32,7 +32,6 @@ using sgpp::datadriven::SampleProvider;
 using sgpp::datadriven::GzipFileSampleDecorator;
 using sgpp::datadriven::ArffFileSampleProvider;
 using sgpp::datadriven::DataSourceConfig;
-using sgpp::datadriven::DataSourceStateConfig;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
@@ -61,9 +60,8 @@ BOOST_FIXTURE_TEST_SUITE(dataSourceGetNextSamplesAllTest, State)
 
 BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
   SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
-  DataSourceStateConfig config;
+  DataSourceConfig config;
   config.filePath = path;
-  config.numBatches = 1;
 
   DataSource dataSource = DataSource(config, sampleProvider);
   auto dataset = std::unique_ptr<Dataset>(dataSource.getNextSamples());
@@ -96,9 +94,8 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
 
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
   SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
-  DataSourceStateConfig config;
+  DataSourceConfig config;
   config.filePath = path;
-  config.numBatches = 1;
 
   DataSource dataSource = DataSource(config, sampleProvider);
 
@@ -113,7 +110,7 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
     BOOST_CHECK_EQUAL(3, data.getNcols());
     //    dataset.reset();
   }
-  BOOST_CHECK_EQUAL(1, dataSource.getConfig().getCurrentIteration());
+  BOOST_CHECK_EQUAL(1, dataSource.getCurrentIteration());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

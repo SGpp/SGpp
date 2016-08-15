@@ -24,11 +24,11 @@ namespace sgpp {
 namespace datadriven {
 
 DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
-    : config(conf), sampleProvider(std::shared_ptr<SampleProvider>(sp)) {
+    : config(conf), currentIteration(0), sampleProvider(std::shared_ptr<SampleProvider>(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
-  if (!this->config.getFilePath().empty()) {
+  if (!this->config.filePath.empty()) {
     auto fileProvider = std::static_pointer_cast<FileSampleProvider>(sampleProvider);
-    fileProvider->readFile(this->config.getFilePath());
+    fileProvider->readFile(this->config.filePath);
   }
 }
 
@@ -36,20 +36,22 @@ DataSource::~DataSource() {}
 
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
-DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.getNumBatches()); }
+DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
 Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
-  if (config.getNumBatches() == 1 && config.getBatchSize() == 0) {
-    config.incrementCurrentIteration();
+  if (config.numBatches == 1 && config.batchSize == 0) {
+    currentIteration++;
     return sampleProvider->getAllSamples();
   } else {
-    config.incrementCurrentIteration();
-    return sampleProvider->getNextSamples(config.getBatchSize());
+    currentIteration++;
+    return sampleProvider->getNextSamples(config.batchSize);
   }
 }
 
-DataSourceConfig& sgpp::datadriven::DataSource::getConfig() { return config; }
+DataSourceConfig& DataSource::getConfig() { return config; }
+
+size_t DataSource::getCurrentIteration() { return currentIteration; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */
