@@ -29,15 +29,13 @@ const std::string gz = "gz";
 namespace sgpp {
 namespace datadriven {
 
-DataSourceBuilder::DataSourceBuilder() : config(), fileType(NONE), isCompressed(false) {
-  config.numBatches = 1;
-}
+DataSourceBuilder::DataSourceBuilder() : config() {}
 
 DataSourceBuilder::~DataSourceBuilder() {}
 
-DataSourceBuilder& DataSourceBuilder::withFileType(std::string fileType) {
+DataSourceBuilder& DataSourceBuilder::withFileType(const std::string& fileType) {
   if (arff.compare(fileType) == 0) {
-    this->fileType = ARFF;
+    config.fileType = DataSourceFileType::ARFF;
   } else {
     base::data_exception("Unknown file type");
   }
@@ -55,30 +53,28 @@ DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
 }
 
 DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
-  this->isCompressed = isCompressed;
+  config.isCompressed = isCompressed;
   return *this;
 }
 
-DataSourceBuilder& DataSourceBuilder::withPath(std::string filePath) {
+DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
   config.filePath = filePath;
-  grabTypeInfoFromFilePath();
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
   return *this;
 }
 
 DataSource* DataSourceBuilder::assemble() {
   SampleProvider* sampleProvider;
 
-  switch (fileType) {
-    case ARFF:
-      sampleProvider = new ArffFileSampleProvider;
-      break;
-    case NONE:
-    default:
-      base::data_exception("Unknown file type");
-      break;
+  if (config.fileType == DataSourceFileType::ARFF) {
+    sampleProvider = new ArffFileSampleProvider;
+  } else {
+    base::data_exception("Unknown file type");
   }
 
-  if (isCompressed) {
+  if (config.isCompressed) {
     sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
   }
 
@@ -98,12 +94,12 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   }
   // check if there is gz compression
   if (tokens.back().compare(gz) == 0) {
-    isCompressed = true;
+    config.isCompressed = true;
   }
 
   // check if we can find ARFF
   if (std::find(tokens.begin(), tokens.end(), arff) != tokens.end()) {
-    fileType = ARFF;
+    config.fileType = DataSourceFileType::ARFF;
   }
 }
 

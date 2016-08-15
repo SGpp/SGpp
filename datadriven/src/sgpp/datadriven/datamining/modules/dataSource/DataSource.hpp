@@ -34,9 +34,11 @@ class DataSource {
   Dataset* getNextSamples();
   DataSourceIterator begin();
   DataSourceIterator end();
+  size_t getCurrentIteration();
 
  protected:
   DataSourceConfig config;
+  size_t currentIteration;
   std::shared_ptr<SampleProvider> sampleProvider;
 };
 

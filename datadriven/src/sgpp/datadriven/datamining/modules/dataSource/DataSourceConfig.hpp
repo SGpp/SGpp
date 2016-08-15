@@ -16,38 +16,14 @@
 namespace sgpp {
 namespace datadriven {
 
-struct DataSourceStateConfig {
+enum class DataSourceFileType { NONE, ARFF };
+
+struct DataSourceConfig {
   std::string filePath = "";
+  DataSourceFileType fileType = DataSourceFileType::NONE;
+  bool isCompressed = false;
+  size_t numBatches = 1;
   size_t batchSize = 0;
-  size_t numBatches = 0;
 };
-
-class DataSourceConfig {
- public:
-  DataSourceConfig() : filePath(""), batchSize(0), numBatches(0), currentIteration(0) {}
-  DataSourceConfig(const DataSourceStateConfig& config)
-      : filePath(config.filePath),
-        batchSize(config.batchSize),
-        numBatches(config.numBatches),
-        currentIteration(0) {}
-  virtual ~DataSourceConfig(){};
-
-  size_t getBatchSize() const { return batchSize; }
-
-  size_t getCurrentIteration() const { return currentIteration; }
-
-  void incrementCurrentIteration() { currentIteration++; }
-
-  const std::string& getFilePath() const { return filePath; }
-
-  size_t getNumBatches() const { return numBatches; }
-
- private:
-  std::string filePath;
-  size_t batchSize;
-  size_t numBatches;
-  size_t currentIteration;
-};
-
 } /* namespace datadriven */
 } /* namespace sgpp */

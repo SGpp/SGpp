@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <memory.h>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <string>
 #include <vector>
 #include "../modules/dataSource/DataSourceConfig.hpp"
@@ -20,15 +20,13 @@
 namespace sgpp {
 namespace datadriven {
 
-enum FileType { NONE, ARFF };
-
 class DataSourceBuilder {
  public:
   DataSourceBuilder();
   virtual ~DataSourceBuilder();
-  DataSourceBuilder& withPath(std::string filePath);
+  DataSourceBuilder& withPath(const std::string& filePath);
   DataSourceBuilder& withCompression(bool isCompressed);
-  DataSourceBuilder& withFileType(std::string fileType);
+  DataSourceBuilder& withFileType(const std::string& fileType);
   DataSourceBuilder& inBatches(size_t howMany);
   DataSourceBuilder& withBatchSize(size_t batchSize);
   virtual DataSource* assemble();
@@ -36,9 +34,7 @@ class DataSourceBuilder {
  private:
   void grabTypeInfoFromFilePath();
 
-  DataSourceStateConfig config;
-  FileType fileType;
-  bool isCompressed;
+  DataSourceConfig config;
 };
 
 } /* namespace datadriven */
