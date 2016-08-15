@@ -11,12 +11,30 @@
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 enum class DataSourceFileType { NONE, ARFF };
+
+class DataSourceFileTypeParser {
+ public:
+  DataSourceFileType operator()(const std::string& input) const {
+    auto inputLower = input;
+    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+
+    if (inputLower == arff) {
+      return DataSourceFileType::ARFF;
+    } else {
+      return DataSourceFileType::NONE;
+    }
+  }
+
+ private:
+  const std::string arff = "arff";
+};
 
 struct DataSourceConfig {
   std::string filePath = "";
@@ -25,5 +43,6 @@ struct DataSourceConfig {
   size_t numBatches = 1;
   size_t batchSize = 0;
 };
+
 } /* namespace datadriven */
 } /* namespace sgpp */

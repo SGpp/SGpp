@@ -33,6 +33,7 @@ class DataSourceBuilder {
 
  private:
   void grabTypeInfoFromFilePath();
+  const std::string gz = "gz";
 
   DataSourceConfig config;
 };
