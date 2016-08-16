@@ -33,6 +33,8 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
       alpha[i] -= yi;
+    } else {
+      alpha[i] = 0.0;
     }
   }
 }

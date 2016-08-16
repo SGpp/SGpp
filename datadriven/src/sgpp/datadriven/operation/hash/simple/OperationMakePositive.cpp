@@ -137,10 +137,11 @@ void OperationMakePositive::addFullGridPoints(
       datadriven::OperationMultipleEvalType::STREAMING,
       datadriven::OperationMultipleEvalSubType::DEFAULT);
   std::unique_ptr<base::OperationMultipleEval> opEval(
-      op_factory::createOperationMultipleEval(grid, data));
+      op_factory::createOperationMultipleEval(grid, data, evalConfig));
   opEval->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
+  size_t numCurrentNewGridPointsForPositivity = 0;
   for (size_t i = 0; i < candidates.size(); ++i) {
     if (nodalValues[i] < tol) {
       if (generateConsistentGrid) {
@@ -149,16 +150,16 @@ void OperationMakePositive::addFullGridPoints(
         size_t ix = gridStorage.insert(*candidates[i]);
         addedGridPoints.push_back(ix);
       }
-      numNewGridPointsForPositivity++;
+      numCurrentNewGridPointsForPositivity++;
     }
   }
 
+  numNewGridPointsForPositivity += numCurrentNewGridPointsForPositivity;
   numNewGridPoints += addedGridPoints.size();
 
   if (verbose) {
-    std::cout << "# considered          : " << numNewGridPointsForPositivity
-              << " <= " << addedGridPoints.size() << " <= " << numNewGridPoints
-              << " : # new grid points" << std::endl;
+    std::cout << "# negative considered : " << numCurrentNewGridPointsForPositivity
+              << " <= " << addedGridPoints.size() << " : # added grid points" << std::endl;
   }
 
   // recompute the leaf property
