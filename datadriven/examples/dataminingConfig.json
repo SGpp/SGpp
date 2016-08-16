@@ -1,0 +1,58 @@
+{
+	"dataSource": {
+		"filePath": "/path/to/some/file.arff",
+		"fileType": "arff",
+		"compression": false,
+		"numBatchens": 1,
+		"batchSize": 0
+	},
+	"scorer": {
+		"testing": {
+			"testingPortion": 0.0,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		},
+		"crossValidation": {
+			"folds": 5,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		}
+	},
+	"fitter": {
+		"type": "regressionLeastSquares",
+		"gridConfig": {
+			"gridType": "linear",
+			"dim": 0,
+			"level": 2,
+			"maxDegree": 0,
+			"boundaryLevel": 0,
+			"filename": ""
+		},
+		"adaptivityConfig": {
+			"numRefinements": 0,
+			"threshold": 0,
+			"maxLevelType": false,
+			"noPoints": 0,
+			"percent": 0,
+			"errorBasedRefinement": false
+		},
+		"solverRefineConfig": {
+			"solverType": "CG",
+			"eps": 10e-15,
+			"maxIterations": 100,
+			"threshold": 1
+		},
+		"solverFinalConfig": {
+			"solverType": "CG",
+			"eps": 10e-15,
+			"maxIterations": 100,
+			"threshold": 1
+		},
+		"regularizationConfig": {
+			"regularizationType": "Identity",
+			"lambda": 10e-7
+		}
+	}
+}
