@@ -25,7 +25,8 @@ class OperationDensityOCL: public base::OperationMatrix {
   /// Execute one matrix-vector multiplication with the density matrix
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
-  virtual void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) = 0;
+  virtual void start_partial_mult(double *alpha, int start_id, int chunksize) = 0;
+  virtual void finish_partial_mult(double *result, int start_id, int chunksize) = 0;
   /// Generates the right hand side vector for the density equation
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) = 0;

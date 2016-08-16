@@ -31,9 +31,9 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
   size_t dims;
   /// OpenCL kernel which executes the graph creation
   KernelCreateGraph<T> *graph_kernel;
+  bool verbose;
   /// Vector with all OpenCL devices
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
-  bool verbose;
   /// OpenCL Manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   /// Copy of the dataset

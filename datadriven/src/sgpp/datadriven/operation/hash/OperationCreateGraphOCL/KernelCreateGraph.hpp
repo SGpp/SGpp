@@ -41,9 +41,9 @@ class KernelCreateGraph {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   /// Stores the running time of the kernel
   double deviceTimingMult;
+  bool verbose;
   /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
-  bool verbose;
   size_t localSize;
   size_t dataBlockingSize;
   size_t scheduleSize;
@@ -96,7 +96,7 @@ class KernelCreateGraph {
 
     totalBlockSize = dataBlockingSize * localSize;
     unpadded_datasize = data.size();
-    for (auto i = 0; i < (localSize - data.size() % localSize) * dims; i++)
+    for (size_t i = 0; i < (localSize - data.size() % localSize) * dims; i++)
       data.push_back(2.0);
     deviceData.intializeTo(data, 1, 0, data.size());
   }
