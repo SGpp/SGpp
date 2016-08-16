@@ -32,12 +32,12 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
  private:
   size_t dims;
   size_t gridSize;
+  bool verbose;
   size_t dataSize;
   /// OpenCL kernel which executes the graph creation
   sgpp::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T> *graph_kernel;
   /// Vector with all OpenCL devices
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
-  bool verbose;
   /// OpenCL Manager
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
@@ -65,10 +65,10 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
-    for (int i = 0; i < gridSize; i++) {
+    for (size_t i = 0; i < gridSize; i++) {
       sgpp::base::HashGridPoint &point = gridStorage.getPoint(i);
       pointscount++;
-      for (int d = 0; d < dims; d++) {
+      for (size_t d = 0; d < dims; d++) {
         pointsVector.push_back(point.getIndex(d));
         pointsVector.push_back(point.getLevel(d));
       }
@@ -133,7 +133,7 @@ class OperationPruneGraphOCLMultiPlatform : public OperationPruneGraphOCL {
     // Store Grid in a opencl compatible buffer
     std::vector<int> points;
     for (size_t i = 0; i < gridSize; i++) {
-      for (int d = 0; d < dims; d++) {
+      for (size_t d = 0; d < dims; d++) {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
         points.push_back(gridpoints[2 * dimensions * i + 2 * d + 1]);
       }

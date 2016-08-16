@@ -14,7 +14,8 @@ namespace sgpp {
 namespace datadriven {
 DensityOCLMultiPlatform::OperationDensityOCL*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
-                                        double lambda, base::OCLOperationConfiguration *parameters,
+                                        double lambda,
+                                        base::OCLOperationConfiguration *parameters,
                                         size_t platform_id, size_t device_id) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());

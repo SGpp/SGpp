@@ -27,6 +27,8 @@ class DensityWorker : public MPIWorkerGridBase {
   MPI_Comm &master_worker_comm;
   MPI_Comm &sub_worker_comm;
 
+  int secondary_workpackage[2];
+  bool secondary_package_prefetched;
  public:
   DensityWorker()
       : MPIWorkerBase("DensityMultiplicationWorker"),
@@ -117,7 +119,8 @@ class DensityWorker : public MPIWorkerGridBase {
         }
         if (opencl_node) {
           // Run partial multiplication
-          op->partial_mult(alpha, partial_result, datainfo[0], datainfo[1]);
+          op->start_partial_mult(alpha, datainfo[0], datainfo[1]);
+          op->finish_partial_mult(partial_result, datainfo[0], datainfo[1]);
           if (verbose)
             std::cout << "Workpackage abgeschlossen" << std::endl;
         } else {

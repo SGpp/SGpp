@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL)  {
   std::ifstream
       alpha_result("datadriven/tests/data/clustering_test_data/alpha_erg_dim2_depth11.txt");
   if (alpha_result) {
-    int counter = 0;
+    size_t counter = 0;
     double value;
     while (alpha_result >> value) {
       alpha[counter] = value;
@@ -622,7 +622,7 @@ BOOST_AUTO_TEST_CASE(KNNClusterSearch)  {
                         OperationCreateGraphOCL::find_clusters(graph, 8);
   BOOST_CHECK(optimal_cluster_assignement.size() == cluster_assignement.size());
   if (optimal_cluster_assignement.size() == cluster_assignement.size()) {
-    for (int i = 0; i < cluster_assignement.size(); ++i) {
+    for (size_t i = 0; i < cluster_assignement.size(); ++i) {
       BOOST_CHECK(optimal_cluster_assignement[i] == cluster_assignement[i]);
     }
   }

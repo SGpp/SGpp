@@ -48,7 +48,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
   /// Generate the opencl code to save the fixed gridpoint of a workitem to the local memory
   std::string save_from_global_to_private(size_t dimensions) {
     std::stringstream output;
-    for (auto block = 0; block < dataBlockSize; block++) {
+    for (size_t block = 0; block < dataBlockSize; block++) {
       if (!preprocess_positions) {
         output << this->indent[0] << "__private int point_indices_block" << block << "["
                << dimensions << "];" << std::endl;
@@ -56,10 +56,12 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                << dimensions << "];" << std::endl;
         for (size_t i = 0; i < dimensions; i++) {
           output << this->indent[0] << "point_indices_block" << block << "[" << i
-                 << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block << ") * "
+                 << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block
+                 << ") * "
                  << dimensions << " * 2 + 2 * " << i << "];" << std::endl;
           output << this->indent[0] << "point_level_block" << block << "[" << i
-                 << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block << ") * "
+                 << "] = starting_points[(gridindex * " << dataBlockSize << " + " << block
+                 << ") * "
                  << dimensions << " * 2 + 2 * " << i << " + 1];" << std::endl;
         }
       } else {
@@ -138,7 +140,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
       index_func2 = std::string("index2");
     }
     // Loop to evaluate the base function on the left, right or mid points of the other basefunction
-    for (unsigned int i = 0; i < 1 + static_cast<int>(use_implicit_zero); i++) {
+    for (int i = 0; i < 1 + static_cast<int>(use_implicit_zero); i++) {
       if (use_level_cache) {
         // Reuse h values from host
         output << this->indent[3] << "h = hs[" << level_func2 << "];" << std::endl;
@@ -551,7 +553,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
     if (useLocalMemory)
       sourceStream << this->indent[1] << "}" << std::endl;
     sourceStream << this->indent[0] << "}" << std::endl;
-    for (auto block = 0; block < dataBlockSize; ++block) {
+    for (size_t block = 0; block < dataBlockSize; ++block) {
       if (!use_fabs_instead_of_fmax || preprocess_positions)
         sourceStream << this->indent[0] << "result[get_global_id(0) * "<< dataBlockSize
                      <<" + " << block << "] = gesamtint_block" << block << ";" << std::endl;

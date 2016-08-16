@@ -61,10 +61,10 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     // Store Grid in a opencl compatible buffer
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     size_t pointscount = 0;
-    for (int i = 0; i < gridSize; i++) {
+    for (size_t i = 0; i < gridSize; i++) {
       sgpp::base::HashGridPoint &point = gridStorage.getPoint(i);
       pointscount++;
-      for (int d = 0; d < dims; d++) {
+      for (size_t d = 0; d < dims; d++) {
         points.push_back(point.getIndex(d));
         points.push_back(point.getLevel(d));
       }
@@ -123,8 +123,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       devices(manager->getDevices()),
       verbose(false),
       manager(manager), lambda(lambda) {
-    for (int i = 0; i < gridSize; i++) {
-      for (int d = 0; d < dims; d++) {
+    for (size_t i = 0; i < gridSize; i++) {
+      for (size_t d = 0; d < dims; d++) {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
         points.push_back(gridpoints[2 * dimensions * i + 2 * d + 1]);
       }
@@ -179,28 +179,24 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
   }
 
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
-  void partial_mult(double *alpha, double *result, size_t start_id, size_t chunksize) override {
+  void start_partial_mult(double *alpha, int start_id, int chunksize) override {
     std::vector<T> alphaVector(gridSize);
-    std::vector<T> resultVector(chunksize);
-    for (size_t i = 0; i < chunksize; i++) {
-      resultVector[i] = static_cast<T>(result[i]);
-    }
-    for (auto i = 0; i < gridSize; ++i) {
+    for (size_t i = 0; i < gridSize; ++i) {
       alphaVector[i] = static_cast<T>(alpha[i]);
     }
-
     if (verbose)
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-    this->multKernel->mult(alphaVector, resultVector, start_id, chunksize);
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
+    this->multKernel->start_mult(alphaVector, start_id, chunksize);
+  }
 
-    if (verbose) {
-      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
+  void finish_partial_mult(double *result, int start_id, int chunksize) override {
+    std::vector<T> resultVector(chunksize);
+    for (int i = 0; i < chunksize; i++) {
+      resultVector[i] = static_cast<T>(result[i]);
     }
-    for (size_t i = 0; i < chunksize; i++)
+    this->multKernel->finish_mult(resultVector, start_id, chunksize);
+    for (int i = 0; i < chunksize; i++)
       result[i] = resultVector[i];
   }
 
@@ -216,7 +212,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->multKernel->mult(alphaVector, resultVector, 0, 0);
+    this->multKernel->start_mult(alphaVector, 0, 0);
+    this->multKernel->finish_mult(resultVector, 0, 0);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
