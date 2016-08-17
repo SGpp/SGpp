@@ -151,14 +151,15 @@ def parents(grid, gp):
 def getGridPointsOnBoundary(level, index):
     # find left boundary
     left = None
-    value = (index - 1) & (index - 1)
+    value = (index - 1) & (~(index - 1) + 1)
     if value > 0:
         n = int(np.log2(value))
         if level - n > 0:
             left = (level - n, (index - 1) >> n)
+
     # find right boundary
     right = None
-    value = (index + 1) & (index + 1)
+    value = (index + 1) & (~(index + 1) + 1)
     if value > 0:
         n = int(np.log2(value))
         if level - n > 0:
@@ -166,6 +167,29 @@ def getGridPointsOnBoundary(level, index):
 
     return (left, right)
 
+def getGridPointsOnBoundaryEfficiently(level, index):
+    # find left boundary
+    left = None
+    multiplyDeBruijnBitPosition = [0,  1,  28, 2,  29, 14, 24, 3,  30, 22, 20,
+                                   15, 25, 17, 4,  8,  31, 27, 13, 23, 21, 19,
+                                   16, 7,  26, 12, 18, 6,  11, 5,  10, 9]
+    lindex = index - 1
+    n = multiplyDeBruijnBitPosition[((lindex & -lindex) * 0x077CB531) >> 27]
+    if n == 0 or n >= level:
+        left = (0, 0)
+    else:
+        left = (level - n, lindex >> n)
+
+    # find right boundary
+    right = None
+    rindex = index + 1
+    n = multiplyDeBruijnBitPosition[((rindex & -rindex) * 0x077CB531) >> 27]
+    if n == 0 or n >= level:
+        right = (0, 1)
+    else:
+        right = (level - n, rindex >> n)
+
+    return (left, right)
 
 def getHierarchicalAncestors(grid, gp):
     ans = []

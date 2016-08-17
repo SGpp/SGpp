@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <utility>
 #include <map>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -281,6 +282,10 @@ bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gpj) {
   // check whether the supports are overlapping in all dimensions
   return idim == dimension;
 }
+
+std::vector<base::HashGridPoint::level_type> HashGridPoint::multiplyDeBruijnBitPosition = {
+    0,  1,  28, 2,  29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4,  8,
+    31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6,  11, 5,  10, 9};
 
 }  // namespace base
 }  // namespace sgpp
