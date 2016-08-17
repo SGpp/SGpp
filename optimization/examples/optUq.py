@@ -14,17 +14,19 @@ from pysgpp.extensions.datadriven.uq.plot import plot2d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation
 
 class ExampleFunction(pysgpp.OptScalarFunction):
-  int_grid_level = 5
+  int_grid_level = 3
   def __init__(self):
-    super(ExampleFunction, self).__init__(1)
+    super(ExampleFunction, self).__init__(3)
     
   def eval(self, x):
-    return -self.target_func(x)
+    return self.target_func(x)
+    # return beale(x)
     # return shcb(x)
     # return easom(x)
     # return michalewicz(x)   # 
     # return griewank(x)
     # return schwefel(x)
+    # return sin_spitze(x)
 
   def target_func(self,x):
     grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(1, 3)
@@ -37,11 +39,15 @@ class ExampleFunction(pysgpp.OptScalarFunction):
       y = gridStorage.getCoordinates(gp)
       # alpha[i] = oscill_genz(d, x)
       # alpha[i] = (0.1*(x[0]*15-8)**2 - 5*np.cos(x[0]*15-8))*2*y
-      # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y # alpha[i] = easom(pysgpp.DataVector(x))*2*y
+      # alpha[i] = michalewicz(pysgpp.DataVector(x))*2*y #
+      # alpha[i] = easom(pysgpp.DataVector(x))*2*y
       # alpha[i] = 1
-      # alpha[i] = schwefel([x[0],y[0]]) alpha[i] = revenue(x[0], y[0])
-      alpha[i] = revenue(x[0], y[0])
-        
+      # alpha[i] = schwefel([x[0], x[1], x[2], y[0]])
+      # alpha[i] = revenue(x[0], y[0])
+      # alpha[i] = beale([x[0], y[0]])
+      # alpha[i] = eggholder([x[0], y[0]])
+      # alpha[i] = griewank([x[0], x[1], x[2], y[0]])
+      alpha[i] = sin_spitze([x[0], x[1], x[2], y[0]])
     hierarch.doHierarchisation(alpha)
     # Quadratur mit f(x) multiplizieren 
     return pysgpp.createOperationQuadrature(grid).doQuadrature(alpha) 
@@ -96,40 +102,60 @@ def f_beta(x):
   return (1.0/beta(p, q)) * x**(p-1) * (1-x)**(q-1) 
 
 def shcb(x):
-    x[0] = x[0]*10 - 5
-    x[1] = x[1]*10 - 5
-    return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1) 
+  x[0] = x[0]*10 - 5
+  x[1] = x[1]*10 - 5
+  return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1) 
     
 def oscill_genz(d, x):
-    u = 0.5
-    a = [2, 2]
-    return np.cos(2*np.pi*u+sum([a[i]*x[i] for i in range(d)]))
+  u = 0.5
+  a = [2, 2]
+  return np.cos(2*np.pi*u+sum([a[i]*x[i] for i in range(d)]))
 
 def michalewicz(x):
-    x[0] = x[0]*5
-    x[1] = x[1]*5
-    return -np.sin(x[0])*np.sin(x[0]**2/np.pi)**20-np.sin(x[1])*np.sin(2*x[1]**2/np.pi)**20
+  x[0] = x[0]*5
+  x[1] = x[1]*5
+  return -np.sin(x[0])*np.sin(x[0]**2/np.pi)**20-np.sin(x[1])*np.sin(2*x[1]**2/np.pi)**20
 
+def eggholder(x):
+  x[0] = x[0]*1024 - 512
+  x[0] = x[1]*1024 - 512
+  return -(x[1]+47)*np.sin(abs(x[0]/2 + x[1] + 47)**0.5)-x[0]*np.sin(abs(x[0]-x[1]-47)**0.5)
 def eggcrate(x):
-    x[0] = x[0]*10 - 5
-    x[1] = x[1]*10 - 5
-    return x[0]**2 + x[1]**2 + 25*(np.sin(x[0])**2 + np.sin(x[1])**2)
+  x[0] = x[0]*10 - 5
+  x[1] = x[1]*10 - 5
+  return x[0]**2 + x[1]**2 + 25*(np.sin(x[0])**2 + np.sin(x[1])**2)
           
 def easom(x):
-    x[0] = x[0]*200 - 100
-    x[1] = x[1]*200 - 100
+  x[0] = x[0]*200 - 100
+  x[1] = x[1]*200 - 100
     
-    return -np.cos(x[0])*np.cos(x[1])*np.exp(-(x[0]-np.pi)**2-(x[1]-np.pi)**2)
+  return -np.cos(x[0])*np.cos(x[1])*np.exp(-(x[0]-np.pi)**2-(x[1]-np.pi)**2)
+  
+def sin_spitze(x):
+  d = len(x)
+  prod = 1.0
+  for i in range(d):
+    prod *= x[i]*np.sin(5*np.pi*x[i]+2*np.pi*x[d-i-1])
+  return -prod
 
 def griewank(x):  #falsch
-    d = len(x)
-    for i in range(d):
-        x[i] = x[i]*1200 - 600
-    prod = 1
-    for i in range(d):
-       prod *= np.cos(x[i] / (i+1)**0.5 ) 
-    return 1 + np.linalg.norm(x)**2 / 4000 - prod
+  #np.linalg.norm is buggy for pysgpp.DataVector
+  d = len(x)
+  prod = 1.0
+  norm = 0.0
+  for i in range(d):
+    x[i] = x[i]*1200.0 - 601.0
+    prod *= np.cos(x[i] / (i+1.0)**0.5 ) 
+    norm += x[i]**2
+  norm = norm**0.5
+  return 1.0 + norm**2 / 4000.0 - prod
     
+def beale(x):
+  x[0] = x[0] * 10 - 5
+  x[1] = x[1] * 10 - 5
+  return (1.5 - x[0]*(1-x[1]))**2+(2.25 - x[0]*(1-x[1]**2))**2+(2.625-x[0]*(1-x[1]**3))**2
+
+  
 def schwefel(x):
     for i in range(len(x)):
         x[i] = x[i] * 1000 - 500
@@ -191,12 +217,12 @@ def optimize():
     # maximal number of grid points
     # adaptivity of grid generation
     gamma = 0.95 
-    N_vals =  range(100, 2000, 300)
-    grids = (pysgpp.Grid.createBsplineGrid(d, 3),
+    N_vals =  range(100, 3301, 800)
+    grids = [pysgpp.Grid.createBsplineGrid(d, 3),
              pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
              # pysgpp.Grid.createModBsplineGrid(d,p),
-             pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3))
+             # pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
+             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)]
     
     fig=plt.figure()
     ax=fig.add_subplot(111)
@@ -272,8 +298,8 @@ def optimize():
             fXOpt = f.eval(xOpt)
             # errors.append(fXOpt - (-1.8013)) #michalewicz
             # errors.append(fXOpt - (-1.031628)) #SHCB
-            # errors.append(fXOpt) #Griewank
-            errors.append(fXOpt - -160) # revenue
+            errors.append(fXOpt) #Griewank, Beale
+            # errors.append(fXOpt - -160) # revenue
             # errors.append(fXOpt - (-837.966) ) # SChwefel 3d opt
             # errors.append(fXOpt - (-1)) #Easom
             # errors.append(fXOpt - d*(-418.9829)) #Schwefel
@@ -286,16 +312,15 @@ def optimize():
             
         # ax.plot(N_vals, errors)
         
-        ax.plot(N_vals, errors, label=gridToName(grid.getType(),p))
+        ax.plot(N_vals, errors, 'o', N_vals, errors, label=gridToName(grid.getType(),p))
         
     # ax.set_xscale('symlog')
     ax.set_yscale('symlog')
     # ax.xlabel('Grid Points')
     # ax.ylabel('Error')
-    ax.legend(loc=2)
-    # ax.title("Optimization-Error Revenue-Funktion reg-" + str(f.int_grid_level) + "-grid") 
-    
-    # ax.title("Optimization-Error Revenue-Funktion reg-5-grid") 
+    ax.legend(loc=3)
+    plt.title("Optimization-Error Schwefel-3-1-Funktion reg-" + str(f.int_grid_level) + "-grid") 
+    # plt.title("Optimization-Error Schwefel-4D-Quad-Funktion reg-3-grid") 
     plt.show()
    
 def genz_error(sol):
@@ -513,26 +538,29 @@ def interpolation_error():
         
 
 def plot_genz():
-  # f = ExampleFunction()
+  f = ExampleFunction()
   # d = f.getNumberOfParameters()
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
-  X = np.arange(0, 1, 1/120.0) 
-  Y = np.arange(0, 1, 1/120.0) 
+  X = np.arange(0, 1.02, 1/50.0) 
+  Y = np.arange(0, 1.02, 1/50.0)
   X, Y = np.meshgrid(X, Y)
   # Z = oscill_genz(2, [X,Y])
   # Z = schwefel([X,Y])
-  Z = sin_kuppel([X,Y])
+  # Z = sin_kuppel([X,Y])
+  # Z = griewank([X,Y])
   
-  # Z = np.zeros((len(X),len(Y)))
-  # for i in range(len(X)):
-  #     for j in range(len(X)):
-  #         vec_x = pysgpp.DataVector(d)
-  #         vec_x[0] = X[i,j]
-  #         vec_x[1] = Y[i,j] 
-  #         # Z[i] = f.eval(vec_x)
-  #         # Z[i] = expeceted_revenue(vec_x[0])
-  #         Z[i,j] = schwefel(vec_x)
+  Z = np.zeros((len(X),len(Y)))
+  for i in range(len(X)):
+      for j in range(len(X)):
+          vec_x = pysgpp.DataVector(2)
+          vec_x[0] = X[i,j]
+          vec_x[1] = Y[i,j] 
+          # Z[i,j] = f.eval(vec_x)
+          # Z[i] = expeceted_revenue(vec_x[0])
+          # Z[i,j] = schwefel(vec_x)
+          # Z[i,j] = griewank(vec_x)
+          Z[i,j] = sin_spitze(vec_x)
   
   ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
   plt.show()
@@ -544,11 +572,15 @@ def plot_1d():
   X = np.arange(0, 1, 1/120.0) 
   Z = np.zeros(len(X))
   for i in range(len(X)):
-    # Z[i] = f.eval([X[i]])
-    Z[i] = -expected_revenue(X[i])
+    Z[i] = f.eval([X[i]])
+    # Z[i] = -expected_revenue(X[i])
     
   plt.plot(X, Z)
   plt.show()
+
+
+def int_sin(x):
+  return x[0]*x[1]*np.sin(np.pi*x[0])*np.sin(np.pi.x[1])/np.pi
 
 def test():
   grid = pysgpp.Grid.createFundamentalSplineGrid(1,3)
@@ -570,9 +602,10 @@ def test():
     i += 1
   plt.plot(xs, [b.eval(5,1, x) for x in xs])
   plt.show()
-# test()
+
+# test() 
 # plot_1d()
 # plot_genz()
-integrate()
-# optimize()
+# integrate()
+optimize()
 # interpolation_error()
