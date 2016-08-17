@@ -21,7 +21,6 @@ class OperationMakePositiveCandidateSetAlgorithm {
   OperationMakePositiveCandidateSetAlgorithm();
   virtual ~OperationMakePositiveCandidateSetAlgorithm();
 
-  virtual void initialize(base::Grid& grid) = 0;
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) = 0;
 
@@ -42,8 +41,6 @@ class OperationMakePositiveFindIntersectionCandidates
  public:
   OperationMakePositiveFindIntersectionCandidates();
   virtual ~OperationMakePositiveFindIntersectionCandidates();
-
-  void initialize(base::Grid& grid) override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
@@ -80,14 +77,14 @@ class OperationMakePositiveLoadFullGridCandidates
   OperationMakePositiveLoadFullGridCandidates();
   virtual ~OperationMakePositiveLoadFullGridCandidates();
 
-  void initialize(base::Grid& grid) override;
-
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
 
   size_t numCandidates() override;
 
  private:
+  void initializeFullGrid(base::Grid& grid);
+
   std::unique_ptr<base::Grid> fullGrid;
 };
 

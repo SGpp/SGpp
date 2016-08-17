@@ -42,15 +42,6 @@ OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindInters
 OperationMakePositiveFindIntersectionCandidates::
     ~OperationMakePositiveFindIntersectionCandidates() {}
 
-void OperationMakePositiveFindIntersectionCandidates::initialize(base::Grid& grid) {
-  candidates.clear();
-  currentIntersections.clear();
-  nextIntersections.clear();
-  intersections.clear();
-  costs = 0;
-  iteration = 0;
-}
-
 bool OperationMakePositiveFindIntersectionCandidates::haveOverlappingSupport(
     base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim) {
   size_t leveli = gpi.getLevel(dim), indexi = gpi.getIndex(dim);
@@ -269,20 +260,18 @@ OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCa
 
 OperationMakePositiveLoadFullGridCandidates::~OperationMakePositiveLoadFullGridCandidates() {}
 
-void OperationMakePositiveLoadFullGridCandidates::initialize(base::Grid& grid) {
+void OperationMakePositiveLoadFullGridCandidates::initializeFullGrid(base::Grid& grid) {
   size_t numDims = grid.getStorage().getDimension();
   size_t maxLevel = grid.getStorage().getMaxLevel();
   fullGrid.reset(base::Grid::createLinearGrid(numDims));
   fullGrid->getGenerator().full(maxLevel);
-
-  iteration = 0;
 }
 
 void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
   if (iteration == 0) {
-    initialize(grid);
+    initializeFullGrid(grid);
   }
 
   base::HashGridStorage& fullGridStorage = fullGrid->getStorage();

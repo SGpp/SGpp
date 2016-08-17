@@ -30,7 +30,20 @@ OperationMakePositive::OperationMakePositive(
       numNewGridPointsForPositivity(0),
       numNewGridPoints(0),
       generateConsistentGrid(generateConsistentGrid),
-      verbose(verbose) {
+      candidateSearchAlgorithm(candidateSearchAlgorithm),
+      interpolationAlgorithm(interpolationAlgorithm),
+      verbose(verbose) {}
+
+OperationMakePositive::~OperationMakePositive() {}
+
+void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha) {
+  // set range of level sums for candidate search
+  base::HashGridStorage& gridStorage = grid.getStorage();
+  auto numDims = gridStorage.getDimension();
+  auto maxLevel = gridStorage.getMaxLevel();
+  minimumLevelSum = numDims;
+  maximumLevelSum = maxLevel * numDims;
+
   // set the candidate search algorithm
   switch (candidateSearchAlgorithm) {
     case MakePositiveCandidateSearchAlgorithm::FullGrid:
@@ -50,26 +63,20 @@ OperationMakePositive::OperationMakePositive(
   // set the interpolation algorithm
   switch (interpolationAlgorithm) {
     case MakePositiveInterpolationAlgorithm::SetToZero:
-      interpolationMethod = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
+      interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
+      break;
+    case MakePositiveInterpolationAlgorithm::InterpolateLog:
+      interpolation =
+          std::make_shared<datadriven::OperationMakePositiveInterpolateLog>(grid, alpha);
+      break;
+    case MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d:
+      interpolation =
+          std::make_shared<datadriven::OperationMakePositiveInterpolateBoundaryOfSupport>();
       break;
     default:
-      interpolationMethod = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
+      interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
   }
-}
-
-OperationMakePositive::~OperationMakePositive() {}
-
-void OperationMakePositive::initialize(base::Grid& grid) {
-  // set range of level sums for candidate search
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-  auto maxLevel = gridStorage.getMaxLevel();
-  minimumLevelSum = numDims;
-  maximumLevelSum = maxLevel * numDims;
-
-  // reset the candidate search
-  candidateSearch->initialize(grid);
 }
 
 void OperationMakePositive::makeCurrentNodalValuesPositive(base::Grid& grid,
@@ -172,7 +179,7 @@ void OperationMakePositive::addFullGridPoints(
 void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alpha,
                                          bool forcePositiveNodalValues) {
   // initialize the operation with the current parameter setting
-  initialize(grid);
+  initialize(grid, alpha);
 
   if (forcePositiveNodalValues) {
     // force the nodal values of the initial grid to be positive
@@ -217,7 +224,7 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       }
 
       // update the hierarchical coefficients for the new points
-      interpolationMethod->computeHierarchicalCoefficients(grid, alpha, addedGridPoints);
+      interpolation->computeHierarchicalCoefficients(grid, alpha, addedGridPoints);
     } else {
       if (verbose) {
         std::cout << std::endl;

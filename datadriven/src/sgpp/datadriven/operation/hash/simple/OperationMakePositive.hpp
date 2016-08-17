@@ -18,7 +18,11 @@ namespace sgpp {
 namespace datadriven {
 
 enum class MakePositiveCandidateSearchAlgorithm { FullGrid, Intersections };
-enum class MakePositiveInterpolationAlgorithm { SetToZero };
+enum class MakePositiveInterpolationAlgorithm {
+  SetToZero,
+  InterpolateLog,
+  InterpolateBoundaries1d
+};
 
 /**
  * This class enforces the function value range of a sparse grid function to be larger than 0.
@@ -54,8 +58,9 @@ class OperationMakePositive {
    * initializes the operation
    *
    * @param grid Grid
+   * @param alpha coefficients
    */
-  void initialize(base::Grid& grid);
+  void initialize(base::Grid& grid, base::DataVector& alpha);
 
   /**
    * Make the sparse grid function defined by grid and coefficient vector positive.
@@ -139,13 +144,15 @@ class OperationMakePositive {
   size_t numNewGridPointsForPositivity;
   /// number of infact newly added grid points
   size_t numNewGridPoints;
-
-  /// candidate search algorithm
-  std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
-  std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolationMethod;
-
   /// sets if a consistent grid is computed or not
   bool generateConsistentGrid;
+
+  /// candidate search algorithm
+  datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm;
+  datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm;
+
+  std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
+  std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolation;
 
   /// verbosity
   bool verbose;

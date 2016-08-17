@@ -33,5 +33,31 @@ class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolation
                                        double tol = -1e-14) override;
 };
 
+// -------------------------------------------------------------------------------------------
+class OperationMakePositiveInterpolateLog : public OperationMakePositiveInterpolationAlgorithm {
+ public:
+  OperationMakePositiveInterpolateLog(base::Grid& grid, base::DataVector& alpha);
+  virtual ~OperationMakePositiveInterpolateLog();
+
+  void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
+                                       std::vector<size_t>& addedGridPoints,
+                                       double tol = -1e-14) override;
+
+ private:
+  base::Grid* logGrid;
+  base::DataVector logAlpha;
+};
+// -------------------------------------------------------------------------------------------
+class OperationMakePositiveInterpolateBoundaryOfSupport
+    : public OperationMakePositiveInterpolationAlgorithm {
+ public:
+  void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
+                                       std::vector<size_t>& addedGridPoints,
+                                       double tol = -1e-14) override;
+
+ private:
+  double computeMinimum(base::Grid& grid, base::DataVector& alpha, base::HashGridPoint& gp);
+};
+
 } /* namespace datadriven */
 } /* namespace sgpp */
