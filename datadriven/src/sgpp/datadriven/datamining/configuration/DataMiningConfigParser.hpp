@@ -7,7 +7,16 @@
 
 #pragma once
 
+#include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <string>
@@ -32,9 +41,11 @@ class DataMiningConfigParser {
   bool hasFitterConfig() const;
 
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
-  //  void getScorerTestingConfig() const;
-  //  void getScorerCrossValidationConfig() const;
-  // bool getFitterConfigType() const;
+  bool getScorerTestingConfig(TestingConfiguration& config,
+                              const TestingConfiguration& defaults) const;
+  bool getScorerCrossValidationConfig(CrossValidationConfiguration& config,
+                                      const CrossValidationConfiguration& defaults) const;
+  bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
   bool getFitterGridConfig(RegularGridConfiguration& config,
                            const RegularGridConfiguration& defaults) const;
   bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
@@ -60,8 +71,14 @@ class DataMiningConfigParser {
                      const std::string& parentNode) const;
   size_t parseUint(DictNode& dict, const std::string& key, size_t defaultValue,
                    const std::string& parentNode) const;
+  int parseInt(DictNode& dict, const std::string& key, int defaultValue,
+               const std::string& parentNode) const;
   bool parseBool(DictNode& dict, const std::string& key, bool defaultValue,
                  const std::string& parentNode) const;
+
+  void parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
+                            const SLESolverConfiguration& defaults,
+                            const std::string& parentNode) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

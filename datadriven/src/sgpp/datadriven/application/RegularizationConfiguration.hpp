@@ -6,18 +6,36 @@
 #ifndef REGULARIZATIONCONFIGURATION_HPP_
 #define REGULARIZATIONCONFIGURATION_HPP_
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 
-enum class RegularizationType {
-  Identity,
-  Laplace
-};
+enum class RegularizationType { Identity, Laplace };
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
+};
+
+class RegularizationTypeParser {
+ public:
+  RegularizationType operator()(const std::string& input) const {
+    auto inputLower = input;
+    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+
+    if (inputLower.compare("identity") == 0) {
+      return sgpp::datadriven::RegularizationType::Identity;
+    } else if (inputLower.compare("laplace") == 0) {
+      return sgpp::datadriven::RegularizationType::Laplace;
+    } else {
+      std::string errorMsg =
+          "Failed to convert string \"" + input + "\" to any known RegularizationType";
+      throw base::data_exception(errorMsg.c_str());
+    }
+  }
 };
 
 }  // namespace datadriven
