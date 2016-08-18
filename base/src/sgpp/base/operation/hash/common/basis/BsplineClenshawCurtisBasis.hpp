@@ -258,6 +258,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline size_t getDegree() const {
     return bsplineBasis.getDegree();
   }
+  
   /**
    * @param l     level of basis function
    * @param i     index of basis function
@@ -280,10 +281,12 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
     constructKnots(l, i, hInv);
     double res = 0.0;
     for(size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
-      double h = xi[j + 1] - xi[j];
+      double left = std::max(0.0, xi[j]);
+      double right = std::min(1.0, xi[j + 1]);
+      double h = right - left;
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++){
-        double x = (h * coordinates[c]) + xi[j];
+        double x = (h * coordinates[c]) + left;
         temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;

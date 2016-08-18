@@ -113,7 +113,7 @@ double f(int dim, double* x, void* clientData) {
   res *= (1 / betaFunkt(alpha_1, beta_1)) * pow(x[0], alpha_1 - 1) * pow(1 - x[0], beta_1 - 1);
   int alpha_2 = 3;
   int beta_2 = 2;
-  res *= (1 / betaFunkt(alpha_2, beta_2)) * pow(x[1], alpha_2 - 1) * pow(1 - x[1], beta_2 - 1);
+  res *= (1/betaFunkt(alpha_2,beta_2))*pow(x[1], alpha_2 - 1)*pow(1 - x[1], beta_2 - 1);
   return res;
 }
 
@@ -213,10 +213,11 @@ void ew_varianz() {
       std::cout << d << "::" << int_res << "::" << int_res_comp << std::endl;
 
       prod_res *= int_res;
-    }
-    std::cout << "prod_res:" << prod_res << std::endl;
 
-    double v_i = alpha[i];  // Erwartungswert
+    }
+    std:: cout << "prod_res:" << prod_res << std::endl;
+    
+    double v_i = alpha[i]; // Erwartungswert
     // double v_i = alpha[i]*alpha[i]; // Varianz
     res += v_i * prod_res;
     std::cout << "res:" << res << std::endl;
@@ -321,5 +322,9 @@ void integrate() {
 int main(int argc, char** argv) {
   // optimize();
   // ew_varianz();
-  integrate();
+  // integrate();
+  double h = std::pow(2, -1);
+  std::cout << h << std::endl;
+  h = std::pow(2, -2);
+  std::cout << h << std::endl;
 }
