@@ -15,6 +15,10 @@
 using json::JSON;
 using json::DictNode;
 
+using sgpp::solver::SLESolverConfiguration;
+using sgpp::base::AdpativityConfiguration;
+using sgpp::base::RegularGridConfiguration;
+
 namespace sgpp {
 namespace datadriven {
 
@@ -30,13 +34,18 @@ class DataMiningConfigParser {
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
   //  void getScorerTestingConfig() const;
   //  void getScorerCrossValidationConfig() const;
-  //  void getFitterConfigType() const;
-  //  void getFitterGridConfig() const;
-  //  void getFitterAdaptivityConfig() const;
-  //  void getFitterSolverRefineConfig() const;
-  //  void getFitterSolverFinalConfig() const;
-  //  void getFitterRegularizationConfig() const;
-  //  double getFitterLambda() const;
+  // bool getFitterConfigType() const;
+  bool getFitterGridConfig(RegularGridConfiguration& config,
+                           const RegularGridConfiguration& defaults) const;
+  bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
+                                 const AdpativityConfiguration& defaults) const;
+  bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
+                                   const SLESolverConfiguration& defaults) const;
+  bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
+                                  const SLESolverConfiguration& defaults) const;
+  bool getFitterRegularizationConfig(RegularizationConfiguration& config,
+                                     const RegularizationConfiguration& defaults) const;
+  bool getFitterLambda(double& lambda, double defaultValue) const;
 
  private:
   std::shared_ptr<JSON> configFile;
