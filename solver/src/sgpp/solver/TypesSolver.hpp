@@ -6,8 +6,10 @@
 #ifndef TYPESSOLVER_HPP
 #define TYPESSOLVER_HPP
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cstddef>
 
 namespace sgpp {
@@ -33,6 +35,23 @@ struct SLESolverSPConfiguration {
   float threshold_;
 };
 
+class SolverTypeParser {
+ public:
+  SLESolverType operator()(const std::string& input) const {
+    auto inputLower = input;
+    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+
+    if (inputLower.compare("cg")) {
+      return sgpp::solver::SLESolverType::CG;
+    } else if (inputLower.compare("bicgstab")) {
+      return sgpp::solver::SLESolverType::BiCGSTAB;
+    } else {
+      std::string errorMsg =
+          "Failed to convert string \"" + input + "\" to any known SLESolverType";
+      throw base::data_exception(errorMsg.c_str());
+    }
+  };
+};
 }  // namespace solver
 }  // namespace sgpp
 
