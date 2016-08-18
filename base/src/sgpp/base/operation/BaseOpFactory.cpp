@@ -203,6 +203,12 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationQuadratureModBspline(
         grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSpline) {
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree()));
+  } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
+    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree()));
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
