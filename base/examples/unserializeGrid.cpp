@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page unserializeGrid.cpp Grid unserialization Example
+ * \page example_unserializeGrid_cpp Grid unserialization
  *
  * In this example we show how to store a grid into a file and how to load it back
  * into a sgpp::base::Grid object.

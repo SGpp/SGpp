@@ -7,13 +7,15 @@
 # sgpp.sparsegrids.org
 
 import unittest
+
+
 from pysgpp import Grid, HashRefinement, HashGridPoint, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
-    ANOVARefinement
+    ANOVAHashRefinement
 
 
-class Test_ANOVARefinement(unittest.TestCase):
-
+class TestANOVARefinement(unittest.TestCase):
+    
     """ Test different classes and class interactions used in spatial and
     dimensionality refinement (ANOVA) routines.
     
@@ -52,19 +54,19 @@ class Test_ANOVARefinement(unittest.TestCase):
                          'Number of grid points doesn\'t match')
         # check if new points are in the grid
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, dim)
+        child.getLeftChild(dim)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, dim)
+        child.getRightChild(dim)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 right child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 1)
+        child.getLeftChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 left child is present, though should not be')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 1)
+        child.getRightChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 right child is present, though should not be')
         # refine the point in x2-direction
@@ -76,11 +78,11 @@ class Test_ANOVARefinement(unittest.TestCase):
                          'Number of grid points doesn\'t match')
         # check if new points are in the grid
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, dim)
+        child.getLeftChild(dim)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, dim)
+        child.getRightChild( dim)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 right child was not found')
 
@@ -108,19 +110,19 @@ class Test_ANOVARefinement(unittest.TestCase):
         self.assertEqual(self.grid.getSize(), 21,
                          'Number of grid points doesn\'t match')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 0)
+        child.getLeftChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 0)
+        child.getRightChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 right child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 1)
+        child.getLeftChild( 1)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 1)
+        child.getRightChild(1)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 right child was not found')
 
@@ -147,19 +149,19 @@ class Test_ANOVARefinement(unittest.TestCase):
         self.assertEqual(self.grid.getSize(), 21,
                          'Number of grid points doesn\'t match')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 0)
+        child.getLeftChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 0)
+        child.getRightChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 right child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 1)
+        child.getLeftChild(1)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 1)
+        child.getRightChild(1)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x2 right child was not found')
 
@@ -183,27 +185,27 @@ class Test_ANOVARefinement(unittest.TestCase):
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         # refine one point
         functor = SurplusRefinementFunctor(alpha, 1, 0.0)
-        hash_refinement = HashRefinement()
-        refinement_strategy = ANOVARefinement(hash_refinement)
-        refinement_strategy.free_refine(self.grid_storage, functor)
+        anova_refinement = ANOVAHashRefinement()
+        #refinement_strategy = ANOVARefinement(hash_refinement)
+        anova_refinement.free_refine(self.grid_storage, functor)
         
         # check if only the children along x1 direction were inserted
         self.assertEqual(self.grid.getSize(), 19,
-                         'Number of grid points doesn\'t match')
+                         'Number of grid points doesn\'t match: %d != %d' %(self.grid.getSize(), 19))
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 0)
+        child.getLeftChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 0)
+        child.getRightChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 right child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 1)
+        child.getLeftChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 left child is present, though should not be')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 1)
+        child.getRightChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 right child is present, though should not be')
 
@@ -228,26 +230,26 @@ class Test_ANOVARefinement(unittest.TestCase):
         # refine one point
         functor = SurplusVolumeRefinementFunctor(alpha, 1, 0.0)
         hash_refinement = HashRefinement()
-        refinement_strategy = ANOVARefinement(hash_refinement)
+        refinement_strategy = ANOVAHashRefinement()
         refinement_strategy.free_refine(self.grid_storage, functor)
         
         # check if only the children along x1 direction were inserted
         self.assertEqual(self.grid.getSize(), 19,
-                         'Number of grid points doesn\'t match')
+                         'Number of grid points doesn\'t match: %d != %d' %(self.grid.getSize(), 19))
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 0)
+        child.getLeftChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 left child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 0)
+        child.getRightChild(0)
         self.assertTrue(self.grid_storage.isContaining(child),
                         'Left x1 right child was not found')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.left_child(child, 1)
+        child.getLeftChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 left child is present, though should not be')
         child = point_to_refine.__class__(point_to_refine)
-        self.grid_storage.right_child(child, 1)
+        child.getRightChild(1)
         self.assertFalse(self.grid_storage.isContaining(child),
                          'Left x2 right child is present, though should not be')
 
