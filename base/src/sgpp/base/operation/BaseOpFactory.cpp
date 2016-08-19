@@ -46,6 +46,9 @@
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModFundamentalSpline.hpp>
+
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
@@ -204,11 +207,11 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
     return new base::OperationQuadratureModBspline(
         grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureFundamentalSpline(
-        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree()));
+    return new base::OperationQuadratureFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModFundamentalSpline(
-        grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree()));
+    return new base::OperationQuadratureModFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
