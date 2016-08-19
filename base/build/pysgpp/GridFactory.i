@@ -8,7 +8,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 %}
 
-%newobject sgpp::base::Grid::createGrid(size_t dim);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -105,6 +105,7 @@ enum class GridType {
 class Grid
 {
 public:
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -180,7 +181,9 @@ public:
         if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
             return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
         };
-
+        if ($self->getType() == sgpp::base::GridType::ModPoly) {
+            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
+        };
         return 1;
     };
 };	

@@ -5,6 +5,7 @@
 
 %include "std_string.i"
 
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -33,6 +34,7 @@
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -46,7 +48,6 @@ namespace sgpp
 {
 namespace base
 {
-
 struct RegularGridConfiguration {
       /// Grid Type, see enum
       sgpp::base::GridType type_;
@@ -97,10 +98,11 @@ enum class GridType {
   LinearStencil,                // 24
   ModLinearStencil              // 25
 };
-    
+
 class Grid
 {
 public:
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -149,11 +151,12 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
+  
+  Grid* clone();
 };
 }
 }
 
-  
 // these are just two new interfaces for consistency with Memento design pattern
 %extend sgpp::base::Grid {
   sgpp::base::Grid* createMemento() {
@@ -165,3 +168,19 @@ public:
   }
 };
 
+// extend the grid by a function that returns the maximum degree of the basis
+// which is important for polynomials and bsplines
+%extend sgpp::base::Grid{
+    int getDegree() {
+        if ($self->getType() == sgpp::base::GridType::Poly) {
+            return ((sgpp::base::PolyGrid*) $self)->getDegree();
+        };
+        if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
+            return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
+        };
+        if ($self->getType() == sgpp::base::GridType::ModPoly) {
+            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
+        };
+        return 1;
+    };
+};	
