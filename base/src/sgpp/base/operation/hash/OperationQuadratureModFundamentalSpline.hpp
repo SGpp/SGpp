@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
@@ -27,8 +26,8 @@ class OperationQuadratureModFundamentalSpline : public OperationQuadrature {
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the ModFundamentalSplines degree
    */
-  OperationQuadratureModFundamentalSpline(GridStorage& storage, size_t degree) : storage(storage),
-    base(degree) {}
+  OperationQuadratureModFundamentalSpline(GridStorage& storage, size_t degree)
+      : storage(storage), base(degree) {}
 
   ~OperationQuadratureModFundamentalSpline() override {}
 
