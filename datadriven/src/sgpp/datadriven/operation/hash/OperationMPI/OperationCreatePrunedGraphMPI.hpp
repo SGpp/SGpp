@@ -33,6 +33,9 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
 
   MPI_Comm &master_worker_comm;
   MPI_Comm &sub_worker_comm;
+
+  bool prefetching;
+  int secondary_workpackage[2];
   void divide_workpackages(int *package, std::vector<int> &graph) {
     // Divide into more work packages
     int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
@@ -45,15 +48,15 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
       // Store result
+      messagesize = workitem_queue.receive_result(chunkid, partial_result);
       if (verbose) {
         std::cout << "Messagesize: "<< messagesize << std::endl;
-        std::cout << partial_result[0] << " at  " << chunkid - package[0] + 0
+        std::cout << partial_result[0] << " at  " << (chunkid - package[0]) * k + 0
                   << " with packageid " << chunkid << " on "
                   << MPIEnviroment::get_node_rank() << std::endl;
       }
-      messagesize = workitem_queue.receive_result(chunkid, partial_result);
       for (size_t i = 0; i < messagesize; i++) {
-        graph[chunkid - package[0] + i] = partial_result[i];
+        graph[(chunkid - package[0]) * k  + i] = partial_result[i];
       }
     }
     delete [] partial_result;
@@ -75,6 +78,9 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
       overseer_node = false;
       opencl_node = true;
     }
+    if (MPIEnviroment::get_configuration().contains("PREFETCHING"))
+      prefetching = MPIEnviroment::get_configuration()["PREFETCHING"].getBool();
+
     // Create datamatrix for operation creation
     base::DataMatrix data_matrix(dataset, dataset_size / dimensions, dimensions);
     // Receive alpha vector

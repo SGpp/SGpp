@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   conf_ocl.serialize("testconf2.cfg");
 
   // MPI_Init(&argc, &argv);
-  sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
+  sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
   // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
-      sgpp::base::DataMatrix& dataset = data.getData();
+  sgpp::base::DataMatrix& dataset = data.getData();
 
 
   // Create right hand side vector
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
   rhs_op.generate_b(rhs);
   for (auto i = 0; i < 100; ++i) {
     std::cout << rhs[i] << " ";
-    }
+  }
 
   // Solve for alpha vector via CG solver
   alpha.setAll(1.0);
@@ -100,12 +100,15 @@ int main(int argc, char *argv[]) {
   std::cin.get();
   std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
+  std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
   for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
       std::cout << knn_graph[i * 12 + node] << " ";
     }
     std::cout << "\n";
-    }
+  }
+  sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationCreateGraphOCL::find_clusters(knn_graph, 12);
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();

@@ -29,7 +29,6 @@ class DensityWorker : public MPIWorkerGridBase {
 
   bool prefetching;
   int secondary_workpackage[2];
-  bool secondary_package_prefetched;
  public:
   DensityWorker()
       : MPIWorkerBase("DensityMultiplicationWorker"),
@@ -214,13 +213,13 @@ class DensityWorker : public MPIWorkerGridBase {
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
       // Store result
+      messagesize = workitem_queue.receive_result(chunkid, package_result);
       if (verbose) {
         std::cout << "Messagesize: "<< messagesize << std::endl;
         std::cout << package_result[0] << " at  " << chunkid - package[0] + 0
                   << " with packageid " << chunkid << " on "
                   << MPIEnviroment::get_node_rank() << std::endl;
       }
-      messagesize = workitem_queue.receive_result(chunkid, package_result);
       for (size_t i = 0; i < messagesize; i++) {
         erg[chunkid - package[0] + i] = package_result[i];
       }
