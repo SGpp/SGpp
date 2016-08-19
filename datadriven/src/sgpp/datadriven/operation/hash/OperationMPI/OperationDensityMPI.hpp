@@ -27,6 +27,7 @@ class DensityWorker : public MPIWorkerGridBase {
   MPI_Comm &master_worker_comm;
   MPI_Comm &sub_worker_comm;
 
+  bool prefetching;
   int secondary_workpackage[2];
   bool secondary_package_prefetched;
  public:
@@ -34,7 +35,7 @@ class DensityWorker : public MPIWorkerGridBase {
       : MPIWorkerBase("DensityMultiplicationWorker"),
         MPIWorkerGridBase("DensityMultiplicationWorker"), opencl_node(false),
         overseer_node(false), master_worker_comm(MPIEnviroment::get_input_communicator()),
-        sub_worker_comm(MPIEnviroment::get_communicator()) {
+        sub_worker_comm(MPIEnviroment::get_communicator()), prefetching(false) {
     if (MPIEnviroment::get_sub_worker_count() > 0) {
       overseer_node = true;
       opencl_node = false;
@@ -42,6 +43,8 @@ class DensityWorker : public MPIWorkerGridBase {
       overseer_node = false;
       opencl_node = true;
     }
+    if (MPIEnviroment::get_configuration().contains("PREFETCHING"))
+      prefetching = MPIEnviroment::get_configuration()["PREFETCHING"].getBool();
 
     // Receive lambda
     MPI_Status stat;
@@ -69,8 +72,9 @@ class DensityWorker : public MPIWorkerGridBase {
         MPIWorkerGridBase("DensityMultiplicationWorker", grid), opencl_node(false),
         overseer_node(false), lambda(lambda),
         master_worker_comm(MPIEnviroment::get_input_communicator()),
-        sub_worker_comm(MPIEnviroment::get_communicator()) {
-    std::cout << "IN DensityWorker cstr" << "\n";
+        sub_worker_comm(MPIEnviroment::get_communicator()), prefetching(false) {
+    if (MPIEnviroment::get_configuration().contains("PREFETCHING"))
+      prefetching = MPIEnviroment::get_configuration()["PREFETCHING"].getBool();
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
@@ -93,13 +97,20 @@ class DensityWorker : public MPIWorkerGridBase {
     int datainfo[2];
     double *partial_result = NULL;
     int old_partial_size = 0;
+    bool first_package = true;
     do {
-      // Receive Workpackage
-      MPI_Probe(0, 1, master_worker_comm, &stat);
-      MPI_Recv(datainfo, 2, MPI_INT, 0, stat.MPI_TAG, master_worker_comm, &stat);
-      if (verbose) {
-        std::cout << "Received workpackage [" << datainfo[0] << "," << datainfo[1]
-                  << "] on " << MPIEnviroment::get_node_rank() << std::endl;
+      if (!prefetching || first_package) {
+        // Receive Workpackage
+        MPI_Probe(0, 1, master_worker_comm, &stat);
+        MPI_Recv(datainfo, 2, MPI_INT, 0, stat.MPI_TAG, master_worker_comm, &stat);
+        if (verbose) {
+          std::cout << "Received workpackage [" << datainfo[0] << "," << datainfo[1]
+                    << "] on " << MPIEnviroment::get_node_rank() << std::endl;
+        }
+        first_package = false;
+      } else {
+        datainfo[0] = secondary_workpackage[0];
+        datainfo[1] = secondary_workpackage[1];
       }
       // Check for exit
       if (datainfo[0] == -2 && datainfo[1] == -2) {
@@ -108,6 +119,11 @@ class DensityWorker : public MPIWorkerGridBase {
         for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
           MPI_Send(datainfo, 2, MPI_INT, dest, 1, sub_worker_comm);
         break;
+      } else if (datainfo[0] == -1 && datainfo[1] == -1){
+        // Receive exitpackage
+        MPI_Probe(0, 1, master_worker_comm, &stat);
+        MPI_Recv(secondary_workpackage, 2, MPI_INT, 0, stat.MPI_TAG, master_worker_comm, &stat);
+        continue;
       } else {
         if (datainfo[1] != old_partial_size || partial_result == NULL) {
           if (partial_result != NULL)
@@ -120,10 +136,31 @@ class DensityWorker : public MPIWorkerGridBase {
         if (opencl_node) {
           // Run partial multiplication
           op->start_partial_mult(alpha, datainfo[0], datainfo[1]);
+          if (prefetching) {
+            // Prefetch secondary workpackage
+            MPI_Probe(0, 1, master_worker_comm, &stat);
+            MPI_Recv(secondary_workpackage, 2, MPI_INT, 0, stat.MPI_TAG,
+                     master_worker_comm, &stat);
+            if (verbose) {
+              std::cout << "Received secondary workpackage [" << secondary_workpackage[0] << ","
+                        << secondary_workpackage[1] << "] on " << MPIEnviroment::get_node_rank()
+                        << std::endl;
+            }
+          }
+          // Finish multiplication
           op->finish_partial_mult(partial_result, datainfo[0], datainfo[1]);
-          if (verbose)
-            std::cout << "Workpackage abgeschlossen" << std::endl;
         } else {
+          if (prefetching) {
+            // Prefetch secondary workpackage
+            MPI_Probe(0, 1, master_worker_comm, &stat);
+            MPI_Recv(secondary_workpackage, 2, MPI_INT, 0, stat.MPI_TAG,
+                     master_worker_comm, &stat);
+            if (verbose) {
+              std::cout << "Received workpackage [" << secondary_workpackage[0] << ","
+                        << secondary_workpackage[1] << "] on " << MPIEnviroment::get_node_rank()
+                        << std::endl;
+            }
+          }
           divide_workpackages(datainfo, partial_result);
         }
         // Send results back
@@ -131,6 +168,7 @@ class DensityWorker : public MPIWorkerGridBase {
       }
     }while(true);
     delete [] alpha;
+    delete [] partial_result;
   }
   virtual ~DensityWorker() {
     if (opencl_node) {
@@ -169,7 +207,9 @@ class DensityWorker : public MPIWorkerGridBase {
     double *package_result = new double[packagesize];
     SimpleQueue<double> workitem_queue(package[0], package[1], packagesize,
                                        sub_worker_comm,
-                                       MPIEnviroment::get_sub_worker_count());
+                                       MPIEnviroment::get_sub_worker_count(),
+                                       verbose,
+                                       prefetching);
     int chunkid = package[0];
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
