@@ -65,7 +65,7 @@ public:
 
 
 
-double oscill_genz(size_t d, DataVector x){
+double oscill_genz(size_t d, DataVector x) {
   double a[2];
   double u[2];
   double pi = 3.14159265358979323846;
@@ -74,13 +74,13 @@ double oscill_genz(size_t d, DataVector x){
   u[0] = 0.5;
   u[1] = 0.5;
   double s = 0.0;
-  for (size_t i = 0; i < d; i++ ){
+  for (size_t i = 0; i < d; i++ ) {
     s += a[i]*x[i];
   }
   return std::cos(2*pi*u[0]+s);
 }
 
-void bsplineQuadTest(int p, int level, int index){
+void bsplineQuadTest(int p, int level, int index) {
   int erster_abschnitt = std::max(-(index-(p+1)/2), 0);
   int letzter_abschnitt = std::min(p, (1 << level) + (p+1)/2 - index - 1);
   std::cout << erster_abschnitt << "::" << letzter_abschnitt << std::endl;
@@ -98,7 +98,7 @@ void bsplineQuadTest(int p, int level, int index){
 }
 
 
-double fac(int n){
+double fac(int n) {
   int erg = 1;
   for(int i = 2; i <= n; i++){
     erg *= i;
@@ -110,7 +110,7 @@ double betaFunkt(int p, int q) {
   return (fac(p-1)*fac(q-1))/fac(p+q-1);
 }
 
-double f(int dim, double* x, void* clientData){
+double f(int dim, double* x, void* clientData) {
   double res = 1.0;
   int alpha_1 = 5;
   int beta_1 = 4;
@@ -121,8 +121,8 @@ double f(int dim, double* x, void* clientData){
   return res;
 }
 
-double f_1d(int d , double x){
-  if(d == 0){
+double f_1d(size_t d , double x){
+  if (d == 0) {
       int alpha_1 = 5;
       int beta_1 = 4;
       return (1/betaFunkt(alpha_1,beta_1))*pow(x, alpha_1 - 1)*pow(1 - x, beta_1 - 1);
@@ -208,7 +208,6 @@ for (size_t i = 0; i < gridStorage.getSize(); i++) {
     for (size_t d = 0; d < 2; d++){
       in = gp.getIndex(d);
       le = gp.getLevel(d);
-      double h = pow(2, -le);
       //quadrature
       double x = 0.0;
       double int_res = 0.0;
@@ -228,7 +227,7 @@ for (size_t i = 0; i < gridStorage.getSize(); i++) {
 
     }
     std:: cout << "prod_res:" << prod_res << std::endl;
-    
+
     double v_i = alpha[i]; // Erwartungswert
     // double v_i = alpha[i]*alpha[i]; // Varianz
     res += v_i*prod_res;

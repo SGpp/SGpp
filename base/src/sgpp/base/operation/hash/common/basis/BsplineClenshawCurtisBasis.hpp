@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -258,41 +259,40 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline size_t getDegree() const {
     return bsplineBasis.getDegree();
   }
-  
+
   /**
    * @param l     level of basis function
    * @param i     index of basis function
    * @return      integreal of the basis function
    */
-  double getIntegral(LT l, IT i){
-    if(l == 0){
-      return bsplineBasis.getIntegral(0,i);
+  double getIntegral(LT l, IT i) {
+    if (l == 0) {
+      return bsplineBasis.getIntegral(0, i);
     }
     const IT hInv = static_cast<IT>(1) << l;
     size_t degree = bsplineBasis.getDegree();
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
-    size_t letzter_abschnitt = std::min(degree, hInv + (degree+1)/2 - i - 1 );
+    size_t letzter_abschnitt = std::min(degree, hInv + (degree+1)/2 - i - 1);
     size_t quadLevel = (degree + 1)/2;
-    if(!integrationInitialized){
+    if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
       integrationInitialized = true;
     }
     constructKnots(l, i, hInv);
     double res = 0.0;
-    for(size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
+    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double left = std::max(0.0, xi[j]);
       double right = std::min(1.0, xi[j + 1]);
       double h = right - left;
       double temp_res = 0.0;
-      for (size_t c = 0; c < quadLevel; c++){
+      for (size_t c = 0; c < quadLevel; c++) {
         double x = (h * coordinates[c]) + left;
         temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;
     }
     return res;
-
   }
 
  protected:

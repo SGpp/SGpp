@@ -222,16 +222,20 @@ std::unique_ptr<base::OperationQuadrature> createOperationQuadrature(base::Grid&
     return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineBoundary(
         grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureBsplineClenshawCurtis(
+    return std::unique_ptr<base::OperationQuadrature>(
+        new base::OperationQuadratureBsplineClenshawCurtis(
         grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModBsplineClenshawCurtis(
+    return std::unique_ptr<base::OperationQuadrature>(
+        new base::OperationQuadratureModBsplineClenshawCurtis(
         grid.getStorage(), dynamic_cast<base::ModBsplineClenshawCurtisGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureFundamentalSpline(
+    return std::unique_ptr<base::OperationQuadrature>(
+        new base::OperationQuadratureFundamentalSpline(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree()));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-    return std::unique_ptr<base::OperationQuadrature>(new base::OperationQuadratureModFundamentalSpline(
+    return std::unique_ptr<base::OperationQuadrature>(
+        new base::OperationQuadratureModFundamentalSpline(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree()));
   } else {
     throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");

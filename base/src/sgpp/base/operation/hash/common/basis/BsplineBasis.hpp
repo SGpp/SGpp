@@ -6,14 +6,15 @@
 #ifndef BSPLINE_BASE_HPP
 #define BSPLINE_BASE_HPP
 
-#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -22,13 +23,12 @@ namespace base {
  * B-spline basis on Noboundary grids.
  */
 template <class LT, class IT>
-class BsplineBasis: public Basis<LT, IT> {
+class BsplineBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  BsplineBasis() : degree(0) {
-  }
+  BsplineBasis() : degree(0) {}
 
   /**
    * Constructor.
@@ -47,8 +47,7 @@ class BsplineBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~BsplineBasis() override {
-  }
+  ~BsplineBasis() override {}
 
   /**
    * @param x     evaluation point
@@ -70,8 +69,7 @@ class BsplineBasis: public Basis<LT, IT> {
         } else if (x < 3.0) {
           return 0.5 * x * x * x - 4.0 * x * x + 10.0 * x - 22.0 / 3.0;
         } else {
-          return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x +
-                 32.0 / 3.0;
+          return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x + 32.0 / 3.0;
         }
 
         break;
@@ -636,9 +634,8 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= pDbl + 1.0)) {
           return 0.0;
         } else {
-          return (x / pDbl) * uniformBSpline(x, p - 1)
-                 + ((pDbl + 1.0 - x) / pDbl) *
-                 uniformBSpline(x - 1.0, p - 1);
+          return (x / pDbl) * uniformBSpline(x, p - 1) +
+                 ((pDbl + 1.0 - x) / pDbl) * uniformBSpline(x - 1.0, p - 1);
         }
     }
   }
@@ -1149,8 +1146,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= static_cast<double>(p) + 1.0)) {
           return 0.0;
         } else {
-          return uniformBSpline(x, p - 1) -
-                 uniformBSpline(x - 1.0, p - 1);
+          return uniformBSpline(x, p - 1) - uniformBSpline(x - 1.0, p - 1);
         }
     }
   }
@@ -1587,8 +1583,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= static_cast<double>(p) + 1.0)) {
           return 0.0;
         } else {
-          return uniformBSpline(x, p - 2) -
-                 2.0 * uniformBSpline(x - 1.0, p - 2) +
+          return uniformBSpline(x, p - 2) - 2.0 * uniformBSpline(x - 1.0, p - 2) +
                  uniformBSpline(x - 2.0, p - 2);
         }
     }
@@ -1604,8 +1599,8 @@ class BsplineBasis: public Basis<LT, IT> {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return uniformBSpline(
-             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
-             this->degree);
+        x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
+        this->degree);
   }
 
   /**
@@ -1617,9 +1612,9 @@ class BsplineBasis: public Basis<LT, IT> {
   inline double evalDx(LT l, IT i, double x) {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hInv * uniformBSplineDx(
-             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
-             this->degree);
+    return hInv * uniformBSplineDx(x * hInv - static_cast<double>(i) +
+                                       static_cast<double>(this->degree + 1) / 2.0,
+                                   this->degree);
   }
 
   /**
@@ -1631,97 +1626,100 @@ class BsplineBasis: public Basis<LT, IT> {
   inline double evalDxDx(LT l, IT i, double x) {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hInv * hInv * uniformBSplineDxDx(
-             x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
-             this->degree);
+    return hInv * hInv * uniformBSplineDxDx(x * hInv - static_cast<double>(i) +
+                                                static_cast<double>(this->degree + 1) / 2.0,
+                                            this->degree);
   }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
-    return degree;
-  }
+  inline size_t getDegree() const { return degree; }
 
-
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      value of the Integral
+   */
   inline double getIntegral(LT level, IT index) {
-    size_t erster_abschnitt = std::max(0, -static_cast<int>(index-(degree+1)/2));
-    size_t letzter_abschnitt = std::min(degree, (1 << level) + (degree+1)/2 - index - 1 );
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(index - (degree + 1) / 2));
+    size_t letzter_abschnitt = std::min(degree, (1 << level) + (degree + 1) / 2 - index - 1);
     double res = 0.0;
-    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++){
-      switch(degree){
-      case 1:
-        switch(j){
-        case 0:
+    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
+      switch (degree) {
         case 1:
-          res += 0.5;
+          switch (j) {
+            case 0:
+            case 1:
+              res += 0.5;
+              break;
+            default:
+              break;
+          }
           break;
-        default:
-          break;
-        }
-        break;
-      case 3:
-        switch(j){
-        case 0:
         case 3:
-          res += 1.0/24.0;
+          switch (j) {
+            case 0:
+            case 3:
+              res += 1.0 / 24.0;
+              break;
+            case 1:
+            case 2:
+              res += 11.0 / 24.0;
+              break;
+            default:
+              break;
+          }
           break;
-        case 1:
-        case 2:
-          res += 11.0/24.0;
-          break;
-        default:
-          break;
-        }
-        break;
-      case 5:
-        switch(j){
-        case 0:
         case 5:
-          res += 1.0/720.0;
+          switch (j) {
+            case 0:
+            case 5:
+              res += 1.0 / 720.0;
+              break;
+            case 1:
+            case 4:
+              res += 57.0 / 720.0;
+              break;
+            case 2:
+            case 3:
+              res += 302.0 / 720.0;
+              break;
+            default:
+              break;
+          }
           break;
-        case 1:
-        case 4:
-          res += 57.0/720.0;
-          break;
-        case 2:
-        case 3:
-          res += 302.0/720.0;
-          break;
-        default:
-          break;
-        }
-        break;
-      case 7:
-        switch(j){
-        case 0:
         case 7:
-          res += 1.0/40320.0;
-          break;
-        case 1:
-        case 6:
-          res += 247.0/40320.0;
-          break;
-        case 2:
-        case 5:
-          res += 4293.0/40320.0;
-          break;
-        case 3:
-        case 4:
-          res += 15619.0/40320.0;
+          switch (j) {
+            case 0:
+            case 7:
+              res += 1.0 / 40320.0;
+              break;
+            case 1:
+            case 6:
+              res += 247.0 / 40320.0;
+              break;
+            case 2:
+            case 5:
+              res += 4293.0 / 40320.0;
+              break;
+            case 3:
+            case 4:
+              res += 15619.0 / 40320.0;
+              break;
+            default:
+              break;
+          }
           break;
         default:
+          throw operation_exception("BsplineBasis::getIntegral() only"
+                                    "implemented for 1 <= degree <= 7");
           break;
-        }
-        break;
-      default:
-        throw operation_exception("BsplineBasis::getIntegral()  only implemented for 1 <= degree <= 7 ");
-
-        break;
       }
     }
-    return 1.0/(1 << level)*res;
+    return 1.0 / (1 << level) * res;
   }
+
  protected:
   /// degree of the B-spline
   size_t degree;
