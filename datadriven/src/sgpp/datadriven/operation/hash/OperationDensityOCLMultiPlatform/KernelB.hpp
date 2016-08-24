@@ -60,7 +60,7 @@ class KernelDensityB {
   size_t dataBlockingSize;
   size_t scheduleSize;
   size_t totalBlockSize;
-
+  cl_event clTiming = nullptr;
  public:
   KernelDensityB(std::shared_ptr<base::OCLDevice> dev, size_t dims,
                  std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -101,7 +101,7 @@ class KernelDensityB {
   }
 
   /// Generates part of the right hand side density vector
-  double rhs(std::vector<T> &data, std::vector<T> &result,
+  void start_rhs_generation(std::vector<T> &data,
              size_t startid = 0, size_t chunksize = 0) {
     if (verbose) {
       std::cout << "entering mult, device: " << device->deviceName << " ("
@@ -167,7 +167,7 @@ class KernelDensityB {
       throw base::operation_exception(errorString.str());
     }
 
-    cl_event clTiming = nullptr;
+    clTiming = nullptr;
 
     size_t globalworkrange[1];
     if (chunksize == 0) {
@@ -187,6 +187,10 @@ class KernelDensityB {
                   << std::endl;
       throw base::operation_exception(errorString.str());
     }
+  }
+
+  double finalize_rhs_generation(std::vector<T> &result, size_t startid = 0,
+                                 size_t chunksize = 0) {
     clFinish(device->commandQueue);
 
     if (verbose)

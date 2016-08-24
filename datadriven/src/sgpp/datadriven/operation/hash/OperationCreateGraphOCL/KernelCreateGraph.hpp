@@ -51,7 +51,7 @@ class KernelCreateGraph {
   /// Host side buffer for the dataset
   std::vector<T> &data;
   size_t unpadded_datasize;
-
+  cl_event clTiming = nullptr;
  public:
   KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims,
                     size_t k, std::vector<T> &data,
@@ -109,7 +109,7 @@ class KernelCreateGraph {
   }
 
   /// Runs the opencl kernel to find the k nearest neighbors of all datapoints in the given chunk
-  double create_graph(std::vector<int> &result, size_t startid, size_t chunksize) {
+  void begin_graph_creation(size_t startid, size_t chunksize) {
     if (verbose) {
       std::cout << "entering graph, device: " << device->deviceName
                 << " (" << device->deviceId << ")"
@@ -166,7 +166,7 @@ class KernelCreateGraph {
       throw base::operation_exception(errorString.str());
     }
 
-    cl_event clTiming = nullptr;
+    clTiming = nullptr;
 
     if (verbose)
       std::cout << "Starting the kernel for " << globalworkrange[0] << " items" << std::endl;
@@ -178,6 +178,8 @@ class KernelCreateGraph {
                   << err << std::endl;
       throw base::operation_exception(errorString.str());
     }
+  }
+  double finalize_graph_creation(std::vector<int> &result, size_t startid, size_t chunksize) {
     clFinish(device->commandQueue);
 
     if (verbose)
@@ -187,6 +189,12 @@ class KernelCreateGraph {
 
     std::vector<int> &hostTemp = deviceResultData.getHostPointer();
 
+    size_t real_count;
+    if (chunksize == 0) {
+      real_count = unpadded_datasize / dims;
+    } else {
+      real_count = chunksize;
+    }
     for (size_t i = 0; i < real_count * k; i++)
       result[i] = hostTemp[i];
     if (verbose)

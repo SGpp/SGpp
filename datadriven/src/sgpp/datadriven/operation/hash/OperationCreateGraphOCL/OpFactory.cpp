@@ -24,7 +24,6 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
@@ -56,7 +55,6 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
@@ -86,7 +84,6 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   size_t platformid = 0;
   if (parameters->contains("USE_PLATFORM") == true) {

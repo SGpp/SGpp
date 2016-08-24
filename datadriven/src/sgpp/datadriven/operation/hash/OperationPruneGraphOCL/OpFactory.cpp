@@ -25,7 +25,6 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
 
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
@@ -58,7 +57,6 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new DensityOCLMultiPlatform::
@@ -91,7 +89,6 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
       new sgpp::base::OCLOperationConfiguration(opencl_conf);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
-  parameters->serialize("MyOCLConf.cfg");
 
   size_t platformid = 0;
   if (parameters->contains("USE_PLATFORM") == true) {

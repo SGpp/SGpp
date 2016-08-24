@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   conf_ocl.serialize("testconf2.cfg");
 
   // MPI_Init(&argc, &argv);
-  sgpp::base::OperationConfiguration testnode("MPIConf.cfg");
+  sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
   // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < 100; ++i) {
     std::cout << result[i] << " ";
   }
-  std::cin.get();
   std::cout << std::endl << std::endl;
 
 
@@ -73,7 +72,6 @@ int main(int argc, char *argv[]) {
   sgpp::datadriven::Dataset data =
       sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& dataset = data.getData();
-
 
   // Create right hand side vector
   sgpp::base::DataVector rhs(gridsize);
@@ -94,10 +92,8 @@ int main(int argc, char *argv[]) {
     alpha[i] = alpha[i]*1.0/(max-min);
 
   // Create and prune knn graph
-  std::cin.get();
   sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
                                                                             dataset, 12, 0.7);
-  std::cin.get();
   std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
   std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
