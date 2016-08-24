@@ -30,6 +30,8 @@ namespace std {
     // For OnlinePredictiveRefinementDimension
     %template(refinement_key) std::pair<size_t, unsigned int>;
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
+    // For interaction-term-aware sparse grids.
+    %template(VecVecSizeT) vector< vector<size_t> >;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
