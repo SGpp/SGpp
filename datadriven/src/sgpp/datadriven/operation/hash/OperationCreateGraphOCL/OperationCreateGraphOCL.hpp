@@ -77,6 +77,9 @@ class OperationCreateGraphOCL {
   /// Pure virtual function to create the k nearest neighbor graph for some datapoints of a dataset
   virtual void create_graph(std::vector<int> &resultVector, int startid = 0,
                             int chunksize = 0) = 0;
+  virtual void begin_graph_creation(int startid, int chunksize) = 0;
+  virtual void finalize_graph_creation(std::vector<int> &resultVector, int startid,
+                                       int chunksize) = 0;
   /// Assign a clusterindex for each datapoint using the connected components of the graph
   static std::vector<size_t> find_clusters(std::vector<int> &graph, size_t k) {
     std::vector<size_t> clusters(graph.size()/k);

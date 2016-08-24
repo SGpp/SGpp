@@ -30,6 +30,10 @@ class OperationDensityOCL: public base::OperationMatrix {
   /// Generates the right hand side vector for the density equation
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) = 0;
+  virtual void start_rhs_generation(base::DataMatrix &dataset,
+                         size_t start_id,  size_t chunksize) = 0;
+  virtual void finalize_rhs_generation(sgpp::base::DataVector &b,
+                         size_t start_id,  size_t chunksize) = 0;
   /// Generate the default parameters in die json configuration
   static void load_default_parameters(base::OCLOperationConfiguration *parameters) {
   if (parameters->contains("INTERNAL_PRECISION") == false) {

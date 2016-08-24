@@ -89,21 +89,6 @@ class SimpleQueue {
       startindex(startindex), packagesize(node_packagesize),
       workitem_count(workitem_count), verbose(verbose), comm(comm),
       commsize(commsize), prefetching(prefetching) {
-    // Adapt packagesize
-    if (packagesize > workitem_count) {
-      commsize = 1;
-      packagesize = workitem_count;
-    } else if (packagesize > workitem_count / (commsize * 2)) {
-      packagesize = static_cast<int>(workitem_count / (commsize * 2));
-    }
-    send_packageindex = 0;
-    received_packageindex = 0;
-    packagecount = static_cast<unsigned int>(workitem_count / packagesize) + 1;
-    startindices = new unsigned int[commsize];
-    secondary_indices = new unsigned int[commsize];
-    packageinfo[0] = static_cast<int>(startindex);
-    packageinfo[1] = static_cast<int>(packagesize);
-
     // Returnvector type
     if (std::is_same<T, int>::value) {
       mpi_typ = MPI_INT;
@@ -117,6 +102,23 @@ class SimpleQueue {
                   << "Template class needs to be int, float or double." << std::endl;
       throw std::logic_error(errorString.str());
     }
+    send_packageindex = 0;
+    received_packageindex = 0;
+
+    // Adapt packagesize
+    if (packagesize > workitem_count) {
+      commsize = 1;
+      packagesize = workitem_count;
+      std::cout << "ITSHAPPENING" << workitem_count << std::endl;
+    } else if (packagesize > workitem_count / (commsize * 2)) {
+      packagesize = static_cast<int>(workitem_count / (commsize * 2));
+    }
+    packagecount = static_cast<unsigned int>(workitem_count / packagesize) + 1;
+    startindices = new unsigned int[commsize];
+    secondary_indices = new unsigned int[commsize];
+    packageinfo[0] = static_cast<int>(startindex);
+    packageinfo[1] = static_cast<int>(packagesize);
+
     // Send first packages
     if (verbose)
       std::cout << "Sending size: " << packageinfo[1] << std::endl;
@@ -127,12 +129,18 @@ class SimpleQueue {
       send_packageindex++;
     }
     if (prefetching) {
-      // Send secondary packages
-      for (int dest = 1; dest < commsize + 1 ; dest++) {
-        packageinfo[0] = static_cast<int>(startindex + send_packageindex * packagesize);
-        MPI_Send(packageinfo, 2, MPI_INT, dest, 1, comm);
-        secondary_indices[dest - 1] = packageinfo[0];
-        send_packageindex++;
+      if (packagesize == workitem_count) {
+        packageinfo[0] = -1;
+        packageinfo[1] = -1;
+        MPI_Send(packageinfo, 2, MPI_INT, 1, 1, comm);
+      } else {
+        // Send secondary packages
+        for (int dest = 1; dest < commsize + 1 ; dest++) {
+          packageinfo[0] = static_cast<int>(startindex + send_packageindex * packagesize);
+          MPI_Send(packageinfo, 2, MPI_INT, dest, 1, comm);
+          secondary_indices[dest - 1] = packageinfo[0];
+          send_packageindex++;
+        }
       }
     }
   }

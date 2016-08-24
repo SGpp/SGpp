@@ -97,7 +97,7 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
                                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                       sgpp::base::OCLOperationConfiguration *parameters,
                                       size_t k, size_t platform_id,
-                                       size_t device_id) :
+                                      size_t device_id) :
       OperationCreateGraphOCL(), dims(dimensions), verbose(false),
       devices(manager->getDevices()), manager(manager), dataVector(datasize) {
     // put data into an vector with chosen precision
@@ -161,7 +161,8 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
     try {
-      this->graph_kernel->create_graph(resultVector, startid, chunksize);
+      graph_kernel->begin_graph_creation(startid, chunksize);
+      graph_kernel->finalize_graph_creation(resultVector, startid, chunksize);
     }
     catch(base::operation_exception &e) {
       std::cerr << "Error! Could not create graph." << std::endl
@@ -173,6 +174,12 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
 
     if (verbose)
       std::cout << "duration create graph" << elapsed_seconds.count() << std::endl;
+  }
+  void begin_graph_creation(int startid, int chunksize) {
+    graph_kernel->begin_graph_creation(startid, chunksize);
+  }
+  void finalize_graph_creation(std::vector<int> &resultVector, int startid, int chunksize) {
+    graph_kernel->finalize_graph_creation(resultVector, startid, chunksize);
   }
 };
 

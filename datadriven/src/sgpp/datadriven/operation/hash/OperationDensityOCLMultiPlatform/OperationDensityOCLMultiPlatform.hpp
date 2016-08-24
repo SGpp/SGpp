@@ -223,6 +223,20 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     for (size_t i = 0; i < gridSize; i++)
       result[i] = resultVector[i];
   }
+  void start_rhs_generation(base::DataMatrix &dataset, size_t start_id, size_t chunksize) override {
+    std::vector<T> datasetVector(dataset.getSize());
+    double *data_raw = dataset.getPointer();
+    for (size_t i = 0; i < dataset.getSize(); i++)
+      datasetVector[i] = static_cast<T>(data_raw[i]);
+    bKernel->start_rhs_generation(datasetVector, start_id, chunksize);
+  }
+
+  void finalize_rhs_generation(sgpp::base::DataVector &b, size_t start_id, size_t chunksize) override {
+    std::vector<T> bVector(b.getSize());
+    bKernel->finalize_rhs_generation(bVector, start_id, chunksize);
+    for (size_t i = 0; i < b.getSize(); i++)
+      b[i] = bVector[i];
+  }
 
   /// Generates the right hand side vector for the density equation
   void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
@@ -241,7 +255,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
       datasetVector[i] = static_cast<T>(data_raw[i]);
     start = std::chrono::system_clock::now();
 
-    bKernel->rhs(datasetVector, bVector, start_id, chunksize);
+    bKernel->start_rhs_generation(datasetVector, start_id, chunksize);
+    bKernel->finalize_rhs_generation(bVector, start_id, chunksize);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
