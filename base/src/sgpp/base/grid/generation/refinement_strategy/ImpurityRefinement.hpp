@@ -111,13 +111,7 @@ class ImpurityRefinement: public virtual RefinementDecorator {
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
-
-  void createGridpointMod(GridStorage& storage, GridPoint& point, 
-    ImpurityRefinementIndicator& indicator);
-
-  void createGridpoint1DMod(GridPoint& point, size_t d, GridStorage& storage,
-    index_t& source_index, level_t& source_level,
-    ImpurityRefinementIndicator& indicator);  
+  
 
   /**
   * Generates a list with indicator elements

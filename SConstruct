@@ -90,11 +90,16 @@ vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", False))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
                       "SG_PYTHON" in languageSupportNames))
+#vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
+#                                "if True, the modules must be disabled explicitly, e.g., " +
+#                                "by setting SG_DATADRIVEN=0; " +
+#                                "if False, the modules must be enabled explicitly, e.g., " +
+#                                "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
                                 "if False, the modules must be enabled explicitly, e.g., " +
-                                "by setting SG_DATADRIVEN=1", True))
+                                "by setting SG_DATADRIVEN=1", False))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
 

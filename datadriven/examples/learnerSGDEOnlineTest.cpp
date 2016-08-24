@@ -23,28 +23,32 @@ using sgpp::base::GridStorage;
 
 
 int main(int argc, char** argv) {
+  std::string filename = "../tests/data/ripley/ripley_train_8.arff";
   //std::string filename = "../tests/data/ripleyGarcke.train.arff";
-  std::string filename = "../tests/data/banana.arff";
-
+  //std::string filename = "../tests/data/banana/banana_train_1.arff";
+  //std::string filename = "../tests/data/banana.arff";
+  // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& trainData = trainDataset.getData();
 
-  //normalize - banana
+  //normalize 
   trainData.normalizeDimension(0);
   trainData.normalizeDimension(1);
 
   // extract train classes
   sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
+  filename = "../tests/data/ripley/ripley_test.arff";
   //filename = "../tests/data/ripleyGarcke.test.arff";
-  filename = "../tests/data/banana.arff";
+  //filename = "../tests/data/banana/banana_train_0.arff";
+  //filename = "../tests/data/banana.arff";
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& testData = testDataset.getData();
 
-  //normalize - banana
+  //normalize 
   testData.normalizeDimension(0);
   testData.normalizeDimension(1);
 
@@ -62,7 +66,7 @@ int main(int argc, char** argv) {
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 5;
+  adaptConfig.numRefinements_ = 3;
   adaptConfig.noPoints_ = 4;
 
   // configure solver
@@ -83,7 +87,7 @@ int main(int argc, char** argv) {
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 5;
+  crossvalidationConfig.kfold_ = 2; // 5
   crossvalidationConfig.lambda_ = 3.16228e-06;
   crossvalidationConfig.lambdaStart_ = 1e-1;
   crossvalidationConfig.lambdaEnd_ = 1e-10;
@@ -97,69 +101,15 @@ int main(int argc, char** argv) {
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
   learner.initialize(trainData);
-  std::cout << "# start training the learner" << std::endl;
-  learner.trainOnline(trainLabels);
+  std::cout << "# start to train the learner" << std::endl;
+  learner.trainOnline(trainLabels, testData, testLabels);
 
   std::cout << "# finished training" << std::endl;
 
   // test learner
-  double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
-  std::cout << "Acc (train): " << accTrain << std::endl;
+  //double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
+  //std::cout << "Acc (train): " << accTrain << std::endl;
   double accTest = learner.getAccuracy(testData, testLabels, 0.0);
   std::cout << "Acc (test): " << accTest << std::endl;
 
-  /*sgpp::base::DataMatrix covSgde(learner.getDim(), learner.getDim());
-  learner.cov(covSgde);
-  std::cout << covSgde.toString() << std::endl;
-
-  sgpp::datadriven::GaussianKDE kde(samples);
-  sgpp::base::DataMatrix covKDE(kde.getDim(), kde.getDim());
-  kde.cov(covKDE);
-  std::cout << covKDE.toString() << std::endl;
-
-  sgpp::base::DataVector x(learner.getDim());
-
-  for (size_t i = 0; i < x.getSize(); i++) {
-    x[i] = 0.5;
-  }
-
-  std::cout << "--------------------------------------------------------" << std::endl;
-  std::cout << learner.getSurpluses()->getSize() << " -> " << learner.getSurpluses()->sum()
-            << std::endl;
-  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
-            << std::endl;
-  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
-            << std::endl;
-  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
-            << std::endl;
-
-  sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
-  std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
-  learner.cov(C);
-  std::cout << C.toString() << std::endl;
-
-  std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
-  kde.cov(C);
-  std::cout << C.toString() << std::endl;
-
-  std::cout << "------------------------------------------------------" << std::endl;
-  // inverse Rosenblatt transformation
-  auto opInvRos =
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get());
-  sgpp::base::DataMatrix points(12, gridConfig.dim_);
-  randu(points);
-
-  std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << points.toString() << std::endl;
-
-  sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
-  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
-
-  points.setAll(0.0);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get());
-  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
-  std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << pointsCdf.toString() << std::endl;
-  std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << points.toString() << std::endl;*/
 }

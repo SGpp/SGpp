@@ -51,6 +51,7 @@ AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
   GridStorage::grid_map_iterator child_iter;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
+  double threshold = impurityIndicator.getRefinementThreshold();
   bool isRefinablePoint = false;
 
   if (point.isLeaf()) {
@@ -66,7 +67,8 @@ AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
     point.set(d, source_level + 1, 2 * source_index - 1);
     child_iter = storage.find(&point);
 
-    // if there no more grid points --> test if we should refine the grid
+    // if child is missing,
+    // test if we should refine the grid
     if (child_iter == storage.end()) {
       isRefinablePoint = true;
       point.set(d, source_level, source_index);
@@ -77,6 +79,8 @@ AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
     point.set(d, source_level + 1, 2 * source_index + 1);
     child_iter = storage.find(&point);
 
+    // if child is missing,
+    // test if we should refine the grid
     if (child_iter == storage.end()) {
       isRefinablePoint = true;
       point.set(d, source_level, source_index);
@@ -91,7 +95,7 @@ AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
     
     double impurity = impurityIndicator(point);
 
-    if (impurity > iThreshold_) {
+    if (impurity > threshold) {
       size_t d = 0;
       key = new refinement_key_type(point, storage.getSequenceNumber(point), d);        // d actually not required now
       list.emplace_front(std::shared_ptr<AbstractRefinement::refinement_key_type>(key),
@@ -129,12 +133,13 @@ void ImpurityRefinement::refineGridpointsCollection(
   AbstractRefinement::refinement_container_type& collection) {
 
   // now refine all grid points which satisfy the refinement criteria
-
-  //double threshold = functor.getRefinementThreshold();
   refinement_key_type* key;
 
   ImpurityRefinementIndicator& impurityIndicator =
     dynamic_cast<ImpurityRefinementIndicator&>(functor);
+
+  // check last sequence number
+  size_t lastSeqNr = storage.getSize() - 1;
 
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
     key = dynamic_cast<refinement_key_type*>(pair.first.get());
@@ -142,80 +147,15 @@ void ImpurityRefinement::refineGridpointsCollection(
     GridPoint& point = key->getPoint();
 
     //std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
+    this->refineGridpoint(storage, storage.getSequenceNumber(point));
 
-    storage[storage.getSequenceNumber(point)].setLeaf(false);
-    //point.setLeaf(false);
-
-    for (size_t d = 0; d < storage.getDimension(); d++) {
-      index_t source_index;
-      level_t source_level;
-      point.get(d, source_level, source_index);
-      // generate left child, if necessary
-      point.set(d, source_level + 1, 2 * source_index - 1);
-
-      if (!storage.isContaining(point)) {
-        point.setLeaf(true);
-        createGridpointMod(storage, point, impurityIndicator);
-      }
-
-      // generate right child, if necessary
-      point.set(d, source_level + 1, 2 * source_index + 1);
- 
-      if (!storage.isContaining(point)) {
-        point.setLeaf(true);
-        createGridpointMod(storage, point, impurityIndicator);
-      }
- 
-      point.set(d, source_level, source_index);
-    }
-    
+    point.setLeaf(false); // this is done within refineGridpoint() already    
   }
-
+  // if SVM learner -> extend w1 and w2 vectors
+  for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
+    impurityIndicator.update(storage.getPoint(seqNr));
+  }
   collection.empty();
-}
-
-
-void ImpurityRefinement::createGridpointMod(
-  GridStorage& storage, GridPoint& point, ImpurityRefinementIndicator& indicator) {
-  index_t source_index;
-  level_t source_level;
-
-  for (size_t d = 0; d < storage.getDimension(); d++) {
-    createGridpoint1DMod(point, d, storage, source_index, source_level, indicator);
-  }
-
-  storage.insert(point);
-  indicator.update(point);
-}
-
-
-void ImpurityRefinement::createGridpoint1DMod(GridPoint& point, size_t d, GridStorage& storage,
-                                                     index_t& source_index, level_t& source_level,
-                                                     ImpurityRefinementIndicator& indicator) {
-  point.get(d, source_level, source_index);
-
-  if (source_level > 1) {
-    if (((source_index + 1) / 2) % 2 == 1) {
-      point.set(d, source_level - 1, (source_index + 1) / 2);
-    } else {
-      point.set(d, source_level - 1, (source_index - 1) / 2);
-    }
-
-    // grid point subroutine
-    if (!storage.isContaining(point)) {
-      // save old leaf value
-      bool saveLeaf = point.isLeaf();
-      point.setLeaf(false);
-      createGridpointMod(storage, point, indicator);
-      // restore leaf value
-      point.setLeaf(saveLeaf);
-    } else {
-      // set stored index to false
-      storage.getPoint((storage.find(&point))->second).setLeaf(false);
-    }
-    // restore values
-    point.set(d, source_level, source_index);
-  }
 }
 
 

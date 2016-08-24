@@ -11,36 +11,37 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/datadriven/application/LearnerSVM.hpp"
 #include "sgpp/base/grid/Grid.hpp"
-//#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 
 
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/ripleyGarcke.train.arff";
-  //std::string filename = "../tests/data/banana.train.arff";
+  std::string filename = "../tests/data/ripley/ripley_train_1.arff";
+  //std::string filename = "../tests/data/ripleyGarcke.train.arff";
+  //std::string filename = "../tests/data/banana/banana_train_7.arff";
   //std::string filename = "../tests/data/banana.arff";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& trainData = trainDataset.getData();  
 
-  //normalize - banana
-  //trainData.normalizeDimension(0);
-  //trainData.normalizeDimension(1);
+  //normalize features
+  trainData.normalizeDimension(0);
+  trainData.normalizeDimension(1);
 
   // extract train classes
   sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
-  filename = "../tests/data/ripleyGarcke.test.arff";
-  //filename = "../tests/data/banana.test.arff";
+  filename = "../tests/data/ripley/ripley_test.arff";
+  //filename = "../tests/data/ripleyGarcke.test.arff";
+  //filename = "../tests/data/banana/banana_train_0.arff";
   //filename = "../tests/data/banana.arff";
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& testData = testDataset.getData();
 
-  //normalize - banana
-  //testData.normalizeDimension(0);
-  //testData.normalizeDimension(1);
+  //normalize features
+  testData.normalizeDimension(0);
+  testData.normalizeDimension(1);
 
   // extract test classes
   sgpp::base::DataVector& testLabels = testDataset.getTargets();  
@@ -65,7 +66,7 @@ int main(int argc, char** argv) {
   learner.initialize(trainData, trainLabels, testData, testLabels);
 
   // train learner
-  std::cout << "# start training the learner" << std::endl;
+  std::cout << "# start to train the learner" << std::endl;
   learner.train();
 
   std::cout << "# finished training" << std::endl;

@@ -17,6 +17,10 @@
 
 #include <cmath>
 
+////////////////////////////////////////////////////
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+////////////////////////////////////////////////////
+
 using sgpp::base::GridStorage;
 using sgpp::base::HashRefinement;
 using sgpp::base::ForwardSelectorRefinement;
@@ -33,6 +37,8 @@ LearnerSVM::LearnerSVM(sgpp::base::RegularGridConfiguration& gridConfig)
     : grid(nullptr),
       trainData(nullptr),
       trainLabels(nullptr),
+      testData(nullptr),
+      testLabels(nullptr),
       gridConfig(gridConfig) {}
 
 LearnerSVM::~LearnerSVM() {}
@@ -51,6 +57,7 @@ void LearnerSVM::initialize(base::DataMatrix& pTrainData, base::DataVector& pTra
   std::cout << "# grid points: " << grid->getSize() << std::endl;
   
   int B = 100; //ToDo: pass budget B (=max number of stored support vectors) as parameter
+               // Ripley 100 / Banana 10000
   
   // generate SVM
   svm = std::shared_ptr<PrimalDualSVM>(new PrimalDualSVM(grid->getSize(), trainData->getNcols(), B, false));
@@ -80,14 +87,14 @@ void LearnerSVM::train() {
 
   size_t dim = trainData->getNcols();
   
-  size_t maxIterations = 1; //ToDo: pass as parameter
+  size_t maxIterations = 2; // Ripley 3 - Banana 1 // ToDo: pass as parameter
   size_t numIterations = 0;
   size_t t = 0;
 
   // refinement parameters - ToDo: pass to Learner as parameters (adaptivityConfig)
-  size_t numRefSteps = 4;
-  size_t refPeriod = 25; //Ripley 25 - Banana 50 (100)
-  size_t numPoints = 3;
+  size_t numRefSteps = 3;
+  size_t refPeriod = 75; //Ripley 25/50 - Banana 100/
+  size_t numPoints = 6;
   double threshold = 0.0;
   double betaRef = 2.0;
  
@@ -101,74 +108,117 @@ void LearnerSVM::train() {
 
   // for error plotting
   sgpp::base::DataVector error;
+  sgpp::base::DataVector grids;
+  // for plotting only
+  //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
+  //double acc = getAccuracy(*testData, *testLabels, 0.0);
+  //error.append(1.0 - acc);
 
-  while (numIterations < maxIterations) {			//shuffle dataset after each iteration
-    for (size_t i = 0; i < trainData->getNrows(); i++) {
-      // Get next training sample x and its label y
-      //int idx = getRandom(static_cast<int>(trainData->getNrows()) - 1);
-      sgpp::base::DataVector x(dim);					// declare outside of loop
-      //trainData->getRow((size_t)idx, x);
-      trainData->getRow((size_t)i, x);
-      double y = trainLabels->get(i);                           // declare outside of loop
-	  
-      t += 1; 
-      eta = 1.0 / (lambda * static_cast<double>(t));
-
-      rawPrediction = svm->predictRaw(*grid, x, dim);
-      svm->multiply(1.0 - lambda * eta);
-      if (rawPrediction * y < 1) {
-        beta = eta * y;
-	svm->add(*grid, x, beta, dim);
-      }	  
-      
-      //std::cout << "i :" << i << std::endl;
-      //std::cout << "i%refPeriod :" << i % refPeriod << std::endl;
-      if ( (i > 0) && (i % refPeriod == 0) ) {
-        doRefine = true;
-      }
-
-      if ( (refSteps < numRefSteps) && doRefine ) {
-        //while ( (tryBudget > 0) && (refBudget > 0) ) {
-
-        // compute curent labels of support vectors 
-        // (needed for impurity refinement)
-        sgpp::base::DataVector svsClassesComputed((svm->svs)->getNrows());
-        predict(*(svm->svs), svsClassesComputed);
-
-        HashRefinement refinement;
-        ForwardSelectorRefinement decorator(&refinement);
-        //ImpurityRefinement decorator(&refinement);
-
-        // refine points according to indicator
-          
-        ForwardSelectorRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
-                                                     *(svm->w2), betaRef, threshold, numPoints);        
-        //ImpurityRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
-        //                                      *(svm->w2), svsClassesComputed, threshold, numPoints);
-
-        decorator.free_refine(gridStorage, indicator);
-        
-        std::cout << "refinement step: " << refSteps+1 << std::endl;
-        //std::cout << "size of w :" << svm->w->getSize() << std::endl;
-        std::cout << "new grid size: " << grid->getSize() << std::endl;
-
-        refSteps++;
-        doRefine = false;
-        //}
-      }
-      // for plotting only
-      //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
-      double acc = getAccuracy(*testData, *testLabels, 0.0);
-      error.append(1.0 - acc);
-    }
+////////////////////////////////////////////////////////////////
+/*  for (size_t nrSets = 0; nrSets < 10; nrSets++) {
+    std::string filename = "../tests/data/banana/banana_train_"+std::to_string(nrSets+1)+".arff";
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+    sgpp::base::DataMatrix& trainDataMatrix = trainDataset.getData();  
+    //normalize features
+    trainDataMatrix.normalizeDimension(0);
+    trainDataMatrix.normalizeDimension(1);
+    // extract train classes
+    sgpp::base::DataVector& trainTargets = trainDataset.getTargets();
+    filename = "../tests/data/banana/banana_train_0.arff";
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+    sgpp::base::DataMatrix& testDataMatrix = testDataset.getData();
+    //normalize features
+    testDataMatrix.normalizeDimension(0);
+    testDataMatrix.normalizeDimension(1);
+    // extract test classes
+    sgpp::base::DataVector& testTargets = testDataset.getTargets();
+    trainData = std::make_shared<base::DataMatrix>(trainDataMatrix);
+    trainLabels = std::make_shared<base::DataVector>(trainTargets);
+    testData = std::make_shared<base::DataMatrix>(testDataMatrix);
+    testLabels = std::make_shared<base::DataVector>(testTargets);
+    gridConfig.dim_ = trainData->getNcols();
+    grid = createRegularGrid();
+    GridStorage& gridStorage = grid->getStorage();
+    std::cout << "# grid points: " << grid->getSize() << std::endl;  
+    //std::cout << "# grid points (storage): " << gridStorage.getSize() << std::endl;
+    int B = 10000; //ToDo: pass budget B (=max number of stored support vectors) as parameter
+                   // Ripley 100 / Banana 10000  
+    // generate SVM
+    svm = std::shared_ptr<PrimalDualSVM>(new PrimalDualSVM(grid->getSize(), trainData->getNcols(), B, false));
+    doRefine = false;      // set true by monitor to trigger refinement
     refSteps = 0;
-    numIterations++;
+    numIterations = 0;
+    t = 0;
+    eta = 0.0;
+    beta = 0.0;
+    rawPrediction = 0.0;*/
+////////////////////////////////////////////////////////////////
+    while (numIterations < maxIterations) {			
+      for (size_t i = 0; i < trainData->getNrows(); i++) {
+        //std::cout << "i: " << i << std::endl;
+        // Get next training sample x and its label y
+        //int idx = getRandom(static_cast<int>(trainData->getNrows()) - 1);
+        sgpp::base::DataVector x(dim);					
+        //trainData->getRow((size_t)idx, x);
+        trainData->getRow((size_t)i, x);
+        double y = trainLabels->get(i);                           
+	  
+        t += 1; 
+        eta = 1.0 / (lambda * static_cast<double>(t));
 
+        rawPrediction = svm->predictRaw(*grid, x, dim);
+        svm->multiply(1.0 - lambda * eta);
+        if (rawPrediction * y < 1.0) {
+          beta = eta * y;
+	  svm->add(*grid, x, beta, dim);
+        }	  
+      
+        if ( (i > 0) && ((i+1) % refPeriod == 0) ) {
+          doRefine = true;
+        }
+
+        if ( (refSteps < numRefSteps) && doRefine ) {
+          // compute current labels of support vectors 
+          // (needed for impurity refinement)
+          sgpp::base::DataVector svsClassesComputed((svm->svs)->getNrows());
+          predict(*(svm->svs), svsClassesComputed);
+
+          HashRefinement refinement;
+          //ForwardSelectorRefinement decorator(&refinement);
+          ImpurityRefinement decorator(&refinement);
+
+          // refine points according to indicator
+          //ForwardSelectorRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
+          //                                           *(svm->w2), betaRef, threshold, numPoints);        
+          ImpurityRefinementIndicator indicator(*grid, *(svm->svs), *(svm->alphas), *(svm->w),
+                                                *(svm->w2), svsClassesComputed, threshold, numPoints);
+
+          decorator.free_refine(gridStorage, indicator);
+
+          std::cout << "refinement step: " << refSteps+1 << std::endl;
+          //std::cout << "size of w :" << svm->w->getSize() << std::endl;
+          std::cout << "new grid size: " << grid->getSize() << std::endl;
+
+          refSteps++;
+          doRefine = false;
+        }
+        // for plotting only
+        //acc = getAccuracy(*trainData, *trainLabels, 0.0);
+        //acc = getAccuracy(*testData, *testLabels, 0.0);
+        //error.append(1.0 - acc);
+      }
+      //refSteps = 0;
+      numIterations++;
+
+    }
     //write error evaluation to .csv
-    std::ofstream output;
-    //output.open("home/maierjo/ripley_predicted.csv");
-    output.open("ripley_err_rate_fwrdSel.csv");
-    //output.open("ripley_predicted.csv");
+    /*std::ofstream output;
+    //output.open("ripley_err_rate_measure_train_1.csv");
+    //output.open("ripley_err_rate_impurity_train_1.csv");
+    output.open("banana_err_rate_measure_train_1.csv");
+    //output.open("banana_err_rate_impurity_train_1.csv");
     if (output.fail()) {
       std::cout << "failed to create .csv file!" << std::endl;  
     }
@@ -177,8 +227,27 @@ void LearnerSVM::train() {
         output << error.get(i) << ";" << std::endl;
       }
       output.close();
-    }
+    }*/
+//////////////////////////////////////////////////////////
+/*    //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
+    double acc = getAccuracy(*testData, *testLabels, 0.0);
+    std::cout << "accuracy: " << acc << std::endl;
+    error.append(acc);
+    grids.append(grid->getSize());
   }
+  double avg = 0.0;
+  for (size_t i = 0; i < error.getSize(); i++) {
+    avg += error.get(i);
+  }
+  avg /= 10.0;
+  std::cout << "average accuracy: " << avg << std::endl;
+  double avgGrid = 0.0;
+  for (size_t i = 0; i < grids.getSize(); i++) {
+    avgGrid += grids.get(i);
+  }
+  avgGrid /= 10.0;
+  std::cout << "average grid size: " << avgGrid << std::endl;*/
+//////////////////////////////////////////////////////////
 }
 
 double LearnerSVM::getAccuracy(sgpp::base::DataMatrix& testDataset,
@@ -191,9 +260,10 @@ double LearnerSVM::getAccuracy(sgpp::base::DataMatrix& testDataset,
 
   //write computed classes to .csv
   /*std::ofstream output;
-  //output.open("home/maierjo/ripley_predicted.csv");
-  output.open("banana_predicted.csv");
-  //output.open("ripley_predicted.csv");
+  //output.open("banana_impurity_predicted_train_1.csv");
+  //output.open("banana_measure_predicted_train_7.csv");
+  output.open("ripley_impurity_predicted_train_.csv");
+  //output.open("ripley_measure_predicted_train_1.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -202,6 +272,31 @@ double LearnerSVM::getAccuracy(sgpp::base::DataMatrix& testDataset,
       sgpp::base::DataVector x(2);					
       testDataset.getRow((size_t)i, x);
       output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
+    }
+    output.close();
+  }
+  //write grid to .csv
+  //output.open("banana_impurity_grid_train_1.csv");
+  //output.open("banana_measure_grid_train_7.csv");
+  output.open("ripley_impurity_grid_train_.csv");
+  //output.open("ripley_measure_grid_train_1.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
+  }
+  else {
+    GridStorage& storage = grid->getStorage();
+    GridStorage::grid_map_iterator end_iter = storage.end();
+    for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) { 
+      sgpp::base::DataVector gpCoord(testDataset.getNcols());
+      storage.getCoordinates(*(iter->first), gpCoord);
+      for (size_t d = 0; d < gpCoord.getSize(); d++) {
+        if (d < gpCoord.getSize()-1) {
+          output << gpCoord[d] << ";";
+        }
+        else {
+          output << gpCoord[d] << std::endl;
+        }
+      }
     }
     output.close();
   }*/

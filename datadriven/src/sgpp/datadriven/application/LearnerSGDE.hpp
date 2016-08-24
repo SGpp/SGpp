@@ -167,7 +167,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   
   virtual void train();
 
-  virtual void trainOnline(base::DataVector& plabels);
+  virtual void trainOnline(base::DataVector& plabels, 
+                           base::DataMatrix& ptestData, base::DataVector& ptestLabels);
 
   virtual void predict(base::DataMatrix& testData,
                        base::DataVector& computedLabels,
