@@ -64,6 +64,8 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(Grid& gri
 double ForwardSelectorRefinementIndicator::operator()(GridStorage& storage, size_t seq) const {
   double epsilon = 0.000001;
   double measure = std::abs(w1.get(seq) + epsilon) / (std::pow(w2.get(seq),beta) * rv2->get(seq) + epsilon); 
+  
+  //std::cout << "measure: " << measure << std::endl;
 
   return measure;
 }

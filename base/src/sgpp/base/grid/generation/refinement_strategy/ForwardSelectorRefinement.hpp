@@ -63,7 +63,6 @@ class ForwardSelectorRefinement_refinement_key : public
 class ForwardSelectorRefinement: public virtual RefinementDecorator {
  public:
   typedef ForwardSelectorRefinement_refinement_key refinement_key_type;
-  //typedef std::vector<const GridPoint&> insertables_container_type; // correct?
   using RefinementDecorator::free_refine;
 
   explicit ForwardSelectorRefinement(AbstractRefinement* refinement):
@@ -112,13 +111,7 @@ class ForwardSelectorRefinement: public virtual RefinementDecorator {
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
-
-  void svmCreateGridpoint(
-    GridStorage& storage, GridPoint& point, ForwardSelectorRefinementIndicator& svmIndicator);
-
-  void svmCreateGridpoint1D(GridPoint& point, size_t d, GridStorage& storage,
-    index_t& source_index, level_t& source_level,
-    ForwardSelectorRefinementIndicator& svmIndicator);  
+  
 
   /**
   * Generates a list with indicator elements

@@ -559,7 +559,8 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   return;
 }
 
-void LearnerSGDE::trainOnline(base::DataVector& plabels) {
+void LearnerSGDE::trainOnline(base::DataVector& plabels,
+                              base::DataMatrix& ptestData, base::DataVector& ptestLabels) {
   labels = std::make_shared<base::DataVector>(plabels);
   size_t dim = trainData->getNcols();
 
@@ -578,17 +579,27 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels) {
 
   // refinement parameters - ToDo: pass to Learner as parameters (adaptivityConfig)
   size_t numRefSteps = adaptivityConfig.numRefinements_;
-  size_t refPeriod = 50; //Ripley 25 - Banana 50 (100)
+  size_t refPeriod = 30; //Ripley 25 - Banana 100 / 200
   size_t numPoints = adaptivityConfig.noPoints_;
   double threshold = adaptivityConfig.threshold_;
+
+  // map number of already performed refinements to grids
+  std::map<int, size_t> refCnts;
   
   bool doRefine = false;      // set true by monitor to trigger refinement
   size_t refSteps = 0;
 
-  while (numIterations < maxIterations) {			//shuffle dataset after each iteration
-    // for error plotting
-    base::DataVector error;
+  // for error plotting
+  base::DataVector error;
+  //base::DataVector gridSizes;
+  // for plotting only
+  //double acc = getAccuracy(*trainData, *labels, 0.0);
+  //double acc = getAccuracy(ptestData, ptestLabels, 0.0);
+  //error.append(1.0 - acc);
+
+  while (numIterations < maxIterations) {			
     for (size_t i = 0; i < trainData->getNrows(); i++) {
+      //std::cout << "iteration: " << i << std::endl;
       // Get next training sample x and its label y
       sgpp::base::DataVector x(dim);					
       trainData->getRow((size_t)i, x);
@@ -625,6 +636,7 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels) {
         //                    std::deque<std::shared_ptr<base::DataVector>>));
         
         appearances.insert(std::pair<int, size_t>(label, 0));
+        refCnts.insert(std::pair<int, size_t>(label, 0));
       }
       appearances.at(label) += 1;
 
@@ -648,10 +660,6 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels) {
       datadriven::DensitySystemMatrix SMatrix(*grid, dataSample, *C, lambdaReg);
       SMatrix.generateb(rhs);
 
-      //if (!crossvalidationConfig.silent_) {
-      //  std::cout << "# LearnerSGDE: Solving " << std::endl;
-      //}
-
       solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
       myCG.solve(SMatrix, newAlpha, rhs, false, false, solverConfig.threshold_);
 
@@ -674,30 +682,31 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels) {
       
       //alphas.at(label)->copyFrom(*alpha);
 
-      if ( (i > 0) && (i % refPeriod == 0) ) {
+      //if ( (i > 0) && (i % refPeriod == 0) ) {
+      if ( (appearances.at(label) > 0) && (appearances.at(label) % refPeriod == 0) ) {
         doRefine = true;
       }
       // Refinement
-      if ( (refSteps < numRefSteps) && doRefine ) {
+      if ( (refCnts.at(label) < numRefSteps) && doRefine ) {
         // Surplus refinement 
         // Weight surplus with function evaluation at grid points
-        //std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
-        //base::DataVector p(dim);
-        //base::DataVector alphaWeight(alpha->getSize());
-        //for (size_t i = 0; i < grid->getSize(); i++) {
-        //  gridStorage.getPoint(i).getStandardCoordinates(p);
-        //  alphaWeight[i] = alpha->get(i) * opEval->eval(*alpha, p);
-        //}
+        std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+        base::DataVector p(dim);
+        base::DataVector alphaWeight(alpha->getSize());
+        for (size_t j = 0; j < grid->getSize(); j++) {
+          gridStorage.getPoint(j).getStandardCoordinates(p);
+          alphaWeight[j] = alpha->get(j) * opEval->eval(*alpha, p);
+        }
 
-        //base::SurplusRefinementFunctor srf(alphaWeight, numPoints, threshold);
-        base::SurplusRefinementFunctor srf(*alpha, numPoints, threshold);
+        base::SurplusRefinementFunctor srf(alphaWeight, numPoints, threshold);
+        //base::SurplusRefinementFunctor srf(*alpha, numPoints, threshold);
         gridGen.refine(srf);
 
         // Impurity refinement
         // ToDo:
 
         if (!crossvalidationConfig.silent_) {
-          std::cout << "# LearnerSGDE: ref " << refSteps+1 << "/" << numRefSteps
+          std::cout << "# LearnerSGDE (label " << label << "): ref " << refCnts.at(label)+1 << "/" << numRefSteps
                     << ": " << grid->getSize() << std::endl;
         }
 
@@ -706,33 +715,37 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels) {
         // keep computed alpha values and append zeros only for new points
         alpha->resizeZero(grid->getSize()); 
 
-        refSteps++;
+        //refSteps++;
+        refCnts.at(label) += 1;
         doRefine = false;        
       }
       // for plotting only
-      //double acc = getAccuracy(*trainData, *labels, 0.0);
-      //double acc = getAccuracy(*testData, *testLabels, 0.0);
-      //error.append(1.0 - acc);
+      //if ((i > 0) && ((i+1) % 50 == 0)) {
+      /*if ((i > 0) && ((i+1) % 10 == 0)) {
+        //acc = getAccuracy(*trainData, *labels, 0.0);
+        acc = getAccuracy(ptestData, ptestLabels, 0.0);
+        error.append(1.0 - acc); 
+      }*/
     }
-    refSteps = 0;
+    //refSteps = 0;
     numIterations++;
 
-    //write error evaluation to .csv
-    /*std::ofstream output;
-    //output.open("ripley_err_rate_surplusRef.csv");
-    //output.open("ripley_err_rate_impurity.csv");
-    output.open("banana_err_rate_surplusRef.csv");
-    //output.open("banana_err_rate_impurity.csv");
-    if (output.fail()) {
-      std::cout << "failed to create .csv file!" << std::endl;  
-    }
-    else {
-      for (size_t i = 0; i < error.getSize(); i++) {					
-        output << error.get(i) << ";" << std::endl;
-      }
-      output.close();
-    }*/
   }
+  //write error evaluation to .csv
+  /*std::ofstream output;
+  output.open("ripley_err_rate_surplusRef_train_1.csv");
+  //output.open("ripley_err_rate_impurity_train_1.csv");
+  //output.open("banana_err_rate_surplusRef_train_10.csv");
+  //output.open("banana_err_rate_impurity_train_1.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
+  }
+  else {
+    for (size_t i = 0; i < error.getSize(); i++) {					
+      output << error.get(i) << ";" << std::endl;
+    }
+    output.close();
+  }*/
 }
 
 double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
@@ -743,10 +756,12 @@ double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
   base::DataVector classesComputed(testDataset.getNrows());
   predict(testDataset, classesComputed);
 
+  std::ofstream output;
   //write computed classes to .csv
-  /*std::ofstream output;
-  output.open("DE_banana_predicted.csv");
-  //output.open("DE_ripley_predicted.csv");
+  /*//output.open("banana_impurity_predicted_train_1.csv");
+  output.open("banana_surplus_predicted_train_1.csv");
+  //output.open("ripley_impurity_predicted_train_.csv");
+  //output.open("ripley_surplus_predicted_train_.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -757,7 +772,92 @@ double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
       output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
     }
     output.close();
+  }
+  //write grid to .csv
+  //output.open("banana_impurity_grid_1_train_1.csv");
+  output.open("banana_surplus_grid_1_train_1.csv");
+  //output.open("ripley_impurity_grid_1_train_.csv");
+  //output.open("ripley_surplus_grid_1_train_.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
+  }
+  else {
+    grid = grids.at(-1);
+    base::GridStorage& storage = grid->getStorage();
+    base::GridStorage::grid_map_iterator end_iter = storage.end();
+    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) { 
+      base::DataVector gpCoord(testDataset.getNcols());
+      storage.getCoordinates(*(iter->first), gpCoord);
+      for (size_t d = 0; d < gpCoord.getSize(); d++) {
+        if (d < gpCoord.getSize()-1) {
+          output << gpCoord[d] << ";";
+        }
+        else {
+          output << gpCoord[d] << std::endl;
+        }
+      }
+    }
+    output.close();
+  }
+  //output.open("banana_impurity_grid_1_train_2.csv");
+  output.open("banana_surplus_grid_2_train_1.csv");
+  //output.open("ripley_impurity_grid_2_train_.csv");
+  //output.open("ripley_surplus_grid_2_train_.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
+  }
+  else {
+    grid = grids.at(1);
+    base::GridStorage& storage = grid->getStorage();
+    base::GridStorage::grid_map_iterator end_iter = storage.end();
+    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) { 
+      base::DataVector gpCoord(testDataset.getNcols());
+      storage.getCoordinates(*(iter->first), gpCoord);
+      for (size_t d = 0; d < gpCoord.getSize(); d++) {
+        if (d < gpCoord.getSize()-1) {
+          output << gpCoord[d] << ";";
+        }
+        else {
+          output << gpCoord[d] << std::endl;
+        }
+      }
+    }
+    output.close();
   }*/
+
+  //write density function evaluations to .csv
+  double stepSize = 0.01;
+  base::DataMatrix values(0,2);
+  //std::cout << values.getNrows() << std::endl;
+  base::DataVector range(101);
+  for (size_t i = 0; i < 101; i++) {
+    range.set(i, stepSize*(static_cast<double>(i)));
+  }
+  //std::cout << range.getSize() << std::endl;
+  for (size_t i = 0; i < range.getSize(); i++) {
+    for (size_t j = 0; j < range.getSize(); j++) {
+      base::DataVector row(2);
+      row.set(1, range.get(i));
+      row.set(0, range.get(j));
+      values.appendRow(row);
+    }
+  }
+  //std::cout << values.getNrows() << std::endl;
+  // evaluate each density function at all points from values
+  // and write result to csv file
+  for (auto const& g : grids) {
+    output.open("density_fun_"+std::to_string(g.first)+"_evals.csv");
+    std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
+    for (size_t i = 0; i < values.getNrows(); i++) {
+      // Get next test sample x 
+      base::DataVector x(2);					
+      values.getRow(i, x);
+      //std::cout << x[0] << " , " << x[1] << std::endl;
+      double res = opEval->eval(*alphas.at(g.first), x);
+      output << res << ";" << std::endl;
+    }
+    output.close();
+  }
 
   return getAccuracy(classesComputed, classesReference, threshold);
 }
@@ -775,6 +875,8 @@ double LearnerSGDE::getAccuracy(const base::DataVector& classesComputed,
   size_t correct = 0;
 
   for (size_t i = 0; i < classesComputed.getSize(); i++) {
+    //std::cout << "computed: " << classesComputed.get(i) << std::endl;
+    //std::cout << "reference: " << classesReference.get(i) << std::endl;
     if ((classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0) ||
        (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0)) {
       correct++;
@@ -801,7 +903,7 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
     testData.getRow((size_t)i, x);
     // predict label using Bayes Theorem
     double max = 0.0;
-    // compute each density function for current test sample x
+    // compute each density functions for current test sample x
     for (auto const& g : grids) {
       std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
       double res = opEval->eval(*alphas.at(g.first), x);
