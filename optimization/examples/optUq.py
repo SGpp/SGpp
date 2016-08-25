@@ -239,11 +239,11 @@ def optimize(f, sol=0):
     p = 3
     # maximal number of grid points
     # adaptivity of grid generation
-    gamma = 0.95
-    N_vals =  range(100, 11101, 1000)
+    gamma = 0.85
+    N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
     grids = [pysgpp.Grid.createBsplineGrid(d, 3),
              pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
-             # pysgpp.Grid.createModBsplineGrid(d,p),
+             pysgpp.Grid.createModBsplineGrid(d, 3),
              # pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
              pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)]
 
@@ -294,7 +294,16 @@ def optimize(f, sol=0):
             print "Optimizing smooth interpolant...\n"
             ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
             ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
-            gradientMethod = pysgpp.OptGradientDescent(ft, ftGradient)
+            ftHessian = pysgpp.OptInterpolantScalarFunctionHessian(grid, coeffs)
+
+            gradientMethod = pysgpp.OptAdaptiveGradientDescent(ft, ftGradient)
+            newtonsMethod = pysgpp.OptAdaptiveNewton(ft, ftHessian)
+            differentialEvolution = pysgpp.OptDifferentialEvolution(ft)
+
+            optimizers = [pysgpp.OptMultiStart(gradientMethod, 100000, 300),
+                          pysgpp.OptMultiStart(newtonsMethod, 100000, 300),
+                          differentialEvolution]
+
             x0 = pysgpp.DataVector(d)
 
             # determine best grid point as starting point
@@ -314,22 +323,29 @@ def optimize(f, sol=0):
             print "x0 = {}".format(x0)
             print "f(x0) = {:.6g}, ft(x0) = {:.6g}\n".format(fX0, ftX0)
 
-            gradientMethod.setStartingPoint(x0)
-            gradientMethod.optimize()
-            xOpt = gradientMethod.getOptimalPoint()
-            ftXOpt = gradientMethod.getOptimalValue()
-            fXOpt = f.eval(xOpt)
+            xOpt, fXOpt, ftXOpt = x0, fX0, ftX0
+
+            for optimizer in optimizers:
+              optimizer.optimize()
+              xOptCur = optimizer.getOptimalPoint()
+              fXOptCur = f.eval(xOptCur)
+              ftXOptCur = optimizer.getOptimalValue()
+
+              if fXOptCur < fXOpt:
+                xOpt, fXOpt, ftXOpt = xOptCur, fXOptCur, ftXOptCur
+
             errors.append(fXOpt - sol)
             print "\nxOpt = {}".format(xOpt)
-            print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
+            print "f(xOpt) = {:.8f}, ft(xOpt) = {:.8f}".format(fXOpt, ftXOpt)
+            print "sol = {:.8f}, error = {:.2e}\n".format(sol, errors[-1])
 
         ax.plot(N_vals, errors, 'o', N_vals, errors, label=gridToName(grid.getType(),p))
 
-    # ax.set_xscale('symlog')
-    ax.set_yscale('symlog')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
     plt.xlabel('Grid Points')
     plt.ylabel('Error')
-    ax.legend(loc=3)
+    #ax.legend(loc=3)
 
     if isinstance(f, opt_function):
         plt.title("Optimization-Error {}-{}-Funktion".format(func_name, d))
@@ -605,7 +621,7 @@ quad_sol_dic = {"genz" : genz_error(),
 
 def opt_sol(function_name, d):
   if(function_name == "schwefel"):
-    return d*(-418.9829)
+    return d*(-418.9828872724337)
 # elif(args.function == "sin_sum"):
       # sol = -0.967531
   else:
