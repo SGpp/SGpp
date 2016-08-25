@@ -59,7 +59,8 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
     if (opencl_node) {
       op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                    (2 * grid_dimensions), grid_dimensions,
-                                                   lambda, "MyOCLConf.cfg", 0, 0);
+                                                   lambda, "MyOCLConf.cfg",
+                                                   opencl_platform, opencl_device);
     }
     if (verbose) {
       std::cout << "Created mpi opencl density operation on "

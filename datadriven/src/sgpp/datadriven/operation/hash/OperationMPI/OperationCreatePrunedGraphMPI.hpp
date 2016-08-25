@@ -84,12 +84,12 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
     // Create opencl operation
     if (opencl_node) {
       op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
-                                                "MyOCLConf.cfg", 0, 0);
+                                                "MyOCLConf.cfg", opencl_platform, opencl_device);
       op_prune = pruneNearestNeighborGraphConfigured(gridpoints, complete_gridsize /
                                                      (2 * grid_dimensions),
                                                      grid_dimensions, alpha,
                                                      data_matrix, treshold, k,
-                                                     "MyOCLConf.cfg", 0, 0);
+                                                     "MyOCLConf.cfg", opencl_platform, opencl_device);
     }
   }
   PrunedGraphCreationWorker(base::Grid &grid, base::DataVector &alpha, base::DataMatrix &data,
@@ -133,11 +133,7 @@ class OperationPrunedGraphCreationMPI : public PrunedGraphCreationWorker {
     datainfo[1] = dataset_size / dimensions;
 
     result.resize(dataset_size / dimensions * k);
-    int *result_graph = new int[dataset_size / dimensions * k];
-    divide_workpackages(datainfo, result_graph);
-    for (size_t i = 0; i < result.size(); ++i) {
-      result[i] = result_graph[i];
-    }
+    divide_workpackages(datainfo, result.data());
 
     int exitmessage[2] = {-2, -2};
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
