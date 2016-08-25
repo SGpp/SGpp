@@ -34,16 +34,19 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
   bool prefetching;
   int secondary_workpackage[2];
 
+  int opencl_platform = 0;
+  int opencl_device = 0;
+
   void divide_workpackages(int *package, T *erg) {
     // Divide into more work packages
     int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
                                        ["PREFERED_PACKAGESIZE"].getInt());
     T *package_result = new T[packagesize * packagesize_multiplier];
     SimpleQueue<T> workitem_queue(package[0], package[1], packagesize,
-                                       sub_worker_comm,
-                                       MPIEnviroment::get_sub_worker_count(),
-                                       verbose,
-                                       prefetching);
+                                  sub_worker_comm,
+                                  MPIEnviroment::get_sub_worker_count(),
+                                  verbose,
+                                  prefetching);
     int chunkid = package[0];
     size_t messagesize = 0;
     while (!workitem_queue.is_finished()) {
@@ -93,6 +96,10 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
     }
     if (MPIEnviroment::get_configuration().contains("PREFETCHING"))
       prefetching = MPIEnviroment::get_configuration()["PREFETCHING"].getBool();
+    if (MPIEnviroment::get_configuration().contains("OPENCL_PLATFORM"))
+      opencl_platform = MPIEnviroment::get_configuration()["OPENCL_PLATFORM"].getUInt();
+    if (MPIEnviroment::get_configuration().contains("OPENCL_DEVICE"))
+      opencl_device = MPIEnviroment::get_configuration()["OPENCL_DEVICE"].getUInt();
   }
   virtual ~MPIWorkerPackageBase() {}
 

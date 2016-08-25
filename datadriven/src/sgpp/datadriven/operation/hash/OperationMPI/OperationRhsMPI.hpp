@@ -45,7 +45,7 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
     if (opencl_node) {
     op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                  (2 * grid_dimensions), grid_dimensions,
-                                                 0.0, "MyOCLConf.cfg", 0, 0);
+                                                 0.0, "MyOCLConf.cfg", opencl_platform, opencl_device);
     }
     data_matrix = NULL;
   }
