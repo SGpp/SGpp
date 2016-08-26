@@ -23,10 +23,25 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
+// arg 1: grid dimensions
+// arg 2: grid level
+// arg 3: packagesize - master
+// arg 4: packagesize - leutant
+// arg 5: output file
 int main(int argc, char *argv[]) {
-
   // Init MPI enviroment - always has to be done first
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
+
+  if (argc != 6) {
+    std::cout << "Wrong arguments - consult source file for more informations!" << std::endl;
+    sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
+    return 0;
+  }
+
+  int dim = std::stoi(argv[1]);
+  int level = std::stoi(argv[2]);
+  int packagesize_master = std::stoi(argv[3]);
+  int packagesize_leut = std::stoi(argv[4]);
 
   // Create Sample config
   sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
@@ -40,15 +55,16 @@ int main(int argc, char *argv[]) {
 
   // MPI_Init(&argc, &argv);
   sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
+  testnode["PREFERED_PACKAGESIZE"].setInt(packagesize_master);
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
 
   // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
   // dumdum.start_operation();
 
   // Create Grid
-  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dim);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(11);
+  gridGen.regular(level);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
@@ -64,7 +80,8 @@ int main(int argc, char *argv[]) {
   }
   std::cout << std::endl << std::endl;
 
-
+  std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+  start = std::chrono::system_clock::now();
   //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
   // Loading dataset
   std::string filename = "dataset2_dim2.arff";
@@ -90,21 +107,37 @@ int main(int argc, char *argv[]) {
   double min = alpha.min();
   for (size_t i = 0; i < gridsize; i++)
     alpha[i] = alpha[i]*1.0/(max-min);
+  end = std::chrono::system_clock::now();
+
+  // Calc time
+  std::chrono::duration<double> elapsed_seconds = end-start;
+  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+  std::cout << "finished computation at " << std::ctime(&end_time)
+            << "elapsed time: " << elapsed_seconds.count() << "s\n";
+  // Write result into file
+  std::ofstream ofs;
+  ofs.open (argv[5], std::ofstream::out | std::ofstream::app);
+  ofs << dim << ";" << level << ";" << packagesize_master << ";" << packagesize_leut
+      << ";" << elapsed_seconds.count() << ";"
+      << gridsize % ((sgpp::datadriven::clusteringmpi::MPIEnviroment::get_node_count() -1) *
+                     packagesize_master)<< std::endl;
+  ofs.close();
 
   // Create and prune knn graph
-  sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
-                                                                            dataset, 12, 0.7);
-  std::vector<int> knn_graph;
-  graph_op.create_graph(knn_graph);
-  std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
-  for (size_t i = 0; i < 100; ++i) {
+  /*sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
+    dataset, 12, 0.7);
+    std::vector<int> knn_graph;
+    graph_op.create_graph(knn_graph);
+    std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
+    for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
-      std::cout << knn_graph[i * 12 + node] << " ";
+    std::cout << knn_graph[i * 12 + node] << " ";
     }
     std::cout << "\n";
-  }
-  sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationCreateGraphOCL::find_clusters(knn_graph, 12);
+    }
+    sgpp::datadriven::DensityOCLMultiPlatform::
+    OperationCreateGraphOCL::find_clusters(knn_graph, 12);
+  */
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
