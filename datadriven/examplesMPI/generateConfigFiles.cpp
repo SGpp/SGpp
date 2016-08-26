@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
       if (device->platformId != old_platform_id) {
         platform_counter++;
         old_platform_id = device->platformId;
+        device_counter = 0;
       }
       if (device->deviceId != old_device_id) {
         device_counter++;
