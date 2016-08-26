@@ -55,24 +55,24 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
     // look for the chosen platform and device and create kernel with it
     size_t platformcounter = 0;
     size_t devicecounter = 0;
-    std::string currentplatformName = devices[0]->platformName;
-    std::string currentdeviceName = devices[0]->deviceName;
+    cl_device_id old_device_id = devices[0]->deviceId;
+    cl_platform_id old_platform_id = devices[0]->platformId;
     size_t counter = 0;
     bool success = false;
     for (auto device : devices) {
-      if (devices[counter]->platformName != currentplatformName) {
+      if (device->platformId != old_platform_id) {
         platformcounter++;
-        currentplatformName = devices[counter]->platformName;
+        old_platform_id = device->platformId;
         devicecounter = 0;
-        currentdeviceName = devices[counter]->deviceName;
-      } else if (devices[counter]->deviceName != currentdeviceName) {
+      }
+      if (device->deviceId != old_device_id) {
         devicecounter++;
-        currentdeviceName = devices[counter]->deviceName;
+        old_device_id = device->deviceId;
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
         json::Node &deviceNode =
-            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+            (*parameters)["PLATFORMS"][device->platformName]["DEVICES"][device->deviceName];
         json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
         graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
                                                 manager, configuration);
@@ -107,24 +107,24 @@ class OperationCreateGraphOCLSingleDevice : public OperationCreateGraphOCL {
     // look for the chosen platform and device and create kernel with it
     size_t platformcounter = 0;
     size_t devicecounter = 0;
-    std::string currentplatformName = devices[0]->platformName;
-    std::string currentdeviceName = devices[0]->deviceName;
+    cl_device_id old_device_id = devices[0]->deviceId;
+    cl_platform_id old_platform_id = devices[0]->platformId;
     size_t counter = 0;
     bool success = false;
     for (auto device : devices) {
-      if (devices[counter]->platformName != currentplatformName) {
+      if (device->platformId != old_platform_id) {
         platformcounter++;
-        currentplatformName = devices[counter]->platformName;
+        old_platform_id = device->platformId;
         devicecounter = 0;
-        currentdeviceName = devices[counter]->deviceName;
-      } else if (devices[counter]->deviceName != currentdeviceName) {
+      }
+      if (device->deviceId != old_device_id) {
         devicecounter++;
-        currentdeviceName = devices[counter]->deviceName;
+        old_device_id = device->deviceId;
       }
       if (platformcounter == platform_id &&
           devicecounter == device_id) {
         json::Node &deviceNode =
-            (*parameters)["PLATFORMS"][currentplatformName]["DEVICES"][currentdeviceName];
+            (*parameters)["PLATFORMS"][device->platformName]["DEVICES"][device->deviceName];
         json::Node &configuration = deviceNode["KERNELS"]["connectNeighbors"];
         graph_kernel = new KernelCreateGraph<T>(devices[counter], dims, k, dataVector,
                                                 manager, configuration);
