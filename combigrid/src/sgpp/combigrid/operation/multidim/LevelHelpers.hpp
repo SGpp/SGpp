@@ -6,15 +6,15 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELHELPERS_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELHELPERS_HPP_
 
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <sgpp/combigrid/utils/BinaryHeap.hpp>
 
-#include <boost/heap/binomial_heap.hpp>
+#include <functional>
 #include <memory>
 #include <queue>
-#include <functional>
 #include <unordered_set>
 #include <vector>
 
@@ -40,8 +40,9 @@ class QueueComparator {
 
 // typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator>
 // MultiIndexQueue;
-typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
-    MultiIndexQueue;
+/*typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
+    MultiIndexQueue;*/
+typedef sgpp::combigrid::BinaryHeap<QueueEntry, QueueComparator> MultiIndexQueue;
 
 /**
  * Started: the computation of function values has been started
