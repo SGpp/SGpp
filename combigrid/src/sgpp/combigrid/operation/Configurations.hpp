@@ -21,6 +21,8 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expLeja();
   static std::shared_ptr<AbstractPointHierarchy> expUniform();
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
+  static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
+  static std::shared_ptr<AbstractPointHierarchy> expUniformNoBoundary();
 };
 
 class CombiEvaluators {

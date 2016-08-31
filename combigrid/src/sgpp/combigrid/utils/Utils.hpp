@@ -22,9 +22,11 @@ template <typename T>
 T pow(T base, size_t exponent) {
   T result = 1;
 
-  size_t mask = static_cast<size_t>(1) << (8 * sizeof(size_t) - 1);
+  size_t numBits = 8 * sizeof(size_t);
+  size_t mask = static_cast<size_t>(1) << (numBits - 1);
 
-  while (exponent != 0) {
+  // while (exponent != 0) {
+  for (size_t i = 0; i < numBits; ++i) {
     result *= result;
 
     if (exponent & mask) {
