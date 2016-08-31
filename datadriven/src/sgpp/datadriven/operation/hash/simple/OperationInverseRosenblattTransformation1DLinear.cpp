@@ -36,7 +36,7 @@ double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   std::multimap<double, double>::iterator it1, it2;
 
   base::GridStorage* gs = &grid->getStorage();
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*grid);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {

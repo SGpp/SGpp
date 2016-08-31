@@ -10,10 +10,10 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -36,7 +36,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   InterpolantScalarFunctionHessian(base::Grid& grid, const base::DataVector& alpha)
       : ScalarFunctionHessian(grid.getDimension()),
         grid(grid),
-        opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
+        opEvalHessian(op_factory::createOperationEvalHessianNaive(grid)),
         alpha(alpha) {}
 
   /**
@@ -87,7 +87,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   /// sparse grid
   base::Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationNaiveEvalHessian> opEvalHessian;
+  std::unique_ptr<base::OperationEvalHessian> opEvalHessian;
   /// coefficient vector
   base::DataVector alpha;
 };

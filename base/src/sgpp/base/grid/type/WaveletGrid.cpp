@@ -38,8 +38,8 @@ SBasis& WaveletGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> WaveletGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new WaveletGrid(istr));
+Grid* WaveletGrid::unserialize(std::istream& istr) {
+  return new WaveletGrid(istr);
 }
 
 /**

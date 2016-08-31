@@ -312,10 +312,10 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
             sgpp::op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
-          std::vector<double> point;
+          base::DataVector point(2);
 
-          point.push_back(dX);
-          point.push_back(dY);
+          point[0] = dX;
+          point[1] = dY;
 
           double result = myEval->eval(alpha, point);
 

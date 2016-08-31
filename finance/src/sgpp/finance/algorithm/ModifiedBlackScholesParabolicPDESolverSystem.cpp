@@ -29,7 +29,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
                                            OperationMode, 0.0, "nothing", bLogTransform, useCoarsen,
                                            coarsenThreshold, adaptSolveMode, numCoarsenPoints,
                                            refineThreshold, refineMode, refineMaxLevel) {
-  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid).release();
+  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid);
   this->dim_r = dim_HW;
   this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
 }

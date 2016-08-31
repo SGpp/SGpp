@@ -38,8 +38,8 @@ SBasis& ModLinearGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> ModLinearGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new ModLinearGrid(istr));
+Grid* ModLinearGrid::unserialize(std::istream& istr) {
+  return new ModLinearGrid(istr);
 }
 
 /**

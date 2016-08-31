@@ -39,8 +39,8 @@ SBasis& BsplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t BsplineBoundaryGrid::getDegree() { return this->degree; }
 
-std::unique_ptr<Grid> BsplineBoundaryGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new BsplineBoundaryGrid(istr));
+Grid* BsplineBoundaryGrid::unserialize(std::istream& istr) {
+  return new BsplineBoundaryGrid(istr);
 }
 
 void BsplineBoundaryGrid::serialize(std::ostream& ostr, int version) {

@@ -65,7 +65,7 @@ struct RegularGridConfiguration {
   /// max. polynomial degree for poly basis
   size_t maxDegree_;
   /// level of boundary grid
-  size_t boundaryLevel_;
+  level_t boundaryLevel_;
   /// string to serialized grid
   std::string filename_;
 };
@@ -96,12 +96,26 @@ struct AdpativityConfiguration {
 class Grid {
  public:
   /**
+   * delete copy constructor
+   * @param other
+   */
+  Grid(const Grid& other) = delete;
+
+  /**
+   * creates a grid defined by the grid configuration
+   *
+   * @param gridConfig grid configuration
+   * @return grid
+   */
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
+
+  /**
    * creates a stencil for a linear grid without boundaries
    *
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearGridStencil(size_t dim);
+  static Grid* createLinearGridStencil(size_t dim);
 
   /**
    * creates a stencil for a modified linear grid (without boundaries)
@@ -109,7 +123,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createModLinearGridStencil(size_t dim);
+  static Grid* createModLinearGridStencil(size_t dim);
 
   /**
    * creates a linear grid without boundaries
@@ -117,7 +131,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearGrid(size_t dim);
+  static Grid* createLinearGrid(size_t dim);
 
   /**
    * creates a linear stretched grid without boundaries
@@ -125,7 +139,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearStretchedGrid(size_t dim);
+  static Grid* createLinearStretchedGrid(size_t dim);
 
   /**
    * creates a linear boundary grid
@@ -138,14 +152,14 @@ class Grid {
    *                      main axis
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+  static Grid* createLinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a linearstretched truncated boundary grid
    *
    * @param dim the grid's dimension
    */
-  static std::unique_ptr<Grid> createLinearStretchedBoundaryGrid(size_t dim);
+  static Grid* createLinearStretchedBoundaryGrid(size_t dim);
 
   /**
    * creates a linear Clenshaw-Curtis grid
@@ -153,7 +167,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearClenshawCurtisGrid(size_t dim);
+  static Grid* createLinearClenshawCurtisGrid(size_t dim);
 
   /**
    * creates a mod linear grid
@@ -161,7 +175,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createModLinearGrid(size_t dim);
+  static Grid* createModLinearGrid(size_t dim);
 
   /**
    * creates a polynomial grid
@@ -170,7 +184,7 @@ class Grid {
    * @param degree the polynom's max. degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createPolyGrid(size_t dim, size_t degree);
+  static Grid* createPolyGrid(size_t dim, size_t degree);
 
   /**
    * creates a polynomial grid with truncated boundary
@@ -179,7 +193,7 @@ class Grid {
    * @param degree the polynom's max. degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
 
   /**
    * creates a poly grid
@@ -188,7 +202,7 @@ class Grid {
    * @param degree the polynom's max. degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createModPolyGrid(size_t dim, size_t degree);
+  static Grid* createModPolyGrid(size_t dim, size_t degree);
 
   /**
    * creates a wavelet grid
@@ -196,14 +210,14 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createWaveletGrid(size_t dim);
+  static Grid* createWaveletGrid(size_t dim);
 
   /**
    * creates a wavelet trapezoid boundary grid
    *
    * @param dim the grid's dimension
    */
-  static std::unique_ptr<Grid> createWaveletBoundaryGrid(size_t dim);
+  static Grid* createWaveletBoundaryGrid(size_t dim);
 
   /**
    * creates a mod wavelet grid
@@ -211,7 +225,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createModWaveletGrid(size_t dim);
+  static Grid* createModWaveletGrid(size_t dim);
 
   /**
    * creates a Bspline grid
@@ -220,7 +234,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createBsplineGrid(size_t dim, size_t degree);
+  static Grid* createBsplineGrid(size_t dim, size_t degree);
 
   /**
    * creates a Bspline trapezoid boundary grid
@@ -229,7 +243,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
 
   /**
    * creates a Bspline Clenshaw-Curtis grid
@@ -238,7 +252,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a mod-Bspline grid
@@ -247,7 +261,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createModBsplineGrid(size_t dim, size_t degree);
+  static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
   /**
    * creates a mod-Bspline Clenshaw-Curtis grid
@@ -256,7 +270,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a fundamental spline grid
@@ -265,7 +279,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createFundamentalSplineGrid(size_t dim, size_t degree);
+  static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
 
   /**
    * creates a mod-fundamental spline grid
@@ -274,7 +288,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static std::unique_ptr<Grid> createModFundamentalSplineGrid(size_t dim, size_t degree);
+  static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
 
   /**
    * creates a prewavelet grid
@@ -282,7 +296,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createPrewaveletGrid(size_t dim);
+  static Grid* createPrewaveletGrid(size_t dim);
 
   /**
    * creates a square root grid(h-grid)
@@ -290,7 +304,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createSquareRootGrid(size_t dim);
+  static Grid* createSquareRootGrid(size_t dim);
 
   /**
    * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have
@@ -299,7 +313,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createLinearTruncatedBoundaryGrid(size_t dim);
+  static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 
   /**
    * creates a periodic grid
@@ -307,7 +321,7 @@ class Grid {
    * @param dim the grid's dimension
    * @return grid
    */
-  static std::unique_ptr<Grid> createPeriodicGrid(size_t dim);
+  static Grid* createPeriodicGrid(size_t dim);
 
   /**
    * reads a grid out of a string
@@ -315,14 +329,14 @@ class Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static std::unique_ptr<Grid> unserialize(const std::string& istr);
+  static Grid* unserialize(const std::string& istr);
 
   /**
    * reads a grid out of a stream
    * @param istr inputstream that contains the grid information
    * @return grid
    */
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
  protected:
   /**
@@ -363,6 +377,11 @@ class Grid {
    * Desctructor
    */
   virtual ~Grid();
+
+  /**
+   * copies a grid
+   */
+  Grid* clone();
 
   /**
    * gets a reference to the GridStorage object
@@ -497,11 +516,11 @@ class Grid {
   /// GridStorage object of the grid
   GridStorage storage;
 
-  typedef std::unique_ptr<Grid> (*Factory)(std::istream&);
+  typedef Grid* (*Factory)(std::istream&);
   typedef std::map<std::string, Grid::Factory> factoryMap;
   typedef std::map<sgpp::base::GridType, std::string> gridTypeVerboseMap;
 
-  static std::unique_ptr<Grid> nullFactory(std::istream&);
+  static Grid* nullFactory(std::istream&);
 
  private:
   /**

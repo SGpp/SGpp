@@ -53,25 +53,6 @@ class PolyModifiedBasis : public Basis<LT, IT> {
   double eval(LT level, IT index, double p) override {
     const IT hInv = static_cast<IT>(1) << level;
     const double hInvDbl = static_cast<double>(hInv);
-
-    if (level == 1) {
-      // first level
-      return 1.0;
-    } else if (index == 1) {
-      // left modified basis function
-      return ((p <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * p) : 0.0);
-    } else if (index == hInv - 1) {
-      // right modified basis function
-      return ((p >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
-    } else {
-      // interior basis function
-      return polyBasis.eval(level, index, p);
-    }
-  }
-
-  double evalSave(LT level, IT index, double p) {
-    const IT hInv = static_cast<IT>(1) << level;
-    const double hInvDbl = static_cast<double>(hInv);
     const double h = 1.0 / hInvDbl;
 
     if (level == 1) {
@@ -90,6 +71,13 @@ class PolyModifiedBasis : public Basis<LT, IT> {
       // interior basis function
       return polyBasis.eval(level, index, p);
     }
+  }
+
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
   }
 
   double getIntegral(LT level, IT index) {
