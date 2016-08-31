@@ -10,8 +10,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -33,6 +33,7 @@ namespace combigrid {
  * In Level 1 there are three points: 0.0, 0.5, 1.0
  * In order to exploit nesting, 0.5 needs to have the same index in all levels.
  * Thus, in level 1, the index mapping is 0 -> 1, 1 -> 0, 2 -> 2.
+ * In Level 2 with 5 points, it would be 0 -> 2, 1 -> 0, 2 -> 4, 3 -> 1, 4 -> 3
  * Since the original points were sorted but the remapped ones are not, the
  * SortedPermutationIterator has to implement the inverse mapping.
  */
@@ -41,6 +42,8 @@ class AbstractPointOrdering {
   virtual ~AbstractPointOrdering();
 
   /**
+   * Converts a level-independent index into a corresponding level-dependent index in for the
+   * PointDistribution
    * @param level The level where the index is considered
    * @param numPoints The number of points at the level
    * @param index The index of the concrete point in the level

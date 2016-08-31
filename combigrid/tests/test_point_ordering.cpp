@@ -6,7 +6,9 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/combigrid/grid/ordering/ExponentialChebyshevPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
+#include <sgpp/combigrid/grid/ordering/ExponentialNoBoundaryPointOrdering.hpp>
 #include <vector>
 
 BOOST_AUTO_TEST_CASE(testExpLevelorderPointOrdering) {
@@ -50,4 +52,84 @@ BOOST_AUTO_TEST_CASE(testExpLevelorderPointOrdering) {
   BOOST_CHECK_EQUAL(it->value(), 2);
   it->reset();
   BOOST_CHECK_EQUAL(it->value(), 1);
+}
+
+BOOST_AUTO_TEST_CASE(testExpChebyshevPointOrdering) {
+  sgpp::combigrid::ExponentialChebyshevPointOrdering ordering;
+
+  BOOST_CHECK_EQUAL(ordering.numPoints(0), 1);
+  BOOST_CHECK_EQUAL(ordering.numPoints(1), 3);
+  BOOST_CHECK_EQUAL(ordering.numPoints(2), 9);
+  BOOST_CHECK_EQUAL(ordering.numPoints(3), 27);
+
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 0), 4);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 1), 1);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 2), 7);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 3), 0);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 4), 2);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 5), 3);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 6), 5);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 7), 6);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 9, 8), 8);
+
+  std::vector<double> points;
+
+  auto it = ordering.getSortedPermutationIterator(2, points, 9);
+
+  BOOST_CHECK_EQUAL(it->value(), 3);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 1);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 4);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 5);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 0);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 6);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 7);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 2);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 8);
+  it->reset();
+  BOOST_CHECK_EQUAL(it->value(), 3);
+}
+
+BOOST_AUTO_TEST_CASE(testExpNoBoundaryPointOrdering) {
+  sgpp::combigrid::ExponentialNoBoundaryPointOrdering ordering;
+
+  BOOST_CHECK_EQUAL(ordering.numPoints(0), 1);
+  BOOST_CHECK_EQUAL(ordering.numPoints(1), 3);
+  BOOST_CHECK_EQUAL(ordering.numPoints(2), 7);
+  BOOST_CHECK_EQUAL(ordering.numPoints(3), 15);
+
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 0), 3);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 1), 1);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 2), 5);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 3), 0);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 4), 2);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 5), 4);
+  BOOST_CHECK_EQUAL(ordering.convertIndex(2, 7, 6), 6);
+
+  std::vector<double> points;
+
+  auto it = ordering.getSortedPermutationIterator(2, points, 7);
+
+  BOOST_CHECK_EQUAL(it->value(), 3);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 1);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 4);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 0);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 5);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 2);
+  it->moveToNext();
+  BOOST_CHECK_EQUAL(it->value(), 6);
+  it->reset();
+  BOOST_CHECK_EQUAL(it->value(), 3);
 }
