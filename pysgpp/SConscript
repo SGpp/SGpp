@@ -36,6 +36,9 @@ swigFlags.extend(["-D" + c + "=" + pyEnv["CPPDEFINES"][c]
 if env["PYDOC"]:
   swigFlags.append("-DPYDOC")
 
+if env["USE_PYTHON3_FOR_PYSGPP"]:
+  swigFlags.append("-py3")
+
 pyEnv.AppendUnique(SWIGFLAGS=swigFlags)
 
 pythonLibPaths = [BUILD_DIR]

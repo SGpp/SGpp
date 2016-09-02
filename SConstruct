@@ -78,6 +78,7 @@ vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " 
                      converter=Helper.multiParamConverter)
 vars.Add("CPPPATH", "Set path where to look for additional headers", "")
 vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
+vars.Add("RPATH", "Set path where to look for additional dynamic libraries", "")
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
                  "for COMPILER=gnu, e.g., the following values are possible: " +
                  "sse3, sse42, avx, fma4, avx2, avx512", "sse3")
@@ -87,8 +88,8 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
-vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
-                      "SG_PYTHON" in languageSupportNames))
+vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
+vars.Add(BoolVariable("USE_PYTHON3_FOR_PYSGPP", "Use Python 3.x for pysgpp", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
@@ -116,7 +117,7 @@ vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provid
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
-vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", "/usr/lib/x86_64-linux-gnu")
+vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -134,6 +135,8 @@ vars.Add(BoolVariable("USE_ARMADILLO", "Set if Armadillo should be used " +
 vars.Add(BoolVariable("USE_EIGEN", "Set if Eigen should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
+                                   "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_MATLAB", "Set if MATLAB should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
@@ -181,6 +184,9 @@ for moduleName in moduleNames:
 env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
+env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux-gnu"
+                                    if env["PLATFORM"] not in ["darwin", "win32"]
+                                    else "")
 
 # don't create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
@@ -250,7 +256,7 @@ EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
 # don't configure if we're cleaning:
-if not env.GetOption("clean"):
+if (not env.GetOption("clean")) and (not env.GetOption("help")):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
@@ -359,9 +365,10 @@ env.Export("lintAction")
 
 if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   # do the actual thing
-  builder = Builder(action="python $SOURCE", chdir=0)
+  python = ("python3" if env["USE_PYTHON3_FOR_PYSGPP"] else "python")
+  builder = Builder(action=python + " $SOURCE", chdir=0)
   env.Append(BUILDERS={"Test" : builder})
-  builder = Builder(action="python $SOURCE")
+  builder = Builder(action=python + " $SOURCE")
   env.Append(BUILDERS={"SimpleTest" : builder})
 
 if env["COMPILE_BOOST_TESTS"]:
@@ -392,7 +399,7 @@ env.Export("headerDestList")
 flattenedDependencyGraph = []
 
 for moduleFolder in moduleFolders:
-  if not env["SG_" + moduleFolder.upper()]:
+  if (not env["SG_" + moduleFolder.upper()]) or env.GetOption("help"):
     continue
 
   Helper.printInfo("Preparing to build module: {}".format(moduleFolder))
@@ -481,7 +488,7 @@ installLibSGpp = env.Alias("install-lib-sgpp",
 
 headerFinalDestList = []
 for headerDest in headerDestList:
-  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), headerDest))
+  headerFinalDestList.append(os.path.join(env.get("INCLUDEDIR"), os.path.relpath(headerDest).split(os.sep, 2)[2]))
 
 installIncSGpp = env.Alias("install-inc-sgpp",
                            env.InstallAs(headerFinalDestList, headerSourceList))
@@ -518,12 +525,14 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
-if not env.GetOption("clean"):
+if env.GetOption("help"):
+  finalMessagePrinter.disable()
+elif env.GetOption("clean"):
+  env.Default(finalStepDependencies + ["clean"])
+  finalMessagePrinter.disable()
+else:
   env.Default(finalStepDependencies)
   if "doxygen" in BUILD_TARGETS:
     finalMessagePrinter.disable()
   elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
-else:
-  env.Default(finalStepDependencies + ["clean"])
-  finalMessagePrinter.disable()
