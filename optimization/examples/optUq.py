@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import random
 import matplotlib
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from matplotlib import cm
@@ -17,6 +17,33 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpol
 
 genz_a = [2,2]
 
+class interpolation_function():
+
+  def __init__(self, d, f):
+    self.f = f
+    self.d = d
+    self.grid = pysgpp.Grid.createBsplineGrid(d, 3)
+    self.gridStorage = self.grid.getStorage()
+    # self.grid.getGenerator().regular(6)
+    self.hierarch = pysgpp.createOperationMultipleHierarchisation(self.grid)
+    self.opeval = pysgpp.createOperationNaiveEval(self.grid)
+    self.alpha = pysgpp.DataVector(self.gridStorage.getSize())
+
+  def create_interpolation(self, grid_lvl):
+    global eval_count
+    self.gridStorage.clear()
+    self.grid.getGenerator().regular(grid_lvl)
+    self.alpha = pysgpp.DataVector(self.gridStorage.getSize())
+    for i in range(self.gridStorage.getSize()):
+      gp = self.gridStorage.getPoint(i)
+      x = [self.gridStorage.getCoordinate(gp, j) for j in range(self.d)]
+      self.alpha[i] = self.f(x)
+      eval_count += 1
+    self.hierarch.doHierarchisation(self.alpha)
+
+  def __call__(self, x):
+    return self.opeval.eval(self.alpha, pysgpp.DataVector(x))
+
 
 class opt_function(pysgpp.OptScalarFunction):
 
@@ -24,9 +51,10 @@ class opt_function(pysgpp.OptScalarFunction):
     super(opt_function, self).__init__(d)
 
   def eval(self, x):
-    global func
+    global func, eval_count
     d = self.getNumberOfParameters()
     list_x = [x[i] for i in range(d)]
+    eval_count += 1
     return func(list_x)
 
 class opt_quad_function(pysgpp.OptScalarFunction):
@@ -47,14 +75,17 @@ class opt_quad_function(pysgpp.OptScalarFunction):
     return self.target_func(list_x)
 
   def target_func(self,x):
-    global func
+    global func, eval_count
     alpha = pysgpp.DataVector(self.gridStorage.getSize())
     for i in range(self.gridStorage.getSize()):
       gp = self.gridStorage.getPoint(i)
       y = [self.gridStorage.getCoordinate(gp, j) for j in range(self.int_d)]
       x_y = list(x + y)
       alpha[i] = func(x_y)
+      eval_count += 1
+    pysgpp.OptPrinter.getInstance().setVerbosity(-2)
     self.hierarch.doHierarchisation(alpha)
+    pysgpp.OptPrinter.getInstance().setVerbosity(2)
     return self.quadop.doQuadrature(alpha)
 
 def revenue(z, D):
@@ -161,13 +192,13 @@ def sin_spitze(x):
     prod *= x[i]*np.sin(5*np.pi*x[i]+2*np.pi*x[d-i-1])
   return -prod
 
-def griewank(x):  #falsch
+def griewank(x):
   #np.linalg.norm is buggy for pysgpp.DataVector
   d = len(x)
   prod = 1.0
   norm = 0.0
   for i in range(d):
-    x[i] = x[i]*1200.0 - 601.0
+    x[i] = x[i]*1200.0 - 607.0
     prod *= np.cos(x[i] / (i+1.0)**0.5 )
     norm += x[i]**2
   norm = norm**0.5
@@ -179,10 +210,18 @@ def beale(x):
   return (1.5 - x[0]*(1-x[1]))**2+(2.25 - x[0]*(1-x[1]**2))**2+(2.625-x[0]*(1-x[1]**3))**2
 
 
-def schwefel(x):
+def schwefel(call_x):
+    x = pysgpp.DataVector(call_x)
     for i in range(len(x)):
         x[i] = x[i] * 1000 - 500
     return -sum([x[i]*np.sin(abs(x[i])**0.5) for i in range(len(x))] )
+
+def schwefel_prod(x):
+    prod = 1.0
+    for i in range(len(x)):
+        x[i] = x[i] * 1000 - 500
+        prod *= 10*x[i]*np.sin(abs(x[i])**0.5)
+    return prod
 
 def grid2d(start, end, num=50):
     """Create an 2D array where each row is a 2D coordinate.
@@ -193,44 +232,44 @@ def grid2d(start, end, num=50):
     return np.column_stack([X0.flatten(), X1.flatten()])
 
 def gridToName(i, p):
-    types = {0 : "Linear",
-             1 : "LinearStretched",
-             2 : "LinearL0Boundary",
-             3 : "LinearBoundary (Rand)",
-             4 : "LinearStretchedBoundary", 5 : "LinearTruncatedBoundary",
-             6 : "ModLinear",
+    types = {0 : "Linear(Grad "  + str(p) + ")",
+             1 : "LinearStretched(Grad "  + str(p) + ")",
+             2 : "LinearL0Boundary(Grad "  + str(p) + ")",
+             3 : "LinearBoundary(Grad "  + str(p) + ")",
+             4 : "LinearStretchedBoundary(Grad "  + str(p) + ")",
+             5 : "LinearTruncatedBoundary(Grad "  + str(p) + ")",
+             6 : "ModLinear(Grad "  + str(p) + ")",
              7 : "Poly (Grad " + str(p) + ")",
-             8 : "PolyBoundary (Grad 3) (Rand)",
-             9 : "ModPoly",
-             10 : "ModWavelet",
-             11 : "ModBspline (Grad 3) (Rand)",
-             12 : "Prewavelet",
-             13 : "SquareRoot",
-             14 : "Periodic",
+             8 : "PolyBoundary (Grad " + str(p) + ")",
+             9 : "ModPoly(Grad "  + str(p) + ")",
+             10 : "ModWavelet(Grad "  + str(p) + ")",
+             11 : "ModBspline (Grad " + str(p) + ")",
+             12 : "Prewavelet(Grad "  + str(p) + ")",
+             13 : "SquareRoot(Grad "  + str(p) + ")",
+             14 : "Periodic(Grad "  + str(p) + ")",
              15 : "LinearClenshawCurtis",
-             16 : "B-Spline (Grad 3)",
-             17 : "B-SplineBoundary (Grad " + str(p) + ") (Rand)",
-             18 : "B-SplineClenshawCurtis (Grad " + str(p) + ") (Rand)",
-             19 : "Wavelet",
-             20 : "WaveletBoundary",
-             21 : "FundamentalSpline",
-             22 : "ModFundamentalSpline",
-             23 : "ModBsplineClenshawCurtis",
-             24 : "LinearStencil",
-             25 : "ModLinearStencil"}
+             16 : "B-Spline (Grad "  + str(p) + ")",
+             17 : "B-SplineBoundary (Grad " + str(p) + ")",
+             18 : "B-SplineClenshawCurtis (Grad " + str(p) + ")",
+             19 : "Wavelet(Grad "  + str(p) + ")",
+             20 : "WaveletBoundary(Grad "  + str(p) + ")",
+             21 : "FundamentalSpline(Grad "  + str(p) + ")",
+             22 : "ModFundamentalSpline(Grad "  + str(p) + ")",
+             23 : "ModBsplineClenshawCurtis(Grad "  + str(p) + ")",
+             24 : "LinearStencil(Grad "  + str(p) + ")",
+             25 : "ModLinearStencil (Grad "  + str(p) + ")"}
     return types[i]
 
 def printLine():
-    print "----------------------------------------" + \
-          "----------------------------------------"
+    print("----------------------------------------" + \
+          "----------------------------------------")
 
 
-def optimize(f, sol=0):
+def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
     # disable multi-threading
+    global func, eval_count
     pysgpp.omp_set_num_threads(1) # increase output verbosity
     pysgpp.OptPrinter.getInstance().setVerbosity(2)
-    print "sgpp::optimization example program started.\n"
-
     # objective function
     # f = opt_quad_function(d, int_d, int_grid_level)
     # dimension of domain
@@ -240,21 +279,40 @@ def optimize(f, sol=0):
     # maximal number of grid points
     # adaptivity of grid generation
     gamma = 0.85
-    N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
-    grids = [pysgpp.Grid.createBsplineGrid(d, 3),
-             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
-             pysgpp.Grid.createModBsplineGrid(d, 3),
+    N_vals = [50, 100, 200, 500, 1000]
+    # N_vals = [1000]
+    ec_list = []
+    loop_list = []
+    if(use_3_grid):
+      interpolf = interpolation_function(d + f.int_d, func)
+      print("using 3-grid method")
+      loop_list= range(1,8)
+    else:
+      loop_list = N_vals
+    # N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
+    grids = [(pysgpp.Grid.createBsplineGrid(d, 3), 3),
+             # (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+             # (pysgpp.Grid.createModBsplineGrid(d, 3), 3),
              # pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)]
-
-    fig=plt.figure()
-    ax=fig.add_subplot(111)
-    for grid in grids:
+             # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3)
+    ]
+    print("starting optimization with {} different grids, plotting based on {}, up to {} Ritter-Novak points".format(len(grids), x_axis, N_vals[-1]))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for grid, p in grids:
         printLine()
-        print gridToName(grid.getType(), p)
         printLine()
         errors = []
-        for N in N_vals:
+        for loop_item in loop_list:
+            eval_count = 0
+
+            if(use_3_grid):
+              grid_lvl = loop_item
+              interpolf.create_interpolation(grid_lvl)
+              func = interpolf
+              N = 3000
+            else:
+              N = loop_item
             grid.getStorage().clear()
             gridGen = pysgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma)
 
@@ -263,7 +321,7 @@ def optimize(f, sol=0):
             # #############################################################################
 
             printLine()
-            print "Generating grid...\n"
+            print("Generating {}".format(gridToName(grid.getType(),p)))
 
 
             if not gridGen.generate():
@@ -334,18 +392,24 @@ def optimize(f, sol=0):
               if fXOptCur < fXOpt:
                 xOpt, fXOpt, ftXOpt = xOptCur, fXOptCur, ftXOptCur
 
-            errors.append(fXOpt - sol)
+            # errors.append(1 + fXOpt) # 80.00256374
+            ec_list.append(eval_count)
+            # use real funct for error calculation only really makes sense for schwefel function
+            errors.append(schwefel(xOpt) - sol)
             print "\nxOpt = {}".format(xOpt)
             print "f(xOpt) = {:.8f}, ft(xOpt) = {:.8f}".format(fXOpt, ftXOpt)
             print "sol = {:.8f}, error = {:.2e}\n".format(sol, errors[-1])
-
-        ax.plot(N_vals, errors, 'o', N_vals, errors, label=gridToName(grid.getType(),p))
-
+            print "Eval Count: {}".format(eval_count)
+        if(x_axis == "gridpoints"):
+          ax.plot(N_vals, errors, 'o', N_vals, errors, label=gridToName(grid.getType(),p))
+          plt.xlabel('Grid Points')
+        elif(x_axis == "evaluations"):
+          ax.plot(ec_list, errors, 'o', ec_list, errors, label=gridToName(grid.getType(),p))
+          plt.xlabel('Evalutions')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    plt.xlabel('Grid Points')
     plt.ylabel('Error')
-    #ax.legend(loc=3)
+    ax.legend(loc=0)
 
     if isinstance(f, opt_function):
         plt.title("Optimization-Error {}-{}-Funktion".format(func_name, d))
@@ -353,9 +417,9 @@ def optimize(f, sol=0):
     elif isinstance(f, opt_quad_function):
         plt.title("Optimization-Error {}-{}-{}-Funktion reg-{}-grid".format(func_name, d, f.int_d, f.int_grid_level))
         save_name= 'opt-quad-{}-{}-{}-{}'.format(func_name, d, f.int_d, f.int_grid_level)
-    # plt.show()
+    plt.show()
     tikz_save(save_name + ".tex")
-    plt.savefig(save_name + ".png")
+    # plt.savefig(save_name + ".png")
 
 def genz_error():
     a = genz_a
@@ -389,26 +453,37 @@ def l2_det_error(f, f_sg):
   return (float(s)/resolution**2)**0.5
 
 def integrate(d, error_type = "l2", quad_error_sol = 0):
-    grids = (pysgpp.Grid.createLinearGrid(d),
-             pysgpp.Grid.createPolyGrid(d,3),
-             pysgpp.Grid.createBsplineGrid(d, 3),
-             # pysgpp.Grid.createLinearBoundaryGrid(d, 1),
-             pysgpp.Grid.createPolyBoundaryGrid(d,3),
-             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
-             # pysgpp.Grid.createModLinearGrid(d),
-             pysgpp.Grid.createModPolyGrid(d,3),
-             pysgpp.Grid.createModBsplineGrid(d,3),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3),
-             pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
-             pysgpp.Grid.createModFundamentalSplineGrid(d, 3),
-             pysgpp.Grid.createFundamentalSplineGrid(d, 3),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1))
+    mixedGrids = [(pysgpp.Grid.createLinearGrid(d), 1),
+             # (pysgpp.Grid.createPolyGrid(d,3), 3),
+             (pysgpp.Grid.createBsplineGrid(d, 3), 3) ,
+             (pysgpp.Grid.createBsplineGrid(d, 5), 5) ,
+             (pysgpp.Grid.createBsplineGrid(d, 7), 7),
+             # (pysgpp.Grid.createLinearBoundaryGrid(d, 1), 1),
+             (pysgpp.Grid.createPolyBoundaryGrid(d,3), 3),
+             # (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+             # (pysgpp.Grid.createModLinearGrid(d), 1),
+             # (pysgpp.Grid.createModPolyGrid(d,3), 3),
+             # (pysgpp.Grid.createModBsplineGrid(d,3), 3),
+             # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3),
+             # (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3), 3),
+             # (pysgpp.Grid.createModFundamentalSplineGrid(d, 3), 3),
+             # (pysgpp.Grid.createFundamentalSplineGrid(d, 3), 3 ),
+             # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1), 1),
+    ]
+    bsplineGrids =[(pysgpp.Grid.createBsplineGrid(d, 3), 3),
+                   (pysgpp.Grid.createBsplineGrid(d, 5), 5),
+                   (pysgpp.Grid.createBsplineGrid(d, 7), 7),
+                   (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+                   (pysgpp.Grid.createBsplineBoundaryGrid(d, 5), 5),
+                   (pysgpp.Grid.createBsplineBoundaryGrid(d, 7), 7),
+                   (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3),
+                   (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 5), 5),
+                   (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 7), 7)]
 
-    for grid in grids:
+
+    # for grid, p in mixedGrids:
+    for grid, p in bsplineGrids:
         #p  wird manuell gesetzt weil grid.getDegree() buggy
-        p  = 3
-        if grid == grids[-1]:
-            p = 1
         printLine()
         print gridToName(grid.getType(), p)
         printLine()
@@ -561,6 +636,8 @@ def plot_func():
           # Z[i,j] = func(vec_x)
           Z[i,j] = func([X[i,j], Y[i,j]])
 
+          # Z[i,j] = f.eval([X[i,j], Y[i,j]])
+
   ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
   plt.show()
 
@@ -577,27 +654,6 @@ def plot_1d():
   plt.plot(X, Z)
   plt.show()
 
-def test():
-  grid = pysgpp.Grid.createFundamentalSplineGrid(1,3)
-  grid.getGenerator().regular(5)
-  gridStorage = grid.getStorage()
-  print gridStorage.getSize()
-  b = pysgpp.SFundamentalSplineBase(3)
-  xs = np.linspace(0, 1, 200)
-  for i in range(gridStorage.getSize()):
-    gp = gridStorage.getPoint(i)
-    x = gridStorage.getCoordinate(gp, 0)
-    # print x
-  i = 0
-  for x in np.arange(1/64.0, 1 + 1/64.0, 1/32.0):
-    print "------"
-    print i
-    print "x=" + str(x)
-    print b.eval(5,1,x)
-    i += 1
-  plt.plot(xs, [b.eval(5,1, x) for x in xs])
-  plt.show()
-
 func_dic = {"genz" : oscill_genz,
             "sin_kuppel" : sin_kuppel,
             "sin_sum" : sin_sum,
@@ -605,6 +661,7 @@ func_dic = {"genz" : oscill_genz,
             "eggholder" : eggholder,
             "eggcrate" : eggcrate,
             "schwefel" : schwefel,
+            "schwefel_prod" : schwefel_prod,
             "shcb" : shcb,
             "easom" : easom,
             "griewank" : griewank,
@@ -616,12 +673,12 @@ func_dic = {"genz" : oscill_genz,
 quad_sol_dic = {"genz" : genz_error(),
             "sin_kuppel" : 4/np.pi**2,
             "eggcrate" : eggcrate_error(),
-            "schwefel" : schwefel,
+            "schwefel" : 0.0,
             "easom" : -0.0000476373}
 
 def opt_sol(function_name, d):
   if(function_name == "schwefel"):
-    return d*(-418.9828872724337)
+    return d*(-418.982887272433743)
 # elif(args.function == "sin_sum"):
       # sol = -0.967531
   else:
@@ -630,27 +687,35 @@ def opt_sol(function_name, d):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   operation_group = parser.add_mutually_exclusive_group()
-  operation_group.add_argument("-oq", "--optimize_quad", help="perform optimization of a quadrature function", nargs = 3)
-  operation_group.add_argument("-op", "--optimize", help="perform optimization", nargs=1)
+  operation_group.add_argument("-oq", "--optimize_quad", help="perform optimization of a quadrature function", nargs = 4)
+  operation_group.add_argument("-op", "--optimize", help="perform optimization", nargs=2)
   operation_group.add_argument("-c", "--convergence", help="create convergence plot", nargs=2)
   operation_group.add_argument("-p", "--plot", help="plot a function", action="store_true")
   operation_group.add_argument("-e", "--pointwise_error", help="plot the pointwise error of a function", action="store_true")
   parser.add_argument("function", help="function")
+  parser.add_argument("-g_3", "--use_3_grid", help="create overall interpolation before optimizing, onmly makles sense with -oq", action="store_true", default=False)
   args = parser.parse_args()
-  # func = schwefel
-  # f = ExampleFunction(4,1,1)
-  # print f.eval([0.920687, 0.920687, 0.920687, 0.920687])
-  # print args
+
+  # func = schwefel_prod
+  # f = opt_quad_function(3,1,1)
+  # print f.eval([0.1, 0.1, 0.1] )
+  print args
+
   func = func_dic[args.function]
   func_name = args.function[0].upper() + args.function[1:]
+  eval_count = 0
 
   if args.optimize_quad != None:
     d = int(args.optimize_quad[0])
     int_d = int(args.optimize_quad[1])
     int_level = int(args.optimize_quad[2])
+    x_axis = args.optimize_quad[3] #evaluations or gridpoints
+    if(x_axis != "evaluations" and x_axis != "gridpoints"):
+      print "Invalid argument for x_axis"
+      exit()
     f = opt_quad_function(d, int_d, int_level)
     sol = opt_sol(args.function, d)
-    optimize(f, sol)
+    optimize(f, sol, x_axis, args.use_3_grid)
   elif args.convergence != None:
     d = int(args.convergence[0])
     error_type = args.convergence[1]
@@ -665,7 +730,8 @@ if __name__ == "__main__":
     interpolation_error()
   elif args.optimize != None:
     d = int(args.optimize[0])
+    x_axis = args.optimize[1] #evaluations or gridpoints
     sol = opt_sol(args.function, d)
     f = opt_function(d)
-    optimize(f, sol)
+    optimize(f, sol, x_axis, args.use_3_grid)
     # plot_1d()
