@@ -415,7 +415,7 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
     size_t co_len = coefficients.size();  // depends on the degree
     // size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i-co_len));
-    size_t letzter_abschnitt = std::min(2*co_len - 1, hInv + co_len - i - 1);
+    size_t letzter_abschnitt = std::min(2*co_len - 1, hInv + co_len - i);
     size_t quadLevel = (degree + 1)/2;
     if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
@@ -426,15 +426,311 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
-        double x = h * (coordinates[c] + (i - co_len + j));
+        double x = h * (coordinates[c] + static_cast<double>(i - co_len + j));
         temp_res += weights[c]*eval(l, i, x);
       }
-      res += h * temp_res;
-    }
-    return res;
+      res += temp_res;
+      std::cout.precision(17);
+      std::cout << j << ":" << integralValues(degree, j) - temp_res << std::endl;
+      std::cout << "tmp:" << temp_res << std::endl;
+      std::cout << "val:" << integralValues(degree, j) << std::endl;
+      // std::cout << "case " << j - erster_abschnitt << ":" << std::endl;
+      // std::cout << "case " << 2*co_len - (j - erster_abschnitt) - 1 << ":" << std::endl;
+      // std::cout << "return " << temp_res << ";" << std::endl;
+     }
+    return h*res;
   }
 
  protected:
+  inline double integralValues(size_t p, size_t j) {
+    switch(p) {
+      case 3:
+        switch(j) {
+          case 0:
+          case 35:
+            return -9.9232277770566386e-11;
+          case 1:
+          case 34:
+            return 2.2015241117734198e-10;
+          case 2:
+          case 33:
+            return -8.3527339221474358e-10;
+          case 3:
+          case 32:
+            return 3.1172827379558299e-09;
+          case 4:
+          case 31:
+            return -1.1633857559608573e-08;
+          case 5:
+          case 30:
+            return 4.3418147500478472e-08;
+          case 6:
+          case 29:
+            return -1.620387324423053e-07;
+          case 7:
+          case 28:
+            return 6.0473678226874283e-07;
+          case 8:
+          case 27:
+            return -2.2569083966326653e-06;
+          case 9:
+          case 26:
+            return 8.4228968042619213e-06;
+          case 10:
+          case 25:
+            return -3.143467882041501e-05;
+          case 11:
+          case 24:
+            return 0.00011731581847739813;
+          case 12:
+          case 23:
+            return -0.00043782859508917761;
+          case 13:
+          case 22:
+            return 0.0016339985618793117;
+          case 14:
+          case 21:
+            return -0.0060981656524280699;
+          case 15:
+          case 20:
+            return 0.022758664047832972;
+          case 16:
+          case 19:
+            return -0.084936490538903828;
+          case 17:
+          case 18:
+            return 0.56698729810778081;
+          default:
+            throw std::invalid_argument("Error FundamentalSplineBasis integralValues. "
+                                        "Wrong B-Spline section.");
+        }
+
+      case 5:
+        switch(j) {
+          case 0:
+          case 57:
+            return 4.2635636180074598e-11;
+          case 1:
+          case 56:
+            return -2.544863733356501e-11;
+          case 2:
+          case 55:
+            return 7.2989809962843931e-11;
+          case 3:
+          case 54:
+            return -1.6927331336552837e-10;
+          case 4:
+          case 53:
+            return 3.9313285004732331e-10;
+          case 5:
+          case 52:
+            return -9.1304077833337545e-10;
+          case 6:
+          case 51:
+            return 2.1205133653910279e-09;
+          case 7:
+          case 50:
+            return -4.9248369180288253e-09;
+          case 8:
+          case 49:
+            return 1.1437805139562127e-08;
+          case 9:
+          case 48:
+            return -2.6564003760546062e-08;
+          case 10:
+          case 47:
+            return 6.1694205066455557e-08;
+          case 11:
+          case 46:
+            return -1.4328318024239078e-07;
+          case 12:
+          case 45:
+            return 3.3277144455073143e-07;
+          case 13:
+          case 44:
+            return -7.7285299028851931e-07;
+          case 14:
+          case 43:
+            return 1.7949308883889198e-06;
+          case 15:
+          case 42:
+            return -4.1686801171463277e-06;
+          case 16:
+          case 41:
+            return 9.6816507150865431e-06;
+          case 17:
+          case 40:
+            return -2.24853809684156e-05;
+          case 18:
+          case 39:
+            return 5.222171014051007e-05;
+          case 19:
+          case 38:
+            return -0.00012128355821293574;
+          case 20:
+          case 37:
+            return 0.00028167789872638306;
+          case 21:
+          case 36:
+            return -0.00065418960751704677;
+          case 22:
+          case 35:
+            return 0.0015193392828977592;
+          case 23:
+          case 34:
+            return -0.0035286490678896583;
+          case 24:
+          case 33:
+            return 0.0081957349905958134;
+          case 25:
+          case 32:
+            return -0.01904690302259859;
+          case 26:
+          case 31:
+            return 0.044526505690472819;
+          case 27:
+          case 30:
+            return -0.11015400914838804;
+          case 28:
+          case 29:
+            return 0.57894527255051087;
+          default:
+            throw std::invalid_argument("Error FundamentalSplineBasis integralValues. "
+                                        "Wrong B-Spline section.");
+
+        }
+      case 7:
+        switch(j) {
+          case 0:
+          case 79:
+            return -3.2776747019309431e-11;
+          case 1:
+          case 78:
+            return 6.800387459235169e-13;
+          case 2:
+          case 77:
+            return -1.7913831954170564e-11;
+          case 3:
+          case 76:
+            return 3.2508669473231547e-11;
+          case 4:
+          case 75:
+            return -6.0735911149886678e-11;
+          case 5:
+          case 74:
+            return 1.1346559234291133e-10;
+          case 6:
+          case 73:
+            return -2.1197410892471303e-10;
+          case 7:
+          case 72:
+            return 3.960057135085598e-10;
+          case 8:
+          case 71:
+            return -7.3980980944763312e-10;
+          case 9:
+          case 70:
+            return 1.3820976200211146e-09;
+          case 10:
+          case 69:
+            return -2.5820066277496919e-09;
+          case 11:
+          case 68:
+            return 4.8236522002269865e-09;
+          case 12:
+          case 67:
+            return -9.0114488083375996e-09;
+          case 13:
+          case 66:
+            return 1.6835005148478023e-08;
+          case 14:
+          case 65:
+            return -3.1450813778918553e-08;
+          case 15:
+          case 64:
+            return 5.8755769816062891e-08;
+          case 16:
+          case 63:
+            return -1.0976633262800374e-07;
+          case 17:
+          case 62:
+            return 2.0506322725955828e-07;
+          case 18:
+          case 61:
+            return -3.830949451196097e-07;
+          case 19:
+          case 60:
+            return 7.1569017486710765e-07;
+          case 20:
+          case 59:
+            return -1.3370378098868959e-06;
+          case 21:
+          case 58:
+            return 2.4978268080896985e-06;
+          case 22:
+          case 57:
+            return -4.6663891754675149e-06;
+          case 23:
+          case 56:
+            return 8.7176532283730618e-06;
+          case 24:
+          case 55:
+            return -1.6286142231327247e-05;
+          case 25:
+          case 54:
+            return 3.0425439273170001e-05;
+          case 26:
+          case 53:
+            return -5.6840186198069873e-05;
+          case 27:
+          case 52:
+            return 0.00010618767956520563;
+          case 28:
+          case 51:
+            return -0.00019837767062076651;
+          case 29:
+          case 50:
+            return 0.00037060520705411933;
+          case 30:
+          case 49:
+            return -0.00069235777534662848;
+          case 31:
+          case 48:
+            return 0.0012934542022453399;
+          case 32:
+          case 47:
+            return -0.0024164497266531818;
+          case 33:
+          case 46:
+            return 0.0045147287551079935;
+          case 34:
+          case 45:
+            return -0.00843731553179871;
+          case 35:
+          case 44:
+            return 0.015786829036653842;
+          case 36:
+          case 43:
+            return -0.029691880417253243;
+          case 37:
+          case 42:
+            return 0.057105157903897474;
+          case 38:
+          case 41:
+            return -0.12107652658875791;
+          case 39:
+          case 40:
+            return 0.58337296759896184;
+
+          default:
+            throw std::invalid_argument("Error FundamentalSplineBasis integralValues. "
+                                        "Wrong B-Spline section.");
+        }
+      default:
+        throw std::invalid_argument("Error FundamentalSplineBasis integralValues. "
+                                    "Unsupported Degree");
+    }
+  }
   /// B-spline coefficients
   std::vector<double> coefficients;
   /// B-spline basis
