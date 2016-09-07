@@ -377,7 +377,7 @@ class DataMatrix {
    * @param[in] x vector to be multiplied
    * @param[out] y vector in which the result should be stored
    */
-  void mult(const DataVector& x, DataVector& y);
+  void mult(const DataVector& x, DataVector& y) const;
 
   /**
    * Squares all elements of the DataMatrix
