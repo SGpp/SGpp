@@ -170,6 +170,10 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual void trainOnline(base::DataVector& plabels, 
                            base::DataMatrix& ptestData, base::DataVector& ptestLabels);
 
+  virtual void storeResults(base::DataMatrix& testDataset,
+                            const base::DataVector& classesReference,
+                            const double threshold);
+
   virtual void predict(base::DataMatrix& testData,
                        base::DataVector& computedLabels,
                        bool usePrior = false);

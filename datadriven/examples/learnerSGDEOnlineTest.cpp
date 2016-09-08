@@ -59,15 +59,15 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = trainDataset.getDimension();
-  gridConfig.level_ = 2;
+  gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
   //gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   // configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 3;
-  adaptConfig.noPoints_ = 4;
+  adaptConfig.numRefinements_ = 10;
+  adaptConfig.noPoints_ = 1;
 
   // configure solver
   std::cout << "# create solver config" << std::endl;
@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 2; // 5
+  crossvalidationConfig.kfold_ = 5; // 5
   crossvalidationConfig.lambda_ = 3.16228e-06;
   crossvalidationConfig.lambdaStart_ = 1e-1;
   crossvalidationConfig.lambdaEnd_ = 1e-10;
@@ -107,9 +107,11 @@ int main(int argc, char** argv) {
   std::cout << "# finished training" << std::endl;
 
   // test learner
-  //double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
-  //std::cout << "Acc (train): " << accTrain << std::endl;
+  double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
+  std::cout << "Acc (train): " << accTrain << std::endl;
   double accTest = learner.getAccuracy(testData, testLabels, 0.0);
   std::cout << "Acc (test): " << accTest << std::endl;
+
+  learner.storeResults(testData, testLabels, 0.0);
 
 }

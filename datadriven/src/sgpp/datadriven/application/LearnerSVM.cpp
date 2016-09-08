@@ -250,11 +250,12 @@ void LearnerSVM::train() {
 //////////////////////////////////////////////////////////
 }
 
+//void LearnerSVM::printResults()
+
 double LearnerSVM::getAccuracy(sgpp::base::DataMatrix& testDataset,
                                const sgpp::base::DataVector& classesReference,
                                const double threshold) {
   // evaluate test dataset
-
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
   predict(testDataset, classesComputed);
 
