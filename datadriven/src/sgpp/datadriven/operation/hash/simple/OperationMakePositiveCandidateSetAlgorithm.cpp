@@ -101,7 +101,6 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
     auto iseq = negativeGridPoints[i];
     auto gpi = currentIntersections[gridStorage.getPoint(iseq).getHash()];
     for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
-      costs++;
       auto jseq = negativeGridPoints[j];
       auto gpj = currentIntersections[gridStorage.getPoint(jseq).getHash()];
       if (haveOverlappingSupport(*gpi, *gpj) && !gpi->isHierarchicalAncestor(*gpj) &&

@@ -221,3 +221,4 @@ def plotSamples2d(samples):
     for i, sample in enumerate(samples):
         X[i], Y[i] = sample.getActiveProbabilistic()
     plt.plot(X, Y, linestyle=' ', marker='o')
+
