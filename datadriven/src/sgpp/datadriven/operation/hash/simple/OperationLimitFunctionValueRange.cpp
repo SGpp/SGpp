@@ -14,6 +14,7 @@
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
+#include <vector>
 #include <limits>
 
 namespace sgpp {
@@ -120,6 +121,22 @@ void OperationLimitFunctionValueRange::addConst(base::Grid& grid, base::DataVect
   }
   // hierarchize the result
   opHier->doHierarchisation(alpha);
+}
+
+std::vector<size_t>& OperationLimitFunctionValueRange::getAddedGridPoints() {
+  return opPositive->getAddedGridPoints();
+}
+
+std::vector<size_t>& OperationLimitFunctionValueRange::getAddedGridPointsForRangeLimitation() {
+  return opPositive->getAddedGridPointsForPositivity();
+}
+
+size_t OperationLimitFunctionValueRange::numAddedGridPoints() {
+  return opPositive->numAddedGridPoints();
+}
+
+size_t OperationLimitFunctionValueRange::numAddedGridPointsForRangeLimitation() {
+  return opPositive->numAddedGridPointsForPositivity();
 }
 
 } /* namespace datadriven */

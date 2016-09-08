@@ -52,11 +52,11 @@ class RefinableNodesSet(AdmissibleSetGenerator):
         for gp in self.admissibleSet.values():
             if not isRefineable(grid, gp) or \
                     not self.checkRange(gp, self.maxLevel):
-                del self.admissibleSet[gp.hash()]
+                del self.admissibleSet[gp.getHash()]
 
         # add the refinable new collocation nodes to the admissible set
         for gp in gps:
-            if gp.hash() not in self.admissibleSet and isRefineable(grid, gp):
+            if gp.getHash() not in self.admissibleSet and isRefineable(grid, gp):
                 self.insertPoint(gp)
 
 
@@ -77,7 +77,7 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
         for d in xrange(gs.getDimension()):
             # check left child in d
             gpl = HashGridPoint(gp)
-            gpr.getLeftChild(d)
+            gpl.getLeftChild(d)
             if not gs.isContaining(gpl) and isValid(grid, gpl) and \
                     self.checkRange(gpl, self.maxLevel):
                 self.addCollocationNode(grid, gpl)
@@ -97,8 +97,8 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
     def update(self, grid, newGridPoints):
         for gp in newGridPoints:
             # remove new points from the set
-            if gp.hash() in self.admissibleSet:
-                del self.admissibleSet[gp.hash()]
+            if gp.getHash() in self.admissibleSet:
+                del self.admissibleSet[gp.getHash()]
 
             # add all its children
             self.addChildren(grid, gp)

@@ -19,6 +19,9 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <string>
+#include <list>
+#include <utility>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -28,6 +31,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::HashGridPoint;
 using sgpp::datadriven::MakePositiveCandidateSearchAlgorithm;
 using sgpp::datadriven::MakePositiveInterpolationAlgorithm;
 

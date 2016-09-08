@@ -34,18 +34,11 @@ class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolation
 };
 
 // -------------------------------------------------------------------------------------------
-class OperationMakePositiveInterpolateLog : public OperationMakePositiveInterpolationAlgorithm {
+class OperationMakePositiveInterpolateExp : public OperationMakePositiveInterpolationAlgorithm {
  public:
-  OperationMakePositiveInterpolateLog(base::Grid& grid, base::DataVector& alpha);
-  virtual ~OperationMakePositiveInterpolateLog();
-
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
                                        std::vector<size_t>& addedGridPoints,
                                        double tol = -1e-14) override;
-
- private:
-  base::Grid* logGrid;
-  base::DataVector logAlpha;
 };
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveInterpolateBoundaryOfSupport

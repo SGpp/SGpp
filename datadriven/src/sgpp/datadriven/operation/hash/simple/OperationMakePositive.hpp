@@ -20,7 +20,7 @@ namespace datadriven {
 enum class MakePositiveCandidateSearchAlgorithm { FullGrid, Intersections };
 enum class MakePositiveInterpolationAlgorithm {
   SetToZero,
-  InterpolateLog,
+  InterpolateExp,
   InterpolateBoundaries1d
 };
 
@@ -86,6 +86,18 @@ class OperationMakePositive {
 
   /**
    *
+   * @return vector containing the indices of the added grid points
+   */
+  std::vector<size_t>& getAddedGridPoints();
+
+  /**
+   *
+   * @return vector containing the indices which have just been added for positivity
+   */
+  std::vector<size_t>& getAddedGridPointsForPositivity();
+
+  /**
+   *
    * @return number of newly added grid points
    */
   size_t numAddedGridPoints();
@@ -140,10 +152,10 @@ class OperationMakePositive {
   size_t minimumLevelSum;
   size_t maximumLevelSum;
 
-  /// number of needed new grid points
-  size_t numNewGridPointsForPositivity;
-  /// number of infact newly added grid points
-  size_t numNewGridPoints;
+  /// needed new grid points for positivity
+  std::vector<size_t> addedGridPointsForPositivity;
+  /// newly added grid points
+  std::vector<size_t> addedGridPoints;
   /// sets if a consistent grid is computed or not
   bool generateConsistentGrid;
 

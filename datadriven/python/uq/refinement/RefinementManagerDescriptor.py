@@ -12,7 +12,8 @@ from RefinementStrategy import (SurplusRanking,
                                 SurplusRatioEstimationRanking,
                                 ExpectationValueBFRanking,
                                 VarianceBFRanking,
-                                SquaredSurplusBFRanking)
+                                SquaredSurplusBFRanking,
+                                PredictiveRanking)
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -137,6 +138,11 @@ class MostPromisingChildrenDescriptor(AdmissibleSetDescriptor):
         super(MostPromisingChildrenDescriptor, self).__init__(refinement)
         localRefinementStrategy = AddNode()
         self._refinement.setLocalRefinementStrategy(localRefinementStrategy)
+
+    def withPredictiveRanking(self, f):
+        ranking = PredictiveRanking(f)
+        self._refinement.setRefinementCriterion(ranking)
+        return self
 
     def withSurplusRatioEstimationRanking(self):
         ranking = SurplusRatioEstimationRanking()

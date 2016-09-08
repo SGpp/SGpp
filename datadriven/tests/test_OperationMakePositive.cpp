@@ -20,6 +20,10 @@
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
+#include <vector>
+#include <list>
+#include <utility>
+
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -27,6 +31,7 @@ using sgpp::base::GridStorage;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
+using sgpp::base::HashGridPoint;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::datadriven::MakePositiveCandidateSearchAlgorithm;
 using sgpp::datadriven::MakePositiveInterpolationAlgorithm;
@@ -145,6 +150,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
               << " < " << numFullGridPoints << std::endl;
   }
 
+  // --------------------------------------------------------------------------------------------
   // make sure that the sparse grid function is really positive
   if (verbose) {
     std::cout << "check full grid for success: ";
@@ -177,6 +183,52 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
   if (verbose) {
     std::cout << "Done" << std::endl;
+  }
+
+  // --------------------------------------------------------------------------------------------
+  // make sure that the sparse grid is really minimal
+  std::vector<size_t> addedGridPointIndices = opMakePositive->getAddedGridPointsForPositivity();
+  std::vector<std::pair<std::shared_ptr<HashGridPoint>, double>> addedGridPoints;
+
+  std::unique_ptr<Grid> coarsedGrid(positiveGrid->clone());
+  GridStorage& coarsedGridStorage = coarsedGrid->getStorage();
+  for (auto& ix : addedGridPointIndices) {
+    std::shared_ptr<HashGridPoint> gp(new HashGridPoint(coarsedGridStorage.getPoint(ix)));
+    addedGridPoints.push_back(std::make_pair(gp, positiveAlpha[ix]));
+  }
+
+  // remove each of the added grid points and check if the function value at that point is
+  // negative
+  std::list<size_t> toBeRemoved;
+  DataVector coarsedAlpha(positiveAlpha);
+  for (auto& values : addedGridPoints) {
+    // load current point
+    std::shared_ptr<HashGridPoint> gp = values.first;
+    double coefficient = values.second;
+
+    // delete grid point
+    toBeRemoved.push_back(coarsedGridStorage.getSequenceNumber(*gp));
+    auto remainingIndex = coarsedGridStorage.deletePoints(toBeRemoved);
+    // restructure the coefficient vector
+    coarsedAlpha.restructure(remainingIndex);
+
+    // evaluate the function at this very point
+    gp->getStandardCoordinates(x);
+    std::unique_ptr<sgpp::base::OperationEval> opEvalNaive(
+        sgpp::op_factory::createOperationEvalNaive(*coarsedGrid));
+    double value = opEvalNaive->eval(coarsedAlpha, x);
+
+    // make sure that it is smaller than zero
+    BOOST_CHECK_LE(value, 0.0);
+
+    // insert grid point again
+    size_t ix = coarsedGridStorage.insert(*gp);
+
+    // restructure alpha
+    coarsedAlpha.insert(ix, coefficient);
+
+    // clear helper list
+    toBeRemoved.clear();
   }
 }
 
