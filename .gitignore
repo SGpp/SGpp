@@ -71,7 +71,20 @@ coverage
 
 # ignoring orig files
 *.orig
+*.lprof
+*.grid
+*.org_archive
 
 # ignoring uq tests
-datadriven/tests/uq/
+datadriven/tests/uq/analysis
+datadriven/tests/uq/anova
+datadriven/tests/uq/dists
+datadriven/tests/uq/learner
+datadriven/tests/uq/parameters
+datadriven/tests/uq/plot
+datadriven/tests/uq/quadrature
+datadriven/tests/uq/sampler
+datadriven/tests/uq/transformation
+datadriven/tests/uq/uq_setting
+
 /Release/

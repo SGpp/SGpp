@@ -9,21 +9,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plotDensity3d(U, n=50):
+def plotDensity3d(U, n=36):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     xlim = U.getBounds()[0]
     ylim = U.getBounds()[1]
-    x = np.linspace(xlim[0], xlim[1], n)
-    y = np.linspace(ylim[0], ylim[1], n)
-    Z = np.zeros(n * n).reshape(n, n)
+    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
+    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
+    Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
-    ax.plot_wireframe(xv, yv, Z)
+    ax.plot_wireframe(xv, yv, Z, color="black")
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
+
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
 #                            cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
@@ -36,12 +40,12 @@ def plotDensity3d(U, n=50):
     return fig, ax
 
 
-def plotSG3d(grid, alpha, n=40, f=lambda x: x):
+def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x = np.linspace(0, 1, n)
-    y = np.linspace(0, 1, n)
-    Z = np.zeros((n, n))
+    x = np.linspace(0, 1, n + 1, endpoint=True)
+    y = np.linspace(0, 1, n + 1, endpoint=True)
+    Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
@@ -73,12 +77,12 @@ def plotSG3d(grid, alpha, n=40, f=lambda x: x):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=40, f=lambda x: x):
+def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x = np.linspace(0, 1, n)
-    y = np.linspace(0, 1, n)
-    Z = np.zeros((n, n))
+    x = np.linspace(0, 1, n + 1, endpoint=True)
+    y = np.linspace(0, 1, n + 1, endpoint=True)
+    Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
@@ -114,8 +118,8 @@ def plotSG3d(grid, alpha, n=40, f=lambda x: x):
 def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x = np.linspace(xlim[0], xlim[1], n)
-    y = np.linspace(ylim[0], ylim[1], n)
+    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
+    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     Z = np.zeros((n, n))
 

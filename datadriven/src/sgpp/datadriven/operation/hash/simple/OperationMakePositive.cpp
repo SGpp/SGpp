@@ -164,10 +164,6 @@ void OperationMakePositive::addFullGridPoints(
     }
   }
 
-  // update the global list of new grid points
-  this->addedGridPoints.insert(this->addedGridPoints.end(), addedGridPoints.begin(),
-                               addedGridPoints.end());
-
   if (verbose) {
     std::cout << "# negative considered : "
               << (numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity)
@@ -194,7 +190,7 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
   size_t currentLevelSum = minimumLevelSum;
   size_t oldGridSize = grid.getSize();
 
-  std::vector<size_t> addedGridPoints;
+  std::vector<size_t> currentlyAddedGridPoints;
   std::vector<std::shared_ptr<base::HashGridPoint>> candidates;
 
   while (currentLevelSum <= maximumLevelSum) {
@@ -221,15 +217,15 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       }
 
       // add the those candidates for which the sparse grid function is negative
-      addFullGridPoints(grid, alpha, finalCandidates, addedGridPoints);
+      addFullGridPoints(grid, alpha, finalCandidates, currentlyAddedGridPoints);
 
       if (verbose) {
-        std::cout << "# new grid points     : " << addedGridPoints.size() << " -> "
+        std::cout << "# new grid points     : " << currentlyAddedGridPoints.size() << " -> "
                   << grid.getSize() << std::endl;
       }
 
       // update the hierarchical coefficients for the new points
-      interpolation->computeHierarchicalCoefficients(grid, alpha, addedGridPoints);
+      interpolation->computeHierarchicalCoefficients(grid, alpha, currentlyAddedGridPoints);
     } else {
       if (verbose) {
         std::cout << std::endl;
@@ -244,9 +240,9 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
     ++currentLevelSum;
 
     // update the global index list of new grid points
-    this->addedGridPoints.insert(this->addedGridPoints.begin(), addedGridPoints.begin(),
-                                 addedGridPoints.end());
-    addedGridPoints.clear();
+    addedGridPoints.insert(addedGridPoints.begin(), currentlyAddedGridPoints.begin(),
+                           currentlyAddedGridPoints.end());
+    currentlyAddedGridPoints.clear();
   }
 
   if (verbose) {
