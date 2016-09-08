@@ -35,6 +35,7 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
 #include <sgpp/datadriven/application/LearnerSVM.hpp>
+#include <sgpp/datadriven/application/LearnerSGD.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
