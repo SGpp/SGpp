@@ -11,6 +11,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
+#include <vector>
 #include <limits>
 
 namespace sgpp {
@@ -34,6 +35,30 @@ class OperationLimitFunctionValueRange {
   void doLimitation(base::Grid& grid, base::DataVector& alpha, double ylower, double yupper,
                     bool limitNodalValues = true);
 
+  /**
+   *
+   * @return vector containing the indices of the added grid points
+   */
+  std::vector<size_t>& getAddedGridPoints();
+
+  /**
+   *
+   * @return vector containing the indices which have just been added for range limiting
+   */
+  std::vector<size_t>& getAddedGridPointsForRangeLimitation();
+
+  /**
+   *
+   * @return number of newly added grid points
+   */
+  size_t numAddedGridPoints();
+
+  /**
+   *
+   * @return number of newly added grid points for guaranteeing the range
+   */
+  size_t numAddedGridPointsForRangeLimitation();
+
  private:
   void prepareForLowerLimitation(base::Grid& grid, base::DataVector& alpha, double ylower);
   void inverseFromLowerLimitation(base::Grid& grid, base::DataVector& alpha, double ylower);
@@ -43,6 +68,7 @@ class OperationLimitFunctionValueRange {
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   std::unique_ptr<datadriven::OperationMakePositive> opPositive;
+
   bool verbose;
 };
 

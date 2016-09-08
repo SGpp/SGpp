@@ -42,35 +42,7 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
 }
 
 // -------------------------------------------------------------------------------------------
-OperationMakePositiveInterpolateLog::OperationMakePositiveInterpolateLog(base::Grid& grid,
-                                                                         base::DataVector& alpha)
-    : logAlpha(alpha.getSize()) {
-  // copy the grid
-  base::HashGridStorage& gridStorage = grid.getStorage();
-  logGrid = base::Grid::createModLinearGrid(grid.getStorage().getDimension());
-  base::HashGridStorage& logGridStorage = logGrid->getStorage();
-
-  // run through grid and add points to newGrid
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    logGridStorage.insert(gridStorage.getPoint(i));
-  }
-  logGridStorage.recalcLeafProperty();
-
-  // interpolate the log of the given sparse grid function
-  logAlpha.copyFrom(alpha);
-
-  std::unique_ptr<base::OperationHierarchisation> opHier(
-      op_factory::createOperationHierarchisation(grid));
-  opHier->doDehierarchisation(logAlpha);
-  for (size_t i = 0; i < logAlpha.getSize(); i++) {
-    logAlpha[i] = std::log(std::max(logAlpha[i], 1e-14));
-  }
-  opHier->doHierarchisation(logAlpha);
-}
-
-OperationMakePositiveInterpolateLog::~OperationMakePositiveInterpolateLog() { delete logGrid; }
-
-void OperationMakePositiveInterpolateLog::computeHierarchicalCoefficients(
+void OperationMakePositiveInterpolateExp::computeHierarchicalCoefficients(
     base::Grid& grid, base::DataVector& alpha, std::vector<size_t>& addedGridPoints, double tol) {
   // compute the nodal values of the newly added grid points and subtract the
   // nodal value from the hierarchical coefficient. This sets the function value at that point
@@ -78,7 +50,6 @@ void OperationMakePositiveInterpolateLog::computeHierarchicalCoefficients(
   base::HashGridStorage& gridStorage = grid.getStorage();
 
   auto opEval = op_factory::createOperationEvalNaive(grid);
-  auto opEvalLog = op_factory::createOperationEvalNaive(*logGrid);
 
   base::DataVector x(gridStorage.getDimension());
 
@@ -86,7 +57,13 @@ void OperationMakePositiveInterpolateLog::computeHierarchicalCoefficients(
     gridStorage.getPoint(i).getStandardCoordinates(x);
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
-      alpha[i] = alpha[i] - yi + std::exp(opEvalLog->eval(logAlpha, x));
+      // eval exp of yi
+      double expyi = 0.0;
+      if (yi < -0.1) {
+        expyi = std::exp(yi);
+      }
+
+      alpha[i] = alpha[i] - yi + expyi;
     } else {
       alpha[i] = 0.0;
     }

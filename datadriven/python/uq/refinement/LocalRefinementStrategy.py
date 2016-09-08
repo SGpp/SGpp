@@ -1,4 +1,4 @@
-from pysgpp import HashGridPoint
+from pysgpp import HashGridPoint, IndexVector
 
 from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
                                insertHierarchicalAncestors,
@@ -16,11 +16,21 @@ class LocalRefinementStrategy(object):
 class AddNode(LocalRefinementStrategy):
 
     def refine(self, grid, gp):
-        ans = insertPoint(grid, gp)
-        ans += insertHierarchicalAncestors(grid, gp)
-        if hasBorder(grid):
-            ans += insertTruncatedBorder(grid, gp)
-        grid.getStorage().recalcLeafProperty()
+        ixs = IndexVector()
+        gs = grid.getStorage()
+
+        gs.insert(gp, ixs)
+#         ans = insertPoint(grid, gp)
+#         ans += insertHierarchicalAncestors(grid, gp)
+#         if hasBorder(grid):
+#             ans += insertTruncatedBorder(grid, gp)
+
+        gs.recalcLeafProperty()
+        
+        ans = []
+        for i in ixs:
+            ans.append(gs.getPoint(i))
+
         return ans
 
 

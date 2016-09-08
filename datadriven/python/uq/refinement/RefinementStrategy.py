@@ -2,7 +2,7 @@ from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 from pysgpp.extensions.datadriven.uq.operations import (estimateConvergence,
                                estimateSurplus)
-from pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix, createOperationEvalNaive
 import numpy as np
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
@@ -34,8 +34,11 @@ class SurplusRanking(Ranking):
         super(SurplusRanking, self).__init__()
 
     def rank(self, grid, gp, alphas, *args, **kws):
-        return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
-
+        gs = grid.getStorage()
+        if gs.isContaining(gp):
+            return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
+        else:
+            raise AttributeError("SurplusRanking - rank: the grid point does not exist in the current grid")
 
 class SquaredSurplusRanking(Ranking):
 
@@ -338,3 +341,18 @@ class LinearSurplusEstimationRanking(Ranking):
             A *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
 
         return a * A
+
+
+class PredictiveRanking(Ranking):
+
+    def __init__(self, f):
+        super(self.__class__, self).__init__()
+        self.f = f
+
+    def rank(self, grid, gp, alphas, *args, **kws):
+        gs = grid.getStorage()
+        x = DataVector(gs.getDimension())
+        gp.getStandardCoordinates(x)
+        opEval = createOperationEvalNaive(grid)
+
+        return abs(opEval.eval(alphas, x) - self.f(x))

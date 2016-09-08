@@ -21,6 +21,13 @@ class ASGCKnowledge(object):
         self.__alphas = {}
         self.__iteration = 0
 
+
+    @classmethod
+    def initWithStandardValues(cls, grid, alpha):
+        ans = ASGCKnowledge()
+        ans.update(grid, alpha, "_", 0, KnowledgeTypes.SIMPLE, 0)
+        return ans
+
     def getAvailableQoI(self):
         """
         get available quantities of interest

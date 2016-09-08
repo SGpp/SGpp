@@ -27,8 +27,6 @@ OperationMakePositive::OperationMakePositive(
     bool verbose)
     : minimumLevelSum(0),
       maximumLevelSum(0),
-      numNewGridPointsForPositivity(0),
-      numNewGridPoints(0),
       generateConsistentGrid(generateConsistentGrid),
       candidateSearchAlgorithm(candidateSearchAlgorithm),
       interpolationAlgorithm(interpolationAlgorithm),
@@ -65,9 +63,8 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
     case MakePositiveInterpolationAlgorithm::SetToZero:
       interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
-    case MakePositiveInterpolationAlgorithm::InterpolateLog:
-      interpolation =
-          std::make_shared<datadriven::OperationMakePositiveInterpolateLog>(grid, alpha);
+    case MakePositiveInterpolationAlgorithm::InterpolateExp:
+      interpolation = std::make_shared<datadriven::OperationMakePositiveInterpolateExp>();
       break;
     case MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d:
       interpolation =
@@ -77,6 +74,10 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
       interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
   }
+
+  // init grid point lists
+  addedGridPoints.clear();
+  addedGridPointsForPositivity.clear();
 }
 
 void OperationMakePositive::makeCurrentNodalValuesPositive(base::Grid& grid,
@@ -148,24 +149,28 @@ void OperationMakePositive::addFullGridPoints(
   opEval->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
-  size_t numCurrentNewGridPointsForPositivity = 0;
+  size_t oldNumNewGridPointsForPositivity = numAddedGridPointsForPositivity();
+  size_t ix = 0;
   for (size_t i = 0; i < candidates.size(); ++i) {
     if (nodalValues[i] < tol) {
       if (generateConsistentGrid) {
         gridStorage.insert(*candidates[i], addedGridPoints);
+        ix = gridStorage.getSequenceNumber(*candidates[i]);
       } else {
-        size_t ix = gridStorage.insert(*candidates[i]);
+        ix = gridStorage.insert(*candidates[i]);
         addedGridPoints.push_back(ix);
       }
-      numCurrentNewGridPointsForPositivity++;
+      addedGridPointsForPositivity.push_back(ix);
     }
   }
 
-  numNewGridPointsForPositivity += numCurrentNewGridPointsForPositivity;
-  numNewGridPoints += addedGridPoints.size();
+  // update the global list of new grid points
+  this->addedGridPoints.insert(this->addedGridPoints.end(), addedGridPoints.begin(),
+                               addedGridPoints.end());
 
   if (verbose) {
-    std::cout << "# negative considered : " << numCurrentNewGridPointsForPositivity
+    std::cout << "# negative considered : "
+              << (numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity)
               << " <= " << addedGridPoints.size() << " : # added grid points" << std::endl;
   }
 
@@ -237,21 +242,32 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
 
     // increment the level sum
     ++currentLevelSum;
+
+    // update the global index list of new grid points
+    this->addedGridPoints.insert(this->addedGridPoints.begin(), addedGridPoints.begin(),
+                                 addedGridPoints.end());
     addedGridPoints.clear();
   }
 
   if (verbose) {
-    std::cout << "# added grid points   : " << numNewGridPointsForPositivity << " + "
-              << (numNewGridPoints - numNewGridPointsForPositivity) << " = " << numNewGridPoints
-              << " + " << oldGridSize << " = " << grid.getSize() << std::endl;
+    std::cout << "# added grid points   : " << numAddedGridPointsForPositivity() << " + "
+              << (numAddedGridPoints() - numAddedGridPointsForPositivity()) << " = "
+              << numAddedGridPoints() << " + " << oldGridSize << " = " << grid.getSize()
+              << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
   }
 }
 
-size_t OperationMakePositive::numAddedGridPoints() { return numNewGridPoints; }
+size_t OperationMakePositive::numAddedGridPoints() { return addedGridPoints.size(); }
 
 size_t OperationMakePositive::numAddedGridPointsForPositivity() {
-  return numNewGridPointsForPositivity;
+  return addedGridPointsForPositivity.size();
+}
+
+std::vector<size_t>& OperationMakePositive::getAddedGridPoints() { return addedGridPoints; }
+
+std::vector<size_t>& OperationMakePositive::getAddedGridPointsForPositivity() {
+  return addedGridPointsForPositivity;
 }
 
 } /* namespace datadriven */
