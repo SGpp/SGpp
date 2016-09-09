@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = trainDataset.getDimension();
-  gridConfig.level_ = 2;
+  gridConfig.level_ = 4;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure regularization
@@ -74,20 +74,20 @@ int main(int argc, char** argv) {
   DBMatDecompostionType dt;
   std::string decompType;
   // "LU decomposition"
-  //dt = DBMatDecompLU;
-  //decompType = "LU decomposition";
+  dt = DBMatDecompLU;
+  decompType = "LU decomposition";
   // "Eigen decomposition"
   //dt = DBMatDecompEigen;
   //decompType = "Eigen decomposition";
   //"Cholesky decomposition"
-  dt = DBMatDecompChol;
-  decompType = "Cholesky decomposition";
+  //dt = DBMatDecompChol;
+  //decompType = "Cholesky decomposition";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
   // if cholesky choosen -> configure adaptive refinement
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 2;
+  adaptConfig.numRefinements_ = 3;
   adaptConfig.noPoints_ = 10;
   adaptConfig.threshold_ = 0.0;
 
@@ -108,8 +108,9 @@ int main(int argc, char** argv) {
   // create learner
   std::cout << "# create learner" << std::endl;
   /*sgpp::datadriven::*/LearnerSGDEOnOff learner(dconf, trainData, trainLabels, 
-                                             classNum, lambda, false, 
-                                             beta);
+                                                 testData, testLabels,
+                                                 classNum, lambda, false, 
+                                                 beta);
 
   //std::shared_ptr<sgpp::base::DataMatrix> cv_testData = std::make_shared<sgpp::base::DataMatrix>(testData);
   sgpp::base::DataMatrix* cv_testData = &testData;
@@ -123,7 +124,8 @@ int main(int argc, char** argv) {
   learner.train(batch_size, next_cv_step);
 
   //compute accuracy
-  //ToDo:
+  double acc = learner.getAccuracy();
+  std::cout << "# accuracy: " << acc << std::endl;
 }
 
 /*void classifstream(ParamClass &pc) {

@@ -142,7 +142,7 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 				esolver.solve(*lhsMatrix, e, *alpha_, b, cur_lambda);
 				// double crit = computeL2Error();
 				double crit = resDensity(alpha_);
-				std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit << std::endl;
+				//std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit << std::endl;
 				if(i == 0 || crit < best_crit) {
 					best_crit = crit;
 					lambda = cur_lambda;
@@ -164,12 +164,12 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 				cur_lambda = lambda_start_ + i*(lambda_end_ - lambda_start_)/(lambda_step_ - 1);
 				if(cv_logscale)
 					cur_lambda = exp(cur_lambda);
-				std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " << old_lambda << std::endl;
+				//std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " << old_lambda << std::endl;
 				//Solve for density declaring coefficients alpha based on changed lambda
 				cholsolver.solve(*lhsMatrix,*alpha_, b, old_lambda, cur_lambda);
 				old_lambda = cur_lambda;
 				double crit = resDensity(alpha_);
-				std::cout << ", crit: " << crit << std::endl;
+				//std::cout << ", crit: " << crit << std::endl;
 				if(i == 0 || crit < best_crit) {
 					best_crit = crit;
 					lambda = cur_lambda;
