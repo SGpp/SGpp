@@ -95,7 +95,7 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
   inline size_t getDegree() const {
     return bsplineBasis.getDegree();
   }
-  inline double getIntegral(LT l, IT i){
+  inline double getIntegral(LT l, IT i) {
     return bsplineBasis.getIntegral(l, i);
   }
 
