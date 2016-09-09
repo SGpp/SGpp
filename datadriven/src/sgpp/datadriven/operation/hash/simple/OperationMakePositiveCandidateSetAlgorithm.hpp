@@ -16,6 +16,8 @@
 namespace sgpp {
 namespace datadriven {
 
+// -------------------------------------------------------------------------------------------
+
 class OperationMakePositiveCandidateSetAlgorithm {
  public:
   OperationMakePositiveCandidateSetAlgorithm();
@@ -35,6 +37,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
   size_t iteration;
   bool verbose;
 };
+
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
@@ -51,9 +54,8 @@ class OperationMakePositiveFindIntersectionCandidates
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj);
 
-  virtual void findIntersections(
-      base::Grid& grid, size_t levelSum,
-      std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
+  void findIntersections(base::Grid& grid, size_t levelSum,
+                         std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
 
   virtual void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
 

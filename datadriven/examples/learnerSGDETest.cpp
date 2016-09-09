@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
   sgdeConfig.makePositive_ = false;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
-      sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::Intersections;
+      sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       sgpp::datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
   sgdeConfig.makePositive_verbose_ = false;
