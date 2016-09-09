@@ -17,7 +17,11 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class MakePositiveCandidateSearchAlgorithm { FullGrid, Intersections };
+enum class MakePositiveCandidateSearchAlgorithm {
+  FullGrid,
+  Intersections,
+  HybridFullIntersections
+};
 enum class MakePositiveInterpolationAlgorithm {
   SetToZero,
   InterpolateExp,
