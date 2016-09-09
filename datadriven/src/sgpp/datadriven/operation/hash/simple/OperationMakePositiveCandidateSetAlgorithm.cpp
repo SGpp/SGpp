@@ -287,5 +287,118 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
 
 size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return fullGrid->getSize(); }
 
+// -------------------------------------------------------------------------------------------
+
+OperationMakePositiveHybridFindIntersectionCandidates::
+    OperationMakePositiveHybridFindIntersectionCandidates(size_t fullGridLevel)
+    : fullGridLevel(fullGridLevel) {}
+
+void OperationMakePositiveHybridFindIntersectionCandidates::initializeCandidates(
+    base::Grid& grid, std::vector<size_t>& negativeGridPoints) {
+  base::HashGridStorage& gridStorage = grid.getStorage();
+
+  // prepare the intersection list for pair wise interactions
+  for (auto& iseq : negativeGridPoints) {
+    auto gpi = std::make_shared<base::HashGridPoint>(gridStorage.getPoint(iseq));
+    intersections[gpi->getHash()] =
+        std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
+    currentIntersections.insert(std::make_pair(gpi->getHash(), gpi));
+  }
+
+  // check intersection of two grid points
+  size_t cntIntersections = 0;
+  for (size_t i = 0; i < negativeGridPoints.size(); ++i) {
+    auto iseq = negativeGridPoints[i];
+    auto gpi = currentIntersections[gridStorage.getPoint(iseq).getHash()];
+    for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
+      auto jseq = negativeGridPoints[j];
+      auto gpj = currentIntersections[gridStorage.getPoint(jseq).getHash()];
+      if (haveOverlappingSupport(*gpi, *gpj) && !gpi->isHierarchicalAncestor(*gpj) &&
+          !gpj->isHierarchicalAncestor(*gpi)) {
+        intersections[gpi->getHash()]->push_back(gpj);
+        intersections[gpj->getHash()]->push_back(gpi);
+        cntIntersections++;
+      }
+    }
+  }
+
+  // sort the overlapping grid points to speed up intersection search
+  for (auto& gps : intersections) {
+    std::sort(gps.second->begin(), gps.second->end(), compareGridPointsByHash);
+  }
+
+  if (verbose) {
+    std::cout << "# intersections (k=1) : " << currentIntersections.size() << "/" << costs
+              << std::endl;
+  }
+}
+
+void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
+    base::Grid& grid, base::DataVector& alpha, size_t levelSum,
+    std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
+  if (grid.getType() != base::GridType::Linear) {
+    throw base::factory_exception(
+        "OperationMakePositiveFindIntersectionCandidates is not implemented for this grid type");
+  }
+
+  if (iteration == 0) {
+    // find all full grid points with |l|_\infty <= fullGridLevel
+    size_t numDims = grid.getStorage().getDimension();
+    base::GridStorage& gridStorage = grid.getStorage();
+
+    fullGrid.reset(base::Grid::createLinearGrid(numDims));
+    fullGridLevel = std::min(fullGridLevel, gridStorage.getMaxLevel());
+    fullGrid->getGenerator().full(fullGridLevel);
+    base::GridStorage& fullGridStorage = fullGrid->getStorage();
+    for (size_t i = 0; i < fullGridStorage.getSize(); i++) {
+      auto gp = std::make_shared<base::HashGridPoint>(fullGridStorage.getPoint(i));
+      this->candidates[gp->getHash()] = gp;
+    }
+
+    // find all the grid points with negative coefficient and max level larger as the full grid
+    // max level
+    std::vector<size_t> negativeGridPoints;
+    for (size_t i = 0; i < alpha.getSize(); ++i) {
+      if (alpha[i] < -1e-14 && gridStorage.getPoint(i).getLevelMax() > fullGridLevel) {
+        negativeGridPoints.push_back(i);
+      }
+    }
+
+    if (verbose) {
+      std::cout << "--------------------------------------------------------" << std::endl;
+      std::cout << "# negative candidates : " << negativeGridPoints.size() << "/" << alpha.getSize()
+                << std::endl;
+    }
+
+    // search for intersections
+    costs = 0;
+    initializeCandidates(grid, negativeGridPoints);
+    findIntersections(grid, levelSum, this->candidates);
+
+    if (verbose) {
+      size_t numDims = grid.getStorage().getDimension();
+      size_t maxLevel = grid.getStorage().getMaxLevel();
+      double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
+
+      std::cout << "# considered intersect: " << this->candidates.size() << " / "
+                << numFullGridPoints << " : full grid points (l = " << maxLevel << ")" << std::endl;
+      std::cout << "# comparison costs    : " << costs << std::endl;
+      std::cout << "--------------------------------------------------------" << std::endl;
+    }
+  }
+
+  // increment the iteration
+  ++iteration;
+
+  // load the candidates with the desired level sum
+  candidates.clear();
+  for (auto& value : this->candidates) {
+    auto gp = value.second;
+    if (gp->getLevelSum() == levelSum) {
+      candidates.push_back(gp);
+    }
+  }
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

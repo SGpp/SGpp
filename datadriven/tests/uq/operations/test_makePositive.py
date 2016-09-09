@@ -29,10 +29,12 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
 
 
 # parameters
-numDims = 6
-level = 4
+numDims = 4
+level = 3
 refnums = 0
 consistentGrid = False
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
 plot = False
@@ -128,7 +130,7 @@ print "full grid                  = %i" % ((2 ** level - 1) ** numDims,)
 
 if code == "c++":
     alpha_vec = DataVector(alpha)
-    opMakePositive = createOperationMakePositive(MakePositiveCandidateSearchAlgorithm_Intersections,
+    opMakePositive = createOperationMakePositive(candidateSearchAlgorithm,
                                                  interpolationAlgorithm,
                                                  consistentGrid, verbose)
     opMakePositive.makePositive(grid, alpha_vec)
