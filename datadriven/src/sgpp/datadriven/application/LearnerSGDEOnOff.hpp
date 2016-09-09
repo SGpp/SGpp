@@ -23,8 +23,10 @@ using namespace std;
 
 class LearnerSGDEOnOff : public DBMatOnline {
 public:
-  LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& dconf, sgpp::base::DataMatrix& trainData,
-                   sgpp::base::DataVector& trainData_c, /*double* classLabels, */int classNumber,
+  LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& dconf,
+                   sgpp::base::DataMatrix& trainData, sgpp::base::DataVector& trainData_c,
+                   sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testData_c,
+                   /*double* classLabels, */int classNumber,
                    double lambda, bool usePrior = true, double beta = 0.);
   /*virtual */~LearnerSGDEOnOff();
 
@@ -54,6 +56,8 @@ public:
 	 * @param RefineCoarse_ vector of a pair of a list representing indices of removed grid points and an unsigned int representing added grid points. The vector is of length 'number of classes'
 	 */
 	virtual void train(std::vector<std::pair<sgpp::base::DataMatrix*, double> >& trainDataClasses, bool do_cv = false, std::vector<std::pair<std::list<size_t>, unsigned int> >*  RefineCoarse_ = NULL);
+
+        virtual double getAccuracy();
 	
 	virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix* test);
 	
@@ -85,7 +89,8 @@ public:
 	 */
 	virtual double getBestLambda();
 	
-	//void init(std::map<double, int> entriesPerClass);
+	//virtual void init(std::map<double, int> entriesPerClass);
+        virtual void init();
 	
 	virtual unsigned int getNumClasses();
 	
@@ -102,11 +107,11 @@ protected:
 	base::DataVector* trainLabels;
         //std::shared_ptr<base::DataMatrix> trainData;
         //std::shared_ptr<base::DataVector> trainLabels;
-        std::shared_ptr<base::DataMatrix> testData;
-        std::shared_ptr<base::DataVector> testLabels;
+        base::DataMatrix* testData;
+        base::DataVector* testLabels;
 
         DBMatOffline* offline;
-	//double* classLabels;
+	double* classLabels;
 	int classNumber;
 	std::vector<std::pair<DBMatOnlineDE*, double> >* destFunctions_;
 	bool trained_;
