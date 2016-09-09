@@ -293,6 +293,9 @@ OperationMakePositiveHybridFindIntersectionCandidates::
     OperationMakePositiveHybridFindIntersectionCandidates(size_t fullGridLevel)
     : fullGridLevel(fullGridLevel) {}
 
+OperationMakePositiveHybridFindIntersectionCandidates::
+    ~OperationMakePositiveHybridFindIntersectionCandidates() {}
+
 void OperationMakePositiveHybridFindIntersectionCandidates::initializeCandidates(
     base::Grid& grid, std::vector<size_t>& negativeGridPoints) {
   base::HashGridStorage& gridStorage = grid.getStorage();

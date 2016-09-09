@@ -1,5 +1,10 @@
-#include "sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
-#include "sgpp/optimization/operation/OptimizationOpFactory.hpp"
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp_base.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp_optimization.hpp>
@@ -18,14 +23,12 @@ using sgpp::base::GridStorage;
 using sgpp::base::OperationQuadrature;
 using sgpp::base::OperationQuadratureMC;
 
-
 class ExampleFunction : public sgpp::optimization::ScalarFunction {
-public:
+ public:
   /**
    * Constructor.
    */
-  ExampleFunction() : sgpp::optimization::ScalarFunction(1) {
-  }
+  ExampleFunction() : sgpp::optimization::ScalarFunction(1) {}
 
   /**
    * Evaluates the test function.
@@ -34,7 +37,7 @@ public:
    * @return      \f$f(\vec{x})\f$
    */
   double eval(const sgpp::base::DataVector& x) {
-    std::unique_ptr<Grid> grid = Grid::createBsplineBoundaryGrid(1, 3);
+    std::unique_ptr<Grid> grid(Grid::createBsplineBoundaryGrid(1, 3));
     size_t level = 3;
     grid->getGenerator().regular(level);
     GridStorage& gridStorage = grid->getStorage();
@@ -55,15 +58,10 @@ public:
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-                     std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
-                                                                new ExampleFunction(*this));
+  virtual void clone(std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(new ExampleFunction(*this));
   }
 };
-
-
-
 
 double oscill_genz(size_t d, DataVector x) {
   double a[2];
@@ -74,85 +72,77 @@ double oscill_genz(size_t d, DataVector x) {
   u[0] = 0.5;
   u[1] = 0.5;
   double s = 0.0;
-  for (size_t i = 0; i < d; i++ ) {
-    s += a[i]*x[i];
+  for (size_t i = 0; i < d; i++) {
+    s += a[i] * x[i];
   }
-  return std::cos(2*pi*u[0]+s);
+  return std::cos(2 * pi * u[0] + s);
 }
 
 void bsplineQuadTest(int p, int level, int index) {
-  int erster_abschnitt = std::max(-(index-(p+1)/2), 0);
-  int letzter_abschnitt = std::min(p, (1 << level) + (p+1)/2 - index - 1);
+  int erster_abschnitt = std::max(-(index - (p + 1) / 2), 0);
+  int letzter_abschnitt = std::min(p, (1 << level) + (p + 1) / 2 - index - 1);
   std::cout << erster_abschnitt << "::" << letzter_abschnitt << std::endl;
 
-  erster_abschnitt = std::max(-((index - p)/2), 0);
-  letzter_abschnitt = std::min(p, static_cast<int>((pow(2, level-1) + 1) - ((index+1)/2 ) + 1));
+  erster_abschnitt = std::max(-((index - p) / 2), 0);
+  letzter_abschnitt =
+      std::min(p, static_cast<int>((pow(2, level - 1) + 1) - ((index + 1) / 2) + 1));
   std::cout << erster_abschnitt << "::" << letzter_abschnitt << std::endl;
 
-  for(int a = 0; a <= p; a++){
-    if((index - (p+1)/2 + a) >= 0 && (index - (p+1)/2 + a) < pow(2,level)) {
+  for (int a = 0; a <= p; a++) {
+    if ((index - (p + 1) / 2 + a) >= 0 && (index - (p + 1) / 2 + a) < pow(2, level)) {
       std::cout << a << ",";
     }
   }
   std::cout << std::endl << "------------" << std::endl;
 }
 
-
 double fac(int n) {
   int erg = 1;
-  for(int i = 2; i <= n; i++){
+  for (int i = 2; i <= n; i++) {
     erg *= i;
   }
   return erg;
 }
 
-double betaFunkt(int p, int q) {
-  return (fac(p-1)*fac(q-1))/fac(p+q-1);
-}
+double betaFunkt(int p, int q) { return (fac(p - 1) * fac(q - 1)) / fac(p + q - 1); }
 
 double f(int dim, double* x, void* clientData) {
   double res = 1.0;
   int alpha_1 = 5;
   int beta_1 = 4;
-  res *= (1/betaFunkt(alpha_1,beta_1))*pow(x[0], alpha_1 - 1)*pow(1 - x[0], beta_1 - 1);
+  res *= (1 / betaFunkt(alpha_1, beta_1)) * pow(x[0], alpha_1 - 1) * pow(1 - x[0], beta_1 - 1);
   int alpha_2 = 3;
   int beta_2 = 2;
-  res *= (1/betaFunkt(alpha_2,beta_2))*pow(x[1], alpha_2 - 1)*pow(1 - x[1], beta_2 - 1);
+  res *= (1 / betaFunkt(alpha_2, beta_2)) * pow(x[1], alpha_2 - 1) * pow(1 - x[1], beta_2 - 1);
   return res;
 }
 
-double f_1d(size_t d , double x){
+double f_1d(size_t d, double x) {
   if (d == 0) {
-      int alpha_1 = 5;
-      int beta_1 = 4;
-      return (1/betaFunkt(alpha_1,beta_1))*pow(x, alpha_1 - 1)*pow(1 - x, beta_1 - 1);
-    }
-    else if(d == 1){
-      int alpha_2 = 3;
-      int beta_2 = 2;
-      return (1/betaFunkt(alpha_2,beta_2))*pow(x, alpha_2 - 1)*pow(1 - x, beta_2 - 1);
-    }
-    else return 0;
+    int alpha_1 = 5;
+    int beta_1 = 4;
+    return (1 / betaFunkt(alpha_1, beta_1)) * pow(x, alpha_1 - 1) * pow(1 - x, beta_1 - 1);
+  } else if (d == 1) {
+    int alpha_2 = 3;
+    int beta_2 = 2;
+    return (1 / betaFunkt(alpha_2, beta_2)) * pow(x, alpha_2 - 1) * pow(1 - x, beta_2 - 1);
+  } else {
+    return 0;
+  }
 }
 
-double const_one(int d, double x){
-  return 1.0;
-}
+double const_one(int d, double x) { return 1.0; }
 
-double u(double x1, double x2){
-  return 4*x1*(1-x1)*4*x2*(1-x2);
-}
+double u(double x1, double x2) { return 4 * x1 * (1 - x1) * 4 * x2 * (1 - x2); }
 
-double parabel_g(double x , double eps){
-  return (x - 0.5)*(x - 0.5)*2*eps;
-}
+double parabel_g(double x, double eps) { return (x - 0.5) * (x - 0.5) * 2 * eps; }
 
-void ew_varianz(){
+void ew_varianz() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
   // std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   // std::unique_ptr<Grid> grid = Grid::createBsplineGrid(dim, 3);
-  std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, 2);
+  std::unique_ptr<Grid> grid(Grid::createPolyGrid(dim, 2));
   GridStorage& gridStorage = grid->getStorage();
 
   std::cout << "dimensional:        " << gridStorage.getDimension() << std::endl;
@@ -166,7 +156,7 @@ void ew_varianz(){
   DataVector alpha(gridStorage.getSize());
   DataVector p(dim);
 
-for (size_t i = 0; i < gridStorage.getSize(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     GridPoint& gp = gridStorage.getPoint(i);
     p = gridStorage.getCoordinates(gp);
     alpha[i] = u(p[0], p[1]);
@@ -189,10 +179,8 @@ for (size_t i = 0; i < gridStorage.getSize(); i++) {
   int in = 0;
   int le = 0;
 
-  std::unique_ptr<Grid> int_grid = Grid::createBsplineGrid(1,3);
+  std::unique_ptr<Grid> int_grid(Grid::createBsplineGrid(1, 3));
   int_grid->getGenerator().regular(5);
-
-
 
   GridStorage& intStorage = int_grid->getStorage();
   sgpp::base::DataVector alpha_int(intStorage.getSize());
@@ -205,10 +193,10 @@ for (size_t i = 0; i < gridStorage.getSize(); i++) {
     p = gridStorage.getCoordinates(gp);
     double prod_res = 1.0;
 
-    for (size_t d = 0; d < 2; d++){
+    for (size_t d = 0; d < 2; d++) {
       in = gp.getIndex(d);
       le = gp.getLevel(d);
-      //quadrature
+      // quadrature
       double x = 0.0;
       double int_res = 0.0;
       double int_res_comp = 0.0;
@@ -217,28 +205,26 @@ for (size_t i = 0; i < gridStorage.getSize(); i++) {
         GridPoint& gp_int = intStorage.getPoint(j);
         x = intStorage.getCoordinates(gp_int)[0];
         // alpha_int[j] = base.eval(le, in, x)*base.eval(le, in, x)*f_1d(d, x); // Varianz
-        alpha_int[j] = base.eval(le, in, x)*f_1d(d, x); // Erwartungswert
+        alpha_int[j] = base.eval(le, in, x) * f_1d(d, x);  // Erwartungswert
       }
       hierarch->doHierarchisation(alpha_int);
       int_res = opQ->doQuadrature(alpha_int);
       std::cout << d << "::" << int_res << "::" << int_res_comp << std::endl;
 
       prod_res *= int_res;
-
     }
-    std:: cout << "prod_res:" << prod_res << std::endl;
+    std::cout << "prod_res:" << prod_res << std::endl;
 
-    double v_i = alpha[i]; // Erwartungswert
+    double v_i = alpha[i];  // Erwartungswert
     // double v_i = alpha[i]*alpha[i]; // Varianz
-    res += v_i*prod_res;
-    std:: cout << "res:" << res << std::endl;
+    res += v_i * prod_res;
+    std::cout << "res:" << res << std::endl;
   }
   // res -= 0.711111111*0.711111111; // Varianz
   std::cout << res << std::endl;
 }
 
-
-void optimize(){
+void optimize() {
   ExampleFunction f;
   // dimension of domain
   const size_t d = f.getNumberOfParameters();
@@ -285,11 +271,10 @@ void optimize(){
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
 
     // index of grid point with minimal function value
-    size_t x0Index = std::distance(
-                       functionValues.getPointer(),
-                       std::min_element(functionValues.getPointer(),
-                                        functionValues.getPointer() +
-                                        functionValues.getSize()));
+    size_t x0Index =
+        std::distance(functionValues.getPointer(),
+                      std::min_element(functionValues.getPointer(),
+                                       functionValues.getPointer() + functionValues.getSize()));
 
     for (size_t t = 0; t < d; t++) {
       x0[t] = gridStorage[x0Index].getStandardCoordinate(t);
@@ -310,11 +295,10 @@ void optimize(){
 
   std::cout << "\nxOpt = " << xOpt.toString() << "\n";
   std::cout << "f(xOpt) = " << fXOpt << ", ft(xOpt) = " << ftXOpt << "\n\n";
-
 }
 
-void integrate(){
-  std::unique_ptr<Grid> grid = Grid::createBsplineGrid(2, 5);
+void integrate() {
+  std::unique_ptr<Grid> grid(Grid::createBsplineGrid(2, 5));
   size_t level = 5;
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
@@ -333,7 +317,7 @@ void integrate(){
   std::cout << opQ->doQuadrature(alpha) << std::endl;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   // optimize();
   // ew_varianz();
   // integrate();
