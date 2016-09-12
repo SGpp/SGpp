@@ -95,6 +95,9 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
+vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
+                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                      converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, "Build the module " + moduleName +
@@ -208,6 +211,9 @@ if "CPPPATH" in ARGUMENTS:
   env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
 if "LIBPATH" in ARGUMENTS:
   env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
+
+if "SWIGFLAGS" in ARGUMENTS:
+    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
