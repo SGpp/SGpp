@@ -23,13 +23,13 @@ from pysgpp.pysgpp_swig import createOperationMakePositive, \
     MakePositiveInterpolationAlgorithm_SetToZero, \
     MakePositiveInterpolationAlgorithm_InterpolateExp, \
     MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, IndexList, \
-    HashGridPoint
+    HashGridPoint, MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
 
 
 # parameters
-numDims = 4
+numDims = 3
 level = 3
 refnums = 0
 consistentGrid = False
@@ -122,7 +122,7 @@ if numDims == 2 and plot:
     fig.show()
 
 C = 0
-M = np.sum([1 for x in alpha if x < 0])
+M = np.sum([1 for i in xrange(len(alpha)) if alpha[i] < 0])
 for d in xrange(2, numDims + 1):
     C += binom(M, d)
 print "predicted comparison costs = %i" % C
@@ -176,18 +176,18 @@ else:
 #
 #     print value
 
-# # security check for positiveness
-# neg = checkPositivity(grid, alpha)
-#
-# if len(neg) > 0:
-#     print "warning: the sparse grid function is not positive"
-# #             raise AttributeError("the sparse grid function is not positive")
-#     # check at which grid points the function is negative
-# #             for i, (yi, gp) in neg.items():
-# #                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
-# #                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
-# #                                                      [gp.getIndex(d) for d in xrange(numDims)],
-# #                                                      yi)
+# security check for positiveness
+neg = checkPositivity(grid, alpha)
+
+if len(neg) > 0:
+    print "warning: the sparse grid function is not positive"
+#             raise AttributeError("the sparse grid function is not positive")
+    # check at which grid points the function is negative
+#             for i, (yi, gp) in neg.items():
+#                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
+#                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
+#                                                      [gp.getIndex(d) for d in xrange(numDims)],
+#                                                      yi)
 
 sgdeDist = SGDEdist(grid, alpha)
 print "-" * 80

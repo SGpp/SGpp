@@ -54,10 +54,11 @@ class OperationMakePositiveFindIntersectionCandidates
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj);
 
-  void findIntersections(base::Grid& grid, size_t levelSum,
-                         std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
+  virtual void findIntersections(
+      base::Grid& grid, base::DataVector& alpha, size_t levelSum,
+      std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
 
-  virtual void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
+  void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
 
   void computeIntersection(base::HashGridPoint& gpi, base::HashGridPoint& gpj,
                            base::HashGridPoint& gpintersection);
@@ -96,17 +97,15 @@ class OperationMakePositiveLoadFullGridCandidates
 class OperationMakePositiveHybridFindIntersectionCandidates
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
-  explicit OperationMakePositiveHybridFindIntersectionCandidates(size_t fullGridLevel);
+  OperationMakePositiveHybridFindIntersectionCandidates();
   virtual ~OperationMakePositiveHybridFindIntersectionCandidates();
+
+  void findIntersections(
+      base::Grid& grid, base::DataVector& alpha, size_t levelSum,
+      std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
-
- protected:
-  void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints) override;
-
-  size_t fullGridLevel;
-  std::unique_ptr<base::Grid> fullGrid;
 };
 
 } /* namespace datadriven */

@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <limits>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -118,13 +119,12 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
   }
 
   if (verbose) {
-    std::cout << "# intersections (k=1) : " << currentIntersections.size() << "/" << costs
-              << std::endl;
+    std::cout << "# intersections (k=1) : " << currentIntersections.size() << std::endl;
   }
 }
 
 void OperationMakePositiveFindIntersectionCandidates::findIntersections(
-    base::Grid& grid, size_t levelSum,
+    base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
@@ -133,9 +133,17 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
   for (size_t k = 2; k <= numDims; ++k) {
     size_t cntNewIntersections = 0;
     size_t currentCosts = 0;
+
+    if (verbose) {
+      std::cout << "# intersections (k=" << k << ") : " << currentIntersections.size();
+    }
+
+    size_t minLengthOverlapping = std::numeric_limits<size_t>::max();
+    size_t maxLengthOverlapping = 0;
     for (auto& candidates : currentIntersections) {
       auto gpi = candidates.second;
       auto overlappingGridPoints = intersections[candidates.first];
+
       for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
         currentCosts++;
         auto gpj = (*overlappingGridPoints)[j];
@@ -164,6 +172,9 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 
           // store the result if the common candidates overlap with the current intersection
           // initialize the grid points that need to be considered
+          //          auto commonOverlappingIntersections =
+          //              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>(
+          //                  commonIntersections);
           auto commonOverlappingIntersections =
               std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
           for (auto& gpk : commonIntersections) {
@@ -177,6 +188,11 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
           if (commonOverlappingIntersections->size() > 0) {
             nextIntersections[gpintersection->getHash()] = gpintersection;
             intersections[gpintersection->getHash()] = commonOverlappingIntersections;
+            // stats
+            minLengthOverlapping =
+                std::min(minLengthOverlapping, commonOverlappingIntersections->size());
+            maxLengthOverlapping =
+                std::max(maxLengthOverlapping, commonOverlappingIntersections->size());
           }
         }
       }
@@ -190,8 +206,9 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     costs += currentCosts;
 
     if (verbose) {
-      std::cout << "# intersections (k=" << k << ") : " << cntNewIntersections << " -> "
-                << res.size() << " (costs = " << currentCosts << ")" << std::endl;
+      std::cout << " -> [" << minLengthOverlapping << ", " << maxLengthOverlapping
+                << "]: " << cntNewIntersections << " -> " << res.size()
+                << " (costs = " << currentCosts << ")" << std::endl;
     }
 
     // just stop if there are no more grid points to be considered in the current iteration
@@ -223,7 +240,7 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     // search for intersections
     costs = 0;
     initializeCandidates(grid, negativeGridPoints);
-    findIntersections(grid, levelSum, this->candidates);
+    findIntersections(grid, alpha, levelSum, this->candidates);
 
     if (verbose) {
       size_t numDims = grid.getStorage().getDimension();
@@ -290,50 +307,105 @@ size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return ful
 // -------------------------------------------------------------------------------------------
 
 OperationMakePositiveHybridFindIntersectionCandidates::
-    OperationMakePositiveHybridFindIntersectionCandidates(size_t fullGridLevel)
-    : fullGridLevel(fullGridLevel) {}
+    OperationMakePositiveHybridFindIntersectionCandidates() {}
 
 OperationMakePositiveHybridFindIntersectionCandidates::
     ~OperationMakePositiveHybridFindIntersectionCandidates() {}
 
-void OperationMakePositiveHybridFindIntersectionCandidates::initializeCandidates(
-    base::Grid& grid, std::vector<size_t>& negativeGridPoints) {
+void OperationMakePositiveHybridFindIntersectionCandidates::findIntersections(
+    base::Grid& grid, base::DataVector& alpha, size_t levelSum,
+    std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) {
   base::HashGridStorage& gridStorage = grid.getStorage();
+  auto numDims = gridStorage.getDimension();
 
-  // prepare the intersection list for pair wise interactions
-  for (auto& iseq : negativeGridPoints) {
-    auto gpi = std::make_shared<base::HashGridPoint>(gridStorage.getPoint(iseq));
-    intersections[gpi->getHash()] =
-        std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
-    currentIntersections.insert(std::make_pair(gpi->getHash(), gpi));
-  }
+  // check for intersections of more than two grid points
+  std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> considerInNextIteration;
 
-  // check intersection of two grid points
-  size_t cntIntersections = 0;
-  for (size_t i = 0; i < negativeGridPoints.size(); ++i) {
-    auto iseq = negativeGridPoints[i];
-    auto gpi = currentIntersections[gridStorage.getPoint(iseq).getHash()];
-    for (size_t j = i + 1; j < negativeGridPoints.size(); ++j) {
-      auto jseq = negativeGridPoints[j];
-      auto gpj = currentIntersections[gridStorage.getPoint(jseq).getHash()];
-      if (haveOverlappingSupport(*gpi, *gpj) && !gpi->isHierarchicalAncestor(*gpj) &&
-          !gpj->isHierarchicalAncestor(*gpi)) {
-        intersections[gpi->getHash()]->push_back(gpj);
-        intersections[gpj->getHash()]->push_back(gpi);
-        cntIntersections++;
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEvalNaive(grid));
+  base::DataVector x(numDims);
+  // just stop if there are no more grid points to be considered in the current iteration
+  while (currentIntersections.size() > 0) {
+    // make sure that no grid points have a larger level sum than the current one
+    for (auto& candidate : currentIntersections) {
+      if (candidate.second->getLevelSum() < levelSum) {
+        nextIntersections[candidate.first] = candidate.second;
+      } else {
+        considerInNextIteration[candidate.first] = candidate.second;
       }
+    }
+    currentIntersections.clear();
+    currentIntersections.swap(nextIntersections);
+
+    if (currentIntersections.size() == 0) {
+      break;
+    }
+
+    size_t cntNewIntersections = 0;
+    size_t currentCosts = 0;
+    for (auto& candidates : currentIntersections) {
+      auto gpi = candidates.second;
+      auto overlappingGridPoints = intersections[candidates.first];
+      for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
+        currentCosts++;
+        auto gpj = (*overlappingGridPoints)[j];
+
+        // find intersection and store it
+        auto gpintersection = std::make_shared<base::HashGridPoint>(numDims);
+        computeIntersection(*gpi, *gpj, *gpintersection);
+
+        // check if the intersection has already been found
+        if ((res.find(gpintersection->getHash()) == res.end()) &&
+            (considerInNextIteration.find(gpintersection->getHash()) ==
+             considerInNextIteration.end()) &&
+            !gridStorage.isContaining(*gpintersection)) {
+          // store the grid point in the result map
+          res[gpintersection->getHash()] = gpintersection;
+          ++cntNewIntersections;
+
+          // join the sets for possible intersections searches in the
+          // next iteration
+          auto iintersections = intersections[gpi->getHash()];
+          auto jintersections = intersections[gpj->getHash()];
+
+          // compute intersection of both overlapping candidate list
+          std::vector<std::shared_ptr<base::HashGridPoint>> commonIntersections;
+          std::set_intersection(iintersections->begin(), iintersections->end(),
+                                jintersections->begin(), jintersections->end(),
+                                std::back_inserter(commonIntersections), compareGridPointsByHash);
+
+          // store the result if the common candidates overlap with the current intersection
+          // initialize the grid points that need to be considered
+          auto commonOverlappingIntersections =
+              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
+          for (auto& gpk : commonIntersections) {
+            if (haveOverlappingSupport(*gpk, *gpintersection)) {
+              commonOverlappingIntersections->push_back(gpk);
+            }
+          }
+
+          // store the grid point for the next iteration if there are any overlapping
+          // other grid points left
+          if (commonOverlappingIntersections->size() > 0) {
+            nextIntersections[gpintersection->getHash()] = gpintersection;
+            intersections[gpintersection->getHash()] = commonOverlappingIntersections;
+          }
+        }
+      }
+    }
+
+    // clear first intersection queue and swap them
+    currentIntersections.clear();
+    currentIntersections.swap(nextIntersections);
+    costs += currentCosts;
+
+    if (verbose) {
+      std::cout << " -> " << cntNewIntersections << " -> " << res.size()
+                << " (costs = " << currentCosts << ")" << std::endl;
     }
   }
 
-  // sort the overlapping grid points to speed up intersection search
-  for (auto& gps : intersections) {
-    std::sort(gps.second->begin(), gps.second->end(), compareGridPointsByHash);
-  }
-
-  if (verbose) {
-    std::cout << "# intersections (k=1) : " << currentIntersections.size() << "/" << costs
-              << std::endl;
-  }
+  // copy the remaining intersections
+  currentIntersections.insert(considerInNextIteration.begin(), considerInNextIteration.end());
 }
 
 void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
@@ -344,31 +416,16 @@ void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
         "OperationMakePositiveFindIntersectionCandidates is not implemented for this grid type");
   }
 
+  if (verbose) {
+    std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
+  }
+
   if (iteration == 0) {
     // find all full grid points with |l|_\infty <= fullGridLevel
-    size_t numDims = grid.getStorage().getDimension();
-    base::GridStorage& gridStorage = grid.getStorage();
-
-    fullGrid.reset(base::Grid::createLinearGrid(numDims));
-    fullGridLevel = std::min(fullGridLevel, gridStorage.getMaxLevel());
-    fullGrid->getGenerator().full(fullGridLevel);
-    base::GridStorage& fullGridStorage = fullGrid->getStorage();
-    for (size_t i = 0; i < fullGridStorage.getSize(); i++) {
-      auto gp = std::make_shared<base::HashGridPoint>(fullGridStorage.getPoint(i));
-      this->candidates[gp->getHash()] = gp;
-    }
-
-    // find all the grid points with negative coefficient and max level larger as the full grid
-    // max level
     std::vector<size_t> negativeGridPoints;
-    for (size_t i = 0; i < alpha.getSize(); ++i) {
-      if (alpha[i] < -1e-14 && gridStorage.getPoint(i).getLevelMax() > fullGridLevel) {
-        negativeGridPoints.push_back(i);
-      }
-    }
+    findNodesWithNegativeCoefficients(alpha, negativeGridPoints);
 
     if (verbose) {
-      std::cout << "--------------------------------------------------------" << std::endl;
       std::cout << "# negative candidates : " << negativeGridPoints.size() << "/" << alpha.getSize()
                 << std::endl;
     }
@@ -376,18 +433,20 @@ void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
     // search for intersections
     costs = 0;
     initializeCandidates(grid, negativeGridPoints);
-    findIntersections(grid, levelSum, this->candidates);
+  }
 
-    if (verbose) {
-      size_t numDims = grid.getStorage().getDimension();
-      size_t maxLevel = grid.getStorage().getMaxLevel();
-      double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
+  // find the necessary intersections for the current level sum
+  findIntersections(grid, alpha, levelSum, this->candidates);
 
-      std::cout << "# considered intersect: " << this->candidates.size() << " / "
-                << numFullGridPoints << " : full grid points (l = " << maxLevel << ")" << std::endl;
-      std::cout << "# comparison costs    : " << costs << std::endl;
-      std::cout << "--------------------------------------------------------" << std::endl;
-    }
+  if (verbose) {
+    size_t numDims = grid.getStorage().getDimension();
+    size_t maxLevel = grid.getStorage().getMaxLevel();
+    double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
+
+    std::cout << "# considered intersect: " << this->candidates.size() << " / " << numFullGridPoints
+              << " : full grid points (l = " << maxLevel << ")" << std::endl;
+    std::cout << "# comparison costs    : " << costs << std::endl;
+    std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
   }
 
   // increment the iteration

@@ -53,7 +53,7 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
       break;
     case MakePositiveCandidateSearchAlgorithm::HybridFullIntersections:
       candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveHybridFindIntersectionCandidates>(4);
+          std::make_shared<datadriven::OperationMakePositiveHybridFindIntersectionCandidates>();
       break;
     default:
       candidateSearch =

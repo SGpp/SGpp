@@ -20,6 +20,9 @@ OperationMakePositiveInterpolationAlgorithm::~OperationMakePositiveInterpolation
 
 // -------------------------------------------------------------------------------------------
 
+OperationMakePositiveSetToZero::OperationMakePositiveSetToZero(double offset) : offset(offset) {}
+OperationMakePositiveSetToZero::~OperationMakePositiveSetToZero() {}
+
 void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
     base::Grid& grid, base::DataVector& alpha, std::vector<size_t>& addedGridPoints, double tol) {
   // compute the nodal values of the newly added grid points and subtract the
@@ -34,7 +37,7 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
     gridStorage.getPoint(i).getStandardCoordinates(x);
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
-      alpha[i] -= yi;
+      alpha[i] -= yi + offset;
     } else {
       alpha[i] = 0.0;
     }
