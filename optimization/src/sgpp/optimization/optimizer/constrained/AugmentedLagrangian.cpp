@@ -369,11 +369,13 @@ AugmentedLagrangian::AugmentedLagrangian(const ScalarFunction& f,
                                          const VectorFunction& h,
                                          const VectorFunctionGradient& hGradient,
                                          size_t maxItCount, double xTolerance,
-                                         double constraintTolerance, double penaltyStartValue,
-                                         double penaltyIncreaseFactor)
+                                         double constraintTolerance,
+                                         size_t convergedIterationsNeeded,
+                                         double penaltyStartValue, double penaltyIncreaseFactor)
     : ConstrainedOptimizer(f, g, h, maxItCount),
       theta(xTolerance),
       epsilon(constraintTolerance),
+      convergedIterationsNeeded(convergedIterationsNeeded),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
       xHistInner(0, 0),
@@ -387,6 +389,7 @@ AugmentedLagrangian::AugmentedLagrangian(const AugmentedLagrangian& other)
     : ConstrainedOptimizer(other),
       theta(other.theta),
       epsilon(other.epsilon),
+      convergedIterationsNeeded(other.convergedIterationsNeeded),
       mu0(other.mu0),
       rhoMuPlus(other.rhoMuPlus),
       xHistInner(other.xHistInner),
@@ -488,7 +491,7 @@ void AugmentedLagrangian::optimize() {
     if ((xNew.l2Norm() < theta) && (gx.max() < epsilon) && (hx.maxNorm() < epsilon)) {
       breakIterationCounter++;
 
-      if (breakIterationCounter >= BREAK_ITERATION_COUNTER_MAX) {
+      if (breakIterationCounter >= convergedIterationsNeeded) {
         break;
       }
     } else {
@@ -566,6 +569,14 @@ double AugmentedLagrangian::getConstraintTolerance() const { return epsilon; }
 
 void AugmentedLagrangian::setConstraintTolerance(double constraintTolerance) {
   epsilon = constraintTolerance;
+}
+
+size_t AugmentedLagrangian::getConvergedIterationsNeeded() const {
+  return convergedIterationsNeeded;
+}
+
+void AugmentedLagrangian::setConvergedIterationsNeeded(size_t convergedIterationsNeeded) {
+  this->convergedIterationsNeeded = convergedIterationsNeeded;
 }
 
 double AugmentedLagrangian::getPenaltyStartValue() const { return mu0; }
