@@ -1,0 +1,2 @@
+all: src/*.tex
+	scons

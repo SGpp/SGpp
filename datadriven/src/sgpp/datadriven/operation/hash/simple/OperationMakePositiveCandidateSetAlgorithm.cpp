@@ -6,7 +6,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <vector>
 #include <map>
@@ -37,8 +36,8 @@ void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficien
 }
 
 // -------------------------------------------------------------------------------------------
-OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates()
-    : costs(0) {}
+OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates() {
+}
 
 OperationMakePositiveFindIntersectionCandidates::
     ~OperationMakePositiveFindIntersectionCandidates() {}
@@ -129,11 +128,12 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
 
+  // reset the costs vectors
+  numCandidatesIteration.setAll(0.0);
+  comparisonCosts.setAll(0.0);
+
   // check for intersections of more than two grid points
   for (size_t k = 2; k <= numDims; ++k) {
-    size_t cntNewIntersections = 0;
-    size_t currentCosts = 0;
-
     if (verbose) {
       std::cout << "# intersections (k=" << k << ") : " << currentIntersections.size();
     }
@@ -145,7 +145,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
       auto overlappingGridPoints = intersections[candidates.first];
 
       for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
-        currentCosts++;
+        comparisonCosts[k - 2]++;
         auto gpj = (*overlappingGridPoints)[j];
 
         // find intersection and store it
@@ -157,7 +157,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
             !gridStorage.isContaining(*gpintersection)) {
           // store the grid point in the result map
           res[gpintersection->getHash()] = gpintersection;
-          ++cntNewIntersections;
+          numCandidatesIteration[k - 2]++;
 
           // join the sets for possible intersections searches in the
           // next iteration
@@ -203,12 +203,15 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     auto hIntersections = currentIntersections;
     currentIntersections = nextIntersections;
     nextIntersections = hIntersections;
-    costs += currentCosts;
 
     if (verbose) {
-      std::cout << " -> [" << minLengthOverlapping << ", " << maxLengthOverlapping
-                << "]: " << cntNewIntersections << " -> " << res.size()
-                << " (costs = " << currentCosts << ")" << std::endl;
+      if (k < numDims) {
+        std::cout << " -> [" << minLengthOverlapping << ", " << maxLengthOverlapping << "]";
+      }
+
+      std::cout << ": " << numCandidatesIteration[k - 2] << " -> " << res.size()
+                << " (costs = " << comparisonCosts[k - 2] << "/" << comparisonCosts.sum() << ")"
+                << std::endl;
     }
 
     // just stop if there are no more grid points to be considered in the current iteration
@@ -221,11 +224,6 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
-  if (grid.getType() != base::GridType::Linear) {
-    throw base::factory_exception(
-        "OperationMakePositiveFindIntersectionCandidates is not implemented for this grid type");
-  }
-
   if (iteration == 0) {
     // find all the grid points with negative coefficient
     std::vector<size_t> negativeGridPoints;
@@ -238,7 +236,9 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
     }
 
     // search for intersections
-    costs = 0;
+    size_t numDims = grid.getStorage().getDimension();
+    comparisonCosts.resizeZero(numDims - 1);
+    numCandidatesIteration.resizeZero(numDims - 1);
     initializeCandidates(grid, negativeGridPoints);
     findIntersections(grid, alpha, levelSum, this->candidates);
 
@@ -246,10 +246,9 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
       size_t numDims = grid.getStorage().getDimension();
       size_t maxLevel = grid.getStorage().getMaxLevel();
       double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
-
       std::cout << "# considered intersect: " << this->candidates.size() << " / "
                 << numFullGridPoints << " : full grid points (l = " << maxLevel << ")" << std::endl;
-      std::cout << "# comparison costs    : " << costs << std::endl;
+      std::cout << "# comparison costs    : " << comparisonCosts.sum() << std::endl;
       std::cout << "--------------------------------------------------------" << std::endl;
     }
   }
@@ -269,6 +268,14 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
 
 size_t OperationMakePositiveFindIntersectionCandidates::numCandidates() {
   return candidates.size();
+}
+
+base::DataVector& OperationMakePositiveFindIntersectionCandidates::getComparisonCosts() {
+  return comparisonCosts;
+}
+
+base::DataVector& OperationMakePositiveFindIntersectionCandidates::numCandidatesPerDimension() {
+  return numCandidatesIteration;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -307,7 +314,8 @@ size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return ful
 // -------------------------------------------------------------------------------------------
 
 OperationMakePositiveHybridFindIntersectionCandidates::
-    OperationMakePositiveHybridFindIntersectionCandidates() {}
+    OperationMakePositiveHybridFindIntersectionCandidates()
+    : overallComparisonCosts(0) {}
 
 OperationMakePositiveHybridFindIntersectionCandidates::
     ~OperationMakePositiveHybridFindIntersectionCandidates() {}
@@ -396,7 +404,7 @@ void OperationMakePositiveHybridFindIntersectionCandidates::findIntersections(
     // clear first intersection queue and swap them
     currentIntersections.clear();
     currentIntersections.swap(nextIntersections);
-    costs += currentCosts;
+    overallComparisonCosts += currentCosts;
 
     if (verbose) {
       std::cout << " -> " << cntNewIntersections << " -> " << res.size()
@@ -411,11 +419,6 @@ void OperationMakePositiveHybridFindIntersectionCandidates::findIntersections(
 void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
     base::Grid& grid, base::DataVector& alpha, size_t levelSum,
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
-  if (grid.getType() != base::GridType::Linear) {
-    throw base::factory_exception(
-        "OperationMakePositiveFindIntersectionCandidates is not implemented for this grid type");
-  }
-
   if (verbose) {
     std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
   }
@@ -431,7 +434,7 @@ void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
     }
 
     // search for intersections
-    costs = 0;
+    overallComparisonCosts = 0;
     initializeCandidates(grid, negativeGridPoints);
   }
 
@@ -445,7 +448,7 @@ void OperationMakePositiveHybridFindIntersectionCandidates::nextCandidates(
 
     std::cout << "# considered intersect: " << this->candidates.size() << " / " << numFullGridPoints
               << " : full grid points (l = " << maxLevel << ")" << std::endl;
-    std::cout << "# comparison costs    : " << costs << std::endl;
+    std::cout << "# comparison costs    : " << overallComparisonCosts << std::endl;
     std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
   }
 

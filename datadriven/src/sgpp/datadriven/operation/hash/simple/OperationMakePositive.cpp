@@ -11,6 +11,7 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <vector>
 
@@ -183,8 +184,19 @@ void OperationMakePositive::addFullGridPoints(
 
 void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alpha,
                                          bool forcePositiveNodalValues) {
+  // make sure that we use a local basis, otherwise the operation is not supported
+  if (grid.getType() != base::GridType::Linear &&
+      grid.getType() != base::GridType::LinearBoundary &&
+      grid.getType() != base::GridType::LinearL0Boundary &&
+      grid.getType() != base::GridType::LinearTruncatedBoundary &&
+      grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary) {
+    throw base::factory_exception(
+        "OperationMakePositive::makePositive - this operation not implemented for this grid type");
+  }
+
   // initialize the operation with the current parameter setting
   initialize(grid, alpha);
+  interpolation->initialize(grid);
 
   if (forcePositiveNodalValues) {
     // force the nodal values of the initial grid to be positive

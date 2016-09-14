@@ -525,9 +525,12 @@ def evalSGFunctionMulti(grid, alpha, samples):
     if grid.getType() == GridType_Bspline:
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
-        # use streaming approach for multiple eval
-        evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
-        opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
+        try:
+            # use streaming approach for multiple eval
+            evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
+            opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
+        except:
+            opEval = createOperationMultipleEval(grid, samples_matrix)
 
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)

@@ -1,0 +1,64 @@
+import subprocess
+import os
+import shutil
+
+env = Environment()
+
+# use lualatex because of usage of graph-drawing library in python file
+env.Replace(PDFLATEX='lualatex')
+
+# set --enable-write-18 flag for building graphics.
+env.Append(PDFLATEXFLAGS='--enable-write18')
+
+# files that need cropping are added to filesToCrop list
+filesToCrop=[]
+cases = []
+
+fd = open(os.path.join('src', 'template.tex'), 'r')
+template_str = fd.read()
+fd.close()
+
+for texfile in os.listdir("src"):
+    texfile = os.path.join("src", texfile)
+    if texfile.endswith(".tex") and "template.tex" not in texfile and "_raw.tex" not in texfile:
+        # load tikzpicture into texfile
+        print texfile
+        fd = open(texfile, 'r')
+        content_str = fd.read().decode('utf8')
+        fd.close()
+
+        # compose new tex file
+        texfilename, _ = os.path.splitext(texfile)
+        texdocument = "%s_raw.tex" % texfilename
+        fd = open(texdocument, "w")
+        fd.write(template_str % content_str)
+        fd.close()
+
+        # construct pdf file name
+        pdffile = "%s_raw.pdf" % texfilename
+
+        # build pdfs
+        cases.append(env.PDF(target=pdffile,
+                             source=texdocument))
+        filesToCrop.append(env.PDF(target=pdffile,
+                                   source=texdocument))
+
+# define some helper functions
+def cropPDFs(target, source, env):
+    """
+    Function to crop pdfs using pdfcrop and convert them to svg
+    @param targets list of SCons.Node.FS.File containing the files to be cropped
+    """
+    for t in target:
+        root = "_".join(os.path.splitext(t.get_abspath())[0].split("_")[:-1])
+        pdffile = "%s.pdf" % root
+
+        # crop pdf files
+        subprocess.call(["pdfcrop", t.get_abspath(), pdffile])
+
+        # copy files
+        print pdffile
+        shutil.copy(pdffile, "figures")
+
+# define cropping post-action
+env.AddPostAction(filesToCrop, cropPDFs)

@@ -50,6 +50,9 @@ class OperationMakePositiveFindIntersectionCandidates
 
   size_t numCandidates() override;
 
+  base::DataVector& getComparisonCosts();
+  base::DataVector& numCandidatesPerDimension();
+
  protected:
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj);
@@ -72,7 +75,9 @@ class OperationMakePositiveFindIntersectionCandidates
   std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> nextIntersections;
   std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> candidates;
 
-  size_t costs;
+  // statistics
+  base::DataVector comparisonCosts;
+  base::DataVector numCandidatesIteration;
 };
 
 // -------------------------------------------------------------------------------------------
@@ -106,6 +111,9 @@ class OperationMakePositiveHybridFindIntersectionCandidates
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
+
+ protected:
+  size_t overallComparisonCosts;
 };
 
 } /* namespace datadriven */
