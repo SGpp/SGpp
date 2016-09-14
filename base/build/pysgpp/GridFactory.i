@@ -3,12 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%{
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-%}
+// %{
+// #include <sgpp/base/grid/type/PolyGrid.hpp>
+// #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+// #include <sgpp/base/grid/LevelIndexTypes.hpp>
+// %}
 
-%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -52,26 +53,34 @@ namespace sgpp
 namespace base
 {
 struct RegularGridConfiguration {
-      /// Grid Type, see enum
-      sgpp::base::GridType type_;
-      /// number of dimensions
-      size_t dim_;
-      /// number of levels
-      int level_;
-    };
+  /// Grid Type, see enum
+  sgpp::base::GridType type_;
+  /// number of dimensions
+  size_t dim_;
+  /// number of levels
+  int level_;
+  /// max. polynomial degree for poly basis
+  size_t maxDegree_;
+  /// level of boundary grid
+  sgpp::base::level_t boundaryLevel_;
+  /// string to serialized grid
+  std::string filename_;
+};
 
 struct AdpativityConfiguration {
-      /// number of refinements
-      size_t numRefinements_;
-      /// refinement threshold for surpluses
-      double threshold_;
-      /// refinement type: false: classic, true: maxLevel
-      bool maxLevelType_;
-      /// max. number of points to be refined
-      size_t noPoints_;
-      /// max. percent of points to be refined
-      double percent_;
-    };
+  /// number of refinements
+  size_t numRefinements_;
+  /// refinement threshold for surpluses
+  double threshold_;
+  /// refinement type: false: classic, true: maxLevel
+  bool maxLevelType_;
+  /// max. number of points to be refined
+  size_t noPoints_;
+  /// max. percent of points to be refined
+  double percent_;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedRefinement = false;
+};
 
 enum class GridType {
   Linear,                       //  0
@@ -105,7 +114,7 @@ enum class GridType {
 class Grid
 {
 public:
-  static Grid* createGrid(RegularGridConfiguration gridConfig);
+  static Grid* createGrid(sgpp::base::RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -132,9 +141,9 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
-	
+
   static Grid* unserialize(std::string& istr);
-	
+
 protected:
   Grid();
   Grid(Grid& o);
@@ -142,7 +151,7 @@ protected:
 public:
   virtual ~Grid();
 
-public:	
+public:
   virtual sgpp::base::GridStorage& getStorage();
   virtual sgpp::base::BoundingBox& getBoundingBox();
   virtual sgpp::base::Stretching& getStretching();
@@ -154,7 +163,7 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
-  
+
   Grid* clone();
 };
 }
@@ -186,4 +195,4 @@ public:
         };
         return 1;
     };
-};	
+};

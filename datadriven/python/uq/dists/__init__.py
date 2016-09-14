@@ -37,7 +37,10 @@ from Lognormal import Lognormal
 from TNormal import TNormal
 from Normal import Normal
 from Uniform import Uniform
-from MultivariateNormal import MultivariateNormal
+try:
+    from MultivariateNormal import MultivariateNormal
+except:
+    pass
 
 from SGDEdist import SGDEdist
 from LibAGFDist import LibAGFDist

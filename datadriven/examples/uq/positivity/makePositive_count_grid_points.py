@@ -27,28 +27,27 @@ from pysgpp import createOperationMakePositive, \
     GridType_Linear, GridType_Poly, RegularGridConfiguration
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
+from pysgpp.pysgpp_swig import MakePositiveCandidateSearchAlgorithm_FullGrid
 
 
 # parameters
 gridConfig = RegularGridConfiguration()
 gridConfig.type_ = GridType_Linear
-# gridConfig.type_ = GridType_Poly
-# gridConfig.maxDegree_ = 3
-gridConfig.boundaryLevel_ = 1
-numDims = 2
-level = 5
+gridConfig.dim_ = 4
+gridConfig.level_ = 3
 refnums = 0
 consistentGrid = False
-# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
 plot = True
 verbose = True
 code = "c++"
 
-gridConfig.dim_ = numDims
-gridConfig.level_ = level
+numDims = gridConfig.dim_
+level = gridConfig.level_
 
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
@@ -217,6 +216,6 @@ if numDims == 2 and plot:
     fig, ax, _ = plotSG3d(grid, sgdeDist.alpha)
 #     ax.set_title("positive")
     fig.show()
-        
+
     plt.show()
 

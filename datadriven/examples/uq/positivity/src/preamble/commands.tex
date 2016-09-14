@@ -1,0 +1,125 @@
+\newcommand{\bbR}{{\mathbb{R}}}
+\newcommand{\bbD}{{\mathbb{D}}}
+\newcommand{\bbT}{{\mathbb{T}}}
+\newcommand{\bbN}{{\mathbb{N}}}
+\newcommand{\vx}{{\vec{x}}}
+\newcommand{\vl}{{\vec{l}}}
+\newcommand{\vi}{{\vec{i}}}
+\newcommand{\vlt}{{\vec{\tilde{l}}}}
+\newcommand{\vit}{{\vec{\tilde{i}}}}
+\newcommand{\vk}{{\vec{k}}}
+\newcommand{\vj}{{\vec{j}}}
+\newcommand{\vv}{{\vec{v}}}
+\newcommand{\vw}{{\vec{w}}}
+\newcommand{\vu}{{\vec{u}}}
+\newcommand{\vb}{{\vec{b}}}
+\newcommand{\vli}{{\vl,\vi}}
+\newcommand{\vlit}{{\vlt,\vit}}
+\newcommand{\vkj}{{\vk,\vj}}
+\newcommand{\Order}{\mathcal{O}}
+\newcommand{\valpha}{{\vec{\alpha}}}
+\newcommand{\vtheta}{{\vec{\theta}}}
+\newcommand{\vthetak}{{\vec{\theta}^{(k)}}}
+\newcommand{\thetak}{{\theta^{(k)}}}
+\newcommand{\vxi}{{\vec{\xi}}}
+\newcommand{\vxik}{{\vec{\xi}^{(k)}}}
+\newcommand{\xik}{{\xi^{(k)}}}
+\newcommand{\veta}{{\vec{\eta}}}
+
+% number of samples
+\newcommand{\nh}{{\hat{n}}}
+
+\newcommand{\psione}{\psi^{(1)}}
+\newcommand{\vp}{{\vec{p}}}
+\newcommand{\psip}{\psi^{(p)}}
+\newcommand{\varphiq}{\varphi^{(q)}}
+
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\compl}{\mathbb{C}}
+\newcommand{\model}{\mathcal{M}}
+
+\newcommand{\fh}{{\hat{f}}}
+\newcommand{\fhk}{{\hat{f}_\Knd}}
+\newcommand{\fhd}{{\hat{f}_\delta}}
+\newcommand{\gi}{{u^{(i)}}}
+
+% norm
+\newcommand{\norm}[1]{\left\| #1 \right\|}
+
+% un demi
+\newcommand{\half}{\frac{1}{2}}
+
+% parantheses
+\newcommand{\parenth}[1]{ \left( #1 \right) }
+\newcommand{\bracket}[1]{ \left[ #1 \right] }
+\newcommand{\accolade}[1]{ \left\{ #1 \right\} }
+%\newcommand{\angle}[1]{ \left\langle  #1 \right\rangle }
+
+% partial derivative: %#1 function, #2 which variable
+% simple / single line version
+\newcommand{\pardevS}[2]{ \delta_{#1} f(#2) }
+% fraction version
+\newcommand{\pardevF}[2]{ \frac{\partial #1}{\partial #2} }
+
+% render vectors: 3 and 4 dimensional
+\newcommand{\veciii}[3]{\left[ \begin{array}[h]{c} #1 \\ #2 \\ #3	\end{array} \right]}
+\newcommand{\veciv}[4]{\left[ \begin{array}[h]{c} #1 \\ #2 \\ #3 \\ #4	\end{array} \right]}
+
+% render matrices: 3  dimensional (arguments in row first order)
+\newcommand{\matiii}[9]{\left[ \begin{array}[h]{ccc} #1 & #2 & #3 \\ #4 & #5 & #6 \\ #7 & #8 & #9	\end{array} \right]}
+%DOESN'T WORK,DON'T KNOW WHY \newcommand{\mativ}[16]{\left[ \begin{array}[h]{cccc} #1 & #2 & #3 & #4 \\ #5 & #6 & #7 & #8 \\ #9 & #10 & #11 & #12 \\ #13 & #14 & #15 & #16 \end{array} \right]}
+
+
+%-------------------------------------------------------------
+%-------------------------------------------------------------
+\newcommand{\mean}{\mathbb{E}}
+\newcommand{\var}{\mathbb{V}}
+\newcommand{\dd}{\text{d}}
+
+\newcommand{\bfi}{\mathbf{i}}
+\newcommand{\bfj}{\mathbf{j}}
+\newcommand{\bfth}{\mathbf{\theta}}
+
+\newcommand{\Ind}{\mathcal{I}}
+\newcommand{\Knd}{\mathcal{K}}
+\newcommand{\Adm}{\mathcal{A}}
+\newcommand{\unitd}{{[0, 1]^d}}
+\newcommand{\level}{{\ell}}
+\newcommand{\Il}{{\Ind_\vl}}
+\newcommand{\XiN}{{\Xi_N}}
+
+\newcommand{\Acal}{\mathcal{A}}
+\newcommand{\Dcal}{\mathcal{D}}
+\newcommand{\Dhcal}{\mathcal{\hat{D}}}
+\newcommand{\Scal}{\mathcal{S}}
+\newcommand{\Bcal}{\mathcal{B}}
+\newcommand{\Tcal}{\mathcal{T}}
+\newcommand{\Rcal}{\mathcal{R}}
+\newcommand{\KL}{{\text{K}_L}}
+\newcommand{\Ka}{{\text{K}_a}}
+\newcommand{\Kak}{{\Ka^{(k)}}}
+\newcommand{\phik}{{\phi^{(k)}}}
+%-------------------------------------------------------------
+
+%%% some additional math definitions
+\DeclareMathOperator*{\essinf}{\operatorname{ess\,inf}}
+\DeclareMathOperator*{\esssup}{\operatorname{ess\,sup}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sgn}{sgn}
+
+% some abreviations ------------------------------------------
+\newcommand{\Reg}{\textsuperscript{\textregistered}}
+\newcommand{\reg}{\textsuperscript{\textregistered}}
+\newcommand{\Tm}{\texttrademark}
+\newcommand{\tm}{\texttrademark~}
+\newcommand{\bsl}{$\backslash$}
+\newcommand{\cotwo}{CO$_2\;$}
+%-------------------------------------------------------------
+%-------------------------------------------------------------
+\newcommand{\TODO}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\BP}[1]{\textcolor{blue}{[BP: #1]}}
+\newcommand{\FF}[1]{\textcolor{red}{[FF: #1]}}
+\newcommand{\SO}[1]{\textcolor{orange}{[SO: #1]}}
+\newcommand{\DP}[1]{\textcolor{blue}{[DP: #1]}}
