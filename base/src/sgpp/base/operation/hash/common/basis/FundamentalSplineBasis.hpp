@@ -422,12 +422,14 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
       integrationInitialized = true;
     }
+    std::cout.precision(17);
     double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
         double x = h * (coordinates[c] + static_cast<double>(i - co_len + j));
         temp_res += weights[c]*eval(l, i, x);
+        std::cout << "Eval " << c << ":" << eval(l, i, x) << std::endl;
       }
       res += temp_res;
       std::cout.precision(17);
