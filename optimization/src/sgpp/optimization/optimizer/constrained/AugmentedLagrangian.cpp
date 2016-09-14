@@ -431,7 +431,6 @@ void AugmentedLagrangian::optimize() {
   base::DataVector lambda(mG + mH, 0.0);
 
   size_t breakIterationCounter = 0;
-  const size_t BREAK_ITERATION_COUNTER_MAX = 10;
   size_t k = 1;
 
   const size_t unconstrainedN = N / 20;
