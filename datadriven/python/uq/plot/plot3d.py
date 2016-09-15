@@ -115,13 +115,13 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
 
 
 
-def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
+def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
     y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    Z = np.zeros((n, n))
+    Z = np.zeros((n + 1, n + 1))
 
     for i in xrange(len(x)):
         for j in xrange(len(y)):
