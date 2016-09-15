@@ -23,95 +23,105 @@ using sgpp::base::GridStorage;
 
 
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/ripley/ripley_train_8.arff";
-  //std::string filename = "../tests/data/ripleyGarcke.train.arff";
-  //std::string filename = "../tests/data/banana/banana_train_1.arff";
-  //std::string filename = "../tests/data/banana.arff";
-  // load training samples
-  std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& trainData = trainDataset.getData();
+  size_t totalSets = 1; //
+  double avgError = 0.0;
+  for (size_t numSets = 0; numSets < totalSets; numSets++) {
+    std::string filename = "../tests/data/ripley/ripley_train_"+std::to_string(numSets+1)+".arff";
+    //std::string filename = "../tests/data/banana/banana_train_"+std::to_string(numSets+1)+".arff";
 
-  //normalize 
-  trainData.normalizeDimension(0);
-  trainData.normalizeDimension(1);
+    //std::string filename = "../tests/data/ripley/ripley_train_8.arff";
+    //std::string filename = "../tests/data/ripleyGarcke.train.arff";
+    //std::string filename = "../tests/data/banana/banana_train_1.arff";
+    //std::string filename = "../tests/data/banana.arff";
+    // load training samples
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+    sgpp::base::DataMatrix& trainData = trainDataset.getData();
 
-  // extract train classes
-  sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
+    //normalize 
+    trainData.normalizeDimension(0);
+    trainData.normalizeDimension(1);
 
-  filename = "../tests/data/ripley/ripley_test.arff";
-  //filename = "../tests/data/ripleyGarcke.test.arff";
-  //filename = "../tests/data/banana/banana_train_0.arff";
-  //filename = "../tests/data/banana.arff";
-  // load test samples
-  std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& testData = testDataset.getData();
+    // extract train classes
+    sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
-  //normalize 
-  testData.normalizeDimension(0);
-  testData.normalizeDimension(1);
+    filename = "../tests/data/ripley/ripley_test.arff";
+    //filename = "../tests/data/ripleyGarcke.test.arff";
+    //filename = "../tests/data/banana/banana_train_0.arff";
+    //filename = "../tests/data/banana.arff";
+    // load test samples
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+    sgpp::base::DataMatrix& testData = testDataset.getData();
 
-  // extract test classes
-  sgpp::base::DataVector& testLabels = testDataset.getTargets();
+    //normalize 
+    testData.normalizeDimension(0);
+    testData.normalizeDimension(1);
 
-  // configure grid
-  std::cout << "# create grid config" << std::endl;
-  sgpp::base::RegularGridConfiguration gridConfig;
-  gridConfig.dim_ = trainDataset.getDimension();
-  gridConfig.level_ = 3;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
-  //gridConfig.type_ = sgpp::base::GridType::ModLinear;
+    // extract test classes
+    sgpp::base::DataVector& testLabels = testDataset.getTargets();
 
-  // configure adaptive refinement
-  std::cout << "# create adaptive refinement config" << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 10;
-  adaptConfig.noPoints_ = 1;
+    // configure grid
+    std::cout << "# create grid config" << std::endl;
+    sgpp::base::RegularGridConfiguration gridConfig;
+    gridConfig.dim_ = trainDataset.getDimension();
+    gridConfig.level_ = 2;
+    gridConfig.type_ = sgpp::base::GridType::Linear;
+    //gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  // configure solver
-  std::cout << "# create solver config" << std::endl;
-  sgpp::solver::SLESolverConfiguration solverConfig;
-  solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 1000;
-  solverConfig.eps_ = 1e-14;
-  solverConfig.threshold_ = 1e-14;
+    // configure adaptive refinement
+    std::cout << "# create adaptive refinement config" << std::endl;
+    sgpp::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.numRefinements_ = 8;
+    adaptConfig.noPoints_ = 4;
 
-  // configure regularization
-  std::cout << "# create regularization config" << std::endl;
-  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  //regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
+    // configure solver
+    std::cout << "# create solver config" << std::endl;
+    sgpp::solver::SLESolverConfiguration solverConfig;
+    solverConfig.type_ = sgpp::solver::SLESolverType::CG;
+    solverConfig.maxIterations_ = 1000;
+    solverConfig.eps_ = 1e-14;
+    solverConfig.threshold_ = 1e-14;
 
-  // configure learner
-  std::cout << "# create learner config" << std::endl;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
-  crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 5; // 5
-  crossvalidationConfig.lambda_ = 3.16228e-06;
-  crossvalidationConfig.lambdaStart_ = 1e-1;
-  crossvalidationConfig.lambdaEnd_ = 1e-10;
-  crossvalidationConfig.lambdaSteps_ = 5;
-  crossvalidationConfig.logScale_ = true;
-  crossvalidationConfig.shuffle_ = true;
-  crossvalidationConfig.seed_ = 1234567;
-  crossvalidationConfig.silent_ = false;
+    // configure regularization
+    std::cout << "# create regularization config" << std::endl;
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+    //regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+    regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
-  std::cout << "# creating the learner" << std::endl;
-  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
+    // configure learner
+    std::cout << "# create learner config" << std::endl;
+    sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+    crossvalidationConfig.enable_ = false;
+    crossvalidationConfig.kfold_ = 5; // 5
+    crossvalidationConfig.lambda_ = 0.2;
+    crossvalidationConfig.lambdaStart_ = 1e-1;
+    crossvalidationConfig.lambdaEnd_ = 1e-10;
+    crossvalidationConfig.lambdaSteps_ = 5;
+    crossvalidationConfig.logScale_ = true;
+    crossvalidationConfig.shuffle_ = true;
+    crossvalidationConfig.seed_ = 1234567;
+    crossvalidationConfig.silent_ = true;
+
+    std::cout << "# creating the learner" << std::endl;
+    sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
-  learner.initialize(trainData);
-  std::cout << "# start to train the learner" << std::endl;
-  learner.trainOnline(trainLabels, testData, testLabels);
+    learner.initialize(trainData);
+    std::cout << "# start to train the learner" << std::endl;
+    learner.trainOnline(trainLabels, testData, testLabels, numSets+1);
 
-  std::cout << "# finished training" << std::endl;
+    std::cout << "# finished training" << std::endl;
 
-  // test learner
-  double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
-  std::cout << "Acc (train): " << accTrain << std::endl;
-  double accTest = learner.getAccuracy(testData, testLabels, 0.0);
-  std::cout << "Acc (test): " << accTest << std::endl;
+    // test learner
+    double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
+    std::cout << "Acc (train): " << accTrain << std::endl;
+    double accTest = learner.getAccuracy(testData, testLabels, 0.0);
+    std::cout << "Acc (test): " << accTest << std::endl;
 
-  learner.storeResults(testData, testLabels, 0.0);
+    learner.storeResults(testData, testLabels, 0.0);
 
+    avgError += learner.error;
+  }
+  avgError = avgError / static_cast<double>(totalSets);
+  std::cout << "Average accuracy on test data: " << (1.0 - avgError) << std::endl;
 }

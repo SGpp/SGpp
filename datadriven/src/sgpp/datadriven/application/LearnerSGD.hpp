@@ -53,13 +53,18 @@ class LearnerSGD {
   /*
    * Implements stochastic gradient descent.
    * */
-  virtual void train();
+  virtual void train(size_t dataNum);
+
+  virtual double getAccuracy(sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testLabels, 
+                             double threshold);
 
   virtual void storeResults(base::DataMatrix& testDataset,
                             base::DataVector& testLabels,
                             double threshold);
 
   virtual ~LearnerSGD();
+
+  double error;
 
  protected:
 
@@ -88,9 +93,6 @@ class LearnerSGD {
    */
   void getBatchError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
                      sgpp::base::DataVector& error);
-
-  double getAccuracy(sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testLabels, 
-                     double threshold);
 
   double getAccuracy(sgpp::base::DataVector& computedLabels,
                      sgpp::base::DataVector& testLabels,

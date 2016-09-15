@@ -55,7 +55,7 @@ class LearnerSVM {
    *
    * @param 
    * */
-  virtual void train();
+  virtual void train(size_t dataNum);
 
   virtual double getAccuracy(sgpp::base::DataMatrix& testDataset,
                              const sgpp::base::DataVector& classesReference,
@@ -67,6 +67,8 @@ class LearnerSVM {
 
   virtual void predict(sgpp::base::DataMatrix& testData,
                        sgpp::base::DataVector& computedLabels);  
+
+  double error;
 
 };
 

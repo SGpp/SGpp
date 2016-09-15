@@ -234,7 +234,8 @@ LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       regularizationConfig(regularizationConfig),
-      crossvalidationConfig(crossvalidationConfig) {}
+      crossvalidationConfig(crossvalidationConfig),
+      error(0.0) {}
 
 LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
     : LearnerSGDE(learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
@@ -566,7 +567,8 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 }
 
 void LearnerSGDE::trainOnline(base::DataVector& plabels,
-                              base::DataMatrix& ptestData, base::DataVector& ptestLabels) {
+                              base::DataMatrix& ptestData, base::DataVector& ptestLabels,
+                              size_t dataNum) {
   labels = std::make_shared<base::DataVector>(plabels);
   size_t dim = trainData->getNcols();
 
@@ -580,12 +582,12 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
     std::cout << "# LearnerSGDE: grid points " << grid->getSize() << std::endl;
   }*/
   
-  size_t maxIterations = 1; //ToDo: pass as parameter
+  size_t maxIterations = 2; //ToDo: pass as parameter
   size_t numIterations = 0;
 
   // refinement parameters - ToDo: pass to Learner as parameters (adaptivityConfig)
   size_t numRefSteps = adaptivityConfig.numRefinements_;
-  size_t refPeriod = 10; //Ripley 25 - Banana 100 / 200
+  size_t refPeriod = 15; //Ripley 25 - Banana 100 / 200
   size_t numPoints = adaptivityConfig.noPoints_;
   double threshold = adaptivityConfig.threshold_;
 
@@ -596,12 +598,12 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
   size_t refSteps = 0;
 
   // for error plotting
-  base::DataVector error;
+  base::DataVector errors;
   //base::DataVector gridSizes;
   // for plotting only
   //double acc = getAccuracy(*trainData, *labels, 0.0);
-  //double acc = getAccuracy(ptestData, ptestLabels, 0.0);
-  //error.append(1.0 - acc);
+  double acc = getAccuracy(ptestData, ptestLabels, 0.0);
+  errors.append(1.0 - acc);
 
   while (numIterations < maxIterations) {			
     for (size_t i = 0; i < trainData->getNrows(); i++) {
@@ -743,8 +745,8 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
                                                               numPoints,
                                                               levelPenalize,
                                                               coeffA);
-        func = &funcZrcr;
-        //func = &funcData;
+        //func = &funcZrcr;
+        func = &funcData;
         if (preCompute) {
           // precompute the evals. Needs to be done once per step, before
           // any refinement is done
@@ -758,10 +760,8 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
         }
         grid->getGenerator().refine(*func);
 
-        if (!crossvalidationConfig.silent_) {
-          std::cout << "# LearnerSGDE (label " << label << "): ref " << refCnts.at(label)+1 << "/" << numRefSteps
-                    << ": " << grids.at(label)->getSize() << std::endl;
-        }
+        std::cout << "# LearnerSGDE (label " << label << "): ref " << refCnts.at(label)+1 << "/" << numRefSteps
+                  << " new grid size: " << grids.at(label)->getSize() << std::endl;
 
         //alpha->resize(grid->getSize());
         //alpha->setAll(0.0); 
@@ -774,19 +774,20 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
       }
       // for plotting only
       //if ((i > 0) && ((i+1) % 50 == 0)) {
-      /*if ((i > 0) && ((i+1) % 10 == 0)) {
+      //if ((i > 0) && ((i+1) % 10 == 0)) {
         //acc = getAccuracy(*trainData, *labels, 0.0);
         acc = getAccuracy(ptestData, ptestLabels, 0.0);
-        error.append(1.0 - acc); 
-      }*/
+        errors.append(1.0 - acc); 
+      //}
     }
     //refSteps = 0;
     numIterations++;
 
   }
   //write error evaluation to .csv
-  /*std::ofstream output;
-  output.open("ripley_err_rate_surplusRef_train_1.csv");
+  std::ofstream output;
+  output.open("SGDE_ripley_err_rate_dataBased_train_"+std::to_string(dataNum)+".csv");
+  //output.open("ripley_err_rate_surplusRef_train_1.csv");
   //output.open("ripley_err_rate_impurity_train_1.csv");
   //output.open("banana_err_rate_surplusRef_train_10.csv");
   //output.open("banana_err_rate_impurity_train_1.csv");
@@ -794,11 +795,12 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
     std::cout << "failed to create .csv file!" << std::endl;  
   }
   else {
-    for (size_t i = 0; i < error.getSize(); i++) {					
-      output << error.get(i) << ";" << std::endl;
+    for (size_t i = 0; i < errors.getSize(); i++) {					
+      output << errors.get(i) << ";" << std::endl;
     }
     output.close();
-  }*/
+  }
+  error = 1.0 - getAccuracy(ptestData, ptestLabels, 0.0);
 }
 
 void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
@@ -813,7 +815,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   //output.open("banana_impurity_predicted_train_1.csv");
   //output.open("banana_surplus_predicted_train_1.csv");
   //output.open("ripley_impurity_predicted_train_.csv");
-  output.open("ripley_zero_predicted.csv");
+  output.open("SGDE_ripley_databased_predicted.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -829,7 +831,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   //output.open("banana_impurity_grid_1_train_1.csv");
   //output.open("banana_surplus_grid_1_train_1.csv");
   //output.open("ripley_impurity_grid_1_train_.csv");
-  output.open("ripley_zero_grid_1.csv");
+  output.open("SGDE_ripley_databased_grid_1.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -854,7 +856,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   //output.open("banana_impurity_grid_1_train_2.csv");
   //output.open("banana_surplus_grid_2_train_1.csv");
   //output.open("ripley_impurity_grid_2_train_.csv");
-  output.open("ripley_zero_grid_2.csv");
+  output.open("SGDE_ripley_databased_grid_2.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -878,7 +880,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   }
 
   //write density function evaluations to .csv
-  /*double stepSize = 0.01;
+  double stepSize = 0.01;
   base::DataMatrix values(0,2);
   //std::cout << values.getNrows() << std::endl;
   base::DataVector range(101);
@@ -898,7 +900,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   // evaluate each density function at all points from values
   // and write result to csv file
   for (auto const& g : grids) {
-    output.open("density_fun_"+std::to_string(g.first)+"_evals.csv");
+    output.open("SGDE_databased_density_fun_"+std::to_string(g.first)+"_evals.csv");
     std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
     for (size_t i = 0; i < values.getNrows(); i++) {
       // Get next test sample x 
@@ -909,7 +911,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
       output << res << ";" << std::endl;
     }
     output.close();
-  }*/
+  }
 
 }
 

@@ -36,7 +36,7 @@ public:
    * @param batch_size size of subset of samples used for each training step
    * @param next_cv_step determines when next cross validation has to be triggered
    */
-  virtual void train(size_t batch_size, unsigned int next_cv_step);
+  virtual void train(size_t batch_size, unsigned int next_cv_step, size_t dataNum);
 	
 	/**
 	 * Trains the learner with the given dataset
@@ -62,6 +62,8 @@ public:
 	virtual sgpp::base::DataVector predict(sgpp::base::DataMatrix* test);
 	
 	virtual int predict(sgpp::base::DataVector &p);
+
+        virtual void storeResults();
 	
 	/**
 	 * Returns the values of all density functions for one point
@@ -101,6 +103,8 @@ public:
 
 	time_t traintime;
 	std::map<double, double> prior;
+
+        double error;
 
 protected:  
         base::DataMatrix* trainData;

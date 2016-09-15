@@ -58,6 +58,15 @@ public:
 	 */
 	virtual sgpp::base::DataVector* getAlpha();
 
+        /**
+	 * Update alpha vector, i.e. delete entries specified by 'deletedPoints' and/or
+         * add 'newPoints' new entries
+         *
+         * @param deletedPoints indices of entries corresponding to deleted grid points
+	 * @param newPoints number of added grid points
+	 */
+        virtual void updateAlpha(std::list<size_t>* deletedPoints, unsigned int newPoints);
+
 	/**
 	 * Returns if the surplus has already been computed
 	 */
