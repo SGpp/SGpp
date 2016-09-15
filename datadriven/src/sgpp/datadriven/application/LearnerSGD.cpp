@@ -46,7 +46,8 @@ LearnerSGD::LearnerSGD(sgpp::base::RegularGridConfiguration& gridConfig,
       currentGamma(0),
       batchSize(0),
       smoothedErrorDecline(0),
-      smoothedErrorDeclineBufferSize(0) {}
+      smoothedErrorDeclineBufferSize(0),
+      error(0) {}
 
 
 LearnerSGD::~LearnerSGD() {}
@@ -121,22 +122,30 @@ std::shared_ptr<base::Grid> LearnerSGD::createRegularGrid() {
 }
 
 
-void LearnerSGD::train() {
+void LearnerSGD::train(size_t dataNum) {
   size_t dim = trainData->getNcols();  
-  size_t maxRuns = 3; //ToDo: pass to learner as parameter
+  size_t maxRuns = 2; //ToDo: pass to learner as parameter
   size_t numRuns = 0;
 
   size_t refNum = adaptivityConfig.numRefinements_;
   size_t numPoints = adaptivityConfig.noPoints_;
   size_t refSteps = 0;
   double threshold = adaptivityConfig.threshold_;
-  //size_t refPeriod = 100;
+  size_t refPeriod = 15;
 
   // refinement monitor variables
   double oldErrorSum = 0.;
   double oldErrorLast = 0.;
   currentBatchError = 0.;
   double ratio = 1.;
+
+  // for error plotting
+  sgpp::base::DataVector errors;
+  //sgpp::base::DataVector grids;
+  // for plotting only
+  //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
+  double acc = getAccuracy(*testData, *testLabels, 0.0);
+  errors.append(1.0 - acc);
 
   while (numRuns < maxRuns) {			
     for (size_t curr_it = 0; curr_it < trainData->getNrows(); curr_it++) {
@@ -206,11 +215,11 @@ void LearnerSGD::train() {
       }
 
       // refinement
-      //if ( (refSteps < refNum) && (curr_t > 0 ) && ((curr_it+1) % refPeriod == 0) ) {
-      if ( (refSteps < refNum) && (ratio <= smoothedErrorDecline) ) {
-        std::cout << "threshold: " << smoothedErrorDecline << std::endl;
-        std::cout << "iteration: " << curr_it << std::endl;
-        std::cout << "ratio: " << ratio << std::endl;
+      if ( (refSteps < refNum) && (curr_it > 0 ) && ((curr_it+1) % refPeriod == 0) ) {
+      //if ( (refSteps < refNum) && (ratio <= smoothedErrorDecline) ) {
+        //std::cout << "threshold: " << smoothedErrorDecline << std::endl;
+        //std::cout << "iteration: " << curr_it << std::endl;
+        //std::cout << "ratio: " << ratio << std::endl;
         double acc_ref = getAccuracy(*testData, *testLabels, 0.0);
         std::cout << "accuracy before refinement: " << acc_ref << std::endl;
         // Predictive refinement based on error measurements
@@ -236,13 +245,34 @@ void LearnerSGD::train() {
 
         refSteps++;      
       }
+      acc = getAccuracy(*testData, *testLabels, 0.0);
+      errors.append(1.0 - acc);
     }
     numRuns++;
   }
   double mse = getError(*testData, *testLabels, "MSE");
   std::cout << "MSE: " << mse << std::endl;
-  double acc = getAccuracy(*testData, *testLabels, 0.0);
+  acc = getAccuracy(*testData, *testLabels, 0.0);
   std::cout << "accuracy: " << acc << std::endl;
+
+  //write error evaluation to .csv
+  std::ofstream output;
+  output.open("SGD_ripley_err_rate_predictive_train_"+std::to_string(dataNum)+".csv");
+  //output.open("ripley_err_rate_measure_train_1.csv");
+  //output.open("ripley_err_rate_impurity_train_1.csv");
+  //output.open("banana_err_rate_measure_train_1.csv");
+  //output.open("banana_err_rate_impurity_train_1.csv");
+  if (output.fail()) {
+    std::cout << "failed to create .csv file!" << std::endl;  
+  }
+  else {
+    for (size_t i = 0; i < errors.getSize(); i++) {					
+      output << errors.get(i) << ";" << std::endl;
+    }
+    output.close();
+  }
+
+  error = 1.0 - getAccuracy(*testData, *testLabels, 0.0);
 }
 
 
@@ -327,7 +357,6 @@ void LearnerSGD::storeResults(base::DataMatrix& testDataset,
   output.close();
 
 }
-
 
 
 double LearnerSGD::getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 

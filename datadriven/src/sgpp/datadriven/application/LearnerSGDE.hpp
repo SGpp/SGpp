@@ -168,7 +168,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual void train();
 
   virtual void trainOnline(base::DataVector& plabels, 
-                           base::DataMatrix& ptestData, base::DataVector& ptestLabels);
+                           base::DataMatrix& ptestData, base::DataVector& ptestLabels,
+                           size_t dataNum);
 
   virtual void storeResults(base::DataMatrix& testDataset,
                             const base::DataVector& classesReference,
@@ -185,6 +186,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual double getAccuracy(const base::DataVector& classesComputed,
                              const base::DataVector& classesReference,
                              const double threshold);
+
+  double error;
 
  protected:
   /**

@@ -46,6 +46,8 @@ void DBMatOnlineDE::readOffline(DBMatOffline* o) {
 	b_totalPoints = new sgpp::base::DataVector(offlineObject_->getDecomposedMatrix()->getNcols(), 0.0);
 	lambda = offlineObject_->getConfig()->lambda_;
 	o_dim = offlineObject_->getConfig()->grid_dim_;
+
+        alpha_ = new sgpp::base::DataVector(offlineObject_->getDecomposedMatrix()->getNcols(), 0.0);
 }
 
 void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_b, bool do_cv, std::list<size_t> *deletedPoints, unsigned int newPoints) {
@@ -66,6 +68,8 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 	
 	//Perform permutation because of decomposition (LU)
 	offlineObject_->permuteVector(b);
+
+        //std::cout << b.getSize() << std::endl;
 
 	if(save_b) {
 		if(functionComputed_) {
@@ -118,10 +122,12 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 	}
 
 	//Solve the system:
-	if (alpha_ != NULL)
-		delete alpha_;
+	//if (alpha_ != NULL)
+	//	delete alpha_;
 
-	alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
+	//alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
+        alpha_->resizeZero(lhsMatrix->getNcols());
+
 	DBMatDecompostionType type = offlineObject_->getConfig()->decomp_type_;
 	if (type == DBMatDecompLU) {
 		DBMatDMSBackSub lusolver;
@@ -177,6 +183,7 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 			}
 		}
 		//Solve for density declaring coefficients alpha
+                //std::cout << "lambda: " << lambda << std::endl;
 		cholsolver.solve(*lhsMatrix, *alpha_, b, old_lambda, lambda);
 
 	} else {
@@ -231,6 +238,28 @@ double DBMatOnlineDE::eval(sgpp::base::DataVector& p, bool force) {
 
 sgpp::base::DataVector* DBMatOnlineDE::getAlpha() {
 	return alpha_;
+}
+
+void DBMatOnlineDE::updateAlpha(std::list<size_t>* deletedPoints, unsigned int newPoints) {
+  if (alpha_ != NULL && deletedPoints != NULL && !deletedPoints->empty()) {  
+    std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
+    sgpp::base::DataVector* newAlpha = new sgpp::base::DataVector(alpha_->getSize()-deletedPoints->size()+newPoints);
+    for (size_t i = 0; i < alpha_->getSize(); i++) {
+      if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
+        continue;
+      }
+      else {
+        newAlpha->append(alpha_->get(i));  
+      }      
+    }    
+    // delete old alpha
+    delete alpha_;
+    // set new alpha
+    alpha_ = newAlpha;
+  }
+  if (newPoints > 0) {
+    alpha_->resizeZero(alpha_->getSize()+newPoints);
+  }
 }
 
 bool DBMatOnlineDE::isComputed() {
