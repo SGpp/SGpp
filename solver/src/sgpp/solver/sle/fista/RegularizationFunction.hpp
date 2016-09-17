@@ -14,8 +14,8 @@ namespace solver {
 
 class RegularizationFunction {
  public:
-  virtual double eval(base::DataVector weights) const = 0;
-  virtual base::DataVector prox(const base::DataVector& weights, double stepsize) const = 0;
+  virtual double eval(base::DataVector weights) = 0;
+  virtual base::DataVector prox(const base::DataVector& weights, double stepsize) = 0;
 };
 
 }  // namespace solver

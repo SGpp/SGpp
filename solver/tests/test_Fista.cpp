@@ -6,8 +6,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
@@ -16,9 +16,9 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
-#include <vector>
-#include <random>
 #include <memory>
+#include <random>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;

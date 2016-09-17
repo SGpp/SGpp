@@ -7,8 +7,8 @@
 #define ELASTICNETFUNCTION_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/solver/sle/fista/RegularizationFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
+#include <sgpp/solver/sle/fista/RegularizationFunction.hpp>
 
 #include <cmath>
 
@@ -23,7 +23,7 @@ class ElasticNetFunction : public RegularizationFunction {
       : lambda(lambda * l1Ratio), gamma(lambda * (1 - l1Ratio)), lasso(this->lambda) {}
 
   // ( lambda |x|_1 + gamma |x|_2^2)
-  double eval(sgpp::base::DataVector weights) const override {
+  double eval(sgpp::base::DataVector weights) override {
     double l1 = 0.0;
     double l2 = 0.0;
 #pragma omp parallel for reduction(+ : l1, l2)
@@ -37,7 +37,7 @@ class ElasticNetFunction : public RegularizationFunction {
     return en;
   }
 
-  base::DataVector prox(const sgpp::base::DataVector& weights, double stepsize) const override {
+  base::DataVector prox(const sgpp::base::DataVector& weights, double stepsize) override {
     base::DataVector proxVec = lasso.prox(weights, stepsize);
     const double multiplicator = 1 / (1 + 2 * stepsize * gamma);
     proxVec.mult(multiplicator);
@@ -47,7 +47,7 @@ class ElasticNetFunction : public RegularizationFunction {
  private:
   const double lambda;
   const double gamma;
-  const LassoFunction lasso;
+  LassoFunction lasso;
 };
 
 }  //  namespace solver

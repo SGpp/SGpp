@@ -18,12 +18,12 @@ class LassoFunction : public RegularizationFunction {
  public:
   explicit LassoFunction(double lambda) : lambda(lambda) {}
 
-  double eval(base::DataVector weights) const override {
+  double eval(base::DataVector weights) override {
     weights.abs();
     return lambda * weights.sum();
   }
 
-  base::DataVector prox(const base::DataVector& weights, double stepsize) const override {
+  base::DataVector prox(const base::DataVector& weights, double stepsize) override {
     stepsize = lambda * stepsize;
     auto proxVec = base::DataVector(weights.getSize());
 #pragma omp parallel for

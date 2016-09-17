@@ -15,7 +15,12 @@ namespace solver {
 class FistaBase {
  public:
   virtual void solve(base::OperationMultipleEval& op, base::DataVector& weights,
-                     const base::DataVector& b, size_t maxIt, double treshold) = 0;
+                     const base::DataVector& classes, size_t maxIt, double treshold,
+                     double L = 0.5) = 0;
+  double getL() { return L; }
+
+ protected:
+  double L = 0.5;
 };
 
 }  // namespace solver

@@ -13,8 +13,8 @@
 #include <sgpp/solver/sle/fista/RegularizationFunction.hpp>
 
 #include <cmath>
-#include <type_traits>
 #include <limits>
+#include <type_traits>
 
 namespace sgpp {
 namespace solver {
@@ -26,11 +26,15 @@ class Fista : public FistaBase {
 
  public:
   Fista(F g) : g(g) {}
-  void solve(base::OperationMultipleEval& op, base::DataVector& weights, const base::DataVector& b,
-             size_t maxIt, double threshold) override {
+  // L > 0
+  void solve(base::OperationMultipleEval& op, base::DataVector& weights,
+             const base::DataVector& classes, size_t maxIt, double threshold,
+             double L = 0.5) override {
     // Parameters for linesearch
-    const double eta = 1.5;
-    double L = 0.5;
+    // The choices made here correspond to values that work well in practice, other
+    // values work as well, as long as the constraints given below still hold.
+    // Larger values lead to a faster linesearch, but to worse stepsize estimates.
+    const double eta = 2;  // eta > 1.0
 
     // Parameters for convergence check
     auto curMSE = std::numeric_limits<double>::max();
@@ -44,12 +48,10 @@ class Fista : public FistaBase {
     // Variables that are reused in each iteration
     double momentumBefore = momentum;
     base::DataVector weightsBefore = base::DataVector(weights.getSize());
-    auto errors = base::DataVector(b.getSize());
+    auto errors = base::DataVector(classes.getSize());
     auto gradient = base::DataVector(weights.getSize());
 
     while (isNotConverged(curIt, maxIt, priorMSE, curMSE, threshold)) {
-      const bool isFirstIteration = curIt == 0;
-
       priorMSE = curMSE;
       momentumBefore = momentum;
       weightsBefore = weights;
@@ -59,16 +61,15 @@ class Fista : public FistaBase {
       // First iteration is L, then L*eta.
       // Mathematically speaking, we try to find the smallest integer i \elem {1,2,...}
       // for which L*eta^i gives rise to a reasonable Lipschitz constant.
-      evalErrors(op, y, b, errors);
+      evalErrors(op, y, classes, errors);
       evalGradient(op, errors, gradient);
       curMSE = evalResidual(errors);
       do {
         L *= eta;
-        weights = evalProxGrad(y, gradient, L);  // do the step!
-      } while (isFirstIteration &&
-               isNotLipschitz(weights, y, op, b, L));  // F(prox) < Q_L(prox, weights)
-      momentum = 0.5 * (1 + std::sqrt(1 + 4 * momentum * momentum));
+        weights = evalProxGrad(y, gradient, L);              // do the step!
+      } while (isNotLipschitz(weights, y, op, classes, L));  // F(prox) < Q_L(prox, weights)
 
+      momentum = 0.5 * (1 + std::sqrt(1 + 4 * momentum * momentum));
       auto weightsDifference = weights;
       weightsDifference.sub(weightsBefore);
       const double multiplicator = (momentumBefore - 1) / momentum;
@@ -132,8 +133,8 @@ class Fista : public FistaBase {
   }
 
   bool isNotConverged(size_t curIteration, size_t maxIterations, double priorMSE, double curMSE,
-                      double epsilon) {
-    const bool isGoodEnough = std::abs(priorMSE - curMSE) < epsilon;
+                      double threshold) {
+    const bool isGoodEnough = std::abs(priorMSE - curMSE) < threshold;
     const bool isFinalStep = curIteration >= maxIterations;
     return !(isGoodEnough || isFinalStep);
   }
