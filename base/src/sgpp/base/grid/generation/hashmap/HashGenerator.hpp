@@ -12,10 +12,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <algorithm>
+#include <unordered_set>
+#include <vector>
 
 #include <iterator>
 template <typename T>
@@ -67,6 +68,32 @@ class HashGenerator {
       throw generation_exception("storage not empty");
     }
     this->regular_iter(storage, level, T);
+  }
+
+  void regularInter(GridStorage& storage, level_t level,
+                    const std::vector<std::vector<size_t>>& terms, double T = 0) {
+    if (storage.getSize() > 0) {
+      throw generation_exception("storage not empty");
+    }
+    auto interset = std::unordered_set<std::vector<bool>>();
+    const auto dim = storage.getDimension();
+    for (const auto& interaction : terms) {
+      auto term = std::vector<bool>(dim, false);
+      for (const auto i : interaction) {
+        term[i] = true;
+      }
+      interset.insert(term);
+    }
+
+    this->regular_inter(storage, level, interset, T);
+  }
+
+  void regular_inter(GridStorage& storage, level_t level,
+                     const std::unordered_set<std::vector<bool>>& terms, double T = 0) {
+    if (storage.getSize() > 0) {
+      throw generation_exception("storage not empty");
+    }
+    this->regular_inter_iter(storage, level, terms, T);
   }
 
   /**
@@ -278,7 +305,7 @@ class HashGenerator {
         // add remaining level-index pairs in current dimension d
         for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
                              static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
-                                (std::max(l, level_max) <= n);
+                            (std::max(l, level_max) <= n);
              l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
@@ -298,6 +325,91 @@ class HashGenerator {
                 idx.push(d, l, i, false);
               }
               storage.update(idx, g);
+              first = false;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void decodeCoords(DataVector& coords, std::vector<bool>& result) {
+    for (size_t i = 0; i < coords.getSize(); ++i) {
+      result[i] = coords[i] != 0.5;
+    }
+  }
+
+  void regular_inter_iter(GridStorage& storage, level_t n,
+                          const std::unordered_set<std::vector<bool>>& terms, double T = 0) {
+    if (storage.getDimension() == 0) return;
+
+    auto coords = DataVector(storage.getDimension());
+    auto coordsBool = std::vector<bool>(storage.getDimension());
+
+    index_type idx_1d(storage.getDimension());
+
+    for (size_t d = 0; d < storage.getDimension(); d++) {
+      idx_1d.push(d, 1, 1, false);
+    }
+
+    // Generate 1D grid in first dimension
+    for (level_t l = 1; l <= n; l++) {
+      for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+        if (l == n) {
+          idx_1d.push(0, l, i, true);
+        } else {
+          idx_1d.push(0, l, i, false);
+        }
+        storage.insert(idx_1d);
+      }
+    }
+
+    // Generate grid points in all other dimensions:
+    // loop dim times over intermediate grid, take all grid points and
+    // modify them in current dimension d
+    for (size_t d = 1; d < storage.getDimension(); d++) {
+      // current size
+      size_t grid_size = storage.getSize();
+
+      // loop over all current grid points
+      for (size_t g = 0; g < grid_size; g++) {
+        bool first = true;
+        index_type idx(*storage.get(g));
+
+        level_t level_sum = idx.getLevelSum() - 1;
+        level_t level_max = idx.getLevelMax();
+
+        // add remaining level-index pairs in current dimension d
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                            (std::max(l, level_max) <= n);
+             l++) {
+          for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+            // first grid point is updated, all others inserted
+            if (first == false) {
+              // is leaf?
+              if ((l + level_sum) == n + storage.getDimension() - 1) {
+                idx.push(d, l, i, true);
+              } else {
+                idx.push(d, l, i, false);
+              }
+              idx.getCoords(coords);
+              decodeCoords(coords, coordsBool);
+              if (terms.find(coordsBool) != terms.end()) {
+                storage.insert(idx);
+              }
+            } else {
+              // is leaf?
+              if ((l + level_sum) == n + storage.getDimension() - 1) {
+                idx.push(d, l, i, true);
+              } else {
+                idx.push(d, l, i, false);
+              }
+              idx.getCoords(coords);
+              decodeCoords(coords, coordsBool);
+              if (terms.find(coordsBool) != terms.end()) {
+                storage.update(idx, g);
+              }
               first = false;
             }
           }
@@ -366,7 +478,7 @@ class HashGenerator {
         // as mentioned before T adjusts the granularity of the grid
         for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
                              static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
-                                (std::max(l, level_max) <= n);
+                            (std::max(l, level_max) <= n);
              l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
@@ -542,7 +654,7 @@ class HashGenerator {
 
         for (level_t l = 1;
              (static_cast<double>(l + levelSum) - (T * std::max(l, level_max)) <= upperBound) &&
-                 (std::max(l, level_max) <= n);
+             (std::max(l, level_max) <= n);
              l++) {
           // generate inner basis functions
           for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
@@ -626,7 +738,7 @@ class HashGenerator {
         // as mentioned before T adjusts the granularity of the grid
         for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
                              static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
-                                (std::max(l, level_max) <= n);
+                            (std::max(l, level_max) <= n);
              l++) {
           if (l == 1) {
             idx.push(d, 0, 0, false);

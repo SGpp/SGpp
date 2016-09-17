@@ -6,13 +6,16 @@
 #ifndef GRIDGENERATOR_HPP
 #define GRIDGENERATOR_HPP
 
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <unordered_set>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -51,8 +54,24 @@ class GridGenerator {
    *        optimized tensor-product approximation spaces
    */
   virtual void regular(size_t level, double T) {
+    throw sgpp::base::not_implemented_exception("Parameter T not implemented for this grid type!");
+  }
+
+  /**
+   * Creates a regular sparse grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} =
+   *\bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
+   * If the used grid doesn't support the parameter t, t = 0 is used instead.
+   * This grid generator allows the creation of regular grids that only contain
+   * some interaction terms.
+   * @param level Grid level
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
+   * @param terms determines the included interaction terms.
+   */
+  virtual void regularInter(size_t level, const std::vector<std::vector<size_t>>& terms, double T) {
     throw sgpp::base::not_implemented_exception(
-          "Parameter T not implemented for this grid type!");
+        "Interaction-Term aware sparse grids not implemented for this grid type!");
   }
 
   /**
@@ -73,8 +92,7 @@ class GridGenerator {
    *        optimized tensor-product approximation spaces
    */
   virtual void cliques(size_t level, size_t clique_size, double T) {
-    throw sgpp::base::not_implemented_exception(
-          "Parameter T not implemented for this grid type!");
+    throw sgpp::base::not_implemented_exception("Parameter T not implemented for this grid type!");
   }
 
   /**
@@ -97,6 +115,18 @@ class GridGenerator {
    */
   virtual void refine(RefinementFunctor& func) = 0;
 
+  /**
+   * Refines a grid according to the settings of the RefinementFunctor func.
+   * Does not create any interactions, that are not in the list of allowed interactions.
+   *
+   * @param func pointer to refinement functor
+   * @param interactions allowed interactions
+   */
+  virtual void refineInter(RefinementFunctor& func,
+                           const std::vector<std::vector<size_t>>& interactions) {
+    throw sgpp::base::not_implemented_exception(
+        "Interaction-Term refinement not implemented for this grid type!");
+  }
   /**
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
    *

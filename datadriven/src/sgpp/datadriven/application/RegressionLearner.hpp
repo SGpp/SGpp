@@ -6,19 +6,20 @@
 #ifndef REGRESSIONLEARNER_H
 #define REGRESSIONLEARNER_H
 
-#include <sgpp/base/datatypes/DataVector.hpp>
+#include <algorithm>
+#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/solver/SLESolver.hpp>
-#include <sgpp/solver/sle/fista/FistaBase.hpp>
 #include <sgpp/globaldef.hpp>
-
-#include <memory>
+#include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/solver/sle/fista/FistaBase.hpp>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -47,11 +48,18 @@ class RegressionLearner {
       solverCG->solve(systemMatrix, alpha, b, reuse, verbose, maxTreshold);
     }
     void solveFista(sgpp::base::OperationMultipleEval& op, sgpp::base::DataVector& weights,
-                    const sgpp::base::DataVector& b, size_t maxIt, double treshold) {
+                    const sgpp::base::DataVector& classes, size_t maxIt, double treshold,
+                    double L) {
       if (type != solverCategory::fista) {
         throw sgpp::base::application_exception("Tried to solve with incorrect solver!");
       }
-      solverFista->solve(op, weights, b, maxIt, treshold);
+      solverFista->solve(op, weights, classes, maxIt, treshold, L);
+    }
+    double getL() {
+      if (type != solverCategory::fista) {
+        throw sgpp::base::application_exception("Solver doesn't support L!");
+      }
+      return solverFista->getL();
     }
 
     friend void swap(Solver& first, Solver& second) {
@@ -105,13 +113,22 @@ class RegressionLearner {
                     sgpp::base::AdpativityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
+                    datadriven::RegularizationConfiguration regularizationConfig,
+                    std::vector<std::vector<size_t>> terms);
+
+  RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
+                    sgpp::base::AdpativityConfiguration adaptivityConfig,
+                    sgpp::solver::SLESolverConfiguration solverConfig,
+                    sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig);
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
   sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
   size_t getGridSize() const;
+  sgpp::base::Grid& getGrid();
   double getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
   void initializeWeights();
   sgpp::base::DataVector getWeights() const;
+  void setWeights(sgpp::base::DataVector weights);
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
@@ -119,6 +136,7 @@ class RegressionLearner {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   datadriven::RegularizationConfiguration regularizationConfig;
+  std::vector<std::vector<size_t>> terms;
   std::unique_ptr<sgpp::base::OperationMultipleEval> op;
   std::unique_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 
@@ -130,8 +148,8 @@ class RegressionLearner {
   void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
   std::unique_ptr<datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset);
-  Solver createSolver();
-  Solver createSolverFista();
+  Solver createSolver(size_t n_rows);
+  Solver createSolverFista(size_t n_rows);
 
   void fit(Solver& solver, sgpp::base::DataVector& classes);
   void refine(sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes);

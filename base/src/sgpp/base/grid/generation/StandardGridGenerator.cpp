@@ -3,14 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -31,6 +32,12 @@ void StandardGridGenerator::regular(size_t level, double T) {
   gen.regular(this->storage, static_cast<HashGenerator::level_t>(level), T);
 }
 
+void StandardGridGenerator::regularInter(size_t level,
+                                         const std::vector<std::vector<size_t>>& terms, double T) {
+  HashGenerator gen;
+  gen.regularInter(this->storage, level, terms, T);
+}
+
 void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
@@ -49,6 +56,25 @@ void StandardGridGenerator::full(size_t level) {
 void StandardGridGenerator::refine(RefinementFunctor& func) {
   HashRefinement refine;
   refine.free_refine(this->storage, func);
+}
+void StandardGridGenerator::refineInter(RefinementFunctor& func,
+                                        const std::unordered_set<std::vector<bool>>& interactions) {
+  auto refine = HashRefinementInteraction(interactions);
+  refine.free_refine(this->storage, func);
+}
+
+void StandardGridGenerator::refineInter(RefinementFunctor& func,
+                                        const std::vector<std::vector<size_t>>& interactions) {
+  auto interset = std::unordered_set<std::vector<bool>>();
+  const auto dim = storage.getDimension();
+  for (const auto& interaction : interactions) {
+    auto term = std::vector<bool>(dim, false);
+    for (const auto i : interaction) {
+      term[i] = true;
+    }
+    interset.insert(term);
+  }
+  refineInter(func, interset);
 }
 
 size_t StandardGridGenerator::getNumberOfRefinablePoints() {

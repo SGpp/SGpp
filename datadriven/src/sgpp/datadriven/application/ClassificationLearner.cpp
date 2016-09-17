@@ -3,14 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/ClassificationLearner.hpp>
-
 #include <set>
+#include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <utility>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
+ClassificationLearner::ClassificationLearner(
+    sgpp::base::RegularGridConfiguration gridConfig,
+    sgpp::base::AdpativityConfiguration adaptivityConfig,
+    sgpp::solver::SLESolverConfiguration solverConfig,
+    sgpp::solver::SLESolverConfiguration finalSolverConfig,
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+    const std::vector<std::vector<size_t>> terms)
+    : gridConfig(gridConfig),
+      adaptivityConfig(adaptivityConfig),
+      solverConfig(solverConfig),
+      finalSolverConfig(finalSolverConfig),
+      regularizationConfig(regularizationConfig),
+      terms(std::move(terms)) {}
 
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
@@ -22,7 +34,9 @@ ClassificationLearner::ClassificationLearner(
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
-      regularizationConfig(regularizationConfig) {}
+      regularizationConfig(regularizationConfig) {
+  terms = std::vector<std::vector<size_t>>();
+}
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
                                   sgpp::base::DataVector& classes) {
@@ -44,16 +58,28 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
   // Now we create a learner for each class.
   for (const auto uniqueClass : uniqueClasses) {
     auto newY = generateYOneVsAll(classes, uniqueClass);
-    auto learner =
-        RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
-                          regularizationConfig);
-    std::cout << "Created learner for class " << uniqueClass << std::endl;
+    auto learner = [&]() {
+      if (terms.size() > 0) {
+        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
+                                 regularizationConfig, terms);
+      } else {
+        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
+                                 regularizationConfig);
+      }
+    }();
+
     learner.train(trainDataset, newY);
     learners.emplace_back(uniqueClass, std::move(learner));
   }
 }
 
-size_t ClassificationLearner::getGridSize() const { return learners[0].second.getGridSize(); }
+size_t ClassificationLearner::getGridSize() const {
+  size_t sizeSum = 0;
+  for (auto& learner : learners) {
+    sizeSum += learner.second.getGridSize();
+  }
+  return sizeSum;
+}
 
 sgpp::base::DataVector ClassificationLearner::predict(sgpp::base::DataMatrix& data) {
   auto predictions = getPredictions(data);
