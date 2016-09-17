@@ -17,11 +17,11 @@ class RidgeFunction : public RegularizationFunction {
   RidgeFunction(double lambda) : lambda(lambda) {}
 
   // (lambda |x|_2 )
-  double eval(sgpp::base::DataVector weights) const override {
+  double eval(sgpp::base::DataVector weights) override {
     return lambda * weights.dotProduct(weights);
   }
 
-  base::DataVector prox(const sgpp::base::DataVector& weights, double stepsize) const override {
+  base::DataVector prox(const sgpp::base::DataVector& weights, double stepsize) override {
     auto proxVec = base::DataVector(weights.getSize());
 #pragma omp parallel for
     for (size_t i = 0; i < weights.getSize(); ++i) {

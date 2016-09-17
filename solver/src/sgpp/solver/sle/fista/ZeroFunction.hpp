@@ -14,9 +14,9 @@ namespace solver {
 
 class ZeroFunction : public RegularizationFunction {
  public:
-  double eval(base::DataVector weights) const override { return 0.0; }
+  double eval(base::DataVector weights) override { return 0.0; }
 
-  base::DataVector prox(const base::DataVector& weights, double stepsize) const override {
+  base::DataVector prox(const base::DataVector& weights, double stepsize) override {
     return weights;
   }
 };

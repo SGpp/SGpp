@@ -7,10 +7,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/solver/sle/fista/ZeroFunction.hpp>
 #include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/RidgeFunction.hpp>
+#include <sgpp/solver/sle/fista/ZeroFunction.hpp>
 
 using sgpp::base::DataVector;
 using sgpp::solver::ZeroFunction;
@@ -37,14 +37,14 @@ BOOST_AUTO_TEST_CASE(testZeroFunction) {
 }
 
 BOOST_AUTO_TEST_CASE(test_ElasticNetFunction) {
-  const auto enRidge = ElasticNetFunction(lambda, 0.0);
-  const auto enLasso = ElasticNetFunction(lambda, 1.0);
-  const auto enZero = ElasticNetFunction(0.0, 0.5);
-  const auto enMixed = ElasticNetFunction(lambda, 0.5);
+  auto enRidge = ElasticNetFunction(lambda, 0.0);
+  auto enLasso = ElasticNetFunction(lambda, 1.0);
+  auto enZero = ElasticNetFunction(0.0, 0.5);
+  auto enMixed = ElasticNetFunction(lambda, 0.5);
 
-  const auto ridge = RidgeFunction(lambda);
-  const auto lasso = LassoFunction(lambda);
-  const auto zero = ZeroFunction();
+  auto ridge = RidgeFunction(lambda);
+  auto lasso = LassoFunction(lambda);
+  auto zero = ZeroFunction();
 
   const double evalEnRidge = enRidge.eval(testVec);
   const double evalRidge = ridge.eval(testVec);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(test_ElasticNetFunction) {
 }
 
 BOOST_AUTO_TEST_CASE(testLassoFunction) {
-  const auto fun = LassoFunction(lambda);
+  auto fun = LassoFunction(lambda);
   const double evalIs = fun.eval(testVec);
   const auto proxIs = fun.prox(testVec, stepsize);
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(testLassoFunction) {
 }
 
 BOOST_AUTO_TEST_CASE(testRidgeFunction) {
-  const auto fun = RidgeFunction(lambda);
+  auto fun = RidgeFunction(lambda);
   const double evalIs = fun.eval(testVec);
   const auto proxIs = fun.prox(testVec, stepsize);
 
