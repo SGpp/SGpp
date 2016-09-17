@@ -3,29 +3,45 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/solver/sle/BiCGStab.hpp>
-#include <sgpp/solver/sle/fista/Fista.hpp>
-#include <sgpp/solver/sle/fista/RidgeFunction.hpp>
-#include <sgpp/solver/sle/fista/LassoFunction.hpp>
-#include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
+#include <cassert>
 #include <limits>
 #include <random>
-#include <cassert>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
+#include <sgpp/solver/sle/fista/Fista.hpp>
+#include <sgpp/solver/sle/fista/GroupLassoFunction.hpp>
+#include <sgpp/solver/sle/fista/LassoFunction.hpp>
+#include <sgpp/solver/sle/fista/RidgeFunction.hpp>
 
 namespace sgpp {
 namespace datadriven {
+
+RegressionLearner::RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
+                                     sgpp::base::AdpativityConfiguration adaptivityConfig,
+                                     sgpp::solver::SLESolverConfiguration solverConfig,
+                                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
+                                     datadriven::RegularizationConfiguration regularizationConfig,
+                                     std::vector<std::vector<size_t>> terms)
+    : gridConfig(gridConfig),
+      adaptivityConfig(adaptivityConfig),
+      solverConfig(solverConfig),
+      finalSolverConfig(finalSolverConfig),
+      regularizationConfig(regularizationConfig),
+      terms(terms) {
+  initializeGrid(gridConfig);
+}
 
 RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
                                      base::AdpativityConfiguration adaptivityConfig,
@@ -37,6 +53,7 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig) {
+  terms = std::vector<std::vector<size_t>>();
   initializeGrid(gridConfig);
 }
 
@@ -46,7 +63,7 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
         "RegressionLearner::train: length of classes vector does not match to "
         "dataset!");
   }
-  auto solver = std::move(createSolver());
+  auto solver = std::move(createSolver(classes.getSize()));
 
   if (solver.type == Solver::solverCategory::cg) {
     systemMatrix = createDMSystem(trainDataset);
@@ -86,8 +103,9 @@ void RegressionLearner::fit(Solver& solver, base::DataVector& classes) {
       break;
     }
     case Solver::solverCategory::fista: {
-      solver.solveFista(*op, weights, classes, solverConfig.maxIterations_,
-                        solverConfig.threshold_);
+      const double L = solver.getL();
+      solver.solveFista(*op, weights, classes, solverConfig.maxIterations_, solverConfig.threshold_,
+                        L);
       break;
     }
     case Solver::solverCategory::none:
@@ -111,7 +129,11 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   // Refine the grid using the weighted errors.
   auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
                                                       adaptivityConfig.threshold_);
-  grid->getGenerator().refine(refineFunctor);
+  if (terms.size() > 0) {
+    grid->getGenerator().refineInter(refineFunctor, terms);
+  } else {
+    grid->getGenerator().refine(refineFunctor);
+  }
 
   // tell the SLE manager that the grid changed (for internal
   // data structures)
@@ -120,6 +142,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   }
   weights.resizeZero(grid->getSize());
 }
+
+sgpp::base::Grid& RegressionLearner::getGrid() { return *grid; }
 
 size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 
@@ -146,6 +170,8 @@ void RegressionLearner::initializeWeights() {
 
 base::DataVector RegressionLearner::getWeights() const { return weights; }
 
+void RegressionLearner::setWeights(base::DataVector weights) { this->weights = weights; }
+
 double RegressionLearner::getMSE(const base::DataVector& y, base::DataVector yPrediction) {
   yPrediction.sub(y);
   yPrediction.sqr();
@@ -167,7 +193,11 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
         "RegressionLearner::InitializeGrid: An unsupported grid type was chosen!");
   }
 
-  grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
+  if (terms.size() > 0) {
+    grid->getGenerator().regularInter(gridConfig.level_, terms, gridConfig.t_);
+  } else {
+    grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
+  }
   weights = base::DataVector(grid->getSize());
   weights.setAll(0.0);
 }
@@ -188,6 +218,7 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
       opMatrix =
           sgpp::op_factory::createOperationDiagonal(*grid, regularizationConfig.exponentBase_);
       break;
+    case RegularizationType::GroupLasso:
     case RegularizationType::Lasso:
     case RegularizationType::ElasticNet:
     default:
@@ -198,7 +229,7 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
                                                       regularizationConfig.lambda_);
 }
 
-RegressionLearner::Solver RegressionLearner::createSolver() {
+RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
   using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
@@ -208,25 +239,32 @@ RegressionLearner::Solver RegressionLearner::createSolver() {
       return Solver(std::move(
           std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_)));
     case SLESolverType::FISTA:
-      return createSolverFista();
+      return createSolverFista(n_rows);
     default:
       throw base::application_exception(
           "RegressionLearner::createSolver: An unsupported solver type was chosen!");
   }
 }
 
-RegressionLearner::Solver RegressionLearner::createSolverFista() {
+RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
+  // The FISTA-solver solves loss + lambda * regularization_penalty.
+  // We adjust it to align to function like the CG solver, by solving
+  // loss + n * lambda * regularization_penalty instead.
+  const double lambda = static_cast<double>(n_rows) * regularizationConfig.lambda_;
   using datadriven::RegularizationType;
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
-      return Solver(std::make_unique<solver::Fista<solver::RidgeFunction>>(
-          solver::RidgeFunction(regularizationConfig.lambda_)));
+      return Solver(
+          std::make_unique<solver::Fista<solver::RidgeFunction>>(solver::RidgeFunction(lambda)));
     case RegularizationType::Lasso:
-      return Solver(std::make_unique<solver::Fista<solver::LassoFunction>>(
-          solver::LassoFunction(regularizationConfig.lambda_)));
+      return Solver(
+          std::make_unique<solver::Fista<solver::LassoFunction>>(solver::LassoFunction(lambda)));
     case RegularizationType::ElasticNet:
       return Solver(std::make_unique<solver::Fista<solver::ElasticNetFunction>>(
-          solver::ElasticNetFunction(regularizationConfig.lambda_, regularizationConfig.l1Ratio_)));
+          solver::ElasticNetFunction(lambda, regularizationConfig.l1Ratio_)));
+    case RegularizationType::GroupLasso:
+      return Solver(std::make_unique<solver::Fista<solver::GroupLassoFunction>>(
+          solver::GroupLassoFunction(lambda, &grid->getStorage())));
     // The following methods are not supported by FISTA.
     case RegularizationType::Diagonal:
     case RegularizationType::Laplace:
