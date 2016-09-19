@@ -282,5 +282,9 @@ std::vector<size_t>& OperationMakePositive::getAddedGridPointsForPositivity() {
   return addedGridPointsForPositivity;
 }
 
+OperationMakePositiveCandidateSetAlgorithm& OperationMakePositive::getCandidateSetAlgorithm() {
+  return *candidateSearch;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

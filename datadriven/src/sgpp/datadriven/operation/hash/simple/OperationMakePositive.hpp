@@ -112,6 +112,12 @@ class OperationMakePositive {
    */
   size_t numAddedGridPointsForPositivity();
 
+  /**
+   *
+   * @return
+   */
+  OperationMakePositiveCandidateSetAlgorithm& getCandidateSetAlgorithm();
+
  private:
   /**
    * Enforce the function values at the new grid points to be positive. It is similar to the

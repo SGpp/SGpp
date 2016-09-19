@@ -26,7 +26,14 @@ class OperationMakePositiveCandidateSetAlgorithm {
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) = 0;
 
+  // statistics
+  base::DataVector& numCandidatesPerLevel();
+  size_t costsComputingCandidates();
+  base::DataVector& costsComputingCandidatesPerIteration();
+
   virtual size_t numCandidates() = 0;
+  virtual base::DataVector& numCandidatesPerIteration() = 0;
+
   void setVerbose(bool pverbose);
 
  protected:
@@ -35,6 +42,8 @@ class OperationMakePositiveCandidateSetAlgorithm {
                                          double tol = -1e-14);
 
   size_t iteration;
+  base::DataVector gridPointsPerLevel;
+  base::DataVector costsPerIteration;
   bool verbose;
 };
 
@@ -49,9 +58,7 @@ class OperationMakePositiveFindIntersectionCandidates
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
 
   size_t numCandidates() override;
-
-  base::DataVector& getComparisonCosts();
-  base::DataVector& numCandidatesPerDimension();
+  base::DataVector& numCandidatesPerIteration() override;
 
  protected:
   bool haveOverlappingSupport(base::HashGridPoint& gpi, base::HashGridPoint& gpj, size_t dim);
@@ -76,7 +83,6 @@ class OperationMakePositiveFindIntersectionCandidates
   std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> candidates;
 
   // statistics
-  base::DataVector comparisonCosts;
   base::DataVector numCandidatesIteration;
 };
 
@@ -91,11 +97,13 @@ class OperationMakePositiveLoadFullGridCandidates
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
 
   size_t numCandidates() override;
+  base::DataVector& numCandidatesPerIteration() override;
 
  private:
   void initializeFullGrid(base::Grid& grid);
 
   std::unique_ptr<base::Grid> fullGrid;
+  base::DataVector candidatesPerIteration;
 };
 
 // -------------------------------------------------------------------------------------------

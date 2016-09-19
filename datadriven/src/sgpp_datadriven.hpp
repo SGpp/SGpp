@@ -44,6 +44,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
 
