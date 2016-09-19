@@ -21,9 +21,10 @@ if env["PLATFORM"] == "cygwin":
 elif env["PLATFORM"] == "darwin":
   pyEnv["SHLIBSUFFIX"] = ".so"
 
+#TODO: bug, plz fix
 # add C++ defines for all modules
 for module in moduleNames:
-  if pyEnv[module]:
+  if pyEnv[module]: 
     pyEnv["CPPDEFINES"][module] = "1"
 
 # build python module with swig

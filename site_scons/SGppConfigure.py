@@ -26,9 +26,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   if env["OPT"] == True:
     env.Append(CPPFLAGS=["-O3", "-g"])
+
   else:
     env.Append(CPPFLAGS=["-g", "-O0"])
-
+          
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
   env["ARCH"] = env["ARCH"].lower()
@@ -109,6 +110,40 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
     # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
+  if env["USE_HPX"]:
+    print 'using hpx!'
+    hpxLibs = ["dl", "rt", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options", "boost_regex" ,
+               "boost_system", "boost_thread", "boost_context", "boost_random", "boost_atomic", "tcmalloc_minimal", "hwloc"]
+    if env["OPT"]:
+      hpxLibs += ["hpxd", "hpx_initd"]
+      if "HPX_RELEASE_LIBRARY_PATH" in env:
+        config.env.AppendUnique(LIBPATH=env["HPX_RELEASE_LIBRARY_PATH"])
+    else:
+      if "HPX_DEBUG_LIBRARY_PATH" in env:
+        config.env.AppendUnique(LIBPATH=env["HPX_DEBUG_LIBRARY_PATH"])
+      hpxLibs += ["hpxd", "hpx_initd"]
+      
+    for lib in hpxLibs:
+      if not config.CheckLib(lib, language="c++", autoadd=1):
+        Helper.printErrorAndExit("lib" + lib + " not found, but required for HPX")
+    config.env.AppendUnique(LIBS=hpxLibs)
+
+    if 'HPX_SHARED_INCLUDE_PATH' in env:
+      config.env.AppendUnique(CPPPATH=env['HPX_SHARED_INCLUDE_PATH'])
+    if env["OPT"]:
+      env.AppendUnique(CPPDEFINES=["HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_RELEASE_INCLUDE_PATH' in env:
+        config.env.AppendUnique(CPPPATH=env['HPX_RELEASE_INCLUDE_PATH'])        
+    else:
+      env.AppendUnique(CPPDEFINES=["HPX_DEBUG", "HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_DEBUG_INCLUDE_PATH' in env:
+        config.env.AppendUnique(CPPPATH=env['HPX_DEBUG_INCLUDE_PATH'])   
+        
+    if not config.CheckCXXHeader("hpx/hpx_init.hpp"):
+      Helper.printErrorAndExit("hpx/hpx_init.hpp not found, but required for HPX")
+    if not config.CheckCXXHeader("hpx/include/actions.hpp"):
+      Helper.printErrorAndExit("hpx/include/actions.hpp not found, but required for HPX")
+
   env = config.Finish()
 
   print "Configuration done."
@@ -116,11 +151,18 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
 def checkCpp11(config):
   # check C++11 support
-  if not config.CheckFlag("-std=c++11"):
-    Helper.printErrorAndExit("The compiler doesn't seem to support the C++11 standard. Abort!")
-    Exit(1)
+  if not config.env['USE_HPX']:
+    if not config.CheckFlag("-std=c++11"):
+      Helper.printErrorAndExit("The compiler doesn't seem to support the C++11 standard. Abort!")
+      Exit(1)
 
-  config.env.AppendUnique(CPPFLAGS="-std=c++11")
+      config.env.AppendUnique(CPPFLAGS="-std=c++11")
+  else:
+    if not config.CheckFlag("-std=c++14"):
+      Helper.printErrorAndExit("HPX requires a compiler that supports the C++14 standard. Abort!")
+      Exit(1)
+      
+      config.env.AppendUnique(CPPFLAGS="-std=c++14")
 
 def checkDoxygen(config):
   # check whether Doxygen installed
