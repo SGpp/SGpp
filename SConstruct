@@ -85,6 +85,8 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "the following values are possible: " +
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
+vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
@@ -112,10 +114,16 @@ vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
 vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
+vars.Add(BoolVariable("USE_HPX", "Enable HPX support", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
 vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
+vars.Add("HPX_DEBUG_LIBRARY_PATH", "Sets the path to the HPX debug libraries", None)
+vars.Add("HPX_RELEASE_LIBRARY_PATH", "Sets the path to the HPX release libraries", None)
+vars.Add("HPX_SHARED_INCLUDE_PATH", "Sets the path to the HPX shared headers", None)
+vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", None)
+vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -161,7 +169,7 @@ finalMessagePrinter.env = env
 
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
+                    if var not in ["CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,

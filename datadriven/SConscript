@@ -36,6 +36,8 @@ if env["USE_OCL"]:
       additionalExampleDependencies=["boost_program_options",
                                      "boost_filesystem",
                                      "boost_system"])
+if env["USE_HPX"]:
+  module.buildExamples("examplesHPX")  
 
 module.runPythonTests()
 module.buildBoostTests()
