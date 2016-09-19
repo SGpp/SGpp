@@ -35,6 +35,19 @@ void OperationMakePositiveCandidateSetAlgorithm::findNodesWithNegativeCoefficien
   }
 }
 
+base::DataVector& OperationMakePositiveCandidateSetAlgorithm::numCandidatesPerLevel() {
+  return gridPointsPerLevel;
+}
+
+size_t OperationMakePositiveCandidateSetAlgorithm::costsComputingCandidates() {
+  return static_cast<size_t>(costsPerIteration.sum());
+}
+
+base::DataVector&
+OperationMakePositiveCandidateSetAlgorithm::costsComputingCandidatesPerIteration() {
+  return costsPerIteration;
+}
+
 // -------------------------------------------------------------------------------------------
 OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates() {
 }
@@ -130,7 +143,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
 
   // reset the costs vectors
   numCandidatesIteration.setAll(0.0);
-  comparisonCosts.setAll(0.0);
+  costsPerIteration.setAll(0.0);
 
   // check for intersections of more than two grid points
   for (size_t k = 2; k <= numDims; ++k) {
@@ -145,7 +158,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
       auto overlappingGridPoints = intersections[candidates.first];
 
       for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
-        comparisonCosts[k - 2]++;
+        costsPerIteration[k - 2]++;
         auto gpj = (*overlappingGridPoints)[j];
 
         // find intersection and store it
@@ -210,7 +223,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
       }
 
       std::cout << ": " << numCandidatesIteration[k - 2] << " -> " << res.size()
-                << " (costs = " << comparisonCosts[k - 2] << "/" << comparisonCosts.sum() << ")"
+                << " (costs = " << costsPerIteration[k - 2] << "/" << costsPerIteration.sum() << ")"
                 << std::endl;
     }
 
@@ -237,7 +250,7 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
 
     // search for intersections
     size_t numDims = grid.getStorage().getDimension();
-    comparisonCosts.resizeZero(numDims - 1);
+    costsPerIteration.resizeZero(numDims - 1);
     numCandidatesIteration.resizeZero(numDims - 1);
     initializeCandidates(grid, negativeGridPoints);
     findIntersections(grid, alpha, levelSum, this->candidates);
@@ -248,8 +261,18 @@ void OperationMakePositiveFindIntersectionCandidates::nextCandidates(
       double numFullGridPoints = std::pow(std::pow(2, maxLevel) - 1, numDims);
       std::cout << "# considered intersect: " << this->candidates.size() << " / "
                 << numFullGridPoints << " : full grid points (l = " << maxLevel << ")" << std::endl;
-      std::cout << "# comparison costs    : " << comparisonCosts.sum() << std::endl;
+      std::cout << "# comparison costs    : " << costsPerIteration.sum() << std::endl;
       std::cout << "--------------------------------------------------------" << std::endl;
+    }
+
+    // update stats: count the grid points for each level sum
+    base::GridStorage& gs = grid.getStorage();
+    size_t maxLevel = gs.getMaxLevel();
+    size_t numLevels = numDims * (maxLevel - 1) + 1;
+    gridPointsPerLevel.resize(numLevels);
+    gridPointsPerLevel.setAll(0.0);
+    for (auto& value : this->candidates) {
+      gridPointsPerLevel[value.second->getLevelSum() - numDims]++;
     }
   }
 
@@ -270,11 +293,7 @@ size_t OperationMakePositiveFindIntersectionCandidates::numCandidates() {
   return candidates.size();
 }
 
-base::DataVector& OperationMakePositiveFindIntersectionCandidates::getComparisonCosts() {
-  return comparisonCosts;
-}
-
-base::DataVector& OperationMakePositiveFindIntersectionCandidates::numCandidatesPerDimension() {
+base::DataVector& OperationMakePositiveFindIntersectionCandidates::numCandidatesPerIteration() {
   return numCandidatesIteration;
 }
 
@@ -295,6 +314,23 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
     std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) {
   if (iteration == 0) {
     initializeFullGrid(grid);
+
+    base::HashGridStorage& fullGridStorage = fullGrid->getStorage();
+    size_t numDims = fullGridStorage.getDimension();
+    size_t maxLevel = fullGridStorage.getMaxLevel();
+
+    // update stats
+    candidatesPerIteration.resize(1);
+    candidatesPerIteration[0] = static_cast<double>(fullGridStorage.getSize());
+
+    // count the grid points for each level sum
+    size_t numLevels = numDims * (maxLevel - 1) + 1;
+    gridPointsPerLevel.resize(numLevels);
+    gridPointsPerLevel.setAll(0.0);
+    for (size_t i = 0; i < fullGridStorage.getSize(); ++i) {
+      auto gp = std::make_shared<base::HashGridPoint>(fullGridStorage.getPoint(i));
+      gridPointsPerLevel[gp->getLevelSum() - numDims]++;
+    }
   }
 
   base::HashGridStorage& fullGridStorage = fullGrid->getStorage();
@@ -310,6 +346,10 @@ void OperationMakePositiveLoadFullGridCandidates::nextCandidates(
 }
 
 size_t OperationMakePositiveLoadFullGridCandidates::numCandidates() { return fullGrid->getSize(); }
+
+base::DataVector& OperationMakePositiveLoadFullGridCandidates::numCandidatesPerIteration() {
+  return candidatesPerIteration;
+}
 
 // -------------------------------------------------------------------------------------------
 
