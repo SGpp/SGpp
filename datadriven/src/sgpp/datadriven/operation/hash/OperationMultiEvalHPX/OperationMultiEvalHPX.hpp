@@ -10,6 +10,7 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -20,18 +21,18 @@ namespace datadriven {
  */
 class OperationMultiEvalHPX: public sgpp::base::OperationMultipleEval {
 protected:
-    OperationMultipleEvalType nodeImplType;
-    OperationMultipleEvalSubType nodeImplSubType;
 
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration;
     size_t dim;
 
     bool verbose;
 
     double duration;
 
+    base::SGppStopwatch myTimer;
 public:
     OperationMultiEvalHPX(base::Grid& grid, base::DataMatrix& dataset,
-            OperationMultipleEvalType type, OperationMultipleEvalSubType,
+            sgpp::datadriven::OperationMultipleEvalConfiguration& configuration,
             bool verbose = false);
 
     ~OperationMultiEvalHPX();
