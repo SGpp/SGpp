@@ -111,7 +111,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
   if env["USE_HPX"]:
-    print 'using hpx!'
     hpxLibs = ["dl", "rt", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options", "boost_regex" ,
                "boost_system", "boost_thread", "boost_context", "boost_random", "boost_atomic", "tcmalloc_minimal", "hwloc"]
     if env["OPT"]:
@@ -127,6 +126,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       if not config.CheckLib(lib, language="c++", autoadd=1):
         Helper.printErrorAndExit("lib" + lib + " not found, but required for HPX")
     config.env.AppendUnique(LIBS=hpxLibs)
+    config.env["CPPDEFINES"]["USE_HPX"] = "1"
+
 
     if 'HPX_SHARED_INCLUDE_PATH' in env:
       config.env.AppendUnique(CPPPATH=env['HPX_SHARED_INCLUDE_PATH'])
@@ -338,13 +339,19 @@ def configureGNUCompiler(config):
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -Wextra \
+      "-Wall -Wextra \
       -Wcast-qual -Wconversion -Wformat=2 \
       -Wformat-nonliteral -Wformat-security -Winit-self  \
       -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
-      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wmissing-include-dirs -Wpacked \
+      -Wunreachable-code -Wunused \
       -Wno-unused-parameter".split(" ")
+      
+  if not config.env['USE_HPX']:
+    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic', '-Wswitch-default'])
+  else:
+    allWarnings.append(['-Wno-conversion', '-Wno-format-nonliteral'])
+    
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
@@ -353,6 +360,7 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse"])
+#   if not config.env["USE_HPX"]:
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
 
@@ -418,6 +426,7 @@ def configureClangCompiler(config):
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
   #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
+#   if not config.env["USE_HPX"]:
   config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
   config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
@@ -467,6 +476,7 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
+#   if not config.env["USE_HPX"]:
   config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
   config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 
