@@ -49,7 +49,7 @@ JSON::JSON(const std::string& fileName) : fileName(fileName) {
 
 JSON::JSON(const JSON& original) : DictNode(original) { this->fileName = original.fileName; }
 
-std::vector<Token> JSON::tokenize(std::string& input) {
+std::vector<Token> JSON::tokenize(const std::string& input) {
   std::vector<Token> stream;
 
   TokenType state = TokenType::NONE;
@@ -200,6 +200,17 @@ void JSON::clear() {
   // it shouldn't even be necessary to reset these
   this->orderedKeyIndex = 0;
   this->parent = nullptr;
+}
+
+void JSON::deserializeFromString(const std::string &content) {
+    this->clear();
+    std::vector<Token> tokenStream = this->tokenize(content);
+
+    this->parse(tokenStream);
+
+    if (tokenStream.size() != 0) {
+      throw json_exception(tokenStream[0], "expected end-of-file");
+    }
 }
 
 }  // namespace json

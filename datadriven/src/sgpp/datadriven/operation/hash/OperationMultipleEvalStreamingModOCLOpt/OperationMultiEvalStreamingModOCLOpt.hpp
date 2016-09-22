@@ -188,6 +188,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
       std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
     }
 
+    resultArray.reserve(this->datasetSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -251,6 +252,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
       std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
     }
 
+    result.resize(this->gridSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }

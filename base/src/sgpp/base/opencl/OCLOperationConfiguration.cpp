@@ -99,5 +99,11 @@ std::vector<std::reference_wrapper<json::Node>> OCLOperationConfiguration::getAl
   return deviceNodes;
 }
 
+std::unique_ptr<OCLOperationConfiguration> OCLOperationConfiguration::fromString(std::string &parametersString) {
+    std::unique_ptr<OCLOperationConfiguration> parameters = std::make_unique<OCLOperationConfiguration>();
+    parameters->deserializeFromString(parametersString);
+    return parameters;
+}
+
 }  // namespace base
 }  // namespace sgpp

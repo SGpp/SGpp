@@ -192,6 +192,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
+    result.resize(this->datasetSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -266,6 +267,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
+    result.resize(this->gridSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }

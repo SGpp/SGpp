@@ -15,6 +15,8 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
 #include <hpx/hpx_init.hpp>
+#include <hpx/include/util.hpp>
+#include <hpx/include/actions.hpp>
 
 /*    sgpp::base::OCLOperationConfiguration parameters;
  parameters.readFromFile("StreamingOCL.cfg");
@@ -26,7 +28,7 @@ uint32_t level = 8;
 //  std::string fileName = "friedman2_90000.arff";
 //  std::string fileName = "debugging.arff";
 //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman2_4d_300000.arff";
+std::string fileName = "friedman2_4d_300000.arff";
 //std::string fileName = "friedman1_10d_150000.arff";
 //  std::string fileName = "friedman_10d.arff";
 //  std::string fileName = "DR5_train.arff";
@@ -37,44 +39,12 @@ std::unique_ptr<sgpp::base::Grid> grid(nullptr);
 sgpp::base::DataMatrix trainingData;
 sgpp::base::DataVector alpha;
 sgpp::base::DataVector dataSizeVectorResult;
+sgpp::datadriven::Dataset dataset;
+bool is_root_node = false;
 
 int hpx_main(boost::program_options::variables_map& vm) {
 
-    sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
-
-    sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
-            sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-            sgpp::datadriven::OperationMultipleEvalSubType::OCLMP,
-            sgpp::datadriven::OperationMultipleEvalMPIType::HPX,
-            parameters);
-
-    std::cout << "creating operation with unrefined grid" << std::endl;
-    std::unique_ptr<sgpp::base::OperationMultipleEval> eval = std::unique_ptr<
-            sgpp::base::OperationMultipleEval>(
-            sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
-                    configuration));
-
-    std::cout << "preparing operation for refined grid" << std::endl;
-    eval->prepare();
-
-    std::cout << "calculating result" << std::endl;
-
-    for (size_t i = 0; i < 1; i++) {
-        std::cout << "repeated mult: " << i << std::endl;
-        eval->mult(alpha, dataSizeVectorResult);
-    }
-
-    std::cout << "duration: " << eval->getDuration() << std::endl;
-
-    return hpx::finalize(); // Handles HPX shutdown
-}
-
-int main(int argc, char* argv[]) {
-    // Configure application-specific options
-    boost::program_options::options_description desc_commandline(
-            "Usage: " HPX_APPLICATION_STRING " [options]");
-
-    desc_commandline.add_options();
+    is_root_node = hpx::find_here() == hpx::find_root_locality();
 
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
@@ -83,7 +53,7 @@ int main(int argc, char* argv[]) {
     adaptConfig.threshold_ = 0.0;
 
     sgpp::datadriven::ARFFTools arffTools;
-    sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+    dataset = arffTools.readARFF(fileName);
 
     trainingData = dataset.getData();
 
@@ -126,49 +96,87 @@ int main(int argc, char* argv[]) {
     dataSizeVectorResult = sgpp::base::DataVector(dataset.getNumberInstances());
     dataSizeVectorResult.setAll(0);
 
+    sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
+
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+            sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+            sgpp::datadriven::OperationMultipleEvalSubType::OCLMP,
+            sgpp::datadriven::OperationMultipleEvalMPIType::HPX, parameters);
+
+    std::cout << "creating operation with unrefined grid" << std::endl;
+    std::unique_ptr<sgpp::base::OperationMultipleEval> eval = std::unique_ptr<
+            sgpp::base::OperationMultipleEval>(
+            sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
+                    configuration));
+
+    std::cout << "preparing operation for refined grid" << std::endl;
+    eval->prepare();
+
+    std::cout << "calculating result" << std::endl;
+
+    for (size_t i = 0; i < 1; i++) {
+        std::cout << "repeated mult: " << i << std::endl;
+        eval->mult(alpha, dataSizeVectorResult);
+    }
+
+    std::cout << "duration: " << eval->getDuration() << std::endl;
+
+    return hpx::finalize(); // Handles HPX shutdown
+}
+
+int main(int argc, char* argv[]) {
+    // Configure application-specific options
+    boost::program_options::options_description desc_commandline(
+            "Usage: " HPX_APPLICATION_STRING " [options]");
+
+    desc_commandline.add_options();
+
     // Initialize and run HPX
     int return_value = hpx::init(desc_commandline, argc, argv);
 
-    std::cout << "calculating comparison values..." << std::endl;
+    if (is_root_node) {
 
-    std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
-            std::unique_ptr<sgpp::base::OperationMultipleEval>(
-                    sgpp::op_factory::createOperationMultipleEval(*grid,
-                            trainingData));
 
-    sgpp::base::DataVector dataSizeVectorResultCompare(
-            dataset.getNumberInstances());
-    dataSizeVectorResultCompare.setAll(0.0);
+        std::cout << "calculating comparison values..." << std::endl;
 
-    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+        std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
+                std::unique_ptr<sgpp::base::OperationMultipleEval>(
+                        sgpp::op_factory::createOperationMultipleEval(*grid,
+                                trainingData));
 
-    double mse = 0.0;
+        sgpp::base::DataVector dataSizeVectorResultCompare(
+                dataset.getNumberInstances());
+        dataSizeVectorResultCompare.setAll(0.0);
 
-    double largestDifferenceMine = 0.0;
-    double largestDifferenceReference = 0.0;
-    double largestDifference = 0.0;
+        evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
-    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-        double difference = std::abs(
-                dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-        if (difference > largestDifference) {
-            largestDifference = difference;
-            largestDifferenceMine = dataSizeVectorResult[i];
-            largestDifferenceReference = dataSizeVectorResultCompare[i];
+        double mse = 0.0;
+
+        double largestDifferenceMine = 0.0;
+        double largestDifferenceReference = 0.0;
+        double largestDifference = 0.0;
+
+        for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+            double difference = std::abs(
+                    dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+            if (difference > largestDifference) {
+                largestDifference = difference;
+                largestDifferenceMine = dataSizeVectorResult[i];
+                largestDifferenceReference = dataSizeVectorResultCompare[i];
+            }
+
+            //    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
+            //              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+
+            mse += difference * difference;
         }
 
-        //    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
-        //              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+        std::cout << "largestDifference: " << largestDifference << " mine: "
+                << largestDifferenceMine << " ref: "
+                << largestDifferenceReference << std::endl;
 
-        mse += difference * difference;
+        mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+        std::cout << "mse: " << mse << std::endl;
     }
-
-    std::cout << "largestDifference: " << largestDifference << " mine: "
-            << largestDifferenceMine << " ref: " << largestDifferenceReference
-            << std::endl;
-
-    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-    std::cout << "mse: " << mse << std::endl;
-
     return return_value;
 }
