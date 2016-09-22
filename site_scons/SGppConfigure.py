@@ -114,13 +114,13 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     hpxLibs = ["dl", "rt", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options", "boost_regex" ,
                "boost_system", "boost_thread", "boost_context", "boost_random", "boost_atomic", "tcmalloc_minimal", "hwloc"]
     if env["OPT"]:
-      hpxLibs += ["hpxd", "hpx_initd"]
+      hpxLibs += ["hpx", "hpx_init", "hpx_iostreams"]
       if "HPX_RELEASE_LIBRARY_PATH" in env:
         config.env.AppendUnique(LIBPATH=env["HPX_RELEASE_LIBRARY_PATH"])
     else:
       if "HPX_DEBUG_LIBRARY_PATH" in env:
         config.env.AppendUnique(LIBPATH=env["HPX_DEBUG_LIBRARY_PATH"])
-      hpxLibs += ["hpxd", "hpx_initd"]
+      hpxLibs += ["hpxd", "hpx_initd", "hpx_iostreamsd"]
       
     for lib in hpxLibs:
       if not config.CheckLib(lib, language="c++", autoadd=1):
