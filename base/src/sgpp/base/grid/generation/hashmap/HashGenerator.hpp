@@ -61,7 +61,8 @@ class HashGenerator {
    * @param level Grid level (non-negative value)
    * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
    *        For further information see Griebel and Knapek's paper
-   *        optimized tensor-product approximation spaces
+   *        optimized tensor-product approximation spaces.
+   *        The effect of T can be seen in: \image html generalisedGrid.svg
    */
   void regular(GridStorage& storage, level_t level, double T = 0) {
     if (storage.getSize() > 0) {
@@ -70,6 +71,19 @@ class HashGenerator {
     this->regular_iter(storage, level, T);
   }
 
+  /**
+   * @brief Generates a regular sparse grid of level level, without boundaries.
+   * The resulting grid only contains interactions that are in the vector terms.
+   * @param storage Hashmap that stores the grid points
+   * @param level Grid level (non-negative value)
+   * @param terms controls the desired interaction terms.
+   * For example, if we want to include grid points that model an
+   * interaction between the first and the second predictor, we would
+   * include the vector [1,2] in terms.
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces.
+   */
   void regularInter(GridStorage& storage, level_t level,
                     const std::vector<std::vector<size_t>>& terms, double T = 0) {
     if (storage.getSize() > 0) {

@@ -118,7 +118,12 @@ class GridGenerator {
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.
    * Does not create any interactions, that are not in the list of allowed interactions.
-   *
+   * @details Refines the grid, but only adds interactions that are contained in
+   * the set interactions, i.e. only desired interactions.
+   * Each desired interaction is encoded as a vector which contains all desired interactions.
+   * For example, if we want to include grid points that model an
+   * interaction between the first and the second predictor, we would
+   * include the vector [1,2] in interactions.
    * @param func pointer to refinement functor
    * @param interactions allowed interactions
    */

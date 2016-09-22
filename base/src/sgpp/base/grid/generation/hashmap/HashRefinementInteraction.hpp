@@ -12,9 +12,21 @@
 
 namespace sgpp {
 namespace base {
-
+/**
+ * @brief The HashRefinementInteraction class
+ * @details Refines the grid, but only adds interactions that are contained in the set interactions, i.e.
+ * only desired interactions.
+ * Each desired interaction is encoded as a vector, of which each entry is true if the dimension
+ * should be used and false otherwise.
+ * For example, a \f$ (x_1 \times x_2)\f$ interaction for a 3-dimensional dataset is
+ * modelled as the boolean vector (true, true, false).
+ */
 class HashRefinementInteraction : public HashRefinement {
  public:
+    /**
+   * @brief HashRefinementInteraction
+   * @param interactions contains all desired interactions.
+   */
   explicit HashRefinementInteraction(std::unordered_set<std::vector<bool>> interactions);
   void createGridpoint(GridStorage& storage, index_type& index) override;
 

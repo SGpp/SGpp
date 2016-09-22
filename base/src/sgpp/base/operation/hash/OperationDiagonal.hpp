@@ -19,15 +19,25 @@ namespace sgpp {
 namespace base {
 
 /**
- * Implementation of diagonal Operation for all kinds of grids
+ * Implementation of diagonal Operation for all kinds of grids.
+ * Corresponds to a Tikhonov matrix of \f$\boldsymbol{\Gamma}_{i,i} = c^{\vert \mathbf{l} \vert_1 - d}\f$
+ * which results in the Gaussian prior
+ * \f$ \boldsymbol{\alpha} \sim \mathcal{N} (0, \boldsymbol{\Gamma}^{-1}) \f$
+ * on the weights \f$ \boldsymbol{\alpha} \f$.
+ * The resulting prior for a 2d-grid with level four looks like
+ * \image html diagonalRegularization.svg
  */
 class OperationDiagonal : public OperationMatrix {
  public:
-  /**
-   * Constructor of OperationDiagonal
+
+   /**
+   * @brief Constructor of OperationDiagonal
+   * @param gridStorage the grid storage
+   * @param priorBase is the exponent base of the variance.
+   * Corresponds to the reciprocal of \f$ c \f$ above.
    */
-  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage, double exponentBase = 0.25)
-      : gridStorage(gridStorage), exponentBase(exponentBase) {
+  explicit OperationDiagonal(sgpp::base::GridStorage* gridStorage, double priorBase = 0.25)
+      : gridStorage(gridStorage), exponentBase(1.0/priorBase) {
     multiplicators = DataVector(0);
   }
 
