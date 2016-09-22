@@ -23,7 +23,7 @@ class PrewaveletGridGenerator: public GridGenerator {
   /// reference to the storage object
   GridStorage& storage;
   GridStorage& shadowstorage;
-  typedef GridStorage::index_type index_type;
+  typedef GridStorage::point_type index_type;
   typedef index_type::index_type index_t;
   typedef index_type::level_type level_t;
 

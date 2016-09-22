@@ -39,6 +39,7 @@
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <utility>
 #include <map>
@@ -48,118 +49,296 @@
 namespace sgpp {
 namespace base {
 
-std::unique_ptr<Grid> Grid::createLinearGridStencil(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearGridStencil(dim));
+Grid* Grid::createLinearGridStencil(size_t dim) {
+  return new LinearGridStencil(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModLinearGridStencil(size_t dim) {
-  return std::unique_ptr<Grid>(new ModLinearGridStencil(dim));
+Grid* Grid::createModLinearGridStencil(size_t dim) {
+  return new ModLinearGridStencil(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearGrid(dim));
+Grid* Grid::createLinearGrid(size_t dim) {
+  return new LinearGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearStretchedGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearStretchedGrid(dim));
+Grid* Grid::createLinearStretchedGrid(size_t dim) {
+  return new LinearStretchedGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
+Grid* Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
   if (boundaryLevel == 0) {
-    return std::unique_ptr<Grid>(new LinearL0BoundaryGrid(dim));
+    return new LinearL0BoundaryGrid(dim);
   } else {
-    return std::unique_ptr<Grid>(new LinearBoundaryGrid(dim, boundaryLevel));
+    return new LinearBoundaryGrid(dim, boundaryLevel);
   }
 }
 
-std::unique_ptr<Grid> Grid::createLinearStretchedBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearStretchedBoundaryGrid(dim));
+Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
+  return new LinearStretchedBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearClenshawCurtisGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearClenshawCurtisGrid(dim));
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) {
+  return new LinearClenshawCurtisGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModLinearGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new ModLinearGrid(dim));
+Grid* Grid::createModLinearGrid(size_t dim) {
+  return new ModLinearGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createPolyGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new PolyGrid(dim, degree));
+Grid* Grid::createPolyGrid(size_t dim, size_t degree) {
+  return new PolyGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new PolyBoundaryGrid(dim, degree));
+Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
+  return new PolyBoundaryGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createWaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new WaveletGrid(dim));
+Grid* Grid::createWaveletGrid(size_t dim) {
+  return new WaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createWaveletBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new WaveletBoundaryGrid(dim));
+Grid* Grid::createWaveletBoundaryGrid(size_t dim) {
+  return new WaveletBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModWaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new ModWaveletGrid(dim));
+Grid* Grid::createModWaveletGrid(size_t dim) {
+  return new ModWaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineGrid(dim, degree));
+Grid* Grid::createBsplineGrid(size_t dim, size_t degree) {
+  return new BsplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineBoundaryGrid(dim, degree));
+Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
+  return new BsplineBoundaryGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new BsplineClenshawCurtisGrid(dim, degree));
+Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new BsplineClenshawCurtisGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModBsplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModBsplineGrid(dim, degree));
+Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
+  return new ModBsplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(dim, degree));
+Grid* Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new ModBsplineClenshawCurtisGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new FundamentalSplineGrid(dim, degree));
+Grid* Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
+  return new FundamentalSplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModFundamentalSplineGrid(dim, degree));
+Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
+  return new ModFundamentalSplineGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createSquareRootGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new SquareRootGrid(dim));
+Grid* Grid::createSquareRootGrid(size_t dim) {
+  return new SquareRootGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createPrewaveletGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new PrewaveletGrid(dim));
+Grid* Grid::createPrewaveletGrid(size_t dim) {
+  return new PrewaveletGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new LinearTruncatedBoundaryGrid(dim));
+Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
+  return new LinearTruncatedBoundaryGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::createModPolyGrid(size_t dim, size_t degree) {
-  return std::unique_ptr<Grid>(new ModPolyGrid(dim, degree));
+Grid* Grid::createModPolyGrid(size_t dim, size_t degree) {
+  return new ModPolyGrid(dim, degree);
 }
 
-std::unique_ptr<Grid> Grid::createPeriodicGrid(size_t dim) {
-  return std::unique_ptr<Grid>(new PeriodicGrid(dim));
+Grid* Grid::createPeriodicGrid(size_t dim) {
+  return new PeriodicGrid(dim);
 }
 
-std::unique_ptr<Grid> Grid::unserialize(const std::string& istr) {
+Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
+  if (gridConfig.filename_.length() > 0) {
+    std::ifstream ifs(gridConfig.filename_);
+    std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+    return base::Grid::unserialize(content);
+  } else {
+    switch (gridConfig.type_) {
+      case GridType::Linear:
+        return Grid::createLinearGrid(gridConfig.dim_);
+      case GridType::LinearStretched:
+        return Grid::createLinearStretchedGrid(gridConfig.dim_);
+      case GridType::LinearL0Boundary:
+        return Grid::createLinearBoundaryGrid(gridConfig.dim_);
+      case GridType::LinearBoundary:
+        return Grid::createLinearBoundaryGrid(gridConfig.dim_, gridConfig.boundaryLevel_);
+      case GridType::LinearStretchedBoundary:
+        return Grid::createLinearStretchedBoundaryGrid(gridConfig.dim_);
+      case GridType::LinearTruncatedBoundary:
+        return Grid::createLinearTruncatedBoundaryGrid(gridConfig.dim_);
+      case GridType::ModLinear:
+        return Grid::createModLinearGrid(gridConfig.dim_);
+      case GridType::Poly:
+        return Grid::createPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::PolyBoundary:
+        return Grid::createPolyBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModPoly:
+        return Grid::createModPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModWavelet:
+        return Grid::createModWaveletGrid(gridConfig.dim_);
+      case GridType::ModBspline:
+        return Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::Prewavelet:
+        return Grid::createPrewaveletGrid(gridConfig.dim_);
+      case GridType::SquareRoot:
+        return Grid::createSquareRootGrid(gridConfig.dim_);
+      case GridType::Periodic:
+        return Grid::createPeriodicGrid(gridConfig.dim_);
+      case GridType::LinearClenshawCurtis:
+        return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_);
+      case GridType::Bspline:
+        return Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::BsplineBoundary:
+        return Grid::createBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::BsplineClenshawCurtis:
+        return Grid::createBsplineClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::Wavelet:
+        return Grid::createWaveletGrid(gridConfig.dim_);
+      case GridType::WaveletBoundary:
+        return Grid::createWaveletBoundaryGrid(gridConfig.dim_);
+      case GridType::FundamentalSpline:
+        return Grid::createFundamentalSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModFundamentalSpline:
+        return Grid::createModFundamentalSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModBsplineClenshawCurtis:
+        return Grid::createModBsplineClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::LinearStencil:
+        return Grid::createLinearStretchedGrid(gridConfig.dim_);
+      case GridType::ModLinearStencil:
+        return Grid::createModLinearGridStencil(gridConfig.dim_);
+      default:
+        throw generation_exception("Grid::createGrid - grid type not known");
+    }
+  }
+}
+
+Grid* Grid::clone() {
+  // clone grid of the same type
+  Grid* newGrid = nullptr;
+
+  size_t numDims = storage.getDimension();
+  level_t boundaryLevel = 0;
+  size_t degree = 1;
+  switch (getType()) {
+    case GridType::Linear:
+      newGrid = Grid::createLinearGrid(numDims);
+      break;
+    case GridType::LinearStretched:
+      newGrid = Grid::createLinearStretchedGrid(numDims);
+      break;
+    case GridType::LinearL0Boundary:
+      newGrid = Grid::createLinearBoundaryGrid(numDims);
+      break;
+    case GridType::LinearBoundary:
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createLinearBoundaryGrid(numDims, boundaryLevel);
+      break;
+    case GridType::LinearStretchedBoundary:
+      newGrid = Grid::createLinearStretchedBoundaryGrid(numDims);
+      break;
+    case GridType::LinearTruncatedBoundary:
+      newGrid = Grid::createLinearTruncatedBoundaryGrid(numDims);
+      break;
+    case GridType::ModLinear:
+      newGrid = Grid::createModLinearGrid(numDims);
+      break;
+    case GridType::Poly:
+      degree = dynamic_cast<PolyGrid*>(this)->getDegree();
+      newGrid = Grid::createPolyGrid(numDims, degree);
+      break;
+    case GridType::PolyBoundary:
+      degree = dynamic_cast<PolyBoundaryGrid*>(this)->getDegree();
+      newGrid = Grid::createPolyBoundaryGrid(numDims, degree);
+      break;
+    case GridType::ModPoly:
+      degree = dynamic_cast<ModPolyGrid*>(this)->getDegree();
+      newGrid = Grid::createModPolyGrid(numDims, degree);
+      break;
+    case GridType::ModWavelet:
+      newGrid = Grid::createModWaveletGrid(numDims);
+      break;
+    case GridType::ModBspline:
+      degree = dynamic_cast<ModBsplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModBsplineGrid(numDims, degree);
+      break;
+    case GridType::Prewavelet:
+      newGrid = Grid::createPrewaveletGrid(numDims);
+      break;
+    case GridType::SquareRoot:
+      newGrid = Grid::createSquareRootGrid(numDims);
+      break;
+    case GridType::Periodic:
+      newGrid = Grid::createPeriodicGrid(numDims);
+      break;
+    case GridType::LinearClenshawCurtis:
+      newGrid = Grid::createLinearClenshawCurtisGrid(numDims);
+      break;
+    case GridType::Bspline:
+      degree = dynamic_cast<BsplineGrid*>(this)->getDegree();
+      newGrid = Grid::createBsplineGrid(numDims, degree);
+      break;
+    case GridType::BsplineBoundary:
+      degree = dynamic_cast<BsplineBoundaryGrid*>(this)->getDegree();
+      newGrid = Grid::createBsplineBoundaryGrid(numDims, degree);
+      break;
+    case GridType::BsplineClenshawCurtis:
+      degree = dynamic_cast<BsplineClenshawCurtisGrid*>(this)->getDegree();
+      newGrid = Grid::createBsplineClenshawCurtisGrid(numDims, degree);
+      break;
+    case GridType::Wavelet:
+      newGrid = Grid::createWaveletGrid(numDims);
+      break;
+    case GridType::WaveletBoundary:
+      newGrid = Grid::createWaveletBoundaryGrid(numDims);
+      break;
+    case GridType::FundamentalSpline:
+      degree = dynamic_cast<FundamentalSplineGrid*>(this)->getDegree();
+      newGrid = Grid::createFundamentalSplineGrid(numDims, degree);
+      break;
+    case GridType::ModFundamentalSpline:
+      degree = dynamic_cast<ModFundamentalSplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModFundamentalSplineGrid(numDims, degree);
+      break;
+    case GridType::ModBsplineClenshawCurtis:
+      degree = dynamic_cast<ModBsplineClenshawCurtisGrid*>(this)->getDegree();
+      newGrid = Grid::createModBsplineClenshawCurtisGrid(numDims, degree);
+      break;
+    case GridType::LinearStencil:
+      newGrid = Grid::createLinearStretchedGrid(numDims);
+      break;
+    case GridType::ModLinearStencil:
+      newGrid = Grid::createModLinearGridStencil(numDims);
+      break;
+    default:
+      throw generation_exception("Grid::clone - grid type not known");
+  }
+
+  base::HashGridStorage& newGridStorage = newGrid->getStorage();
+
+  // run through grid and add points to newGrid
+  for (size_t i = 0; i < storage.getSize(); i++) {
+    newGridStorage.insert(storage.getPoint(i));
+  }
+  newGridStorage.recalcLeafProperty();
+
+  return newGrid;
+}
+
+Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
 
   return Grid::unserialize(istream);
 }
 
-std::unique_ptr<Grid> Grid::unserialize(std::istream& istr) {
+Grid* Grid::unserialize(std::istream& istr) {
   std::string gridtype;
   istr >> gridtype;
 
@@ -361,18 +540,18 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
 /**
  * Factory for everything we don't know.
  */
-std::unique_ptr<Grid> Grid::nullFactory(std::istream&) {
+Grid* Grid::nullFactory(std::istream&) {
   throw factory_exception("factory_exeception unserialize: unsupported gridtype");
-  return std::unique_ptr<Grid>(nullptr);
+  return nullptr;
 }
 
 Grid::Grid(std::istream& istr) : storage(istr) {}
 
 Grid::Grid(size_t dim) : storage(dim) {}
 
-Grid::Grid(BoundingBox& BB) : storage(BB) {}
+Grid::Grid(BoundingBox& boundingBox) : storage(boundingBox) {}
 
-Grid::Grid(Stretching& BB) : storage(BB) {}
+Grid::Grid(Stretching& stretching) : storage(stretching) {}
 
 Grid::~Grid() {}
 
@@ -382,9 +561,9 @@ BoundingBox& Grid::getBoundingBox() { return *storage.getBoundingBox(); }
 
 Stretching& Grid::getStretching() { return *storage.getStretching(); }
 
-void Grid::setBoundingBox(BoundingBox& bb) { storage.setBoundingBox(bb); }
+void Grid::setBoundingBox(BoundingBox& boundingBox) { storage.setBoundingBox(boundingBox); }
 
-void Grid::setStretching(Stretching& bb) { storage.setStretching(bb); }
+void Grid::setStretching(Stretching& stretching) { storage.setStretching(stretching); }
 
 void Grid::serialize(std::string& ostr, int version) {
   std::ostringstream ostream;
@@ -411,8 +590,8 @@ void Grid::refine(DataVector& vector, int numOfPoints) {
 }
 
 void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf) {
-  // create HashGridIndex object for the point
-  GridIndex pointIndex(dim);
+  // create HashGridPoint object for the point
+  GridPoint pointIndex(dim);
 
   for (unsigned int i = 0; i < dim - 1; i++) {
     pointIndex.push(i, levels[i], indices[i]);

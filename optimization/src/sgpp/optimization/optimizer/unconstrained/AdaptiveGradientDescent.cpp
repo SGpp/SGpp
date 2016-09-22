@@ -13,21 +13,32 @@ namespace optimization {
 namespace optimizer {
 
 AdaptiveGradientDescent::AdaptiveGradientDescent(
-    ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, double tolerance,
+    const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+    size_t maxItCount, double tolerance,
     double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
-      rhoLs(lineSearchAccuracy) {}
+      rhoLs(lineSearchAccuracy) {
+  fGradient.clone(this->fGradient);
+}
+
+AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other) :
+    UnconstrainedOptimizer(other),
+    theta(other.theta),
+    rhoAlphaPlus(other.rhoAlphaPlus),
+    rhoAlphaMinus(other.rhoAlphaMinus),
+    rhoLs(other.rhoLs) {
+  other.fGradient->clone(fGradient);
+}
 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
 
 void AdaptiveGradientDescent::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -35,7 +46,7 @@ void AdaptiveGradientDescent::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = f.eval(x);
+  double fx = f->eval(x);
   base::DataVector gradFx(d);
 
   xHist.appendRow(x);
@@ -54,7 +65,7 @@ void AdaptiveGradientDescent::optimize() {
 
   while (k < N) {
     // calculate gradient and norm
-    fx = fGradient.eval(x, gradFx);
+    fx = fGradient->eval(x, gradFx);
     k++;
 
     const double gradFxNorm = gradFx.l2Norm();
@@ -77,7 +88,7 @@ void AdaptiveGradientDescent::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f.eval(xNew) : INFINITY);
+    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
     k++;
 
     // inner product of gradient and search direction
@@ -99,7 +110,7 @@ void AdaptiveGradientDescent::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? f.eval(xNew) : INFINITY);
+      fxNew = (inDomain ? f->eval(xNew) : INFINITY);
       k++;
     }
 
@@ -141,7 +152,7 @@ void AdaptiveGradientDescent::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double AdaptiveGradientDescent::getTolerance() const { return theta; }
 

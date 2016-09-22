@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
 
   std::cout << "Grid size with one level terms is " << grid->getSize() << std::endl;
   for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::GridStorage::index_pointer gridIndex = storage.get(i);
-    gridIndex->getCoords(coords);
+    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+    gridIndex.getStandardCoordinates(coords);
     decodeCoords(coords, boolCoords);
     std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
     if (isInserted) {
@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
 
   std::cout << "Grid size with two level terms is " << grid->getSize() << std::endl;
   for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::GridStorage::index_pointer gridIndex = storage.get(i);
-    gridIndex->getCoords(coords);
+    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+    gridIndex.getStandardCoordinates(coords);
     decodeCoords(coords, boolCoords);
     std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
     if (isInserted) {
@@ -102,8 +102,8 @@ int main(int argc, char **argv) {
   std::cout << "Grid size with three level terms is " << grid->getSize() << std::endl;
 
   for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::GridStorage::index_pointer gridIndex = storage.get(i);
-    gridIndex->getCoords(coords);
+    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+    gridIndex.getStandardCoordinates(coords);
     decodeCoords(coords, boolCoords);
     std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
     if (isInserted) {

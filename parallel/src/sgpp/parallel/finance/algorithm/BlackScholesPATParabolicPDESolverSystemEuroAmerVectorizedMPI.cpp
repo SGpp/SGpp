@@ -29,7 +29,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
         std::string OperationMode, double dStrike, std::string option_type, double r,
         bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
         double refineThreshold, std::string refineMode,
-        sgpp::base::GridIndex::level_type refineMaxLevel) {
+        sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -109,32 +109,32 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
   if (!strcmp(alg_selector, "X86SIMD")) {
-    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD);
-    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD);
-    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD);
+    this->OpLaplaceInner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD));
+    this->OpLaplaceBound.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD));
+    this->OpLTwoInner.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoBound.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoDotLaplaceInner.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD));
+    this->OpLTwoDotLaplaceBound.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD));
 #ifdef USEOCL
   } else if (!strcmp(alg_selector, "OCL")) {
-    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL);
-    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL);
-    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL);
-    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL);
+    this->OpLaplaceInner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL));
+    this->OpLaplaceBound.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL));
+    this->OpLTwoInner.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoBound.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoDotLaplaceInner.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL));
+    this->OpLTwoDotLaplaceBound.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL));
 #endif
   } else {
     throw sgpp::base::algorithm_exception(
@@ -273,17 +273,17 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
   if (this->option_type == "std_amer_put") {
     double current_time = static_cast<double>(this->nExecTimesteps) * this->TimestepSize;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid));
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
     size_t dim = this->BoundGrid->getStorage().getDimension();
-    sgpp::base::BoundingBox* myBB = new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
     double* coords_val = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
       std::vector<double> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getCoordinates(
+          this->BoundGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       double tmp;
@@ -318,7 +318,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
     delete[] coords_val;
 
     myHierarchisation->doHierarchisation(*this->alpha_complete);
-    delete myBB;
   }
 }
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRefine(

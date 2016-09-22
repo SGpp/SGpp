@@ -73,28 +73,47 @@ void LearnerVectorizedIdentity::postProcessing(const sgpp::base::DataMatrix& tra
   }
 }
 
-sgpp::base::DataVector LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset) {
+void LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset,
+                                        sgpp::base::DataVector& classesComputed) {
   sgpp::base::DataMatrix tmpDataSet(testDataset);
   size_t originalSize = testDataset.getNrows();
   size_t paddedSize =
       sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
 
-  sgpp::base::DataVector classesComputed(paddedSize);
+  classesComputed.resize(paddedSize);
 
   classesComputed.setAll(0.0);
 
-  if (this->vecType_ != ArBB) {
-    tmpDataSet.transpose();
-  }
+  tmpDataSet.transpose();
 
-  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval =
-      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet);
+  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval(
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet));
   MultEval->multVectorized(*alpha, classesComputed);
 
   // removed the padded instances
   classesComputed.resize(originalSize);
+}
 
-  return classesComputed;
+void LearnerVectorizedIdentity::multTranspose(sgpp::base::DataMatrix& dataset,
+                                              sgpp::base::DataVector& multiplier,
+                                              sgpp::base::DataVector& result) {
+  sgpp::base::DataMatrix tmpDataSet(dataset);
+  size_t originalSize = dataset.getNrows();
+  size_t paddedSize =
+      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
+
+  multiplier.resizeZero(paddedSize);
+  result.resize(grid->getSize());
+  result.setAll(0.0);
+
+  tmpDataSet.transpose();
+
+  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval(
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid, vecType_, &tmpDataSet));
+  MultEval->multTransposeVectorized(multiplier, result);
+
+  // removed the padded instances
+  multiplier.resize(originalSize);
 }
 
 }  // namespace parallel

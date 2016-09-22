@@ -40,7 +40,6 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 
 #pragma omp parallel shared(fX, oldGridSize, gridStorage) default(none)
   {
-    base::GridIndex* gp;
     base::DataVector x(d);
     ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
@@ -57,10 +56,10 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 
     for (size_t i = oldGridSize; i < curGridSize; i++) {
       // convert grid point to coordinate vector
-      gp = gridStorage[i];
+      const base::GridPoint& gp = gridStorage[i];
 
       for (size_t t = 0; t < d; t++) {
-        x[t] = gp->getCoord(t);
+        x[t] = gridStorage.getCoordinate(gp, t);
       }
 
       const double fx = curFPtr->eval(x);

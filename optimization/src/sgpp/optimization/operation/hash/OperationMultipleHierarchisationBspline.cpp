@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalBspline.hpp>
+#include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
@@ -29,18 +29,13 @@ bool OperationMultipleHierarchisationBspline::doHierarchisation(base::DataVector
 void OperationMultipleHierarchisationBspline::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalBspline opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalBsplineNaive opEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
   for (size_t j = 0; j < storage.getSize(); j++) {
-    const base::GridIndex& gp = *storage[j];
-
-    for (size_t t = 0; t < d; t++) {
-      x[t] = gp.getCoord(t);
-    }
-
-    nodeValues[j] = opNaiveEval.eval(alpha, x);
+    storage.getCoordinates(storage[j], x);
+    nodeValues[j] = opEval.eval(alpha, x);
   }
 
   alpha.resize(storage.getSize());
@@ -57,7 +52,7 @@ bool OperationMultipleHierarchisationBspline::doHierarchisation(base::DataMatrix
 void OperationMultipleHierarchisationBspline::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalBspline opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalBsplineNaive opEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);
@@ -66,13 +61,8 @@ void OperationMultipleHierarchisationBspline::doDehierarchisation(base::DataMatr
     alpha.getColumn(i, alpha1);
 
     for (size_t j = 0; j < storage.getSize(); j++) {
-      const base::GridIndex& gp = *storage[j];
-
-      for (size_t t = 0; t < d; t++) {
-        x[t] = gp.getCoord(t);
-      }
-
-      nodeValues[j] = opNaiveEval.eval(alpha1, x);
+      storage.getCoordinates(storage[j], x);
+      nodeValues[j] = opEval.eval(alpha1, x);
     }
 
     alpha.setColumn(i, nodeValues);

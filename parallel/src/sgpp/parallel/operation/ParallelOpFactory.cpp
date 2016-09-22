@@ -36,9 +36,7 @@
 #include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
-#ifdef USEARBB
-#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp>
-#endif
+
 
 // #ifdef USE_MPI
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp>
@@ -68,7 +66,7 @@ namespace sgpp {
 
 namespace op_factory {
 
-std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultipleEvalVectorized(
+parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(
     base::Grid& grid, const parallel::VectorizationType vecType, base::DataMatrix* dataset,
     size_t gridFrom, size_t gridTo, size_t datasetFrom, size_t datasetTo) {
   // handle default upper boundaries
@@ -89,40 +87,29 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::CPUKernel<parallel::X86SimdLinear>>(&grid.getStorage(), dataset, gridFrom,
-                                                            gridTo, datasetFrom, datasetTo));
+                                                            gridTo, datasetFrom, datasetTo);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::OCLKernel<parallel::OCLLinear<double>>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double>>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
-#endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterativeArBBLinear(&grid.getStorage(), dataset));
-
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 #endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+      return new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
     } else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 
 #endif
 #endif
@@ -132,41 +119,31 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::CPUKernel<parallel::X86SimdLinear>>(&grid.getStorage(), dataset, gridFrom,
-                                                            gridTo, datasetFrom, datasetTo));
+                                                            gridTo, datasetFrom, datasetTo);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::OCLKernel<parallel::OCLLinear<double>>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double>>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 
 #endif
-#ifdef USEARBB
-    } else if (vecType == parallel::ArBB) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterativeArBBLinear(&grid.getStorage(), dataset));
 
-#endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+      return new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
     } else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
-      return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<
+      return new parallel::OperationMultipleEvalIterative<
               parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear>>(
-              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
 
 #endif
 #endif
@@ -176,15 +153,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
   } else if (grid.getType() == base::GridType::ModLinear) {
     if (vecType == parallel::X86SIMD) {
       if (strcmp(modlinear_mode, "orig") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::CPUKernel<parallel::X86SimdModLinear>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else if (strcmp(modlinear_mode, "mask") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::CPUKernel<parallel::X86SimdModLinearMask>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -193,15 +168,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
       if (strcmp(modlinear_mode, "orig") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::OCLKernel<parallel::OCLModLinear<double>>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else if (strcmp(modlinear_mode, "mask") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::OCLKernel<parallel::OCLModLinearMask<double>>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -209,15 +182,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
       if (strcmp(modlinear_mode, "orig") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
+        return new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
                 parallel::X86SimdModLinear, parallel::OCLModLinear<double>>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else if (strcmp(modlinear_mode, "mask") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
+        return new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
                 parallel::X86SimdModLinearMask, parallel::OCLModLinearMask<double>>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -227,15 +198,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       if (strcmp(modlinear_mode, "orig") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::MICKernel<parallel::MICModLinear>>(&grid.getStorage(), dataset, gridFrom,
-                                                             gridTo, datasetFrom, datasetTo));
+                                                             gridTo, datasetFrom, datasetTo);
       } else if (strcmp(modlinear_mode, "mask") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::MICKernel<parallel::MICModLinearMask>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -244,15 +213,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
     } else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
       if (strcmp(modlinear_mode, "orig") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<
+        return new parallel::OperationMultipleEvalIterative<
                 parallel::MICCPUHybridKernel<parallel::X86SimdModLinear, parallel::MICModLinear>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else if (strcmp(modlinear_mode, "mask") == 0) {
-        return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative<parallel::MICCPUHybridKernel<
+        return new parallel::OperationMultipleEvalIterative<parallel::MICCPUHybridKernel<
                 parallel::X86SimdModLinearMask, parallel::MICModLinearMask>>(
-                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -271,16 +238,14 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 }
 
 // #ifdef USE_MPI
-std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
+base::OperationMatrix* createOperationLTwoDotProductVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLTwoDotProductVectorizedLinear(&grid.getStorage()));
+      return new parallel::OperationLTwoDotProductVectorizedLinear(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLTwoDotProductVectorizedLinearOCL(&grid.getStorage()));
+      return new parallel::OperationLTwoDotProductVectorizedLinearOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -288,12 +253,10 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLTwoDotProductVectorizedLinearBoundary(&grid.getStorage()));
+      return new parallel::OperationLTwoDotProductVectorizedLinearBoundary(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLTwoDotProductVectorizedLinearBoundaryOCL(&grid.getStorage()));
+      return new parallel::OperationLTwoDotProductVectorizedLinearBoundaryOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -304,17 +267,15 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
   }
 }
 
-std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
+parallel::OperationParabolicPDEMatrixCombined*
 createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sgpp::base::DataVector& lambda,
                                         const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinear(&grid.getStorage(), lambda));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinear(&grid.getStorage(), lambda);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(&grid.getStorage(), lambda));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(&grid.getStorage(), lambda);
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -322,14 +283,12 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sgpp::base::DataVector
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(&grid.getStorage(),
-                                                                        lambda));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(&grid.getStorage(),
+                                                                        lambda);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage(),
-                                                                           lambda));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage(),
+                                                                           lambda);
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -340,17 +299,15 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sgpp::base::DataVector
   }
 }
 
-std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
+parallel::OperationParabolicPDEMatrixCombined*
 createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
                                         const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinear(&grid.getStorage()));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinear(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(&grid.getStorage()));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -358,12 +315,10 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(&grid.getStorage()));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>(
-          new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage()));
+      return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -374,16 +329,14 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
+base::OperationMatrix* createOperationLaplaceVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinear(&grid.getStorage()));
+      return new parallel::OperationLaplaceVectorizedLinear(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearOCL(&grid.getStorage()));
+      return new parallel::OperationLaplaceVectorizedLinearOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -391,12 +344,10 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearBoundary(&grid.getStorage()));
+      return new parallel::OperationLaplaceVectorizedLinearBoundary(&grid.getStorage());
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage()));
+      return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage());
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -407,16 +358,14 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
+base::OperationMatrix* createOperationLaplaceVectorized(
     base::Grid& grid, sgpp::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinear(&grid.getStorage(), lambda));
+      return new parallel::OperationLaplaceVectorizedLinear(&grid.getStorage(), lambda);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearOCL(&grid.getStorage(), lambda));
+      return new parallel::OperationLaplaceVectorizedLinearOCL(&grid.getStorage(), lambda);
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");
@@ -424,12 +373,10 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearBoundary(&grid.getStorage(), lambda));
+      return new parallel::OperationLaplaceVectorizedLinearBoundary(&grid.getStorage(), lambda);
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
-      return std::unique_ptr<base::OperationMatrix>(
-          new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage(), lambda));
+      return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(&grid.getStorage(), lambda);
 #endif
     } else {
       throw base::factory_exception("Unsupported vectorization type");

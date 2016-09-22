@@ -12,6 +12,7 @@
 // #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
+using sgpp::base::BoundingBox1D;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -21,9 +22,12 @@ using sgpp::base::OperationMultipleEval;
 BOOST_AUTO_TEST_SUITE(TestOperationMultipleEval)
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
-  size_t dim = 2;
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  const size_t dim = 2;
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   grid->getGenerator().regular(2);
+
+  grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 5.0));
+  grid->getBoundingBox().setBoundary(1, BoundingBox1D(-2.0, 2.0));
 
   GridStorage& gS = grid->getStorage();
 
@@ -35,8 +39,9 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
     alpha[i] = static_cast<double>(i + 1);
   }
 
-  double points[3][2] = {{0.5, 1.0}, {0.3, 0.4}, {0.9, 0.7}};
-  size_t numberDataPoints = 3;
+  // transformed to unit cube: {{0.5, 1.0}, {0.3, 0.4}, {0.9, 0.7}};
+  const double points[3][2] = {{4.0, 2.0}, {3.6, -0.4}, {4.8, 0.8}};
+  const size_t numberDataPoints = 3;
 
   DataVector result(numberDataPoints);
 

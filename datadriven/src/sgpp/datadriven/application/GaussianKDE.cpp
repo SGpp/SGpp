@@ -229,8 +229,8 @@ void GaussianKDE::cov(base::DataMatrix& cov) {
   std::vector<double> means(ndim);
   std::vector<double> variances(ndim);
 
-  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg =
-      op_factory::createOperationDensityMarginalizeKDE(*this);
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg(
+      op_factory::createOperationDensityMarginalizeKDE(*this));
   GaussianKDE kdeMarginalized;
 
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -336,7 +336,7 @@ void GaussianKDE::computeOptKDEbdwth() {
       }
     }
 
-    if (numBorder > static_cast<double>(nsamples) / 20.) {
+    if (static_cast<double>(numBorder) > static_cast<double>(nsamples) / 20.) {
       flag[idim] = 0.5;
     }
 

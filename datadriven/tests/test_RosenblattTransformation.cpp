@@ -48,14 +48,14 @@ double parabola(DataVector& input) {
 
 Grid* hierarchize(std::uint32_t dim, std::uint32_t level, DataVector& alpha,
                   double (*func)(DataVector&)) {
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   alpha.resize(grid->getSize());
 
   DataVector coords(dim);
   GridStorage& gs = grid->getStorage();
   for (size_t i = 0; i < grid->getSize(); i++) {
-    gs.get(i)->getCoords(coords);
+    gs.getPoint(i).getStandardCoordinates(coords);
     alpha[i] = func(coords);
   }
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
@@ -90,8 +90,10 @@ void testEqualityRosenblattInverseRosenblatt1D(
   // init samples to be transformed
   randu(u_vars, generator);
 
-  auto opInvRos = sgpp::op_factory::createOperationInverseRosenblattTransformation1D(grid);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation1D(grid);
+  std::unique_ptr<sgpp::datadriven::OperationTransformation1D> opInvRos(
+      sgpp::op_factory::createOperationInverseRosenblattTransformation1D(grid));
+  std::unique_ptr<sgpp::datadriven::OperationTransformation1D> opRos(
+      sgpp::op_factory::createOperationRosenblattTransformation1D(grid));
 
   DataVector inversionErrors(numDims);
   for (size_t isample = 0; isample < numSamples; isample++) {
@@ -117,8 +119,10 @@ void testEqualityRosenblattInverseRosenblattDD(
   // init samples to be transformed
   randu(u_vars, seedValue);
 
-  auto opInvRos = sgpp::op_factory::createOperationInverseRosenblattTransformation(grid);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(grid);
+  std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(grid));
+  std::unique_ptr<sgpp::datadriven::OperationRosenblattTransformation> opRos(
+      sgpp::op_factory::createOperationRosenblattTransformation(grid));
 
   // transform the u-space to x-space
   opInvRos->doTransformation(&alpha, &u_vars, &x_vars);

@@ -67,10 +67,9 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>&
 void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints,
     BoundingBox& SubDomain, size_t points) {
   std::vector<DataVector> evalPoints;
-  DataVector curPoint(SubDomain.getDimensions());
+  DataVector curPoint(SubDomain.getDimension());
 
-  getCuboidEvalPoints(evalPoints, curPoint, SubDomain, points,
-                      SubDomain.getDimensions() - 1);
+  getCuboidEvalPoints(evalPoints, curPoint, SubDomain, points, SubDomain.getDimension() - 1);
 
   size_t numEvalPoints = evalPoints.size();
   EvaluationPoints.resize(numEvalPoints);

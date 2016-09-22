@@ -34,7 +34,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
         # run over all columns
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
@@ -73,8 +73,8 @@ def computeBFGridPoint(basis, U, gpi, gps):
     stored in gps
     @param basis: basis of sparse grid function,
     @param U: list of distributions
-    @param gpi: HashGridIndex
-    @param gps: list of HashGridIndex
+    @param gpi: HashGridPoint
+    @param gps: list of HashGridPoint
     """
     n = len(gps)
     s = np.ndarray(gpi.getDimension(), dtype='float')
@@ -189,7 +189,7 @@ def computeBF(grid, U, admissibleSet):
         # run over all columns
         for j in xrange(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
-            gpj = gs.get(j)
+            gpj = gs.getPoint(j)
             for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
@@ -212,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # define transformation function
                     T = LinearTransformation(lb, ub)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).getCoord(0)
+                        x = ngs.getPoint(k).getStandardCoordinate(0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
                             basis.eval(ljd, ijd, x)
@@ -262,9 +262,9 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
 #     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.seq(gpi)
-        gpi.getCoords(p)
+        gpi.getStandardCoordinates(p)
         for j in xrange(gs.size()):
-            gs.get(j).getCoords(q)
+            gs.getPoint(j).getStandardCoordinates(q)
 #             for d in xrange(gs.getDimension()):
 #                 # get level index
 #                 xlow = max(p[0], q[0])
@@ -299,7 +299,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # run over all rows
     p = DataVector(gs.getDimension())
     for i, gpi in enumerate(admissibleSet.values()):
-        gpi.getCoords(p)
+        gpi.getStandardCoordinates(p)
         for d in xrange(gs.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)

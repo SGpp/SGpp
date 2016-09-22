@@ -27,7 +27,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
     std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
     bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -121,14 +121,14 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // Create needed operations, on inner grid
     this->OpDeltaInner =
-        sgpp::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
     this->OpGammaInner =
-        sgpp::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
     // Create needed operations, on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
   } else {
     // create needed operations that are different in case of a log-transformed Black-Scholoes
     // equation
@@ -137,19 +137,19 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // operations on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
     // operations on inner grid
     this->OpDeltaInner =
-        sgpp::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
     this->OpGammaInner =
-        sgpp::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
   }
 
   // Create operations, independent bLogTransform
-  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
-  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;
@@ -176,10 +176,10 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
 #ifdef HEDGE
   sgpp::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
-  sgpp::base::DimensionBoundary* myBoundaries =
-      new sgpp::base::DimensionBoundary[grid_bb->getDimensions()];
+  sgpp::base::BoundingBox1D* myBoundaries =
+      new sgpp::base::BoundingBox1D[grid_bb->getDimension()];
 
-  for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
+  for (size_t d = 0; d < grid_bb->getDimension(); d++) {
     if (bLogTransform == true) {
       double interval_width =
           exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
@@ -199,7 +199,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   }
 
   sgpp::base::BoundingBox* myHedgeBB =
-      new sgpp::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
+      new sgpp::base::BoundingBox(grid_bb->getDimension(), myBoundaries);
   // hedging
   myHedge = new sgpp::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
 
@@ -336,7 +336,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep() {
     double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
-      std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().getCoordinates(
+          this->BoundGrid->getStorage().getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       double tmp;

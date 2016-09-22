@@ -1,4 +1,4 @@
-from pysgpp import HashGridIndex
+from pysgpp import HashGridPoint
 
 from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
                                insertHierarchicalAncestors,
@@ -30,7 +30,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
         ans = []
         gs = grid.getStorage()
         for d in xrange(gs.getDimension()):
-            gpl = HashGridIndex(gp)
+            gpl = HashGridPoint(gp)
             gs.left_child(gpl, d)
             if isValid(grid, gpl):
                 ans += insertPoint(grid, gpl)
@@ -38,7 +38,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
                 if hasBorder(grid):
                     ans += insertTruncatedBorder(grid, gpl)
 
-            gpr = HashGridIndex(gp)
+            gpr = HashGridPoint(gp)
             gs.right_child(gpr, d)
             if isValid(grid, gpr):
                 ans += insertPoint(grid, gpr)

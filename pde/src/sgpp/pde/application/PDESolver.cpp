@@ -44,7 +44,8 @@ void PDESolver::getGridNormalDistribution(sgpp::base::DataVector& alpha,
     sgpp::base::StdNormalDistribution myNormDistr;
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+      std::string coords = this->myGridStorage->getCoordinates(
+          this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       value = 1.0;
@@ -83,7 +84,7 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
     myGridStorage = NULL;
   }
 
-  myGrid = sgpp::base::Grid::unserialize(serializedGrid).release();
+  myGrid = sgpp::base::Grid::unserialize(serializedGrid);
 
   myBoundingBox = &myGrid->getBoundingBox();
   myGridStorage = &myGrid->getStorage();
@@ -162,7 +163,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(sgpp::base::DataVector& alpha,
 
 void PDESolver::refineInitialGridSurplusToMaxLevel(
     sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::GridStorage::index_type::level_type maxLevel) {
+    sgpp::base::level_t maxLevel) {
   if (bGridConstructed) {
     size_t nRefinements =
         myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
@@ -179,7 +180,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
 
 void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu,
+    sgpp::base::level_t maxLevel, std::vector<double>& norm_mu,
     std::vector<double>& norm_sigma) {
   if (bGridConstructed) {
     size_t nRefinements =
@@ -246,7 +247,7 @@ void PDESolver::printSparseGridExpTransform(sgpp::base::DataVector& alpha, std::
   myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
-double PDESolver::evaluatePoint(std::vector<double>& evalPoint, sgpp::base::DataVector& alpha) {
+double PDESolver::evaluatePoint(sgpp::base::DataVector& evalPoint, sgpp::base::DataVector& alpha) {
   double result = 0.0;
 
   if (bGridConstructed) {
@@ -287,7 +288,7 @@ size_t PDESolver::getNumberGridPoints() const {
 
 size_t PDESolver::getNumberInnerGridPoints() const {
   if (bGridConstructed) {
-    return myGridStorage->getNumInnerPoints();
+    return myGridStorage->getNumberOfInnerPoints();
   } else {
     throw sgpp::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");

@@ -258,10 +258,10 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
   if (updateNorm) {
     // update norm factors
     for (auto const& p : grids) {
-      // for each grid
+      //  for each grid
       double evalsum = 0;
 
-      for (float x = 0; x < batchConf.samples; x++) {
+      for (size_t x = 0; x < batchConf.samples; x++) {
         // generate points per grid
         base::DataVector pt(dimensions);
 

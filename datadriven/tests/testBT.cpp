@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createModLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createModLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createModLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createModLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -264,7 +264,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim, 0));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim, 0));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim, 0));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim, 0));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -456,7 +456,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -502,7 +502,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearBoundaryGrid(dim));
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 

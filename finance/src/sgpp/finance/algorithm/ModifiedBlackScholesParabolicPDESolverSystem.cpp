@@ -24,12 +24,12 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
     sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
     std::string OperationMode, bool bLogTransform, bool useCoarsen, double coarsenThreshold,
     std::string adaptSolveMode, int numCoarsenPoints, double refineThreshold,
-    std::string refineMode, sgpp::base::GridIndex::level_type refineMaxLevel, int dim_HW)
+    std::string refineMode, sgpp::base::GridPoint::level_type refineMaxLevel, int dim_HW)
     : BlackScholesParabolicPDESolverSystem(SparseGrid, alpha, mu, sigma, rho, r, TimestepSize,
                                            OperationMode, 0.0, "nothing", bLogTransform, useCoarsen,
                                            coarsenThreshold, adaptSolveMode, numCoarsenPoints,
                                            refineThreshold, refineMode, refineMaxLevel) {
-  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid).release();
+  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid);
   this->dim_r = dim_HW;
   this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
 }
@@ -39,9 +39,9 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
   double tmp;
 
   for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
-    // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-    std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
-        this->BoundGrid->getBoundingBox());
+    // std::string coords = (*storage)[i].getStandardCoordinatesStringBB(*this->myBoundingBox);
+    std::string coords = this->BoundGrid->getStorage().getCoordinates(
+        this->BoundGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
     double dblFuncValues[2];
 

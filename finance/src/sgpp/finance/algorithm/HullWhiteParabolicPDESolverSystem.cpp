@@ -24,7 +24,7 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(
     double a, double TimestepSize, std::string OperationMode, bool useCoarsen,
     double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel, int dim_HW) {
+    sgpp::base::GridPoint::level_type refineMaxLevel, int dim_HW) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -44,13 +44,13 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(
   this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
   // Create needed operations, on boundary grid
-  this->OpBBound = sgpp::op_factory::createOperationLB(*this->BoundGrid).release();
-  this->OpDBound = sgpp::op_factory::createOperationLD(*this->BoundGrid).release();
-  this->OpEBound = sgpp::op_factory::createOperationLE(*this->BoundGrid).release();
-  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid).release();
+  this->OpBBound = sgpp::op_factory::createOperationLB(*this->BoundGrid);
+  this->OpDBound = sgpp::op_factory::createOperationLD(*this->BoundGrid);
+  this->OpEBound = sgpp::op_factory::createOperationLE(*this->BoundGrid);
+  this->OpFBound = sgpp::op_factory::createOperationLF(*this->BoundGrid);
 
   // Create operations, independent bLogTransform
-  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;

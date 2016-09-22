@@ -333,7 +333,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssets,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -390,7 +390,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets,
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readAnalyzeData(std::string tFile, size_t numAssets,
-                    sgpp::base::DimensionBoundary* BoundaryArray, size_t& points) {
+                    std::vector<sgpp::base::BoundingBox1D>& BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -636,7 +636,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -658,13 +658,11 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
     writeHelp();
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   if (dim == 1) {
     maxStock = myBoundaries[0].rightBoundary;
   }
-
-  delete[] myBoundaries;
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -689,7 +687,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 
@@ -844,14 +842,14 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
@@ -873,11 +871,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     writeHelp();
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
-  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(dim, myEvalBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
+  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(myEvalBoundaries);
   sgpp::base::EvalCuboidGenerator* myEvalCuboidGen = new sgpp::base::EvalCuboidGenerator();
-  delete[] myBoundaries;
-  delete[] myEvalBoundaries;
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -1131,14 +1127,14 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
@@ -1153,11 +1149,9 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     myBSSolver = new sgpp::finance::BlackScholesSolver(false, "European");
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
-  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(dim, myEvalBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
+  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(myEvalBoundaries);
   sgpp::base::EvalCuboidGenerator* myEvalCuboidGen = new sgpp::base::EvalCuboidGenerator();
-  delete[] myBoundaries;
-  delete[] myEvalBoundaries;
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -1199,7 +1193,7 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
 
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1270,13 +1264,13 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(d);
 
     for (size_t j = 0; j < d; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 
@@ -1416,14 +1410,14 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     writeHelp();
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
@@ -1445,11 +1439,9 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     writeHelp();
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
-  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(dim, myEvalBoundaries);
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
+  sgpp::base::BoundingBox* myEvalBoundingBox = new sgpp::base::BoundingBox(myEvalBoundaries);
   sgpp::base::EvalCuboidGenerator* myEvalCuboidGen = new sgpp::base::EvalCuboidGenerator();
-  delete[] myBoundaries;
-  delete[] myEvalBoundaries;
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -1487,7 +1479,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1822,7 +1814,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -1844,8 +1836,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     writeHelp();
   }
 
-  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(dim, myBoundaries);
-  delete[] myBoundaries;
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(myBoundaries);
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -1995,7 +1986,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 

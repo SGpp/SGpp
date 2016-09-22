@@ -25,14 +25,14 @@ AlgorithmAdaBoostSPVectorizedIdentity::AlgorithmAdaBoostSPVectorizedIdentity(
     size_t refineNum, size_t numberOfAda, double percentOfAda, VectorizationType vecMode,
     size_t mode)
     : AlgorithmAdaBoostBase(SparseGrid, gridType,
-                            static_cast<sgpp::base::HashGenerator::level_t>(gridLevel), trainData,
+                            static_cast<sgpp::base::level_t>(gridLevel), trainData,
                             trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final,
                             firstLabel, secondLabel, threshold, maxLambda, minLambda, searchNum,
                             refine, refineMode, refineNum, numberOfAda, percentOfAda, mode) {
-  if (vecMode != X86SIMD && vecMode != OpenCL && vecMode != ArBB &&
+  if (vecMode != X86SIMD && vecMode != OpenCL &&
       vecMode != Hybrid_X86SIMD_OpenCL) {
     throw sgpp::base::operation_exception(
-        "AlgorithmAdaBoostVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL "
+        "AlgorithmAdaBoostVectorizedIdentity : Only X86SIMD or OCL or HYBRID_X86SIMD_OCL "
         "are supported vector extensions!");
   }
 

@@ -17,7 +17,7 @@
 using sgpp::base::BoundingBox;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
-using sgpp::base::DimensionBoundary;
+using sgpp::base::BoundingBox1D;
 using sgpp::base::generation_exception;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
@@ -33,14 +33,14 @@ BOOST_AUTO_TEST_SUITE(TestGridFactory)
 BOOST_AUTO_TEST_CASE(testCreation) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinear) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinear) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinear) {
 BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createModLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createModLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
   // Uses Linear grid for tests
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
   // Uses Linear grid for tests
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
 
 BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
   // Uses Linear grid for tests
-  std::unique_ptr<Grid> factory = Grid::createPrewaveletGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createPrewaveletGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
@@ -122,14 +122,14 @@ BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -140,14 +140,14 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -158,14 +158,14 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
 BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createModLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createModLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -176,14 +176,14 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -194,14 +194,14 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -212,14 +212,14 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -230,14 +230,14 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
   // Uses Linear grid for tests
 
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   {
     BoundingBox& boundingBox = factory->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     tempBound.leftBoundary = 0.0;
     tempBound.rightBoundary = 100.0;
     tempBound.bDirichletLeft = false;
@@ -248,14 +248,14 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
-    DimensionBoundary tempBound = boundingBox.getBoundary(0);
+    BoundingBox1D tempBound = boundingBox.getBoundary(0);
     BOOST_CHECK(0.0 == tempBound.leftBoundary);
     BOOST_CHECK(100.0 == tempBound.rightBoundary);
     BOOST_CHECK(false == tempBound.bDirichletLeft);
@@ -268,25 +268,25 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
 
   std::vector<bool> srcLeaf;
 
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -295,25 +295,25 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
 
   std::vector<bool> srcLeaf;
 
-  std::unique_ptr<Grid> factory = Grid::createModLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createModLinearGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -322,25 +322,25 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
 
   std::vector<bool> srcLeaf;
 
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -349,25 +349,25 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
 
   std::vector<bool> srcLeaf;
 
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   BOOST_CHECK(factory != nullptr);
 
   factory->getGenerator().regular(3);
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
+    srcLeaf.push_back(factory->getStorage().getPoint(i).isLeaf());
   }
 
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac(Grid::unserialize(str));
   BOOST_CHECK(newfac != nullptr);
 
   BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   for (size_t i = 0; i < factory->getSize(); ++i) {
-    BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
+    BOOST_CHECK(newfac->getStorage().getPoint(i).isLeaf() == srcLeaf[i]);
   }
 }
 
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestLinearGrid)
 
 BOOST_AUTO_TEST_CASE(testGeneration) {
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement) {
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(testRefinement) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(1));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearGrid(1));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
@@ -459,7 +459,7 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestLinearBoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testGeneration) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -473,7 +473,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -498,7 +498,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(3);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(3));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement3d) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(1));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(1));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
@@ -571,7 +571,7 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestLinearL0BoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testGeneration) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -585,7 +585,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -604,7 +604,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -629,7 +629,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -662,7 +662,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -703,7 +703,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -753,7 +753,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
   // point 0: l = (0,0), i = (0,0)
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
-  std::unique_ptr<Grid> factory = Grid::createLinearBoundaryGrid(2, 0);
+  std::unique_ptr<Grid> factory(Grid::createLinearBoundaryGrid(2, 0));
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
@@ -830,20 +830,20 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
   str1d.x_0 = 1;
   str1d.xsi = 10;
 
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
 
-  std::vector<DimensionBoundary> dimBoundaryVector(2);
+  std::vector<BoundingBox1D> dimBoundaryVector(2);
   dimBoundaryVector[0] = dimBound;
   dimBoundaryVector[1] = dimBound;
 
   std::vector<Stretching1D> str1dvector(2);
   str1dvector[0] = str1d;
   str1dvector[1] = str1d;
-  Stretching stretch(2, dimBoundaryVector, str1dvector);
+  Stretching stretch(dimBoundaryVector, str1dvector);
 
-  std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearStretchedBoundaryGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -857,7 +857,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d) {
-  std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(2);
+  std::unique_ptr<Grid> factory(Grid::createLinearStretchedBoundaryGrid(2));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -881,7 +881,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement3d) {
-  std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(3);
+  std::unique_ptr<Grid> factory(Grid::createLinearStretchedBoundaryGrid(3));
   GridStorage& storage = factory->getStorage();
 
   GridGenerator& gen = factory->getGenerator();
@@ -903,12 +903,12 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
-  std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearStretchedBoundaryGrid(1));
   factory->getStorage().setStretching(stretch);
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
@@ -945,13 +945,13 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   /*
-  from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
+  from pysgpp import Grid, DataVector, Stretching, Stretching1D, BoundingBox1D
 
   str1d = Stretching1D()
   str1d.type='log'
   str1d.x_0=1
   str1d.xsi=10
-  dimBound = DimensionBoundary()
+  dimBound = BoundingBox1D()
   dimBound.leftBoundary=0.5
   dimBound.rightBoundary=7
   stretch=Stretching(1,dimBound,str1d)
@@ -975,12 +975,12 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   str1d.type = "log";
   str1d.x_0 = 1;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;
+  BoundingBox1D dimBound;
   dimBound.leftBoundary = 0.5;
   dimBound.rightBoundary = 7;
-  Stretching stretch(1, &dimBound, &str1d);
+  Stretching stretch({dimBound}, {str1d});
 
-  std::unique_ptr<Grid> factory = Grid::createLinearStretchedBoundaryGrid(1);
+  std::unique_ptr<Grid> factory(Grid::createLinearStretchedBoundaryGrid(1));
   factory->getStorage().setStretching(stretch);
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);

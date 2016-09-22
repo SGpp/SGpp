@@ -127,8 +127,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   float maxNormActual = d.maxNorm();
   float maxNormExpected = 0.0f;
   for (int i = 1; i < N; ++i) {
-    maxNormExpected = maxNormExpected < static_cast<float>(std::fabs(d_rand[i]))
-                          ? static_cast<float>(std::fabs(d_rand[i]))
+    maxNormExpected = maxNormExpected < static_cast<float>(std::abs(d_rand[i]))
+                          ? static_cast<float>(std::abs(d_rand[i]))
                           : maxNormExpected;
   }
   BOOST_CHECK_CLOSE(maxNormActual, maxNormExpected, tol);
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.abs();
 
   for (int i = 0; i < N; ++i) {
-    BOOST_CHECK_EQUAL(d[i], std::fabs(d_rand[i]));
+    BOOST_CHECK_EQUAL(d[i], std::abs(d_rand[i]));
   }
 
   // componentwise mult

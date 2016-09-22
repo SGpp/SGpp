@@ -10,32 +10,32 @@
 
 #include <zlib.h>
 
-#include <random>
+#include <chrono>
 #include <fstream>
 #include <iostream>
-#include <chrono>
 #include <map>
+#include <random>
 #include <string>
 #include <vector>
 
 #include "testsCommon.hpp"
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/grid/type/LinearGrid.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
+#include "sgpp/base/grid/type/LinearGrid.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/ConfigurationParameters.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
 
 #define OUT_FILENAME "results.csv"
 // #define REFINEMENT_POINTS 100
 
-// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-//        "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
+// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman2_4d_10000.arff.gz",
+//        "datadriven/tests/data/friedman1_10d_2000.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
 //
 // std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 //
@@ -88,11 +88,11 @@ void getRuntime(sgpp::base::GridType gridType, const std::string& kernel, std::s
   std::unique_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = sgpp::base::Grid::createLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = sgpp::base::Grid::createModLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   } else {
-    throw nullptr;
+    throw;
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -121,8 +121,8 @@ void getRuntime(sgpp::base::GridType gridType, const std::string& kernel, std::s
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval(
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
   dataSizeVectorResult.setAll(0);
@@ -294,8 +294,8 @@ void getRuntimeDataMining(sgpp::base::GridType gridType, const std::string& kern
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval(
+      sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration));
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
   dataSizeVectorResult.setAll(0);
@@ -389,8 +389,8 @@ void getRuntimeDataMiningTransposed(
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval(
+      sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration));
 
   sgpp::base::DataVector gridSizeVectorResult(gridStorage.getSize());
   gridSizeVectorResult.setAll(0);
@@ -448,11 +448,11 @@ void getRuntimeTransposed(sgpp::base::GridType gridType, const std::string& kern
   std::unique_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = sgpp::base::Grid::createLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = sgpp::base::Grid::createModLinearGrid(dim);
+    grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   } else {
-    throw nullptr;
+    throw;
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -481,8 +481,8 @@ void getRuntimeTransposed(sgpp::base::GridType gridType, const std::string& kern
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval(
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   sgpp::base::DataVector gridSizeVectorResult(gridStorage.getSize());
   gridSizeVectorResult.setAll(0);

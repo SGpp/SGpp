@@ -28,7 +28,7 @@ class HashRefinementInteraction : public HashRefinement {
    * @param interactions contains all desired interactions.
    */
   explicit HashRefinementInteraction(std::unordered_set<std::vector<bool>> interactions);
-  void createGridpoint(GridStorage& storage, index_type& index) override;
+  void createGridpoint(GridStorage& storage, GridPoint& index) override;
 
  private:
   std::unordered_set<std::vector<bool>> interactions;

@@ -15,22 +15,34 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NLCG::NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, double beta,
+NLCG::NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+           size_t maxItCount, double beta,
            double gamma, double tolerance, double epsilon, double restartThreshold)
     : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
       eps(epsilon),
-      alpha(restartThreshold) {}
+      alpha(restartThreshold) {
+  fGradient.clone(this->fGradient);
+}
+
+NLCG::NLCG(const NLCG& other)
+    : UnconstrainedOptimizer(other),
+      beta(other.beta),
+      gamma(other.gamma),
+      tol(other.tol),
+      eps(other.eps),
+      alpha(other.alpha) {
+  other.fGradient->clone(fGradient);
+}
 
 NLCG::~NLCG() {}
 
 void NLCG::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -47,7 +59,7 @@ void NLCG::optimize() {
   base::DataVector sNormalized(d);
   base::DataVector y(d);
 
-  fx = fGradient.eval(x0, gradFx);
+  fx = fGradient->eval(x0, gradFx);
   double gradFxNorm = gradFx.l2Norm();
 
   xHist.appendRow(x);
@@ -74,7 +86,7 @@ void NLCG::optimize() {
     }
 
     // line search
-    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx, gradFx, sNormalized, y, k)) {
+    if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, sNormalized, y, k)) {
       // line search failed ==> exit
       // (either a "real" error occured or the improvement achieved is
       // too small)
@@ -82,7 +94,7 @@ void NLCG::optimize() {
     }
 
     // calculate gradient and norm
-    fy = fGradient.eval(y, gradFy);
+    fy = fGradient->eval(y, gradFy);
     k++;
 
     const double gradFyNorm = gradFy.l2Norm();
@@ -123,7 +135,7 @@ void NLCG::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return *fGradient; }
 
 double NLCG::getBeta() const { return beta; }
 
