@@ -147,27 +147,6 @@ sgpp::base::Grid& RegressionLearner::getGrid() { return *grid; }
 
 size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 
-void RegressionLearner::initializeWeights() {
-  const size_t size = grid->getSize();
-  const size_t dimensions = grid->getDimension();
-
-  weights = base::DataVector(size);
-  auto& gridStorage = grid->getStorage();
-
-  std::mt19937_64 gen(42);
-
-  const double exponentBase = 0.25;
-  for (size_t i = 0; i < size; ++i) {
-    base::GridStorage::index_pointer gridIndex = gridStorage.get(i);
-    base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
-    const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
-    const double multiplicator = std::pow(exponentBase, exponent);
-
-    std::normal_distribution<> dist(0, std::sqrt(multiplicator));
-    weights[i] = dist(gen);
-  }
-}
-
 base::DataVector RegressionLearner::getWeights() const { return weights; }
 
 void RegressionLearner::setWeights(base::DataVector weights) { this->weights = weights; }

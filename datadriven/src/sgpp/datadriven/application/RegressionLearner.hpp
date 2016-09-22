@@ -23,7 +23,10 @@
 
 namespace sgpp {
 namespace datadriven {
-
+/**
+ * @brief The RegressionLearner class
+ * Solves a regression problem with continuous target vector.
+ */
 class RegressionLearner {
  public:
   // Fista and (Bi)-CG do not share a common interace.
@@ -108,7 +111,18 @@ class RegressionLearner {
       std::unique_ptr<sgpp::solver::FistaBase> solverFista;
     };
   };
-
+  /**
+   * @brief RegressionLearner
+   * @param gridConfig
+   * @param adaptivityConfig
+   * @param solverConfig is the solver used during each adaptivity step
+   * @param finalSolverConfig is the solver used to build the final model
+   * @param regularizationConfig
+   * @param terms is a vector that contains all desired interaction terms.
+   * For example, if we want to include grid points that model an
+   * interaction between the first and the second predictor, we would
+   * include the vector [1,2] in terms.
+   */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
                     sgpp::base::AdpativityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
@@ -116,18 +130,58 @@ class RegressionLearner {
                     datadriven::RegularizationConfiguration regularizationConfig,
                     std::vector<std::vector<size_t>> terms);
 
+  /**
+   * @brief RegressionLearner
+   * @param gridConfig
+   * @param adaptivityConfig
+   * @param solverConfig is the solver used during each adaptivity step
+   * @param finalSolverConfig is the solver used to build the final model
+   * @param regularizationConfig
+   * @param terms is a vector that contains all desired interaction terms
+   */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
                     sgpp::base::AdpativityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig);
+  /**
+   * @brief train fits a sparse grid regression model.
+   * @param trainDataset is the design matrix
+   * @param classes is the (continuous) target
+   */
   void train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes);
+  /**
+   * @brief predict
+   * @param data are observations
+   * @return the predicted target for matrix data
+   */
   sgpp::base::DataVector predict(sgpp::base::DataMatrix& data);
+  /**
+   * @brief getGridSize
+   * @return the size of the grid
+   */
   size_t getGridSize() const;
+  /**
+   * @brief getGrid
+   * @return the grid
+   */
   sgpp::base::Grid& getGrid();
+  /**
+   * @brief getMSE
+   * @param data is the design matrix
+   * @param y is the target
+   * @return the mean-squared-error of the prediction of the model for the matrix data
+   */
   double getMSE(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& y);
-  void initializeWeights();
+  /**
+   * @brief getWeights
+   * @return the weights
+   */
   sgpp::base::DataVector getWeights() const;
+  /**
+   * @brief setWeights
+   * @param weights are the new weights.
+   */
   void setWeights(sgpp::base::DataVector weights);
 
  private:
