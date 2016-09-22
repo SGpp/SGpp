@@ -29,8 +29,9 @@ sgpp::datadriven::RegressionLearner getLearner(
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 5000;
+  solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-8;
+  solverConfig.threshold_ = 1e-5;
 
   return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
                                              solverConfig, regularizationConfig);
