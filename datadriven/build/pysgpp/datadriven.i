@@ -34,6 +34,7 @@
 //%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #endif
 
 %apply std::string *INPUT { std::string& istr };

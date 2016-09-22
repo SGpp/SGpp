@@ -39,6 +39,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/datadriven/tools/NearestNeighbors.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
