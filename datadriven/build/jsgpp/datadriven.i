@@ -31,6 +31,9 @@
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
 //%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #endif
 
 //%apply std::string *INPUT { std::string& istr };
