@@ -215,9 +215,14 @@ For C++, this includes compilation, linking, and execution of the program
 using SG++.
 We also show how to use SG++ from the other supported languages
 (Python, Java, and MATLAB).
-As an example application, we consider the \ref code_examples_tutorial
+As an example application, we consider the @ref example_tutorial_cpp
 from the directory <tt>base/examples</tt>;
 however, the instructions can be analogously applied to other programs.
+
+Note that all examples, including @ref example_tutorial_cpp, are automatically built
+after each SCons run.
+Therefore, the following steps are not necessary to compile the examples;
+rather, the intent is to show the steps to build an application using SG++.
 
 In the following, the current directory is always <tt>base/examples</tt> and
 @c /PATH_TO_SGPP refers to the absolute path of the SG++ directory.
@@ -368,6 +373,23 @@ and searching for a line containing @c libstdc++.
 On 64-bit Ubuntu systems, it can be located in
 <tt>/usr/lib/x86_64-linux-gnu/libstdc++.so.6</tt>,
 but it can differ on other systems.
+
+When starting MATLAB, make sure that the Java version of
+MATLAB's internal Java Runtime Environment
+(check with <tt>version -java</tt> in MATLAB)
+is newer than that of the Java you built jsgpp with
+(check with <tt>java -version</tt> in a terminal).
+Sometimes, you have to force MATLAB to use your installed JDK
+by using the <tt>MATLAB_JAVA</tt> environment variable:
+@verbatim
+export MATLAB_JAVA="/PATH_TO_JDK/jre"
+@endverbatim
+(e.g., <tt>MATLAB_JAVA="/usr/lib/jvm/java-7-openjdk-amd64/jre"</tt>).
+You can get errors like this otherwise:
+@verbatim
+Undefined variable "sgpp" or class "sgpp.LoadJSGPPLib.loadJSGPPLib".
+@endverbatim
+Keep in mind that, however, MATLAB seems not to be compatible with Java 8 yet.
 
 After starting MATLAB,
 we have to add the @c jsgpp.jar file to MATLAB's class path with the command

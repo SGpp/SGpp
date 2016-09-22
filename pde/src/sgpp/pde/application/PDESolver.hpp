@@ -117,7 +117,7 @@ class PDESolver {
    * @param maxLevel maxLevel of refinement
    */
   void refineInitialGridSurplusToMaxLevel(sgpp::base::DataVector& alpha, double dThreshold,
-                                          sgpp::base::GridStorage::index_type::level_type maxLevel);
+                                          sgpp::base::level_t maxLevel);
 
   /**
    * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -157,7 +157,7 @@ class PDESolver {
    */
   void refineInitialGridSurplusToMaxLevelSubDomain(
       sgpp::base::DataVector& alpha, double dThreshold,
-      sgpp::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu,
+      sgpp::base::level_t maxLevel, std::vector<double>& norm_mu,
       std::vector<double>& norm_sigma);
 
   /**
@@ -178,7 +178,7 @@ class PDESolver {
    *
    * @return price of option for given point
    */
-  double evaluatePoint(std::vector<double>& evalPoint, sgpp::base::DataVector& alpha);
+  double evaluatePoint(sgpp::base::DataVector& evalPoint, sgpp::base::DataVector& alpha);
 
   /**
    * Evaluates the sparse grid's function given by the stored grid and the alpha coefficients.

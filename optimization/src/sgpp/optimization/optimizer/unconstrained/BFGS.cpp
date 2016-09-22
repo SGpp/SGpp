@@ -12,22 +12,32 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-BFGS::BFGS(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
+BFGS::BFGS(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
            double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
            double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
-      rhoLs(lineSearchAccuracy) {}
+      rhoLs(lineSearchAccuracy) {
+  fGradient.clone(this->fGradient);
+}
+
+BFGS::BFGS(const BFGS& other)
+    : UnconstrainedOptimizer(other),
+      theta(other.theta),
+      rhoAlphaPlus(other.rhoAlphaPlus),
+      rhoAlphaMinus(other.rhoAlphaMinus),
+      rhoLs(other.rhoLs) {
+  other.fGradient->clone(fGradient);
+}
 
 BFGS::~BFGS() {}
 
 void BFGS::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
 
-  const size_t d = f.getNumberOfParameters();
+  const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
   fOpt = NAN;
@@ -65,7 +75,7 @@ void BFGS::optimize() {
 
   while (k < N) {
     // calculate gradient
-    fx = fGradient.eval(x, gradFx);
+    fx = fGradient->eval(x, gradFx);
     k++;
 
     if (k == 1) {
@@ -105,7 +115,7 @@ void BFGS::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f.eval(xNew) : INFINITY);
+    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
     k++;
 
     // inner product of gradient and search direction
@@ -127,7 +137,7 @@ void BFGS::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? fGradient.eval(xNew, gradFxNew) : INFINITY);
+      fxNew = (inDomain ? fGradient->eval(xNew, gradFxNew) : INFINITY);
       k++;
     }
 
@@ -196,7 +206,7 @@ void BFGS::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return *fGradient; }
 
 double BFGS::getTolerance() const { return theta; }
 

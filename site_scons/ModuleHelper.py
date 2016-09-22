@@ -74,7 +74,7 @@ class Module(object):
           self.objs.append(env.SharedObject(cpp))
 
           # process cuda source files if cuda is enabled
-        if env['USE_CUDA']:
+        if env["USE_CUDA"]:
           for fileName in fnmatch.filter(fileNames, "*.cu"):
             if fileName in self.excludeFiles: continue
             cpp = os.path.join(currentFolder, fileName)
@@ -89,8 +89,8 @@ class Module(object):
 
     # append headers to install list
     for hpp in self.hpps:
-      headerSourceList.append(os.path.join(moduleName, hpp))
-      headerDestList.append(hpp.split(os.sep, 1)[1])
+      headerSourceList.append(hpp)
+      headerDestList.append(hpp)
 
   def buildLibrary(self):
     """Build the module.
@@ -113,15 +113,15 @@ class Module(object):
     if env["BUILD_STATICLIB"]:
       # build static library
       libsuffix = env["LIBSUFFIX"]
-      env_clone = env.Clone()
-      env_clone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
-      self.lib = env_clone.StaticLibrary(target=self.libname, source=self.objs)
+      envClone = env.Clone()
+      envClone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
+      self.lib = envClone.StaticLibrary(target=self.libname, source=self.objs)
     else:
       # build shared library
       libsuffix = env["SHLIBSUFFIX"]
-      env_clone = env.Clone()
-      env_clone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
-      self.lib = env_clone.SharedLibrary(target=self.libname, source=self.objs)
+      envClone = env.Clone()
+      envClone.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies)
+      self.lib = envClone.SharedLibrary(target=self.libname, source=self.objs)
 
     # set module dependencies
     for module in self.moduleDependencies:
@@ -213,7 +213,6 @@ class Module(object):
 
       # only build Boost test executable if there are any tests
       if len(testObjs) > 0:
-
         self.boostTestExecutable = \
             os.path.join(boostTestFolder, "test_{}_boost".format(moduleName)) + \
             (".exe" if env["PLATFORM"] == "win32" else "")

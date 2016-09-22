@@ -15,11 +15,12 @@
  * Version 4: needed for import of the Bonner's Sparse Grid Definition files; same as Ver 3
  *        but without leaf property, NOT FOR EXPORT
  * Version 5: differentiate BoundingBox and Stretching, added support for stretching.
- * Version 6: added PointDistribution to HashGridIndex
+ * Version 6: added PointDistribution to HashGridPoint
  *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
  * Version 7: PointDistribution changed from enum to enum class
  * Version 8: Add custom boundaryLevel (>= 1) for LinearBoundaryGrid etc.
+ * Version 9: Remove PointDistribution again, include Clenshaw-Curtis points in Stretching
  */
-#define SERIALIZATION_VERSION 8
+#define SERIALIZATION_VERSION 9
 
 #endif /* SERIALIZATIONVERSION_HPP */

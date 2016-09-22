@@ -143,6 +143,12 @@ bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
   addSLESolver(&solverEigen, solvers, supports);
   addSLESolver(&solverUMFPACK, solvers, supports);
   addSLESolver(&solverGmmpp, solvers, supports);
+
+  // fallback solvers
+  if (n <= MAX_DIM_FOR_GAUSSIAN) {
+    addSLESolver(&solverGaussianElimination, solvers, supports);
+  }
+
   addSLESolver(&solverBiCGStab, solvers, supports);
   addSLESolver(&solverGaussianElimination, solvers, supports);
 

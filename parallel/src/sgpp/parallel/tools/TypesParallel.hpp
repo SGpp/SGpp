@@ -12,15 +12,7 @@ namespace sgpp {
 
 namespace parallel {
 
-enum VectorizationType {
-  X86SIMD,
-  OpenCL,
-  Hybrid_X86SIMD_OpenCL,
-  MIC,
-  Hybrid_X86SIMD_MIC,
-  CUDA,
-  ArBB
-};
+enum VectorizationType { X86SIMD, OpenCL, Hybrid_X86SIMD_OpenCL, MIC, Hybrid_X86SIMD_MIC };
 
 enum MPIType {
   MPINone,

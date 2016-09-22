@@ -24,8 +24,8 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
                               grid_iterator& index, size_t dim, double& f) {
   size_t seq = index.seq();
 
-  sgpp::base::GridStorage::index_type::level_type l;
-  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::level_t l;
+  sgpp::base::index_t i;
 
   index.get(dim, l, i);
 
@@ -38,14 +38,14 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.leftChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
       f = 0.0;
       index.stepRight(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
@@ -59,7 +59,7 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.leftChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 
@@ -75,7 +75,7 @@ void dPhidPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
     if (!index.hint()) {
       index.rightChild(dim);
 
-      if (!storage->end(index.seq())) {
+      if (!storage->isValidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, f);
       }
 

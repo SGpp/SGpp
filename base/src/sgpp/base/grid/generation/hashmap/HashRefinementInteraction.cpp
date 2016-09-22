@@ -16,14 +16,14 @@ HashRefinementInteraction::HashRefinementInteraction(
     std::unordered_set<std::vector<bool>> interactions)
     : HashRefinement(), interactions(interactions) {}
 
-void HashRefinementInteraction::createGridpoint(GridStorage& storage, index_type& index) {
+void HashRefinementInteraction::createGridpoint(GridStorage& storage, GridPoint& index) {
   index_t source_index;
   level_t source_level;
 
   // Get the currently used dimensions of the grid point.
   auto coordsIndex = std::vector<bool>(storage.getDimension());
   for (size_t i = 0; i < storage.getDimension(); ++i) {
-    coordsIndex[i] = index.getCoord(i) != 0.5;
+    coordsIndex[i] = index.getStandardCoordinate(i) != 0.5;
   }
 
   // Check first whether index obeys our limitations.

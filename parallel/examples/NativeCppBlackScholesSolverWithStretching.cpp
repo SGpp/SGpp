@@ -326,7 +326,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sgpp::base::DataVect
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readBoudingBoxData(std::string tFile, size_t numAssets,
-                       sgpp::base::DimensionBoundary* BoundaryArray) {
+                       std::vector<sgpp::base::BoundingBox1D>& BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -400,7 +400,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests,
 }
 
 int readStretchingData(std::string tFile, size_t numAssests,
-                       sgpp::base::Stretching1D* streching1dArray) {
+                       std::vector<sgpp::base::Stretching1D>& streching1dArray) {
   std::fstream file;
   std::string stretchingType;
   double x_0, xsi;
@@ -437,7 +437,7 @@ int readStretchingData(std::string tFile, size_t numAssests,
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 int readAnalyzeData(std::string tFile, size_t numAssets,
-                    sgpp::base::DimensionBoundary* BoundaryArray, size_t& points) {
+                    std::vector<sgpp::base::BoundingBox1D>& BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -687,7 +687,7 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -709,7 +709,7 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
    * if discrete, read the points on the grid.
    */
   if (stretchingMode == "analytic") {
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -717,8 +717,7 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
       return;
     }
 
-    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
-    delete[] stretching1dArray;
+    myStretching = new sgpp::base::Stretching(myBoundaries, stretching1dArray);
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
     int readStretchData = readDiscreteStretchingData(fileStretch, dim, discreteCoordinates);
@@ -739,8 +738,6 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
   if (dim == 1) {
     maxStock = myBoundaries[0].rightBoundary;
   }
-
-  delete[] myBoundaries;
 
   // init Screen Object
   myBSSolver->initScreen();
@@ -764,7 +761,7 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 
@@ -849,13 +846,13 @@ void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBo
   }
 
   // Test call @ the money
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     if (isLogSolve == true) {
-      point.push_back(log(dStrike));
+      point[i] = log(dStrike);
     } else {
-      point.push_back(dStrike);
+      point[i] = dStrike;
     }
   }
 
@@ -917,14 +914,14 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
@@ -947,7 +944,7 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
    * if discrete, read the points on the grid.
    */
   if (stretchingMode == "analytic") {
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -962,9 +959,8 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
       }
     }
 
-    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
-    myEvalStretching = new sgpp::base::Stretching(dim, myEvalBoundaries, stretching1dArray);
-    delete[] stretching1dArray;
+    myStretching = new sgpp::base::Stretching(myBoundaries, stretching1dArray);
+    myEvalStretching = new sgpp::base::Stretching(myEvalBoundaries, stretching1dArray);
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
     int readStretchData = readDiscreteStretchingData(fileStretch, dim, discreteCoordinates);
@@ -974,7 +970,7 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
       return;
     }
 
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
 
     for (size_t i = 0; i < dim; i++) {
       stretching1dArray[i].type.assign("id");
@@ -983,9 +979,8 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
     }
 
     myStretching = new sgpp::base::Stretching(dim, discreteCoordinates);
-    myEvalStretching = new sgpp::base::Stretching(dim, myEvalBoundaries, stretching1dArray);
+    myEvalStretching = new sgpp::base::Stretching(myEvalBoundaries, stretching1dArray);
     delete[] discreteCoordinates;
-    delete[] stretching1dArray;
   } else {
     std::cout << "Unsupported Stretching Mode Specified\n";
     return;
@@ -993,8 +988,6 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
 
   sgpp::base::EvalCuboidGeneratorForStretching* myEvalCuboidGen =
       new sgpp::base::EvalCuboidGeneratorForStretching();
-  delete[] myBoundaries;
-  delete[] myEvalBoundaries;
   //  delete[] stretching1dArray;
 
   // init Screen Object
@@ -1037,7 +1030,7 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
 
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1101,13 +1094,13 @@ void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileS
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(d);
 
     for (size_t j = 0; j < d; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 
@@ -1252,14 +1245,14 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
     writeHelp();
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sgpp::base::DimensionBoundary* myEvalBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myEvalBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
@@ -1282,7 +1275,7 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
    * if discrete, read the points on the grid.
    */
   if (stretchingMode == "analytic") {
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -1297,9 +1290,8 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
       }
     }
 
-    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
-    myEvalStretching = new sgpp::base::Stretching(dim, myEvalBoundaries, stretching1dArray);
-    delete[] stretching1dArray;
+    myStretching = new sgpp::base::Stretching(myBoundaries, stretching1dArray);
+    myEvalStretching = new sgpp::base::Stretching(myEvalBoundaries, stretching1dArray);
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
     int readStretchData = readDiscreteStretchingData(fileStretch, dim, discreteCoordinates);
@@ -1309,7 +1301,7 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
       return;
     }
 
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
 
     for (int i = 0; i < dim; i++) {
       stretching1dArray[i].type.assign("id");
@@ -1318,9 +1310,8 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
     }
 
     myStretching = new sgpp::base::Stretching(dim, discreteCoordinates);
-    myEvalStretching = new sgpp::base::Stretching(dim, myEvalBoundaries, stretching1dArray);
+    myEvalStretching = new sgpp::base::Stretching(myEvalBoundaries, stretching1dArray);
     delete[] discreteCoordinates;
-    delete[] stretching1dArray;
   } else {
     std::cout << "Unsupported Stretching Mode Specified\n";
     return;
@@ -1328,8 +1319,6 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
 
   sgpp::base::EvalCuboidGeneratorForStretching* myEvalCuboidGen =
       new sgpp::base::EvalCuboidGeneratorForStretching();
-  delete[] myBoundaries;
-  delete[] myEvalBoundaries;
   //  delete[] stretching1dArray;
 
   // init Screen Object
@@ -1371,7 +1360,7 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
     myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
     // Gridpoints @Money
     std::cout << "Gridpoints @Money: "
-              << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+              << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
               << std::endl
               << std::endl
               << std::endl;
@@ -1469,13 +1458,13 @@ void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(dim);
 
     for (int j = 0; j < dim; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 
@@ -1677,7 +1666,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
                                   size_t timeSt, double dt, size_t CGIt, double CGeps,
                                   std::string Solver, std::string refinementMode,
                                   int numRefinePoints,
-                                  sgpp::base::HashGridIndex::level_type maxRefineLevel,
+                                  sgpp::base::HashGridPoint::level_type maxRefineLevel,
                                   size_t nIterAdaptSteps, double dRefineThreshold, bool useCoarsen,
                                   std::string adaptSolvingMode, double coarsenThreshold,
                                   bool isLogSolve, bool useNormalDist) {
@@ -1698,7 +1687,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
     return;
   }
 
-  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
+  std::vector<sgpp::base::BoundingBox1D> myBoundaries(dim, sgpp::base::BoundingBox1D());
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -1720,7 +1709,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
    * if discrete, read the points on the grid.
    */
   if (stretchingMode == "analytic") {
-    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
+    std::vector<sgpp::base::Stretching1D> stretching1dArray(dim, sgpp::base::Stretching1D());
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -1728,8 +1717,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
       return;
     }
 
-    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
-    delete[] stretching1dArray;
+    myStretching = new sgpp::base::Stretching(myBoundaries, stretching1dArray);
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
     int readStretchData = readDiscreteStretchingData(fileStretch, dim, discreteCoordinates);
@@ -1746,7 +1734,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
     return;
   }
 
-  delete[] myBoundaries;
   // init Screen Object
   myBSSolver->initScreen();
 
@@ -1885,7 +1872,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
 
   // Gridpoints @Money
   std::cout << "Gridpoints @Money: "
-            << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
+            << myBSSolver->getPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl
             << std::endl
             << std::endl;
 
@@ -1937,13 +1924,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::s
     }
   }
 
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     if (isLogSolve == true) {
-      point.push_back(log(dStrike));
+      point[i] = log(dStrike);
     } else {
-      point.push_back(dStrike);
+      point[i] = dStrike;
     }
   }
 

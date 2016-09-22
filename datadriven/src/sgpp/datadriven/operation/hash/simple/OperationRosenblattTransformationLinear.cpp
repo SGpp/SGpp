@@ -197,11 +197,11 @@ double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* g
   std::multimap<double, double>::iterator it1, it2, it3;
 
   base::GridStorage* gs = &grid1d->getStorage();
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(grid1d));
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*(grid1d)));
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
-    coord[0] = gs->get(i)->getCoord(0);
+    coord[0] = gs->getPoint(i).getStandardCoordinate(0);
     coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }

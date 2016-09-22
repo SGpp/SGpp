@@ -24,7 +24,7 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
     std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
     bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
     double refineThreshold, std::string refineMode,
-    sgpp::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::GridPoint::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
@@ -105,9 +105,9 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
 
     // Create needed operations, on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
   } else {
     // create needed operations that are different in case of a log-transformed Black-Scholoes
     // equation
@@ -116,12 +116,12 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
 
     // operations on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
   }
 
-  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;

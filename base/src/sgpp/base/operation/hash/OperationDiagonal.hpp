@@ -69,8 +69,8 @@ class OperationDiagonal : public OperationMatrix {
     multiplicators.resize(size);
     size_t dimensions = gridStorage->getDimension();
     for (size_t i = 0; i < size; ++i) {
-      sgpp::base::GridStorage::index_pointer gridIndex = gridStorage->get(i);
-      sgpp::base::GridIndex::level_type levelSum = gridIndex->getLevelSum();
+      auto gridIndex = gridStorage->getPoint(i);
+      auto levelSum = gridIndex.getLevelSum();
       const double exponent = (static_cast<double>(levelSum) - static_cast<double>(dimensions));
       const double multiplicator = std::pow(exponentBase, exponent);
       multiplicators[i] = multiplicator;

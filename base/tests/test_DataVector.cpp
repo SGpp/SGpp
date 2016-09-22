@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   double maxNormActual = d.maxNorm();
   double maxNormExpected = 0.0;
   for (int i = 1; i < N; ++i) {
-    maxNormExpected = maxNormExpected < std::fabs(d_rand[i]) ? std::fabs(d_rand[i]) : maxNormExpected;
+    maxNormExpected = maxNormExpected < std::abs(d_rand[i]) ? std::abs(d_rand[i]) : maxNormExpected;
   }
   BOOST_CHECK_CLOSE(maxNormActual, maxNormExpected, tol);
 
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.abs();
 
   for (int i = 0; i < N; ++i) {
-    BOOST_CHECK_EQUAL(d[i], std::fabs(d_rand[i]));
+    BOOST_CHECK_EQUAL(d[i], std::abs(d_rand[i]));
   }
 
   // componentwise mult

@@ -46,39 +46,23 @@ class PolyModifiedBasis : public Basis<LT, IT> {
    */
   ~PolyModifiedBasis() override {}
 
-  /**
-   * Evaluate a basis function.
-   * Has a dependence on the absolute position of grid point and support.
-   */
   double eval(LT level, IT index, double p) override {
-    const IT hInv = static_cast<IT>(1) << level;
-    const double hInvDbl = static_cast<double>(hInv);
-
-    if (level == 1) {
-      // first level
-      return 1.0;
-    } else if (index == 1) {
-      // left modified basis function
-      return ((p <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * p) : 0.0);
-    } else if (index == hInv - 1) {
-      // right modified basis function
-      return ((p >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
-    } else {
-      // interior basis function
-      return polyBasis.eval(level, index, p);
-    }
-  }
-
-  double evalSave(LT level, IT index, double p) {
     // spacing on current level
     double h = 1.0f / static_cast<double>(1 << level);
 
     // check if p is out of bounds
-    if ((p <= h * static_cast<double>(index - 1)) || (p >= h * static_cast<double>(index + 1))) {
+    if ((p < h * static_cast<double>(index - 1)) || (p > h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
-      return eval(level, index, p);
+      return evalBasis(level, index, p);
     }
+  }
+
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
   }
 
   double getIntegral(LT level, IT index) {
@@ -127,6 +111,30 @@ class PolyModifiedBasis : public Basis<LT, IT> {
   }
 
   size_t getDegree() { return polyBasis.getDegree(); }
+
+ private:
+  /**
+   * Evaluate a basis function.
+   * Has a dependence on the absolute position of grid point and support.
+   */
+  double evalBasis(LT level, IT index, double p) {
+    const IT hInv = static_cast<IT>(1) << level;
+    const double hInvDbl = static_cast<double>(hInv);
+
+    if (level == 1) {
+      // first level
+      return 1.0;
+    } else if (index == 1) {
+      // left modified basis function
+      return ((p <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * p) : 0.0);
+    } else if (index == hInv - 1) {
+      // right modified basis function
+      return ((p >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.eval(level, index, p);
+    }
+  }
 };
 
 // default type-def (unsigned int for level and index)

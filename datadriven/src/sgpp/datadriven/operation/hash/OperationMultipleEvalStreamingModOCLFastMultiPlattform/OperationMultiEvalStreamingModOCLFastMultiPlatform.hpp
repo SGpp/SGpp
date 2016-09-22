@@ -7,20 +7,20 @@
 
 #include <omp.h>
 
+#include <algorithm>
 #include <chrono>
 #include <vector>
-#include <algorithm>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
-#include "Configuration.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -120,8 +120,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node& deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node& kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+      json::Node& kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
 
       multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                                queueLoadBalancerMult);
@@ -165,6 +166,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     for (size_t i = 0; i < devices.size(); i++) {
@@ -187,6 +189,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }
@@ -220,6 +225,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
 #pragma omp parallel
@@ -239,6 +245,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }
@@ -293,16 +302,13 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     level = std::vector<T>(gridSizeBuffers * dims);
     index = std::vector<T>(gridSizeBuffers * dims);
 
-    base::HashGridIndex::level_type curLevel;
-    base::HashGridIndex::index_type curIndex;
-
-    /// pointer to index_type
-    base::HashGridStorage::index_pointer gridPoint;
+    base::HashGridPoint::level_type curLevel;
+    base::HashGridPoint::index_type curIndex;
 
     for (size_t i = 0; i < gridSizeUnpadded; i++) {
-      gridPoint = storage.get(i);
+      base::HashGridPoint& gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
-        gridPoint->get(dim, curLevel, curIndex);
+        gridPoint.get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);
         index[i * dims + dim] = static_cast<T>(curIndex);
       }
@@ -323,8 +329,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node& deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node& kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+      json::Node& kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(commonPaddingRequiredment,
                                            kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt() *
@@ -340,8 +347,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
           (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
       json::Node& deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
-      json::Node& kernelConfiguration = deviceConfiguration
-          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+      json::Node& kernelConfiguration =
+          deviceConfiguration["KERNELS"]
+                             [StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(
           commonPaddingRequiredment, kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt() *

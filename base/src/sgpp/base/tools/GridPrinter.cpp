@@ -34,9 +34,9 @@ void GridPrinter::printLevelIndexGrid(std::string tFilename) {
     fileout.open(tFilename.c_str());
 
     for (size_t i = 0; i < myGrid->getSize(); i++) {
-      for (size_t j = 0; j < myGrid->getStorage().get(i)->getDimension(); j++) {
-        fileout << myGrid->getStorage().get(i)->getLevel(j) << " "
-                << myGrid->getStorage().get(i)->getIndex(j) << " ";
+      for (size_t j = 0; j < myGrid->getStorage().getPoint(i).getDimension(); j++) {
+        fileout << myGrid->getStorage().getPoint(i).getLevel(j) << " "
+                << myGrid->getStorage().getPoint(i).getIndex(j) << " ";
       }
 
       fileout << std::endl;
@@ -55,8 +55,8 @@ void GridPrinter::printLevelIndexGrid(std::string tFilename) {
 void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
                                   BoundingBox& GridArea,
                                   size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -67,7 +67,7 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval(sgpp::op_factory::createOperationEval(*myGrid));
 
       dimOne = GridArea.getBoundary(0);
       dimTwo = GridArea.getBoundary(1);
@@ -80,9 +80,9 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
              j += ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
                    static_cast<double>
                    (PointsPerDimension))) {
-          std::vector<double> point;
-          point.push_back(i);
-          point.push_back(j);
+          DataVector point(2);
+          point[0] = i;
+          point[1] = j;
           fileout << i << " " << j << " " << myEval->eval(alpha, point) <<
                   std::endl;
         }
@@ -102,8 +102,8 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
 
 void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
                             size_t PointsPerDimension) {
-  DimensionBoundary dimOne;
-  DimensionBoundary dimTwo;
+  BoundingBox1D dimOne;
+  BoundingBox1D dimTwo;
   std::ofstream fileout;
 
   if (myGrid->getSize() > 0) {
@@ -114,7 +114,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval(sgpp::op_factory::createOperationEval(*myGrid));
 
       if (myGrid->getDimension() == 1) {
         dimOne = myGrid->getBoundingBox().getBoundary(0);
@@ -126,8 +126,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
         size_t points = PointsPerDimension;
 
         for (size_t i = 0; i < points; i++) {
-          std::vector<double> point;
-          point.push_back(offset_x + ((static_cast<double>(i))*inc_x));
+          DataVector point(1, offset_x + ((static_cast<double>(i))*inc_x));
           fileout << (offset_x + (static_cast<double>(i))*inc_x) << " " <<
                   myEval->eval(alpha, point) << std::endl;
         }
@@ -146,9 +145,9 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
 
         for (size_t i = 0; i < points; i++) {
           for (size_t j = 0; j < points; j++) {
-            std::vector<double> point;
-            point.push_back(offset_x + ((static_cast<double>(i))*inc_x));
-            point.push_back(offset_y + ((static_cast<double>(j))*inc_y));
+            DataVector point(2);
+            point[0] = offset_x + ((static_cast<double>(i))*inc_x);
+            point[1] = offset_y + ((static_cast<double>(j))*inc_y);
             fileout << (offset_x + (static_cast<double>(i))*inc_x) << " " <<
                     (offset_y + (static_cast<double>(j))*inc_y) <<
                     " " << myEval->eval(alpha, point) << std::endl;
@@ -184,8 +183,8 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
-                            myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {
@@ -215,8 +214,8 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha,
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
-                            myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().getCoordinates(
+        myGrid->getStorage().getPoint(i)).toString();
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {

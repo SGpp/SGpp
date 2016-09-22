@@ -32,7 +32,7 @@ void ConstrainedTestProblem::generateDisplacement(double stdDev) {
   do {
     for (size_t t = 0; t < d; t++) {
       // every component is normally distributed
-      displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
+      displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(0.0, stdDev);
     }
   } while (!isDisplacementFeasible());
 

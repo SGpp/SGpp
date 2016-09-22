@@ -69,7 +69,8 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
     systemMatrix = createDMSystem(trainDataset);
   }
 
-  op = sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset);
+  op = std::unique_ptr<sgpp::base::OperationMultipleEval>
+          (sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset));
 
   for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
@@ -185,7 +186,7 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
 std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
     base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
-  std::unique_ptr<base::OperationMatrix> opMatrix;
+  base::OperationMatrix* opMatrix;
   switch (regularizationConfig.regType_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
@@ -204,7 +205,8 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
-  return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset, std::move(opMatrix),
+  return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset,
+                                                      std::unique_ptr<base::OperationMatrix>(opMatrix),
                                                       regularizationConfig.lambda_);
 }
 

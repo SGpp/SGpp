@@ -54,7 +54,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
     // (thanks to Sage & Python!)
     switch (p) {
       case 3:
-        if ((x < 0.0) || (x >= 3.0)) {
+        if (x >= 3.0) {
           return 0.0;
         } else if (x < 1.0) {
           return -x + 2.0;
@@ -70,7 +70,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
       case 5:
 
         // use Horner's method for evaluation
-        if ((x < 0.0) || (x >= 4.0)) {
+        if (x >= 4.0) {
           return 0.0;
         } else if (x < 1.0) {
           double result = 1.0 / 120.0;
@@ -109,7 +109,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 7:
-        if ((x < 0.0) || (x >= 5.0)) {
+        if (x >= 5.0) {
           return 0.0;
         } else if (x < 1.0) {
           double result = -1.0 / 1008.0;
@@ -167,7 +167,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
 
       // for the sake of completeness...
       case 1:
-        if ((x < 0.0) || (x >= 2.0)) {
+        if (x >= 2.0) {
           return 0.0;
         } else {
           return -x + 2.0;
@@ -176,7 +176,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       /*case 2:
-          if ((x < 0.0) || (x >= 2.5))
+          if (x >= 2.5)
           {
               return 0.0;
           } else if (x < 1.5)
@@ -188,7 +188,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 4:
-          if ((x < 0.0) || (x >= 3.5))
+          if (x >= 3.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -221,7 +221,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 6:
-          if ((x < 0.0) || (x >= 4.5))
+          if (x >= 4.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -277,7 +277,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 8:
-          if ((x < 0.0) || (x >= 5.5))
+          if (x >= 5.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -355,7 +355,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 9:
-          if ((x < 0.0) || (x >= 6.0))
+          if (x >= 6.0)
           {
               return 0.0;
           } else if (x < 1.0)
@@ -452,8 +452,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         // which is the same as (p + 2) / 2 written in C
         for (size_t k = 0; k <= (p + 2) / 2; k++) {
           // x2 is chosen such that it holds: x2 = x + (p+1)/2 + k - 1
-          y += static_cast<double>(k + 1) *
-               bsplineBasis.uniformBSpline(x2, p);
+          y += static_cast<double>(k + 1) * bsplineBasis.uniformBSpline(x2, p);
           // the rounding errors induced by this method can be neglected
           x2 += 1.0;
         }
@@ -471,7 +470,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
   inline double modifiedBSplineDx(double x, size_t p) const {
     switch (p) {
       case 3:
-        if ((x < 0.0) || (x >= 3.0)) {
+        if (x >= 3.0) {
           return 0.0;
         } else if (x < 1.0) {
           return -1.0;
@@ -484,7 +483,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 5:
-        if ((x < 0.0) || (x >= 4.0)) {
+        if (x >= 4.0) {
           return 0.0;
         } else if (x < 1.0) {
           double result = 1.0 / 24.0;
@@ -519,7 +518,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 7:
-        if ((x < 0.0) || (x >= 5.0)) {
+        if (x >= 5.0) {
           return 0.0;
         } else if (x < 1.0) {
           double result = -1.0 / 144.0;
@@ -571,7 +570,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 1:
-        if ((x < 0.0) || (x >= 2.0)) {
+        if (x >= 2.0) {
           return 0.0;
         } else {
           return -1.0;
@@ -580,7 +579,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       /*case 2:
-          if ((x < 0.0) || (x >= 2.5))
+          if (x >= 2.5)
           {
               return 0.0;
           } else if (x < 1.5)
@@ -592,7 +591,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 4:
-          if ((x < 0.0) || (x >= 3.5))
+          if (x >= 3.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -610,7 +609,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 6:
-          if ((x < 0.0) || (x >= 4.5))
+          if (x >= 4.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -661,7 +660,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 8:
-          if ((x < 0.0) || (x >= 5.5))
+          if (x >= 5.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -733,7 +732,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 9:
-          if ((x < 0.0) || (x >= 6.0))
+          if (x >= 6.0)
           {
               return 0.0;
           } else if (x < 1.0)
@@ -819,8 +818,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         }
 
         for (size_t k = 0; k <= (p + 2) / 2; k++) {
-          y += static_cast<double>(k + 1) *
-               bsplineBasis.uniformBSplineDx(x2, p);
+          y += static_cast<double>(k + 1) * bsplineBasis.uniformBSplineDx(x2, p);
           x2 += 1.0;
         }
 
@@ -837,7 +835,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
   inline double modifiedBSplineDxDx(double x, size_t p) const {
     switch (p) {
       case 3:
-        if ((x < 0.0) || (x >= 3.0)) {
+        if (x >= 3.0) {
           return 0.0;
         } else if (x < 1.0) {
           return 0.0;
@@ -850,7 +848,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 5:
-        if ((x < 0.0) || (x >= 4.0)) {
+        if (x >= 4.0) {
           return 0.0;
         } else if (x < 1.0) {
           return 1.0 / 6.0 * x * x * x;
@@ -866,7 +864,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       case 7:
-        if ((x < 0.0) || (x >= 5.0)) {
+        if (x >= 5.0) {
           return 0.0;
         } else if (x < 1.0) {
           double result = -1.0 / 24.0;
@@ -917,7 +915,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         break;
 
       /*case 2:
-          if ((x < 0.0) || (x >= 2.5))
+          if (x >= 2.5)
           {
               return 0.0;
           } else if (x < 1.5)
@@ -947,7 +945,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 6:
-          if ((x < 0.0) || (x >= 4.5))
+          if (x >= 4.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -993,7 +991,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 8:
-          if ((x < 0.0) || (x >= 5.5))
+          if (x >= 5.5)
           {
               return 0.0;
           } else if (x < 0.5)
@@ -1059,7 +1057,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
           }
           break;
       case 9:
-          if ((x < 0.0) || (x >= 6.0))
+          if (x >= 6.0)
           {
               return 0.0;
           } else if (x < 1.0)
@@ -1139,8 +1137,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         }
 
         for (size_t k = 0; k <= (p + 2) / 2; k++) {
-          y += static_cast<double>(k + 1) *
-               bsplineBasis.uniformBSplineDxDx(x2, p);
+          y += static_cast<double>(k + 1) * bsplineBasis.uniformBSplineDxDx(x2, p);
           x2 += 1.0;
         }
 

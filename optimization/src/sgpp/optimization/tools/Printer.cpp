@@ -212,7 +212,7 @@ void Printer::printIterativeGridGenerator(const IterativeGridGenerator& grid_gen
     }
 
     // print grid point and function value
-    (*stream) << *gridStorage[i] << ", " << functionValues[i];
+    (*stream) << gridStorage[i] << ", " << functionValues[i];
   }
 
   (*stream) << "\n";

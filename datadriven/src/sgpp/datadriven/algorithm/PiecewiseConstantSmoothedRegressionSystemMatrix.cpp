@@ -25,7 +25,7 @@ PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegres
   piecewiseRegressor(piecewiseRegressor), grid(grid) {
   this->lambda = lambdaRegression;
 
-  this->A = op_factory::createOperationLTwoDotProduct(grid).release();
+  this->A = op_factory::createOperationLTwoDotProduct(grid);
   //      this->B = op_factory::createOperationMultipleEval(grid, *(this->data));
   this->C = &C;
 }
@@ -54,9 +54,9 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
   #pragma omp parallel for
 
   for (size_t gridIndex = 0; gridIndex < storage->getSize(); gridIndex++) {
-    base::GridIndex* gridPoint = storage->get(gridIndex);
+    base::GridPoint& gridPoint = storage->getPoint(gridIndex);
     size_t integratedNodes;
-    rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
+    rhs[gridIndex] = piecewiseRegressor.integrate(gridPoint, integratedNodes);
     #pragma omp atomic
     totalIntegratedNodes += integratedNodes;
   }

@@ -84,7 +84,7 @@ It is advisable to install the requirements in this order:
    contain any space (no <tt>Program Files</tt> or similar)
    or you might get trouble, i.e.,
    the paths <tt>C:\\PATH_TO_MINGW</tt> etc.,
-   where you install the software, should be free of spaces. 
+   where you install the software, should be free of spaces.
 
 2. MinGW:
    1. Download <tt>mingw-w64-install.exe</tt> from the
@@ -183,11 +183,9 @@ b2 --with-test ^
 
 @section mingw_compilation Compilation with SCons
 
-When compiling with SCons, supply <tt>COMPILER=gnu</tt> to override the default
-of MSVC++.
-Don't forget to add the locations of the Boost include and library path.
+Before you compile with SCons you need to make sure that command line finds the executable. It is located in <tt><python 2 installation path>/Scripts</tt>. Add it either to your <tt>PATH</tt> variable or provide the full path when calling SCons. Furthermore, when compiling with SCons, supply <tt>COMPILER=gnu</tt> to override the default of MSVC++. Don't forget to add the locations of the Boost include and library path.
 @verbatim
-scons -j 4 ^
+scons.bat -j 4 ^
   COMPILER=gnu ^
   BOOST_INCLUDE_PATH=C:\PATH_TO_BOOST ^
   BOOST_LIBRARY_PATH=C:\PATH_TO_BOOST\stage\lib
@@ -204,9 +202,14 @@ For C++, this includes compilation, linking, and execution of the program
 using SG++.
 We also show how to use SG++ from the other supported languages
 (Python, Java, and MATLAB).
-As an example application, we consider the @ref code_examples_tutorial
+As an example application, we consider the @ref example_tutorial_cpp example
 from the directory <tt>base\\examples</tt>;
 however, the instructions can be analogously applied to other programs.
+
+Note that all examples, including @ref example_tutorial_cpp, are automatically built
+after each SCons run.
+Therefore, the following steps are not necessary to compile the examples;
+rather, the intent is to show the steps to build an application using SG++.
 
 In the following, the current directory is always <tt>base\\examples</tt> and
 <tt>C:\\PATH_TO_SGPP</tt> refers to the absolute path of the SG++ directory.
@@ -323,6 +326,11 @@ is newer than that of the Java you built jsgpp with
 (check with <tt>java -version</tt> in <tt>cmd.exe</tt>).
 In general, you will have to force MATLAB to use your installed JDK
 by using the <tt>MATLAB_JAVA</tt> environment variable.
+You can get errors like this otherwise:
+@verbatim
+Undefined variable "sgpp" or class "sgpp.LoadJSGPPLib.loadJSGPPLib".
+@endverbatim
+Keep in mind that, however, MATLAB seems not to be compatible with Java 8 yet.
 Also, set the <tt>PATH</tt> environment variable appropriately as before.
 Therefore, start MATLAB by typing the following:
 @verbatim
@@ -376,5 +384,5 @@ OperationMultipleEvalSubspaceCombined.hpp:82:121: fatal error: ../../OperationMu
   @verbatim
 ARCH=SSE3
   @endverbatim
-  to your build command, which replaces AVX by SSE3. SSE3 is supported by processors, which have been released after 2006. 
+  to your build command, which replaces AVX by SSE3. SSE3 is supported by processors, which have been released after 2006.
 */

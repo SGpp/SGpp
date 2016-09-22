@@ -118,9 +118,9 @@ class GroupLassoFunction : public RegularizationFunction {
     groupsVec = std::vector<size_t>(weights.getSize());
     size_t curGroupNum = 0;
     for (size_t i = 0; i < gridStorage->getSize(); ++i) {
-      const auto p = gridStorage->get(i);
+      const auto p = gridStorage->getPoint(i);
       auto coords = sgpp::base::DataVector(dim);
-      p->getCoords(coords);
+      p.getStandardCoordinates(coords);
 
       // Check which coordinates are used, i.e. not equal to 0.5.
       auto dimsUsed = std::vector<bool>(dim);

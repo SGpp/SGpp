@@ -7,9 +7,9 @@
 
 #include <omp.h>
 
+#include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/globaldef.hpp"
 
 #ifndef STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH

@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import glob
 import os
+import platform
 import re
 import string
 import subprocess
@@ -63,7 +64,10 @@ def multiParamConverter(s):
 # => print lines to the terminal and to the log file simultaneously
 class Logger(object):
   def __init__(self, terminal):
+    # save original terminal
     self.terminal = terminal
+    # regex for ANSI color codes
+    self.ansiCode = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]")
 
     # clear file
     with open("build.log", "a") as logFile:
@@ -71,47 +75,76 @@ class Logger(object):
       logFile.truncate()
 
   def write(self, message):
+    # write on terminal
     self.terminal.write(message)
+
+    # remove ANSI color codes (e.g., for GCC >= 4.9)
+    # (from https://stackoverflow.com/a/33925425)
+    message = self.ansiCode.sub("", message)
+
     # Python replaces all "\n" with os.linesep by default,
     # i.e., on Windows, if we call write with some "\r\n" in it, they get replaced by "\r\r\n"
+    message = message.replace(os.linesep, "\n")
+
     with open("build.log", "a") as logFile:
-      logFile.write(message.replace(os.linesep, "\n"))
+      logFile.write(message)
 
   def flush(self):
     self.terminal.flush()
 
+  def isatty(self):
+    return (self.terminal.isatty() if hasattr(self.terminal, "isatty") else None)
+
+# class for printing a final success/error message,
+# depending on whether there were compilation errors or not
 class FinalMessagePrinter(object):
   def __init__(self):
+    # whether the final message will be printed or not
     self.enabled = True
+    # global SCons environment (has to be set from outside)
     self.env = None
+    # path of the SG++ libraries (has to be set from outside)
     self.sgppBuildPath = None
+    # path of the pysgpp package (has to be set from outside)
     self.pysgppPackagePath = None
+    # exit code if exited with sys.exit
     self.exitCode = None
+    # override sys.exit (called by SCons) to save the exit code,
+    # since atexit.register doesn't give access to the exit code
     self.exitFunction = sys.exit
     sys.exit = self.exit
 
   def enable(self):
+    # enable printing of final message
     self.enabled = True
 
   def disable(self):
+    # disable printing of final message
     self.enabled = False
 
   def exit(self, exitCode=0):
+    # save exit code, call original sys.exit
     self.exitCode = exitCode
     self.exitFunction(exitCode)
 
   def printMessage(self):
+    # check if we should print
     if not self.enabled:
       return
 
+    # list of SCons build failures
     failures = SCons.Script.GetBuildFailures()
+    # the build was successful, if there were no failures and the exit_status is zero
     build_was_successful = (len(failures) == 0) and (SCons.Script.Main.exit_status == 0)
+    # the build was interrupted, if there were not errors, but the exit code is non-zero
     build_interrupted = build_was_successful and (self.exitCode != 0)
 
+    # don't print if Ctrl+C was hit
     if build_interrupted:
       return
 
     if build_was_successful:
+      # print success message (instructions)
       if self.env["PLATFORM"] in ["cygwin", "win32"]:
         filename = "INSTRUCTIONS_WINDOWS"
       elif self.env["PLATFORM"] == "darwin":
@@ -125,11 +158,18 @@ class FinalMessagePrinter(object):
         print(instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=self.sgppBuildPath,
                                                    PYSGPP_PACKAGE_PATH=self.pysgppPackagePath))
     else:
+      # print error message
       print("""# ------------------------------------------------------------------------
 # An error occurred while compiling SG++.
 # If you believe this is a bug in SG++, please attach the build.log and
 # the config.log file when contacting the SG++ developers.
 # ------------------------------------------------------------------------""")
+
+# returns whether the terminal supports ANSI color codes
+# (actually, we only check if it's a tty and we're not on Windows,
+# since there doesn't seem to be a portable way to check that)
+def terminalSupportsColors():
+  return hasattr(sys.stderr, "isatty") and sys.stderr.isatty() and (platform.system() != "Windows")
 
 # detour compiler output to print dots if VERBOSE=0
 def printCommand(s, target, src, env):
@@ -138,104 +178,6 @@ def printCommand(s, target, src, env):
   else:
     sys.stdout.write(u".")
     sys.stdout.flush()
-
-#creates a Doxyfile containing proper module paths based on Doxyfile_template
-def prepareDoxyfile(modules):
-  '''Create Doxyfile(s) and overview-pages
-  @param modules list of modules'''
-
-  # create Doxyfile
-  with open("Doxyfile_template", "r") as doxyFileTemplate:
-    with open("Doxyfile", "w") as doxyFile:
-      inputPaths = "INPUT ="
-      excludePaths = "EXCLUDE ="
-      examplePaths = "EXAMPLE_PATH ="
-      imagePaths = "IMAGE_PATH ="
-
-      for moduleName in modules:
-        inputPath = moduleName + "/"
-        examplePath = moduleName + "/examples"
-        testPath = moduleName + "/tests"
-        imagePath = moduleName + "/doc/doxygen/images"
-
-        #print(os.path.join(os.getcwd(),inputPath))
-        if os.path.exists(os.path.join(os.getcwd(), inputPath)):
-          inputPaths += " " + inputPath
-        if os.path.exists(os.path.join(os.getcwd(), examplePath)):
-          examplePaths += " " + examplePath
-          excludePaths += " " + examplePath
-        if os.path.exists(os.path.join(os.getcwd(), testPath)):
-          excludePaths += " " + testPath
-        if os.path.exists(os.path.join(os.getcwd(), imagePath)):
-          imagePaths += " " + imagePath
-
-      for line in doxyFileTemplate.readlines():
-        if re.match(r"INPUT  .*", line):
-          doxyFile.write(inputPaths + "\n")
-        elif re.match(r"EXCLUDE  .*", line):
-          doxyFile.write(excludePaths + "\n")
-        elif re.match(r"EXAMPLE_PATH  .*", line):
-          doxyFile.write(examplePaths + "\n")
-        elif re.match(r"IMAGE_PATH  .*", line):
-          doxyFile.write(imagePaths + "\n")
-        else:
-          doxyFile.write(line)
-
-  # create example menu page
-  with open("base/doc/doxygen/examples.doxy", "w") as examplesFile:
-    examplesFile.write('''/**
-@page examples Examples
-
-This is a collection of examples from all modules.
-
-If you're new to SG++ or want to try out quickly,
-read the @ref code_examples_tutorial first.
-
-To add new examples to the documentation,
-go to the respective folder MODULE_NAME/doc/doxygen/ and
-add a new example file code_examples_NAME.doxy with doxygen-internal
-name code_examples_NAME.
-
-Note that SCons automatically compiles (but not runs)
-all C++ examples on each run.
-For this to work, the examples must lie in the directories of the form
-\c /path/to/SGpp/trunk/MODULE_NAME/examples.
-
-''')
-
-    modules.sort()
-    tutorial = "code_examples_tutorial"
-
-    for moduleName in modules:
-      examplesFile.write("<h2>Module {}</h2>\n".format(moduleName))
-      subpages = glob.glob(os.path.join(
-        moduleName, "doc", "doxygen", "code_examples_*.doxy"))
-      subpages = [os.path.split(path)[-1][:-5]
-            for path in glob.glob(os.path.join(
-              moduleName, "doc", "doxygen",
-              "code_examples_*.doxy"))]
-      subpages.sort()
-      if tutorial in subpages:
-        del subpages[subpages.index(tutorial)]
-        subpages = [tutorial] + subpages
-
-      for subpage in subpages:
-        examplesFile.write("- @subpage {}\n".format(subpage))
-
-    examplesFile.write("**/\n")
-
-  # create module page
-  with open("base/doc/doxygen/modules.doxy", "w") as modulesFile:
-    with open("base/doc/doxygen/modules.stub0", "r") as stubFile:
-      modulesFile.write(stubFile.read())
-
-    for moduleName in modules:
-      for subpage in glob.glob(os.path.join(moduleName, "doc", "doxygen", "module_*.doxy")):
-        modulesFile.write("- @subpage " + os.path.splitext(os.path.split(subpage)[-1])[0] + "\n")
-
-    with open("base/doc/doxygen/modules.stub1", "r") as stubFile:
-      modulesFile.write(stubFile.read())
-
 
 def flatDependencyGraph(dependencies, acc):
   for dependency in dependencies[::-1]:

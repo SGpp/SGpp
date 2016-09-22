@@ -41,11 +41,19 @@ class BFGS : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  BFGS(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
+  BFGS(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N,
        double tolerance = DEFAULT_TOLERANCE,
        double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
        double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
        double lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  BFGS(const BFGS& other);
 
   /**
    * Destructor.
@@ -106,7 +114,7 @@ class BFGS : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// step size increase factor

@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include "CheckEqualFunction.hpp"
+
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::optimization::ComponentScalarFunction;
@@ -331,35 +333,19 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunction) {
   // Test sgpp::optimization::TestWrapperScalarFunction.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
-  const size_t N = 100;
-  DataVector x(d);
   ScalarTestFunction f1(d);
   WrapperScalarFunction f2(d, [](const DataVector & x) {
     return x.sum();
   });
   std::unique_ptr<ScalarFunction> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    BOOST_CHECK_EQUAL(f1.eval(x), f2Clone->eval(x));
-  }
+  checkEqualFunction(f1, *f2Clone);
 }
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
   // Test sgpp::optimization::TestWrapperScalarFunctionGradient.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
-  const size_t N = 100;
-  DataVector x(d);
-  DataVector gradient1(d), gradient2(d);
   ScalarTestGradient f1(d);
   WrapperScalarFunctionGradient f2(d, [](const DataVector & x,
   DataVector & gradient) {
@@ -371,30 +357,12 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
   });
   std::unique_ptr<ScalarFunctionGradient> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    BOOST_CHECK_EQUAL(f1.eval(x, gradient1), f2Clone->eval(x, gradient2));
-    BOOST_CHECK_EQUAL(gradient2.getSize(), d);
-
-    for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(gradient1[t], gradient2[t]);
-    }
-  }
+  checkEqualFunction(f1, *f2Clone);
 }
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
   // Test sgpp::optimization::TestWrapperScalarFunctionHessian.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
-  const size_t N = 100;
-  DataVector x(d);
-  DataVector gradient1(d), gradient2(d);
-  DataMatrix hessian1(d, d), hessian2(d, d);
   ScalarTestHessian f1(d);
   WrapperScalarFunctionHessian f2(d, [](const DataVector & x,
                                         DataVector & gradient,
@@ -412,34 +380,13 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
   });
   std::unique_ptr<ScalarFunctionHessian> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    BOOST_CHECK_EQUAL(f1.eval(x, gradient1, hessian1),
-                      f2Clone->eval(x, gradient2, hessian2));
-    BOOST_CHECK_EQUAL(gradient2.getSize(), d);
-    BOOST_CHECK_EQUAL(hessian2.getNrows(), d);
-    BOOST_CHECK_EQUAL(hessian2.getNcols(), d);
-
-    for (size_t t1 = 0; t1 < d; t1++) {
-      for (size_t t2 = 0; t2 < d; t2++) {
-        BOOST_CHECK_EQUAL(hessian1(t1, t2), hessian2(t1, t2));
-      }
-    }
-  }
+  checkEqualFunction(f1, *f2Clone);
 }
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
   // Test sgpp::optimization::TestWrapperVectorFunction.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
   const size_t m = 4;
-  const size_t N = 100;
-  DataVector x(d);
   DataVector value1(m), value2(m);
   VectorTestFunction f1(d, m);
   WrapperVectorFunction f2(d, m, [](const DataVector & x,
@@ -450,33 +397,13 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
   });
   std::unique_ptr<VectorFunction> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    f1.eval(x, value1);
-    f2Clone->eval(x, value2);
-
-    BOOST_CHECK_EQUAL(value2.getSize(), m);
-
-    for (size_t j = 0; j < m; j++) {
-      BOOST_CHECK_EQUAL(value1[j], value2[j]);
-    }
-  }
+  checkEqualFunction(f1, *f2Clone);
 }
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
   // Test sgpp::optimization::TestWrapperVectorFunctionGradient.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
   const size_t m = 4;
-  const size_t N = 100;
-  DataVector x(d);
-  DataVector value1(m), value2(m);
-  DataMatrix gradient1(m, d), gradient2(m, d);
   VectorTestGradient f1(d, m);
   WrapperVectorFunctionGradient f2(d, m, [](const DataVector & x,
                                    DataVector & value,
@@ -492,41 +419,13 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
   });
   std::unique_ptr<VectorFunctionGradient> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    f1.eval(x, value1, gradient1);
-    f2Clone->eval(x, value2, gradient2);
-
-    BOOST_CHECK_EQUAL(value2.getSize(), m);
-    BOOST_CHECK_EQUAL(gradient2.getNrows(), m);
-    BOOST_CHECK_EQUAL(gradient2.getNcols(), d);
-
-    for (size_t j = 0; j < m; j++) {
-      BOOST_CHECK_EQUAL(value1[j], value2[j]);
-
-      for (size_t t = 0; t < d; t++) {
-        BOOST_CHECK_EQUAL(gradient1(j, t), gradient2(j, t));
-      }
-    }
-  }
+  checkEqualFunction(f1, *f2Clone);
 }
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
   // Test sgpp::optimization::TestWrapperVectorFunctionHessian.
-  RandomNumberGenerator::getInstance().setSeed(42);
-
   const size_t d = 3;
   const size_t m = 4;
-  const size_t N = 100;
-  DataVector x(d);
-  DataVector value1(m), value2(m);
-  DataMatrix gradient1(m, d), gradient2(m, d);
-  std::vector<DataMatrix> hessian1(m, DataMatrix(d, d)),
-      hessian2(m, DataMatrix(d, d));
   VectorTestHessian f1(d, m);
   WrapperVectorFunctionHessian f2(d, m, [](const DataVector & x,
                                   DataVector & value,
@@ -549,33 +448,5 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
   });
   std::unique_ptr<VectorFunctionHessian> f2Clone;
   f2.clone(f2Clone);
-
-  for (size_t i = 0; i < N; i++) {
-    for (size_t t = 0; t < d; t++) {
-      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-
-    f1.eval(x, value1, gradient1, hessian1);
-    f2Clone->eval(x, value2, gradient2, hessian2);
-
-    BOOST_CHECK_EQUAL(value2.getSize(), m);
-    BOOST_CHECK_EQUAL(gradient2.getNrows(), m);
-    BOOST_CHECK_EQUAL(gradient2.getNcols(), d);
-    BOOST_CHECK_EQUAL(hessian2.size(), m);
-
-    for (size_t j = 0; j < m; j++) {
-      BOOST_CHECK_EQUAL(value1[j], value2[j]);
-      BOOST_CHECK_EQUAL(hessian2[j].getNrows(), d);
-      BOOST_CHECK_EQUAL(hessian2[j].getNcols(), d);
-
-      for (size_t t = 0; t < d; t++) {
-        BOOST_CHECK_EQUAL(gradient1(j, t), gradient2(j, t));
-
-        for (size_t t2 = 0; t2 < d; t2++) {
-          BOOST_CHECK_EQUAL(hessian1[j](t, t2), hessian2[j](t, t2));
-        }
-      }
-    }
-  }
+  checkEqualFunction(f1, *f2Clone);
 }

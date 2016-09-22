@@ -71,7 +71,7 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
   this->currentRefinementStep = 0;
 
   // TODO(pfandedd): don't use grid serialization to not have to implement a copy constructor!
-  grid = sgpp::base::Grid::unserialize(copyMe.grid->serialize());
+  grid.reset(sgpp::base::Grid::unserialize(copyMe.grid->serialize()));
   alpha = std::make_unique<sgpp::base::DataVector>(*(copyMe.alpha));
 }
 
@@ -115,7 +115,9 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                                  const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
                                  const sgpp::base::AdpativityConfiguration& AdaptConfig,
-                                 const bool testAccDuringAdapt, const double lambdaRegularization) {
+                                 const bool testAccDuringAdapt, const double lambdaRegularization,
+                                 sgpp::base::DataMatrix* testDataset,
+                                 sgpp::base::DataVector* testClasses) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
@@ -186,9 +188,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
       std::make_unique<sgpp::base::SGppStopwatch>();
 
   for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
-    if (isVerbose)
-      std::cout << std::endl
-                << "Doing refinement: " << i << std::endl;
+    if (isVerbose) std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
     this->currentRefinementStep = i;
 
@@ -199,9 +199,24 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
       myStopwatch2->start();
 
       // disable refinement here!
-      sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.noPoints_,
-                                                        AdaptConfig.threshold_);
-      grid->getGenerator().refine(myRefineFunc);
+      if (AdaptConfig.errorBasedRefinement) {
+        std::unique_ptr<sgpp::base::DataVector> residuals =
+            std::make_unique<sgpp::base::DataVector>(alpha->getSize());
+        this->predict(trainDataset, *residuals);
+        residuals->sub(classes);
+        residuals->sqr();
+        std::unique_ptr<sgpp::base::DataVector> mseResiduals =
+            std::make_unique<sgpp::base::DataVector>(grid->getSize());
+        multTranspose(trainDataset, *residuals, *mseResiduals);
+        mseResiduals->componentwise_mult(*alpha);
+        sgpp::base::SurplusRefinementFunctor myRefineFunc(*mseResiduals, AdaptConfig.noPoints_,
+                                                          AdaptConfig.threshold_);
+        grid->getGenerator().refine(myRefineFunc);
+      } else {
+        sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.noPoints_,
+                                                          AdaptConfig.threshold_);
+        grid->getGenerator().refine(myRefineFunc);
+      }
 
       // tell the SLE manager that the grid changed (for internal data
       // structures)
@@ -266,6 +281,18 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
         }
       }
 
+      if (testDataset != nullptr && testClasses != nullptr) {
+        double testAcc = getAccuracy(*testDataset, *testClasses);
+
+        if (isVerbose) {
+          if (isRegression) {
+            if (isVerbose) std::cout << "MSE (test): " << testAcc << std::endl;
+          } else {
+            if (isVerbose) std::cout << "Acc (test): " << testAcc << std::endl;
+          }
+        }
+      }
+
       if (isRegression) {
         if ((i > 0) && (oldAcc <= acc)) {
           if (isVerbose) std::cout << "The grid is becoming worse --> stop learning" << std::endl;
@@ -279,16 +306,13 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
           break;
         }
       }
-
       oldAcc = acc;
     }
   }
 
   if (isVerbose) {
-    std::cout << "Finished Training!" << std::endl
-              << std::endl;
-    std::cout << "Training took: " << execTime << " seconds" << std::endl
-              << std::endl;
+    std::cout << "Finished Training!" << std::endl << std::endl;
+    std::cout << "Training took: " << execTime << " seconds" << std::endl << std::endl;
   }
 
   isTrained = true;
@@ -323,8 +347,18 @@ void LearnerBase::predict(sgpp::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset);
   MultEval->mult(*alpha, classesComputed);
+  delete MultEval;
+}
+
+void LearnerBase::multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
+                                sgpp::base::DataVector& result) {
+  result.resize(grid->getSize());
+
+  sgpp::base::OperationMultipleEval* MultEval =
+      sgpp::op_factory::createOperationMultipleEval(*grid, dataset);
+  MultEval->multTranspose(multiplier, result);
   delete MultEval;
 }
 

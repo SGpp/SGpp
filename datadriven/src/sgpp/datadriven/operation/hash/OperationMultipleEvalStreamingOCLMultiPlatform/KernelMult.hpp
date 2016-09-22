@@ -7,16 +7,17 @@
 
 #include <CL/cl.h>
 
+#include <chrono>
 #include <limits>
 #include <string>
 #include <vector>
 
-#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "SourceBuilderMult.hpp"
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -57,6 +58,8 @@ class KernelMult {
   size_t scheduleSize;
   size_t totalBlockSize;
 
+  double buildDuration;
+
  public:
   KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
              std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -75,14 +78,15 @@ class KernelMult {
         manager(manager),
         deviceTimingMult(0.0),
         kernelConfiguration(kernelConfiguration),
-        queueLoadBalancerMult(queueBalancerMult) {
+        queueLoadBalancerMult(queueBalancerMult),
+        buildDuration(0.0) {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
       errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
                      "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
-                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
-                  << std::endl;
+                     "set, was set to "
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << std::endl;
       throw sgpp::base::operation_exception(errorString.str());
     }
 
@@ -124,8 +128,17 @@ class KernelMult {
     }
 
     if (this->kernelMult == nullptr) {
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      start = std::chrono::system_clock::now();
+
       std::string program_src = kernelSourceBuilder.generateSource();
       this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration, "multOCL");
+
+      end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end - start;
+      this->buildDuration = elapsed_seconds.count();
+    } else {
+      buildDuration = 0.0;
     }
 
     initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
@@ -271,7 +284,8 @@ class KernelMult {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in mult)! Error code: " << err << std::endl;
+                         "queue (or crash in mult)! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -281,7 +295,8 @@ class KernelMult {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: " << err << std::endl;
+                         "queue! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -305,6 +320,8 @@ class KernelMult {
 
     return this->deviceTimingMult;
   }
+
+  double getBuildDuration() { return this->buildDuration; }
 
  private:
   void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha,

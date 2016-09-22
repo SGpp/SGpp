@@ -34,7 +34,7 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::
         std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
         bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
         double refineThreshold, std::string refineMode,
-        sgpp::base::GridIndex::level_type refineMaxLevel)
+        sgpp::base::GridPoint::level_type refineMaxLevel)
     : BlackScholesParabolicPDESolverSystemEuroAmer(
           SparseGrid, alpha, mu, sigma, rho, r, TimestepSize, OperationMode, dStrike, option_type,
           bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints,
@@ -537,17 +537,16 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
 
     // check if we are doing an American put -> handle early exercise
     if (this->option_type == "std_amer_put") {
-      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
+      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid));
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
       size_t dim = this->BoundGrid->getStorage().getDimension();
-      sgpp::base::BoundingBox* myBB =
-          new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
       double* dblFuncValues = new double[dim];
 
       for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
-        std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
+        std::string coords = this->BoundGrid->getStorage().getCoordinates(
+            this->BoundGrid->getStorage().getPoint(i)).toString();
         std::stringstream coordsStream(coords);
 
         double tmp;
@@ -583,7 +582,6 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
       delete[] dblFuncValues;
 
       myHierarchisation->doHierarchisation(*this->alpha_complete);
-      delete myBB;
     }
 
     // add number of Gridpoints
@@ -648,8 +646,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
 
       myGlobalMPIComm->receiveGridStorage(bound_grid_storage);
 
-      this->BoundGrid->getStorage().emptyStorage();
-      this->BoundGrid->getStorage().unserialize_noAlgoDims(bound_grid_storage);
+      this->BoundGrid->getStorage().clear();
+      this->BoundGrid->getStorage().unserializeNoAlgoDims(bound_grid_storage);
       this->alpha_complete->resize(this->BoundGrid->getStorage().getSize());
 
       // rebuild the inner grid + coefficients

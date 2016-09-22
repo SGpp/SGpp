@@ -44,10 +44,17 @@ class GradientDescent : public UnconstrainedOptimizer {
    * @param tolerance     tolerance (parameter for Armijo's rule)
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  GradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
+  GradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
                   size_t maxItCount = DEFAULT_MAX_IT_COUNT, double beta = DEFAULT_BETA,
                   double gamma = DEFAULT_GAMMA, double tolerance = DEFAULT_TOLERANCE,
                   double epsilon = DEFAULT_EPSILON);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  GradientDescent(const GradientDescent& other);
 
   /**
    * Destructor.
@@ -108,7 +115,7 @@ class GradientDescent : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

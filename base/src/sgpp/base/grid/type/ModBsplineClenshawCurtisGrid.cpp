@@ -10,6 +10,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -23,7 +25,12 @@ ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim, size_t de
     : Grid(dim),
       generator(storage),
       degree(degree),
-      basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {}
+      basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {
+  std::vector<BoundingBox1D> boundingBox1Ds(dim, BoundingBox1D());
+  std::vector<Stretching1D> stretching1Ds(dim, Stretching1D("cc"));
+  Stretching stretching(boundingBox1Ds, stretching1Ds);
+  storage.setStretching(stretching);
+}
 
 ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {}
 
@@ -35,8 +42,8 @@ const SBasis& ModBsplineClenshawCurtisGrid::getBasis() { return *basis_; }
 
 size_t ModBsplineClenshawCurtisGrid::getDegree() { return this->degree; }
 
-std::unique_ptr<Grid> ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(istr));
+Grid* ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return new ModBsplineClenshawCurtisGrid(istr);
 }
 
 void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr, int version) {

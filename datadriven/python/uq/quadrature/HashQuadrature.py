@@ -33,7 +33,7 @@ class HashQuadratureMap(object):
     def getKey(self, gps, d):
         """
         Generates a unique key for a given list of grid points
-        @param gps: list of HashGridIndex
+        @param gps: list of HashGridPoint
         @param d: int dimension
         """
         return tuple([(gp.getLevel(d), gp.getIndex(d)) for gp in gps])

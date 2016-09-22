@@ -33,9 +33,9 @@ class UniformQuadratureStrategy(BilinearQuadratureStrategy):
 
         # store the result in the hash map
         for i in xrange(gs.size()):
-            gpi = gs.get(i)
+            gpi = gs.getPoint(i)
             for j in xrange(gs.size()):
-                gpj = gs.get(j)
+                gpj = gs.getPoint(j)
                 key = self.getKey(gpi, gpj)
                 self._map[key] = A.get(i, j)
         return A

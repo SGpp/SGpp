@@ -60,7 +60,8 @@ class Newton : public UnconstrainedOptimizer {
    * @param alpha2            steepest descent restart parameter 2
    * @param p                 steepest descent restart exponent
    */
-  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
+  Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
+         size_t maxItCount = DEFAULT_N,
          double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
          double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
          double alpha1 = DEFAULT_ALPHA1, double alpha2 = DEFAULT_ALPHA2, double p = DEFAULT_P);
@@ -83,9 +84,17 @@ class Newton : public UnconstrainedOptimizer {
    *                          the linear systems
    *                          (Hessian as coefficient matrix)
    */
-  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount, double beta,
+  Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
+         size_t maxItCount, double beta,
          double gamma, double tolerance, double epsilon, double alpha1, double alpha2,
          double p, const sle_solver::SLESolver& sleSolver);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  Newton(const Newton& other);
 
   /**
    * Destructor.
@@ -176,7 +185,7 @@ class Newton : public UnconstrainedOptimizer {
 
  protected:
   /// objective function Hessian
-  ScalarFunctionHessian& fHessian;
+  std::unique_ptr<ScalarFunctionHessian> fHessian;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

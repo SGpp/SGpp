@@ -48,10 +48,18 @@ class NLCG : public UnconstrainedOptimizer {
    * @param epsilon           epsilon (parameter for Armijo's rule)
    * @param restartThreshold  restart threshold
    */
-  NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
+  NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N,
        double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
        double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
        double restartThreshold = DEFAULT_RESTART_THRESHOLD);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  NLCG(const NLCG& other);
 
   /**
    * Destructor.
@@ -122,7 +130,7 @@ class NLCG : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  ScalarFunctionGradient& fGradient;
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

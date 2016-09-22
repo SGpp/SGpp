@@ -38,7 +38,7 @@ class MultiStart : public UnconstrainedOptimizer {
    * @param populationSize  number of individual points
    *                        (default: \f$\min(10d, 100)\f$)
    */
-  MultiStart(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+  MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
              size_t populationSize = 0);
 
   /**
@@ -52,8 +52,16 @@ class MultiStart : public UnconstrainedOptimizer {
    * @param populationSize   number of individual points
    *                         (default: \f$\min(10d, 100)\f$)
    */
-  MultiStart(UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+  MultiStart(const UnconstrainedOptimizer& optimizer,
+             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
              size_t populationSize = 0);
+
+  /**
+   * Copy constructor.
+   *
+   * @param other optimizer to be copied
+   */
+  MultiStart(const MultiStart& other);
 
   /**
    * Destructor.
@@ -88,7 +96,7 @@ class MultiStart : public UnconstrainedOptimizer {
   /// default optimization algorithm
   NelderMead defaultOptimizer;
   /// optimization algorithm
-  UnconstrainedOptimizer& optimizer;
+  std::unique_ptr<UnconstrainedOptimizer> optimizer;
   /// number of individual points
   size_t populationSize;
   /// search history (inner iterations)

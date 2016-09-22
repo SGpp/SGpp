@@ -5,8 +5,8 @@
 
 #pragma once
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -15,18 +15,18 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
-#include <sgpp/parallel/tools/TypesParallel.hpp>
 #include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <stdint.h>
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <sstream>
 #include <exception>
 #include <list>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace sgpp {
 namespace parallel {
@@ -53,8 +53,8 @@ class HashGridStorageConverter {
       sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& level,
       sgpp::base::DataMatrix& index, sgpp::parallel::VectorizationType vectorizationType,
       size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
@@ -76,7 +76,7 @@ class HashGridStorageConverter {
       for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
         for (size_t t = i; t < i + blocking_length; ++t) {
           if (t < storage->getSize()) {
-            (*storage)[t]->get(current_dim, curLevel, curIndex);
+            (*storage)[t].get(current_dim, curLevel, curIndex);
             *level_ptr = static_cast<double>(1 << curLevel);
             *index_ptr = static_cast<double>(curIndex);
           }
@@ -91,7 +91,7 @@ class HashGridStorageConverter {
   /**
    * Converts the storage from AOS (array of structures) to SOA (structure of array)
    * with modification to speed up iterative Laplace Calculations: the level
-   * won't contain the levels, it contains 2 to the neagative power of the level.
+   * won't contain the levels, it contains 2 to the negative power of the level.
    * Additional blocking for better TLB usage is provided.
    *
    * @param storage GridStorage, which should be converted
@@ -103,8 +103,8 @@ class HashGridStorageConverter {
                                               sgpp::base::DataMatrix& level,
                                               sgpp::parallel::VectorizationType vectorizationType,
                                               size_t blocking_length) {
-    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
-    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::level_t curLevel;
+    typename sgpp::base::index_t curIndex;
 
     // pad datasets
     sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
@@ -122,7 +122,7 @@ class HashGridStorageConverter {
       for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
         for (size_t t = i; t < i + blocking_length; ++t) {
           if (t < storage->getSize()) {
-            (*storage)[t]->get(current_dim, curLevel, curIndex);
+            (*storage)[t].get(current_dim, curLevel, curIndex);
             *level_ptr = pow(2.0, static_cast<int>(-curLevel));
           }
 
