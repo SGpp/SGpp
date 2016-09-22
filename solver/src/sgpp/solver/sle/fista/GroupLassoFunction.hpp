@@ -19,9 +19,26 @@
 
 namespace sgpp {
 namespace solver {
+/**
+ * @brief The GroupLassoFunction class
+ * @details Corresponds to the regularization function
+ * \f$ \sum_{\mathbf{p} \in \mathcal{P}}
+ * \left(\sqrt{\vert \mathbf{p} \vert}\right) \Vert  \mathbf{p} \Vert_2 \f$.
+ * In this formula \f$\mathcal{P}\f$ is a partition of the weights.
+ * We use groups that correspond to the original features and their
+ * interactions, e.g. we have one group of basis functions that are
+ * constant for all but the first predictor, one that only models the
+ * second predictor, one that models the interaction of both mentioned
+ * predictors, and so on.
+ */
 
 class GroupLassoFunction : public RegularizationFunction {
  public:
+    /**
+   * @brief GroupLassoFunction
+   * @param lambda controls the regularization strength.
+   * @param gridStorage is the grid storage.
+   */
   GroupLassoFunction(double lambda, sgpp::base::GridStorage* gridStorage)
       : lambda(lambda), gridStorage(gridStorage) {}
 
@@ -59,7 +76,6 @@ class GroupLassoFunction : public RegularizationFunction {
       // Here we normalize with the root of the groupSize.
       // If we would not do that, we would drop larger groups with a higher probability than smaller
       // ones!
-      // TODO(krenzls): Check formula!
       const double ss = lambda * stepsize * std::sqrt(curSize);
       const double multiplicator = std::max(1 - (ss) / curNorm, 0.0);
       proxVec[i] = multiplicator * weights[i];

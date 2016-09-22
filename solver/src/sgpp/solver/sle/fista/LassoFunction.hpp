@@ -14,8 +14,17 @@
 namespace sgpp {
 namespace solver {
 
+/**
+ * @brief The LassoFunction class.
+ * @details This class models the standard lasso regularization penalty
+ * \f$ \Vert \boldsymbol{\alpha} \Vert_1 \f$.
+ */
 class LassoFunction : public RegularizationFunction {
  public:
+    /**
+   * @brief LassoFunction
+   * @param lambda controls the regularization strength.
+   */
   explicit LassoFunction(double lambda) : lambda(lambda) {}
 
   double eval(base::DataVector weights) override {
