@@ -11,9 +11,17 @@
 
 namespace sgpp {
 namespace solver {
-
+/**
+ * @brief The RidgeFunction class
+ * @details Corresponds to the regularization function
+ * \f$ \Vert \boldsymbol{\alpha} \Vert_2^2\f$.
+ */
 class RidgeFunction : public RegularizationFunction {
  public:
+    /**
+   * @brief RidgeFunction
+   * @param lambda controls the regularization strength.
+   */
   RidgeFunction(double lambda) : lambda(lambda) {}
 
   // (lambda |x|_2 )

@@ -11,7 +11,11 @@
 
 namespace sgpp {
 namespace solver {
-
+/**
+ * @brief The ZeroFunction class
+ * @details Corresponds to the trivial regularization function, which
+ * is zero in all cases.
+ */
 class ZeroFunction : public RegularizationFunction {
  public:
   double eval(base::DataVector weights) override { return 0.0; }
