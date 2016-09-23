@@ -11,6 +11,12 @@
 #include <unordered_set>
 #include <tuple>
 
+/**
+ * @brief decodeCoords
+ * @param coords are the coordinates of a grid point
+ * @param result is the boolean version of the vector, each entry is true if the
+ * corresponding dimension is used, i.e. not equal to 0.5
+ */
 void decodeCoords(sgpp::base::DataVector& coords, std::vector<bool>& result) {
     for (size_t i = 0; i < coords.getSize(); ++i) {
         result[i] = coords[i] != 0.5;
@@ -18,6 +24,14 @@ void decodeCoords(sgpp::base::DataVector& coords, std::vector<bool>& result) {
 }
 
 
+/**
+ * @brief main creates a grid with dimension three and level five and
+ * adds more and more interaction points.
+ * @details This is done by using interaction-term aware sparse grids.
+ * First, we create a grid with interaction terms, that model only
+ * one feature, then we add the pairwise interactions and finally
+ * all interactions. The differences between the grids are printed.
+ */
 int main(int argc, char **argv) {
   auto dimensions = 3;
   auto level = 5;
