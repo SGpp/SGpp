@@ -16,6 +16,12 @@
 #include <limits>
 #include <ostream>
 
+/**
+ * @brief getLearner
+ * @param dimension is the number of dimensions
+ * @param regularizationConfig
+ * @return a sparse grid regression learner
+ */
 sgpp::datadriven::RegressionLearner getLearner(
     size_t dimension, sgpp::datadriven::RegularizationConfiguration regularizationConfig) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
@@ -37,6 +43,11 @@ sgpp::datadriven::RegressionLearner getLearner(
                                              solverConfig, regularizationConfig);
 }
 
+/**
+ * @brief showRegularizationConfiguration
+ * @param regularizationConfig
+ * @return type of the regularization method as string
+ */
 std::string showRegularizationConfiguration(
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig) {
   std::ostringstream ss;
@@ -59,6 +70,17 @@ std::string showRegularizationConfiguration(
   return ss.str();
 }
 
+/**
+ * @brief gridSearch performs a hyper-parameter grid search over configs using a
+ * holdout validation set.
+ * @param configs are the regularization configs that will be tried
+ * @param dimension is the number of dimensions
+ * @param xTrain are the training predictors
+ * @param yTrain is the training target
+ * @param xValidation are the validation predictors
+ * @param yValidation is the validation target
+ * @return best found regularization configuration
+ */
 sgpp::datadriven::RegularizationConfiguration gridSearch(
     std::vector<sgpp::datadriven::RegularizationConfiguration> configs, size_t dimension,
     sgpp::base::DataMatrix& xTrain, sgpp::base::DataVector& yTrain,
@@ -86,11 +108,16 @@ sgpp::datadriven::RegularizationConfiguration gridSearch(
   return bestConfig;
 }
 
+/**
+ * @brief getConfigs
+ * @return some regularization configurations for seven lambdas between 1 and 0.000001
+ * and for exponent bases 1.0, 0.5, 0.25, 0.125
+ */
 std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
   decltype(getConfigs()) result;
   std::vector<double> lambdas = {1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
 
-  std::vector<double> exponentBases = {0.5, 0.25, 0.125};
+  std::vector<double> exponentBases = {1.0, 0.5, 0.25, 0.125};
   for (const auto lambda : lambdas) {
     // Identity
     const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
@@ -114,10 +141,14 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
   return result;
 }
 
+/**
+ * @brief main is an example for the RegressionLearner. It performs a grid search for the best
+ * hyper-parameter for the Friedman3 dataset using the diagonal Tikhonov regularization method.
+ */
 int main(int argc, char** argv) {
   const auto filenameTrain = std::string("../tests/data/friedman3_10k_train.arff");
   const auto filenameValidation = std::string("../tests/data/friedman3_10k_validation.arff");
-  const auto filenameTest = std::string("../tests/data/friedman3_10k_testing.arff");
+  const auto filenameTest = std::string("../tests/data/friedman3_10k_test.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
