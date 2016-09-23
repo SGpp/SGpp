@@ -4,8 +4,15 @@
 // sgpp.sparsegrids.org
 
 #include <cstdlib>
+#include <iostream>
 #include <sgpp/base/grid/Grid.hpp>
 
+/**
+ * @brief main creates a generalised grid. The first CLI argument is
+ * the number of dimensions, the second the level and the third the parameter
+ * T. It then prints our the new grid size.
+ * @return
+ */
 int main(int argc, char **argv) {
   if (argc != 4) return 42;
   auto dimensions = std::atoi(argv[1]);
@@ -15,4 +22,5 @@ int main(int argc, char **argv) {
   auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
   auto& generator = grid->getGenerator();
   generator.regular(level, T);
+  std::cout << grid->getSize() << std::endl;
 }
