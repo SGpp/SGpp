@@ -7,6 +7,10 @@
 #include <iostream>
 #include <cmath>
 
+/**
+ * @brief main prints out all interaction terms for a 64-dimensional
+ * image dataset that are in a \f$ 3 \times 3 \f$ neighborhood.
+ */
 int main(void) {
     using namespace sgpp::datadriven;
     const auto neigh = NearestNeighbors(8,8);
