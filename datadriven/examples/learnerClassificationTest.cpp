@@ -16,6 +16,11 @@
 #include <limits>
 #include <ostream>
 
+/**
+ * @brief getLearner
+ * @param dimension the number of new dimensions
+ * @return a classification for dimension dimension
+ */
 sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
   gridConfig.dim_ = dimension;
@@ -40,9 +45,14 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
                                                  solverConfig, regularizationConfig);
 }
 
+/**
+ * @brief main
+   Creates a sparse grid classification learner and returns the training accuracy for the ripley dataset.
+ * @return
+ */
 int main(int argc, char** argv) {
   const auto filenameTrain =
-      std::string("/home/lukaskrenz/Dropbox/UNI/SparseGrids/datasets/raw/yeast/yeast.arff");
+      std::string("../../datasets/ripley/ripleyGarcke.train.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
