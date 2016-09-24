@@ -144,7 +144,7 @@ public:
     double mult(std::vector<T> &level, std::vector<T> &index,
             std::vector<T> &dataset, std::vector<T> &alpha,
             std::vector<T> &result, const size_t start_index_grid,
-            const size_t end_index_grid) {
+            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
         if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
             {
@@ -329,7 +329,7 @@ public:
                 std::vector<T> &hostTemp = deviceResultData.getHostPointer();
                 size_t deviceIndex = 0;
                 for (size_t i = 0; i < rangeSize; i++) {
-                    result[kernelStartData + i] = hostTemp[deviceIndex];
+                    result[(kernelStartData - start_index_data) + i] = hostTemp[deviceIndex];
                     deviceIndex += 1;
                 }
 

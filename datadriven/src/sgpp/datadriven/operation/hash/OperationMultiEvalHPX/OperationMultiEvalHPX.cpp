@@ -13,6 +13,7 @@
 #include "sgpp/base/exception/not_implemented_exception.hpp"
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
 #include "sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 
 #include <hpx/include/components.hpp>
 #include <hpx/include/async.hpp>
@@ -36,6 +37,8 @@ OperationMultiEvalHPX::~OperationMultiEvalHPX() {
 void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
         sgpp::base::DataVector& result) {
     this->myTimer.start();
+
+    result.resize(dataset.getNrows());
 
 //    // create appropriate node level multi eval implementation
 //    std::unique_ptr<sgpp::base::OperationMultipleEval> nodeMultiEval;
@@ -96,13 +99,36 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
     multiplier.wait();
     std::string alphaSerialized = alpha.toString();
 
-    hpx::future<std::string> f =
-            hpx::async<
-                    sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action>(
-                    multiplier.get_id(), alphaSerialized, 0, dataset.getNrows());
-    std::string resultSerialized = f.get();
+    base::QueueLoadBalancer queueLoadBalancer;
+    queueLoadBalancer.initialize(0, dataset.getNrows());
 
-    result = sgpp::base::DataVector::fromString(resultSerialized);
+    size_t startIndex = 0;
+    size_t stopIndex = 0;
+    const size_t blockSize = 1;
+    const size_t scheduleSize = 10000;
+    while (true) {
+        bool segmentAvailable = queueLoadBalancer.getNextSegment(scheduleSize,
+                blockSize, startIndex, stopIndex);
+        if (!segmentAvailable) {
+            break;
+        }
+        hpx::future<std::string> f =
+                hpx::async<
+                        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action>(
+                        multiplier.get_id(), alphaSerialized, startIndex,
+                        stopIndex);
+        f.wait();
+        hpx::future<void> g = f.then(
+                hpx::util::unwrapped(
+                        [=,&result](std::string resultSerialized)
+                        {
+                            sgpp::base::DataVector resultSegment = sgpp::base::DataVector::fromString(resultSerialized);
+                            for (size_t i = 0; i < resultSegment.getSize(); i++) {
+                                result[startIndex + i] = resultSegment[i];
+                            }
+                        }));
+        g.wait();
+    }
 
     this->duration = this->myTimer.stop();
 }
