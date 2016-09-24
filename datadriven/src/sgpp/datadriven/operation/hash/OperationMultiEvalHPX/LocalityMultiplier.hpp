@@ -63,6 +63,8 @@ struct LocalityMultiplier: hpx::components::component_base<
                 alphaSerialized);
 
         sgpp::base::DataVector result;
+//        result.resize(endIndexData - startIndexData);
+//        result.setAll(0.0);
         nodeMultiEval->mult(alpha, result, startIndexData, endIndexData);
 
         std::string resultString = result.toString();

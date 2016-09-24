@@ -234,7 +234,7 @@ public:
             try {
                 this->multKernels[threadId].mult(this->level, this->index,
                         this->kernelDataset, alphaArray, resultArray, gridFrom,
-                        gridTo);
+                        gridTo, datasetFrom, datasetTo);
             } catch (...) {
                 // store the first exception thrown for rethrow
                 std::call_once(onceFlag,
