@@ -13,10 +13,11 @@
 #include "sgpp/base/exception/not_implemented_exception.hpp"
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
 #include "sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
 
 #include <hpx/include/components.hpp>
 #include <hpx/include/async.hpp>
+#include <hpx/include/lcos.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -99,15 +100,15 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
     multiplier.wait();
     std::string alphaSerialized = alpha.toString();
 
-    base::QueueLoadBalancer queueLoadBalancer;
-    queueLoadBalancer.initialize(0, dataset.getNrows());
+    queueLoadBalancerMult.initialize(0, dataset.getNrows());
 
     size_t startIndex = 0;
     size_t stopIndex = 0;
     const size_t blockSize = 1;
     const size_t scheduleSize = 10000;
+    std::vector<hpx::future<void>> futures;
     while (true) {
-        bool segmentAvailable = queueLoadBalancer.getNextSegment(scheduleSize,
+        bool segmentAvailable = queueLoadBalancerMult.getNextSegment(scheduleSize,
                 blockSize, startIndex, stopIndex);
         if (!segmentAvailable) {
             break;
@@ -117,7 +118,6 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
                         sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action>(
                         multiplier.get_id(), alphaSerialized, startIndex,
                         stopIndex);
-        f.wait();
         hpx::future<void> g = f.then(
                 hpx::util::unwrapped(
                         [=,&result](std::string resultSerialized)
@@ -127,9 +127,9 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
                                 result[startIndex + i] = resultSegment[i];
                             }
                         }));
-        g.wait();
+        futures.push_back(std::move(g));
     }
-
+    hpx::wait_all(futures);
     this->duration = this->myTimer.stop();
 }
 

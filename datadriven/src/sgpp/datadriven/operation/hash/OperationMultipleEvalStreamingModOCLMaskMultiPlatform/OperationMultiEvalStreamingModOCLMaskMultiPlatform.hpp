@@ -18,7 +18,7 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
@@ -62,8 +62,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMult;
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMult;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTrans;
 
   size_t overallGridBlockingSize;
   size_t overallDataBlockingSize;
@@ -100,8 +100,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     overallGridBlockingSize = calculateCommonGridPadding();
     overallDataBlockingSize = calculateCommonDatasetPadding();
 
-    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
-    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
+    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
+    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
 
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;

@@ -50,7 +50,7 @@ class KernelMultTranspose {
   //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
   json::Node &kernelConfiguration;
 
-  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+  std::shared_ptr<base::QueueLoadBalancerMutex> queueLoadBalancerMultTranspose;
 
   bool verbose;
 
@@ -63,7 +63,7 @@ class KernelMultTranspose {
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
-                      std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose)
+                      std::shared_ptr<base::QueueLoadBalancerMutex> queueBalancerMultTranpose)
       : device(device),
         dims(dims),
         err(CL_SUCCESS),
