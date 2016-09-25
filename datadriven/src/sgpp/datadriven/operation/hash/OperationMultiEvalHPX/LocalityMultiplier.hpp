@@ -4,6 +4,8 @@
 #include <sstream>
 #include <hpx/include/components.hpp>
 #include <hpx/include/iostreams.hpp>
+#include <hpx/include/lcos.hpp>
+#include <hpx/include/async.hpp>
 
 #include "sgpp/base/datatypes/DataMatrix.hpp"
 #include "sgpp/base/datatypes/DataVector.hpp"
@@ -12,6 +14,7 @@
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/exception/not_implemented_exception.hpp"
+#include "LoadBalancerComponent.hpp"
 
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
 #include "sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
@@ -26,15 +29,19 @@ struct LocalityMultiplier: hpx::components::component_base<
     sgpp::base::DataMatrix dataset;
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration;
     std::unique_ptr<sgpp::base::OperationMultipleEval> nodeMultiEval;
+    uint32_t managerId;
 
     // TODO: why does this get called?
-    LocalityMultiplier() {
+    LocalityMultiplier() :
+            managerId(0) {
     }
 
     LocalityMultiplier(std::string serializedGrid,
             std::string serializedDataset, std::string parametersString,
             sgpp::datadriven::OperationMultipleEvalType type,
-            sgpp::datadriven::OperationMultipleEvalSubType subType) {
+            sgpp::datadriven::OperationMultipleEvalSubType subType,
+            uint32_t managerId) :
+            managerId(managerId) {
 
         std::unique_ptr<sgpp::base::OCLOperationConfiguration> parameters =
                 std::make_unique<sgpp::base::OCLOperationConfiguration>();
@@ -57,24 +64,48 @@ struct LocalityMultiplier: hpx::components::component_base<
         hpx::cout << "component set up!" << std::endl << hpx::flush;
     }
 
-    std::string mult_fragment(std::string alphaSerialized, size_t startIndexData, size_t endIndexData) {
+    void mult(std::string alphaSerialized) {
         hpx::cout << "processing mult_fragment!" << std::endl << hpx::flush;
         sgpp::base::DataVector alpha = sgpp::base::DataVector::fromString(
                 alphaSerialized);
+        hpx::components::client<
+                sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent> loadBalancer;
 
-        sgpp::base::DataVector result;
-//        result.resize(endIndexData - startIndexData);
-//        result.setAll(0.0);
-        nodeMultiEval->mult(alpha, result, startIndexData, endIndexData);
+        loadBalancer.connect_to("manager#" + std::to_string(managerId));
 
-        std::string resultString = result.toString();
-        return resultString;
+        std::vector<hpx::future<void>> resultFutures;
+
+        while (true) {
+            std::vector<size_t> s =
+                    hpx::async<
+                            sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent::get_work_segment_action>(
+                            loadBalancer.get_id(), 10000, 1).get();
+            bool segmentAvailable = s[0];
+            size_t startIndexData = s[1];
+            size_t endIndexData = s[2];
+            if (!segmentAvailable) {
+                break;
+            }
+//            hpx::cout << "processing from " << startIndexData << " to " << endIndexData << " on locality " << hpx::get_locality_id() << std::endl << hpx::flush;
+
+            sgpp::base::DataVector result;
+            nodeMultiEval->mult(alpha, result, startIndexData, endIndexData);
+
+            std::string resultString = result.toString();
+
+            hpx::future<void> f =
+                    hpx::async<
+                            sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent::send_result_segment_action>(
+                            loadBalancer.get_id(), resultString, startIndexData, endIndexData);
+            resultFutures.push_back(std::move(f));
+        }
+        hpx::wait_all(resultFutures);
     }
 
     //TODO: add update grid action!
 
-    HPX_DEFINE_COMPONENT_ACTION(sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier, mult_fragment,
-            mult_fragment_action);
+    HPX_DEFINE_COMPONENT_ACTION(sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier, mult,
+            mult_action);
 
 };
 
@@ -83,5 +114,5 @@ struct LocalityMultiplier: hpx::components::component_base<
 }
 
 HPX_REGISTER_ACTION_DECLARATION(
-        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action);
+        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_action);
 

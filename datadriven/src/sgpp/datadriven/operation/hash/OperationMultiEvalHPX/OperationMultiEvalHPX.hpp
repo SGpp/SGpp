@@ -11,6 +11,7 @@
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
 
 namespace sgpp {
 namespace datadriven {

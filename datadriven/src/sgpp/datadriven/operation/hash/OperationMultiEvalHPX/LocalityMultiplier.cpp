@@ -10,4 +10,4 @@ HPX_REGISTER_COMPONENT(
         LocalityMultiplier);
 
 HPX_REGISTER_ACTION(
-        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action);
+        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_action);

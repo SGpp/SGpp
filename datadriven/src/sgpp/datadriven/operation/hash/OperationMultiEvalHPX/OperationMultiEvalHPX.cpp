@@ -41,26 +41,6 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
 
     result.resize(dataset.getNrows());
 
-//    // create appropriate node level multi eval implementation
-//    std::unique_ptr<sgpp::base::OperationMultipleEval> nodeMultiEval;
-//    if (configuration.getType() == OperationMultipleEvalType::STREAMING
-//            && configuration.getSubType()
-//                    == OperationMultipleEvalSubType::DEFAULT) {
-//        nodeMultiEval =
-//                std::make_unique<datadriven::OperationMultiEvalStreaming>(grid,
-//                        dataset);
-//    } else if (configuration.getType() == OperationMultipleEvalType::STREAMING
-//            && configuration.getSubType()
-//                    == OperationMultipleEvalSubType::OCLMP) {
-//        nodeMultiEval = std::unique_ptr<OperationMultipleEval>(
-//                createStreamingOCLMultiPlatformConfigured(grid, dataset,
-//                        configuration));
-//    } else {
-//        throw base::not_implemented_exception();
-//    }
-//    nodeMultiEval->mult(alpha, result);
-
-    size_t num_localities = hpx::get_num_localities().get();
     std::vector<hpx::id_type> all_ids = hpx::find_remote_localities();
 
     hpx::default_distribution_policy policy = hpx::default_layout(all_ids);
@@ -75,61 +55,46 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
     configuration.getParameters()->serialize(transferStream, 0);
     std::string transferableParameterString = transferStream.str();
 
-//    std::vector<
-//            hpx::components::client<
-//                    sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier<float>>>multipliers =
-//    hpx::new_<hpx::components::client<sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier<float>>[]>(
-//            policy, num_localities, serializedGrid, serializedDataset, transferableParameterString, configuration.getType(), configuration.getSubType()).get();
-//
-//    for (hpx::components::client<
-//            sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier<float>> &multiplier : multipliers) {
-//        uint32_t comp_locality = hpx::naming::get_locality_id_from_id(
-//                multiplier.get_id());
-//        multiplier.register_as("/multiplier#" + std::to_string(comp_locality),
-//                false);
-//    }
-
     hpx::components::client<
-            sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier> multiplier =
+            sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent> loadBalancer =
             hpx::new_<
                     hpx::components::client<
-                            sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier>>(
-                    policy, serializedGrid, serializedDataset,
+                            sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent>>(
+                    hpx::find_here(), 0, dataset.getNrows());
+    loadBalancer.register_as(
+            "manager#" + std::to_string(hpx::get_locality_id()), false);
+
+    std::vector<
+            hpx::components::client<
+                    sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier>> multipliers =
+            hpx::new_<
+                    hpx::components::client<
+                            sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier>[]>(
+                    policy, all_ids.size(), serializedGrid, serializedDataset,
                     transferableParameterString, configuration.getType(),
-                    configuration.getSubType());
-    multiplier.wait();
+                    configuration.getSubType(), hpx::get_locality_id()).get();
+
     std::string alphaSerialized = alpha.toString();
 
-    queueLoadBalancerMult.initialize(0, dataset.getNrows());
-
-    size_t startIndex = 0;
-    size_t stopIndex = 0;
-    const size_t blockSize = 1;
-    const size_t scheduleSize = 10000;
-    std::vector<hpx::future<void>> futures;
-    while (true) {
-        bool segmentAvailable = queueLoadBalancerMult.getNextSegment(scheduleSize,
-                blockSize, startIndex, stopIndex);
-        if (!segmentAvailable) {
-            break;
-        }
-        hpx::future<std::string> f =
+    std::vector<hpx::future<void>> finished;
+    for (hpx::components::client<
+            sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier> &multiplier : multipliers) {
+        hpx::future<void> f =
                 hpx::async<
-                        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_fragment_action>(
-                        multiplier.get_id(), alphaSerialized, startIndex,
-                        stopIndex);
-        hpx::future<void> g = f.then(
-                hpx::util::unwrapped(
-                        [=,&result](std::string resultSerialized)
-                        {
-                            sgpp::base::DataVector resultSegment = sgpp::base::DataVector::fromString(resultSerialized);
-                            for (size_t i = 0; i < resultSegment.getSize(); i++) {
-                                result[startIndex + i] = resultSegment[i];
-                            }
-                        }));
-        futures.push_back(std::move(g));
+                        sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_action>(
+                        multiplier.get_id(), alphaSerialized);
+        finished.push_back(std::move(f));
     }
-    hpx::wait_all(futures);
+
+    hpx::wait_all(finished);
+    std::vector<float> resultVector =
+            hpx::async<
+                    sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent::get_result_action>(
+                    loadBalancer.get_id()).get();
+    for (size_t i = 0; i < resultVector.size(); i++) {
+        result[i] = static_cast<double>(resultVector.at(i));
+    }
+
     this->duration = this->myTimer.stop();
 }
 
