@@ -30,6 +30,8 @@ protected:
     double duration;
 
     base::SGppStopwatch myTimer;
+
+    base::QueueLoadBalancerMutex queueLoadBalancerMult;
 public:
     OperationMultiEvalHPX(base::Grid& grid, base::DataMatrix& dataset,
             sgpp::datadriven::OperationMultipleEvalConfiguration& configuration,

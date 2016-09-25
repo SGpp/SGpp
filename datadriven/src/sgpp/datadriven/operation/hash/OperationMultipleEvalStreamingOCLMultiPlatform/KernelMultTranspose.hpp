@@ -18,7 +18,7 @@
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/globaldef.hpp"
 
 namespace sgpp {
@@ -64,7 +64,7 @@ private:
     //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     json::Node &kernelConfiguration;
 
-    std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+    std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTranspose;
 
     bool verbose;
 
@@ -88,7 +88,7 @@ public:
     KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
             std::shared_ptr<base::OCLManagerMultiPlatform> manager,
             json::Node &kernelConfiguration,
-            std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose) :
+            std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMultTranpose) :
             device(device), dims(dims), err(CL_SUCCESS), deviceLevelTranspose(
                     device), deviceIndexTranspose(device), deviceDataTranspose(
                     device), deviceSourceTranspose(device), deviceResultGridTranspose(

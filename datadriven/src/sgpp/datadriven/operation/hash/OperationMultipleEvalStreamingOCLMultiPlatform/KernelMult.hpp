@@ -12,11 +12,11 @@
 #include <string>
 #include <vector>
 
+#include "../../../../../../../base/src/sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "SourceBuilderMult.hpp"
 #include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "sgpp/globaldef.hpp"
 
 namespace sgpp {
@@ -61,7 +61,7 @@ private:
 
     json::Node &kernelConfiguration;
 
-    std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
+    std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMult;
 
     bool verbose;
 
@@ -85,7 +85,7 @@ public:
     KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
             std::shared_ptr<base::OCLManagerMultiPlatform> manager,
             json::Node &kernelConfiguration,
-            std::shared_ptr<base::QueueLoadBalancer> queueBalancerMult) :
+            std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMult) :
             device(device), dims(dims), err(CL_SUCCESS), deviceData(device), deviceLevel(
                     device), deviceIndex(device), deviceAlpha(device), deviceResultData(
                     device), kernelMult(nullptr), kernelSourceBuilder(device,

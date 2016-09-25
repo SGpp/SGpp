@@ -17,7 +17,7 @@
 #include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/globaldef.hpp"
 
 namespace sgpp {
@@ -50,7 +50,7 @@ class KernelMultTranspose {
   //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
   json::Node &kernelConfiguration;
 
-  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+  std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTranspose;
 
   bool verbose;
 
@@ -63,7 +63,7 @@ class KernelMultTranspose {
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
-                      std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose)
+                      std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMultTranpose)
       : device(device),
         dims(dims),
         err(CL_SUCCESS),

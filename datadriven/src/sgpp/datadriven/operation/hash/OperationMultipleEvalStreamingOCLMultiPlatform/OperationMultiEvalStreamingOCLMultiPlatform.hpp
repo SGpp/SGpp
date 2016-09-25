@@ -18,7 +18,7 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
@@ -78,8 +78,8 @@ protected:
 
     double duration;
 
-    std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
-    std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+    std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMult;
+    std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTranspose;
 
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     std::vector<std::shared_ptr<base::OCLDevice>> devices;
@@ -120,9 +120,9 @@ public:
         this->commonDatasetPadding = calculateCommonDatasetPadding();
         this->commonGridPadding = calculateCommonGridPadding();
 
-        queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
+        queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancerOpenMP>();
         queueLoadBalancerMultTranspose = std::make_shared<
-                base::QueueLoadBalancer>();
+                base::QueueLoadBalancerOpenMP>();
 
         // initialized in padDataset
         datasetSizeUnpadded = 0;
