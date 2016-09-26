@@ -8,6 +8,7 @@ import random
 import matplotlib
 # matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from matplotlib import cm
 from mpl_toolkits.mplot3d import axes3d
@@ -15,7 +16,7 @@ from matplotlib2tikz import save as tikz_save
 from pysgpp.extensions.datadriven.uq.plot import plot2d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation
 
-genz_a = [2,2]
+genz_a = [2,2,2]
 
 class interpolation_function():
 
@@ -101,13 +102,15 @@ def revenue(z, D):
   assert s <= a
   return (r - c) * a + c*s - (r - 0.5*c) * max(a - D, 0)
 
-def expected_revenue(z):
-  s = 30.0
-  v = 30.0
-  my = 60.0
-  scaling = 2*v
-  r = 4.0
-  c = 2.0
+def expected_revenue(x):
+  scaling = 100
+  z = x[0]
+  s = 10.0
+  v = 20.0
+  my = 50.0
+  # scaling = 2*v
+  r = 7.0
+  c = 4.0
   z *= scaling
   a = s + z
   assert s <= a
@@ -116,7 +119,7 @@ def expected_revenue(z):
     expected = ((a - my + v)**2)/(4*v)
   elif(a > my + v):
     expected = a - my
-  print (my + (v*(2*r - 3*c))/(2*r - c) - s) / scaling
+  opt = (my + (v*(2*r - 3*c))/(2*r - c) - s) # / scaling
   return (r - c) * a + c*s - (r - 0.5*c) * expected
 
 def sin_kuppel(x):
@@ -140,6 +143,14 @@ def shcb(x):
   x[0] = x[0]*10 - 5
   x[1] = x[1]*10 - 5
   return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1)
+
+def peak_genz(x):
+    u = [0.5, 0.5]
+    a = [2,2]
+    prod = 1
+    for i in range(len(x)):
+        prod *= (a[i]**-2 + (x[i] - u[i])**2)
+    return 1.0/prod
 
 def oscill_genz(x):
   d = len(x)
@@ -256,7 +267,7 @@ def gridToName(i, p):
              8 : "PolyBoundary (Grad " + str(p) + ")",
              9 : "ModPoly(Grad "  + str(p) + ")",
              10 : "ModWavelet(Grad "  + str(p) + ")",
-             11 : "ModBspline (Grad " + str(p) + ")",
+             11 : "ModB-Spline (Grad " + str(p) + ")",
              12 : "Prewavelet(Grad "  + str(p) + ")",
              13 : "SquareRoot(Grad "  + str(p) + ")",
              14 : "Periodic(Grad "  + str(p) + ")",
@@ -294,7 +305,8 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
     gamma = 0.85
     # N_vals = [50, 100, 200, 500, 1000]
     # N_vals = [12000]
-    N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
+    # N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
+    N_vals = [1, 5, 10, 15, 20, 30, 40]
     ec_list = []
     loop_list = []
     if(use_3_grid):
@@ -313,12 +325,12 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for grid, p in grids:
+        gridpoint_list = []
         printLine()
         printLine()
         errors = []
         for loop_item in loop_list:
             eval_count = 0
-
             if(use_3_grid):
               grid_lvl = loop_item
               interpolf.create_interpolation(grid_lvl)
@@ -340,7 +352,7 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
             if not gridGen.generate():
                 print "Grid generation failed, exiting."
                 sys.exit(1)
-
+            gridpoint_list.append(grid.getStorage().getSize())
             # #############################################################################
             # HIERARCHIZATION
             # #############################################################################
@@ -414,11 +426,26 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
             print "f(xOpt) = {:.8f}, ft(xOpt) = {:.8f}".format(fXOpt, ftXOpt)
             print "sol = {:.8f}, error = {:.2e}\n".format(sol, errors[-1])
             print "Eval Count: {}".format(eval_count)
+
+        color = "k"
+        degree_based = False
+        if "ModBsplineClenshaw" in gridToName(grid.getType(), p):
+            color = "g"
+        elif "Boundary" in gridToName(grid.getType(), p):
+            color = "r"
+        elif "Clenshaw" in gridToName(grid.getType(), p):
+            color = "k"
+        elif "B-Spline" in gridToName(grid.getType(), p):
+            color = "b"
+        elif "Mod" in gridToName(grid.getType(), p):
+            color = "c"
+        linestyle = color + ".-"
+
         if(x_axis == "gridpoints"):
-          ax.plot(N_vals, errors, 'o', N_vals, errors, label=gridToName(grid.getType(),p))
+          ax.plot(gridpoint_list, errors, linestyle, label=gridToName(grid.getType(),p))
           plt.xlabel('Grid Points')
         elif(x_axis == "evaluations"):
-          ax.plot(ec_list, errors, 'o', ec_list, errors, label=gridToName(grid.getType(),p))
+          ax.plot(ec_list, errors, linestyle, label=gridToName(grid.getType(),p))
           plt.xlabel('Evalutions')
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -437,7 +464,13 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
 
 def genz_error():
     a = genz_a
-    exact_sol = (np.cos(a[0] + a[1]) - np.cos(a[0]) - np.cos(a[1])+1)/(a[0]*a[1])
+    d = len(a)
+    if d == 2:
+      exact_sol = (np.cos(a[0] + a[1]) - np.cos(a[0]) - np.cos(a[1])+1)/(a[0]*a[1])
+    elif all([i == 2 for i in a]):
+      return np.sin(1)**d * (-np.cos(d))
+    else:
+      print "no exact solution for this genz function"
     return exact_sol
 
 def eggcrate_error():
@@ -467,33 +500,38 @@ def l2_det_error(f, f_sg):
   return (float(s)/resolution**2)**0.5
 
 def integrate(d, error_type = "l2", quad_error_sol = 0):
-    mixedGrids = [(pysgpp.Grid.createLinearGrid(d), 1),
-             (pysgpp.Grid.createPolyGrid(d,3), 3),
+    mixedGrids = [ #  (pysgpp.Grid.createLinearGrid(d), 1),
+             # (pysgpp.Grid.createPolyGrid(d,3), 3),
              # (pysgpp.Grid.createBsplineGrid(d, 3), 3) ,
              # (pysgpp.Grid.createBsplineGrid(d, 5), 5) ,
-             (pysgpp.Grid.createBsplineGrid(d, 7), 7),
+             # (pysgpp.Grid.createBsplineGrid(d, 7), 7),
              # (pysgpp.Grid.createLinearBoundaryGrid(d, 1), 1),
              (pysgpp.Grid.createPolyBoundaryGrid(d,3), 3),
              (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
              # (pysgpp.Grid.createModLinearGrid(d), 1),
-             (pysgpp.Grid.createModPolyGrid(d,3), 3),
+             # (pysgpp.Grid.createModPolyGrid(d,3), 3),
              (pysgpp.Grid.createModBsplineGrid(d,3), 3),
              (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3),
-             # (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3), 3),
-             # (pysgpp.Grid.createModFundamentalSplineGrid(d, 3), 3),
-             (pysgpp.Grid.createFundamentalSplineGrid(d, 3), 3 ),
+             (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3), 3),
+             (pysgpp.Grid.createModFundamentalSplineGrid(d, 3), 3),
+             # (pysgpp.Grid.createFundamentalSplineGrid(d, 3), 3 ),
              # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1), 1),
     ]
-
-    # bsplineGrids =[(pysgpp.Grid.createBsplineGrid(d, 3), 3),
-    #                (pysgpp.Grid.createBsplineGrid(d, 5), 5),
-    #                (pysgpp.Grid.createBsplineGrid(d, 7), 7),
+    plot_mode = False# True -> bsplineGrids Flase -> mixedGrids
+    # bsplineGrids =[ # (pysgpp.Grid.createBsplineGrid(d, 3), 3),
+    #                # (pysgpp.Grid.createBsplineGrid(d, 5), 5),
+    #                # (pysgpp.Grid.createBsplineGrid(d, 7), 7),
     #                (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
     #                (pysgpp.Grid.createBsplineBoundaryGrid(d, 5), 5),
     #                (pysgpp.Grid.createBsplineBoundaryGrid(d, 7), 7),
+    #                (pysgpp.Grid.createModBsplineGrid(d, 3), 3),
+    #                (pysgpp.Grid.createModBsplineGrid(d, 5), 5),
+    #                (pysgpp.Grid.createModBsplineGrid(d, 7), 7),
     #                (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3),
     #                (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 5), 5),
-    #                (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 7), 7)]
+    #                (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 7), 7),
+
+    # ]
 
 
     for grid, p in mixedGrids:
@@ -509,10 +547,11 @@ def integrate(d, error_type = "l2", quad_error_sol = 0):
 
         num_gridPoints = []
         errors = []
-        try:
+        if error_type == "l2":
+          try:
             opeval = pysgpp.createOperationEval(grid)
             print("using non-naive eval")
-        except:
+          except:
             opeval = pysgpp.createOperationNaiveEval(grid)
             print("using naive eval")
 
@@ -538,37 +577,73 @@ def integrate(d, error_type = "l2", quad_error_sol = 0):
                 errors.append(l2_error(d, func, f_sg))
             num_gridPoints.append(gridStorage.getSize())
 
+        linestyle = ".-"
+        color = "k"
+        degree_based = False
+        if not plot_mode:
+            if "Mod" in gridToName(grid.getType(), p):
+                linestyle = ".--"
+            elif "Boundary" in gridToName(grid.getType(), p):
+                linestyle = ".-"
 
-        plt.loglog(num_gridPoints, errors, basex=10, basey=10, label=gridToName(grid.getType(), p))
-    plt.xlabel('#Gitterpunkte')
-    plt.ylabel('Fehler')
-    plt.legend(loc=3)
+            if "Clenshaw" in gridToName(grid.getType(), p):
+                color = "k"
+            elif "B-Spline" in gridToName(grid.getType(), p):
+                color = "b"
+            elif "Poly" in gridToName(grid.getType(), p):
+                color = "g"
+            elif "Linear" in gridToName(grid.getType(), p):
+                color = "r"
+            elif "Fundamental" in gridToName(grid.getType(), p):
+                color = "c"
+        else:
+            if p == 3:
+                color = "k"
+            elif p == 5:
+                color = "b"
+            elif p == 7:
+                color = "r"
+
+            if "Mod" in gridToName(grid.getType(), p):
+                linestyle = ".--"
+            elif "Boundary" in gridToName(grid.getType(), p):
+                linestyle = ".:"
+
+        linestyle = color + linestyle
+        plt.loglog(num_gridPoints, errors, linestyle, basex=10, basey=10, label=gridToName(grid.getType(), p) )
+    plt.xlabel(r'\#Gitterpunkte')
+    # plt.legend(loc=3)
     if(error_type == "quad"):
-        plt.title("Quadratur-Fehler {}-Funktion".format(func_name))
+        save_title = "quad_{}.tex".format(func_name)
+        plt.ylabel(r'$|\epsilon|$', fontsize=16)
+        # plt.title("Quadratur-Fehler {}-Funktion".format(func_name))
     elif(error_type == "l2"):
-        plt.title("L2-Fehler {}-Funktion".format(func_name))
+        # plt.title("L2-Fehler {}-Funktion".format(func_name))
+        plt.ylabel(r'$L_{2}$-Fehler', fontsize=16)
+        save_title = "l2_{}.tex".format(func_name)
+
+    tikz_save(save_title, figureheight = '\\figureheight', figurewidth = '\\figurewidth');
     plt.show()
-    # tikz_save('mytikz.tex');
 
 def interpolation_error():
     l = 7
     d = 2
-    grids = (# pysgpp.Grid.createLinearGrid(d),
+    grids = [# pysgpp.Grid.createLinearGrid(d),
              # pysgpp.Grid.createPolyGrid(d,3),
              # pysgpp.Grid.createBsplineGrid(d, 3),
              # pysgpp.Grid.createLinearBoundaryGrid(d, 1),
-             # pysgpp.Grid.createPolyBoundaryGrid(d,3),
-             # pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
+             pysgpp.Grid.createPolyBoundaryGrid(d,3),
+             pysgpp.Grid.createBsplineBoundaryGrid(d, 3),
              # pysgpp.Grid.createModLinearGrid(d),
              # pysgpp.Grid.createModPolyGrid(d,3),
-             # pysgpp.Grid.createModBsplineGrid(d,3),
+             pysgpp.Grid.createModBsplineGrid(d,3),
              # pysgpp.Grid.createLinearClenshawCurtisGrid(d),
-             # pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3),
+             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3),
              # pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),
              # pysgpp.Grid.createModFundamentalSplineGrid(d, 3),
-             pysgpp.Grid.createFundamentalSplineGrid(d, 3),
-             pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1))
-
+             # pysgpp.Grid.createFundamentalSplineGrid(d, 3),
+             # pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1))
+        ]
     for grid in grids:
        p = 3
        if grid == grids[-1]:
@@ -598,7 +673,9 @@ def interpolation_error():
 
        f_sg = lambda point: opeval.eval(alpha, pysgpp.DataVector(point))
 
-       resolution =128
+       resolution = 150
+       for x in np.linspace(0, 1, 200):
+           print f_sg([x,0]) - func([x,0])
        X = np.linspace(0, 1, resolution, endpoint=True)
        Y = np.linspace(0, 1, resolution, endpoint=True)
        X, Y = np.meshgrid(X, Y)
@@ -617,9 +694,18 @@ def interpolation_error():
        fig = plt.figure()
        ax = fig.add_subplot(111, projection='3d')
        ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
+       z_formatter = ticker.ScalarFormatter()
+       z_formatter.set_powerlimits((-1,1))
+       ax.zaxis.set_major_formatter(z_formatter)
+       ax.set_xlabel(r'x$_{1}$', fontsize=16)
+       ax.set_ylabel(r'x$_{2}$', fontsize=16)
+       # ax.zaxis.set_rotate_label(False)
+       # ax.set_zlabel(r'Fehler', rotation=0, fontsize=16)
+       ax.set_zlabel(r'$q(\vec{x}) - \widetilde{q}(\vec{x})$', fontsize=16)
        # ax.plot_wireframe(X, Y, Z)
        # plt.title("Punktweiser-Fehler Sin_Kuppel " + gridToName(grid.getType(), p) + " Level: 7 Quadratur-Fehler: "  + str(abs(sol - 4/np.pi**2)))
-       plt.title("Punktweiser-Fehler {} {} Level: 7 L2-Fehler: {}".format(func_name, gridToName(grid.getType(), p), s))
+       # plt.title("Punktweiser-Fehler {} {} Level: 7 L2-Fehler: {}".format(func_name, gridToName(grid.getType(), p), s))
+       # tikz_save("pointwise_error_{}_{}.tex".format(func_name, gridToName(grid.getType(), p) ), figureheight = '\\figureheight', figurewidth = '\\figurewidth');
        plt.show()
 
 
@@ -652,21 +738,28 @@ def plot_func():
           Z[i,j] = func([X[i,j], Y[i,j]])
 
           # Z[i,j] = f.eval([X[i,j], Y[i,j]])
+  ax.set_xlabel(r'x$_{1}$', fontsize=16)
+  ax.set_ylabel(r'x$_{2}$', fontsize=16)
+  # ax.zaxis.set_rotate_label(False)
+  ax.set_zlabel(r'$q(\vec{x})$', fontsize=16)
 
   ax.plot_surface(X, Y, Z, rstride=4, cstride=4, cmap=cm.coolwarm)
+  # tikz_save("{}-funktion.tex".format(func_name), figureheight = '\\figureheight', figurewidth = '\\figurewidth');
   plt.show()
 
 def plot_1d():
   # f = opt_quad_function()
   # d = 1
   # fig = plt.figure()
-  X = np.arange(0, 1, 1/120.0)
+  # X = np.arange(0, 1, 1/120.0)
+  X = np.arange(0, 100, 1)
   Z = np.zeros(len(X))
   for i in range(len(X)):
-    # Z[i] = f.eval([X[i]])
-    Z[i] = func(X[i])
+    Z[i] = -func([X[i]])
+    # Z[i] = func(X[i])
     # Z[i] = -expected_revenue(X[i])
-
+  plt.xlabel(r"z")
+  plt.ylabel(r"v(z)", rotation=0)
   plt.plot(X, Z)
   plt.show()
 
@@ -677,6 +770,7 @@ func_dic = {"genz" : oscill_genz,
             "sin_nice" : sin_nice,
             "sin_nice_int" : sin_nice_int,
             "revenue" : revenue,
+            "expected_revenue" : lambda point: -expected_revenue(point),
             "eggholder" : eggholder,
             "eggcrate" : eggcrate,
             "schwefel" : schwefel,
@@ -687,21 +781,26 @@ func_dic = {"genz" : oscill_genz,
             "beale" : beale,
             "michalewicz" : michalewicz,
             "sin_cos" : weighted_sin_cos,
+            "peak_genz" : peak_genz,
             "e_sin" : e_sin}
 
 quad_sol_dic = {"genz" : genz_error(),
             "sin_kuppel" : 4/np.pi**2,
             "eggcrate" : eggcrate_error(),
             "schwefel" : 0.0,
+            "peak_genz" : np.pi**2,
             "easom" : -0.0000476373}
 
 def opt_sol(function_name, d):
   if(function_name == "schwefel"):
     return d*(-418.982887272433743)
-  if(function_name == "sin_nice"):
+  elif(function_name == "sin_nice"):
     return -0.9003163161571061
-  if(function_name == "sin_nice_int"):
+  elif(function_name == "sin_nice_int"):
     return -0.9003163161571061
+  elif(function_name == "expected_revenue"):
+    return -expected_revenue([0.44])
+
 # elif(args.function == "sin_sum"):
       # sol = -0.967531
   else:
@@ -713,7 +812,7 @@ if __name__ == "__main__":
   operation_group.add_argument("-oq", "--optimize_quad", help="perform optimization of a quadrature function", nargs = 4)
   operation_group.add_argument("-op", "--optimize", help="perform optimization", nargs=2)
   operation_group.add_argument("-c", "--convergence", help="create convergence plot", nargs=2)
-  operation_group.add_argument("-p", "--plot", help="plot a function", action="store_true")
+  operation_group.add_argument("-p", "--plot", help="plot a function", nargs=1)
   operation_group.add_argument("-e", "--pointwise_error", help="plot the pointwise error of a function", action="store_true")
   parser.add_argument("function", help="function")
   parser.add_argument("-g_3", "--use_3_grid", help="create overall interpolation before optimizing, onmly makles sense with -oq", action="store_true", default=False)
@@ -723,11 +822,10 @@ if __name__ == "__main__":
   # f = opt_quad_function(3,1,1)
   # print f.eval([0.1, 0.1, 0.1] )
   # print args
-
   func = func_dic[args.function]
   func_name = args.function[0].upper() + args.function[1:]
   eval_count = 0
-  print "{:.16f}".format(sin_nice_int([0.5, 0.5+1/7.0]))
+  # print "{:.16f}".format(sin_nice_int([0.5, 0.5+1/7.0]))
   if args.optimize_quad != None:
     d = int(args.optimize_quad[0])
     int_d = int(args.optimize_quad[1])
@@ -747,9 +845,12 @@ if __name__ == "__main__":
       integrate(d, error_type, quad_error_sol)
     else:
       integrate(d, error_type)
-  elif args.plot:
-    # plot_1d()
-    plot_func()
+  elif args.plot != None:
+    d = int(args.plot[0])
+    if d == 1:
+        plot_1d()
+    elif d == 2:
+        plot_func()
   elif args.pointwise_error:
     interpolation_error()
   elif args.optimize != None:

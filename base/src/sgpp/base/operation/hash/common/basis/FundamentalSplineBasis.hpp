@@ -415,27 +415,27 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
     size_t co_len = coefficients.size();  // depends on the degree
     // size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i-co_len));
-    size_t letzter_abschnitt = std::min(2*co_len - 1, hInv + co_len - i);
+    size_t letzter_abschnitt = std::min(2*co_len - 1, hInv + co_len - i - 1);
     size_t quadLevel = (degree + 1)/2;
     if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
       integrationInitialized = true;
     }
-    std::cout.precision(17);
+    // std::cout.precision(17);
     double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
         double x = h * (coordinates[c] + static_cast<double>(i - co_len + j));
         temp_res += weights[c]*eval(l, i, x);
-        std::cout << "Eval " << c << ":" << eval(l, i, x) << std::endl;
+        // std::cout << "Eval " << c << ":" << eval(l, i, x) << std::endl;
       }
       res += temp_res;
-      std::cout.precision(17);
-      std::cout << j << ":" << integralValues(degree, j) - temp_res << std::endl;
-      std::cout << "tmp:" << temp_res << std::endl;
-      std::cout << "val:" << integralValues(degree, j) << std::endl;
+      // std::cout.precision(17);
+      // std::cout << j << ":" << integralValues(degree, j) - temp_res << std::endl;
+      // std::cout << "tmp:" << temp_res << std::endl;
+      // std::cout << "val:" << integralValues(degree, j) << std::endl;
       // std::cout << "case " << j - erster_abschnitt << ":" << std::endl;
       // std::cout << "case " << 2*co_len - (j - erster_abschnitt) - 1 << ":" << std::endl;
       // std::cout << "return " << temp_res << ";" << std::endl;
@@ -445,9 +445,9 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
 
  protected:
   inline double integralValues(size_t p, size_t j) {
-    switch(p) {
+    switch (p) {
       case 3:
-        switch(j) {
+        switch (j) {
           case 0:
           case 35:
             return -9.9232277770566386e-11;
@@ -508,7 +508,7 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
         }
 
       case 5:
-        switch(j) {
+        switch (j) {
           case 0:
           case 57:
             return 4.2635636180074598e-11;
@@ -599,10 +599,9 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
           default:
             throw std::invalid_argument("Error FundamentalSplineBasis integralValues. "
                                         "Wrong B-Spline section.");
-
         }
       case 7:
-        switch(j) {
+        switch (j) {
           case 0:
           case 79:
             return -3.2776747019309431e-11;
