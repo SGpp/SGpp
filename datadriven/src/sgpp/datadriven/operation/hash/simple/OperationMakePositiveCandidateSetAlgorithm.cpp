@@ -140,7 +140,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
-
+i
   // reset the costs vectors
   numCandidatesIteration.setAll(0.0);
   costsPerIteration.setAll(0.0);
