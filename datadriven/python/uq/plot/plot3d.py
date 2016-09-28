@@ -1,4 +1,5 @@
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
+
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
@@ -77,7 +78,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x):
+def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -105,7 +106,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
 
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gps.shape[0]), c="red", marker="o")
+    ax.scatter(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at, c="red", marker="o")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
@@ -127,9 +128,10 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36):
         for j in xrange(len(y)):
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
-    ax.plot_wireframe(xv, yv, Z)
-#     surf = ax.plot_surface(xv, xv, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-#                            linewidth=0, antialiased=False)
+    ax.plot_wireframe(xv, yv, Z, color="black")
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])

@@ -104,7 +104,8 @@ def plotFunction2d(f, addContour=True, n=101,
 
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
-             show_numbers=False):
+             show_numbers=False,
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\vec{x})"):
     gs = grid.getStorage()
 
     gpxp = []
@@ -180,7 +181,8 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
            plt.text(x, y, "%i" % i, color='yellow', fontsize=12)
 
     plt.jet()
-    plt.colorbar()
+    cbar = plt.colorbar()
+    cbar.set_label(colorbarLabel)
 
     if addContour:
         cs = plt.contour(xv, yv, Z, colors='white')

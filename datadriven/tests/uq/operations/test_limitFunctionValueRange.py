@@ -19,6 +19,7 @@ from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import addConst
 from pysgpp.pysgpp_swig import MakePositiveInterpolationAlgorithm_InterpolateExp, \
     MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d
 
 numDims = 2
 level = 7
@@ -28,7 +29,7 @@ verbose = False
 plot = True
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
-ylower, yupper = -1.2, 1.0
+ylower, yupper = -0.9, 1.5
 
 
 def hierarchizeFun(fun):
@@ -59,11 +60,8 @@ def hierarchizeFun(fun):
 
 
 def sin(x):
-    return np.sum(np.sin(np.pi * (2 * x - 1.0)))
+    return np.sum(np.sin(np.pi * (2 * x - np.pi)))
 
-
-def arctan(x):
-    return np.sum(np.arctan(np.pi * (2 * x - 1.0)))
 
 fun = sin
 
@@ -79,6 +77,12 @@ if plot:
         plotFunction2d(fun)
         plt.title("analytic")
         fig.show()
+
+        fig, ax, _ = plotFunction3d(fun)
+        ax.set_title("analytic")
+        ax.set_zlim(-2, 2)
+        fig.show()
+        plt.savefig("sin_analytic.pdf")
 
 # get a sparse grid approximation
 grid = Grid.createLinearGrid(numDims)
@@ -97,8 +101,18 @@ if plot and numDims < 3:
     elif numDims == 2:
         plotSG2d(grid, alpha, show_negative=False, show_grid_points=True)
 
-    plt.title("neg: #gp = %i" % grid.getStorage().getSize())
+    plt.title(r"\#gp = %i" % grid.getStorage().getSize())
     fig.show()
+
+    if numDims == 2:
+        fig, ax, _ = plotSG3d(grid, alpha, grid_points_at=-2)
+        ax.set_title(r"\#gp = %i" % grid.getStorage().getSize())
+        ax.set_zlim(-2, 2)
+        fig.show()
+        plt.savefig("sin_sg_negative.pdf")
+        plt.close(fig)
+
+
 
 if side == "lower":
     sides = ["lower"]
@@ -174,7 +188,14 @@ if plot and numDims < 3:
     elif numDims == 2:
         plotSG2d(grid, alpha, show_negative=False, show_grid_points=True)
 
-    plt.title("pos: #gp = %i" % grid.getStorage().getSize())
+    plt.title(r"\#gp = %i" % grid.getStorage().getSize())
     fig.show()
+
+    if numDims == 2:
+        fig, ax, _ = plotSG3d(grid, alpha, grid_points_at=-2)
+        ax.set_title(r"\#gp = %i" % grid.getStorage().getSize())
+        ax.set_zlim(-2, 2)
+        plt.savefig("sin_sg_positive_%s.pdf" % side)
+        fig.show()
 
     plt.show()
