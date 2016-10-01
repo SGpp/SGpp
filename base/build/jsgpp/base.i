@@ -131,7 +131,6 @@ namespace std {
 %include "base/src/sgpp/base/algorithm/AlgorithmEvaluation.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp"
 %include "base/src/sgpp/base/algorithm/sweep.hpp"
-//%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
