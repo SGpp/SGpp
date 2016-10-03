@@ -16,10 +16,7 @@ from matplotlib2tikz import save as tikz_save
 from pysgpp.extensions.datadriven.uq.plot import plot2d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation
 
-genz_a = [2,2,2]
-
 class interpolation_function():
-
   def __init__(self, d, f):
     self.f = f
     self.d = d
@@ -64,11 +61,36 @@ class opt_quad_function(pysgpp.OptScalarFunction):
     super(opt_quad_function, self).__init__(d)
     self.int_d = int_d
     self.int_grid_level = int_grid_level
-    self.grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(self.int_d, 3)
+    self.grid = pysgpp.Grid.createModBsplineClenshawCurtisGrid(self.int_d, 3)
+    # self.grid = pysgpp.Grid.createBsplineGrid(self.int_d, 3)
+    # self.grid = pysgpp.Grid.createLinearGrid(self.int_d)
+    # self.grid = pysgpp.Grid.createModBsplineGrid(self.int_d, 3)
     self.grid.getGenerator().regular(int_grid_level)
     self.gridStorage = self.grid.getStorage()
     self.hierarch = pysgpp.createOperationMultipleHierarchisation(self.grid)
     self.quadop = pysgpp.createOperationQuadrature(self.grid)
+
+  def eval_high_precision_quad(self, x, int_lvl):
+    global func
+    new_grid = pysgpp.Grid.createModBsplineClenshawCurtisGrid(int_lvl, 3)
+    new_grid.getGenerator().regular(int_lvl)
+    new_gridStorage = new_grid.getStorage()
+    new_hierarch = pysgpp.createOperationMultipleHierarchisation(new_grid)
+    new_quadop = pysgpp.createOperationQuadrature(new_grid)
+    list_x = [x[i] for i in range(self.getNumberOfParameters())]
+    x = list_x
+    alpha = pysgpp.DataVector(new_gridStorage.getSize())
+    for i in range(new_gridStorage.getSize()):
+      gp = new_gridStorage.getPoint(i)
+      y = [new_gridStorage.getCoordinate(gp, j) for j in range(self.int_d)]
+      x_y = list(x + y)
+      alpha[i] = func(x_y)
+    pysgpp.OptPrinter.getInstance().setVerbosity(-2)
+    new_hierarch.doHierarchisation(alpha)
+    pysgpp.OptPrinter.getInstance().setVerbosity(2)
+    res =  new_quadop.doQuadrature(alpha)
+    # print res - schwefel(x)
+    return res
 
   def eval(self, x):
     d = self.getNumberOfParameters()
@@ -87,18 +109,23 @@ class opt_quad_function(pysgpp.OptScalarFunction):
     pysgpp.OptPrinter.getInstance().setVerbosity(-2)
     self.hierarch.doHierarchisation(alpha)
     pysgpp.OptPrinter.getInstance().setVerbosity(2)
-    return self.quadop.doQuadrature(alpha)
+    res =  self.quadop.doQuadrature(alpha)
+    print res + sin_kuppel(x)
+    # print res - schwefel(x)
+    return res
 
-def revenue(z, D):
-  s = 30.0
-  v = 30.0
-  my = 60.0
-  scaling = 2*v
-  r = 4.0
-  c = 2.0
+def revenue(x):
+  scaling = 100
+  z = x[0]
+  s = 10.0
+  v = 20.0
+  my = 50.0
+  D = x[1]
+  r = 7.0
+  c = 4.0
   z *= scaling
   a = s + z
-  D = (D * scaling) + (my-v)
+  D = (D * 2*v) + (my-v)
   assert s <= a
   return (r - c) * a + c*s - (r - 0.5*c) * max(a - D, 0)
 
@@ -123,7 +150,10 @@ def expected_revenue(x):
   return (r - c) * a + c*s - (r - 0.5*c) * expected
 
 def sin_kuppel(x):
-  return np.sin(np.pi*x[0])*np.sin(np.pi*x[1])
+  prod = 1
+  for i in range(len(x)):
+    prod *= np.sin(np.pi*x[i])
+  return prod
 
 def gamma(n):
   res = 1
@@ -139,20 +169,26 @@ def f_beta(x):
   q = 4
   return (1.0/beta(p, q)) * x**(p-1) * (1-x)**(q-1)
 
+def ackley(x):
+  x[0] -= 1
+  d = len(x)
+  return 20+np.e - 20*np.exp(-(np.linalg.norm(x)/(5*d**0.5))) - np.exp( (1.0/d) * sum( [ np.cos(2*np.pi*x[t]) for t in range(d)] ))
+
 def shcb(x):
   x[0] = x[0]*10 - 5
   x[1] = x[1]*10 - 5
   return x[0]**2 * (4 - 2.1*x[0]**2 + (x[0]**4)/3) + x[0]*x[1] + 4*x[1]**2*(x[1]**2 - 1)
 
 def peak_genz(x):
-    u = [0.5, 0.5]
-    a = [2,2]
+    u = [0.5, 0.5, 0.5, 0.5]
+    a = [12,12,12,12]
     prod = 1
     for i in range(len(x)):
         prod *= (a[i]**-2 + (x[i] - u[i])**2)
     return 1.0/prod
 
 def oscill_genz(x):
+  global genz_a
   d = len(x)
   u = 0.5
   a = genz_a
@@ -175,7 +211,6 @@ def eggcrate(x):
 def easom(x):
   x[0] = x[0]*200 - 100
   x[1] = x[1]*200 - 100
-
   return -np.cos(x[0])*np.cos(x[1])*np.exp(-(x[0]-np.pi)**2-(x[1]-np.pi)**2)
 
 def weighted_sin_cos(x):
@@ -195,14 +230,22 @@ def e_sin(x):
 
 def sin_nice(call_x):
   x = pysgpp.DataVector(call_x)
-  x[0] = x[0] - 1/7.0
-  x[1] = 4*x[1]
-  return np.sin(np.pi/4.0 * (sum([x[i] for i in range(2, len(x))]) + np.cos(2*np.pi*x[0]) - np.sin(x[1])))
+  n = 3
+  m = 2
+  d = len(x)
+  assert m+n == d
+  r_1 = 1
+  r_2 = 4
+  sin_prod = 1
+  prod = 1
+  for j in range(n):
+    x[j] -= 0.01
+    sin_prod *= np.sin(np.pi*x[j])
+    prod *= x[j]
 
-def sin_nice_int(x):
-  x[0] = x[0] - 1/7.0
-  x[1] = x[1] * 4
-  return -4*(np.sin(np.pi*(-2 - np.sin(np.pi*x[1]) + np.cos(2*np.pi*x[0]))/4) - np.sin((np.pi*(-1 - np.sin(np.pi*x[1]) + np.cos(2*np.pi*x[0])))/4))/np.pi
+  # return schwefel(call_x[:n])+r_1*prod*np.sin(r_2*sum([x[i] for i in range(n, d - 1)])  + r_2*(2*np.pi*x[d-1]))
+  return -sin_prod+r_1*np.sin(r_2*sum([x[i] for i in range(n, d - 1)])  + r_2*(2*np.pi*x[d-1]))*(np.sin(4*np.pi*sum([x[j] for j in range(n)])) + 1)
+  # return sin_prod+r_1*np.sin(r_2*sum([x[i] for i in range(n, d - 1)])  + r_2*(2*np.pi*x[d-1]))*np.sin(4*np.pi*sum([x[j] for j in range(n)]))
 
 def sin_sum_int(x):
   # return (25.0 * (np.sin((np.pi * (x[0] + x[1] + x[2]))/5.0) - 2.0 * np.sin((np.pi * (1.0 + x[0] + x[1] + x[2]))/5.0) + np.sin((np.pi * (2.0 + x[0] + x[1] + x[2]))/5.0)))/np.pi**2
@@ -233,12 +276,24 @@ def beale(x):
   x[1] = x[1] * 10 - 5
   return (1.5 - x[0]*(1-x[1]))**2+(2.25 - x[0]*(1-x[1]**2))**2+(2.625-x[0]*(1-x[1]**3))**2
 
+def mod_schwefel(call_x):
+    x = pysgpp.DataVector(call_x)
+    for i in range(len(x)):
+        x[i] = x[i] * 1000 - 450
+    return -sum([x[i]*(np.sin(abs(x[i])**0.5)) for i in range(len(x))])
+
+def mod_schwefel_offset(call_x, int_d):
+    x = pysgpp.DataVector(call_x)
+    for i in range(len(x)):
+        x[i] = x[i] * 1000 - 450
+    return -sum([x[i]*(np.sin(abs(x[i])**0.5)) for i in range(len(x))]) + int_d*15.7759
+
 
 def schwefel(call_x):
     x = pysgpp.DataVector(call_x)
     for i in range(len(x)):
         x[i] = x[i] * 1000 - 500
-    return -sum([x[i]*np.sin(abs(x[i])**0.5) for i in range(len(x))])
+    return -sum([x[i]*np.sin(abs(x[i])**0.5) for i in range(len(x))]) + 30
 
 def schwefel_prod(x):
     prod = 1.0
@@ -290,6 +345,9 @@ def printLine():
 
 
 def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
+    saved_error_lists = []
+    saved_ec_lists = []
+    saved_gp_lists = []
     # disable multi-threading
     global func, eval_count
     pysgpp.omp_set_num_threads(1) # increase output verbosity
@@ -303,11 +361,11 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
     # maximal number of grid points
     # adaptivity of grid generation
     gamma = 0.85
-    # N_vals = [50, 100, 200, 500, 1000]
-    # N_vals = [12000]
-    # N_vals = [100, 200, 500, 1000, 2000, 5000, 10000]
-    N_vals = [1, 5, 10, 15, 20, 30, 40]
-    ec_list = []
+    # N_vals = [50, 100, 200, 500, 1000, 2000, 4000]
+    # N_vals = [1000, 2000]
+    # N_vals = [1000]
+    N_vals = [1, 10, 50, 100, 200, 500, 1000, 2000]#, 500, 1000] # 2000]
+    # N_vals = [5, 15, 20, 30, 40]
     loop_list = []
     if(use_3_grid):
       interpolf = interpolation_function(d + f.int_d, func)
@@ -315,17 +373,19 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
       loop_list= range(1,8)
     else:
       loop_list = N_vals
-    grids = [(pysgpp.Grid.createBsplineGrid(d, 3), 3),
-             (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+      grids = [
+             # (pysgpp.Grid.createBsplineGrid(d, 3), 3),
+             # (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
              (pysgpp.Grid.createModBsplineGrid(d, 3), 3),
-             (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),3),
-             (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3)
+             # (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3),3),
+             # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3)
     ]
     print("starting optimization with {} different grids, plotting based on {}, up to {} Ritter-Novak points".format(len(grids), x_axis, N_vals[-1]))
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for grid, p in grids:
         gridpoint_list = []
+        ec_list = []
         printLine()
         printLine()
         errors = []
@@ -420,11 +480,20 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
             # errors.append(1 + fXOpt) # 80.00256374
             ec_list.append(eval_count)
             # use real funct for error calculation only really makes sense for schwefel function
-            errors.append(abs(fXOpt - sol))
-            # errors.append(schwefel(xOpt) - sol)
+            # errors.append(schwefel(xOpt)  - sol)
+            # errors.append(mod_schwefel_offset(xOpt, int_d)  - sol)
+            if isinstance(f, opt_quad_function):
+              # pass
+              # errors.append(f.eval_high_precision_quad(xOpt, 5) - sol)
+              x_temp = [xOpt[i] - 0.01 for i in range(d)]
+              errors.append(1-sin_kuppel(x_temp))
+            elif isinstance(f, opt_function):
+              errors.append(fXOpt - sol)
+            # errors.append(abs(fXOpt - sol))
             print "\nxOpt = {}".format(xOpt)
-            print "f(xOpt) = {:.8f}, ft(xOpt) = {:.8f}".format(fXOpt, ftXOpt)
+            print "f(xOpt) = {:.13f}, ft(xOpt) = {:.13f}".format(fXOpt, ftXOpt)
             print "sol = {:.8f}, error = {:.2e}\n".format(sol, errors[-1])
+            # print "mod_schwefel_offset(xOpt)= {}".format(mod_schwefel_offset(xOpt, int_d))
             print "Eval Count: {}".format(eval_count)
 
         color = "k"
@@ -435,31 +504,41 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
             color = "r"
         elif "Clenshaw" in gridToName(grid.getType(), p):
             color = "k"
-        elif "B-Spline" in gridToName(grid.getType(), p):
-            color = "b"
         elif "Mod" in gridToName(grid.getType(), p):
             color = "c"
+        elif "B-Spline" in gridToName(grid.getType(), p):
+            color = "b"
         linestyle = color + ".-"
-
+        saved_ec_lists.append(list(ec_list))
+        saved_error_lists.append(list(errors))
+        saved_gp_lists.append(list(gridpoint_list))
         if(x_axis == "gridpoints"):
           ax.plot(gridpoint_list, errors, linestyle, label=gridToName(grid.getType(),p))
-          plt.xlabel('Grid Points')
+          plt.xlabel('\#Gitterpunkte')
         elif(x_axis == "evaluations"):
           ax.plot(ec_list, errors, linestyle, label=gridToName(grid.getType(),p))
-          plt.xlabel('Evalutions')
+          plt.xlabel('Evaluationen')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    plt.ylabel('Error')
-    ax.legend(loc=0)
+    plt.ylabel(r'$v(\vec{x}^{*}) - v(\vec{x}_{opt})$')
+    print "errors:"
+    print saved_error_lists
+    print "gridpoint list:"
+    print saved_gp_lists
+    print "ec list:"
+    print saved_ec_lists
+
+    # plt.ylabel('$v(\vec{x}^{*}) - v(\vec{x}_{\text{opt}})$')
+    # ax.legend(loc=0)
 
     if isinstance(f, opt_function):
-        plt.title("Optimization-Error {}-{}-Funktion".format(func_name, d))
+        # plt.title("Optimization-Errorotation=0, fontsize=16)
         save_name = 'opt-{}-{}'.format(func_name, d)
     elif isinstance(f, opt_quad_function):
-        plt.title("Optimization-Error {}-{}-{}-Funktion reg-{}-grid".format(func_name, d, f.int_d, f.int_grid_level))
+        # plt.title("Optimization-Error {}-{}-{}-Funktion reg-{}-grid".format(func_name, d, f.int_d, f.int_grid_level))
         save_name= 'opt-quad-{}-{}-{}-{}'.format(func_name, d, f.int_d, f.int_grid_level)
+    tikz_save(save_name + ".tex", figureheight = '\\figureheight', figurewidth = '\\figurewidth')
     plt.show()
-    tikz_save(save_name + ".tex")
     # plt.savefig(save_name + ".png")
 
 def genz_error():
@@ -709,13 +788,13 @@ def interpolation_error():
        plt.show()
 
 
-def plot_func():
+def plot_func(f):
   # f = ExampleFunction()
   # d = f.getNumberOfParameters()
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
-  X = np.arange(0.0, 1.02, 1/50.0)
-  Y = np.arange(0.0, 1.02, 1/50.0)
+  X = np.linspace(0, 1, 50, endpoint=True)
+  Y = np.linspace(0, 1, 50, endpoint=True)
   X, Y = np.meshgrid(X, Y)
   # Z = oscill_genz(2, [X,Y])
   # Z = schwefel([X,Y])
@@ -729,13 +808,13 @@ def plot_func():
           vec_x[0] = X[i,j]
           vec_x[1] = Y[i,j]
 
-          # Z[i,j] = f.eval(vec_x)
+          Z[i,j] = f(vec_x)
           # Z[i] = expeceted_revenue(vec_x[0])
           # Z[i,j] = schwefel(vec_x)
           # Z[i,j] = griewank(vec_x)
           # Z[i,j] = sin_spitze(vec_x)
           # Z[i,j] = func(vec_x)
-          Z[i,j] = func([X[i,j], Y[i,j]])
+          # Z[i,j] = func([X[i,j], Y[i,j]])
 
           # Z[i,j] = f.eval([X[i,j], Y[i,j]])
   ax.set_xlabel(r'x$_{1}$', fontsize=16)
@@ -752,11 +831,12 @@ def plot_1d():
   # d = 1
   # fig = plt.figure()
   # X = np.arange(0, 1, 1/120.0)
-  X = np.arange(0, 100, 1)
+  X = np.arange(0, 1, 1/100.0)
+  # for f in functions:
   Z = np.zeros(len(X))
   for i in range(len(X)):
-    Z[i] = -func([X[i]])
-    # Z[i] = func(X[i])
+    # Z[i] = -func([X[i]])
+    Z[i] = func(X[i])
     # Z[i] = -expected_revenue(X[i])
   plt.xlabel(r"z")
   plt.ylabel(r"v(z)", rotation=0)
@@ -764,16 +844,17 @@ def plot_1d():
   plt.show()
 
 func_dic = {"genz" : oscill_genz,
+            "ackley" : ackley,
             "sin_kuppel" : sin_kuppel,
             "sin_sum" : sin_sum,
             "sin_sum_int" : sin_sum_int,
             "sin_nice" : sin_nice,
-            "sin_nice_int" : sin_nice_int,
             "revenue" : revenue,
             "expected_revenue" : lambda point: -expected_revenue(point),
             "eggholder" : eggholder,
             "eggcrate" : eggcrate,
             "schwefel" : schwefel,
+            "mod_schwefel" : mod_schwefel,
             "schwefel_prod" : schwefel_prod,
             "shcb" : shcb,
             "easom" : easom,
@@ -784,18 +865,35 @@ func_dic = {"genz" : oscill_genz,
             "peak_genz" : peak_genz,
             "e_sin" : e_sin}
 
-quad_sol_dic = {"genz" : genz_error(),
-            "sin_kuppel" : 4/np.pi**2,
-            "eggcrate" : eggcrate_error(),
-            "schwefel" : 0.0,
-            "peak_genz" : np.pi**2,
-            "easom" : -0.0000476373}
+def quad_sol(function_name, d):
+  if function_name == "sin_kuppel":
+    return (2/np.pi)**d
+  elif function_name == "eggcrate":
+    return eggcrate_error()
+  elif function_name == "mod_schwefel":
+    return 15.7759*d
+  elif function_name == "schwefel":
+    return 30.0
+  elif function_name == "peak_genz":
+    return np.pi**2
+  elif function_name == "easom":
+    return -0.0000476373
+  elif function_name == "genz":
+    return genz_error(d)
 
 def opt_sol(function_name, d):
   if(function_name == "schwefel"):
-    return d*(-418.982887272433743)
+    return d*(-418.982887272433743) + 30
+  if(function_name == "mod_schwefel"):
+    return d*(-418.982887272433743)+ 2*15.7759
+    # return mod_schwefel([0.924928405301430500707 for i in range(d)])+15.7759*2
   elif(function_name == "sin_nice"):
-    return -0.9003163161571061
+    return -0.0042070893493 #lvl 5
+    return -0.6714977322570 #lvl 5
+    return -0.6714977346292 #lvl 7
+    # return -0.679251695848
+    # return sin_nice([6.42854853427698991197e-01, 3.92701901570129685570e-01])
+    # return -0.9003163161571061
   elif(function_name == "sin_nice_int"):
     return -0.9003163161571061
   elif(function_name == "expected_revenue"):
@@ -807,6 +905,7 @@ def opt_sol(function_name, d):
     return 0
 
 if __name__ == "__main__":
+  global genz_a
   parser = argparse.ArgumentParser()
   operation_group = parser.add_mutually_exclusive_group()
   operation_group.add_argument("-oq", "--optimize_quad", help="perform optimization of a quadrature function", nargs = 4)
@@ -817,7 +916,6 @@ if __name__ == "__main__":
   parser.add_argument("function", help="function")
   parser.add_argument("-g_3", "--use_3_grid", help="create overall interpolation before optimizing, onmly makles sense with -oq", action="store_true", default=False)
   args = parser.parse_args()
-
   # func = schwefel_prod
   # f = opt_quad_function(3,1,1)
   # print f.eval([0.1, 0.1, 0.1] )
@@ -836,21 +934,28 @@ if __name__ == "__main__":
       exit()
     f = opt_quad_function(d, int_d, int_level)
     sol = opt_sol(args.function, d)
+    # plot_func(f.eval)
+    # print("{:.13f}").format(f.eval([6.42854853427698991197e-01, 3.92701901570129685570e-01]))
+    sol = 0
     optimize(f, sol, x_axis, args.use_3_grid)
   elif args.convergence != None:
     d = int(args.convergence[0])
+    genz_a = [2 for i in range(d)]
     error_type = args.convergence[1]
     if args.convergence[1] == "quad":
-      quad_error_sol = quad_sol_dic[args.function]
+      quad_error_sol = quad_sol(args.function, d)
+      if quad_error_sol == None:
+        quad_error_sol = 0
       integrate(d, error_type, quad_error_sol)
     else:
       integrate(d, error_type)
   elif args.plot != None:
     d = int(args.plot[0])
+    genz_a = [2 for i in range(d)]
     if d == 1:
         plot_1d()
     elif d == 2:
-        plot_func()
+        plot_func(func)
   elif args.pointwise_error:
     interpolation_error()
   elif args.optimize != None:
