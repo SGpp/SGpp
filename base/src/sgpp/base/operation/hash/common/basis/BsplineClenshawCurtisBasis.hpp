@@ -263,7 +263,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   /**
    * @param l     level of basis function
    * @param i     index of basis function
-   * @return      integreal of the basis function
+   * @return      integral of the basis function
    */
   double getIntegral(LT l, IT i) {
     if (l == 0) {
@@ -284,6 +284,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double left = std::max(0.0, xi[j]);
       double right = std::min(1.0, xi[j + 1]);
+      // std::cout << "Left: " << left << std::endl;
+      // std::cout << "Right: " << right << std::endl;
       double h = right - left;
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
