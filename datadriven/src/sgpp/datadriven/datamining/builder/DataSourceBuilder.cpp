@@ -26,6 +26,8 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::data_exception;
+
 DataSourceBuilder::DataSourceBuilder() : config() {}
 
 DataSourceBuilder::~DataSourceBuilder() {}
@@ -34,7 +36,7 @@ DataSourceBuilder& DataSourceBuilder::withFileType(const std::string& fileType) 
   if (DataSourceFileTypeParser::parse(fileType) == DataSourceFileType::ARFF) {
     config.fileType = DataSourceFileType::ARFF;
   } else {
-    base::data_exception("Unknown file type");
+    data_exception("Unknown file type");
   }
   return *this;
 }
@@ -68,7 +70,7 @@ DataSource* DataSourceBuilder::assemble() {
   if (config.fileType == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider;
   } else {
-    base::data_exception("Unknown file type");
+    data_exception("Unknown file type");
   }
 
   if (config.isCompressed) {
@@ -97,7 +99,12 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // check if we can find file type
   DataSourceFileType type;
   for (auto t : tokens) {
-    type = DataSourceFileTypeParser::parse(t);
+    try {
+      type = DataSourceFileTypeParser::parse(t);
+    } catch (data_exception& e) {
+      // wasn't found
+      type = DataSourceFileType::NONE;
+    }
     if (type != DataSourceFileType::NONE) {
       config.fileType = type;
     }
