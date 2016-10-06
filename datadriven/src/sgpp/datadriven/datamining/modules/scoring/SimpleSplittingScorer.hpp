@@ -12,13 +12,13 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "../../configuration/DataMiningConfiguration.hpp"
 
  namespace sgpp {
  namespace datadriven {
@@ -26,7 +26,7 @@
  class SimpleSplittingScorer : public Scorer {
  public:
   SimpleSplittingScorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter,
-                        datadriven::DataMiningConfigJsonParser config);
+                        datadriven::DataMiningConfiguration config);
   virtual ~SimpleSplittingScorer();
 
   virtual double getScore(Dataset& dataset) override;

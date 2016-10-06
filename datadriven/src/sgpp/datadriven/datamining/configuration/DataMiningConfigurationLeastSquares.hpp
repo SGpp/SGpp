@@ -9,16 +9,16 @@
 
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
-#include "DataMiningConfigJsonParser.hpp"
+#include "DataMiningConfiguration.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-class DataMiningConfigurationLeastSquares : public DataMiningConfigJsonParser {
+class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
   friend class ModelFittingDensityEstimation;
 
  private:
@@ -31,8 +31,6 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfigJsonParser {
 
  public:
   DataMiningConfigurationLeastSquares();
-
-  explicit DataMiningConfigurationLeastSquares(const std::string &fileName);
 
   base::RegularGridConfiguration getGridConfig();
   base::AdpativityConfiguration getRefinementConfig();
@@ -47,8 +45,6 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfigJsonParser {
   void setSolverFinalConfig(solver::SLESolverConfiguration &solverFinalConfig);
   void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
   void setLambda(double lambda);
-
-  virtual DataMiningConfigJsonParser *clone() override;
 };
 
 }  // namespace base

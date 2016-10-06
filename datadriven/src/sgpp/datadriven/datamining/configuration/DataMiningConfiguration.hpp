@@ -9,28 +9,20 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/base/grid/Grid.hpp>
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-class DataMiningConfigJsonParser : public json::JSON {
+class DataMiningConfiguration {
  public:
-  DataMiningConfigJsonParser();
-
-  explicit DataMiningConfigJsonParser(const std::string& fileName);
-
-  virtual DataMiningConfigJsonParser* clone();
-
-  base::GridType stringToGridType(std::string& gridType);
-  RegularizationType stringToRegularizationType(std::string& regularizationType);
-  solver::SLESolverType stringToSolverType(std::string& solverType);
+  DataMiningConfiguration();
 };
 
 }  // namespace datadriven
