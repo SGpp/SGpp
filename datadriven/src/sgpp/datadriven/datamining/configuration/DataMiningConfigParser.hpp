@@ -1,8 +1,12 @@
-/*
- * DataMiningParser.hpp
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * DataMiningConfigParser.cpp
  *
  *  Created on: Aug 14, 2016
- *      Author: Michael Lettrich
+ *  	Author: Michael Lettrich
  */
 
 #pragma once
@@ -69,16 +73,21 @@ class DataMiningConfigParser {
                           const std::string& parentNode) const;
   double parseDouble(DictNode& dict, const std::string& key, double defaultValue,
                      const std::string& parentNode) const;
-  size_t parseUint(DictNode& dict, const std::string& key, size_t defaultValue,
+  size_t parseUInt(DictNode& dict, const std::string& key, size_t defaultValue,
                    const std::string& parentNode) const;
-  int parseInt(DictNode& dict, const std::string& key, int defaultValue,
-               const std::string& parentNode) const;
+  int64_t parseInt(DictNode& dict, const std::string& key, int64_t defaultValue,
+                   const std::string& parentNode) const;
   bool parseBool(DictNode& dict, const std::string& key, bool defaultValue,
                  const std::string& parentNode) const;
 
   void parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
                             const SLESolverConfiguration& defaults,
                             const std::string& parentNode) const;
+
+  template <typename Enumeration>
+  int asInteger(Enumeration const value) const {
+    return static_cast<int>(value);
+  }
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

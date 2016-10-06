@@ -19,6 +19,7 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::RegularGridConfiguration;
 
 namespace datadriven {
 
@@ -44,7 +45,7 @@ class ModelFittingBase {
    * @param sample
    * @return
    */
-  virtual double evaluate(base::DataVector& sample);
+  virtual double evaluate(DataVector& sample);
 
   /**
    *
@@ -52,17 +53,17 @@ class ModelFittingBase {
    * @param result
    * @return
    */
-  virtual void evaluate(base::DataMatrix& samples, base::DataVector& results) const;
+  virtual void evaluate(DataMatrix& samples, DataVector& results) const;
 
-  virtual const base::Grid& getGrid() const;
-  virtual const base::DataVector& getSurpluses() const;
+  virtual const Grid& getGrid() const;
+  virtual const DataVector& getSurpluses() const;
 
  protected:
   OperationMatrix* getRegularizationMatrix(RegularizationType regType);
-  void initializeGrid(base::RegularGridConfiguration gridConfig);
+  void initializeGrid(RegularGridConfiguration gridConfig);
 
-  std::shared_ptr<base::Grid> grid;
-  std::shared_ptr<base::DataVector> alpha;
+  std::shared_ptr<Grid> grid;
+  std::shared_ptr<DataVector> alpha;
 };
 
 } /* namespace datadriven */
