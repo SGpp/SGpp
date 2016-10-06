@@ -52,7 +52,6 @@
  * datamining
  * ************************/
 // configuration
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigJsonParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 
 // builders
@@ -80,5 +79,6 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
+#include "sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp"
 
 #endif /* DATADRIVEN_HPP */

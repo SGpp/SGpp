@@ -51,8 +51,8 @@ int main(int argc, char **argv) {
 
   // regression
   auto config = DataMiningConfigurationLeastSquares();
-  config.addIDAttr("trainPortion", 0.5);
-  config.addIDAttr("seed", static_cast<uint64_t>(42));
+  // config.addIDAttr("trainPortion", 0.5);
+  // config.addIDAttr("seed", static_cast<uint64_t>(42));
 
   auto gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;

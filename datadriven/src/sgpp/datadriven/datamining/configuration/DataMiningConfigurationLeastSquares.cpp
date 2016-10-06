@@ -13,7 +13,7 @@ namespace sgpp {
 namespace datadriven {
 
 DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
-    : DataMiningConfigJsonParser() {
+    : DataMiningConfiguration() {
   // set default config
   gridConfig.dim_ = 0;
   gridConfig.level_ = 2;
@@ -44,43 +44,6 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
   lambda = 0.0;
-}
-
-DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares(
-    const std::string &fileName)
-    : DataMiningConfigJsonParser(fileName) {
-  try {
-    gridConfig.dim_ = 0;
-    gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getUInt());
-    gridConfig.type_ = stringToGridType((*this)["grid"]["type"].get());
-
-    // configure adaptive refinement
-    adaptivityConfig.maxLevelType_ = (*this)["refinement"]["maxLevelType"].getBool();
-    adaptivityConfig.noPoints_ = (*this)["refinement"]["numPoints"].getUInt();
-    adaptivityConfig.numRefinements_ = (*this)["refinement"]["numRefinements"].getUInt();
-    adaptivityConfig.percent_ = (*this)["refinement"]["percent"].getDouble();
-    adaptivityConfig.threshold_ = (*this)["refinement"]["threshold"].getDouble();
-
-    // configure solver
-    solverRefineConfig.type_ = stringToSolverType((*this)["solverRefine"]["type"].get());
-    solverRefineConfig.maxIterations_ = (*this)["solverRefine"]["maxIterations"].getUInt();
-    solverRefineConfig.eps_ = (*this)["solverRefine"]["eps"].getDouble();
-    solverRefineConfig.threshold_ = (*this)["solverRefine"]["threshold"].getDouble();
-
-    // configure solver
-    solverFinalConfig.type_ = stringToSolverType((*this)["solverFinal"]["type"].get());
-    solverFinalConfig.maxIterations_ = (*this)["solverFinal"]["maxIterations"].getUInt();
-    solverFinalConfig.eps_ = (*this)["solverFinal"]["eps"].getDouble();
-    solverFinalConfig.threshold_ = (*this)["solverFinal"]["threshold"].getDouble();
-
-    // configure regularization
-    regularizationConfig.regType_ =
-        stringToRegularizationType((*this)["regularization"]["type"].get());
-
-    lambda = (*this)["regularization"]["type"].getDouble();
-  } catch (json::json_exception &e) {
-    std::cout << e.what() << std::endl;
-  }
 }
 
 base::RegularGridConfiguration DataMiningConfigurationLeastSquares::getGridConfig() {
@@ -132,11 +95,6 @@ void DataMiningConfigurationLeastSquares::setRegularizationConfig(
 }
 
 void DataMiningConfigurationLeastSquares::setLambda(double lambda) { this->lambda = lambda; }
-
-DataMiningConfigJsonParser *DataMiningConfigurationLeastSquares::clone() {
-  DataMiningConfigJsonParser *clone = new DataMiningConfigurationLeastSquares(*this);
-  return clone;
-}
 
 }  // namespace datadriven
 }  // namespace sgpp
