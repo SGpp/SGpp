@@ -22,7 +22,7 @@ struct RegularizationConfiguration {
 
 class RegularizationTypeParser {
  public:
-  RegularizationType operator()(const std::string& input) const {
+  static RegularizationType parse(const std::string& input) {
     auto inputLower = input;
     std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 

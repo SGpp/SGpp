@@ -31,8 +31,7 @@ DataSourceBuilder::DataSourceBuilder() : config() {}
 DataSourceBuilder::~DataSourceBuilder() {}
 
 DataSourceBuilder& DataSourceBuilder::withFileType(const std::string& fileType) {
-  auto ftParser = DataSourceFileTypeParser();
-  if (ftParser(fileType) == DataSourceFileType::ARFF) {
+  if (DataSourceFileTypeParser::parse(fileType) == DataSourceFileType::ARFF) {
     config.fileType = DataSourceFileType::ARFF;
   } else {
     base::data_exception("Unknown file type");
@@ -96,10 +95,9 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   }
 
   // check if we can find file type
-  auto parser = DataSourceFileTypeParser();
   DataSourceFileType type;
   for (auto t : tokens) {
-    type = parser(t);
+    type = DataSourceFileTypeParser::parse(t);
     if (type != DataSourceFileType::NONE) {
       config.fileType = type;
     }

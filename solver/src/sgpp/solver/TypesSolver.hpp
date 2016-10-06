@@ -37,13 +37,13 @@ struct SLESolverSPConfiguration {
 
 class SolverTypeParser {
  public:
-  SLESolverType operator()(const std::string& input) const {
+  static SLESolverType parse(const std::string& input) {
     auto inputLower = input;
     std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-    if (inputLower.compare("cg")) {
+    if (inputLower.compare("cg") == 0) {
       return sgpp::solver::SLESolverType::CG;
-    } else if (inputLower.compare("bicgstab")) {
+    } else if (inputLower.compare("bicgstab") == 0) {
       return sgpp::solver::SLESolverType::BiCGSTAB;
     } else {
       std::string errorMsg =

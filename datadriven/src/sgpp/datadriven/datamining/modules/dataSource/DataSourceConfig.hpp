@@ -25,13 +25,13 @@ enum class DataSourceFileType { NONE, ARFF };
 
 class DataSourceFileTypeParser {
  public:
-  DataSourceFileType operator()(const std::string& input) const {
+  static DataSourceFileType parse(const std::string& input) {
     auto inputLower = input;
     std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-    if (inputLower == arff) {
+    if (inputLower == "arff") {
       return DataSourceFileType::ARFF;
-    } else if (inputLower == none) {
+    } else if (inputLower == "none") {
       return DataSourceFileType::NONE;
     } else {
       std::string errorMsg =
@@ -39,10 +39,6 @@ class DataSourceFileTypeParser {
       throw data_exception(errorMsg.c_str());
     }
   };
-
- private:
-  const std::string arff = "arff";
-  const std::string none = "none";
 };
 
 struct DataSourceConfig {

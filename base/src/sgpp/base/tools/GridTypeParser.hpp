@@ -18,7 +18,7 @@ namespace sgpp {
 namespace base {
 class GridTypeParser {
  public:
-  GridType operator()(const std::string& input) const {
+  static GridType parse(const std::string& input) {
     auto inputLower = input;
     std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
