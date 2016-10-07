@@ -10,6 +10,8 @@
  */
 
 #pragma once
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
@@ -20,17 +22,16 @@
 namespace sgpp {
 namespace datadriven {
 
-class CrossValidation {
+class CrossValidation : Scorer {
  public:
   virtual ~CrossValidation();
   CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
                   size_t foldNumber = 5);
 
-  double calculateScore(ModelFittingBase& model, Dataset& dataset, double* stdDeviation = nullptr);
+  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
+                                double* stdDeviation = nullptr);
 
  private:
-  std::shared_ptr<Metric> metric;
-  std::shared_ptr<ShufflingFunctor> shuffling;
   size_t foldNumber;
 };
 
