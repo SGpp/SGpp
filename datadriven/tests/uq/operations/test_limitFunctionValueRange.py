@@ -24,7 +24,7 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d
 numDims = 2
 level = 7
 code = "c++"
-side = "lower"
+side = "both"
 verbose = False
 plot = True
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
@@ -101,12 +101,12 @@ if plot and numDims < 3:
     elif numDims == 2:
         plotSG2d(grid, alpha, show_negative=False, show_grid_points=True)
 
-    plt.title(r"\#gp = %i" % grid.getStorage().getSize())
+    plt.title(r"$\ell = %i, N = %i$" % (level, grid.getStorage().getSize()))
     fig.show()
 
     if numDims == 2:
         fig, ax, _ = plotSG3d(grid, alpha, grid_points_at=-2)
-        ax.set_title(r"\#gp = %i" % grid.getStorage().getSize())
+        ax.set_title(r"$\ell = %i, N = %i$" % (level, grid.getStorage().getSize()))
         ax.set_zlim(-2, 2)
         fig.show()
         plt.savefig("sin_sg_negative.pdf")
@@ -188,12 +188,12 @@ if plot and numDims < 3:
     elif numDims == 2:
         plotSG2d(grid, alpha, show_negative=False, show_grid_points=True)
 
-    plt.title(r"\#gp = %i" % grid.getStorage().getSize())
+    plt.title(r"$\ell = %i, N = %i$" % (level, grid.getStorage().getSize()))
     fig.show()
 
     if numDims == 2:
         fig, ax, _ = plotSG3d(grid, alpha, grid_points_at=-2)
-        ax.set_title(r"\#gp = %i" % grid.getStorage().getSize())
+        ax.set_title(r"$\ell = %i, N = %i$" % (level, grid.getStorage().getSize()))
         ax.set_zlim(-2, 2)
         plt.savefig("sin_sg_positive_%s.pdf" % side)
         fig.show()

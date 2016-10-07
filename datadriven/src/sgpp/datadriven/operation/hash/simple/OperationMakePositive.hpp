@@ -49,6 +49,7 @@ class OperationMakePositive {
    */
   explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
+                                 size_t maxLevel = 0,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
                                  bool generateConsistentGrid = true, bool verbose = false);
@@ -157,6 +158,9 @@ class OperationMakePositive {
   void addFullGridPoints(base::Grid& grid, base::DataVector& alpha,
                          std::vector<std::shared_ptr<base::HashGridPoint>>& candidates,
                          std::vector<size_t>& addedGridPoints, double tol = -1e-14);
+
+  /// maximum level of the reference full grid
+  size_t maxLevel;
 
   /// range for level sums to be tested
   size_t minimumLevelSum;

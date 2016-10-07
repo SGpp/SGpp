@@ -8,6 +8,7 @@ from scipy.stats import gaussian_kde
 
 import matplotlib.pyplot as plt
 import numpy as np
+from pysgpp._pysgpp_swig import createOperationEval
 
 
 def plotDensity3d(U, n=36):
@@ -86,6 +87,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
     Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    opEval = createOperationEval(grid)
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = f(evalSGFunction(grid, alpha,

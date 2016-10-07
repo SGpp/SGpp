@@ -22,8 +22,8 @@ class OperationLimitFunctionValueRange {
   OperationLimitFunctionValueRange(
       datadriven::MakePositiveCandidateSearchAlgorithm candiateSearch =
           MakePositiveCandidateSearchAlgorithm::Intersections,
-      datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-          MakePositiveInterpolationAlgorithm::SetToZero,
+      size_t maxLevel = 0, datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+                               MakePositiveInterpolationAlgorithm::SetToZero,
       bool verbose = false);
 
   virtual ~OperationLimitFunctionValueRange();

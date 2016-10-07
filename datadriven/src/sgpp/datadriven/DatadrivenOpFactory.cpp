@@ -294,17 +294,17 @@ base::OperationMultipleEval* createOperationMultipleEval(
 }
 
 datadriven::OperationMakePositive* createOperationMakePositive(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, size_t maxLevel,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
     bool generateConsistentGrid, bool verbose) {
-  return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
-                                               generateConsistentGrid, verbose);
+  return new datadriven::OperationMakePositive(
+      candidateSearchAlgorithm, maxLevel, interpolationAlgorithm, generateConsistentGrid, verbose);
 }
 
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, size_t maxLevel,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
-  return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
+  return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm, maxLevel,
                                                           interpolationAlgorithm, verbose);
 }
 

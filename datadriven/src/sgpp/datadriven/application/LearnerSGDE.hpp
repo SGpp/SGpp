@@ -49,6 +49,7 @@ struct MakePositiveConfiguration {};
 struct SGDEConfiguration {
   bool makePositive_;  // force the density to be positive
   datadriven::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
+  size_t makePositive_maxLevel_;
   datadriven::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
   bool makePositive_generateConsistentGrid_;
   bool makePositive_verbose_;
