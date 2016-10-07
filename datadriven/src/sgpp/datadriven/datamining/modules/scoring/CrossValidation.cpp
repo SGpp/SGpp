@@ -21,13 +21,7 @@ CrossValidation::~CrossValidation() {}
 
 CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
                                  size_t foldNumber)
-    : metric(std::shared_ptr<Metric>(metric)),
-      shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)),
-      foldNumber(foldNumber) {
-  if (seed != -1) {
-    shuffling->setSeed(seed);
-  }
-}
+    : Scorer(metric, shuffling), foldNumber(foldNumber) {}
 
 double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {

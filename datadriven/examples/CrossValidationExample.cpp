@@ -18,7 +18,6 @@
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -31,7 +30,6 @@ using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
 using sgpp::datadriven::MSE;
-// using sgpp::datadriven::SimpleSplittingScorer;
 using sgpp::datadriven::CrossValidation;
 using sgpp::datadriven::RandomShufflingFunctor;
 using sgpp::base::GridType;
