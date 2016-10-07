@@ -65,8 +65,8 @@ int main(int argc, char **argv) {
   auto metric = std::make_unique<MSE>();
   auto shuffling = std::make_unique<RandomShufflingFunctor>();
   double stdDeviation;
-  CrossValidation crossValidation(metric.release(), shuffling.release(), 42);
-  double score = crossValidation.calculateScore(*model, *dataset, 5, &stdDeviation);
+  CrossValidation crossValidation(metric.release(), shuffling.release(), 42, 5);
+  double score = crossValidation.calculateScore(*model, *dataset, &stdDeviation);
 
   std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
 

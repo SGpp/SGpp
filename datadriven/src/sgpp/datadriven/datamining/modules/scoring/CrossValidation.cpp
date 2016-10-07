@@ -19,15 +19,17 @@ namespace datadriven {
 
 CrossValidation::~CrossValidation() {}
 
-CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
+CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
+                                 size_t foldNumber)
     : metric(std::shared_ptr<Metric>(metric)),
-      shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)) {
+      shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)),
+      foldNumber(foldNumber) {
   if (seed != -1) {
     shuffling->setSeed(seed);
   }
 }
 
-double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset, size_t foldNumber,
+double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {
   std::vector<double> scores(foldNumber);
 
