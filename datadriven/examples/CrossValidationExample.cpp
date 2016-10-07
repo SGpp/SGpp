@@ -17,7 +17,10 @@
 #include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -30,11 +33,13 @@ using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::DataMiningConfigurationLeastSquares;
 using sgpp::datadriven::MSE;
+using sgpp::datadriven::Scorer;
 using sgpp::datadriven::CrossValidation;
+using sgpp::datadriven::SplittingScorer;
 using sgpp::datadriven::RandomShufflingFunctor;
 using sgpp::base::GridType;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   // input
   std::string path;
   if (argc != 2) {
@@ -63,8 +68,11 @@ int main(int argc, char **argv) {
   auto metric = std::make_unique<MSE>();
   auto shuffling = std::make_unique<RandomShufflingFunctor>();
   double stdDeviation;
-  CrossValidation crossValidation(metric.release(), shuffling.release(), 42, 5);
-  double score = crossValidation.calculateScore(*model, *dataset, &stdDeviation);
+  std::unique_ptr<Scorer> scorer;
+  scorer = std::make_unique<CrossValidation>(metric.release(), shuffling.release(), 42, 5);
+  // scorer = std::make_unique<SplittingScorer>(metric.release(), shuffling.release(), 42, 0.8);
+
+  double score = scorer->calculateScore(*model, *dataset, &stdDeviation);
 
   std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
 
