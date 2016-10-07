@@ -23,14 +23,15 @@ namespace datadriven {
 class CrossValidation {
  public:
   virtual ~CrossValidation();
-  CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1);
+  CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
+                  size_t foldNumber = 5);
 
-  double calculateScore(ModelFittingBase& model, Dataset& dataset, size_t foldNumber = 5,
-                        double* stdDeviation = nullptr);
+  double calculateScore(ModelFittingBase& model, Dataset& dataset, double* stdDeviation = nullptr);
 
  private:
   std::shared_ptr<Metric> metric;
   std::shared_ptr<ShufflingFunctor> shuffling;
+  size_t foldNumber;
 };
 
 } /* namespace datadriven */
