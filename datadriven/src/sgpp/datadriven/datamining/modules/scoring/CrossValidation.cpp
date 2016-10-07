@@ -29,11 +29,7 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
 
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  for (size_t i = 0; i < dataset.getNumberInstances(); i++) {
-    randomizedIndices[i] = i;
-  }
-
-  shuffling->shuffle(randomizedIndices);
+  randomizeIndices(randomizedIndices, dataset.getNumberInstances());
 
   // perform actual folding
 
@@ -48,62 +44,21 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     size_t dim = dataset.getDimension();
 
     // calculate where the training portion starts
-    size_t test_begin = fold * (dataset.getNumberInstances() / foldNumber);
-    size_t test_end = test_begin + testSize;
+    size_t offset = fold * (dataset.getNumberInstances() / foldNumber);
 
     std::cout << "starting fold " << fold << " with full set:" << dataset.getNumberInstances()
               << ", test size:" << testSize << ", train size:" << trainSize << std::endl;
-    std::cout << "test begins at:" << test_begin << ", test ends at:" << test_end << std::endl;
     // create testing & training datasets;
     auto testDataset = std::make_unique<Dataset>(testSize, dim);
     auto trainDataset = std::make_unique<Dataset>(trainSize, dim);
 
     // fill them
-    DataVector tmpRow(dim);
-    double tmpEntry = 0;
-    size_t targetIdx = 0;
-    // before test portion
-
-    for (size_t i = 0; i < test_begin; i++) {
-      dataset.getData().getRow(randomizedIndices[i], tmpRow);
-      trainDataset->getData().setRow(i, tmpRow);
-      tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-      trainDataset->getTargets().set(i, tmpEntry);
-    }
-
-    // test portion
-    targetIdx = 0;
-    for (size_t i = test_begin; i < test_end; i++) {
-      dataset.getData().getRow(randomizedIndices[i], tmpRow);
-      testDataset->getData().setRow(targetIdx, tmpRow);
-      tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-      testDataset->getTargets().set(targetIdx, tmpEntry);
-      targetIdx++;
-    }
-
-    // after test portion
-    targetIdx = test_begin;
-    for (size_t i = test_end; i < dataset.getNumberInstances(); i++) {
-      dataset.getData().getRow(randomizedIndices[i], tmpRow);
-      trainDataset->getData().setRow(targetIdx, tmpRow);
-      tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-      trainDataset->getTargets().set(targetIdx, tmpEntry);
-      targetIdx++;
-    }
+    splitSet(dataset, *trainDataset, *testDataset, trainSize, testSize, randomizedIndices, offset);
 
     // fit model
     std::cout << "fitting model" << std::endl;
-    model.fit(*trainDataset);
-
-    // calculate testing error
-    // auto predictedValues = model.evaluate(testDataset->getData());
-
-    auto predictedValues = std::make_unique<DataVector>(testDataset->getNumberInstances());
-    model.evaluate(testDataset->getData(), *predictedValues);
-    // set score
-    scores[fold] = (*metric)(*predictedValues, testDataset->getTargets());
+    scores[fold] = train(model, *trainDataset, *testDataset);
     std::cout << "accuracy of fit:" << scores[fold] << std::endl;
-    predictedValues.reset();
   }
 
   // calculate final score as AVG
