@@ -24,19 +24,18 @@ namespace datadriven {
  */
 class Scorer {
  public:
-  Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1)
-      : metric(std::shared_ptr<Metric>(metric)),
-        shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)) {
-    if (seed != -1) {
-      shuffling->setSeed(seed);
-    }
-  };
-
-  virtual ~Scorer(){};
+  Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1);
+  virtual ~Scorer();
   virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
                                 double* stdDeviation = nullptr) = 0;
 
  protected:
+  virtual void randomizeIndices(std::vector<size_t>& randomizedIndices, size_t size);
+  virtual void splitSet(Dataset& fullDataset, Dataset& trainDataset, Dataset& testDataset,
+                        size_t trainSize, size_t testSize,
+                        const std::vector<size_t>& randomizedIndices, size_t offset = 0);
+  double train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset);
+
   std::shared_ptr<Metric> metric;
   std::shared_ptr<ShufflingFunctor> shuffling;
 };

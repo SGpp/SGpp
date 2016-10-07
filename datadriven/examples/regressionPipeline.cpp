@@ -16,7 +16,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SimpleSplittingScorer.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>

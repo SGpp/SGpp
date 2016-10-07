@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
   auto metric = std::make_unique<MSE>();
   auto shuffling = std::make_unique<RandomShufflingFunctor>();
   double stdDeviation;
-  std::unique_ptr<Scorer> scorer;
-  scorer = std::make_unique<CrossValidation>(metric.release(), shuffling.release(), 42, 5);
-  // scorer = std::make_unique<SplittingScorer>(metric.release(), shuffling.release(), 42, 0.8);
+  auto scorer = std::make_unique<CrossValidation>(metric.release(), shuffling.release(), 42, 5);
+  // auto scorer = std::make_unique<SplittingScorer>(metric.release(), shuffling.release(), 42,
+  // 0.8);
 
   double score = scorer->calculateScore(*model, *dataset, &stdDeviation);
 
