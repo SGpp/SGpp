@@ -19,8 +19,9 @@
 namespace sgpp {
 namespace datadriven {
 
-OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm()
-    : iteration(0), verbose(false) {}
+OperationMakePositiveCandidateSetAlgorithm::OperationMakePositiveCandidateSetAlgorithm(
+    size_t maxLevel)
+    : iteration(0), maxLevel(maxLevel), verbose(false) {}
 
 OperationMakePositiveCandidateSetAlgorithm::~OperationMakePositiveCandidateSetAlgorithm() {}
 
@@ -49,8 +50,9 @@ OperationMakePositiveCandidateSetAlgorithm::costsComputingCandidatesPerIteration
 }
 
 // -------------------------------------------------------------------------------------------
-OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates() {
-}
+OperationMakePositiveFindIntersectionCandidates::OperationMakePositiveFindIntersectionCandidates(
+    size_t maxLevel)
+    : OperationMakePositiveCandidateSetAlgorithm(maxLevel) {}
 
 OperationMakePositiveFindIntersectionCandidates::
     ~OperationMakePositiveFindIntersectionCandidates() {}
@@ -109,7 +111,6 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
   }
 
   // check intersection of two grid points
-  size_t cntIntersections = 0;
   for (size_t i = 0; i < negativeGridPoints.size(); ++i) {
     auto iseq = negativeGridPoints[i];
     auto gpi = currentIntersections[gridStorage.getPoint(iseq).getHash()];
@@ -120,7 +121,6 @@ void OperationMakePositiveFindIntersectionCandidates::initializeCandidates(
           !gpj->isHierarchicalAncestor(*gpi)) {
         intersections[gpi->getHash()]->push_back(gpj);
         intersections[gpj->getHash()]->push_back(gpi);
-        cntIntersections++;
       }
     }
   }
@@ -140,10 +140,12 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
     std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) {
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
-i
+
   // reset the costs vectors
   numCandidatesIteration.setAll(0.0);
   costsPerIteration.setAll(0.0);
+  std::unordered_map<size_t, std::shared_ptr<std::vector<std::shared_ptr<base::HashGridPoint>>>>
+      intersectionsk;
 
   // check for intersections of more than two grid points
   for (size_t k = 2; k <= numDims; ++k) {
@@ -185,22 +187,28 @@ i
 
           // store the result if the common candidates overlap with the current intersection
           // initialize the grid points that need to be considered
-          //          auto commonOverlappingIntersections =
-          //              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>(
-          //                  commonIntersections);
           auto commonOverlappingIntersections =
-              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
-          for (auto& gpk : commonIntersections) {
-            if (haveOverlappingSupport(*gpk, *gpintersection)) {
-              commonOverlappingIntersections->push_back(gpk);
-            }
+              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>(
+                  commonIntersections);
+          //          auto commonOverlappingIntersections =
+          //              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
+          //          for (auto& gpk : commonIntersections) {
+          //            if (haveOverlappingSupport(*gpk, *gpintersection)) {
+          //              commonOverlappingIntersections->push_back(gpk);
+          //              intersectionsk[gpk->getHash()] = intersections[gpk->getHash()];
+          //            }
+          //          }
+
+          // store the list of common overlapping intersections for next iteration
+          for (auto& gpk : *commonOverlappingIntersections) {
+            intersectionsk[gpk->getHash()] = intersections[gpk->getHash()];
           }
 
           // store the grid point for the next iteration if there are any overlapping
           // other grid points left
           if (commonOverlappingIntersections->size() > 0) {
             nextIntersections[gpintersection->getHash()] = gpintersection;
-            intersections[gpintersection->getHash()] = commonOverlappingIntersections;
+            intersectionsk[gpintersection->getHash()] = commonOverlappingIntersections;
             // stats
             minLengthOverlapping =
                 std::min(minLengthOverlapping, commonOverlappingIntersections->size());
@@ -216,6 +224,7 @@ i
     auto hIntersections = currentIntersections;
     currentIntersections = nextIntersections;
     nextIntersections = hIntersections;
+    intersections = intersectionsk;
 
     if (verbose) {
       if (k < numDims) {
@@ -298,13 +307,14 @@ base::DataVector& OperationMakePositiveFindIntersectionCandidates::numCandidates
 }
 
 // -------------------------------------------------------------------------------------------
-OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCandidates() {}
+OperationMakePositiveLoadFullGridCandidates::OperationMakePositiveLoadFullGridCandidates(
+    size_t maxLevel)
+    : OperationMakePositiveCandidateSetAlgorithm(maxLevel) {}
 
 OperationMakePositiveLoadFullGridCandidates::~OperationMakePositiveLoadFullGridCandidates() {}
 
 void OperationMakePositiveLoadFullGridCandidates::initializeFullGrid(base::Grid& grid) {
   size_t numDims = grid.getStorage().getDimension();
-  size_t maxLevel = grid.getStorage().getMaxLevel();
   fullGrid.reset(base::Grid::createLinearGrid(numDims));
   fullGrid->getGenerator().full(maxLevel);
 }
@@ -354,8 +364,8 @@ base::DataVector& OperationMakePositiveLoadFullGridCandidates::numCandidatesPerI
 // -------------------------------------------------------------------------------------------
 
 OperationMakePositiveHybridFindIntersectionCandidates::
-    OperationMakePositiveHybridFindIntersectionCandidates()
-    : overallComparisonCosts(0) {}
+    OperationMakePositiveHybridFindIntersectionCandidates(size_t maxLevel)
+    : OperationMakePositiveFindIntersectionCandidates(maxLevel), overallComparisonCosts(0) {}
 
 OperationMakePositiveHybridFindIntersectionCandidates::
     ~OperationMakePositiveHybridFindIntersectionCandidates() {}

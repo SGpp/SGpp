@@ -137,7 +137,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
   std::unique_ptr<sgpp::datadriven::OperationMakePositive> opMakePositive(
-      sgpp::op_factory::createOperationMakePositive(candidateSearchAlgorithm,
+      sgpp::op_factory::createOperationMakePositive(candidateSearchAlgorithm, 0,
                                                     MakePositiveInterpolationAlgorithm::SetToZero,
                                                     generateConsistentGrid, verbose));
   std::unique_ptr<Grid> positiveGrid(grid.clone());

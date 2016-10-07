@@ -55,7 +55,7 @@ class SGDEdist(EstimatedDist):
 
         assert self.grid.getSize() == len(self.alpha)
         self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
-        if abs(self.vol) > 1e-13:
+        if self.vol > 1e-13:
             self.alpha.mult(1. / self.vol)
 
     @classmethod

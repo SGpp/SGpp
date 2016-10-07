@@ -20,7 +20,7 @@ namespace datadriven {
 
 class OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveCandidateSetAlgorithm();
+  OperationMakePositiveCandidateSetAlgorithm(size_t maxLevel);
   virtual ~OperationMakePositiveCandidateSetAlgorithm();
 
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
@@ -42,6 +42,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
                                          double tol = -1e-14);
 
   size_t iteration;
+  size_t maxLevel;
   base::DataVector gridPointsPerLevel;
   base::DataVector costsPerIteration;
   bool verbose;
@@ -51,7 +52,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
 class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveFindIntersectionCandidates();
+  OperationMakePositiveFindIntersectionCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveFindIntersectionCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
@@ -90,7 +91,7 @@ class OperationMakePositiveFindIntersectionCandidates
 class OperationMakePositiveLoadFullGridCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveLoadFullGridCandidates();
+  OperationMakePositiveLoadFullGridCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveLoadFullGridCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
@@ -110,7 +111,7 @@ class OperationMakePositiveLoadFullGridCandidates
 class OperationMakePositiveHybridFindIntersectionCandidates
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
-  OperationMakePositiveHybridFindIntersectionCandidates();
+  OperationMakePositiveHybridFindIntersectionCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveHybridFindIntersectionCandidates();
 
   void findIntersections(

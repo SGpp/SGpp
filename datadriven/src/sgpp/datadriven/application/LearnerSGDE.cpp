@@ -328,10 +328,10 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 
   // make the density positive
   if (sgdeConfig.makePositive_) {
-    op_factory::createOperationMakePositive(sgdeConfig.makePositive_candidateSearchAlgorithm_,
-                                            sgdeConfig.makePositive_interpolationAlgorithm_,
-                                            sgdeConfig.makePositive_generateConsistentGrid_,
-                                            sgdeConfig.makePositive_verbose_)
+    op_factory::createOperationMakePositive(
+        sgdeConfig.makePositive_candidateSearchAlgorithm_, sgdeConfig.makePositive_maxLevel_,
+        sgdeConfig.makePositive_interpolationAlgorithm_,
+        sgdeConfig.makePositive_generateConsistentGrid_, sgdeConfig.makePositive_verbose_)
         ->makePositive(*grid, *alpha);
   }
 

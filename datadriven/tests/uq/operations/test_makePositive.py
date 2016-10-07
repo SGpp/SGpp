@@ -27,20 +27,22 @@ from pysgpp import createOperationMakePositive, \
     GridType_Linear, GridType_Poly, RegularGridConfiguration
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
+from pysgpp.pysgpp_swig import GridType_PolyBoundary, \
+    MakePositiveCandidateSearchAlgorithm_FullGrid
 
 
 # parameters
 gridConfig = RegularGridConfiguration()
-gridConfig.type_ = GridType_Linear
-# gridConfig.type_ = GridType_Poly
-# gridConfig.maxDegree_ = 3
-gridConfig.boundaryLevel_ = 1
+# gridConfig.type_ = GridType_Linear
+gridConfig.type_ = GridType_Poly
+gridConfig.boundaryLevel_ = 0
 numDims = 2
-level = 5
-refnums = 0
-consistentGrid = False
+level = 4
+refnums = 10
+consistentGrid = True
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
 plot = True
@@ -49,6 +51,7 @@ code = "c++"
 
 gridConfig.dim_ = numDims
 gridConfig.level_ = level
+gridConfig.maxDegree_ = level + 1
 
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
@@ -120,14 +123,14 @@ print "-" * 80
 if numDims == 2 and plot:
     # plot the result
     fig = plt.figure()
-    plotGrid2d(grid, sgdeDist.alpha, show_numbers=False)
+    plotGrid2d(grid, alpha, show_numbers=False)
 #     plt.title("neg: #gp = %i, kldivergence = %g, log = %g" % (grid.getStorage().getSize(),
 #                                                               dist.klDivergence(sgdeDist, testSamples),
 #                                                               dist.crossEntropy(testSamples)))
     fig.show()
 
     fig, ax, _ = plotSG3d(grid, sgdeDist.alpha)
-#     ax.set_title("negative")
+    ax.set_title("negative")
     fig.show()
 
 C = 0
@@ -140,6 +143,7 @@ print "full grid                  = %i" % ((2 ** level - 1) ** numDims,)
 if code == "c++":
     alpha_vec = DataVector(alpha)
     opMakePositive = createOperationMakePositive(candidateSearchAlgorithm,
+                                                 level + numDims - 1,
                                                  interpolationAlgorithm,
                                                  consistentGrid, verbose)
     opMakePositive.makePositive(grid, alpha_vec)
@@ -207,13 +211,16 @@ print "(gs=%i) -> %g (%g, %g)" % (sgdeDist.grid.getSize(),
 
 if numDims == 2 and plot:
     # plot the result
-    fig = plt.figure()
-    plotGrid2d(grid, sgdeDist.alpha, show_numbers=False)
+#     fig = plt.figure()
+#     plotGrid2d(grid, alpha, show_numbers=False)
 #     plt.title("pos: #gp = %i, kldivergence = %g, log = %g" % (grid.getStorage().getSize(),
 #                                                               dist.klDivergence(sgdeDist, testSamples),
 #                                                               dist.crossEntropy(testSamples)))
     fig.show()
 
+    fig = plt.figure()
+    plotSG2d(grid, sgdeDist.alpha, show_negative=True, show_grid_points=True)
+    fig.show()
     fig, ax, _ = plotSG3d(grid, sgdeDist.alpha)
 #     ax.set_title("positive")
     fig.show()

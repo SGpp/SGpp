@@ -14,6 +14,7 @@ from pysgpp import (createOperationHierarchisation,
 from scipy.interpolate import interp1d
 
 import numpy as np
+from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT
 
 
 #######################################################################
@@ -525,11 +526,12 @@ def evalSGFunctionMulti(grid, alpha, samples):
     if grid.getType() == GridType_Bspline:
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
-        try:
+        if grid.getType() == GridType_Linear:
             # use streaming approach for multiple eval
             evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
             opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
-        except:
+        else:
+            # use standard approach
             opEval = createOperationMultipleEval(grid, samples_matrix)
 
     res_vec = DataVector(samples.shape[0])

@@ -52,7 +52,7 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
     gridStorage.getPoint(i).getStandardCoordinates(x);
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
-      alpha[i] -= yi + offset;
+      alpha[i] = alpha[i] - yi + offset;
     } else {
       alpha[i] = 0.0;
     }

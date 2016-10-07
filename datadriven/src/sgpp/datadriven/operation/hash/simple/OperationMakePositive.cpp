@@ -12,6 +12,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
 
@@ -23,11 +25,12 @@ namespace sgpp {
 namespace datadriven {
 
 OperationMakePositive::OperationMakePositive(
-    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, size_t maxLevel,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
     bool verbose)
     : minimumLevelSum(0),
       maximumLevelSum(0),
+      maxLevel(maxLevel),
       generateConsistentGrid(generateConsistentGrid),
       candidateSearchAlgorithm(candidateSearchAlgorithm),
       interpolationAlgorithm(interpolationAlgorithm),
@@ -39,26 +42,32 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
   // set range of level sums for candidate search
   base::HashGridStorage& gridStorage = grid.getStorage();
   auto numDims = gridStorage.getDimension();
-  auto maxLevel = gridStorage.getMaxLevel();
+  size_t candidateSearchMaxLevel = maxLevel;
+  if (maxLevel == 0) {
+    candidateSearchMaxLevel = gridStorage.getMaxLevel();
+  }
   minimumLevelSum = numDims;
   maximumLevelSum = maxLevel * numDims;
 
   // set the candidate search algorithm
   switch (candidateSearchAlgorithm) {
     case MakePositiveCandidateSearchAlgorithm::FullGrid:
-      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>();
+      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(
+          candidateSearchMaxLevel);
       break;
     case MakePositiveCandidateSearchAlgorithm::Intersections:
       candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>();
+          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>(
+              candidateSearchMaxLevel);
       break;
     case MakePositiveCandidateSearchAlgorithm::HybridFullIntersections:
       candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveHybridFindIntersectionCandidates>();
+          std::make_shared<datadriven::OperationMakePositiveHybridFindIntersectionCandidates>(
+              candidateSearchMaxLevel);
       break;
     default:
-      candidateSearch =
-          std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidates>();
+      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(
+          candidateSearchMaxLevel);
       break;
   }
   candidateSearch->setVerbose(verbose);
@@ -146,11 +155,17 @@ void OperationMakePositive::addFullGridPoints(
 
   // use streaming eval to support inconsistent grids
   base::DataVector nodalValues(numCandidates);
-  datadriven::OperationMultipleEvalConfiguration evalConfig(
-      datadriven::OperationMultipleEvalType::STREAMING,
-      datadriven::OperationMultipleEvalSubType::DEFAULT);
+  std::shared_ptr<datadriven::OperationMultipleEvalConfiguration> evalConfig;
+  if (grid.getType() == base::GridType::Linear) {
+    evalConfig.reset(new datadriven::OperationMultipleEvalConfiguration(
+        datadriven::OperationMultipleEvalType::STREAMING,
+        datadriven::OperationMultipleEvalSubType::DEFAULT));
+  } else {
+    evalConfig.reset(new datadriven::OperationMultipleEvalConfiguration(
+        datadriven::OperationMultipleEvalType::DEFAULT));
+  }
   std::unique_ptr<base::OperationMultipleEval> opEval(
-      op_factory::createOperationMultipleEval(grid, data, evalConfig));
+      op_factory::createOperationMultipleEval(grid, data, *evalConfig));
   opEval->mult(alpha, nodalValues);
 
   // insert the negative ones to the grid
@@ -189,9 +204,15 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       grid.getType() != base::GridType::LinearBoundary &&
       grid.getType() != base::GridType::LinearL0Boundary &&
       grid.getType() != base::GridType::LinearTruncatedBoundary &&
-      grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary) {
+      grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary &&
+      (grid.getType() == base::GridType::Poly &&
+       (static_cast<base::PolyGrid*>(&grid)->getDegree() != 2 || !generateConsistentGrid)) &&
+      (grid.getType() == base::GridType::PolyBoundary &&
+       (static_cast<base::PolyBoundaryGrid*>(&grid)->getDegree() != 2 ||
+        !generateConsistentGrid))) {
     throw base::factory_exception(
-        "OperationMakePositive::makePositive - this operation not implemented for this grid type");
+        "OperationMakePositive::makePositive - this operation not implemented for this grid "
+        "type");
   }
 
   // initialize the operation with the current parameter setting
