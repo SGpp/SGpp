@@ -1,0 +1,1 @@
+scons -j 2 COMPILER=gnu VERBOSE=0 SG_ALL=0 SG_BASE=1 SG_OPTIMIZATION=1 USE_MATLAB=1 BUILD_STATICLIB=1 CPPPATH=/opt/local/include,/Applications/MATLAB_R2015b.app/extern/include/ BOOST_LIBRARY_PATH=/opt/local/lib LIBPATH=/opt/local/lib/libomp,/Applications/MATLAB_R2015b.app/bin/maci64 COMPILE_BOOST_TESTS=0
