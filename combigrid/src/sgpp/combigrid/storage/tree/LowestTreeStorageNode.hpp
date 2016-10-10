@@ -28,8 +28,7 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
   std::vector<T> elements;
   TreeStorageContext<T> &context;
 
-  LowestTreeStorageNode(TreeStorageContext<T> &context, MultiIndex const &index, size_t depth,
-                        size_t zeroDepth)
+  LowestTreeStorageNode(TreeStorageContext<T> &context)
       : statusVector(), elements(), context(context) {}
 
   virtual ~LowestTreeStorageNode() {}
