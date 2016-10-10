@@ -47,15 +47,14 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
         while (index >= node->children.size()) {
           CGLOG("TreeStorageGuidedIterator::getChild(): create internal tree storage node at depth "
                 << depth);
-          node->children.emplace_back(new InternalTreeStorageNode<T>(
-              node->context, remainingDimensions - 1, multiIndex, depth + 1, depth, true));
+          node->children.emplace_back(
+              new InternalTreeStorageNode<T>(node->context, remainingDimensions - 1));
         }
       } else {
         while (index >= node->children.size()) {
           CGLOG("TreeStorageGuidedIterator::getChild(): create lowest tree storage node at depth "
                 << depth);
-          node->children.emplace_back(
-              new LowestTreeStorageNode<T>(node->context, multiIndex, depth + 1, depth));
+          node->children.emplace_back(new LowestTreeStorageNode<T>(node->context));
         }
       }
     }

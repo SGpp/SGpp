@@ -27,17 +27,6 @@ namespace combigrid {
  */
 template <typename T>
 class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
-  /**
-   * Returns a Multi-index containing only the first depth+1 entries of index.
-   */
-  MultiIndex restrictIndex(MultiIndex const &index, size_t depth) {
-    MultiIndex result(depth + 1);
-    for (size_t i = 0; i <= depth; ++i) {
-      result[i] = index[i];
-    }
-    return result;
-  }
-
  public:
   std::vector<std::unique_ptr<AbstractTreeStorageNode<T>>> children;
   TreeStorageContext<T> &context;
@@ -48,19 +37,12 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
    * this is an internal node).
    * @param index Multi-index at which the
    */
-  InternalTreeStorageNode(TreeStorageContext<T> &context, size_t remainingDimensions,
-                          MultiIndex const &index, size_t depth, size_t zeroDepth,
-                          bool createFirstChild = true)
+  InternalTreeStorageNode(TreeStorageContext<T> &context, size_t remainingDimensions)
       : children(), context(context) {
-    if (!createFirstChild) {
-      return;
-    }
-
     if (remainingDimensions > 1) {
-      children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1, index,
-                                                           depth + 1, zeroDepth, createFirstChild));
+      children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
     } else {
-      children.emplace_back(new LowestTreeStorageNode<T>(context, index, depth + 1, zeroDepth));
+      children.emplace_back(new LowestTreeStorageNode<T>(context));
     }
   }
 
@@ -75,14 +57,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
     size_t remainingDimensions = context.numDimensions - depth - 1;
 
     while (currentIndex >= children.size()) {
-      MultiIndex restrictedIndex = restrictIndex(index, depth);
-      restrictedIndex[depth] = children.size();
-      bool createFirstChild = true;
       if (remainingDimensions >= 2) {
-        children.emplace_back(new InternalTreeStorageNode<T>(
-            context, remainingDimensions - 1, index, depth + 1, depth, createFirstChild));
+        children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
       } else {
-        children.emplace_back(new LowestTreeStorageNode<T>(context, index, depth + 1, depth));
+        children.emplace_back(new LowestTreeStorageNode<T>(context));
       }
     }
     return children[currentIndex]->get(index, depth + 1);
@@ -93,17 +71,11 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
     size_t remainingDimensions = context.numDimensions - depth - 1;
 
     while (currentIndex >= children.size()) {
-      MultiIndex restrictedIndex = restrictIndex(index, depth);
-      restrictedIndex[depth] = children.size();
-      bool createFirstChild =
-          (currentIndex != children.size());  // if this is the child to set, then it will be
-                                              // created in the recursion or by setting the value
       if (remainingDimensions >= 2) {
-        children.emplace_back(new InternalTreeStorageNode<T>(
-            context, remainingDimensions - 1, index, depth + 1, depth, createFirstChild));
+        children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
       } else {
         // TODO(holzmudd) check depth, depth+1 and not depth+1, depth
-        children.emplace_back(new LowestTreeStorageNode<T>(context, index, depth + 1, depth));
+        children.emplace_back(new LowestTreeStorageNode<T>(context));
       }
     }
 

@@ -54,11 +54,10 @@ class TreeStorage : public AbstractMultiStorage<T> {
    */
   explicit TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
       : context(numDimensions, func), root(nullptr) {
-    MultiIndex index;
     if (numDimensions <= 1) {
-      root.reset(new LowestTreeStorageNode<T>(context, index, 0, 0));
+      root.reset(new LowestTreeStorageNode<T>(context));
     } else {
-      root.reset(new InternalTreeStorageNode<T>(context, numDimensions - 1, index, 0, 0, false));
+      root.reset(new InternalTreeStorageNode<T>(context, numDimensions - 1));
     }
   }
 
