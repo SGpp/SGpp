@@ -28,7 +28,7 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
   std::vector<T> elements;
   TreeStorageContext<T> &context;
 
-  LowestTreeStorageNode(TreeStorageContext<T> &context)
+  explicit LowestTreeStorageNode(TreeStorageContext<T> &context)
       : statusVector(), elements(), context(context) {}
 
   virtual ~LowestTreeStorageNode() {}
@@ -40,6 +40,9 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
 
   virtual bool isLeaf() const { return true; }
 
+  /**
+   * Helper function that fills elements and statusVector until they contain the given index.
+   */
   void ensureVectorEntry(size_t currentIndex) {
     while (currentIndex >= elements.size()) {
       elements.push_back(T());
