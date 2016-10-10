@@ -107,6 +107,10 @@ base::DataVector CombigridMultiOperation::getResult() {
   return result;
 }
 
+std::shared_ptr<AbstractCombigridStorage> CombigridMultiOperation::getStorage() {
+  return impl->storage;
+}
+
 std::shared_ptr<LevelManager> CombigridMultiOperation::getLevelManager() {
   return impl->levelManager;
 }
