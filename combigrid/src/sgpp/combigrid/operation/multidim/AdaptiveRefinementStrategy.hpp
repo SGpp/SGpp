@@ -8,12 +8,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
 #include <functional>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class is a helper class to configure some adaptive refinement methods. More precisely, it
+ * implements some kind of averaging scores of predecessor levels. Standard averaging techniques are
+ * already implemented in static methods.
+ */
 class AdaptiveRefinementStrategy {
  public:
   typedef std::function<double(std::vector<double> const &, size_t)> priority_function;

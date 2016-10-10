@@ -6,16 +6,17 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGEGUIDEDITERATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGEGUIDEDITERATOR_HPP_
 
+#include <sgpp/combigrid/common/MultiIndexIterator.hpp>
+#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
+#include <sgpp/combigrid/storage/IterationPolicy.hpp>
 #include <sgpp/combigrid/storage/tree/InternalTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
-#include <sgpp/combigrid/storage/IterationPolicy.hpp>
-#include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 
-#include <sgpp/combigrid/definitions.hpp>
-#include <vector>
-#include <memory>
 #include <cstddef>
+
+#include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -54,7 +55,7 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
           CGLOG("TreeStorageGuidedIterator::getChild(): create lowest tree storage node at depth "
                 << depth);
           node->children.emplace_back(
-              new LowestTreeStorageNode<T>(node->context, multiIndex, depth + 1, depth, true));
+              new LowestTreeStorageNode<T>(node->context, multiIndex, depth + 1, depth));
         }
       }
     }

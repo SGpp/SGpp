@@ -12,6 +12,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Point ordering class with the slowest possible growth (n = 2^(l+1) - 1) that makes uniform points
+ * without boundary nested.
+ */
 class ExponentialNoBoundaryPointOrdering : public AbstractPointOrdering {
  public:
   virtual ~ExponentialNoBoundaryPointOrdering();

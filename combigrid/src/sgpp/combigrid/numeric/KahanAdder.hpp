@@ -10,6 +10,9 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Kahan adder (a numerically more precise method to add many numbers).
+ */
 class KahanAdder {
   double sum = 0.0;
   double c = 0.0;

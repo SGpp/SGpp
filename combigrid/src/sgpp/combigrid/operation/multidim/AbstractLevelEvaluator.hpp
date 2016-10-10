@@ -10,13 +10,19 @@
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
-#include <vector>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class abstracts a lot of methods of CombigridEvaluator for classes that do not want to carry
+ * around its template parameter, e. g. LevelManager. AbstractLevelEvaluator provides the central
+ * method addLevel() that does an evaluation on a given level to make its numerical approximation
+ * more accurate.
+ */
 class AbstractLevelEvaluator {
  public:
   virtual ~AbstractLevelEvaluator();

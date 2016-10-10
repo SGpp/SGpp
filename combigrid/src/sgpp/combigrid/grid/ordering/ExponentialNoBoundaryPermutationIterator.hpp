@@ -10,6 +10,9 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Sorted-permutation-iterator for ExponentialNoBoundaryPointOrdering.
+ */
 class ExponentialNoBoundaryPermutationIterator : public AbstractPermutationIterator {
   size_t currentIndex;
   size_t level;

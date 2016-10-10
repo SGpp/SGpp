@@ -12,6 +12,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * PointOrdering class with the slowest possible growth (n = (l == 1) ? 1 : 2^l + 1) to make
+ * Clenshaw-Curtis-points / uniform points with boundary nested.
+ */
 class ExponentialLevelorderPointOrdering : public AbstractPointOrdering {
  public:
   virtual ~ExponentialLevelorderPointOrdering();

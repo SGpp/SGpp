@@ -7,14 +7,18 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_LINEARINTERPOLATIONEVALUATOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This evaluator does linear interpolation on the given grid points. If the evaluation point is
+ * outside the grid points, it will just use the function value of the nearest grid point.
+ */
 class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double evaluationPoint;
   std::vector<FloatScalarVector> basisCoefficients;

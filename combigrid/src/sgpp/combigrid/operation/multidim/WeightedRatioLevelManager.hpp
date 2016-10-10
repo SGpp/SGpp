@@ -13,6 +13,8 @@ namespace combigrid {
 /**
  * This refinement criterion implements the one proposed by ´Gerstner and Griebel:
  * Dimension-adaptive Tensor-Product Quadrature, p. 9´
+ * Slight deviations from the proposed algorithm are possible due to the slightly different usage of
+ * the priority queue in this implementation.
  */
 class WeightedRatioLevelManager : public LevelManager {
  protected:

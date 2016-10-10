@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
+
 #include <functional>
 #include <vector>
 

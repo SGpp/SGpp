@@ -50,8 +50,15 @@ class AbstractPointOrdering {
    */
   virtual size_t convertIndex(size_t level, size_t numPoints, size_t index) = 0;
 
+  /**
+   * Returns the number of points in the given level.
+   */
   virtual size_t numPoints(size_t level) = 0;
 
+  /**
+   * Returns a permutation iterator which first returns the level-independent index of the leftmost
+   * point, then the level-independent index of the second-leftmost point, etc.
+   */
   virtual std::shared_ptr<AbstractPermutationIterator> getSortedPermutationIterator(
       size_t level, std::vector<double> const &points, size_t numPoints) = 0;
 };

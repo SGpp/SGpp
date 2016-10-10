@@ -20,7 +20,13 @@
 
 namespace sgpp {
 namespace combigrid {
+/**
+ * This is a header containing helper classes for the implementation of LevelManager.
+ */
 
+/**
+ * This class can be stored in a priority queue.
+ */
 class QueueEntry {
  public:
   QueueEntry(MultiIndex const &level, double priority, size_t maxNewPoints)
@@ -31,6 +37,9 @@ class QueueEntry {
   size_t maxNewPoints;
 };
 
+/**
+ * This class is a comparator to compare objects of type QueueEntry.
+ */
 class QueueComparator {
  public:
   int operator()(QueueEntry first, QueueEntry second) const {
@@ -42,6 +51,12 @@ class QueueComparator {
 // MultiIndexQueue;
 /*typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
     MultiIndexQueue;*/
+
+/**
+ * use custom binary heap class because std::priority_queue does not provide methods to change an
+ * element's priority.
+ * We could use boost, but that would introduce an additional dependency
+ */
 typedef sgpp::combigrid::BinaryHeap<QueueEntry, QueueComparator> MultiIndexQueue;
 
 /**
@@ -52,18 +67,51 @@ typedef sgpp::combigrid::BinaryHeap<QueueEntry, QueueComparator> MultiIndexQueue
  */
 enum class ComputationStage { NOT_STARTED, STARTED, TERMINATED, COMPLETED };
 
+/**
+ * Stores necessary information about the computation status of a level. This is necessary for
+ * adaptive level generation.
+ */
 class LevelInfo {
  public:
+  /**
+   * Number of predecessor levels which are in status ComputationStage::NOT_STARTED.
+   * If this is > 0, then the computation for this level may not be started (to avoid evaluating the
+   * function multiple times at the same point).
+   */
   size_t numNotStartedPredecessors;
+
+  /**
+   * Number of predecessor levels which are not in status ComputationStage::COMPLETED
+   */
   size_t numNotCompletedPredecessors;
-  std::vector<ThreadPool::Task> terminationListeners;
+
+  /**
+   * The stage of computation of this level.
+   */
   ComputationStage computationStage;
+
+  /**
+   * Handle to the queue entry if there is any. Via this handle, the QueueEntry can be retrieved and
+   * its priority can be updated.
+   */
   std::shared_ptr<MultiIndexQueue::handle_type> handle;
+
+  /**
+   * Norm of the difference (Delta) of this level (if already computed, zero otherwise).
+   */
   double norm;
+
+  /**
+   * Number of new function evaluations (grid points) that have to be done to add this level.
+   */
   size_t maxNewPoints;
+
+  /**
+   * Number of grid points in this level.
+   */
   size_t numPoints;
 
-  // TODO(holzmudd): add priority/num points
+  // TODO(holzmudd): add priority
 
   /**
    * Creates a new level in its earliest stage. This means that it is not ready for computation yet.
@@ -71,7 +119,6 @@ class LevelInfo {
   explicit LevelInfo(size_t numPredecessors, size_t maxNewPoints, size_t numPoints)
       : numNotStartedPredecessors(numPredecessors),
         numNotCompletedPredecessors(numPredecessors),
-        terminationListeners(),
         computationStage(ComputationStage::NOT_STARTED),
         handle(nullptr),
         norm(0.0),
@@ -84,13 +131,15 @@ class LevelInfo {
   explicit LevelInfo(double norm, size_t maxNewPoints, size_t numPoints)
       : numNotStartedPredecessors(0),
         numNotCompletedPredecessors(0),
-        terminationListeners(),
         computationStage(ComputationStage::COMPLETED),
         handle(nullptr),
         norm(norm),
         maxNewPoints(maxNewPoints),
         numPoints(numPoints) {}
 
+  /**
+   * Updates the priority of this level in the priority queue.
+   */
   void setPriority(MultiIndexQueue &queue, double priority) {
     auto entry = *(*handle);
     entry.priority = priority;
