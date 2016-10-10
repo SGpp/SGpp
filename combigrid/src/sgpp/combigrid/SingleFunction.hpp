@@ -6,8 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_SINGLEFUNCTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_SINGLEFUNCTION_HPP_
 
-#include <functional>
 #include <sgpp/globaldef.hpp>
+
+#include <functional>
 
 namespace sgpp {
 namespace combigrid {

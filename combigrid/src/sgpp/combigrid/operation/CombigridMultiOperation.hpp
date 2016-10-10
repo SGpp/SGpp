@@ -98,6 +98,11 @@ class CombigridMultiOperation {
   base::DataVector evaluate(size_t q, std::vector<base::DataVector> const &params);
 
   /**
+   * @return the storage containing the computed function values at evaluation points.
+   */
+  std::shared_ptr<AbstractCombigridStorage> getStorage();
+
+  /**
    * Via the LevelManager, more options are available than are provided directly by this class.
    */
   std::shared_ptr<LevelManager> getLevelManager();

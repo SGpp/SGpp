@@ -75,6 +75,8 @@ class CombigridOperation {
   std::shared_ptr<LevelManager> getLevelManager();
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
+  std::shared_ptr<AbstractCombigridStorage> getStorage();
+
   // TODO(holzmudd): add static constructor functions
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
