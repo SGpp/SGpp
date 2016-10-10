@@ -12,11 +12,15 @@
 #include <string>
 #include <vector>
 
+/**
+ * This header contains some utility functions.
+ */
+
 namespace sgpp {
 namespace combigrid {
 
 /**
- * Exponentiation function for inter types with exact precision. Uses square-and-multiply.
+ * Exponentiation function for integer types with exact precision. Uses square-and-multiply.
  */
 template <typename T>
 T pow(T base, size_t exponent) {

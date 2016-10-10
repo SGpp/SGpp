@@ -24,6 +24,7 @@ namespace combigrid {
 /**
  * Iterator class that travels "along" a MultiIndexIterator through a TreeStorage.
  * If entries are not already contained, they are created during iteration.
+ * For a detailed method description, see AbstractMultiStorageIterator.
  */
 template <typename T>
 class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
@@ -37,8 +38,13 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
 
   IterationPolicy policy;
 
-  AbstractTreeStorageNode<T> *getChild(InternalTreeStorageNode<T> *node, size_t depth, size_t index,
-                                       MultiIndex const &multiIndex) {
+  /**
+   * Helper function that returns the index-th child of the given node. If this child does not
+   * exist, it is created (along with nodes for previous childs that also do not exist).
+   * @param depth Depth of the node in the tree (starting from 0)
+   */
+  AbstractTreeStorageNode<T> *getChild(InternalTreeStorageNode<T> *node, size_t depth,
+                                       size_t index) {
     if (index >= node->children.size()) {
       size_t numDimensions = permutedIndex.size();
       size_t remainingDimensions = numDimensions - depth - 1;
@@ -83,7 +89,7 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
       size_t currentIndex = this->policy.value(d, 0);
       CGLOG("TreeStorageGuidedIterator(): currentIndex == " << currentIndex);
       permutedIndex[d] = currentIndex;
-      current = getChild(internal, d, currentIndex, permutedIndex);
+      current = getChild(internal, d, currentIndex);
     }
     lowestNode = (LowestTreeStorageNode<T> *)current;
   }
@@ -122,15 +128,14 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
     permutedIndex[d] = nextValue;
 
     if (dim < numInternalDimensions) {
-      internalNodes[dim] =
-          (InternalTreeStorageNode<T> *)getChild(internalNodes[d], d, nextValue, permutedIndex);
+      internalNodes[dim] = (InternalTreeStorageNode<T> *)getChild(internalNodes[d], d, nextValue);
       nextValue = policy.resetAndGetValue(dim, 0);
       permutedIndex[dim] = nextValue;
 
       ++dim;
       while (dim < numInternalDimensions) {
-        internalNodes[dim] = (InternalTreeStorageNode<T> *)getChild(internalNodes[dim - 1], dim - 1,
-                                                                    nextValue, permutedIndex);
+        internalNodes[dim] =
+            (InternalTreeStorageNode<T> *)getChild(internalNodes[dim - 1], dim - 1, nextValue);
         nextValue = policy.resetAndGetValue(dim, 0);
         permutedIndex[dim] = nextValue;
 
@@ -138,7 +143,7 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
       }
     }
     lowestNode = (LowestTreeStorageNode<T> *)getChild(internalNodes[lastInternalDim],
-                                                      lastInternalDim, nextValue, permutedIndex);
+                                                      lastInternalDim, nextValue);
 
     return h;
   }

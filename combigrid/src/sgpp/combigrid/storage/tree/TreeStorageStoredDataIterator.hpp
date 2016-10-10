@@ -7,13 +7,13 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGESTOREDDATAITERATOR_HPP_
 
 #include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
+#include <sgpp/combigrid/storage/IterationPolicy.hpp>
 #include <sgpp/combigrid/storage/tree/InternalTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
-#include <sgpp/combigrid/storage/IterationPolicy.hpp>
 
-#include <vector>
-#include <memory>
 #include <cstddef>
+#include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -21,6 +21,7 @@ namespace combigrid {
 /**
  * Iterator for the TreeStorage class that only traverses entries stored in the storage.
  * The entries are traversed in lexicographical order (lexicographically ascending multi-indices).
+ * For a detailed method description, see AbstractMultiStorageIterator.
  */
 template <typename T>
 class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
@@ -35,6 +36,10 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
 
   bool valid;
 
+  /**
+   * Helper function that moves to the next storage entry. This entry might not have been computed
+   * yet and so this function might have to be called multiple times until a valid entry is reached.
+   */
   int moveToNextImpl() {
     size_t numInternalDimensions = internalIndex.size();
     size_t lastInternalDim = numInternalDimensions - 1;
@@ -80,15 +85,6 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
 
     lowestNode =
         (LowestTreeStorageNode<T> *)internalNodes[lastInternalDim]->children[firstValue].get();
-    /*if (lowestNode->elements.size() == 0) {
-     // it is not valid to have an empty node for efficiency reasons except if the tree is
-     completely empty
-     // (otherwise, we might have to walk up and down several times to find a valid node)
-     // thus, we are going to fill it
-     MultiIndex index = internalIndex;
-     index.push_back(lowestIndex);
-     lowestNode->elements.push_back(lowestNode->context.func(index));
-     }*/
 
     return static_cast<int>(numInternalDimensions - d);
   }
@@ -168,10 +164,14 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
     return index;
   }
 
-  virtual bool computationRequested() {
-    return true;  // only iterates over already stored data
-  }
+  /**
+   * Returns true because the iterator only iterates over already stored data.
+   */
+  virtual bool computationRequested() { return true; }
 
+  /**
+   * Returns a dummy function because the values pointed to are already stored.
+   */
   virtual std::function<T()> requestComputationTask() {
     return []() { return T(); };  // no computation necessary
   }

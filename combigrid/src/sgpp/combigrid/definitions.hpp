@@ -13,6 +13,7 @@
 #include <functional>
 #include <vector>
 
+// defines for turning logging capabilities on or off
 #define CGLOG(str)
 #define CGLOG_SURROUND(cmd) cmd
 /*#include <iostream>
@@ -27,11 +28,22 @@ namespace combigrid {
 
 typedef std::vector<size_t> MultiIndex;
 
+/**
+ * Returns a constant function with the given value. If no value is specified, the
+ * default-constructed value is taken. The template-parameter In corresponding to the input
+ * parameter type of the returned constant function has to be specified. If no fixed value is given,
+ * the output type also has to be specified.
+ */
 template <typename In, typename Out>
 std::function<Out(In)> constantFunction(Out fixedValue = Out()) {
   return [fixedValue](In value) { return fixedValue; };
 }
 
+/**
+ * Returns a constant function with the given value and input type (MultiIndex const &). If no value
+ * is specified, the default-constructed value is taken. If no fixed value is given, the output type
+ * also has to be specified.
+ */
 template <typename Out>
 std::function<Out(MultiIndex const &)> multiIndexToDefaultValue(Out fixedValue = Out()) {
   return constantFunction<MultiIndex const &, Out>(fixedValue);

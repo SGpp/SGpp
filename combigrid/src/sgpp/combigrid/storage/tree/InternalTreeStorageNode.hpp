@@ -24,6 +24,8 @@ namespace combigrid {
  * which themselves have one number.
  * These nodes are represented by LowestTreeStorageNode objects, all other nodes are
  * InternalTreeStorageNode objects.
+ * Each InternalTreeStorageNode contains at least one child, even if the final LowestTreeStorageNode
+ * contains no value. This is guaranteed by the constructor.
  */
 template <typename T>
 class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
@@ -35,7 +37,6 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
    * @param context TreeStorageContext<T>-object containing information about the storage.
    * @param remainingDimensions Number of dimensions that come after this node (at least 1, since
    * this is an internal node).
-   * @param index Multi-index at which the
    */
   InternalTreeStorageNode(TreeStorageContext<T> &context, size_t remainingDimensions)
       : children(), context(context) {
@@ -74,7 +75,6 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
       if (remainingDimensions >= 2) {
         children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
       } else {
-        // TODO(holzmudd) check depth, depth+1 and not depth+1, depth
         children.emplace_back(new LowestTreeStorageNode<T>(context));
       }
     }

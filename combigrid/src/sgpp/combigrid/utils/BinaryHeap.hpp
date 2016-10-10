@@ -16,7 +16,8 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Implements a max heap using a binary heap
+ * Implements a max heap using a binary heap. We need this as a priority queue implementation with a
+ * updatePriority() function because we do not want to have boost as a dependency.
  */
 template <typename T, typename Comparator = std::less<T>>
 class BinaryHeap {
