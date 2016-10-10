@@ -62,9 +62,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
     # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and
     # -q is the relevant flag to make it use integrated assembler
-    env.AppendUnique(CPPFLAGS=["-Wa,-q"])
-    env.AppendUnique(CPPPATH="/usr/local/include")
-    env.AppendUnique(LIBPATH="/usr/local/lib")
+    #env.AppendUnique(CPPFLAGS=["-Wa,-q"])
+    #env.AppendUnique(CPPPATH="/usr/local/include")
+    #env.AppendUnique(LIBPATH="/usr/local/lib")
     env["SHLIBSUFFIX"] = ".dylib"
   elif env["PLATFORM"] == "cygwin":
     # required to find the static libraries compiled before the shared libraries
