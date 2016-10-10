@@ -29,6 +29,7 @@ std::shared_ptr<AbstractPermutationIterator> IdentityPointOrdering::getSortedPer
     return std::shared_ptr<AbstractPermutationIterator>(nullptr);
   }
 
+  // TODO(holzmudd): sort only once and not every time for more efficiency?
   return std::shared_ptr<AbstractPermutationIterator>(
       new SortedPermutationIterator(points, numPoints));
 }

@@ -16,6 +16,10 @@ namespace optimize {
 
 // TODO(holzmudd) destructor
 
+/**
+ * This contains helper classes used internally for optimization (Leja points)
+ */
+
 class func_base {
  public:
   virtual ~func_base() {}

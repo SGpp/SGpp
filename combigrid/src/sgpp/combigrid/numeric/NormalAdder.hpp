@@ -10,6 +10,9 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Standard adder with the same interface as the Kahan adder.
+ */
 class NormalAdder {
   double sum = 0.0;
 

@@ -29,6 +29,13 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * The CombigridEvaluator class evaluates a numerical method on different full grids and combines
+ * them using the combination technique. The numerical method on a full grid is given by an
+ * AbstractFullGridEvaluator.
+ * The template parameter V determines whether this does single or multi evaluation, confer also the
+ * description in algebraic/FloatArrayVector.hpp
+ */
 template <typename V>
 class CombigridEvaluator : public AbstractLevelEvaluator {
   V sum;
@@ -41,6 +48,10 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * The storages in between contain partial differences.
    */
   std::vector<std::shared_ptr<AbstractMultiStorage<V>>> partialDifferences;
+
+  /**
+   * Evaluator that does the numerical evaluation on full grids.
+   */
   std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval;
 
   void initPartialDifferences() {
@@ -52,12 +63,18 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   }
 
  public:
+  /**
+   * Constructor.
+   * @param numDimensions Dimensionality of the problem.
+   * @param multiEval Evaluation method for full grids whose results are then combined into a single
+   * value.
+   */
   CombigridEvaluator(size_t numDimensions, std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval)
       : sum(V::zero()),
         numDimensions(numDimensions),
         partialDifferences(),
         multiEval(multiEval),
-        queue(),
+        levelQueue(),
         refinementStrategy(AdaptiveRefinementStrategy::minStrategy()) {
     initPartialDifferences();
   }
@@ -71,14 +88,16 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         numDimensions(numDimensions),
         partialDifferences(),
         multiEval(multiEval),
-        queue(),
+        levelQueue(),
         refinementStrategy(AdaptiveRefinementStrategy::minStrategy()) {
     initPartialDifferences();
   }
 
   /**
-   * @return Returns true if the level was already there or if it was computed and the difference
-   * was not nan or +-inf.
+   * Performs an evaluation on the given level and adds the gained information to the current
+   * numerical approximation value.
+   * @return Returns true if the level was already there or (if it was computed and the difference
+   * was not nan or +-inf).
    */
   bool addLevel(MultiIndex const &level) {
     CGLOG("addLevel(): start");
@@ -124,31 +143,63 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
+  /**
+   * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
+   * execution of addLevel() faster
+   * @param level the level which one wants to compute
+   * @param callback This callback is called (with already locked mutex) from inside one of the
+   * returned tasks when all tasks for the given level are completed and the level can be added.
+   */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
     return multiEval->getLevelTasks(level, callback);
   }
 
+  /**
+   * Sets the mutex that is locked (if not nullptr) whenever problematic operations on data are
+   * executed.
+   */
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) { multiEval->setMutex(mutexPtr); }
 
+  /**
+   * Returns the storage with the Delta-values.
+   */
   std::shared_ptr<AbstractMultiStorage<V>> differences() const {
     return partialDifferences[numDimensions];
   }
 
+  /**
+   * @returns true iff the given level has already been added.
+   */
   bool containsLevel(MultiIndex const &level) {
     return partialDifferences[0]->containsIndex(level);
   }
 
+  /**
+   * Deprecated. Functionality has moved to LevelManager.
+   */
   void setRefinementStrategy(AdaptiveRefinementStrategy strategy) { refinementStrategy = strategy; }
 
+  /**
+   * @return an estimate (upper bound, in the case of nested points normally exact) of the number of
+   * new function evaluations (grid points) that have to be performed when adding this level.
+   */
   size_t maxNewPoints(MultiIndex const &level) { return multiEval->maxNewPoints(level); }
 
+  /**
+   * @return the total number of grid points in a given level.
+   */
   size_t numPoints(MultiIndex const &level) { return multiEval->numPoints(level); }
 
+  /**
+   * @return the norm of the difference/Delta value (in the single-evaluation case this is the
+   * absolute value) for the given level.
+   */
   double getDifferenceNorm(MultiIndex const &level) {
     return partialDifferences[numDimensions]->get(level).norm();
   }
 
   /**
+   * Deprecated. Functionality has moved to LevelManager.
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
    * If you have a norm w with levels starting from 1, simply use q = w - dim().
@@ -162,6 +213,9 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
+  /**
+   * Deprecated. Functionality has moved to LevelManager.
+   */
   void addRegularLevelsByNumPoints(size_t maxNumPoints) {
     size_t numPoints = 0;
 
@@ -193,15 +247,29 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
+  /**
+   * @return the dimensionality of the problem.
+   */
   size_t dim() const { return numDimensions; }
 
+  /**
+   * @return the numerical approximation value computed by the combination technique. No computation
+   * is done here.
+   */
   V getValue() const { return sum; }
 
+  /**
+   * Clears the already computed values. This method has to be called if a parameter changed etc.
+   */
   void clear() {
     sum = V::zero();
     initPartialDifferences();
   }
 
+  /**
+   * @return a TreeStorage which contains an entry at an index i iff the level i has been added to
+   * this CombigridEvaluator.
+   */
   std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() {
     std::shared_ptr<TreeStorage<uint8_t>> storage(new TreeStorage<uint8_t>(numDimensions));
 
@@ -215,10 +283,17 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     return storage;
   }
 
+  /**
+   * @return the serialized version of getLevelStructure()
+   */
   std::string getSerializedLevelStructure() {
     return TreeStorageSerializationStrategy<uint8_t>(numDimensions).serialize(getLevelStructure());
   }
 
+  /**
+   * Adds all levels for which an entry is contained in storage. "Inverse" operation to
+   * getLevelStructure().
+   */
   void addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage) {
     auto it = storage->getStoredDataIterator();
 
@@ -228,11 +303,18 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     }
   }
 
+  /**
+   * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
+   * "Inverse" operation to getSerializedLevelStructure().
+   */
   void addLevelsFromSerializedStructure(std::string serializedStructure) {
     addLevelsFromStructure(
         TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
   }
 
+  /**
+   * Deprecated. Functionality has moved to LevelManager.
+   */
   void addLevelsAdaptive(size_t maxNumPoints) {
     CGLOG("addLevelsAdaptive(): start");
     initAdaption();
@@ -240,10 +322,10 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     CGLOG("addLevelsAdaptive(): adaption initialized");
     size_t currentPointBound = 0;
 
-    while (!queue.empty()) {
+    while (!levelQueue.empty()) {
       CGLOG("addLevelsAdaptive(): next queue entry");
-      QueueEntry entry = queue.top();
-      queue.pop();
+      QueueEntry entry = levelQueue.top();
+      levelQueue.pop();
 
       currentPointBound += entry.maxNewPoints;
 
@@ -262,14 +344,16 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   }
 
  private:
+  // This whole part is deprecated. Functionality has moved to LevelManager.
+
   // data structures for adaptive refinement
   typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator> MultiIndexQueue;
-  MultiIndexQueue queue;
+  MultiIndexQueue levelQueue;
   AdaptiveRefinementStrategy refinementStrategy;
 
   void clearQueue() {
     MultiIndexQueue other;
-    queue.swap(other);  // unfortunately, there is no clear() method
+    levelQueue.swap(other);  // unfortunately, there is no clear() method
   }
 
   void initAdaption() {
@@ -282,10 +366,10 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
       it->moveToNext();
     }
 
-    if (queue.empty()) {
+    if (levelQueue.empty()) {
       // no difference has yet been computed, so add start value
       MultiIndex startIndex(numDimensions, 0);
-      queue.push(QueueEntry(startIndex, 1.0, multiEval->maxNewPoints(startIndex)));
+      levelQueue.push(QueueEntry(startIndex, 1.0, multiEval->maxNewPoints(startIndex)));
     }
   }
 
@@ -328,7 +412,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
       double priority = refinementStrategy.computePriority(predecessorNorms, maxNewPoints);
 
       QueueEntry nextEntry(nextIndex, priority, maxNewPoints);
-      queue.push(nextEntry);
+      levelQueue.push(nextEntry);
     }
   }
 };

@@ -7,6 +7,7 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ABSTRACTPOINTDISTRIBUTION_HPP_
 
 #include <sgpp/globaldef.hpp>
+
 #include <cstddef>
 
 namespace sgpp {
@@ -14,6 +15,7 @@ namespace combigrid {
 
 /**
  * An abstract point distribution provides a set of n one-dimensional grid points for each value of
+ * n
  */
 class AbstractPointDistribution {
  public:

@@ -13,6 +13,7 @@ namespace combigrid {
 
 /**
  * numPoints = (l == 0) ? 1 : 2^l + 1
+ * Yields nested points for e. g. uniform points (with boundary) and Clenshaw-Curtis-Points
  */
 class ExponentialGrowthStrategy : public AbstractGrowthStrategy {
  public:

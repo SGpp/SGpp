@@ -7,15 +7,20 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ARRAYEVALUATOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class takes a 1D linear evaluator operating on scalars (which is given through the template
+ * type ScalarEvaluator) and uses multiple instances of it for doing multi-evaluation.
+ * It is optimized to perform operations common to all of the evaluators only once.
+ */
 template <typename ScalarEvaluator>
 class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   std::vector<ScalarEvaluator> evaluators;
@@ -61,8 +66,6 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     computeBasisCoefficients();
   }
 
-  // don't change return type back to the equivalent
-  // std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> or swig will give compile errors...
   virtual std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() {
     return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>(
         new ArrayEvaluator<ScalarEvaluator>(*this));

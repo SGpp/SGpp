@@ -49,11 +49,19 @@ class CombigridMultiOperation {
   std::shared_ptr<CombigridMultiOperationImpl> impl;  // unique_ptr causes SWIG errors
 
  public:
+  /**
+   * Constructs a CombigridMultiOperation with the given hierarchies, evaluators, level manager and
+   * function to evaluate.
+   */
   CombigridMultiOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, MultiFunction func);
 
+  /**
+   * Constructs a CombigridMultiOperation with the given hierarchies, evaluators, level manager and
+   * CombigridStorage that contains the function to evaluate.
+   */
   CombigridMultiOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
@@ -64,36 +72,105 @@ class CombigridMultiOperation {
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
-   * computed data)
+   * computed data). This is only relevant for methods with parameters (e.g. interpolation, but not
+   * quadrature).
+   * @param params The parameters at which the function should be evaluated.
    */
   void setParameters(std::vector<base::DataVector> const &params);
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
-   * computed data). The evaluation points are assumed to be the columns of the matrix.
+   * computed data). This is only relevant for methods with parameters (e.g. interpolation, but not
+   * quadrature). The evaluation points are assumed to be the rows of the matrix.
    */
   void setParameters(base::DataMatrix const &params);
 
+  /**
+   * Returns the current computed value.
+   */
   base::DataVector getResult();
 
+  /**
+   * Computes the result with regular levels up to 1-norm q (levels start from zero) and with
+   * parameter params. This is a convenience function. If you need other functionality, use
+   * getLevelManager() and operate directly on the LevelManager.
+   */
   base::DataVector evaluate(size_t q, std::vector<base::DataVector> const &params);
 
+  /**
+   * Via the LevelManager, more options are available than are provided directly by this class.
+   */
   std::shared_ptr<LevelManager> getLevelManager();
+
+  /**
+   * Can be used to set the level manager, e.g. if one of the static constructor functions has been
+   * used.
+   */
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
+  /**
+   * Returns a storage of the differences (Deltas) that have been computed by the
+   * CombigridEvaluator.
+   */
   std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> getDifferences();
 
   // TODO(holzmudd): add static constructor functions
+
+  /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a Clenshaw-Curtis grid with
+   * an exponential growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
   static std::shared_ptr<CombigridMultiOperation> createExpClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
+
+  /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a Clenshaw-Curtis grid with
+   * a linear growth (not nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
   static std::shared_ptr<CombigridMultiOperation> createLinearClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
+
+  /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a Leja grid with
+   * an exponential growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
   static std::shared_ptr<CombigridMultiOperation> createExpLejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
+
+  /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a Leja grid with
+   * linear growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
+   * points are used.
+   */
   static std::shared_ptr<CombigridMultiOperation> createLinearLejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
+
+  /**
+   * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
+   * on a Leja grid with linear growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
+   * points are used.
+   */
   static std::shared_ptr<CombigridMultiOperation> createLinearLejaQuadrature(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
+
+  /**
+   * Returns a CombigridMultiOperation doing (multi-)linear interpolation
+   * on a uniform grid with boundary using an exponential growth strategy (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformLinearInterpolation(
       size_t numDimensions, MultiFunction func);
 };

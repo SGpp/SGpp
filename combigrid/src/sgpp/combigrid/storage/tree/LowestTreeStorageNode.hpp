@@ -6,12 +6,12 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_LOWESTTREESTORAGENODE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_LOWESTTREESTORAGENODE_HPP_
 
+#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageContext.hpp>
-#include <sgpp/combigrid/definitions.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -29,17 +29,8 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
   TreeStorageContext<T> &context;
 
   LowestTreeStorageNode(TreeStorageContext<T> &context, MultiIndex const &index, size_t depth,
-                        size_t zeroDepth, bool createFirstChild = true)
-      : elements(), context(context) {
-    /*if (createFirstChild) {
-     MultiIndex realIndex(depth + 1);
-     for (size_t i = 0; i <= depth; ++i) {
-     realIndex[i] = (i <= zeroDepth) ? index[i] : 0;
-     } CGLOG("LowestTreeStorageNode(): evaluate function");
-     elements.push_back(context.func(realIndex));
-     statusVector.push_back(StorageStatus::STORED);
-     }*/
-  }
+                        size_t zeroDepth)
+      : statusVector(), elements(), context(context) {}
 
   virtual ~LowestTreeStorageNode() {}
 

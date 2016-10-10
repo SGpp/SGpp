@@ -15,6 +15,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class provides standard configurations of point hierarchies. The methods names allude to the
+ * used growth strategy and point distribution. All hierarchies provided here are nested.
+ */
 class CombiHierarchies {
  public:
   static std::shared_ptr<AbstractPointHierarchy> linearLeja(size_t growthFactor = 2);
@@ -25,6 +29,9 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expUniformNoBoundary();
 };
 
+/**
+ * This class provides standard configurations of 1D-evaluators (single- and multi-evaluation).
+ */
 class CombiEvaluators {
  public:
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();

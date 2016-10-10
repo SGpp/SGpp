@@ -6,20 +6,27 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_IDENTITYPOINTORDERING_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_ORDERING_IDENTITYPOINTORDERING_HPP_
 
-#include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 #include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
+#include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Point ordering class that uses the identity mapping to compute a level-independent index (i.e. it
+ * can be used for non-nested settings or for points which are already ordered correctly, e.g. Leja
+ * points). The growth strategy can be configured via a constructor parameter. If isSorted is set to
+ * false in the constructor, the sorted permutation is determined using a sorting algorithm.
+ */
 class IdentityPointOrdering : public AbstractPointOrdering {
   std::shared_ptr<AbstractGrowthStrategy> growthStrategy;
   bool isSorted;
 
  public:
-  IdentityPointOrdering(std::shared_ptr<AbstractGrowthStrategy> growthStrategy, bool isSorted);
+  IdentityPointOrdering(std::shared_ptr<AbstractGrowthStrategy> growthStrategy,
+                        bool isSorted = false);
 
   virtual ~IdentityPointOrdering();
 

@@ -6,17 +6,23 @@
 #ifndef QUADRATUREEVALUATOR_HPP_
 #define QUADRATUREEVALUATOR_HPP_
 
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/SingleFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
-#include <vector>
 #include <functional>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This evaluator does quadrature based on the given grid points. The quadrature weights are
+ * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
+ * In the constructor, a weight function may be passed whose values at the grid points are
+ * multiplied with the given function values.
+ */
 class QuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   std::vector<double> xValues;
   std::vector<FloatScalarVector> weights;

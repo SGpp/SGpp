@@ -10,6 +10,9 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Sorted-permutation-iterator for ExponentialChebyshevPointOrdering
+ */
 class ExponentialChebyshevPermutationIterator : public AbstractPermutationIterator {
   size_t currentIndex;
   size_t level;
