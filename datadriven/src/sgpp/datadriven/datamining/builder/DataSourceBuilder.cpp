@@ -80,6 +80,11 @@ DataSource* DataSourceBuilder::assemble() {
   return new DataSource(config, sampleProvider);
 }
 
+DataSource* DataSourceBuilder::fromConfig(const DataSourceConfig& config) {
+  this->config = config;
+  return assemble();
+}
+
 void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;
