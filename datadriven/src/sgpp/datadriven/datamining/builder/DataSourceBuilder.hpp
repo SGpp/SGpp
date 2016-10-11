@@ -29,7 +29,8 @@ class DataSourceBuilder {
   DataSourceBuilder& withFileType(const std::string& fileType);
   DataSourceBuilder& inBatches(size_t howMany);
   DataSourceBuilder& withBatchSize(size_t batchSize);
-  virtual DataSource* assemble();
+  DataSource* assemble();
+  DataSource* fromConfig(const DataSourceConfig& config);
 
  private:
   void grabTypeInfoFromFilePath();
