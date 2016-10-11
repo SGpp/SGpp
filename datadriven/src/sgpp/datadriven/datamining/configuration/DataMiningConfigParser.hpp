@@ -42,6 +42,8 @@ class DataMiningConfigParser {
 
   bool hasDataSourceConfig() const;
   bool hasScorerConfig() const;
+  bool hasScorerConfigCrossValidation() const;
+  bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
 
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
