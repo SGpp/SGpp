@@ -54,6 +54,18 @@ bool DataMiningConfigParser::hasDataSourceConfig() const {
 
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
 
+bool DataMiningConfigParser::hasScorerConfigCrossValidation() const {
+  bool hasScorerCrossValidationConfig =
+      hasScorerConfig() ? (*configFile)[scorer].contains("crossValidation") : false;
+  return hasScorerCrossValidationConfig;
+}
+
+bool DataMiningConfigParser::hasScorerConfigTesting() const {
+  bool hasScorerTestingConfig =
+      hasScorerConfig() ? (*configFile)[scorer].contains("testing") : false;
+  return hasScorerTestingConfig;
+}
+
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
@@ -89,8 +101,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
 
 bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config,
                                                     const TestingConfiguration& defaults) const {
-  bool hasScorerTestingConfig =
-      hasScorerConfig() ? (*configFile)[scorer].contains("testing") : false;
+  bool hasScorerTestingConfig = hasScorerConfigTesting();
 
   if (hasScorerTestingConfig) {
     auto scorerTestingConfig = static_cast<DictNode*>(&(*configFile)[scorer]["testing"]);
@@ -128,8 +139,7 @@ bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config
 
 bool DataMiningConfigParser::getScorerCrossValidationConfig(
     CrossValidationConfiguration& config, const CrossValidationConfiguration& defaults) const {
-  bool hasScorerCrossValidationConfig =
-      hasScorerConfig() ? (*configFile)[scorer].contains("crossValidation") : false;
+  bool hasScorerCrossValidationConfig = hasScorerConfigCrossValidation();
 
   if (hasScorerCrossValidationConfig) {
     auto scorerTestingConfig = static_cast<DictNode*>(&(*configFile)[scorer]["crossValidation"]);
