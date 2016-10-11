@@ -5,23 +5,14 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
-#include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-
-#include <sgpp/globaldef.hpp>
 
 // TODO(lettrich): allow different regularization types
 // TODO(lettrich): allow different refinement types
@@ -41,7 +32,7 @@ using sgpp::solver::SLESolverType;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingLeastSquares::ModelFittingLeastSquares(DataMiningConfigurationLeastSquares config)
+ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
     : datadriven::ModelFittingBase(),
       config(config),
       systemMatrix(nullptr),
@@ -117,7 +108,7 @@ DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(DataMatrix& trai
   return static_cast<DMSystemMatrixBase*>(systemMatrix);
 }
 
-SLESolver* ModelFittingLeastSquares::buildSolver(DataMiningConfigurationLeastSquares& config) {
+SLESolver* ModelFittingLeastSquares::buildSolver(FitterConfiguration& config) {
   SLESolver* solver;
 
   if (config.getSolverRefineConfig().type_ == SLESolverType::CG) {
@@ -134,8 +125,8 @@ SLESolver* ModelFittingLeastSquares::buildSolver(DataMiningConfigurationLeastSqu
   return solver;
 }
 
-void ModelFittingLeastSquares::configureSolver(DataMiningConfigurationLeastSquares& config,
-                                               SLESolver& solver, FittingSolverState solverState) {
+void ModelFittingLeastSquares::configureSolver(FitterConfiguration& config, SLESolver& solver,
+                                               FittingSolverState solverState) {
   switch (solverState) {
     case FittingSolverState::solve:
       solver.setMaxIterations(config.getSolverFinalConfig().maxIterations_);

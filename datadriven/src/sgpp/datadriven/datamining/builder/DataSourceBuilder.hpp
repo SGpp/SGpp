@@ -13,9 +13,9 @@
 
 #include <memory.h>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <string>
 #include <vector>
-#include "../modules/dataSource/DataSourceConfig.hpp"
 
 namespace sgpp {
 namespace datadriven {

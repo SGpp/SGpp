@@ -11,11 +11,10 @@
  */
 
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -27,10 +26,10 @@ using sgpp::datadriven::DataSourceBuilder;
 using sgpp::datadriven::DataSource;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
-using sgpp::datadriven::DataMiningConfigurationLeastSquares;
+using sgpp::datadriven::FitterConfigurationLeastSquares;
 using sgpp::datadriven::Metric;
 using sgpp::datadriven::MSE;
-// using sgpp::datadriven::SimpleSplittingScorer;
+// using sgpp::datadriven::SplittingScorer;
 
 int main(int argc, char **argv) {
   // input
@@ -50,7 +49,7 @@ int main(int argc, char **argv) {
   //  size_t maxRefinenum = 4;
 
   // regression
-  auto config = DataMiningConfigurationLeastSquares();
+  auto config = FitterConfigurationLeastSquares();
   // config.addIDAttr("trainPortion", 0.5);
   // config.addIDAttr("seed", static_cast<uint64_t>(42));
 

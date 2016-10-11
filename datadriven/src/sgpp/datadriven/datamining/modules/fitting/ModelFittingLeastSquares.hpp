@@ -9,10 +9,9 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
-
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/solver/SLESolver.hpp>
@@ -37,7 +36,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    *
    * @param config configuration
    */
-  ModelFittingLeastSquares(DataMiningConfigurationLeastSquares config);
+  ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config);
 
   /**
    * Destructor
@@ -63,13 +62,13 @@ class ModelFittingLeastSquares : public ModelFittingBase {
  protected:
   virtual DMSystemMatrixBase* buildSystemMatrix(DataMatrix& trainDataset, double lambda);
 
-  virtual SLESolver* buildSolver(DataMiningConfigurationLeastSquares& config);
+  virtual SLESolver* buildSolver(FitterConfiguration& config);
 
-  void configureSolver(DataMiningConfigurationLeastSquares& config, SLESolver& solver,
+  void configureSolver(FitterConfiguration& config, SLESolver& solver,
                        FittingSolverState solverState);
 
  private:
-  DataMiningConfigurationLeastSquares config;
+  FitterConfigurationLeastSquares config;
   std::shared_ptr<DMSystemMatrixBase> systemMatrix;
   std::shared_ptr<SLESolver> solver;
   OperationMultipleEvalConfiguration implementationConfig;
