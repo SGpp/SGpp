@@ -11,14 +11,12 @@
  */
 
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -31,7 +29,7 @@ using sgpp::datadriven::DataSourceBuilder;
 using sgpp::datadriven::DataSource;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
-using sgpp::datadriven::DataMiningConfigurationLeastSquares;
+using sgpp::datadriven::FitterConfigurationLeastSquares;
 using sgpp::datadriven::MSE;
 using sgpp::datadriven::Scorer;
 using sgpp::datadriven::CrossValidation;
@@ -54,7 +52,7 @@ int main(int argc, char** argv) {
   auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   // regression
-  auto config = DataMiningConfigurationLeastSquares();
+  auto config = FitterConfigurationLeastSquares();
   // set grid dim
   auto gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;

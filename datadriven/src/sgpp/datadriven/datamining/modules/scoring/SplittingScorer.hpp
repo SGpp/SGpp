@@ -23,7 +23,6 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../../configuration/DataMiningConfiguration.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -31,7 +30,7 @@ namespace datadriven {
 class SplittingScorer : public Scorer {
  public:
   SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
-                        double trainPortion = 0.8);
+                  double trainPortion = 0.8);
   virtual ~SplittingScorer();
 
   virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
