@@ -22,7 +22,7 @@
 namespace sgpp {
 namespace datadriven {
 
-class CrossValidation : Scorer {
+class CrossValidation : public Scorer {
  public:
   virtual ~CrossValidation();
   CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
