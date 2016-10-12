@@ -82,6 +82,10 @@ DataSource* DataSourceBuilder::assemble() {
 
 DataSource* DataSourceBuilder::fromConfig(const DataSourceConfig& config) {
   this->config = config;
+
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
   return assemble();
 }
 
