@@ -86,7 +86,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     if (dataSourceConfig->contains("fileType")) {
       config.fileType = DataSourceFileTypeParser::parse((*dataSourceConfig)["fileType"].get());
     } else {
-      std::cout << "# Did not find " << dataSource << " [fileType]. Setting default value "
+      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
                 << asInteger(defaults.fileType) << "." << std::endl;
       config.fileType = defaults.fileType;
     }
@@ -338,7 +338,7 @@ std::string DataMiningConfigParser::parseString(DictNode& dict, const std::strin
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find  " << parentDict << "[" << key << "]. Setting default value "
+    std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
               << defaultValue << "." << std::endl;
     return defaultValue;
   }
@@ -356,7 +356,7 @@ double DataMiningConfigParser::parseDouble(DictNode& dict, const std::string& ke
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find  " << parentDict << "[" << key << "]. Setting default value "
+    std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
               << defaultValue << "." << std::endl;
     return defaultValue;
   }
@@ -373,7 +373,7 @@ size_t DataMiningConfigParser::parseUInt(DictNode& dict, const std::string& key,
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find  " << parentDict << "[" << key << "]. Setting default value "
+    std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
               << defaultValue << "." << std::endl;
     return defaultValue;
   }
@@ -408,7 +408,7 @@ int64_t DataMiningConfigParser::parseInt(DictNode& dict, const std::string& key,
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find  " << parentNode << "[" << key << "]. Setting default value "
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting default value "
               << defaultValue << "." << std::endl;
     return defaultValue;
   }
