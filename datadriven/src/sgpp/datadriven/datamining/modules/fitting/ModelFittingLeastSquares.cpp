@@ -49,9 +49,12 @@ void ModelFittingLeastSquares::fit(Dataset& dataset) {
   grid.reset();
   systemMatrix.reset();
 
-  // rebuild grid
+  // build grid
+  auto gridConfig = config.getGridConfig();
+  gridConfig.dim_ = dataset.getDimension();
+  config.setGridConfig(gridConfig);
   initializeGrid(config.getGridConfig());
-  // rebuild surplus vector
+  // build surplus vector
   alpha = std::make_shared<DataVector>(grid->getSize());
 
   // create sytem matrix
