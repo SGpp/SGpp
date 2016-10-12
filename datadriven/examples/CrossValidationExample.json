@@ -1,0 +1,23 @@
+{
+	"dataSource": {
+		"filePath": "/home/michael/Projects/HiWi/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz"
+	},
+	"scorer": {
+		"crossValidation": {
+			"folds": 5,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		}
+	},
+	"fitter": {
+		"type": "regressionLeastSquares",
+		"gridConfig": {
+			"gridType": "modlinear",
+			"level": 2
+		},
+		"regularizationConfig": {
+			"lambda": 10e-1
+		}
+	}
+}
