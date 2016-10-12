@@ -56,9 +56,11 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     splitSet(dataset, *trainDataset, *testDataset, trainSize, testSize, randomizedIndices, offset);
 
     // fit model
-    std::cout << "fitting model" << std::endl;
+    std::cout << "###############" << std::endl << "fitting model" << std::endl;
     scores[fold] = train(model, *trainDataset, *testDataset);
-    std::cout << "accuracy of fit:" << scores[fold] << std::endl;
+    std::cout << "###############" << std::endl
+              << "accuracy of fit:" << scores[fold] << std::endl
+              << std::endl;
   }
 
   // calculate final score as AVG

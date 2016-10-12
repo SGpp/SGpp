@@ -37,7 +37,7 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
 
   std::cout << "starting training with testing. " << std::endl
             << "test size:" << testSize << std::endl
-            << ", train size:" << trainSize << std::endl;
+            << "train size:" << trainSize << std::endl;
 
   // create test and train datasets.
   auto testDataset = std::make_unique<Dataset>(testSize, dim);
@@ -45,9 +45,11 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   splitSet(dataset, *trainDataset, *testDataset, trainSize, testSize, randomizedIndices);
 
   // fit model
-  std::cout << "fitting model" << std::endl;
+  std::cout << "###############" << std::endl << "fitting model" << std::endl;
   double score = train(model, *trainDataset, *testDataset);
-  std::cout << "accuracy of fit:" << score << std::endl;
+  std::cout << "###############" << std::endl
+            << "accuracy of fit:" << score << std::endl
+            << std::endl;
 
   if (stdDeviation) {
     *stdDeviation = 0;
