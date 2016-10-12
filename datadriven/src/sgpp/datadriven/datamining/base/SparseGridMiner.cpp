@@ -26,11 +26,14 @@ SparseGridMiner::~SparseGridMiner() {}
 void SparseGridMiner::learn() {
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   double stdDeviation;
-  double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
+  std::cout << std::endl;
 
+  double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
   std::cout << "Learner finished." << std::endl
+            << "###############" << std::endl
             << "Score: " << score << std::endl
-            << " Standard Deviation: " << stdDeviation << std::endl;
+            << "Standard Deviation: " << stdDeviation << std::endl
+            << "###############" << std::endl;
 }
 
 } /* namespace datadriven */
