@@ -12,7 +12,7 @@
 #include "OperationDensityOCLMultiPlatform.hpp"
 namespace sgpp {
 namespace datadriven {
-DensityOCLMultiPlatform::OperationDensityOCL*
+DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda,
                                         base::OCLOperationConfiguration *parameters,
@@ -21,7 +21,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("testdebug.cfg");
 
-  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
+  DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
         OperationDensityOCLMultiPlatform<float>(grid, dimension, manager, parameters,
@@ -39,7 +39,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   }
   return NULL;
 }
-DensityOCLMultiPlatform::OperationDensityOCL*
+DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, std::string opencl_conf,
                                         size_t platform_id, size_t device_id) {
@@ -47,7 +47,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
-  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
+  DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("MyOCLConf.cfg");
 
@@ -68,7 +68,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   }
   return NULL;
 }
-DensityOCLMultiPlatform::OperationDensityOCL*
+DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
                                         double lambda, std::string opencl_conf,
                                         size_t platform_id, size_t device_id) {
@@ -76,7 +76,7 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
-  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
+  DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
   parameters->serialize("MyOCLConf.cfg");
 
@@ -97,14 +97,14 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
   }
   return NULL;
 }
-DensityOCLMultiPlatform::OperationDensityOCL*
+DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, std::string opencl_conf) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
-  DensityOCLMultiPlatform::OperationDensityOCL::load_default_parameters(parameters);
+  DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
 
   size_t platformid = 0;

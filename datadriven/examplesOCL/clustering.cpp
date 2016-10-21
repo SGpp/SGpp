@@ -23,9 +23,9 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 6, k = 8;
-  double lambda = 0.0001, treshold = 0.2;
-  std::string filename = "clustering_testdataset_dim2.arff";
+  size_t dimension = 10, tiefe = 6, k = 6;
+  double lambda = 0.00001, treshold = 1.5;
+  std::string filename = "dataset2_dim10.arff";
 
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data =
@@ -36,9 +36,9 @@ int main() {
             << dataset.getNrows() << " datapoints." << std::endl;
 
   // Create Grid
-  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(2);
+  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(11);
+  gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
@@ -46,9 +46,9 @@ int main() {
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
 
-  sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.001);
-  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_mult =
-      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, 0.001,
+  sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.0001);
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* operation_mult =
+      sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
 
   operation_mult->mult(alpha, result);
@@ -125,5 +125,5 @@ int main() {
   // cleanup
   delete operation_mult;
   delete solver;
-  delete operation_graph;
+  // delete operation_graph;
 }

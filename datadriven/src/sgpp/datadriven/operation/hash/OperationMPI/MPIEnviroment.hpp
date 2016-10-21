@@ -38,7 +38,11 @@ class MPIEnviroment {
   MPIEnviroment(int argc, char *argv[], bool verbose);
   MPIEnviroment(void);
   MPIEnviroment(MPIEnviroment &cpy);
-
+  /**
+   * Slave main - every MPI node except the master should run in one of those
+   *
+   * In this main loop, every slave receives the messages to create or run operations.
+   */
   void slave_mainloop(void);
   int count_slaves(json::Node &currentslave);
   void init_communicator(base::OperationConfiguration conf);
@@ -58,6 +62,18 @@ class MPIEnviroment {
   static MPI_Comm& get_input_communicator(void) {return singleton_instance->input_communicator;}
   static base::OperationConfiguration createMPIConfiguration(int compute_nodes,
                                                              int opencl_devices_per_compute_node);
+  /**
+   * Create MPI configuration file based on a number of compute nodes their OpenCL configuration file
+   *
+   * Creates a MPI configuration with 3 Levels. One master node to control all other nodes, and
+   * one leutenant node on every compute node which controls all MPI nodes for this compute
+   * nodes. For each OpenCL device specified in the opencl configuration it will also create
+   * one worker. Duplicate devices will not be recognized hoewever.
+   *
+   * @param compute_nodes Number of compute nodes
+   * @param node_opencl_configuration OpenCL configuration file
+   * @return Finished MPI configuration
+   */
   static base::OperationConfiguration createMPIConfiguration(int compute_nodes,
                                                              base::OCLOperationConfiguration
                                                              node_opencl_configuration);
@@ -67,23 +83,50 @@ class MPIEnviroment {
 template <class T>
 class SimpleQueue {
  protected:
+  /// Number of sent workapckages
   unsigned int send_packageindex;
+  /// Number of received workapckages
   unsigned int received_packageindex;
+  /// Number of all workpackages
   unsigned int packagecount;
+  /// Array with for sending indices and packagesizes
   int packageinfo[2];
+  /// Stores the current starting indices for each work package
   unsigned int *startindices;
+  /// Stores the current starting indices for each prefetched work package
   unsigned int *secondary_indices;
+  /// Start index for the entire problem chunk of this queue
   size_t startindex;
   size_t packagesize;
   size_t workitem_count;
+  /// Datatyp for MPI_SEND and MPI_RECV, only supports float, double and int right now
   MPI_Datatype mpi_typ;
 
   bool verbose;
   MPI_Comm &comm;
   int commsize;
+  /// Prefetching activated?
   bool prefetching;
 
  public:
+  /**
+   * Constructor for a simple queue
+   *
+   * This constructor check whether there are enough packages for all subworkers (workers which
+   * receive workpackages from this queue). If there are not enough packages, the packagesize
+   * will be modified such that every worker receives at least 1 package (2 if prefetching is
+   * activated). This constructor will also already send the first workpackages with a blocking
+   * send so use with care!
+   *
+   * @param startindex Index where the chunk of the problem begins
+   * @param workitem_count Number of subworkers
+   * @param node_packagesize Prefered packagesize - will be modified if to small
+   * @param comm Communicator to the subworkers
+   * @param commsize Size of the communictor
+   * @param verbose Verbosity on or off
+   * @param prefetching Activates package prefetching if this parameter is true
+   * @return
+   */
   SimpleQueue(size_t startindex, size_t workitem_count, size_t node_packagesize, MPI_Comm &comm,
               int commsize, bool verbose = false, bool prefetching = false) :
       startindex(startindex), packagesize(node_packagesize),
@@ -144,6 +187,13 @@ class SimpleQueue {
       }
     }
   }
+  /**
+   * Waits for a result from any of the other workers, sends a new workpackage and returns said result
+   *
+   * @param startid Returns the starting index of the package result
+   * @param partial_result Buffer containing the package result
+   * @return Size of the result array
+   */
   size_t receive_result(int &startid, T *partial_result) {
     MPI_Status stat;
     int messagesize = 0;
@@ -214,6 +264,12 @@ class SimpleQueue {
     }
     return messagesize;
   }
+  /**
+   * Checks whether the queue has already finished
+   *
+   * @param
+   * @return Returns true if the queue has received results for all packages
+   */
   bool is_finished(void) {
     if (received_packageindex == packagecount)
       return true;

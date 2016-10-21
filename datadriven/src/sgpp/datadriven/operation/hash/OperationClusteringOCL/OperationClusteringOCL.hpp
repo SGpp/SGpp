@@ -40,7 +40,7 @@ class OperationClusteringOCL {
     size_t gridsize = grid->getStorage()->size();
     base::DataVector alpha(gridsize);
     base::DataVector b(gridsize);
-    DensityOCLMultiPlatform::OperationDensityOCL *mult_operation;
+    DensityOCLMultiPlatform::OperationDensity *mult_operation;
     DensityOCLMultiPlatform::OperationCreateGraphOCL *graph_operation;
     DensityOCLMultiPlatform::OperationPruneGraphOCL *prune_operation;
 

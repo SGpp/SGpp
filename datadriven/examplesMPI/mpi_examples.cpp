@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
   gridGen.regular(level);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
+  std::cin.get();
 
   sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
 
