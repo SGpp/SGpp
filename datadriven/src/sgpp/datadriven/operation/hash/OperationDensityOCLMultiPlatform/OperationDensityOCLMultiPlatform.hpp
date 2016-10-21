@@ -28,7 +28,7 @@ namespace DensityOCLMultiPlatform {
 
 /// Class for opencl density multiplication and density right hand side vector
 template<typename T>
-class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
+class OperationDensityOCLMultiPlatform: public OperationDensity {
  private:
   size_t dims;
   size_t gridSize;
@@ -53,7 +53,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    sgpp::base::OCLOperationConfiguration *parameters,
                                    T lambda, size_t platform_id, size_t device_id)
-      : OperationDensityOCL(), dims(dimensions),
+      : OperationDensity(), dims(dimensions),
         gridSize(grid.getStorage().getSize()),
         devices(manager->getDevices()),
         verbose(false),
@@ -118,7 +118,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                    sgpp::base::OCLOperationConfiguration *parameters,
                                    T lambda, size_t platform_id, size_t device_id) :
-      OperationDensityOCL(), dims(dimensions),
+      OperationDensity(), dims(dimensions),
       gridSize(gridsize),
       devices(manager->getDevices()),
       verbose(false),

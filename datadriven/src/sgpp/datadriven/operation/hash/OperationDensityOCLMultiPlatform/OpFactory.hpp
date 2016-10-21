@@ -13,22 +13,22 @@ namespace sgpp {
 namespace datadriven {
 
 
-DensityOCLMultiPlatform::OperationDensityOCL*
+DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         double lambda, base::OCLOperationConfiguration *parameters,
                                         size_t platform_id, size_t device_id);
 /// Generates opencl density multiplication operation given opencl device and configuration file
-sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
+sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf, size_t platform_id,
                                         size_t device_id);
 /// Generates opencl density multiplication operation given opencl device and a serialized grid
-sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
+sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
                                         double lambda, std::string opencl_conf,
                                         size_t platform_id, size_t device_id);
 /// Generates opencl density multiplication operation
-sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL*
+sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda,
                                         std::string opencl_conf);
 }  // namespace datadriven

@@ -89,7 +89,8 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
                                                      (2 * grid_dimensions),
                                                      grid_dimensions, alpha,
                                                      data_matrix, treshold, k,
-                                                     "MyOCLConf.cfg", opencl_platform, opencl_device);
+                                                     "MyOCLConf.cfg", opencl_platform,
+                                                     opencl_device);
     }
   }
   PrunedGraphCreationWorker(base::Grid &grid, base::DataVector &alpha, base::DataMatrix &data,

@@ -37,7 +37,7 @@ void multiply_and_test(sgpp::base::OCLOperationConfiguration *parameters,
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
   // Create operation
-  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* mult_operation =
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* mult_operation =
       new sgpp::datadriven::DensityOCLMultiPlatform::
       OperationDensityOCLMultiPlatform<double>(grid, 2, manager, parameters, 0.001,
                                                0, 0);
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL)  {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
   sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationDensityOCL::load_default_parameters(parameters.get());
+      OperationDensity::load_default_parameters(parameters.get());
 
   // Create OpenCL Manager
   std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
@@ -313,14 +313,14 @@ BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
   sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationDensityOCL::load_default_parameters(parameters.get());
+      OperationDensity::load_default_parameters(parameters.get());
 
   // Create OpenCL Manager
   std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(false);
 
   // Create operation
-  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* mult_operation =
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* mult_operation =
       new sgpp::datadriven::DensityOCLMultiPlatform::
       OperationDensityOCLMultiPlatform<double>(*grid, 2, manager, parameters.get(), 0.001,
                                                0, 0);
@@ -365,7 +365,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
   sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationDensityOCL::load_default_parameters(parameters.get());
+      OperationDensity::load_default_parameters(parameters.get());
 
   // Create OpenCL Manager
   std::shared_ptr<sgpp::base::OCLManagerMultiPlatform> manager;
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL)  {
   sgpp::base::DataMatrix& dataset = data.getData();
 
   // Create operation
-  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensityOCL* operation_rhs =
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* operation_rhs =
       new sgpp::datadriven::DensityOCLMultiPlatform::
       OperationDensityOCLMultiPlatform<double>(*grid, 2, manager, parameters.get(), 0.001,
                                                0, 0);

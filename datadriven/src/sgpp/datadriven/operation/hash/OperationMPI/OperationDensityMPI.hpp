@@ -20,7 +20,7 @@ namespace clusteringmpi {
 class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<double> {
  protected:
   double lambda;
-  DensityOCLMultiPlatform::OperationDensityOCL *op;
+  DensityOCLMultiPlatform::OperationDensity *op;
   double *alpha;
 
   void receive_and_send_initial_data(void) {

@@ -18,9 +18,9 @@ namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 /// Base class for density multiplication operation
-class OperationDensityOCL: public base::OperationMatrix {
+class OperationDensity: public base::OperationMatrix {
  public:
-  OperationDensityOCL()  {
+  OperationDensity()  {
   }
   /// Execute one matrix-vector multiplication with the density matrix
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;

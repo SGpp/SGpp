@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   sgpp::base::OCLManagerMultiPlatform manager(true);
   auto configuration = manager.getConfiguration();
   sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationDensityOCL::load_default_parameters(configuration.get());
+      OperationDensity::load_default_parameters(configuration.get());
   sgpp::datadriven::DensityOCLMultiPlatform::
       OperationCreateGraphOCL::load_default_parameters(configuration.get());
   sgpp::datadriven::DensityOCLMultiPlatform::

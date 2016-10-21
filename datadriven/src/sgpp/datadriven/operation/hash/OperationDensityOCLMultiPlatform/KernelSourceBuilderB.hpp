@@ -103,7 +103,7 @@ class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
                  <<"}" << std::endl;
     if (kernelConfiguration.contains("WRITE_SOURCE")) {
       if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-        this->writeSource("DensityOCLMultiPlatform_mult.cl", sourceStream.str());
+        this->writeSource("DensityOCLMultiPlatform_rhs.cl", sourceStream.str());
       }
     }
     return sourceStream.str();

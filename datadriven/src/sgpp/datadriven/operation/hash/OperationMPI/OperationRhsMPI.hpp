@@ -18,7 +18,7 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
                          public MPIWorkerPackageBase<double> {
  protected:
   double lambda;
-  DensityOCLMultiPlatform::OperationDensityOCL *op;
+  DensityOCLMultiPlatform::OperationDensity *op;
   base::DataMatrix *data_matrix;
 
   void receive_and_send_initial_data(void) {
