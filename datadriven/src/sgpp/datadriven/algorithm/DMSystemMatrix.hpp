@@ -29,7 +29,7 @@ class DMSystemMatrix : public DMSystemMatrixBase {
  private:
   base::Grid& grid;
   /// base::OperationMatrix, the regularisation method
-  std::unique_ptr<base::OperationMatrix> C;
+  std::shared_ptr<base::OperationMatrix> C;
   /// OperationB for calculating the data matrix
   std::unique_ptr<base::OperationMultipleEval> B;
 
@@ -43,7 +43,7 @@ class DMSystemMatrix : public DMSystemMatrixBase {
    * @param lambdaRegression the lambda, the regression parameter
    */
   DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
-                 std::unique_ptr<base::OperationMatrix> C, double lambdaRegression);
+                 std::shared_ptr<base::OperationMatrix> C, double lambdaRegression);
 
   /**
    * Std-Destructor
