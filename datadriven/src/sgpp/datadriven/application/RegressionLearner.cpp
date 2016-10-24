@@ -206,7 +206,7 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
   return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset,
-                                                      std::unique_ptr<base::OperationMatrix>(opMatrix),
+                                                      std::shared_ptr<base::OperationMatrix>(opMatrix),
                                                       regularizationConfig.lambda_);
 }
 

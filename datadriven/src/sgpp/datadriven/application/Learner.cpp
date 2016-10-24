@@ -38,7 +38,7 @@ Learner::~Learner() {
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
-  std::unique_ptr<sgpp::base::OperationMatrix> C;
+  std::shared_ptr<sgpp::base::OperationMatrix> C;
   if (this->grid == NULL) return NULL;
 
   // Clean up, if needed
