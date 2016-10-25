@@ -213,6 +213,8 @@ class LevelManager {
   /**
    * Adds a set of level multi-indices. The levels are enumerated with increasing 1-norm until
    * the total number of necessary function evaluations would exceed the given limit maxNumPoints.
+   * Levels which are already computed are not counted in the number of points, so if many levels
+   * have already been computed, the counting starts from their successors.
    * For example, this might add the levels (0, 0), (1, 0), (0, 1), (2, 0), (1, 1) and omit the
    * level (0, 2) because that would mean more function evaluations than specified.
    *

@@ -225,14 +225,17 @@ std::vector<MultiIndex> LevelManager::getRegularLevelsByNumPoints(size_t maxNumP
     while (iterator.isValid()) {
       MultiIndex nextLevel = iterator.value();
 
-      size_t maxNewPoints = combiEval->maxNewPoints(nextLevel);
-      numPoints += maxNewPoints;
+      if (!combiEval->containsLevel(nextLevel)) {
+        size_t maxNewPoints = combiEval->maxNewPoints(nextLevel);
+        numPoints += maxNewPoints;
 
-      if (numPoints > maxNumPoints) {
-        return result;
+        if (numPoints > maxNumPoints) {
+          return result;
+        }
+
+        result.push_back(nextLevel);
       }
 
-      result.push_back(nextLevel);
       iterator.moveToNext();
     }
 

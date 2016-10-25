@@ -35,17 +35,17 @@ class MultiFunction {
    * for lambdas or function objects
    */
   template <typename T>
-  explicit MultiFunction(T f) : func(f) {}
+  explicit MultiFunction(T const &f) : func(f) {}
 
   /**
    * Evaluates the function.
    */
-  double operator()(base::DataVector const &vec);
+  double operator()(base::DataVector const &vec) const;
 
   /**
    * Evaluates the function (for python use etc., does the same as operator()).
    */
-  double call(base::DataVector const &vec);
+  double call(base::DataVector const &vec) const;
 };
 
 } /* namespace combigrid */
