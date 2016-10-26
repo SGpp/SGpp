@@ -11,6 +11,7 @@
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp>
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 
@@ -23,7 +24,7 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 6, k = 6;
+  size_t dimension = 10, tiefe = 5, k = 6;
   double lambda = 0.00001, treshold = 1.5;
   std::string filename = "dataset2_dim10.arff";
 
