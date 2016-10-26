@@ -8,7 +8,7 @@ from scipy.stats import gaussian_kde
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp._pysgpp_swig import createOperationEval
+from pysgpp._pysgpp_swig import createOperationEval, createOperationEvalNaive
 
 
 def plotDensity3d(U, n=36):
@@ -60,7 +60,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
         gps[i, :] = p.array()
 
     ax.plot_wireframe(xv, yv, Z, color="black")
@@ -87,7 +87,6 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
     Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    opEval = createOperationEval(grid)
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = f(evalSGFunction(grid, alpha,
@@ -98,7 +97,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
     gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
         gps[i, :] = p.array()
 
     ax.plot_wireframe(xv, yv, Z, color="black")
@@ -150,7 +149,7 @@ def plotSGNodal3d(grid, alpha):
 
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
         A[i, 0] = p[0]
         A[i, 1] = p[1]
         A[i, 2] = evalSGFunction(grid, alpha, p)

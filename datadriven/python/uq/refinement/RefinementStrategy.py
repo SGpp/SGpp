@@ -67,7 +67,7 @@ class ExpectationValueOptRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -265,7 +265,7 @@ class ExpectationValueBFRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -296,7 +296,7 @@ class SurplusRatioEstimationRanking(Ranking):
         ratio = estimateConvergence(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -324,7 +324,7 @@ class LinearSurplusEstimationRanking(Ranking):
         ratio = estimateSurplus(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.getStandardCoordinate(j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -352,7 +352,7 @@ class PredictiveRanking(Ranking):
     def rank(self, grid, gp, alphas, *args, **kws):
         gs = grid.getStorage()
         x = DataVector(gs.getDimension())
-        gp.getStandardCoordinates(x)
+        gs.getCoordinates(gp, x)
         opEval = createOperationEvalNaive(grid)
 
         return abs(opEval.eval(alphas, x) - self.f(x))

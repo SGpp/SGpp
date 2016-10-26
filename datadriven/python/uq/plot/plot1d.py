@@ -33,7 +33,7 @@ def plotGrid1d(grid, f=lambda x: x):
     x = np.zeros(gs.getSize())
     nodalValues = np.zeros(gs.getSize())
     for i in xrange(gs.getSize()):
-        x[i] = f(gs.get(i).getStandardCoordinate(0))
+        x[i] = f(gs.getCoordinate(gs.getPoint(i), 0))
 
     plt.scatter(x, nodalValues, marker="o")
 
@@ -43,7 +43,7 @@ def plotNodal1d(grid, alpha):
     x = np.zeros(gs.getSize())
     nodalValues = np.zeros(gs.getSize())
     for i in xrange(gs.getSize()):
-        x[i] = gs.getPoint(i).getStandardCoordinate(0)
+        x[i] = gs.getCoordinate(gs.getPoint(i), 0)
         nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
 
     plt.plot(x, nodalValues, " ", marker="o")
@@ -59,10 +59,9 @@ def plotSG1d(grid, alpha, n=1000, f=lambda x: x, show_grid_points=False,
 
     if show_grid_points:
         gs = grid.getStorage()
-        coordinates = DataMatrix(gs.getSize(), gs.getDimension())
-        grid.getStorage().getCoordinateArraysForEval(coordinates)
-        plt.plot(coordinates.array()[:, 0],
-                 np.zeros(gs.getSize()), "o ")
+        for i in xrange(gs.getSize()):
+            x = gs.getCoordinate(gs.getPoint(i), 0)
+            plt.scatter(x, 0, color="black")
 
 
 def plotCDF(p, buckets):

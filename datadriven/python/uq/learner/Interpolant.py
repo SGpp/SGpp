@@ -40,7 +40,7 @@ class Interpolant(Learner):
         cnt = 0
         for i in xrange(gs.getSize()):
             gp = gs.getPoint(i)
-            gp.getStandardCoordinates(p)
+            gs.getCoordinates(gp, p)
             x = tuple(p.array())
             if x not in points:
                 # # search for 2*d closest grid points

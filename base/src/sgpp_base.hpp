@@ -24,6 +24,8 @@
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
@@ -109,6 +111,8 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>

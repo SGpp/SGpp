@@ -26,8 +26,8 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
         yr = [0.0] * len(refined)
 
         for i, ix in enumerate(refined):
-            xr[i] = gs.getPoint(ix).getStandardCoordinate(0)
-            yr[i] = gs.getPoint(ix).getStandardCoordinate(1)
+            xr[i] = gs.getCoordinate(gs.getPoint(ix), 0)
+            yr[i] = gs.getCoordinate(gs.getPoint(ix), 1)
 
     n = 50
     A = np.ones(n * n).reshape(n, n)

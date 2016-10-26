@@ -20,7 +20,7 @@
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
 %newobject sgpp::base::Grid::createModLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createWaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createWaveletBoundaryGrid(size_t dim);
@@ -36,6 +36,8 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -108,7 +110,9 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
+  ModLinearStencil,             // 25
+  PolyClenshawCurtisBoundary,   // 26
+  PolyClenshawCurtis            // 27
 };
 
 class Grid
@@ -123,7 +127,7 @@ public:
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
   static Grid* createWaveletBoundaryGrid(size_t dim);
@@ -141,6 +145,8 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   static Grid* unserialize(std::string& istr);
 

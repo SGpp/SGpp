@@ -28,9 +28,9 @@ OperationMakePositive::OperationMakePositive(
     MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, size_t maxLevel,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
     bool verbose)
-    : minimumLevelSum(0),
+    : maxLevel(maxLevel),
+      minimumLevelSum(0),
       maximumLevelSum(0),
-      maxLevel(maxLevel),
       generateConsistentGrid(generateConsistentGrid),
       candidateSearchAlgorithm(candidateSearchAlgorithm),
       interpolationAlgorithm(interpolationAlgorithm),
@@ -118,7 +118,7 @@ void OperationMakePositive::forceNewNodalValuesToBePositive(base::Grid& grid,
   auto opEval = op_factory::createOperationEvalNaive(grid);
   base::DataVector x(gridStorage.getDimension());
   for (size_t i : newGridPoints) {
-    gridStorage.getPoint(i).getStandardCoordinates(x);
+    gridStorage.getCoordinates(gridStorage.getPoint(i), x);
     double nodalValue = opEval->eval(alpha, x);
     if (nodalValue < tol) {
       alpha[i] -= nodalValue;
@@ -149,7 +149,8 @@ void OperationMakePositive::addFullGridPoints(
   // compute the function values of the new candidates
   base::DataMatrix data(numCandidates, numDims);
   for (size_t i = 0; i < candidates.size(); ++i) {
-    candidates[i]->getStandardCoordinates(x);
+    gridStorage.getCoordinates(gridStorage.getPoint(i), x);
+    gridStorage.getCoordinates(*candidates[i], x);
     data.setRow(i, x);
   }
 
@@ -204,6 +205,7 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       grid.getType() != base::GridType::LinearBoundary &&
       grid.getType() != base::GridType::LinearL0Boundary &&
       grid.getType() != base::GridType::LinearTruncatedBoundary &&
+      grid.getType() != base::GridType::LinearClenshawCurtis &&
       grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary &&
       (grid.getType() == base::GridType::Poly &&
        (static_cast<base::PolyGrid*>(&grid)->getDegree() != 2 || !generateConsistentGrid)) &&

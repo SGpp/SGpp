@@ -7,7 +7,7 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -18,7 +18,7 @@ namespace base {
 /**
  * Hierarchisation on sparse grid, poly case
  */
-class OperationHierarchisationPoly : public OperationHierarchisation {
+class OperationHierarchisationPolyClenshawCurtis : public OperationHierarchisation {
  public:
   /**
    * Constructor
@@ -26,13 +26,13 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationHierarchisationPoly(GridStorage& storage, size_t degree)
+  OperationHierarchisationPolyClenshawCurtis(GridStorage& storage, size_t degree)
       : storage(storage), base(degree) {}
 
   /**
    * Destructor
    */
-  ~OperationHierarchisationPoly() override {}
+  ~OperationHierarchisationPolyClenshawCurtis() override {}
 
   /**
    * Implements the hierarchisation on a sprase grid with poly base functions
@@ -54,7 +54,7 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
   /// Pointer to GridStorage object
   GridStorage& storage;
   /// Poly Basis object
-  SPolyBase base;
+  SPolyClenshawCurtisBase base;
 };
 
 }  // namespace base
