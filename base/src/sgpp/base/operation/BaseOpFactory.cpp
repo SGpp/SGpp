@@ -25,6 +25,7 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
@@ -81,6 +82,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
@@ -156,6 +158,8 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
     return new base::OperationStencilHierarchisationModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationHierarchisationModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new base::OperationHierarchisationLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary ||
@@ -326,6 +330,8 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new base::OperationMultipleEvalPolyClenshawCurtisBoundary(
         grid, dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new base::OperationMultipleEvalLinearClenshawCurtis(grid, dataset);
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationMultipleEvalPrewavelet(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearStretched) {

@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEARCLENSHAWCURTISGRID_HPP
-#define LINEARCLENSHAWCURTISGRID_HPP
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
@@ -57,5 +56,3 @@ class LinearClenshawCurtisGrid : public Grid {
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* LINEARCLENSHAWCURTISGRID_HPP */
