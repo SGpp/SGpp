@@ -49,7 +49,9 @@ enum class GridType {
   ModFundamentalSpline,      // 22
   ModBsplineClenshawCurtis,  // 23
   LinearStencil,             // 24
-  ModLinearStencil           // 25
+  ModLinearStencil,          // 25
+  BsplineNotAKnotBoundary,   // 26
+  ModBsplineNotAKnot,        // 27
 };
 
 /**
@@ -289,6 +291,24 @@ class Grid {
    * @return grid
    */
   static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a Bspline not-a-knot trapezoid boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createBsplineNotAKnotBoundaryGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a mod-Bspline not-a-knot grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createModBsplineNotAKnotGrid(size_t dim, size_t degree);
 
   /**
    * creates a prewavelet grid
