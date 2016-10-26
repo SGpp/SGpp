@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -25,14 +26,15 @@ namespace base {
  * @version $HEAD$
  */
 template <class LT, class IT>
-class PolyClensahwCurtisBasis : public Basis<LT, IT> {
+class PolyClenshawCurtisBasis : public Basis<LT, IT> {
  public:
   /**
    * Constructor
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyClensahwCurtisBasis(size_t degree) : degree(degree) {
+  explicit PolyClenshawCurtisBasis(size_t degree)
+      : degree(degree), clenshawCurtisTable(ClenshawCurtisTable::getInstance()), idxtable(4) {
     if (degree < 2) {
       throw factory_exception("PolyClensahwCurtisBasis: degree < 2");
     }
@@ -40,12 +42,17 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
     if (degree > 20) {
       throw factory_exception("PolyClensahwCurtisBasis: degree > 20 is not supported");
     }
+
+    idxtable[0] = 1;
+    idxtable[1] = 2;
+    idxtable[2] = -2;
+    idxtable[3] = -1;
   }
 
   /**
    * Destructor
    */
-  ~PolyClensahwCurtisBasis() override {}
+  ~PolyClenshawCurtisBasis() override {}
 
   /**
    * Evaluates all the hierarchical ancestors of the node defined by level
@@ -70,14 +77,41 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
       result += coeffs[level] * eval(level, index, pos);
       index >>= 1;
       index |= 1;
-      //        index = ((index - 1) / 2);
-      //        index = (index % 2 == 0) ? (index + 1) : index;
     }
 
     return result;
   }
 
   size_t getDegree() { return degree; }
+
+  void getBoundariesOfSupport(LT level, IT index, double& xleft, double& xright) {
+    // left boundary
+    HashGridPoint gp(1);
+    gp.setAsHierarchicalGridPoint(0, level, index - 1);
+    xleft = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
+    // right boundary
+    gp.setAsHierarchicalGridPoint(0, level, index + 1);
+    xright = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
+  }
+
+  double eval(LT level, IT index, double p) override {
+    // check if x value is in the unit interval
+    if ((p <= 0) || (p >= 1)) {
+      return 0.0f;
+    }
+
+    // load boundaries of support
+    double xleft = 0.0;
+    double xright = 0.0;
+    getBoundariesOfSupport(level, index, xleft, xright);
+
+    // check if p is out of bounds
+    if ((p <= xleft) || (p >= xright)) {
+      return 0.0f;
+    } else {
+      return evalBasis(level, index, p);
+    }
+  }
 
   /**
    * Evaluate a basis function.
@@ -88,28 +122,30 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
    * Due to limited polynomial degree, we compute the roots of the Lagrange
    * polynomial bottom up.
    */
-  double eval(LT level, IT index, double p) override {
+  double evalBasis(LT level, IT index, double p) {
     // degree of polynomial, limited with level of grid point
     size_t deg = std::min<size_t>(degree, level + 1);
-    // get the position in units of h of the current maximum level
-    p *= static_cast<double>(1 << level);
     // start with the current grid point
-    size_t root = index;
+    IT root = index;
     // copy of index: used to identify the path in the binary tree of grid
     // points. The binary representation of the index contains the information
     // in which direction the grid point has been added w.r.t.
     // the parent node.
     // 0011 -> left, left, right (last one ignored)
-    size_t id = root;
+    IT id = root;
     // position where the polynomial is one -> position of grid point:
     // (level, index)
-    double base = static_cast<double>(root);
+    double xbase = clenshawCurtisTable.getPoint(level, index);
     double eval = 1;
     // as first parent we choose the right one. In units of h, it is 1 distance
     // away from the current one.
     root++;
+    HashGridPoint gp(1);
+    gp.setAsHierarchicalGridPoint(0, level, root);
+
     // add it to the Lagrange polynomial and normalize it
-    eval *= (p - static_cast<double>(root)) / (base - static_cast<double>(root));
+    double xroot = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
+    eval *= (p - xroot) / (xbase - xroot);
     // go to the next left neighbor that must exist due to
     // minimum degree of 2 of
     // the polynomial. the reference point is now the last one
@@ -121,9 +157,11 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
     // p - 1 runs in this loop: so in total the polynomial has a
     // degree of p taking
     // into account that the first root has been added already
-    for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
+    for (unsigned int j = 2; j < static_cast<unsigned int>(1 << deg); j *= 2) {
       // add the next root to the polynomial
-      eval *= (p - static_cast<double>(root)) / (base - static_cast<double>(root));
+      gp.setAsHierarchicalGridPoint(0, level, root);
+      xroot = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
+      eval *= (p - xroot) / (xbase - xroot);
       // take last two indices (id & 3):
       // this gives you the information where to
       // look for the next root. The result needs to be scaled
@@ -146,21 +184,14 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
     return eval;
   }
 
-  double evalSave(LT level, IT index, double p) {
-    // spacing on current level
-    double h = 1.0f / static_cast<double>(1 << level);
-
-    // check if p is out of bounds
-    if ((p <= h * static_cast<double>(index - 1)) || (p >= h * static_cast<double>(index + 1))) {
-      return 0.0f;
-    } else {
-      return eval(level, index, p);
-    }
-  }
-
   double getIntegral(LT level, IT index) {
+    // load boundaries of support
+    double xleft = 0.0;
+    double xright = 0.0;
+    getBoundariesOfSupport(level, index, xleft, xright);
+
     // grid spacing
-    double h = 1.0f / static_cast<double>(1 << level);
+    double h = xright - xleft;
 
     // --------------------------------
     // Gauss-Legendre quadrature
@@ -178,18 +209,22 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
     for (size_t i = 0; i < n_roots; i++) {
       // scale the roots to the support of the basis:
       // [-1, 1] -> [0, 1] -> [a, b]
-      x = h * (roots[i] + static_cast<double>(index));
+      x = (1 + roots[i]) / 2. * h + xleft;
       // evaluate the polynom and weight it
       sum += weights[i] * eval(level, index, x);
     }
 
     // scale the result with the width of the support
-    return h * sum;
+    return h * sum / 2.;
   }
 
  protected:
   /// the polynom's max degree
   size_t degree;
+  /// reference to the Clenshaw-Curtis cache table
+  ClenshawCurtisTable& clenshawCurtisTable;
+  // compute values for roots
+  std::vector<int> idxtable;
 
  private:
   /// gauss legendre quadrature rule to compute the integral of the bases
@@ -197,7 +232,7 @@ class PolyClensahwCurtisBasis : public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef PolyClensahwCurtisBasis<unsigned int, unsigned int> SPolyClensahwCurtisBase;
+typedef PolyClenshawCurtisBasis<unsigned int, unsigned int> SPolyClenshawCurtisBase;
 
 }  // namespace base
 }  // namespace sgpp

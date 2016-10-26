@@ -199,6 +199,30 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModPoly) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(testHierarchisationPolyClenshawCurtisBoundary) {
+  int level = 5;
+  int degree[4] = {2, 3, 5, 8};
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int i = 0; i < 4; i++) {
+      std::unique_ptr<Grid> grid(Grid::createPolyClenshawCurtisBoundaryGrid(dim, degree[i]));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-13, true);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationPolyClenshawCurtis) {
+  int level = 5;
+  int degree[4] = {2, 3, 5, 8};
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int i = 0; i < 4; i++) {
+      std::unique_ptr<Grid> grid(Grid::createPolyClenshawCurtisGrid(dim, degree[i]));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-13, true);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   int dim = 1;
   int level = 5;

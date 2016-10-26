@@ -13,6 +13,7 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -38,14 +39,13 @@ using sgpp::base::SBasis;
 using sgpp::base::SPolyBase;
 using sgpp::base::SPolyBoundaryBase;
 using sgpp::base::SPolyModifiedBase;
+using sgpp::base::SPolyClenshawCurtisBoundaryBase;
 
 double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i, double x) {
   return basis.eval(l, i, x);
 }
 
-void checkClose(double x, double y, double tol = 1e-8) {
-  BOOST_CHECK_CLOSE(x, y, tol);
-}
+void checkClose(double x, double y, double tol = 1e-8) { BOOST_CHECK_CLOSE(x, y, tol); }
 
 void checkClose(const DataVector& x, const DataVector& y, double tol = 1e-8) {
   BOOST_CHECK_EQUAL(x.getSize(), y.getSize());
@@ -113,6 +113,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModPolyGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisGrid(d, p)));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBase(p)));
@@ -132,6 +134,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBoundaryBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBoundaryBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBase(p)));
 
   for (size_t k = 0; k < grids.size(); k++) {
     Grid& grid = *grids[k];

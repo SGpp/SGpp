@@ -33,7 +33,7 @@ class PolyBasis : public Basis<LT, IT> {
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyBasis(size_t degree) : degree(degree) {
+  explicit PolyBasis(size_t degree) : degree(degree), idxtable(4) {
     if (degree < 2) {
       throw factory_exception("PolyBasis: degree < 2");
     }
@@ -42,7 +42,6 @@ class PolyBasis : public Basis<LT, IT> {
       throw factory_exception("PolyBasis: degree > 20 is not supported");
     }
 
-    idxtable = new int[4];
     idxtable[0] = 1;
     idxtable[1] = 2;
     idxtable[2] = -2;
@@ -52,7 +51,7 @@ class PolyBasis : public Basis<LT, IT> {
   /**
    * Destructor
    */
-  ~PolyBasis() override { delete idxtable; }
+  ~PolyBasis() override {}
 
   /**
    * Evaluates all the hierarchical ancestors of the node defined by level
@@ -131,7 +130,7 @@ class PolyBasis : public Basis<LT, IT> {
   /// the polynom's max degree
   size_t degree;
   // compute values for roots
-  int* idxtable;
+  std::vector<int> idxtable;
 
  private:
   /// gauss legendre quadrature rule to compute the integral of the bases

@@ -24,32 +24,34 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                    //  0
-  LinearStretched,           //  1
-  LinearL0Boundary,          //  2
-  LinearBoundary,            //  3
-  LinearStretchedBoundary,   //  4
-  LinearTruncatedBoundary,   //  5
-  ModLinear,                 //  6
-  Poly,                      //  7
-  PolyBoundary,              //  8
-  ModPoly,                   //  9
-  ModWavelet,                // 10
-  ModBspline,                // 11
-  Prewavelet,                // 12
-  SquareRoot,                // 13
-  Periodic,                  // 14
-  LinearClenshawCurtis,      // 15
-  Bspline,                   // 16
-  BsplineBoundary,           // 17
-  BsplineClenshawCurtis,     // 18
-  Wavelet,                   // 19
-  WaveletBoundary,           // 20
-  FundamentalSpline,         // 21
-  ModFundamentalSpline,      // 22
-  ModBsplineClenshawCurtis,  // 23
-  LinearStencil,             // 24
-  ModLinearStencil           // 25
+  Linear,                      //  0
+  LinearStretched,             //  1
+  LinearL0Boundary,            //  2
+  LinearBoundary,              //  3
+  LinearStretchedBoundary,     //  4
+  LinearTruncatedBoundary,     //  5
+  ModLinear,                   //  6
+  Poly,                        //  7
+  PolyBoundary,                //  8
+  ModPoly,                     //  9
+  ModWavelet,                  // 10
+  ModBspline,                  // 11
+  Prewavelet,                  // 12
+  SquareRoot,                  // 13
+  Periodic,                    // 14
+  LinearClenshawCurtis,        // 15
+  Bspline,                     // 16
+  BsplineBoundary,             // 17
+  BsplineClenshawCurtis,       // 18
+  Wavelet,                     // 19
+  WaveletBoundary,             // 20
+  FundamentalSpline,           // 21
+  ModFundamentalSpline,        // 22
+  ModBsplineClenshawCurtis,    // 23
+  LinearStencil,               // 24
+  ModLinearStencil,            // 25
+  PolyClenshawCurtisBoundary,  // 26
+  PolyClenshawCurtis           // 27
 };
 
 /**
@@ -191,9 +193,10 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
+   * @param boundaryLevel level at which boundary points are added
    * @return grid
    */
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a poly grid
@@ -203,6 +206,26 @@ class Grid {
    * @return grid
    */
   static Grid* createModPolyGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a poly boundary grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @param boundaryLevel level at which boundary points are added
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree,
+                                                    level_t boundaryLevel = 1);
+
+  /**
+   * creates a poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a wavelet grid

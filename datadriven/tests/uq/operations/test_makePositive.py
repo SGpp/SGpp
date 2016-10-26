@@ -28,20 +28,20 @@ from pysgpp import createOperationMakePositive, \
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
 from pysgpp.pysgpp_swig import GridType_PolyBoundary, \
-    MakePositiveCandidateSearchAlgorithm_FullGrid
+    MakePositiveCandidateSearchAlgorithm_FullGrid, GridType_LinearClenshawCurtis
 
 
 # parameters
 gridConfig = RegularGridConfiguration()
 # gridConfig.type_ = GridType_Linear
-gridConfig.type_ = GridType_Poly
+gridConfig.type_ = GridType_Linear
 gridConfig.boundaryLevel_ = 0
 numDims = 2
 level = 4
-refnums = 10
+refnums = 0
 consistentGrid = True
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
-# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero

@@ -38,8 +38,8 @@ def plotSGDE2d(U, n=100):
     y = [0.0] * gs.size()
 
     for i in xrange(gs.size()):
-        x[i] = gs.getPoint(i).getStandardCoordinate(0)
-        y[i] = gs.getPoint(i).getStandardCoordinate(1)
+        x[i] = gs.getCoordinate(gs.getPoint(i), 0)
+        y[i] = gs.getCoordinate(gs.getPoint(i), 1)
 
     neg_x = []
     neg_y = []
@@ -121,7 +121,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
 
         if alpha[i] > 1e-14:
             gpxp.append(p[0])
@@ -198,7 +198,7 @@ def plotGrid2d(grid, alpha=None, show_numbers=True):
     p = DataVector(2)
     numbers = []
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinats(gs.getPoint(i), p)
         if alpha is None or alpha[i] >= 0:
             gps['p'] = np.vstack((gps['p'], p.array()))
         else:
