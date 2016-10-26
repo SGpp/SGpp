@@ -105,6 +105,15 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModLinear) {
   }
 }
 
+// BOOST_AUTO_TEST_CASE(testHierarchisationLinearClenshawCurtis) {
+//  int level = 5;
+//
+//  for (int dim = 1; dim < 4; dim++) {
+//    std::unique_ptr<Grid> grid(Grid::createLinearClenshawCurtisGrid(dim));
+//    testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+//  }
+//}
+
 BOOST_AUTO_TEST_CASE(testHierarchisationModLinearWithBoundary) {
   int level = 5;
 
