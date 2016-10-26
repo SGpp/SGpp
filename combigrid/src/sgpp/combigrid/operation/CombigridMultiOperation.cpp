@@ -83,11 +83,11 @@ void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> 
 }
 
 void CombigridMultiOperation::setParameters(const base::DataMatrix &params) {
-  std::vector<FloatArrayVector> vecs(params.getNcols());
+  std::vector<FloatArrayVector> vecs(params.getNrows());
 
   for (size_t i = 0; i < params.getNrows(); ++i) {
     for (size_t j = 0; j < params.getNcols(); ++j) {
-      vecs[j].at(i) = params(i, j);
+      vecs[i].at(j) = params(i, j);
     }
   }
 
@@ -122,6 +122,14 @@ void CombigridMultiOperation::setLevelManager(std::shared_ptr<LevelManager> leve
 
 base::DataVector CombigridMultiOperation::evaluate(size_t q,
                                                    std::vector<base::DataVector> const &params) {
+  setParameters(params);
+
+  impl->combiEval->addRegularLevels(q);
+
+  return getResult();
+}
+
+base::DataVector CombigridMultiOperation::evaluate(size_t q, base::DataMatrix const &params) {
   setParameters(params);
 
   impl->combiEval->addRegularLevels(q);

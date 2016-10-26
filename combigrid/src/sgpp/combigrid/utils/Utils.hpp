@@ -78,6 +78,17 @@ std::string escape(std::string str, char escapeCharacter, std::string avoidChara
  */
 std::string unescape(std::string str, char escapeCharacter, std::string avoidCharacters,
                      std::string replaceCharacters);
+
+/**
+ * Reads a file into a string (without advanced error-handling).
+ */
+std::string readFromFile(std::string filename);
+
+/**
+ * Writes a string into a file, overwriting currently saved data if the file already exists (without
+ * advanced error-handling).
+ */
+void writeToFile(std::string filename, std::string value);
 }  // namespace combigrid
 }  // namespace sgpp
 

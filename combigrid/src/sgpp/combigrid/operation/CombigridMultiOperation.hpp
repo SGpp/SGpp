@@ -81,7 +81,7 @@ class CombigridMultiOperation {
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
    * computed data). This is only relevant for methods with parameters (e.g. interpolation, but not
-   * quadrature). The evaluation points are assumed to be the rows of the matrix.
+   * quadrature). The evaluation points are assumed to be the columns of the matrix.
    */
   void setParameters(base::DataMatrix const &params);
 
@@ -96,6 +96,11 @@ class CombigridMultiOperation {
    * getLevelManager() and operate directly on the LevelManager.
    */
   base::DataVector evaluate(size_t q, std::vector<base::DataVector> const &params);
+
+  /**
+   * See the other version of evaluate() and the setParameters() overloads.
+   */
+  base::DataVector evaluate(size_t q, base::DataMatrix const &params);
 
   /**
    * @return the storage containing the computed function values at evaluation points.
