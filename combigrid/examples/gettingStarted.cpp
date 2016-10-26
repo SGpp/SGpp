@@ -13,10 +13,12 @@
 
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
+#include <sgpp/combigrid/utils/Utils.hpp>
 
 #include <cmath>
 
@@ -209,6 +211,21 @@ void example3() {
   std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
   std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
             << "\n";
+
+  /**
+   * We can also set the parameters via a DataMatrix containing the vectors as columns:
+   */
+  sgpp::base::DataMatrix matrix(3, 2);
+  for (size_t i = 0; i < parameters.size(); ++i) {
+    for (size_t j = 0; j < parameters[0].getSize(); ++j) {
+      matrix(j, i) = parameters[i][j];
+    }
+  }
+
+  result = operation->evaluate(3, matrix);
+  std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
+  std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
+            << "\n";
 }
 
 /**
@@ -225,17 +242,115 @@ void example4() {
 
   /**
    * Next, we create a FunctionLookupTable. This will cache the function values by their DataVector
-   * parameter. Note, however, that even slightly differing DataVectors will be considered as two
-   * different function evaluations.
+   * parameter. Note, however, that even slightly differing DataVectors will lead to separate
+   * function evaluations.
    */
-  sgpp::combigrid::FunctionLookupTable lookupTable(
-      func);  // TODO(holzmudd): make it easier to use (copy)
-  auto lookupFunction = [&lookupTable](sgpp::base::DataVector const &x) { return lookupTable(x); };
-  auto operation = sgpp::combigrid::CombigridOperation::createLinearLejaPolynomialInterpolation(
-      d, sgpp::combigrid::MultiFunction(lookupFunction));
+  sgpp::combigrid::FunctionLookupTable lookupTable(loggingFunc);
+  auto operation = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
+      d, sgpp::combigrid::MultiFunction(lookupTable));
+
+  /**
+   * Do a normal computation
+   */
+  double result = operation->evaluate(2);
+  std::cout << "Result computed: " << result << "\n";
+
+  /**
+   * The first (and most convenient) possibility to store the data is serializing the lookup table.
+   * The serialization is not compressed and will roughly use 60 Bytes per entry. If you have lots
+   * of data, you might consider compressing it.
+   */
+  sgpp::combigrid::writeToFile("lookupTable.txt", lookupTable.serialize());
+
+  /**
+   * Restore the data into another lookup table. The function is still needed for new evaluations.
+   */
+  sgpp::combigrid::FunctionLookupTable restoredLookupTable(func);
+  restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.txt"));
+  auto operation2 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
+      d, sgpp::combigrid::MultiFunction(restoredLookupTable));
+
+  /**
+   * A new evaluation with the same precision does not require new function evaluations:
+   */
+  result = operation2->evaluate(2);
+  std::cout << "Result computed (2nd time): " << result << "\n";
+
+  /**
+   * Another less general way of storing the data is directly serializing the storage underlying the
+   * operation. This means that retrieval is faster, but it only works if the same grid is used
+   * again.
+   * For demonstration purposes, we use loggingFunc directly this time without a
+   */
+  sgpp::combigrid::writeToFile("storage.txt", operation->getStorage()->serialize());
+  auto operation3 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
+      d, sgpp::combigrid::MultiFunction(loggingFunc));
+  operation3->getStorage()->deserialize(sgpp::combigrid::readFromFile("storage.txt"));
+  result = operation3->evaluate(2);
+  std::cout << "Result computed (3rd time): " << result << "\n";
 }
 
 // TODO(holzmudd): non-isotropic setting, data storage
+/**
+ * This example shows how to apply different operators in different dimensions.
+ */
+void example5() {
+  /**
+   * First, we want to configure which grid points to use in which dimension.
+   * We use Chebyshev points in the 0th dimension. To make them nested, we have to use at least \f$n
+   * = 3^l\f$ points at level \f$l\f$. This is why this method contains the prefix exp.
+   * CombiHierarchies provides some matching configurations for grid points. If you nevertheless
+   * need your own configuration or you want to know which growth strategy and ordering fit to which
+   * point distribution, look up the implementation details in CombiHierarchies, it is not
+   * difficult to implement your own configuration.
+   */
+  sgpp::combigrid::CombiHierarchies::Collection grids;
+  grids.push_back(sgpp::combigrid::CombiHierarchies::expChebyshev());
+
+  /**
+   * Our next set of grid points are Leja points with linear growth (\f$n = 1 + 3l\f$).
+   * For the last dimension, we use equidistant points with boundary. These are suited for linear
+   * interpolation. To make them nested, again the slowest possible exponential growth is selected
+   * by the CombiHierarchies class.
+   */
+  grids.push_back(sgpp::combigrid::CombiHierarchies::linearLeja(3));
+  grids.push_back(sgpp::combigrid::CombiHierarchies::expUniform());
+
+  /**
+   * The next thing we have to configure is the linear operation that is performed in those
+   * directions. We will use polynomial interpolation in the 0th dimension, quadrature in the 1st
+   * dimension and linear interpolation in the 2nd dimension.
+   * Roughly spoken, this means that a quadrature is performed on the 1D function that is the
+   * interpolated function with two fixed parameters. But since those operators "commute", the
+   * result is invariant under the order that the operations are applied in.
+   * The CombiEvaluators class also provides analogous methods and typedefs for the multi-evaluation
+   * case.
+   */
+  sgpp::combigrid::CombiEvaluators::Collection evaluators;
+  evaluators.push_back(sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
+  evaluators.push_back(sgpp::combigrid::CombiEvaluators::quadrature());
+  evaluators.push_back(sgpp::combigrid::CombiEvaluators::linearInterpolation());
+
+  /**
+   * To create a CombigridOperation object with our own configuration, we have to provide a
+   * LevelManager as well:
+   */
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+
+  auto operation =
+      std::make_shared<sgpp::combigrid::CombigridOperation>(grids, evaluators, levelManager, func);
+
+  /**
+   * The two interpolations need a parameter \f$(x, z)\f$. If \f$\tilde{f}\f$ is the interpolated
+   * function, the operation approximates the result of \f$\int_0^1 \tilde{f}(x, y, z) \,dy\f$.
+   */
+  sgpp::base::DataVector parameters(2);
+  parameters[0] = 0.777;
+  parameters[1] = 0.14159;
+  double result = operation->evaluate(2, parameters);
+  std::cout << "Result: " << result << "\n";
+}
 
 int main() {
   std::cout << "Example 1: \n";
@@ -249,4 +364,7 @@ int main() {
 
   std::cout << "\nExample 4: \n";
   example4();
+
+  std::cout << "\nExample 5: \n";
+  example5();
 }

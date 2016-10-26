@@ -27,6 +27,8 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
   static std::shared_ptr<AbstractPointHierarchy> expUniformNoBoundary();
+
+  typedef std::vector<std::shared_ptr<AbstractPointHierarchy>> Collection;
 };
 
 /**
@@ -40,6 +42,9 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature();
+
+  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> Collection;
+  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> MultiCollection;
 };
 
 } /* namespace combigrid */
