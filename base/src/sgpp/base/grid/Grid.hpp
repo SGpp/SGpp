@@ -52,7 +52,8 @@ enum class GridType {
   ModLinearStencil,              // 25
   PolyClenshawCurtisBoundary,    // 26
   PolyClenshawCurtis,            // 27
-  LinearClenshawCurtis           // 28
+  LinearClenshawCurtis,          // 28
+  ModPolyClenshawCurtis          // 29
 };
 
 /**
@@ -236,6 +237,15 @@ class Grid {
    * @return grid
    */
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a modified poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a wavelet grid

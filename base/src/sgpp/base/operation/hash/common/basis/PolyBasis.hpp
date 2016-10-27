@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef POLY_BASE_HPP
-#define POLY_BASE_HPP
+#pragma once
 
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -216,5 +215,3 @@ typedef PolyBasis<unsigned int, unsigned int> SPolyBase;
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* POLY_BASE_HPP */

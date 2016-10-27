@@ -39,6 +39,7 @@
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -114,7 +115,8 @@ enum class GridType {
   ModLinearStencil,             // 25
   PolyClenshawCurtisBoundary,   // 26
   PolyClenshawCurtis,           // 27
-  LinearClenshawCurtis          // 28
+  LinearClenshawCurtis,         // 28
+  ModPolyClenshawCurtis,        // 29
 };
 
 class Grid
@@ -150,6 +152,7 @@ public:
   static Grid* createPeriodicGrid(size_t dim);
   static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   static Grid* unserialize(std::string& istr);
 
@@ -207,6 +210,9 @@ public:
         };
         if ($self->getType() == sgpp::base::GridType::PolyClenshawCurtisBoundary) {
             return ((sgpp::base::PolyClenshawCurtisBoundaryGrid*) $self)->getDegree();
+        };
+        if ($self->getType() == sgpp::base::GridType::ModPolyClenshawCurtis) {
+            return ((sgpp::base::ModPolyClenshawCurtisGrid*) $self)->getDegree();
         };
         return 1;
     };
