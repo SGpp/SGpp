@@ -19,6 +19,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
@@ -88,6 +89,10 @@ Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLe
 
 Grid* Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree) {
   return new PolyClenshawCurtisGrid(dim, degree);
+}
+
+Grid* Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new ModPolyClenshawCurtisGrid(dim, degree);
 }
 
 Grid* Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
@@ -171,6 +176,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::PolyClenshawCurtisBoundary:
         return Grid::createPolyClenshawCurtisBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_,
                                                           gridConfig.boundaryLevel_);
+      case GridType::ModPolyClenshawCurtis:
+        return Grid::createModPolyClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::ModWavelet:
         return Grid::createModWaveletGrid(gridConfig.dim_);
       case GridType::ModBspline:
@@ -326,6 +333,10 @@ Grid* Grid::clone() {
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createPolyClenshawCurtisBoundaryGrid(numDims, degree, boundaryLevel);
+      break;
+    case GridType::ModPolyClenshawCurtis:
+      degree = dynamic_cast<ModPolyClenshawCurtisGrid*>(this)->getDegree();
+      newGrid = Grid::createModPolyClenshawCurtisGrid(numDims, degree);
       break;
     default:
       throw generation_exception("Grid::clone - grid type not known");

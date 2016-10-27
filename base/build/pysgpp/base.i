@@ -129,6 +129,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
@@ -161,6 +162,7 @@ namespace std {
 %template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyClenshawCurtisBase) sgpp::base::PolyClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SPolyClenshawCurtisBoundaryBase) sgpp::base::PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedClenshawCurtisBase) sgpp::base::PolyModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) sgpp::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) sgpp::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
 %template(SWaveletModifiedBase) sgpp::base::WaveletModifiedBasis<unsigned int, unsigned int>;

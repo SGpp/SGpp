@@ -8,7 +8,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -27,10 +27,12 @@ namespace base {
  * (http://www5.in.tum.de/wiki/index.php/Algorithmen_des_Wissenschaftlichen_Rechnens_II_-_Winter_08)
  */
 template <class LT, class IT>
-class PolyModifiedBasis : public Basis<LT, IT> {
+class PolyModifiedClenshawCurtisBasis : public Basis<LT, IT> {
  protected:
   /// poly basis
-  SPolyBase polyBasis;
+  SPolyClenshawCurtisBase polyBasis;
+  /// reference to the Clenshaw-Curtis cache table
+  ClenshawCurtisTable& clenshawCurtisTable;
 
  public:
   /**
@@ -38,19 +40,21 @@ class PolyModifiedBasis : public Basis<LT, IT> {
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyModifiedBasis(size_t degree) : polyBasis(degree) {}
+  explicit PolyModifiedClenshawCurtisBasis(size_t degree)
+      : polyBasis(degree), clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
   /**
    * Destructor
    */
-  ~PolyModifiedBasis() override {}
+  ~PolyModifiedClenshawCurtisBasis() override {}
 
   double eval(LT level, IT index, double p) override {
-    // spacing on current level
-    double h = 1.0f / static_cast<double>(1 << level);
+    // load boundaries of support
+    double xleft = clenshawCurtisTable.getPoint(level, index - 1);
+    double xright = clenshawCurtisTable.getPoint(level, index + 1);
 
     // check if p is out of bounds
-    if ((p < h * static_cast<double>(index - 1)) || (p > h * static_cast<double>(index + 1))) {
+    if ((p < xleft) || (p > xright)) {
       return 0.0f;
     } else {
       return evalBasis(level, index, p);
@@ -72,7 +76,10 @@ class PolyModifiedBasis : public Basis<LT, IT> {
       return 1.0;
     } else if ((index == 1) || (index == hInv - 1)) {
       // left and right modified basis functions
-      return 2. / static_cast<double>(hInv);
+      // load right boundary of support
+      double xr = clenshawCurtisTable.getPoint(level, 2);
+      double xc = clenshawCurtisTable.getPoint(level, 1);
+      return 0.5 * (xc / (xr - xc) + 1.0) * xr;
     } else {
       // interior basis function
       return polyBasis.getIntegral(level, index);
@@ -102,8 +109,6 @@ class PolyModifiedBasis : public Basis<LT, IT> {
       result += coeffs[level] * eval(level, index, pos);
       index >>= 1;
       index |= 1;
-      //        index = ((index - 1) / 2);
-      //        index = (index % 2 == 0) ? (index + 1) : index;
     }
 
     return result;
@@ -118,17 +123,19 @@ class PolyModifiedBasis : public Basis<LT, IT> {
    */
   double evalBasis(LT level, IT index, double p) {
     const IT hInv = static_cast<IT>(1) << level;
-    const double hInvDbl = static_cast<double>(hInv);
-
     if (level == 1) {
       // first level
       return 1.0;
     } else if (index == 1) {
       // left modified basis function
-      return ((p <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * p) : 0.0);
+      double xr = clenshawCurtisTable.getPoint(level, index + 1);
+      double xc = clenshawCurtisTable.getPoint(level, index);
+      return ((p < xr) ? (-1.0 / (xr - xc) * (p - xc) + 1.0) : 0.0);
     } else if (index == hInv - 1) {
       // right modified basis function
-      return ((p >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * p - static_cast<double>(index) + 1.0) : 0.0);
+      double xl = clenshawCurtisTable.getPoint(level, index - 1);
+      double xc = clenshawCurtisTable.getPoint(level, index);
+      return ((p > xl) ? (1.0 / (xc - xl) * (p - xl)) : 0.0);
     } else {
       // interior basis function
       return polyBasis.eval(level, index, p);
@@ -137,7 +144,7 @@ class PolyModifiedBasis : public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef PolyModifiedBasis<unsigned int, unsigned int> SPolyModifiedBase;
+typedef PolyModifiedClenshawCurtisBasis<unsigned int, unsigned int> SPolyModifiedClenshawCurtisBase;
 
 }  // namespace base
 }  // namespace sgpp
