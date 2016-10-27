@@ -5,12 +5,11 @@
 
 #pragma once
 
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -26,6 +25,9 @@ class OperationEvalPolyClenshawCurtisBoundaryNaive : public OperationEval {
   OperationEvalPolyClenshawCurtisBoundaryNaive(GridStorage& storage, size_t degree)
       : storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {}
 
+  /**
+   * Destructor.
+   */
   ~OperationEvalPolyClenshawCurtisBoundaryNaive() override {}
 
   /**
@@ -45,7 +47,7 @@ class OperationEvalPolyClenshawCurtisBoundaryNaive : public OperationEval {
  protected:
   /// storage of the sparse grid
   GridStorage& storage;
-  /// 1D B-spline basis
+  /// 1D poly boundary basis
   SPolyClenshawCurtisBoundaryBase base;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
