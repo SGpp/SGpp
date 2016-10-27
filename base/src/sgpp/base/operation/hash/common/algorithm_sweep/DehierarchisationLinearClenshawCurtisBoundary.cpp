@@ -72,8 +72,8 @@ void DehierarchisationLinearClenshawCurtisBoundary::rec(DataVector& source, Data
   // Dehierarchisation
   // v_i * 1 + sum_{j < i} v_j * \phi(x_i)
   double xm = clenshawCurtisTable.getPoint(cur_lev, cur_ind);
-  double fm = source[seq];
-  result[seq] = fm + ((fr - fl) / (xr - xl) * (xm - xl) + fl);
+  result[seq] = source[seq] + ((fr - fl) / (xr - xl) * (xm - xl) + fl);
+  double fm = result[seq];
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
