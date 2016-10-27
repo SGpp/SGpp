@@ -21,15 +21,13 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
    *
    * @param storage       storage of the sparse grid
    */
-  explicit OperationEvalLinearClenshawCurtisNaive(GridStorage& storage) :
-    storage(storage), pointInUnitCube(storage.getDimension()) {
-  }
+  explicit OperationEvalLinearClenshawCurtisNaive(GridStorage& storage)
+      : storage(storage), pointInUnitCube(storage.getDimension()) {}
 
   /**
    * Destructor.
    */
-  ~OperationEvalLinearClenshawCurtisNaive() override {
-  }
+  ~OperationEvalLinearClenshawCurtisNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -43,8 +41,7 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
    * @param      point  evaluation point
    * @param[out] value  values of linear combination
    */
-  void eval(const DataMatrix& alpha, const DataVector& point,
-            DataVector& value) override;
+  void eval(const DataMatrix& alpha, const DataVector& point, DataVector& value) override;
 
  protected:
   /// storage of the sparse grid
@@ -57,5 +54,3 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP */
