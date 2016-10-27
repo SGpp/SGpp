@@ -9,8 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include "../../../../../../base/src/sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
 
 namespace sgpp {
 namespace optimization {
@@ -28,7 +28,7 @@ class OperationMultipleHierarchisationLinearClenshawCurtis
    * @param grid      grid
    */
   explicit OperationMultipleHierarchisationLinearClenshawCurtis(
-      base::LinearClenshawCurtisGrid& grid);
+      base::LinearClenshawCurtisBoundaryGrid& grid);
 
   /**
    * Destructor.
@@ -67,7 +67,7 @@ class OperationMultipleHierarchisationLinearClenshawCurtis
 
  protected:
   /// storage of the sparse grid
-  base::LinearClenshawCurtisGrid& grid;
+  base::LinearClenshawCurtisBoundaryGrid& grid;
 };
 }  // namespace optimization
 }  // namespace sgpp

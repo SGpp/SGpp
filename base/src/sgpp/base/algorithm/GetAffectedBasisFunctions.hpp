@@ -8,7 +8,6 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
@@ -19,6 +18,7 @@
 
 #include <vector>
 #include <utility>
+#include "../operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -1243,8 +1243,8 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
  * Template Specialization for LinearClenshawCurtisBasis basis.
  */
 template <>
-class GetAffectedBasisFunctions<LinearClenshawCurtisBasis<unsigned int, unsigned int> > {
-  typedef LinearClenshawCurtisBasis<unsigned int, unsigned int> SLinearClenshawCurtisBase;
+class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int> > {
+  typedef LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int> SLinearClenshawCurtisBase;
 
  public:
   explicit GetAffectedBasisFunctions(GridStorage& storage)

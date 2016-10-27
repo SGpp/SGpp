@@ -24,34 +24,35 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                      //  0
-  LinearStretched,             //  1
-  LinearL0Boundary,            //  2
-  LinearBoundary,              //  3
-  LinearStretchedBoundary,     //  4
-  LinearTruncatedBoundary,     //  5
-  ModLinear,                   //  6
-  Poly,                        //  7
-  PolyBoundary,                //  8
-  ModPoly,                     //  9
-  ModWavelet,                  // 10
-  ModBspline,                  // 11
-  Prewavelet,                  // 12
-  SquareRoot,                  // 13
-  Periodic,                    // 14
-  LinearClenshawCurtis,        // 15
-  Bspline,                     // 16
-  BsplineBoundary,             // 17
-  BsplineClenshawCurtis,       // 18
-  Wavelet,                     // 19
-  WaveletBoundary,             // 20
-  FundamentalSpline,           // 21
-  ModFundamentalSpline,        // 22
-  ModBsplineClenshawCurtis,    // 23
-  LinearStencil,               // 24
-  ModLinearStencil,            // 25
-  PolyClenshawCurtisBoundary,  // 26
-  PolyClenshawCurtis           // 27
+  Linear,                        //  0
+  LinearStretched,               //  1
+  LinearL0Boundary,              //  2
+  LinearBoundary,                //  3
+  LinearStretchedBoundary,       //  4
+  LinearTruncatedBoundary,       //  5
+  ModLinear,                     //  6
+  Poly,                          //  7
+  PolyBoundary,                  //  8
+  ModPoly,                       //  9
+  ModWavelet,                    // 10
+  ModBspline,                    // 11
+  Prewavelet,                    // 12
+  SquareRoot,                    // 13
+  Periodic,                      // 14
+  LinearClenshawCurtisBoundary,  // 15
+  Bspline,                       // 16
+  BsplineBoundary,               // 17
+  BsplineClenshawCurtis,         // 18
+  Wavelet,                       // 19
+  WaveletBoundary,               // 20
+  FundamentalSpline,             // 21
+  ModFundamentalSpline,          // 22
+  ModBsplineClenshawCurtis,      // 23
+  LinearStencil,                 // 24
+  ModLinearStencil,              // 25
+  PolyClenshawCurtisBoundary,    // 26
+  PolyClenshawCurtis,            // 27
+  LinearClenshawCurtis           // 28
 };
 
 /**
@@ -162,6 +163,15 @@ class Grid {
    * @param dim the grid's dimension
    */
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
+
+  /**
+   * creates a linear Clenshaw-Curtis boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param boundaryLevel level of the boundary
+   * @return grid
+   */
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundarLevel = 1);
 
   /**
    * creates a linear Clenshaw-Curtis grid

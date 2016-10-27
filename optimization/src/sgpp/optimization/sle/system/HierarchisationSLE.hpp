@@ -21,13 +21,11 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
 
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
@@ -40,6 +38,9 @@
 #include <cstring>
 #include <stdexcept>
 #include <memory>
+
+#include "../../../../../../base/src/sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
+#include "../../../../../../base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace optimization {
@@ -109,9 +110,9 @@ class HierarchisationSLE : public CloneableSLE {
       linearL0BoundaryBasis =
           std::unique_ptr<base::SLinearBoundaryBase>(new base::SLinearBoundaryBase());
       basisType = LINEAR_BOUNDARY;
-    } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
       linearClenshawCurtisBasis =
-          std::unique_ptr<base::SLinearClenshawCurtisBase>(new base::SLinearClenshawCurtisBase());
+          std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase>(new base::SLinearClenshawCurtisBoundaryBase());
       basisType = LINEAR_CLENSHAW_CURTIS;
     } else if (grid.getType() == base::GridType::ModLinear) {
       modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(new base::SLinearModifiedBase());
@@ -195,7 +196,7 @@ class HierarchisationSLE : public CloneableSLE {
   /// linear boundary basis
   std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
   /// linear Clenshaw-Curtis basis
-  std::unique_ptr<base::SLinearClenshawCurtisBase> linearClenshawCurtisBasis;
+  std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase> linearClenshawCurtisBasis;
   /// modified linear basis
   std::unique_ptr<base::SLinearModifiedBase> modLinearBasis;
   /// wavelet basis

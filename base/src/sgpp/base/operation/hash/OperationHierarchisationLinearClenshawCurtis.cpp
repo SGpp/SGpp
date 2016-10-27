@@ -16,23 +16,23 @@ namespace sgpp {
 namespace base {
 
 void OperationHierarchisationLinearClenshawCurtis::doHierarchisation(DataVector& node_values) {
-  HierarchisationLinearClenshawCurtis func(storage, &base);
+  HierarchisationLinearClenshawCurtis func(storage);
   sweep<HierarchisationLinearClenshawCurtis> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.getDimension(); i++) {
-    s.sweep1D_Boundary(node_values, node_values, i);
+    s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationLinearClenshawCurtis::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationLinearClenshawCurtis func(storage, &base);
+  DehierarchisationLinearClenshawCurtis func(storage);
   sweep<DehierarchisationLinearClenshawCurtis> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
-    s.sweep1D_Boundary(source, alpha, i);
+    s.sweep1D(source, alpha, i);
   }
 }
 

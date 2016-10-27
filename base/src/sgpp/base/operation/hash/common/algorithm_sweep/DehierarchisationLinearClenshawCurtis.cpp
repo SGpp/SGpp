@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DehierarchisationLinearClenshawCurtis.hpp"
-
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -13,47 +11,19 @@
 
 #include <cmath>
 
+#include "DehierarchisationLinearClenshawCurtis.hpp"
+
 namespace sgpp {
 namespace base {
 
-DehierarchisationLinearClenshawCurtis::DehierarchisationLinearClenshawCurtis(
-    GridStorage& storage, SLinearClenshawCurtisBase* base)
-    : storage(storage), base(base), clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
+DehierarchisationLinearClenshawCurtis::DehierarchisationLinearClenshawCurtis(GridStorage& storage)
+    : storage(storage), clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
 DehierarchisationLinearClenshawCurtis::~DehierarchisationLinearClenshawCurtis() {}
 
 void DehierarchisationLinearClenshawCurtis::operator()(DataVector& source, DataVector& result,
                                                        grid_iterator& index, size_t dim) {
-  double left_boundary;
-  double right_boundary;
-  size_t seq;
-
-  // left boundary
-  index.resetToLeftLevelZero(dim);
-  level_type cur_lev;
-  index_type cur_ind;
-  index.get(dim, cur_lev, cur_ind);
-  double xl = clenshawCurtisTable.getPoint(cur_lev, cur_ind);
-
-  seq = index.seq();
-  left_boundary = source[seq];
-  // right boundary
-  index.resetToRightLevelZero(dim);
-  index.get(dim, cur_lev, cur_ind);
-  double xr = clenshawCurtisTable.getPoint(cur_lev, cur_ind);
-  seq = index.seq();
-  right_boundary = source[seq];
-
-  // move to root
-  if (!index.hint()) {
-    index.resetToLevelOne(dim);
-
-    if (!storage.isValidSequenceNumber(index.seq())) {
-      rec(source, result, index, dim, xl, left_boundary, xr, right_boundary);
-    }
-
-    index.resetToLeftLevelZero(dim);
-  }
+  rec(source, result, index, dim, 0.0, 0.0, 1.0, 0.0);
 }
 
 void DehierarchisationLinearClenshawCurtis::rec(DataVector& source, DataVector& result,

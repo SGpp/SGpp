@@ -9,7 +9,7 @@
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include "../src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE(TestLinearBoundaryBasis) {
 }
 
 BOOST_AUTO_TEST_CASE(TestLinearClenshawCurtisBasis) {
-  sgpp::base::SLinearClenshawCurtisBase basis;
+  sgpp::base::SLinearClenshawCurtisBoundaryBase basis;
   linearLevelZeroTest(basis);
   linearClenshawCurtisTest(basis);
   derivativesTest(basis, 0, 0);

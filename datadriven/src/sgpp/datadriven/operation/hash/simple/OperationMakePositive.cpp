@@ -205,7 +205,7 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       grid.getType() != base::GridType::LinearBoundary &&
       grid.getType() != base::GridType::LinearL0Boundary &&
       grid.getType() != base::GridType::LinearTruncatedBoundary &&
-      grid.getType() != base::GridType::LinearClenshawCurtis &&
+      grid.getType() != base::GridType::LinearClenshawCurtisBoundary &&
       grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary &&
       (grid.getType() == base::GridType::Poly &&
        (static_cast<base::PolyGrid*>(&grid)->getDegree() != 2 || !generateConsistentGrid)) &&

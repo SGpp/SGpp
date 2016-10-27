@@ -14,6 +14,7 @@
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
+%newobject sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(sgpp::base::BoudingBox& BB);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
@@ -100,7 +101,7 @@ enum class GridType {
   Prewavelet,                   // 12
   SquareRoot,                   // 13
   Periodic,                     // 14
-  LinearClenshawCurtis,         // 15
+  LinearClenshawCurtisBoundary, // 15
   Bspline,                      // 16
   BsplineBoundary,              // 17
   BsplineClenshawCurtis,        // 18
@@ -112,7 +113,8 @@ enum class GridType {
   LinearStencil,                // 24
   ModLinearStencil,             // 25
   PolyClenshawCurtisBoundary,   // 26
-  PolyClenshawCurtis            // 27
+  PolyClenshawCurtis,           // 27
+  LinearClenshawCurtis          // 28
 };
 
 class Grid
@@ -123,6 +125,7 @@ public:
   static Grid* createLinearStretchedGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
   static Grid* createLinearBoundaryGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
@@ -198,6 +201,12 @@ public:
         };
         if ($self->getType() == sgpp::base::GridType::ModPoly) {
             return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
+        };
+        if ($self->getType() == sgpp::base::GridType::PolyClenshawCurtis) {
+            return ((sgpp::base::PolyClenshawCurtisGrid*) $self)->getDegree();
+        };
+        if ($self->getType() == sgpp::base::GridType::PolyClenshawCurtisBoundary) {
+            return ((sgpp::base::PolyClenshawCurtisBoundaryGrid*) $self)->getDegree();
         };
         return 1;
     };

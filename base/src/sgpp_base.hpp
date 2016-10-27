@@ -17,7 +17,6 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
@@ -95,7 +94,6 @@
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
@@ -129,5 +127,7 @@
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include "sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
+#include "sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 #endif /* BASE_HPP */

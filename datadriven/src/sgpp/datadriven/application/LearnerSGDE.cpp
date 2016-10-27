@@ -219,7 +219,7 @@ sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(std::string& gri
   } else if (gridType.compare("Periodic") == 0) {
     return sgpp::base::GridType::Periodic;
   } else if (gridType.compare("LinearClenshawCurtis") == 0) {
-    return sgpp::base::GridType::LinearClenshawCurtis;
+    return sgpp::base::GridType::LinearClenshawCurtisBoundary;
   } else if (gridType.compare("Bspline") == 0) {
     return sgpp::base::GridType::Bspline;
   } else if (gridType.compare("BsplineBoundary") == 0) {

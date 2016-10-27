@@ -7,21 +7,20 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../basis/LinearClenshawCurtisBasis.hpp"
+#include "../basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
 
 /**
- * Class that implements the dehierarchisation on a polynomial sparse grid. Therefore
+ * Class that implements the hierarchisation on a polynomial sparse grid. Therefore
  * the ()operator has to be implement in order to use the sweep algorithm for
  * the grid traversal
  */
-class DehierarchisationLinearClenshawCurtis {
+class HierarchisationLinearClenshawCurtisBoundary {
  protected:
   typedef GridStorage::grid_iterator grid_iterator;
   typedef level_t level_type;
@@ -37,24 +36,26 @@ class DehierarchisationLinearClenshawCurtis {
   /**
    * Constructor, must be bind to a grid
    *
-   * @param storage the grid storage object of the the grid, on which the dehierarchisation should
-   * be executed
-   * @param base Polynomial basis
+   * @param storage the grid storage object of the the grid, on which the hierarchisation should
+   * be
+   * executed
+   * @param base The polynomial basis functions
    */
-  explicit DehierarchisationLinearClenshawCurtis(GridStorage& storage);
+  HierarchisationLinearClenshawCurtisBoundary(GridStorage& storage);
+
   /**
    * Destructor
    */
-  ~DehierarchisationLinearClenshawCurtis();
+  ~HierarchisationLinearClenshawCurtisBoundary();
 
   /**
    * Implements operator() needed by the sweep class during the grid traversal. This function
    * is applied to the whole grid.
    *
-   * @param source this DataVector holds the linear base coefficients of the sparse grid's
-   * ansatz-functions
-   * @param result this DataVector holds the node base coefficients of the function that should be
+   * @param source this DataVector holds the node base coefficients of the function that should be
    * applied to the sparse grid
+   * @param result this DataVector holds the linear base coefficients of the sparse grid's
+   * ansatz-functions
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
@@ -62,16 +63,15 @@ class DehierarchisationLinearClenshawCurtis {
 
  protected:
   /**
-   * Recursive dehierarchisation algorithm, this algorithms works in-place -> source should be equal
-   * to result
+   * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to
+   * result
    *
-   * @param source this DataVector holds the linear base coefficients of the sparse grid's
-   * ansatz-functions
-   * @param result this DataVector holds the node base coefficients of the function that should be
+   * @param source this DataVector holds the node base coefficients of the function that should be
    * applied to the sparse grid
+   * @param result this DataVector holds the linear base coefficients of the sparse grid's
+   * ansatz-functions
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
-   * @param coeffs nodal coefficients computed so far
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double xl,
            double fl, double xr, double fr);

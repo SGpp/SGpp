@@ -6,7 +6,8 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -14,44 +15,67 @@ namespace sgpp {
 namespace base {
 
 /**
- * grid with Clenshaw-Curtis linear base functions with boundaries, pentagon cut
+ * Grid with modified Clenshaw-Curtis poly basis functions
  */
 class LinearClenshawCurtisGrid : public Grid {
  protected:
+  /**
+   * This constructor creates a new GridStorage out of the stream.
+   *
+   * @param istr inputstream that contains the grid information
+   */
   explicit LinearClenshawCurtisGrid(std::istream& istr);
 
  public:
   /**
-   * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
+   * Constructor of grid with Clenshaw-Curtis poly basis functions
    *
    * @param dim the dimension of the grid
-   * @param boundaryLevel 1 + how much levels the boundary is coarser than
-   *                      the main axes, 0 means one level finer,
-   *                      1 means same level,
-   *                      2 means one level coarser, etc.
+     * @param degree the bspline's degree
    */
-  explicit LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
+  explicit LinearClenshawCurtisGrid(size_t dim);
 
   /**
-   * Destructor
+   * Destructor.
    */
   ~LinearClenshawCurtisGrid() override;
 
+  /**
+   * @return string that identifies the grid type uniquely
+   */
   sgpp::base::GridType getType() override;
 
+  /**
+   * @return B-spline basis
+   */
   SBasis& getBasis() override;
 
+  /**
+   * @return pointer to a GridGenerator object
+   */
   GridGenerator& getGenerator() override;
 
+  /**
+   * reads a grid out of a string
+   *
+   * @param istr string that contains the grid information
+   * @return grid
+   */
   static Grid* unserialize(std::istream& istr);
 
+  /**
+   * Serializes the grid.
+   *
+   * @param ostr stream to which the grid is written
+   * @param version the serialization version of the file
+   */
   void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
  protected:
   /// grid generator
-  BoundaryGridGenerator generator;
-  /// 1 + how much levels the boundary is coarser than the main axes
-  level_t boundaryLevel;
+  StandardGridGenerator generator;
+  /// linear basis
+  SLinearClenshawCurtisBase basis_;
 };
 
 }  // namespace base

@@ -7,10 +7,10 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -18,7 +18,7 @@ namespace base {
 /**
  * Hierarchisation on sparse grid, poly case
  */
-class OperationHierarchisationLinearClenshawCurtis : public OperationHierarchisation {
+class OperationHierarchisationLinearClenshawCurtisBoundary : public OperationHierarchisation {
  public:
   /**
    * Constructor
@@ -26,12 +26,12 @@ class OperationHierarchisationLinearClenshawCurtis : public OperationHierarchisa
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationHierarchisationLinearClenshawCurtis(GridStorage& storage) : storage(storage) {}
+  OperationHierarchisationLinearClenshawCurtisBoundary(GridStorage& storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  ~OperationHierarchisationLinearClenshawCurtis() override {}
+  ~OperationHierarchisationLinearClenshawCurtisBoundary() override {}
 
   /**
    * Implements the hierarchisation on a sprase grid with poly base functions
