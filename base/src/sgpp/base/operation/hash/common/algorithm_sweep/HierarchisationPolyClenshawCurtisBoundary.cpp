@@ -37,8 +37,16 @@ void HierarchisationPolyClenshawCurtisBoundary::operator()(DataVector& source, D
   seq = index.seq();
   coeffs[1] = source[seq];
 
-  // do recursion
-  rec(source, result, index, dim, coeffs);
+  // move to root
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!storage.isValidSequenceNumber(index.seq())) {
+      rec(source, result, index, dim, coeffs);
+    }
+
+    index.resetToLeftLevelZero(dim);
+  }
 }
 
 void HierarchisationPolyClenshawCurtisBoundary::rec(DataVector& source, DataVector& result,
@@ -60,11 +68,8 @@ void HierarchisationPolyClenshawCurtisBoundary::rec(DataVector& source, DataVect
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
-    if (cur_lev == 0) {
-      coeffs[cur_ind] = result[seq];
-    } else {
-      coeffs[cur_lev + 1] = result[seq];
-    }
+    // add the current result to the coefficient vector
+    coeffs[cur_lev + 1] = result[seq];
 
     // descend left
     index.leftChild(dim);
@@ -83,9 +88,8 @@ void HierarchisationPolyClenshawCurtisBoundary::rec(DataVector& source, DataVect
     // ascend
     index.up(dim);
 
-    if (cur_lev > 0) {
-      coeffs[cur_lev + 1] = 0.0;
-    }
+    // remove the current result from the coefficient vector
+    coeffs[cur_lev + 1] = 0.0;
   }
 }
 

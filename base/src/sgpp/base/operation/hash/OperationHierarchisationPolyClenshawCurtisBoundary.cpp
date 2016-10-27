@@ -21,7 +21,7 @@ void OperationHierarchisationPolyClenshawCurtisBoundary::doHierarchisation(DataV
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.getDimension(); i++) {
-    s.sweep1D(node_values, node_values, i);
+    s.sweep1D_Boundary(node_values, node_values, i);
   }
 }
 
@@ -32,7 +32,7 @@ void OperationHierarchisationPolyClenshawCurtisBoundary::doDehierarchisation(Dat
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
-    s.sweep1D(source, alpha, i);
+    s.sweep1D_Boundary(source, alpha, i);
   }
 }
 

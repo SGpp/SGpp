@@ -79,30 +79,36 @@ class PolyClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
   size_t getDegree() { return polyBasis.getDegree(); }
 
   double eval(LT level, IT index, double p) override {
-    // check if x value is in the unit interval
-    if ((p <= 0) || (p >= 1)) {
-      return 0.0f;
+    // make sure that the point is inside the unit interval
+    if (p < 0.0 || p > 1.0) {
+      return 0.0;
     }
 
-    // boundary points
+    // consider grid points at the boundary
     if (level == 0) {
       if (index == 0) {
-        return 1.0 - p;
+        return 1 - p;
       } else {
+        // index == 1
         return p;
       }
-    } else {
-      // inner points
-      return polyBasis.eval(level, index, p);
     }
+
+    // interior basis function
+    return polyBasis.eval(level, index, p);
+  }
+
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
   }
 
   double getIntegral(LT level, IT index) {
-    // boundary points
     if (level == 0) {
-      return 0.5f;
+      return 0.5;
     } else {
-      // inner points
       return polyBasis.getIntegral(level, index);
     }
   }

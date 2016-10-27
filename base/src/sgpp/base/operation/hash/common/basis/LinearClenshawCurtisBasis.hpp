@@ -19,18 +19,15 @@ namespace base {
 /**
  * Linear basis on Clenshaw-Curtis grids.
  */
-template<class LT, class IT>
-class LinearClenshawCurtisBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class LinearClenshawCurtisBasis : public Basis<LT, IT> {
  public:
-  LinearClenshawCurtisBasis() :
-    clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
-  }
+  LinearClenshawCurtisBasis() : clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
   /**
    * Destructor.
    */
-  ~LinearClenshawCurtisBasis() override {
-  }
+  ~LinearClenshawCurtisBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -68,14 +65,32 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
     }
   }
 
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
+  }
+
+  double getIntegral(LT level, IT index) {
+    // boundary points
+    if (level == 0) {
+      return 0.5f;
+    } else {
+      // endpoints of support
+      const double x0 = clenshawCurtisTable.getPoint(level, index - 1);
+      const double x2 = clenshawCurtisTable.getPoint(level, index + 1);
+      return (x2 - x0) / 2.;
+    }
+  }
+
  protected:
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;
 };
 
 // default type-def (unsigned int for level and index)
-typedef LinearClenshawCurtisBasis<unsigned int, unsigned int>
-SLinearClenshawCurtisBase;
+typedef LinearClenshawCurtisBasis<unsigned int, unsigned int> SLinearClenshawCurtisBase;
 
 }  // namespace base
 }  // namespace sgpp

@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP
-#define OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>

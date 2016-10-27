@@ -652,14 +652,11 @@ def dehierarchize(grid, alpha):
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
     nodalValues = DataVector(gs.getSize())
-    A = DataMatrix(gs.getSize(), gs.getDimension())
+    A = np.ndarray((gs.getSize(), gs.getDimension()))
     for i in xrange(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
-        A.setRow(i, p)
-    opEval = createOperationMultipleEval(grid, A)
-    alphaVec = DataVector(alpha)
-    opEval.mult(alphaVec, nodalValues)
-    return nodalValues.array()
+        A[i, :] = p.array()
+    return evalSGFunctionMulti(grid, alpha, A)
 
 
 def dehierarchizeList(grid, alpha, gps):
@@ -881,22 +878,27 @@ def estimateConvergence(grid, gp, v):
 
 def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     # check if interpolation property is given
-    evalValues = dehierarchize(grid, DataVector(alpha))
+    gs = grid.getStorage()
+    evalValues = np.ndarray(gs.getSize())
+    x = DataVector(gs.getDimension())
+    opEval = createOperationEvalNaive(grid)
+    alpha_vec = DataVector(alpha)
+    for i in xrange(gs.getSize()):
+        gs.getCoordinates(gs.getPoint(i), x)
+        evalValues[i] = opEval.eval(alpha_vec, x)
 
     error = np.array([])
     nodes = np.array([])
     head = True
-    gs = grid.getStorage()
     p = DataVector(gs.getDimension())
     for i, (nodal, value) in enumerate(zip(nodalValues, evalValues)):
         # compute the relative error
+        abs_error = abs(nodal - value)
+        rel_error = abs_error
         if abs(nodal) > 1e-14:
-            rel_error = min(abs(nodal - value) / nodal,
-                            abs(nodal - value))
-        else:
-            rel_error = abs(nodal - value)
+            rel_error = abs_error / nodal
 
-        if rel_error > epsilon:
+        if abs_error > epsilon:
             spacing = 12
             if head:
                 print
@@ -917,9 +919,9 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                     ("%g" % nodal).rjust(spacing),
                     ("%g" % value).rjust(spacing),
                     ("%g" % rel_error).rjust(spacing),
-                    ("%g" % abs(nodal - value)).rjust(spacing))
+                    ("%g" % abs_error).rjust(spacing))
             nodes = np.append(nodes, [i])
-            error = np.append(rel_error, [rel_error])
+            error = np.append(abs_error, [abs_error])
 
     return error, nodes
 

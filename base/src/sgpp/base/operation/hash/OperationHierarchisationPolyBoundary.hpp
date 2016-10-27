@@ -1,11 +1,9 @@
-/* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#ifndef OPERATIONHIERARCHISATIONPOLYBOUNDARY_HPP
-#define OPERATIONHIERARCHISATIONPOLYBOUNDARY_HPP
+#pragma once
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -13,7 +11,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -63,5 +60,3 @@ class OperationHierarchisationPolyBoundary : public OperationHierarchisation {
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONHIERARCHISATIONPOLYBOUNDARY_HPP */

@@ -84,16 +84,6 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
 
   size_t getDegree() { return degree; }
 
-  void getBoundariesOfSupport(LT level, IT index, double& xleft, double& xright) {
-    // left boundary
-    HashGridPoint gp(1);
-    gp.setAsHierarchicalGridPoint(0, level, index - 1);
-    xleft = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
-    // right boundary
-    gp.setAsHierarchicalGridPoint(0, level, index + 1);
-    xright = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
-  }
-
   double eval(LT level, IT index, double p) override {
     // check if x value is in the unit interval
     if ((p <= 0) || (p >= 1)) {
@@ -101,9 +91,8 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     }
 
     // load boundaries of support
-    double xleft = 0.0;
-    double xright = 0.0;
-    getBoundariesOfSupport(level, index, xleft, xright);
+    double xleft = clenshawCurtisTable.getPoint(level, index - 1);
+    double xright = clenshawCurtisTable.getPoint(level, index + 1);
 
     // check if p is out of bounds
     if ((p <= xleft) || (p >= xright)) {
@@ -186,9 +175,8 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
 
   double getIntegral(LT level, IT index) {
     // load boundaries of support
-    double xleft = 0.0;
-    double xright = 0.0;
-    getBoundariesOfSupport(level, index, xleft, xright);
+    double xleft = clenshawCurtisTable.getPoint(level, index - 1);
+    double xright = clenshawCurtisTable.getPoint(level, index + 1);
 
     // grid spacing
     double h = xright - xleft;

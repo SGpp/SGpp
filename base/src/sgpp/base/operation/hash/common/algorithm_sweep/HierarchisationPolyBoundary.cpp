@@ -14,15 +14,13 @@ namespace sgpp {
 namespace base {
 
 HierarchisationPolyBoundary::HierarchisationPolyBoundary(GridStorage& storage,
-    SPolyBoundaryBase* base) :
-  storage(storage), base(base) {
-}
+                                                         SPolyBoundaryBase* base)
+    : storage(storage), base(base) {}
 
-HierarchisationPolyBoundary::~HierarchisationPolyBoundary() {
-}
+HierarchisationPolyBoundary::~HierarchisationPolyBoundary() {}
 
-void HierarchisationPolyBoundary::operator()(DataVector& source,
-    DataVector& result, grid_iterator& index, size_t dim) {
+void HierarchisationPolyBoundary::operator()(DataVector& source, DataVector& result,
+                                             grid_iterator& index, size_t dim) {
   DataVector coeffs(index.getGridDepth(dim) + 2);
   coeffs.setAll(0.0);
 
@@ -37,13 +35,20 @@ void HierarchisationPolyBoundary::operator()(DataVector& source,
   seq = index.seq();
   coeffs[1] = source[seq];
 
-  // do recursion
-  rec(source, result, index, dim, coeffs);
+  // move to root
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!storage.isValidSequenceNumber(index.seq())) {
+      rec(source, result, index, dim, coeffs);
+    }
+
+    index.resetToLeftLevelZero(dim);
+  }
 }
 
-void HierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
-                                      grid_iterator& index, size_t dim,
-                                      DataVector& coeffs) {
+void HierarchisationPolyBoundary::rec(DataVector& source, DataVector& result, grid_iterator& index,
+                                      size_t dim, DataVector& coeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -54,19 +59,14 @@ void HierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // hierarchisation
-  double x = static_cast<double>(cur_ind) /
-              static_cast<double>(1 << cur_lev);
+  double x = static_cast<double>(cur_ind) / static_cast<double>(1 << cur_lev);
   // v_i * 1 - sum_{j < i} v_j * \phi(x_i)
-  result[seq] = source[seq]
-                - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
+  result[seq] = source[seq] - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
-    if (cur_lev == 0) {
-      coeffs[cur_ind] = result[seq];
-    } else {
-      coeffs[cur_lev + 1] = result[seq];
-    }
+    // add the current result to the coefficient vector
+    coeffs[cur_lev + 1] = result[seq];
 
     // descend left
     index.leftChild(dim);
@@ -85,9 +85,8 @@ void HierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
     // ascend
     index.up(dim);
 
-    if (cur_lev > 0) {
-      coeffs[cur_lev + 1] = 0.0;
-    }
+    // remove the current result from the coefficient vector
+    coeffs[cur_lev + 1] = 0.0;
   }
 }
 
