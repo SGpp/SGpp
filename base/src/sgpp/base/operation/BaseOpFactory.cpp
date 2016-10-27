@@ -19,6 +19,7 @@
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
@@ -36,6 +37,7 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
@@ -85,6 +87,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundary.hpp>
@@ -108,6 +111,7 @@
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
 
@@ -189,6 +193,9 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new base::OperationHierarchisationPolyClenshawCurtisBoundary(
         grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationHierarchisationModPolyClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationHierarchisationPrewavelet(
         grid.getStorage(), dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage());
@@ -335,6 +342,9 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new base::OperationMultipleEvalPolyClenshawCurtisBoundary(
         grid, dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationMultipleEvalModPolyClenshawCurtis(
+        grid, dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationMultipleEvalLinearClenshawCurtis(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
@@ -420,6 +430,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
     return new base::OperationEvalPolyClenshawCurtisNaive(
         grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationEvalModPolyClenshawCurtisNaive(
+        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalNaive is not implemented for this grid type.");
