@@ -13,6 +13,7 @@
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
@@ -72,6 +73,10 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
 }
 
 Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
+
+Grid* Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel) {
+  return new LinearClenshawCurtisBoundaryGrid(dim, boundaryLevel);
+}
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
 
@@ -176,6 +181,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createSquareRootGrid(gridConfig.dim_);
       case GridType::Periodic:
         return Grid::createPeriodicGrid(gridConfig.dim_);
+      case GridType::LinearClenshawCurtisBoundary:
+        return Grid::createLinearClenshawCurtisBoundaryGrid(gridConfig.dim_,
+                                                            gridConfig.boundaryLevel_);
       case GridType::LinearClenshawCurtis:
         return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_);
       case GridType::Bspline:
@@ -264,6 +272,11 @@ Grid* Grid::clone() {
       break;
     case GridType::Periodic:
       newGrid = Grid::createPeriodicGrid(numDims);
+      break;
+    case GridType::LinearClenshawCurtisBoundary:
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createLinearClenshawCurtisBoundaryGrid(numDims, boundaryLevel);
       break;
     case GridType::LinearClenshawCurtis:
       newGrid = Grid::createLinearClenshawCurtisGrid(numDims);
@@ -383,8 +396,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedBoundary",
                                                        LinearStretchedBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis",
-                                                       LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "linearClenshawCurtis", LinearClenshawCurtisBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
     tMap->insert(
@@ -420,7 +433,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
     tMap->insert(
         std::make_pair("linearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(
+        std::make_pair("linearClenshawCurtis", LinearClenshawCurtisBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
     tMap->insert(std::make_pair("polyBoundary", PolyBoundaryGrid::unserialize));
@@ -468,8 +482,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::LinearBoundary, "linearBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::LinearClenshawCurtis,
-                                                                    "linearClenshawCurtis"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtis"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::Poly, "poly"));
@@ -509,7 +523,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::LinearBoundary, "linearBoundary"));
     verboseMap->insert(
         std::make_pair(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
-    verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::make_pair(GridType::Poly, "poly"));
     verboseMap->insert(std::make_pair(GridType::PolyBoundary, "polyBoundary"));

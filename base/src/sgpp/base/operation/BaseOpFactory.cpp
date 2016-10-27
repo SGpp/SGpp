@@ -25,7 +25,6 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
@@ -40,6 +39,8 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
@@ -70,6 +71,8 @@
 #include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPrewavelet.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundary.hpp>
@@ -82,8 +85,9 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
@@ -94,7 +98,6 @@
 #include <sgpp/base/operation/hash/OperationEvalFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModFundamentalSplineNaive.hpp>
@@ -160,6 +163,8 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
     return new base::OperationHierarchisationModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationHierarchisationLinearClenshawCurtis(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationHierarchisationLinearClenshawCurtisBoundary(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary ||
@@ -332,6 +337,8 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
         grid, dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationMultipleEvalLinearClenshawCurtis(grid, dataset);
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationMultipleEvalLinearClenshawCurtisBoundary(grid, dataset);
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationMultipleEvalPrewavelet(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearStretched) {
@@ -369,6 +376,8 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalLinearBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationEvalLinearClenshawCurtisNaive(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationEvalLinearClenshawCurtisBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationEvalBsplineNaive(grid.getStorage(),
                                                dynamic_cast<base::BsplineGrid&>(grid).getDegree());
@@ -413,8 +422,7 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
         grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
-        "createOperationEval is not implemented for this grid type."
-        "Try createOperationEvalNaive instead.");
+        "createOperationEvalNaive is not implemented for this grid type.");
   }
 }
 

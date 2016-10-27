@@ -10,7 +10,6 @@
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
@@ -39,6 +38,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 
 #include <cstring>
+#include "../../../../../base/src/sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
 
 namespace sgpp {
 namespace op_factory {
@@ -51,9 +51,9 @@ createOperationMultipleHierarchisation(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearBoundary) {
     return new optimization::OperationMultipleHierarchisationLinearBoundary(
         dynamic_cast<base::LinearBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
     return new optimization::OperationMultipleHierarchisationLinearClenshawCurtis(
-        dynamic_cast<base::LinearClenshawCurtisGrid&>(grid));
+        dynamic_cast<base::LinearClenshawCurtisBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new optimization::OperationMultipleHierarchisationModLinear(
         dynamic_cast<base::ModLinearGrid&>(grid));

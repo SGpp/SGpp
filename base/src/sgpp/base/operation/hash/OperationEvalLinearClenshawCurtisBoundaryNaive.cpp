@@ -3,13 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationEvalLinearClenshawCurtisNaive.hpp"
+#include "OperationEvalLinearClenshawCurtisBoundaryNaive.hpp"
+
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
-double OperationEvalLinearClenshawCurtisNaive::eval(const DataVector& alpha,
-                                                    const DataVector& point) {
+double OperationEvalLinearClenshawCurtisBoundaryNaive::eval(
+  const DataVector& alpha, const DataVector& point) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -38,8 +40,9 @@ double OperationEvalLinearClenshawCurtisNaive::eval(const DataVector& alpha,
   return result;
 }
 
-void OperationEvalLinearClenshawCurtisNaive::eval(const DataMatrix& alpha, const DataVector& point,
-                                                  DataVector& value) {
+void OperationEvalLinearClenshawCurtisBoundaryNaive::eval(const DataMatrix& alpha,
+                                                  const DataVector& point,
+                                       DataVector& value) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();

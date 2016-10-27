@@ -11,7 +11,7 @@
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../basis/LinearClenshawCurtisBasis.hpp"
+#include "../basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -21,7 +21,7 @@ namespace base {
  * the ()operator has to be implement in order to use the sweep algorithm for
  * the grid traversal
  */
-class DehierarchisationLinearClenshawCurtis {
+class DehierarchisationLinearClenshawCurtisBoundary {
  protected:
   typedef GridStorage::grid_iterator grid_iterator;
   typedef level_t level_type;
@@ -41,11 +41,11 @@ class DehierarchisationLinearClenshawCurtis {
    * be executed
    * @param base Polynomial basis
    */
-  explicit DehierarchisationLinearClenshawCurtis(GridStorage& storage);
+  explicit DehierarchisationLinearClenshawCurtisBoundary(GridStorage& storage);
   /**
    * Destructor
    */
-  ~DehierarchisationLinearClenshawCurtis();
+  ~DehierarchisationLinearClenshawCurtisBoundary();
 
   /**
    * Implements operator() needed by the sweep class during the grid traversal. This function

@@ -6,15 +6,15 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include "../../../../../../base/src/sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp"
 
 namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationLinearClenshawCurtis::
-    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisGrid& grid)
+    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisBoundaryGrid& grid)
     : grid(grid) {}
 
 OperationMultipleHierarchisationLinearClenshawCurtis::
@@ -32,7 +32,7 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
     base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalLinearClenshawCurtisNaive opNaiveEval(storage);
+  base::OperationEvalLinearClenshawCurtisBoundaryNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
@@ -57,7 +57,7 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
     base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalLinearClenshawCurtisNaive opNaiveEval(storage);
+  base::OperationEvalLinearClenshawCurtisBoundaryNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);

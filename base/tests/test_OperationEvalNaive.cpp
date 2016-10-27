@@ -9,6 +9,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -106,6 +107,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d)));
@@ -127,6 +129,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));

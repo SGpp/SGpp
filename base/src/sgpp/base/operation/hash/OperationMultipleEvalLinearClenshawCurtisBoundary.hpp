@@ -8,15 +8,15 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include "common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
 
 /**
- * This class implements OperationMultipleEval for a grids with linear basis ansatzfunctions
+ * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
  */
-class OperationMultipleEvalLinearClenshawCurtis : public OperationMultipleEval {
+class OperationMultipleEvalLinearClenshawCurtisBoundary : public OperationMultipleEval {
  public:
   /**
    * Constructor
@@ -25,13 +25,13 @@ class OperationMultipleEvalLinearClenshawCurtis : public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset Dataset
    */
-  OperationMultipleEvalLinearClenshawCurtis(Grid& grid, DataMatrix& dataset)
+  OperationMultipleEvalLinearClenshawCurtisBoundary(Grid& grid, DataMatrix& dataset)
       : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
    */
-  ~OperationMultipleEvalLinearClenshawCurtis() override {}
+  ~OperationMultipleEvalLinearClenshawCurtisBoundary() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
@@ -41,8 +41,8 @@ class OperationMultipleEvalLinearClenshawCurtis : public OperationMultipleEval {
  protected:
   /// Pointer to GridStorage object
   GridStorage& storage;
-  /// Linear Basis object
-  SLinearClenshawCurtisBase base;
+  /// Poly Basis object
+  SLinearClenshawCurtisBoundaryBase base;
 };
 
 }  // namespace base

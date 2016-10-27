@@ -5,28 +5,29 @@
 
 #pragma once
 
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "common/basis/LinearClenshawCurtisBasis.hpp"
+#include "common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
 
-class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
+class OperationEvalLinearClenshawCurtisBoundaryNaive : public OperationEval {
  public:
   /**
    * Constructor.
    *
-   * @param storage   storage of the sparse grid
-   * @param degree    polynomial degree
+   * @param storage       storage of the sparse grid
    */
-  OperationEvalLinearClenshawCurtisNaive(GridStorage& storage)
+  explicit OperationEvalLinearClenshawCurtisBoundaryNaive(GridStorage& storage)
       : storage(storage), pointInUnitCube(storage.getDimension()) {}
 
-  ~OperationEvalLinearClenshawCurtisNaive() override {}
+  /**
+   * Destructor.
+   */
+  ~OperationEvalLinearClenshawCurtisBoundaryNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -46,7 +47,7 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D linear basis
-  SLinearClenshawCurtisBase base;
+  SLinearClenshawCurtisBoundaryBase base;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
 };
