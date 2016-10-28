@@ -147,7 +147,7 @@ class GetAffectedBasisFunctions {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -241,7 +241,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -344,7 +344,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -490,7 +490,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -782,7 +782,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -911,7 +911,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1015,7 +1015,7 @@ class GetAffectedBasisFunctions <
       index_type global_work_index = 0;
 
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;

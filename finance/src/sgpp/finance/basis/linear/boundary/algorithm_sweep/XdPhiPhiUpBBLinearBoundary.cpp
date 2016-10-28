@@ -35,7 +35,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(sgpp::base::DataVector& source,
     if (!index.hint()) {
       index.resetToLevelOne(dim);
 
-      if (!this->storage->isValidSequenceNumber(index.seq())) {
+      if (!this->storage->isInvalidSequenceNumber(index.seq())) {
         recBB(source, result, index, dim, fl, fr, q, t);
       }
 
@@ -74,7 +74,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(sgpp::base::DataVector& source,
     if (!index.hint()) {
       index.resetToLevelOne(dim);
 
-      if (!storage->isValidSequenceNumber(index.seq())) {
+      if (!storage->isInvalidSequenceNumber(index.seq())) {
         rec(source, result, index, dim, fl, fr);
       }
 

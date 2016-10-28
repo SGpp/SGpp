@@ -313,7 +313,7 @@ class HashGridStorage {
    *
    * @return true if we are not EOF
    */
-  bool isValidSequenceNumber(size_t s);
+  bool isInvalidSequenceNumber(size_t s);
 
   /**
    * returns the algorithmic dimensions (the dimensions in which the Up Down
@@ -536,7 +536,7 @@ size_t inline HashGridStorage::getSequenceNumber(HashGridPoint& index) const {
   }
 }
 
-bool inline HashGridStorage::isValidSequenceNumber(size_t s) { return s > map.size(); }
+bool inline HashGridStorage::isInvalidSequenceNumber(size_t s) { return s > map.size(); }
 
 std::vector<size_t> inline HashGridStorage::getAlgorithmicDimensions() { return algoDims; }
 
