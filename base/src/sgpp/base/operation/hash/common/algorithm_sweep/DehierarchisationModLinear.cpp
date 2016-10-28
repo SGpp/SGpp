@@ -74,14 +74,14 @@ void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fltemp, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, frtemp);
     }
 

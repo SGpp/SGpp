@@ -51,13 +51,13 @@ void XdPhidPhiUpBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVe
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fml);
     }
 
     index.stepRight(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fmr, fr);
     }
 
@@ -92,13 +92,13 @@ void XdPhidPhiUpBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::Data
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fl, fml, q, t);
     }
 
     index.stepRight(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       recBB(source, result, index, dim, fmr, fr, q, t);
     }
 

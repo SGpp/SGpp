@@ -40,14 +40,14 @@ void XPhidPhiUpBBLinearStretched::rec(sgpp::base::DataVector& source,
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fml);
       //      recBB(source, result, index, dim, fl, fml, q, t);
     }
 
     index.stepRight(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fmr, fr);
       //      recBB(source, result, index, dim, fmr, fr, q, t);
     }
