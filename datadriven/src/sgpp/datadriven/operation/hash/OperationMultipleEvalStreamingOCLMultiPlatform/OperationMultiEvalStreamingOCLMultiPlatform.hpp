@@ -7,20 +7,21 @@
 
 #include <omp.h>
 
-#include <chrono>
-#include <vector>
 #include <algorithm>
+#include <chrono>
+#include <mutex>
+#include <vector>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -131,11 +132,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
                                         kernelConfiguration, queueLoadBalancerMultTranspose);
     }
 
-
-
     // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
-
   }
 
   ~OperationMultiEvalStreamingOCLMultiPlatform() {}
@@ -165,33 +163,44 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
-    for (size_t i = 0; i < devices.size(); i++) {
-      std::cout << devices[i]->deviceName << std::endl;
-    }
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
 
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
-      this->multKernels[threadId].mult(this->level, this->index, this->kernelDataset, alphaArray,
-                                       resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      try {
+        this->multKernels[threadId].mult(this->level, this->index, this->kernelDataset, alphaArray,
+                                         resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
 
-    if (verbose) {
-      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
+
     this->duration = this->myTimer.stop();
+
+    for (StreamingOCLMultiPlatform::KernelMult<T> &kernel : multKernels) {
+      this->duration -= kernel.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration mult ocl: " << this->duration << std::endl;
+    }
   }
 
   void multTranspose(base::DataVector &source, base::DataVector &result) override {
@@ -220,30 +229,47 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
+
+    std::once_flag onceFlag;
+    std::exception_ptr exceptionPtr;
 
 #pragma omp parallel
     {
       size_t threadId = omp_get_thread_num();
 
-      this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo,
-          datasetFrom, datasetTo);
+      try {
+        this->multTransposeKernels[threadId].multTranspose(
+            this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom,
+            gridTo, datasetFrom, datasetTo);
+      } catch (...) {
+        // store the first exception thrown for rethrow
+        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+      }
     }
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    if (verbose) {
-      std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
+
+    if (exceptionPtr) {
+      std::rethrow_exception(exceptionPtr);
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
 
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
+
     this->duration = this->myTimer.stop();
+
+    for (StreamingOCLMultiPlatform::KernelMultTranspose<T> &kernelTranspose :
+         multTransposeKernels) {
+      this->duration -= kernelTranspose.getBuildDuration();
+    }
+
+    if (verbose) {
+      std::cout << "duration multTranspose ocl: " << duration << std::endl;
+    }
   }
 
   double getDuration() override { return this->duration; }
@@ -297,13 +323,10 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     base::HashGridPoint::level_type curLevel;
     base::HashGridPoint::index_type curIndex;
 
-    /// pointer to index_type
-    base::HashGridStorage::point_pointer gridPoint;
-
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.getPoint(i);
+      base::HashGridPoint &gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
-        gridPoint->get(dim, curLevel, curIndex);
+        gridPoint.get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);
         index[i * dims + dim] = static_cast<T>(curIndex);
       }

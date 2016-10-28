@@ -1264,13 +1264,13 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     }
 
     // Test call @ the money
-    std::vector<double> point;
+    sgpp::base::DataVector point(d);
 
     for (size_t j = 0; j < d; j++) {
       if (isLogSolve == true) {
-        point.push_back(log(dStrike));
+        point[j] = log(dStrike);
       } else {
-        point.push_back(dStrike);
+        point[j] = dStrike;
       }
     }
 

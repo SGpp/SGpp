@@ -90,9 +90,9 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
   // operations on boundary grid
   this->OpLaplaceBound =
-      sgpp::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
+      sgpp::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
   this->OpLTwoBound =
-      sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+      sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;
