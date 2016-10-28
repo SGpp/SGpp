@@ -178,7 +178,7 @@ class PDESolver {
    *
    * @return price of option for given point
    */
-  double evaluatePoint(std::vector<double>& evalPoint, sgpp::base::DataVector& alpha);
+  double evaluatePoint(sgpp::base::DataVector& evalPoint, sgpp::base::DataVector& alpha);
 
   /**
    * Evaluates the sparse grid's function given by the stored grid and the alpha coefficients.

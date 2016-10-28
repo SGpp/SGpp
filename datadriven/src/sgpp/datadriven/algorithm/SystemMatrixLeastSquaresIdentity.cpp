@@ -20,8 +20,8 @@ SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(base::Grid& g
                                                                    double lambda)
     : DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
   this->instances = this->dataset_.getNrows();
-  this->B = op_factory::createOperationMultipleEval(grid, this->dataset_,
-                                                    this->implementationConfiguration);
+  this->B.reset(op_factory::createOperationMultipleEval(grid, this->dataset_,
+                                                        this->implementationConfiguration));
 
   // padded during Operator construction, fetch new size
   this->paddedInstances = this->dataset_.getNrows();
@@ -36,10 +36,12 @@ void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha, base::DataV
   this->myTimer_->start();
   this->B->mult(alpha, temp);
   this->completeTimeMult_ += this->myTimer_->stop();
+  this->computeTimeMult_ += this->B->getDuration();
 
   this->myTimer_->start();
   this->B->multTranspose(temp, result);
   this->completeTimeMultTrans_ += this->myTimer_->stop();
+  this->computeTimeMultTrans_ += this->B->getDuration();
 
   result.axpy(static_cast<double>(this->instances) * this->lambda_, alpha);
 }
@@ -50,6 +52,7 @@ void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector& classes, base
   this->myTimer_->start();
   this->B->multTranspose(myClasses, b);
   this->completeTimeMultTrans_ += this->myTimer_->stop();
+  this->computeTimeMultTrans_ += this->B->getDuration();
 }
 
 void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
@@ -57,8 +60,8 @@ void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
 void SystemMatrixLeastSquaresIdentity::setImplementation(
     datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
   this->implementationConfiguration = operationConfiguration;
-  this->B = op_factory::createOperationMultipleEval(this->grid, this->dataset_,
-                                                    this->implementationConfiguration);
+  this->B.reset(op_factory::createOperationMultipleEval(this->grid, this->dataset_,
+                                                        this->implementationConfiguration));
 }
 
 }  // namespace datadriven

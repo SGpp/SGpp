@@ -12,23 +12,23 @@
 
 #include <omp.h>
 
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.hpp>
 
-#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
-#include <sgpp/parallel/tools/TypesParallel.hpp>
-#include <sgpp/parallel/tools/PartitioningTool.hpp>
-#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/parallel/operation/HashGridStorageConverter.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <cmath>
 
+#include <algorithm>
 #include <cstring>
 #include <iostream>
-#include <algorithm>
 
 #if defined(__SSE4_2__) || defined(__AVX__) || defined(__MIC__)
 #include <immintrin.h>
@@ -167,7 +167,7 @@ void OperationLTwoDotProductVectorizedLinear::init_grid_storage() {
       storage, *(this->level_), *(this->index_), sgpp::parallel::MIC, BLOCK_LENGTH);
   sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
       storage, *(this->level_int_), sgpp::parallel::MIC, BLOCK_LENGTH);
-#elif defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
+#elif defined(__SSE4_2__) || defined(__AVX__)
   sgpp::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
       storage, *(this->level_), *(this->index_), sgpp::parallel::X86SIMD, BLOCK_LENGTH);
   sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
