@@ -6,7 +6,7 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -17,14 +17,14 @@ namespace base {
 /**
  * Grid with modified Clenshaw-Curtis poly basis functions
  */
-class LinearClenshawCurtisGrid : public Grid {
+class ModLinearClenshawCurtisGrid : public Grid {
  protected:
   /**
    * This constructor creates a new GridStorage out of the stream.
    *
    * @param istr inputstream that contains the grid information
    */
-  explicit LinearClenshawCurtisGrid(std::istream& istr);
+  explicit ModLinearClenshawCurtisGrid(std::istream& istr);
 
  public:
   /**
@@ -32,12 +32,12 @@ class LinearClenshawCurtisGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  explicit LinearClenshawCurtisGrid(size_t dim);
+  explicit ModLinearClenshawCurtisGrid(size_t dim);
 
   /**
    * Destructor.
    */
-  ~LinearClenshawCurtisGrid() override;
+  ~ModLinearClenshawCurtisGrid() override;
 
   /**
    * @return string that identifies the grid type uniquely
@@ -74,7 +74,7 @@ class LinearClenshawCurtisGrid : public Grid {
   /// grid generator
   StandardGridGenerator generator;
   /// linear basis
-  SLinearClenshawCurtisBase basis_;
+  SLinearModifiedClenshawCurtisBase basis_;
 };
 
 }  // namespace base

@@ -15,6 +15,7 @@
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModLinearClenshawCurtisGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(sgpp::base::BoudingBox& BB);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
@@ -117,6 +118,7 @@ enum class GridType {
   PolyClenshawCurtis,           // 27
   LinearClenshawCurtis,         // 28
   ModPolyClenshawCurtis,        // 29
+  ModLinearClenshawCurtis       // 30
 };
 
 class Grid
@@ -128,6 +130,7 @@ public:
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
