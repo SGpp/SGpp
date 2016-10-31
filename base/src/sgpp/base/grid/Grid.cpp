@@ -14,6 +14,7 @@
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
@@ -77,6 +78,10 @@ Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClensh
 
 Grid* Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel) {
   return new LinearClenshawCurtisBoundaryGrid(dim, boundaryLevel);
+}
+
+Grid* Grid::createModLinearClenshawCurtisGrid(size_t dim) {
+  return new ModLinearClenshawCurtisGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
@@ -193,6 +198,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
                                                             gridConfig.boundaryLevel_);
       case GridType::LinearClenshawCurtis:
         return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_);
+      case GridType::ModLinearClenshawCurtis:
+        return Grid::createModLinearClenshawCurtisGrid(gridConfig.dim_);
       case GridType::Bspline:
         return Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::BsplineBoundary:
@@ -287,6 +294,9 @@ Grid* Grid::clone() {
       break;
     case GridType::LinearClenshawCurtis:
       newGrid = Grid::createLinearClenshawCurtisGrid(numDims);
+      break;
+    case GridType::ModLinearClenshawCurtis:
+      newGrid = Grid::createModLinearClenshawCurtisGrid(numDims);
       break;
     case GridType::Bspline:
       degree = dynamic_cast<BsplineGrid*>(this)->getDegree();

@@ -53,7 +53,8 @@ enum class GridType {
   PolyClenshawCurtisBoundary,    // 26
   PolyClenshawCurtis,            // 27
   LinearClenshawCurtis,          // 28
-  ModPolyClenshawCurtis          // 29
+  ModPolyClenshawCurtis,         // 29
+  ModLinearClenshawCurtis        // 30
 };
 
 /**
@@ -181,6 +182,14 @@ class Grid {
    * @return grid
    */
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
+
+  /**
+   * creates a modified linear Clenshaw-Curtis grid
+   *
+   * @param dim the grid's dimension
+   * @return grid
+   */
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
 
   /**
    * creates a mod linear grid
