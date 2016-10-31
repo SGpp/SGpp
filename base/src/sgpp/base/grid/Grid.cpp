@@ -565,6 +565,13 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::Periodic, "periodic"));
     verboseMap->insert(
         std::make_pair(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+    verboseMap->insert(std::make_pair(GridType::PolyClenshawCurtis, "polyClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::PolyClenshawCurtisBoundary, "polyClenshawCurtisBoundary"));
+    verboseMap->insert(std::make_pair(GridType::ModPolyClenshawCurtis, "modPolyClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
+    verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
 #endif
   }
 

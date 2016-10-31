@@ -336,7 +336,14 @@ def gridToName(i, p):
              22 : "ModFundamentalSpline(Grad "  + str(p) + ")",
              23 : "ModBsplineClenshawCurtis(Grad "  + str(p) + ")",
              24 : "LinearStencil(Grad "  + str(p) + ")",
-             25 : "ModLinearStencil (Grad "  + str(p) + ")"}
+             25 : "ModLinearStencil (Grad "  + str(p) + ")",
+             26 : "PolyClenshawCurtisBoundary (Grad "  + str(p) + ")",
+             27 : "PolyClenshawCurtis (Grad "  + str(p) + ")",
+             28 : "LinearClenshawCurtis (Grad "  + str(p) + ")",
+             29 : "ModPolyClenshawCurtis (Grad "  + str(p) + ")",
+             30 : "ModLinearClenshawCurtis (Grad " + str(p) + ")"
+             }
+
     return types[i]
 
 def printLine():
@@ -585,8 +592,12 @@ def integrate(d, error_type = "l2", quad_error_sol = 0):
              # (pysgpp.Grid.createBsplineGrid(d, 5), 5) ,
              # (pysgpp.Grid.createBsplineGrid(d, 7), 7),
              # (pysgpp.Grid.createLinearBoundaryGrid(d, 1), 1),
+             (pysgpp.Grid.createPolyClenshawCurtisGrid(d, 3), 3),
+             (pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3), 3),
              (pysgpp.Grid.createPolyBoundaryGrid(d,3), 3),
              (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+             (pysgpp.Grid.createLinearClenshawCurtisGrid(d), 1),
+             (pysgpp.Grid.createModLinearClenshawCurtisGrid(d), 1),
              # (pysgpp.Grid.createModLinearGrid(d), 1),
              # (pysgpp.Grid.createModPolyGrid(d,3), 3),
              (pysgpp.Grid.createModBsplineGrid(d,3), 3),

@@ -48,11 +48,16 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureLinearClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureLinearClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationQuadraturePolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBspline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineClenshawCurtis.hpp>
@@ -222,6 +227,12 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     return new base::OperationQuadratureLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new base::OperationQuadratureLinearClenshawCurtis(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationQuadratureLinearClenshawCurtisBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
+    return new base::OperationQuadratureModLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationQuadraturePoly(grid.getStorage(),
                                              dynamic_cast<base::PolyGrid*>(&grid)->getDegree());
@@ -232,8 +243,14 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationQuadraturePolyClenshawCurtis(
+    return new base::OperationQuadraturePolyClenshawCurtisBoundary(
         grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationQuadraturePolyClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationQuadratureModPolyClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationQuadratureBspline(
         grid.getStorage(), dynamic_cast<base::BsplineGrid*>(&grid)->getDegree());
