@@ -62,6 +62,7 @@
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModFundamentalSpline.hpp>
 
@@ -263,6 +264,9 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationQuadratureModBspline(
         grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationQuadratureModBsplineClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::ModBsplineClenshawCurtisGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationQuadratureFundamentalSpline(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree());

@@ -536,7 +536,7 @@ def optimize(f, sol=0, x_axis="gridpoints", use_3_grid=False):
     print saved_ec_lists
 
     # plt.ylabel('$v(\vec{x}^{*}) - v(\vec{x}_{\text{opt}})$')
-    # ax.legend(loc=0)
+    ax.legend(loc=0)
 
     if isinstance(f, opt_function):
         # plt.title("Optimization-Errorotation=0, fontsize=16)
@@ -587,23 +587,25 @@ def l2_det_error(f, f_sg):
 
 def integrate(d, error_type = "l2", quad_error_sol = 0):
     mixedGrids = [ #  (pysgpp.Grid.createLinearGrid(d), 1),
-             # (pysgpp.Grid.createPolyGrid(d,3), 3),
-             # (pysgpp.Grid.createBsplineGrid(d, 3), 3) ,
              # (pysgpp.Grid.createBsplineGrid(d, 5), 5) ,
              # (pysgpp.Grid.createBsplineGrid(d, 7), 7),
-             # (pysgpp.Grid.createLinearBoundaryGrid(d, 1), 1),
-             (pysgpp.Grid.createPolyClenshawCurtisGrid(d, 3), 3),
-             (pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3), 3),
-             (pysgpp.Grid.createPolyBoundaryGrid(d,3), 3),
-             (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
+#              (pysgpp.Grid.createPolyGrid(d, 3), 3),
+             (pysgpp.Grid.createPolyBoundaryGrid(d, 20), 20),
+             (pysgpp.Grid.createPolyClenshawCurtisGrid(d, 20), 20),
+             (pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 20), 20),
+
+#              (pysgpp.Grid.createLinearGrid(d), 1),
+             (pysgpp.Grid.createLinearBoundaryGrid(d, 1), 1),
              (pysgpp.Grid.createLinearClenshawCurtisGrid(d), 1),
              (pysgpp.Grid.createModLinearClenshawCurtisGrid(d), 1),
              # (pysgpp.Grid.createModLinearGrid(d), 1),
              # (pysgpp.Grid.createModPolyGrid(d,3), 3),
-             (pysgpp.Grid.createModBsplineGrid(d,3), 3),
+#              (pysgpp.Grid.createModBsplineGrid(d,3), 3),
+#              (pysgpp.Grid.createBsplineGrid(d, 3), 3) ,
+             (pysgpp.Grid.createBsplineBoundaryGrid(d, 3), 3),
              (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3), 3),
              (pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3), 3),
-             (pysgpp.Grid.createModFundamentalSplineGrid(d, 3), 3),
+#              (pysgpp.Grid.createModFundamentalSplineGrid(d, 3), 3),
              # (pysgpp.Grid.createFundamentalSplineGrid(d, 3), 3 ),
              # (pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 1), 1),
     ]
@@ -675,10 +677,10 @@ def integrate(d, error_type = "l2", quad_error_sol = 0):
                 linestyle = ".--"
             elif "Boundary" in gridToName(grid.getType(), p):
                 linestyle = ".-"
+            elif "Clenshaw" in gridToName(grid.getType(), p):
+                linestyle = "-."
 
-            if "Clenshaw" in gridToName(grid.getType(), p):
-                color = "k"
-            elif "B-Spline" in gridToName(grid.getType(), p):
+            if "Spline" in gridToName(grid.getType(), p):
                 color = "b"
             elif "Poly" in gridToName(grid.getType(), p):
                 color = "g"
@@ -698,11 +700,13 @@ def integrate(d, error_type = "l2", quad_error_sol = 0):
                 linestyle = ".--"
             elif "Boundary" in gridToName(grid.getType(), p):
                 linestyle = ".:"
+            elif "Clenshaw" in gridToName(grid.getType(), p):
+                linestyle = "-."
 
         linestyle = color + linestyle
         plt.loglog(num_gridPoints, errors, linestyle, basex=10, basey=10, label=gridToName(grid.getType(), p) )
     plt.xlabel(r'\#Gitterpunkte')
-    # plt.legend(loc=3)
+    plt.legend(loc=3)
     if(error_type == "quad"):
         save_title = "quad_{}.tex".format(func_name)
         plt.ylabel(r'$|\epsilon|$', fontsize=16)
