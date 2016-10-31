@@ -127,15 +127,14 @@ public:
   static Grid* createGrid(sgpp::base::RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createModLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
   static Grid* createWaveletBoundaryGrid(size_t dim);
@@ -153,7 +152,7 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
-  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
