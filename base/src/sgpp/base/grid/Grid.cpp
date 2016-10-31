@@ -417,13 +417,23 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedBoundary",
                                                        LinearStretchedBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis",
+                                                       LinearClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "linearClenshawCurtis", LinearClenshawCurtisBoundaryGrid::unserialize));
+        "linearClenshawCurtisBoundary", LinearClenshawCurtisGridBoundary::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("modLinearClenshawCurtis",
+                                                       ModLinearClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("polyBoundary", PolyBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("polyClenshawCurtis",
+                                                       PolyClenshawCurtisGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "polyClenshawCurtisBoundary", PolyClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("modPolyClenshawCurtis",
+                                                       ModPolyClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("wavelet", WaveletGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("waveletBoundary", WaveletBoundaryGrid::unserialize));
@@ -454,12 +464,18 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
     tMap->insert(
         std::make_pair("linearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
-    tMap->insert(
-        std::make_pair("linearClenshawCurtis", LinearClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::make_pair("modLinearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::make_pair("linearClenshawCurtisBoundary",
+                                LinearClenshawCurtisBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
     tMap->insert(std::make_pair("polyBoundary", PolyBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
+    tMap->insert(std::make_pair("polyClenshawCurtis", PolyClenshawCurtisGrid::unserialize));
+    tMap->insert(
+        std::make_pair("polyClenshawCurtisBoundary", PolyClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modPolyClenshawCurtis", ModPolyClenshawCurtisGrid::unserialize));
     tMap->insert(std::make_pair("wavelet", WaveletGrid::unserialize));
     tMap->insert(std::make_pair("waveletBoundary", WaveletBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
@@ -503,13 +519,23 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::LinearBoundary, "linearBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::LinearClenshawCurtis,
+                                                                    "linearClenshawCurtis"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtis"));
+        GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtisBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::Poly, "poly"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::PolyBoundary, "polyBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::PolyClenshawCurtis,
+                                                                    "polyClenshawCurtis"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::PolyClenshawCurtisBoundary, "polyClenshawCurtisBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModPolyClenshawCurtis,
+                                                                    "modPolyClenshawCurtis"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModPoly, "modpoly"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::Wavelet, "wavelet"));
     verboseMap->insert(
@@ -544,8 +570,11 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::LinearBoundary, "linearBoundary"));
     verboseMap->insert(
         std::make_pair(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
+    verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(
-        std::make_pair(GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtis"));
+        std::make_pair(GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtisBoundary"));
+    verboseMap->insert(
+        std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::make_pair(GridType::Poly, "poly"));
     verboseMap->insert(std::make_pair(GridType::PolyBoundary, "polyBoundary"));
