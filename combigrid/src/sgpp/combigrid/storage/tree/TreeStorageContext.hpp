@@ -8,8 +8,6 @@
 
 #include <sgpp/combigrid/definitions.hpp>
 
-#include <mutex>
-
 namespace sgpp {
 namespace combigrid {
 

@@ -6,8 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 
-#include <memory>
 #include <sgpp/globaldef.hpp>
+
+#include <memory>
 #include <vector>
 
 namespace sgpp {
