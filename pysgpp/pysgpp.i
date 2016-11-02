@@ -60,7 +60,7 @@ import_array();
 #include "sgpp_base.hpp"
 #endif
 #ifdef SG_COMBIGRID
-#include "combigrid.hpp"
+#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_PDE
 #include "sgpp_pde.hpp"

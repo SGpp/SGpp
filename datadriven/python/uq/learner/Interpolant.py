@@ -158,8 +158,8 @@ class Interpolant(Learner):
 
         surrogateValues = evalSGFunctionMulti(self.grid, alpha, points)
 
-        # compute L2 error
-        return np.sqrt((surrogateValues - modelValues) ** 2)
+        # compute error
+        return np.abs(surrogateValues - modelValues)
 
     def getSize(self, dtype="train"):
         if dtype == "train":
@@ -173,9 +173,9 @@ class Interpolant(Learner):
         @return: last L2-norm of error
         """
         if dtype == "train":
-            value = self.trainErrors.sum()
+            value = np.mean(self.trainErrors ** 2)
         else:
-            value = self.testErrors.sum()
+            value = np.mean(self.testErrors ** 2)
             
         return np.sqrt(value)
 
@@ -185,11 +185,9 @@ class Interpolant(Learner):
         @return: max error
         """
         if dtype == "train":
-            value = self.trainErrors.max()
+            return self.trainErrors.max()
         else:
-            value = self.testErrors.max()
-
-        return np.sqrt(value)
+            return self.testErrors.max()
 
     def getMinError(self, dtype="train"):
         """
@@ -197,12 +195,9 @@ class Interpolant(Learner):
         @return: min error
         """
         if dtype == "train":
-            value = self.trainErrors.min()
+            return self.trainErrors.min()
         else:
-            value = self.testErrors.min()
-
-        return np.sqrt(value)
-
+            return self.testErrors.min()
 
     def getErrorPerSample(self, dtype="train"):
         if dtype == "sample":
@@ -212,6 +207,6 @@ class Interpolant(Learner):
 
     def getMSE(self, dtype="train"):
         if dtype == "train":
-            return self.trainErrors.sum() / self.getSize("train")
+            return np.mean(self.trainErrors ** 2)
         else:
-            return self.testErrors.sum() / self.getSize("test")
+            return np.mean(self.testErrors ** 2)

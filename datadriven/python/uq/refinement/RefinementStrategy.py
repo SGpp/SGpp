@@ -47,7 +47,7 @@ class SquaredSurplusRanking(Ranking):
         self._dtype = KnowledgeTypes.SQUARED
 
     def rank(self, grid, gp, alphas, *args, **kws):
-        return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
+        return np.abs(alphas[grid.getStorage().getSequenceNumber(gp)])
 
 
 class SurplusRatioRanking(Ranking):
@@ -173,7 +173,7 @@ class SquaredSurplusBFRanking(Ranking):
         self._dtype = KnowledgeTypes.SQUARED
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
-        return abs(estimateSurplus(grid, gp, alphas))
+        return np.abs(estimateSurplus(grid, gp, alphas))
 
 
 class VarianceBFRanking(Ranking):
