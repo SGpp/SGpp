@@ -1,13 +1,22 @@
+from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
+
 class Model(object):
 
-    def __init__(self):
+    def __init__(self, params, filename=None):
         self.num_results = 1
+        self.params = params
+        self.filename = filename
 
-    def evaluate(self, sample):
+        # load uq setting
+        self.uqBuilder = UQBuilder()
+        if filename is not None:
+            self.uqBuilder.fromFile(filename)
+
+        self.buildUQSetting()
+        self.uqSetting = self.uqBuilder.andGetResult()
+
+    def buildUQSetting(self):
         raise NotImplementedError
 
-    def evaluate_set(self, samples, distributed=False):
-        ans = np.ndarray(num_results, len(samples))
-        for i, sample in enumerate(samples):
-            ans[:, i] = self.evaluate(sample)
-        return ans
+    def evaluate(self, samples, distributed=False):
+        self.uqSetting.runSamples(samples, dist=distributed)

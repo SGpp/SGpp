@@ -219,3 +219,17 @@ public:
         return 1;
     };
 };
+
+%extend sgpp::base::Grid {
+  %pythoncode
+     %{
+    def hash_hexdigest(self):
+      import hashlib
+
+      gs = self.getStorage()
+      gps = [None] * gs.getSize()
+      for i in xrange(gs.getSize()):
+        gps[i] = gs.getPoint(i).getHash()
+      return hashlib.sha512(str(gps)).hexdigest()
+    %}
+}

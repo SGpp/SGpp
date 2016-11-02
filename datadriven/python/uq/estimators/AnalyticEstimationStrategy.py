@@ -34,8 +34,8 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
     def computeSystemMatrixForMean(self, grid, W, D):
         # compute the integral of the product
         gs = grid.getStorage()
-        A_mean = np.ones(gs.getSize())
         tmp = DataVector(gs.getSize())
+        A_mean = np.ones(gs.getSize())
         err = 0
         # run over all dimensions
         for i, dims in enumerate(W.getTupleIndices()):

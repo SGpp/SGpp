@@ -114,6 +114,7 @@ class UQBuilder(object):
 
     def verbose(self):
         self.__verbose = True
+        return self
 
     def fromFile(self, filename):
         """

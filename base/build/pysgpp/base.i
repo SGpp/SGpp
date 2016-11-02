@@ -186,18 +186,3 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
 %template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
-
-
-%extend sgpp::base::Grid {
-  %pythoncode
-     %{
-    def hash_hexdigest(self):
-      import hashlib
-
-      gs = self.getStorage()
-      gps = [None] * gs.getSize()
-      for i in xrange(gs.getSize()):
-        gps[i] = gs.get(i).hash()
-      return hashlib.sha512(str(gps)).hexdigest()
-    %}
-}
