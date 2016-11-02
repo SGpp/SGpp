@@ -12,19 +12,25 @@
 #include <string>
 #include <vector>
 
+/**
+ * This header contains some utility functions.
+ */
+
 namespace sgpp {
 namespace combigrid {
 
 /**
- * Exponentiation function for inter types with exact precision. Uses square-and-multiply.
+ * Exponentiation function for integer types with exact precision. Uses square-and-multiply.
  */
 template <typename T>
 T pow(T base, size_t exponent) {
   T result = 1;
 
-  size_t mask = static_cast<size_t>(1) << (8 * sizeof(size_t) - 1);
+  size_t numBits = 8 * sizeof(size_t);
+  size_t mask = static_cast<size_t>(1) << (numBits - 1);
 
-  while (exponent != 0) {
+  // while (exponent != 0) {
+  for (size_t i = 0; i < numBits; ++i) {
     result *= result;
 
     if (exponent & mask) {
@@ -72,6 +78,17 @@ std::string escape(std::string str, char escapeCharacter, std::string avoidChara
  */
 std::string unescape(std::string str, char escapeCharacter, std::string avoidCharacters,
                      std::string replaceCharacters);
+
+/**
+ * Reads a file into a string (without advanced error-handling).
+ */
+std::string readFromFile(std::string filename);
+
+/**
+ * Writes a string into a file, overwriting currently saved data if the file already exists (without
+ * advanced error-handling).
+ */
+void writeToFile(std::string filename, std::string value);
 }  // namespace combigrid
 }  // namespace sgpp
 

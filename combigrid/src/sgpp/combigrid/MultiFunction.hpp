@@ -6,14 +6,18 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_MULTIFUNCTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_MULTIFUNCTION_HPP_
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <functional>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Wrapper for std::function<double(base::DataVector const &)>. This is necessary because SWIG can't
+ * handle std::function objects properly.
+ */
 class MultiFunction {
  public:
   typedef std::function<double(base::DataVector const &)> function_type;
@@ -31,11 +35,17 @@ class MultiFunction {
    * for lambdas or function objects
    */
   template <typename T>
-  explicit MultiFunction(T f)
-      : func(f) {}
+  explicit MultiFunction(T const &f) : func(f) {}
 
-  double operator()(base::DataVector const &vec);
-  double call(base::DataVector const &vec);
+  /**
+   * Evaluates the function.
+   */
+  double operator()(base::DataVector const &vec) const;
+
+  /**
+   * Evaluates the function (for python use etc., does the same as operator()).
+   */
+  double call(base::DataVector const &vec) const;
 };
 
 } /* namespace combigrid */

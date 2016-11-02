@@ -29,7 +29,7 @@ class AbstractTreeStorageNode {
   virtual ~AbstractTreeStorageNode() {}
 
   /**
-   * @return Returns the number of children
+   * @return Returns the number of children of this node.
    */
   virtual size_t numChildren() const = 0;
 
@@ -49,9 +49,15 @@ class AbstractTreeStorageNode {
   /**
    * Stores the given value at the given multi-index. If the storage entry does not exist, it is
    * created. The default-value-function is not called.
-   * @param depth Level of the node in the tree, starting from zero
+   * @param depth Level of the node in the tree, starting from zero.
    */
   virtual void set(MultiIndex const &index, T const &value, size_t depth = 0) = 0;
+
+  /**
+   * @param index Multi-index indicating the storage position.
+   * @param depth Level of the node in the tree, starting from zero.
+   * @return true iff the storage contains data at the given index.
+   */
   virtual bool containsIndex(MultiIndex const &index, size_t depth = 0) const = 0;
 };
 

@@ -6,20 +6,24 @@
 #ifndef TREESTORAGESERIALIZATIONSTRATEGY_HPP_
 #define TREESTORAGESERIALIZATIONSTRATEGY_HPP_
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp>
 #include <sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <stdexcept>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class provides a serialization strategy for TreeStorage<T>-objects (though not particularly
+ * well-compressed).
+ */
 template <typename T>
 class TreeStorageSerializationStrategy
     : public AbstractSerializationStrategy<std::shared_ptr<TreeStorage<T>>> {
@@ -31,6 +35,12 @@ class TreeStorageSerializationStrategy
   }
 
  public:
+  /**
+   * Constructor. A serialization strategy for the type T can be provided, otherwise, a
+   * DefaultSerializationStrategy<T> will be used. The serialization strategy may use any
+   * characters, this class will use escaping to deal with it.
+   * @param numDimensions Dimension of the tree storage.
+   */
   TreeStorageSerializationStrategy(
       size_t numDimensions,
       std::shared_ptr<AbstractSerializationStrategy<T>> innerStrategy = getDefaultStrategy())

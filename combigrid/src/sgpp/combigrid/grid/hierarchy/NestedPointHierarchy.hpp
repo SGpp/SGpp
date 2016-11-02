@@ -6,11 +6,11 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_HIERARCHY_NESTEDPOINTHIERARCHY_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_HIERARCHY_NESTEDPOINTHIERARCHY_HPP_
 
-#include <sgpp/globaldef.hpp>
+#include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
+#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
-#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
-#include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
 
@@ -35,6 +35,12 @@ class NestedPointHierarchy : public AbstractPointHierarchy {
 
   virtual ~NestedPointHierarchy();
 
+  /**
+   * @return Returns the grid point for the given level and index. (0 <= index <
+   * getNumPoints(level)). In the case of NestedPointHierarchy, this also works if the argument
+   * level is smaller than the real level. This is necessary because the CombigridTreeStorage loses
+   * the level information on the way to calling this method.
+   */
   virtual double getPoint(size_t level, size_t index);
 
   virtual std::vector<double> &computePoints(size_t level);

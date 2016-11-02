@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp>
+#include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
-#include <sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp>
 
 #include <stdexcept>
 #include <string>
@@ -15,16 +15,64 @@
 namespace sgpp {
 namespace combigrid {
 
-FunctionLookupTable::FunctionLookupTable(MultiFunction func)
-    : hashmap(
-          new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()),
-      func(func),
-      tableMutex() {}
+/**
+ * Helper class used internally as an equality predicate.
+ */
+class DataVectorEqualTo {
+ public:
+  bool operator()(base::DataVector const& first, base::DataVector const& second) const {
+    if (first.getSize() != second.getSize()) {
+      return false;
+    }
+
+    for (size_t i = 0; i < first.getSize(); ++i) {
+      if (first[i] != second[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+};
+
+/**
+ * Helper class used internally as a hash function for DataVector objects.
+ */
+class DataVectorHash {
+ public:
+  size_t operator()(base::DataVector const& vec) const {
+    std::hash<double> h;
+    size_t result = 0;
+    for (size_t i = 0; i < vec.getSize(); ++i) {
+      result ^= h(vec[i]) * (i + 1);
+    }
+    return result;
+  }
+};
+
+/**
+ * Helper to realize the PIMPL pattern
+ */
+struct FunctionLookupTableImpl {
+  std::shared_ptr<std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>>
+      hashmap;
+  MultiFunction func;
+  std::mutex tableMutex;
+
+  FunctionLookupTableImpl(MultiFunction func)
+      : hashmap(
+            new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()),
+        func(func),
+        tableMutex() {}
+};
+
+FunctionLookupTable::FunctionLookupTable(MultiFunction const& func)
+    : impl(std::make_shared<FunctionLookupTableImpl>(func)) {}
 
 double FunctionLookupTable::operator()(const base::DataVector& x) {
-  auto it = hashmap->find(x);
-  if (it == hashmap->end()) {
-    auto y = func(x);
+  auto it = impl->hashmap->find(x);
+  if (it == impl->hashmap->end()) {
+    auto y = impl->func(x);
     addEntry(x, y);
     return y;
   }
@@ -35,31 +83,31 @@ double FunctionLookupTable::operator()(const base::DataVector& x) {
 double FunctionLookupTable::eval(const base::DataVector& x) { return (*this)(x); }
 
 double FunctionLookupTable::evalThreadsafe(const base::DataVector& x) {
-  tableMutex.lock();
-  auto it = hashmap->find(x);
-  if (it == hashmap->end()) {
-    tableMutex.unlock();
-    auto y = func(x);
-    tableMutex.lock();
+  impl->tableMutex.lock();
+  auto it = impl->hashmap->find(x);
+  if (it == impl->hashmap->end()) {
+    impl->tableMutex.unlock();
+    auto y = impl->func(x);
+    impl->tableMutex.lock();
     addEntry(x, y);
-    tableMutex.unlock();
+    impl->tableMutex.unlock();
     return y;
   }
 
-  std::lock_guard<std::mutex> guard(tableMutex);
+  std::lock_guard<std::mutex> guard(impl->tableMutex);
   auto y = it->second;
-  tableMutex.unlock();
+  impl->tableMutex.unlock();
   return y;
 }
 
-void FunctionLookupTable::addEntry(const base::DataVector& x, double y) { (*hashmap)[x] = y; }
+void FunctionLookupTable::addEntry(const base::DataVector& x, double y) { (*impl->hashmap)[x] = y; }
 
 std::string FunctionLookupTable::serialize() {
   FloatSerializationStrategy<double> strategy;
 
   std::vector<std::string> entries;
 
-  for (auto it = hashmap->begin(); it != hashmap->end(); ++it) {
+  for (auto it = impl->hashmap->begin(); it != impl->hashmap->end(); ++it) {
     std::vector<std::string> vectorEntries;
 
     auto& vec = it->first;
@@ -109,10 +157,10 @@ void FunctionLookupTable::deserialize(const std::string& value) {
 }
 
 bool FunctionLookupTable::containsEntry(const base::DataVector& x) {
-  auto it = hashmap->find(x);
-  return it != hashmap->end();
+  auto it = impl->hashmap->find(x);
+  return it != impl->hashmap->end();
 }
 
-size_t FunctionLookupTable::getNumEntries() const { return hashmap->size(); }
+size_t FunctionLookupTable::getNumEntries() const { return impl->hashmap->size(); }
 }  // namespace combigrid
 }  // namespace sgpp

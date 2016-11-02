@@ -13,15 +13,31 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Simple stopwatch implementation.
+ */
 class Stopwatch {
   std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 
  public:
+  /**
+   * Starts the stopwatch.
+   */
   Stopwatch();
 
+  /**
+   * Re-starts the stopwatch.
+   */
   void start();
 
+  /**
+   * @return the number of seconds that have passed since the last start.
+   */
   double elapsedSeconds();
+
+  /**
+   * Prints the result of elapsedSeconds() to the console.
+   */
   void log();
 };
 }  // namespace combigrid

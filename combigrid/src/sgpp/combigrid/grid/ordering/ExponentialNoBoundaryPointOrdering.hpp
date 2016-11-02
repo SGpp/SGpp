@@ -13,12 +13,12 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * PointOrdering class with the slowest growth (n = 3^l) possible in order to make Chebyshev points
- * nested.
+ * Point ordering class with the slowest possible growth (n = 2^(l+1) - 1) that makes uniform points
+ * without boundary nested.
  */
-class ExponentialChebyshevPointOrdering : public AbstractPointOrdering {
+class ExponentialNoBoundaryPointOrdering : public AbstractPointOrdering {
  public:
-  virtual ~ExponentialChebyshevPointOrdering();
+  virtual ~ExponentialNoBoundaryPointOrdering();
 
   virtual size_t convertIndex(size_t level, size_t numPoints, size_t index);
 
@@ -29,4 +29,4 @@ class ExponentialChebyshevPointOrdering : public AbstractPointOrdering {
 };
 
 } /* namespace combigrid */
-} /* namespace sgpp*/
+} /* namespace sgpp */

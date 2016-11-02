@@ -11,6 +11,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Helper class implementing a lock guard for std::shared_ptr<mutex> that does not lock a mutex if
+ * it is nullptr.
+ */
 class PtrGuard {
   std::shared_ptr<std::mutex> mutexPtr;
 

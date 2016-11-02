@@ -11,6 +11,11 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Iterates over a hypercube of multi-indices. For example, with multiBounds = (2, 1), the following
+ * indices will be generated: (0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1).
+ * Method descriptions can be found at BoundedSumMultiIndexIterator.
+ */
 class MultiIndexIterator {
   MultiIndex index;
   MultiIndex multiBounds;

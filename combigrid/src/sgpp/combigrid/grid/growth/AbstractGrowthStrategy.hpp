@@ -15,7 +15,7 @@ namespace combigrid {
 
 /**
  * Defines a converter from a level to a number of points, i. e. an abstract base class for
- * level-numPoints mappings.
+ * level->numPoints mappings.
  * AbstractGrowthStrategy-Objects are used in some subclasses of AbstractPointOrdering.
  */
 class AbstractGrowthStrategy {

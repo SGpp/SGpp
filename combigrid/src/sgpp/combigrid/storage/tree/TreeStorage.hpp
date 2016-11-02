@@ -8,15 +8,14 @@
 
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
-#include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/InternalTreeStorageNode.hpp>
+#include <sgpp/combigrid/storage/tree/LowestTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageContext.hpp>
-#include <sgpp/combigrid/storage/tree/TreeStorageStoredDataIterator.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageGuidedIterator.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorageStoredDataIterator.hpp>
 
 #include <memory>
 #include <stdexcept>
-#include <thread>
 
 namespace sgpp {
 namespace combigrid {
@@ -28,11 +27,13 @@ namespace combigrid {
  * TreeStorage can be configured with a function that computes a value for a multi-index such that
  * TreeStorage caches its values.
  * Multi-Indices start from 0 in each dimension.
+ * The class T has to have a default constructor.
+ * For more information see AbstractMultiStorage.
  */
 template <typename T>
 class TreeStorage : public AbstractMultiStorage<T> {
-  TreeStorageContext<T>
-      context;  // the context stores general information and is referenced by all nodes
+  // the context stores general information and is referenced by all nodes
+  TreeStorageContext<T> context;
 
   std::unique_ptr<AbstractTreeStorageNode<T>> root;
 
@@ -46,23 +47,26 @@ class TreeStorage : public AbstractMultiStorage<T> {
    * @param numDimensions number of dimensions of the multi-indices that the storage is addressed
    * with
    * @param func "Default-value-function" that is called to compute entries that are not already
-   * stored.
+   * stored. If this parameter is not specified, func will be set to a function returning T().
    * The storage might serve as a function value cache such that these values only have to be
    * computed once.
    * If no function is specified, the default constructor of the stored type is used.
    */
   explicit TreeStorage(size_t numDimensions, function_type func = multiIndexToDefaultValue<T>())
       : context(numDimensions, func), root(nullptr) {
-    MultiIndex index;
     if (numDimensions <= 1) {
-      root.reset(new LowestTreeStorageNode<T>(context, index, 0, 0, false));
+      root.reset(new LowestTreeStorageNode<T>(context));
     } else {
-      root.reset(new InternalTreeStorageNode<T>(context, numDimensions - 1, index, 0, 0, false));
+      root.reset(new InternalTreeStorageNode<T>(context, numDimensions - 1));
     }
   }
 
   virtual ~TreeStorage() {}
 
+  /**
+   * Returns the value for the given MultiIndex. If the value is not stored, it is computed using
+   * the function and then stored and returned.
+   */
   virtual T &get(MultiIndex const &index) {
     if (index.size() != context.numDimensions) {
       throw std::runtime_error("TreeStorage::get(): index.size() != context.numDimensions");
@@ -70,6 +74,9 @@ class TreeStorage : public AbstractMultiStorage<T> {
     return root->get(index);
   }
 
+  /**
+   * Changes the function that generates the entries.
+   */
   virtual void setFunc(function_type func) { context.func = func; }
 
   /**

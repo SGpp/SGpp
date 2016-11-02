@@ -6,16 +6,19 @@
 #ifndef MCINTEGRATOR_HPP_
 #define MCINTEGRATOR_HPP_
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <vector>
 #include <functional>
 #include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Monte-Carlo-Quadrature for testing issues.
+ */
 class MCIntegrator {
   std::function<base::DataVector(std::vector<base::DataVector> const &)> func;
 

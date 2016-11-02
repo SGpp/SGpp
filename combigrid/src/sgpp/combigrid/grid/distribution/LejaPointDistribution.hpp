@@ -6,25 +6,25 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 
-#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
-#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 
-#include <vector>
-#include <functional>
 #include <cmath>
+#include <functional>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
-// for the test cases
+// used only internally and for the test cases
 void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points, int number,
                       double lower_bound, double upper_bound,
                       std::function<double(double)> weight_func);
 
 /**
  * Provides Leja points (which are nested, i. e. the set of n leja points is a subset of the set of
- * n+1 leja points)
+ * n+1 leja points). Also accepts a weight function to compute weighted Leja points.
  */
 class LejaPointDistribution : public AbstractPointDistribution {
   std::vector<double> points;

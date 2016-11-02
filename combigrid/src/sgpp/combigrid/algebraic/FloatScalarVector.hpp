@@ -7,11 +7,19 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 
 #include <sgpp/globaldef.hpp>
+
 #include <cmath>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class models a single scalar supporting operations such as addition, scalar
+ * multiplication and componentwise muliplication. It is intended to have the same interface as
+ * FloatArrayVector. Thus, one can use the same code for single-evaluation and multi-evaluation,
+ * where the mode is controlled by passing FloatArrayVector or FloatScalarVector as a template
+ * parameter.
+ */
 class FloatScalarVector {
   double val;
 

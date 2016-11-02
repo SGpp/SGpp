@@ -7,14 +7,18 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_POLYNOMIALINTERPOLATIONEVALUATOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This evaluator does polynomial interpolation (using the barycentric approach) on the given grid
+ * points.
+ */
 class PolynomialInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double evaluationPoint;
   std::vector<FloatScalarVector> basisCoefficients;
