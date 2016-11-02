@@ -703,6 +703,11 @@ class UQSetting(object):
         # search for explicitly given results
         ans = np.ndarray([len(ts)], dtype='float')
 
+        # just return the value if there is just one available
+        if len(stats_ts) == 1:
+            ans[0] = results[0]
+            return ans
+
         # sort it to search it faster
         stats_ixs = np.argsort(stats_ts)
         stats_ts = [stats_ts[ix] for ix in stats_ixs]
@@ -778,8 +783,8 @@ class UQSetting(object):
         @return: dictionary {<time step>: {<Sample>: value}}
         """
         if qoi not in self.getAvailableQoI():
-            raise AttributeError('the quantity of interest "%s" does not \
-                                  exist. There are "%s" available.' %
+            raise AttributeError(('the quantity of interest "%s" does not' +
+                                  'exist. There are "%s" available.') %
                                  (qoi, self.getAvailableQoI()))
 
         if ps is None:
