@@ -26,6 +26,7 @@ class GridDescriptor(object):
         self.__border = None
         self.__grid = None
         self.__full = None
+        self.__clenshaw_curtis = False
 
     def withDimension(self, dim):
         """
@@ -67,6 +68,13 @@ class GridDescriptor(object):
         Defines if a full grid should be generated
         """
         self.__full = True
+        return self
+
+    def isClenshawCurtis(self):
+        """
+        Defines if a clenshaw curtis grid should be generated
+        """
+        self.__clenshaw_curtis = True
         return self
 
     def fromGrid(self, grid):

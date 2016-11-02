@@ -69,6 +69,9 @@ class UQSetting(object):
         self.files = []  # result files written
         self.lastid = 0
 
+        # speed up result loading
+        self.__dictResults = {}
+
     def __getattr__(self, attr):
         """
         Overrides built-in method if method called is not a object
@@ -782,6 +785,10 @@ class UQSetting(object):
 
         @return: dictionary {<time step>: {<Sample>: value}}
         """
+        keyResults = (tuple(ts), qoi)
+        if ps is None and keyResults in self.__dictResults:
+            return self.__dictResults[keyResults]
+            
         if qoi not in self.getAvailableQoI():
             raise AttributeError(('the quantity of interest "%s" does not' +
                                   'exist. There are "%s" available.') %
@@ -828,6 +835,9 @@ class UQSetting(object):
 
         if self._verbose:
             print
+
+        # store result
+        self.__dictResults[keyResults] = B
 
         return B
 

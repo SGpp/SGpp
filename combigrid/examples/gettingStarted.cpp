@@ -5,6 +5,7 @@
 
 /**
  * \page example_combigrid_gettingStarted_cpp gettingStarted.cpp (Start Here)
+ *
  * This tutorial contains examples with increasing complexity to introduce you to the combigrid
  * module. The combigrid module is quite separated from the other modules. It only refers to the
  * base module for things like DataVector and DataMatrix.
@@ -44,6 +45,8 @@ static const sgpp::combigrid::MultiFunction func(f);
 size_t d = 3;
 
 /**
+ * @section combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
+ *
  * Here comes the first and very simple example.
  */
 void example1() {
@@ -85,6 +88,8 @@ void example1() {
 }
 
 /**
+ * @section combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
+ *
  * The next example uses interpolation.
  */
 void example2() {
@@ -180,6 +185,8 @@ void example2() {
 }
 
 /**
+ * @section combigrid_example_3 Example 3: Evaluation at multiple points
+ *
  * Now, we want to do interpolation at multiple evaluation points efficiently.
  */
 void example3() {
@@ -229,6 +236,8 @@ void example3() {
 }
 
 /**
+ * @section combigrid_example_4 Example 4: Serialization and lookup tables
+ *
  * This example shows how to store and retrieve computed function values.
  */
 void example4() {
@@ -290,8 +299,9 @@ void example4() {
   std::cout << "Result computed (3rd time): " << result << "\n";
 }
 
-// TODO(holzmudd): non-isotropic setting, data storage
 /**
+ * @section combigrid_example_5 Example 5: Using different operations in each dimension
+ *
  * This example shows how to apply different operators in different dimensions.
  */
 void example5() {
