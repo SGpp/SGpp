@@ -47,6 +47,8 @@ class CombigridOperationImpl;
  * - Set the parameters for interpolation via setParameters()
  * - add combigrid levels via getLevelManager()->some_add_levels_function()
  * - fetch the result via getResult().
+ *
+ * For method documentation, refer to CombigridMultiOperation.
  */
 class CombigridOperation {
   std::shared_ptr<CombigridOperationImpl>
@@ -72,6 +74,8 @@ class CombigridOperation {
   double evaluate(size_t q, base::DataVector const &param = base::DataVector(0));
   std::shared_ptr<LevelManager> getLevelManager();
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
+
+  std::shared_ptr<AbstractCombigridStorage> getStorage();
 
   // TODO(holzmudd): add static constructor functions
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(

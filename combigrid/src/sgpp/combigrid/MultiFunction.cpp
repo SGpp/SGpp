@@ -10,9 +10,9 @@ namespace combigrid {
 
 MultiFunction::MultiFunction(double (*ptr)(const base::DataVector&)) : func(ptr) {}
 
-double MultiFunction::operator()(const base::DataVector& vec) { return func(vec); }
+double MultiFunction::operator()(const base::DataVector& vec) const { return func(vec); }
 
-double MultiFunction::call(const base::DataVector& vec) { return func(vec); }
+double MultiFunction::call(const base::DataVector& vec) const { return func(vec); }
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

@@ -11,6 +11,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This is a simple LevelManager implementation that does level norm prediction for adaptive
+ * refinement by averaging the norms of predecessor levels.
+ */
 class AveragingLevelManager : public LevelManager {
  protected:
   virtual double computePriority(MultiIndex const &level);

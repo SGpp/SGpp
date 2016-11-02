@@ -12,7 +12,7 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Provides Clenshaw-Curtis grid points (Chebyshev grid points), that is, the points 0.5 - 0.5
+ * Provides Clenshaw-Curtis grid points, that is, the points 0.5 - 0.5
  * cos(k*pi/(n-1)) for k = 0, ..., n or 0.5, if n = 1
  */
 class ClenshawCurtisDistribution : public AbstractPointDistribution {

@@ -78,6 +78,8 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   return getResult();
 }
 
+std::shared_ptr<AbstractCombigridStorage> CombigridOperation::getStorage() { return impl->storage; }
+
 std::shared_ptr<LevelManager> CombigridOperation::getLevelManager() { return impl->levelManager; }
 
 void CombigridOperation::setLevelManager(std::shared_ptr<LevelManager> levelManager) {

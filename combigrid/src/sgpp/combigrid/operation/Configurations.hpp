@@ -15,14 +15,25 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class provides standard configurations of point hierarchies. The methods names allude to the
+ * used growth strategy and point distribution. All hierarchies provided here are nested.
+ */
 class CombiHierarchies {
  public:
   static std::shared_ptr<AbstractPointHierarchy> linearLeja(size_t growthFactor = 2);
   static std::shared_ptr<AbstractPointHierarchy> expLeja();
   static std::shared_ptr<AbstractPointHierarchy> expUniform();
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
+  static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
+  static std::shared_ptr<AbstractPointHierarchy> expUniformNoBoundary();
+
+  typedef std::vector<std::shared_ptr<AbstractPointHierarchy>> Collection;
 };
 
+/**
+ * This class provides standard configurations of 1D-evaluators (single- and multi-evaluation).
+ */
 class CombiEvaluators {
  public:
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
@@ -31,6 +42,9 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature();
+
+  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> Collection;
+  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> MultiCollection;
 };
 
 } /* namespace combigrid */

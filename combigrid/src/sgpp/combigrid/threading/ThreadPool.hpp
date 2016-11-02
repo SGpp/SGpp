@@ -8,16 +8,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <thread>
-#include <mutex>
-#include <memory>
 #include <deque>
 #include <functional>
+#include <memory>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This implements a thread-pool with a pre-specified number of threads that process a list of
+ * tasks.
+ */
 class ThreadPool {
  public:
   typedef std::function<void()> Task;
@@ -34,16 +38,47 @@ class ThreadPool {
   IdleCallback idleCallback;
 
  public:
+  /**
+   * Creates a ThreadPool that processes available tasks. When no more tasks are available, the
+   * threads terminate. Another way to terminate earlier is using triggerTermination().
+   * The ThreadPool starts its computation only when start() is called.
+   */
   explicit ThreadPool(size_t numThreads);
+
+  /**
+   * Creates a ThreadPool that processes available tasks. When no more tasks are available, the
+   * callback function idleCallback is called. This callback should either add more tasks or call
+   * triggerTermination(), which will cause the threads to terminate. The ThreadPool is passed as a
+   * parameter to the callback.
+   * The ThreadPool starts its computation only when start() is called.
+   */
   ThreadPool(size_t numThreads, IdleCallback idleCallback);
   ~ThreadPool();
 
+  /**
+   * Adds a single task to the task list (thread-safe).
+   */
   void addTask(Task const &task);
+
+  /**
+   * Adds a list of tasks to the task list (thread-safe).
+   */
   void addTasks(std::vector<Task> const &newTasks);
 
+  /**
+   * Starts the threads.
+   */
   void start();
 
+  /**
+   * Sets a termination flag (thread-safe). When a thread completes a task, it will check the
+   * termination flag and terminate.
+   */
   void triggerTermination();
+
+  /**
+   * Waits until all threads are finished.
+   */
   void join();
 
   /**

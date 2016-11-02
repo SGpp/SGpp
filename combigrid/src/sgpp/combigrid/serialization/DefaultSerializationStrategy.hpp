@@ -9,12 +9,17 @@
 #include <sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp>
 
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This serialization strategy uses the operators << and >> on streams that are overloaded for many
+ * standard types. For floating-point types, FloatSerializationStrategy provides an exact
+ * serialization method.
+ */
 template <typename T>
 class DefaultSerializationStrategy : public AbstractSerializationStrategy<T> {
  public:

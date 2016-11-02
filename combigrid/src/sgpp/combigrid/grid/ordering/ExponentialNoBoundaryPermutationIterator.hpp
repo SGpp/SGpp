@@ -11,17 +11,17 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Sorted-permutation-iterator for ExponentialChebyshevPointOrdering
+ * Sorted-permutation-iterator for ExponentialNoBoundaryPointOrdering.
  */
-class ExponentialChebyshevPermutationIterator : public AbstractPermutationIterator {
+class ExponentialNoBoundaryPermutationIterator : public AbstractPermutationIterator {
   size_t currentIndex;
   size_t level;
   size_t numPoints;
 
  public:
-  ExponentialChebyshevPermutationIterator(size_t level, size_t numPoints, size_t currentIndex = 0);
+  ExponentialNoBoundaryPermutationIterator(size_t level, size_t numPoints, size_t currentIndex = 0);
 
-  virtual ~ExponentialChebyshevPermutationIterator();
+  virtual ~ExponentialNoBoundaryPermutationIterator();
 
   /**
    * Sets the iterator back to the start
@@ -36,4 +36,4 @@ class ExponentialChebyshevPermutationIterator : public AbstractPermutationIterat
 };
 
 } /* namespace combigrid */
-} /* namespace sgpp*/
+} /* namespace sgpp */

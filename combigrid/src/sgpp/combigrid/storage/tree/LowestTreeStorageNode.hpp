@@ -6,12 +6,12 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_LOWESTTREESTORAGENODE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_LOWESTTREESTORAGENODE_HPP_
 
+#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageContext.hpp>
-#include <sgpp/combigrid/definitions.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -28,18 +28,8 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
   std::vector<T> elements;
   TreeStorageContext<T> &context;
 
-  LowestTreeStorageNode(TreeStorageContext<T> &context, MultiIndex const &index, size_t depth,
-                        size_t zeroDepth, bool createFirstChild = true)
-      : elements(), context(context) {
-    /*if (createFirstChild) {
-     MultiIndex realIndex(depth + 1);
-     for (size_t i = 0; i <= depth; ++i) {
-     realIndex[i] = (i <= zeroDepth) ? index[i] : 0;
-     } CGLOG("LowestTreeStorageNode(): evaluate function");
-     elements.push_back(context.func(realIndex));
-     statusVector.push_back(StorageStatus::STORED);
-     }*/
-  }
+  explicit LowestTreeStorageNode(TreeStorageContext<T> &context)
+      : statusVector(), elements(), context(context) {}
 
   virtual ~LowestTreeStorageNode() {}
 
@@ -50,6 +40,9 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
 
   virtual bool isLeaf() const { return true; }
 
+  /**
+   * Helper function that fills elements and statusVector until they contain the given index.
+   */
   void ensureVectorEntry(size_t currentIndex) {
     while (currentIndex >= elements.size()) {
       elements.push_back(T());

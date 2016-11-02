@@ -94,7 +94,7 @@ void adaptiveInterpolation() {
   auto operation =
       CombigridOperation::createLinearLejaPolynomialInterpolation(numDimensions, wrapper);
 
-  // point to evaluate the interpolant at (0.5, 0.7)  
+  // point to evaluate the interpolant at (0.5, 0.7)
   DataVector param(std::vector<double>{0.5, 0.7});
 
   // perform adaptivity

@@ -13,6 +13,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Sorted-permutation-iterator (e.g. for IdentityPointOrdering), using a sorting algorithm to
+ * determine the correct order.
+ */
 class SortedPermutationIterator : public AbstractPermutationIterator {
   std::vector<size_t> permutation;
   size_t currentIndex;

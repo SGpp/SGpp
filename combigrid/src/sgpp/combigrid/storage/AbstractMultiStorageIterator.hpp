@@ -6,15 +6,19 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGEITERATOR_HPP_
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cstddef>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Abstract base class for iterators iterating over (existing or maybe also non-existing) entries of
+ * an AbstractMultiStorage.
+ */
 template <typename T>
 class AbstractMultiStorageIterator {
  public:
@@ -52,8 +56,16 @@ class AbstractMultiStorageIterator {
    */
   virtual MultiIndex getMultiIndex() const = 0;
 
+  /**
+   * @return True iff the value the iterator points to has already been computed or the computation
+   * has been requested (in case of parallel evaluation, using requestComputationTask()).
+   */
   virtual bool computationRequested() = 0;
 
+  /**
+   * @return Returns a function that computes the value at the current entry (if it is not already
+   * stored). This is useful for parallel function evaluation.
+   */
   virtual std::function<T()> requestComputationTask() = 0;
 };
 

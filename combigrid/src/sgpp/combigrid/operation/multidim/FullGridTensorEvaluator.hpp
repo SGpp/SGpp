@@ -31,6 +31,8 @@ namespace combigrid {
  * value.
  * The concrete grid is given by PointHierarchy-Objects for each dimension and a level-multi-index
  * encoding a level for each dimension.
+ * The template parameter V controls whether single-evaluation or multi-evaluation is done. Confer
+ * also FloatArrayVector.
  */
 template <typename V>
 class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
@@ -40,15 +42,30 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
   // partialProducts has Size numDimensions, since the product partialProducts[numDimensions] is
   // only used once and does not have to be stored
   std::vector<V> partialProducts;
+
+  /**
+   * For each dimension, this contains a vector of weights which are used as coefficients for
+   * linearly combining the function values at different grid points.
+   */
   std::vector<std::vector<V>> basisValues;
+
+  /**
+   * Provides access to the function values (stored or computed on demand)
+   */
   std::shared_ptr<AbstractCombigridStorage> storage;
   // one per dimension
   std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes;
   // one per dimension and level
   std::vector<std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>>> evaluators;
+  // one per dimension
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
+  // parameters (empty when doing quadrature)
   std::vector<V> parameters;
 
+  /**
+   * Pointer to a mutex that is locked when doing critical operations on data.
+   * This is set to nullptr if the action is done in a single thread.
+   */
   std::shared_ptr<std::mutex> mutexPtr;
 
  public:
@@ -77,11 +94,22 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 
   virtual ~FullGridTensorEvaluator() {}
 
+  /**
+   * Updates the current mutex. If the mutex is set to nullptr, no mutex locking is done. Otherwise,
+   * the mutex is locked at critical actions.
+   */
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) {
     this->mutexPtr = mutexPtr;
     storage->setMutex(mutexPtr);
   }
 
+  /**
+   * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
+   * execution of eval() faster
+   * @param level the level which one wants to compute
+   * @param callback This callback is called (with already locked mutex) from inside one of the
+   * returned tasks when all tasks for the given level are completed and the level can be added.
+   */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
     size_t numDimensions = evaluators.size();
     MultiIndex multiBounds(numDimensions);
@@ -272,6 +300,10 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
     }
   }
 
+  /**
+   * @return an estimate (upper bound, in the case of nested points normally exact) of the number of
+   * new function evaluations (grid points) that have to be performed when evaluating this level.
+   */
   virtual size_t maxNewPoints(MultiIndex const &level) {
     size_t result = 1;
 
@@ -289,6 +321,9 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
     return result;
   }
 
+  /**
+   * @return the total number of grid points in a given level.
+   */
   virtual size_t numPoints(MultiIndex const &level) {
     size_t result = 1;
 

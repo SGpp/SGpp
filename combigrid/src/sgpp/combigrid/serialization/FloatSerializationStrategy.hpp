@@ -10,13 +10,17 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
-#include <sstream>
 #include <limits>
+#include <sstream>
 #include <string>
 
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This class provides a serialization strategy for floating-point types (float, double), though not
+ * particularly well-compressed (roughly 70 characters per float will be used).
+ */
 template <typename T>
 class FloatSerializationStrategy : public AbstractSerializationStrategy<T> {
   static const int64_t SHIFT_AMOUNT = 58;

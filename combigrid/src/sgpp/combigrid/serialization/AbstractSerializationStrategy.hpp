@@ -13,6 +13,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * This is an abstract base class for strategies converting between an object of type T (template
+ * parameter) and std::string for serialization and deserialization.
+ */
 template <typename T>
 class AbstractSerializationStrategy {
  public:

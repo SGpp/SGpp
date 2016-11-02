@@ -6,8 +6,8 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 
-#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 
 #include <memory>
 #include <vector>
@@ -15,6 +15,11 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Abstract class for doing an evaluation on a full grid, yielding a value of the template type V.
+ * For this type, confer the comment in algebraic/FloatArrayVector.hpp
+ * This class is used inside CombigridEvaluator to do evaluations on different grids.
+ */
 template <typename V>
 class AbstractFullGridEvaluator {
  public:

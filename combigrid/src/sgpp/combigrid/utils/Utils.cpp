@@ -5,9 +5,11 @@
 
 #include <sgpp/combigrid/utils/Utils.hpp>
 
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 namespace sgpp {
 namespace combigrid {
@@ -130,5 +132,23 @@ std::string unescape(std::string str, char escapeCharacter, std::string avoidCha
 
   return result;
 }
+
+std::string readFromFile(std::string filename) {
+  std::ifstream file(filename);
+
+  if (!file.is_open()) {
+    return "";
+  }
+
+  std::ostringstream stream;
+  stream << file.rdbuf();
+  return stream.str();
+}
+
+void writeToFile(std::string filename, std::string value) {
+  std::ofstream file(filename);
+  file << value;
+}
+
 }  // namespace combigrid
 }  // namespace sgpp
