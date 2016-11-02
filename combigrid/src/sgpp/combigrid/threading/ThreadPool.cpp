@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <chrono>
 #include <vector>
@@ -42,7 +42,7 @@ void ThreadPool::addTask(const Task& task) {
 
 void ThreadPool::addTasks(const std::vector<Task>& newTasks) {
   CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
-  tasks.insert(tasks.cend(), newTasks.begin(), newTasks.end());
+  tasks.insert(tasks.end(), newTasks.begin(), newTasks.end());
 }
 
 void ThreadPool::start() {
