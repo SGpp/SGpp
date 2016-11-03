@@ -215,8 +215,9 @@ void example3() {
   sgpp::combigrid::Stopwatch stopwatch;
   sgpp::base::DataVector result = operation->evaluate(3, parameters);
   stopwatch.log();
-  std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
-  std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
+  std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0])
+            << std::endl
+            << "Second result: " << result[1] << ", function value: " << func(parameters[1])
             << "\n";
 
   /**
@@ -233,7 +234,7 @@ void example3() {
   std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
   std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
             << "\n";
-}
+}  // end example3
 
 /**
  * @section combigrid_example_4 Example 4: Serialization and lookup tables

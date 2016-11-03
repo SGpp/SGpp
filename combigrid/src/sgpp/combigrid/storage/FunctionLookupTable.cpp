@@ -59,7 +59,7 @@ struct FunctionLookupTableImpl {
   MultiFunction func;
   std::mutex tableMutex;
 
-  FunctionLookupTableImpl(MultiFunction func)
+  explicit FunctionLookupTableImpl(MultiFunction func)
       : hashmap(
             new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()),
         func(func),
