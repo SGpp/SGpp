@@ -270,13 +270,13 @@ void example4() {
    * The serialization is not compressed and will roughly use 60 Bytes per entry. If you have lots
    * of data, you might consider compressing it.
    */
-  sgpp::combigrid::writeToFile("lookupTable.txt", lookupTable.serialize());
+  sgpp::combigrid::writeToFile("lookupTable.log", lookupTable.serialize());
 
   /**
    * Restore the data into another lookup table. The function is still needed for new evaluations.
    */
   sgpp::combigrid::FunctionLookupTable restoredLookupTable(func);
-  restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.txt"));
+  restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.log"));
   auto operation2 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
       d, sgpp::combigrid::MultiFunction(restoredLookupTable));
 
@@ -292,10 +292,10 @@ void example4() {
    * again.
    * For demonstration purposes, we use loggingFunc directly this time without a
    */
-  sgpp::combigrid::writeToFile("storage.txt", operation->getStorage()->serialize());
+  sgpp::combigrid::writeToFile("storage.log", operation->getStorage()->serialize());
   auto operation3 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
       d, sgpp::combigrid::MultiFunction(loggingFunc));
-  operation3->getStorage()->deserialize(sgpp::combigrid::readFromFile("storage.txt"));
+  operation3->getStorage()->deserialize(sgpp::combigrid::readFromFile("storage.log"));
   result = operation3->evaluate(2);
   std::cout << "Result computed (3rd time): " << result << "\n";
 }
