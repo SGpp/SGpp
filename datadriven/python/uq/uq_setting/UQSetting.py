@@ -786,11 +786,13 @@ class UQSetting(object):
         @return: dictionary {<time step>: {<Sample>: value}}
         """
         keyResults = (tuple(ts), qoi)
-        if ps is None and keyResults in self.__dictResults:
+        if ps is None and keyResults in self.__dictResults and \
+                np.all([len(self.__dictResults[keyResults][t]) == self.getSize()
+                        for t in ts]):
             return self.__dictResults[keyResults]
             
         if qoi not in self.getAvailableQoI():
-            raise AttributeError(('the quantity of interest "%s" does not' +
+            raise AttributeError(('the quantity of interest "%s" does not ' +
                                   'exist. There are "%s" available.') %
                                  (qoi, self.getAvailableQoI()))
 

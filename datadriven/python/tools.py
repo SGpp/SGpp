@@ -333,11 +333,12 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
 # @param grid Grid
 def writeGnuplotGrid(filename, grid):
     dim = grid.getDimension()
+    gs = grid.getStorage()
     if dim == 2:
         p = DataVector(dim)
         fout = file(filename, "w")
         for i in range(grid.getSize()):
-            grid.getStorage().getPoint(i).getStandardCoordinates(p)
+            gp = gs.getCoordinates(gs.getPoint(i), p)
             fout.write("%f %f\n" % (p[0],p[1]))
     # can't plot anything else
     else:

@@ -59,7 +59,7 @@ class ASGCSampler(Sampler):
         Create a set of all collocation nodes
         """
         gs = self.__grid.getStorage()
-        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
+        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float')
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)

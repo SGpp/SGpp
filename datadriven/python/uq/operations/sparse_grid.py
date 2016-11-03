@@ -14,7 +14,15 @@ from pysgpp import (createOperationHierarchisation,
 from scipy.interpolate import interp1d
 
 import numpy as np
-from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT
+from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
+    GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
+    GridType_ModPoly, GridType_ModPolyClenshawCurtis, \
+    GridType_LinearClenshawCurtis, GridType_LinearClenshawCurtisBoundary, \
+    GridType_ModLinear, GridType_ModLinearClenshawCurtis, \
+    RegularGridConfiguration, SLinearModifiedBase, SLinearClenshawCurtisBase, \
+    SLinearClenshawCurtisBoundaryBase, SLinearModifiedClenshawCurtisBase, \
+    SPolyClenshawCurtisBase, SPolyClenshawCurtisBoundaryBase, \
+    SPolyModifiedClenshawCurtisBase, SPolyModifiedBase
 
 
 #######################################################################
@@ -22,28 +30,38 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
 
-    if gridType in [GridType_Poly, GridType_PolyBoundary]:
+    if gridType in [GridType_Poly,
+                    GridType_PolyBoundary,
+                    GridType_ModPoly,
+                    GridType_PolyClenshawCurtis,
+                    GridType_PolyClenshawCurtisBoundary,
+                    GridType_ModPolyClenshawCurtis]:
         deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
-        if gridType in [GridType_LinearBoundary, GridType_PolyBoundary]:
+        if gridType in [GridType_LinearBoundary, GridType_PolyBoundary,
+                        GridType_LinearL0Boundary]:
             return Grid.createPolyBoundaryGrid(dim, deg)
-        elif gridType == GridType_LinearL0Boundary:
-            raise NotImplementedError("there is no full boundary polynomial grid")
         elif gridType in [GridType_Linear, GridType_Poly]:
             return Grid.createPolyGrid(dim, deg)
+        elif gridType in [GridType_LinearClenshawCurtis, GridType_PolyClenshawCurtis]:
+            return Grid.createPolyClenshawCurtisGrid(dim, deg)
+        elif gridType in [GridType_LinearClenshawCurtisBoundary,
+                          GridType_PolyClenshawCurtisBoundary]:
+            return Grid.createPolyClenshawCurtisBoundaryGrid(dim, deg)
+        elif gridType in [GridType_ModLinear, GridType_ModPoly]:
+            return Grid.createModPolyGrid(dim, deg)
+        elif gridType in [GridType_ModLinearClenshawCurtis,
+                          GridType_ModPolyClenshawCurtis]:
+            return Grid.createModPolyClenshawCurtisGrid(dim, deg)
         else:
             raise Exception('unknown grid type %s' % gridType)
     else:
-        if gridType == GridType_Linear:
-            return Grid.createLinearGrid(dim)
-        elif gridType == GridType_LinearBoundary:
-            return Grid.createLinearBoundaryGrid(dim, 1)
-        elif gridType == GridType_LinearL0Boundary:
-            return Grid.createLinearBoundaryGrid(dim, 0)
-        else:
-            raise Exception('unknown grid type %s' % gridType)
+        gridConfig = RegularGridConfiguration()
+        gridConfig.type_ = gridType
+        gridConfig.dim_ = grid.getStorage().getDimension()
+        return Grid.createGrid(gridConfig)
 
 
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
@@ -79,8 +97,34 @@ def copyGrid(grid, level=0, deg=1):
 
 
 def getBasis(grid):
-    return grid.getBasis()
+    gridType = grid.getType()
 
+    if gridType == GridType_Linear:
+        return SLinearBase()
+    elif gridType == GridType_LinearBoundary:
+        return SLinearBoundaryBase()
+    elif gridType == GridType_ModLinear:
+        return SLinearModifiedBase()
+    elif gridType == GridType_LinearClenshawCurtis:
+        return SLinearClenshawCurtisBase()
+    elif gridType == GridType_LinearClenshawCurtisBoundary:
+        return SLinearClenshawCurtisBoundaryBase()
+    elif gridType == GridType_ModLinearClenshawCurtis:
+        return SLinearModifiedClenshawCurtisBase()
+    if gridType == GridType_Poly:
+        return SPolyBase(grid.getDegree())
+    elif gridType == GridType_PolyBoundary:
+        return SPolyBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModPoly:
+        return SPolyModifiedBase(grid.getDegree())
+    elif gridType == GridType_PolyClenshawCurtis:
+        return SPolyClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_PolyClenshawCurtisBoundary:
+        return SPolyClenshawCurtisBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModPolyClenshawCurtis:
+        return SPolyModifiedClenshawCurtisBase(grid.getDegree())
+    else:
+        raise AttributeError("basis is not supported")
 
 def getDegree(grid):
     if grid.getType() in [GridType_Poly, GridType_PolyBoundary]:
@@ -92,7 +136,11 @@ def getDegree(grid):
 
 
 def hasBorder(grid):
-    return grid.getType() in [GridType_PolyBoundary, GridType_LinearBoundary, GridType_LinearL0Boundary]
+    return grid.getType() in [GridType_PolyBoundary,
+                              GridType_LinearBoundary,
+                              GridType_LinearL0Boundary,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_PolyClenshawCurtisBoundary]
 
 
 def isValid1d(grid, level, index):
@@ -709,10 +757,16 @@ def balance(grid):
     return newgps
 
 
-def getBoundsOfSupport(level, index):
+def getBoundsOfSupport(gs, level, index):
     if level > 0:
-        h = 1. / (1 << level)
-        return (index - 1) * h, (index + 1) * h
+        gp = HashGridPoint(1)
+        gp.set(0, level, index)
+        gp.getLeftBoundaryPoint(0)
+        xleft = gs.getCoordinate(gp, 0)
+        gp.set(0, level, index)
+        gp.getRightBoundaryPoint(0)
+        xright = gs.getCoordinate(gp, 0)
+        return xleft, xright
     else:
         return 0., 1.
 
@@ -750,7 +804,7 @@ def addConst(grid, alpha, c, y):
 #     vgp = []
 #     # get all available parents
 #     myParents = [(d, pgp) for (d, pgp) in parents(grid, gp) if gs.isContaining(pgp)]
-#     vparents = np.ndarray(len(myParents), dtype='float32')
+#     vparents = np.ndarray(len(myParents), dtype='float')
 #     for i, (dp, p) in enumerate(myParents):
 #         ipar = gs.getSequenceNumber(p)
 #         vparents[i] = v[ipar]
@@ -823,7 +877,7 @@ def estimateSurplus(grid, gp, v):
     vgp = []
     # get all available parents
     myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
-    vparents = np.ndarray(len(myParents), dtype='float32')
+    vparents = np.ndarray(len(myParents), dtype='float')
     for i, (_, p) in enumerate(myParents):
         ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]
@@ -855,7 +909,7 @@ def estimateConvergence(grid, gp, v):
     vgp = []
     # get all available parents
     myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
-    vparents = np.ndarray(len(myParents), dtype='float32')
+    vparents = np.ndarray(len(myParents), dtype='float')
     for i, (_, p) in enumerate(myParents):
         ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]

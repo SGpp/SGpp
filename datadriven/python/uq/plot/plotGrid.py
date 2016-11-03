@@ -10,14 +10,14 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
     y = [0.0] * gs.getSize()
 
     for i in xrange(gs.getSize()):
-        x[i] = gs.getPoint(i).getStandardCoordinate(0)
-        y[i] = gs.getPoint(i).getStandardCoordinate(1)
+        x[i] = gs.getCoordinate(gs.getPoint(i), 0)
+        y[i] = gs.getCoordinate(gs.getPoint(i), 1)
 
     xa = [0.0] * len(admissibleSet)
     ya = [0.0] * len(admissibleSet)
     for i, gp in enumerate(admissibleSet):
-        xa[i] = gp.getStandardCoordinate(0)
-        ya[i] = gp.getStandardCoordinate(1)
+        xa[i] = gs.getCoordinate(gp, 0)
+        ya[i] = gs.getCoordinate(gp, 1)
 
     xr = []
     yr = []

@@ -643,10 +643,11 @@ class ASGCAnalysis(Analysis):
             # write sparse grid points to file
             # -----------------------------------------
             data = np.ndarray((gs.getSize(), dim))
-
+            x = DataVector(dim)
             for i in xrange(gs.getSize()):
                 gp = gs.getPoint(i)
-                data[i, :] = np.array([gp.getStandardCoordinate(j) for j in xrange(dim)])
+                gs.getCoordinates(gp, x)
+                data[i, :] = x.array()
 
             # write results
             writeDataARFF({'filename': "%s.t%f.gridpoints.arff" % (filename, t),

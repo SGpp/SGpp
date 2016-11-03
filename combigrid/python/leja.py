@@ -6,7 +6,6 @@ Created on Wed Nov 18 10:40:46 2015
 """
 
 import numpy as np
-from scipy.optimize import minimize
 
 def maximum_leja(next_point, z, lower_bound, upper_bound, weight=lambda x : 1):
     """ 
@@ -104,6 +103,11 @@ if __name__ == '__main__':
     lower_bound = 0
     upper_bound = 1
     count = 8
-    points = leja_points(start, count, lower_bound, upper_bound, weight)
-    print "Sorted:"
-    print points
+    try:
+        from scipy.optimize import minimize
+        points = leja_points(start, count, lower_bound, upper_bound, weight)
+        print "Sorted:"
+        print points
+    except:
+        pass
+

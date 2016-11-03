@@ -69,7 +69,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
             lf = LinearGaussQuadratureStrategy([dist], [trans])
             gpdd = HashGridPoint(1)
             gpdd.set(0, dd_level, dd_index)
-            q, err = lf.computeLinearFormByList([gpdd], basis)
+            q, err = lf.computeLinearFormByList(gs, [gpdd], basis)
             q = q[0] * trans.vol()
             err *= trans.vol()
 
