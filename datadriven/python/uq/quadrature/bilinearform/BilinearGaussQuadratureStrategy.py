@@ -12,7 +12,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
     Use Gauss-Legendre for quadrature
     """
 
-    def computeBilinearFormEntry(self, gpi, basisi, gpj, basisj, d):
+    def computeBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
         val = 1
         err = 0.
 
@@ -22,8 +22,8 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlowi, xhighi = getBoundsOfSupport(lid, iid)
-        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
+        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
+        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
 
         xlow = max(xlowi, xlowj)
         xhigh = min(xhighi, xhighj)
@@ -49,31 +49,39 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
                         self._U[d].pdf(q)
 
             # compute the piecewise continuous parts separately
-            sleft, err1dleft = self.quad(f, xlow, (xlow + xhigh) / 2,
+            if lid > ljd:
+                xcenter = gs.getCoordinate(gpi, d)
+            else:
+                xcenter = gs.getCoordinate(gpj, d)
+
+            sleft, err1dleft = self.quad(f, xlow, xcenter,
                                          deg=2 * (gpi.getLevel(d) + 1) + 1)
-            sright, err1dright = self.quad(f, (xlow + xhigh) / 2, xhigh,
+            sright, err1dright = self.quad(f, xcenter, xhigh,
                                            deg=2 * (gpi.getLevel(d) + 1) + 1)
-#                 # -----------------------------------------
-#                 # plot the basis
-#                 import numpy as np
-#                 import matplotlib.pyplot as plt
-#                 x = np.linspace(0, 1, 100)
-#                 b1 = [basisi.eval(lid, iid, xi) for xi in x]
-#                 b2 = [basisj.eval(ljd, ijd, xi) for xi in x]
-#                 pdf = [self._U[d].pdf(self._T[d].unitToProbabilistic(xi))
-#                        for xi in x]
-#                 res = [f(xi) for xi in x]
-#
-#                 plt.plot(x, b1, label="basis 1")
-#                 plt.plot(x, b2, label="basis 2")
-#                 plt.plot(x, pdf, label="pdf")
-#                 plt.plot(x, res, label="product")
-#                 plt.xlim(0, 1)
-#                 plt.title("[%i, %i] -> (%i, %i), (%i, %i), %g" % (xlow, xhigh, lid, iid, ljd, ijd, s))
-#                 plt.legend()
-#                 plt.show()
-#                 # ----------------------------------------------------
+
             val = val * (sleft + sright)
             err += val * (err1dleft + err1dright)
+
+#             # -----------------------------------------
+#             # plot the basis
+#             import numpy as np
+#             import matplotlib.pyplot as plt
+#             x = np.linspace(0, 1, 100)
+#             b1 = [basisi.eval(lid, iid, xi) for xi in x]
+#             b2 = [basisj.eval(ljd, ijd, xi) for xi in x]
+#             pdf = [self._U[d].pdf(self._T[d].unitToProbabilistic(xi))
+#                    for xi in x]
+#             res = [f(xi) for xi in x]
+#
+#             plt.plot(x, b1, label="basis 1")
+#             plt.plot(x, b2, label="basis 2")
+#             plt.plot(x, pdf, label="pdf")
+#             plt.plot(x, res, label="product")
+#             plt.scatter(xcenter, 0.0)
+#             plt.xlim(0, 1)
+#             plt.title("[%i, %i] -> (%i, %i), (%i, %i), %g" % (xlow, xhigh, lid, iid, ljd, ijd, val))
+#             plt.legend()
+#             plt.show()
+#             # ----------------------------------------------------
 
         return val, err

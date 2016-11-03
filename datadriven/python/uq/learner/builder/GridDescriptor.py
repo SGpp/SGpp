@@ -7,6 +7,12 @@ import os
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
                                            hasBorder,
                                            getDegree)
+from pysgpp import RegularGridConfiguration, GridType_PolyBoundary, \
+    GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
+    GridType_LinearClenshawCurtisBoundary, GridType_LinearClenshawCurtis, \
+    GridType_ModPolyClenshawCurtis, GridType_ModLinearClenshawCurtis, \
+    GridType_ModLinear, GridType_ModPoly, GridType_LinearBoundary
+from pysgpp.pysgpp_swig import GridType_Poly, GridType_Linear
 
 
 class GridDescriptor(object):
@@ -20,13 +26,14 @@ class GridDescriptor(object):
         Constructor
         """
         self.__dim = None
-        self.__deg = None
+        self.__deg = 1
         self.level = None
         self.__file = None
         self.__border = None
         self.__grid = None
         self.__full = None
         self.__clenshaw_curtis = False
+        self.__modified = False
 
     def withDimension(self, dim):
         """
@@ -108,36 +115,63 @@ class GridDescriptor(object):
             gridFormatter = GridFormatter()
             grid = gridFormatter.deserializeFromFile(self.__file)
         else:
+            gridConfig = RegularGridConfiguration()
+
             if self.__grid is not None:
-                self.__dim = self.__grid.getDimension()
+                gridConfig.dim_ = self.__grid.getDimension()
+            else:
+                gridConfig.dim_ = self.__dim
 
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\
                                      grid")
             if self.__border is not None:
                 if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                    if self.__deg > 1:
-                        grid = Grid.createPolyBoundaryGrid(self.__dim, self.__deg)
-                    else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim, 1)
+                    gridConfig.boundaryLevel_ = 1
                 elif self.__border == BorderTypes.COMPLETEBOUNDARY:
+                    gridConfig.boundaryLevel_ = 0
+
+            gridConfig.maxDegree_ = self.__deg
+
+            # identify grid type
+            if self.__border is not None:
+                if self.__clenshaw_curtis:
                     if self.__deg > 1:
-                        raise NotImplementedError()
+                        gridConfig.type_ = GridType_PolyClenshawCurtisBoundary
                     else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
+                        gridConfig.type_ = GridType_LinearClenshawCurtisBoundary
                 else:
                     if self.__deg > 1:
-                        grid = Grid.createModPolyGrid(self.__dim, self.__deg)
+                        gridConfig.type_ = GridType_PolyBoundary
                     else:
-                        grid = Grid.createModLinearGrid(self.__dim)
+                        gridConfig.type_ = GridType_LinearBoundary
             else:
-                # no border points
-                if self.__deg > 1:
-                    grid = Grid.createPolyGrid(self.__dim, self.__deg)
+                if self.__modified:
+                    if self.__clenshaw_curtis:
+                        if self.__deg > 1:
+                            gridConfig.type_ = GridType_ModPolyClenshawCurtis
+                        else:
+                            gridConfig.type_ = GridType_ModLinearClenshawCurtis
+                    else:
+                        if self.__deg > 1:
+                            gridConfig.type_ = GridType_ModPoly
+                        else:
+                            gridConfig.type_ = GridType_ModLinear
                 else:
-                    grid = Grid.createLinearGrid(self.__dim)
+                    if self.__clenshaw_curtis:
+                        if self.__deg > 1:
+                            gridConfig.type_ = GridType_PolyClenshawCurtis
+                        else:
+                            gridConfig.type_ = GridType_LinearClenshawCurtis
+                    else:
+                        if self.__deg > 1:
+                            gridConfig.type_ = GridType_Poly
+                        else:
+                            gridConfig.type_ = GridType_Linear
 
             # generate the grid
+            grid = Grid.createGrid(gridConfig)
+
             if self.level is not None:
                 generator = grid.getGenerator()
                 if not self.__full:

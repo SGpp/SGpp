@@ -12,7 +12,9 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
     Use Gauss-Legendre for quadrature
     """
 
-    def computeTrilinearFormEntry(self, gpk, basisk,
+    def computeTrilinearFormEntry(self,
+                                  gs,
+                                  gpk, basisk,
                                   gpi, basisi,
                                   gpj, basisj,
                                   d):
@@ -26,9 +28,9 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of all
         # three basis functions
-        xlowk, xhighk = getBoundsOfSupport(lkd, ikd)
-        xlowi, xhighi = getBoundsOfSupport(lid, iid)
-        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
+        xlowk, xhighk = getBoundsOfSupport(gs, lkd, ikd)
+        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
+        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
 
         # compute overlapping support
         xlow = max(xlowk, xlowi, xlowj)
@@ -45,9 +47,16 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
                     basisi.eval(lid, iid, p) * \
                     basisj.eval(ljd, ijd, p)
 
-            sleft, err1dleft = self.quad(f, xlow, (xlow + xhigh) / 2,
+            if lid >= ljd and lid >= lkd:
+                xcenter = gs.getCoordinate(gpi, d)
+            elif ljd >= lid and ljd >= lkd:
+                xcenter = gs.getCoordinate(gpj, d)
+            else:
+                xcenter = gs.getCoordinate(gpk, d)
+
+            sleft, err1dleft = self.quad(f, xlow, xcenter,
                                          deg=2 * (gpi.getLevel(d) + 1) + 1)
-            sright, err1dright = self.quad(f, (xlow + xhigh) / 2, xhigh,
+            sright, err1dright = self.quad(f, xcenter, xhigh,
                                            deg=2 * (gpi.getLevel(d) + 1) + 1)
 #             # -----------------------------------------
 #             # plot the basis

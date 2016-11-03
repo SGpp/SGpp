@@ -67,7 +67,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     trans = [trans]
 
                 lf = LinearGaussQuadratureStrategy(dist, trans)
-                tmp, erri = lf.computeLinearFormByList(gpsi, basisi)
+                tmp, erri = lf.computeLinearFormByList(gs, gpsi, basisi)
 
             # print error stats
             # print "%s: %g -> %g" % (str(dims), err, err + D[i].vol() * erri)
@@ -111,7 +111,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 gpsk, basisk = project(dist.grid, range(len(dims)))
                 # compute the bilinear form
                 tf = TrilinearGaussQuadratureStrategy([dist], trans)
-                A_idim, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
+                A_idim, erri = tf.computeTrilinearFormByList(ngs,
+                                                             gpsk, basisk,
+                                                             dist.alpha,
                                                              psi, basisi,
                                                              psi, basisi)
             else:
@@ -122,7 +124,8 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     trans = [trans]
 
                 bf = BilinearGaussQuadratureStrategy(dist, trans)
-                A_idim, erri = bf.computeBilinearFormByList(gpsi, basisi,
+                A_idim, erri = bf.computeBilinearFormByList(ngs,
+                                                            gpsi, basisi,
                                                             gpsi, basisi)
             # accumulate the results
             A_var *= A_idim
@@ -164,6 +167,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
         moment = vol * alpha.array().dot(A_var.dot(alpha.array()))
 
-        moment = moment - mean ** 2
+        var = moment - mean ** 2
 
-        return moment, err
+        return var, err

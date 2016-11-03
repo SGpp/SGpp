@@ -4,6 +4,10 @@ from pysgpp import (createOperationQuadrature,
 from pysgpp.extensions.datadriven.uq.operations import getBasis
 from pysgpp import DataVector
 import numpy as np
+from pysgpp.pysgpp_swig import GridType_PolyClenshawCurtis, \
+    GridType_PolyClenshawCurtisBoundary, GridType_ModPoly, \
+    GridType_ModPolyClenshawCurtis, GridType_LinearClenshawCurtis, \
+    GridType_LinearClenshawCurtisBoundary, GridType_ModLinearClenshawCurtis
 
 
 def getIntegral(grid, level, index):
@@ -15,9 +19,13 @@ def getIntegral(grid, level, index):
         # if gp.isLeaf():
         #     q *= 4. / 3.
         return np.power(2., -level)
-    elif grid.getType() == GridType_Poly:
-        return getBasis(grid).getIntegral(level, index)
-    elif grid.getType() == GridType_PolyBoundary:
+    elif grid.getType() in [GridType_Poly, GridType_PolyBoundary,
+                            GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary,
+                            GridType_ModPoly, GridType_ModPolyClenshawCurtis,
+                            GridType_LinearClenshawCurtis,
+                            GridType_LinearClenshawCurtisBoundary,
+                            GridType_ModLinear,
+                            GridType_ModLinearClenshawCurtis]:
         return getBasis(grid).getIntegral(level, index)
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())

@@ -21,11 +21,13 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         return False, key
 
     def computeTrilinearFormByList(self,
+                                   gs,
                                    gpsk, basisk, alphak,
                                    gpsi, basisi,
                                    gpsj, basisj):
         """
         Compute trilinear form for two lists of grid points
+        @param gs: HashGridStorage
         @param gpsk: list of HashGridPoint
         @param basisk: SG++ basis for grid indices gpsk
         @param alphak: coefficients for kth grid
@@ -54,12 +56,14 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         return A, err
 
     def computeTrilinearFormByRow(self,
+                                  gs,
                                   gpsk, basisk,
                                   gpi, basisi,
                                   gpj, basisj):
         """
         Compute the trilinear form of two grid point with a list
         of grid points
+        @param gs: HashGridStorage
         @param gpk: list of HashGridPoint
         @param basisk: SG++ Basis for grid indices k
         @param gpi: HashGridPoint
@@ -84,6 +88,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         return b, err
 
     def getTrilinearFormEntry(self,
+                              gs,
                               gpk, basisk,
                               gpi, basisi,
                               gpj, basisj,
@@ -91,6 +96,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         """
         Restore the trilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
+        @param gs: HashGridStorage
         @param gpk: HashGridPoint
         @param basisk: SG++ Basis
         @param gpi: HashGridPoint
@@ -102,7 +108,8 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         if not available:
             # there is no information available for the current combination
             # of grid points
-            val, err = self.computeTrilinearFormEntry(gpk, basisk,
+            val, err = self.computeTrilinearFormEntry(gs,
+                                                      gpk, basisk,
                                                       gpi, basisi,
                                                       gpj, basisj,
                                                       d)
@@ -112,9 +119,10 @@ class TrilinearQuadratureStrategy(HashQuadrature):
             val, err = self._map[key]
         return val, err
 
-    def computeTrilinearFormEntry(self, gpk, basisk, gpi, basisi, gpj, basisj, d):
+    def computeTrilinearFormEntry(self, gs, gpk, basisk, gpi, basisi, gpj, basisj, d):
         """
         Compute the Trilinear form of one grid point with another one
+        @param gs: HashGridStorage
         @param gpk: HashGridPoint
         @param basisk: SG++ Basis
         @param gpi: HashGridPoint

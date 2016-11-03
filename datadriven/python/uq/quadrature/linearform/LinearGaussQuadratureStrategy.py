@@ -22,7 +22,7 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
         self._U = U
         self._T = T
 
-    def computeLinearFormEntry(self, gp, basis, d):
+    def computeLinearFormEntry(self, gs, gp, basis, d):
         val = 1
         err = 0.
 
@@ -31,7 +31,8 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlow, xhigh = getBoundsOfSupport(lid, iid)
+        xlow, xhigh = getBoundsOfSupport(gs, lid, iid)
+        xcenter = gs.getCoordinate(gp, d)
 
         # ----------------------------------------------------
         # use gauss-legendre-quadrature
@@ -44,9 +45,9 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
                 return basis.eval(lid, iid, p) * self._U[d].pdf(q)
 
         # compute the piecewise continuous parts separately
-        sleft, err1dleft = self.quad(f, xlow, (xlow + xhigh) / 2,
+        sleft, err1dleft = self.quad(f, xlow, xcenter,
                                      deg=gp.getLevel(d) + 2)
-        sright, err1dright = self.quad(f, (xlow + xhigh) / 2, xhigh,
+        sright, err1dright = self.quad(f, xcenter, xhigh,
                                        deg=gp.getLevel(d) + 2)
 
 #             # -----------------------------------------
