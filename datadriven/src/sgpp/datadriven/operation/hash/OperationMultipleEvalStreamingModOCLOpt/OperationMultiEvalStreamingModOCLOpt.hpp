@@ -7,20 +7,20 @@
 
 #include <omp.h>
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <vector>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "Configuration.hpp"
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -107,9 +107,6 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     overallGridBlockingSize = calculateCommonGridPadding();
     overallDataBlockingSize = calculateCommonDatasetPadding();
 
-    std::cout << "overallDataBlockingSize: " << overallDataBlockingSize << std::endl;
-    std::cout << "overallGridBlockingSize: " << overallGridBlockingSize << std::endl;
-
     queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
     queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
 
@@ -174,6 +171,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
 #pragma omp parallel
@@ -193,6 +191,9 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }
@@ -233,6 +234,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
 #pragma omp parallel
@@ -252,6 +254,9 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }
@@ -421,13 +426,10 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     base::HashGridPoint::level_type curLevel;
     base::HashGridPoint::index_type curIndex;
 
-    /// pointer to index_type
-    base::HashGridStorage::point_pointer gridPoint;
-
     for (size_t i = 0; i < storage.getSize(); i++) {
-      gridPoint = storage.getPoint(i);
+      base::HashGridPoint &gridPoint = storage.getPoint(i);
       for (size_t dim = 0; dim < dims; dim++) {
-        gridPoint->get(dim, curLevel, curIndex);
+        gridPoint.get(dim, curLevel, curIndex);
         levelFast[i * dims + dim] = static_cast<T>(1 << curLevel);
         indexFast[i * dims + dim] = static_cast<T>(curIndex);
       }

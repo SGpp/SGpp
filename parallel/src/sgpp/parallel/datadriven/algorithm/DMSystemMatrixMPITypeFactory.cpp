@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #ifdef USEMIC
-#include <sgpp/parallel/datadriven/basis/common/mic/MICKernel.hpp>
 #include <sgpp/parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernel.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
 #endif
@@ -25,18 +25,18 @@
 #include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp>
 
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp>
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp>
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp>
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp>
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp>
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityBigdataAllreduce.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp>
 
 #include <sgpp/parallel/datadriven/basis/common/CPUKernel.hpp>
 #ifdef USEOCL
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp>
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernel.hpp>
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp>
-#include <sgpp/parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp>
 
 #include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp>
 #include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp>
@@ -44,8 +44,8 @@
 #endif
 
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 
 #include <cstring>
 #include <string>

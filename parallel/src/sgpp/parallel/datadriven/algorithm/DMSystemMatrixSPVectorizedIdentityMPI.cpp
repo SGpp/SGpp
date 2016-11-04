@@ -58,7 +58,7 @@ DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(
   this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorizedSP(
       m_grid, this->vecMode_, this->dataset_, _mpi_grid_offsets[mpi_rank],
       _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank], _mpi_data_offsets[mpi_rank],
-      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]).release();
+      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]);
   waitting_time = 0.0;
 }
 

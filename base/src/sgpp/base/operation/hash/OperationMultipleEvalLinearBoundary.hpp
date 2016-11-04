@@ -6,11 +6,10 @@
 #ifndef OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP
 #define OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -28,9 +27,8 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset the should be evaluated
    */
-  OperationMultipleEvalLinearBoundary(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
-  }
+  OperationMultipleEvalLinearBoundary(Grid& grid, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
@@ -39,6 +37,8 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object
