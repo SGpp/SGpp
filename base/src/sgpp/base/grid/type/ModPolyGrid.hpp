@@ -43,7 +43,7 @@ class ModPolyGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
   virtual size_t getDegree() const;
 
  protected:

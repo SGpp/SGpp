@@ -3,9 +3,9 @@
 
 
 #getting rid of weverything without a . in examples folder and all subfolders (executables on linux)
-*/examples/*
-!*/examples/*/
-!*/examples/*.*
+*/examples*/*
+!*/examples*/*/
+!*/examples*/*.*
 
 #ignoring c++ build files
 *.o
@@ -13,6 +13,8 @@
 *.so
 *.exe
 *.a
+*.dylib
+*.dSYM
 
 #ignoring cpplint files
 *.lint

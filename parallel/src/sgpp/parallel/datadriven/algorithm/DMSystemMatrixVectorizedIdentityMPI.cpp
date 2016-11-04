@@ -56,10 +56,10 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(
       this->numPatchedTrainingInstances_, mpi_size, _mpi_data_sizes, _mpi_data_offsets,
       sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-  this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorized(
+  this->B_.reset(sgpp::op_factory::createOperationMultipleEvalVectorized(
       m_grid, this->vecMode_, &this->dataset_, _mpi_grid_offsets[mpi_rank],
       _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank], _mpi_data_offsets[mpi_rank],
-      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]);
+      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]));
   waitting_time = 0.0;
 }
 
