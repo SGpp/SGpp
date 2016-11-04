@@ -11,7 +11,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
     """
     Generic object for quadrature strategies
     """
-    def hasValue(self, gpk, gpi, gpj, d):
+    def hasValue(self, gpk, gpi, gpj, d=None):
         key = self._map.getKey([gpk, gpi, gpj], d)
         if key in self._map:
             return True, key
@@ -91,8 +91,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
                               gs,
                               gpk, basisk,
                               gpi, basisi,
-                              gpj, basisj,
-                              d):
+                              gpj, basisj):
         """
         Restore the trilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
@@ -104,20 +103,35 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @param gpj: HashGridPoint
         @param basisj: SG++ Basis
         """
-        available, key = self.hasValue(gpk, gpi, gpj, d)
+        ans, err = 1.0, 0.0
+
+        available, key = self.hasValue(gpk, gpi, gpj)
         if not available:
-            # there is no information available for the current combination
-            # of grid points
-            val, err = self.computeTrilinearFormEntry(gs,
-                                                      gpk, basisk,
-                                                      gpi, basisi,
-                                                      gpj, basisj,
-                                                      d)
-            # store value
-            self._map[key] = val, err
+            # run over all dimensions
+            for d in xrange(gpi.getDimension()):
+                # compute linear form for one entry
+                available, keyd = self.hasValue(gpk, gpi, gpj, d)
+                if not available:
+                    # there is no information available for the current combination
+                    # of grid points
+                    val, err = self.computeTrilinearFormEntry(gs,
+                                                              gpk, basisk,
+                                                              gpi, basisi,
+                                                              gpj, basisj,
+                                                              d)
+                    # store value
+                    self._map[keyd] = val, erri
+                else:
+                    val, erri = self._map[keyd]
+
+                # collect results
+                ans *= val
+                err += erri
         else:
-            val, err = self._map[key]
-        return val, err
+            ans, err = self._map[key]
+
+        return ans, err
+
 
     def computeTrilinearFormEntry(self, gs, gpk, basisk, gpi, basisi, gpj, basisj, d):
         """

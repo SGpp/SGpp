@@ -84,6 +84,13 @@ class GridDescriptor(object):
         self.__clenshaw_curtis = True
         return self
 
+    def withModifiedBasis(self):
+        """
+        define a basis with extrapolation towards the boundary
+        """
+        self.__modified = True
+        return self
+
     def fromGrid(self, grid):
         """
         Indicates that all grid points in grid should also be in the

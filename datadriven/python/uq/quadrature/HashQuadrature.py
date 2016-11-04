@@ -30,13 +30,19 @@ class HashQuadratureMap(object):
         """
         self._map = {}
 
-    def getKey(self, gps, d):
+    def getKey(self, gps, d=None):
         """
         Generates a unique key for a given list of grid points
         @param gps: list of HashGridPoint
         @param d: int dimension
         """
-        return tuple([(gp.getLevel(d), gp.getIndex(d)) for gp in gps])
+        if d is None:
+            return tuple([(gp.getLevel(d), gp.getIndex(d))
+                          for gp in gps
+                          for d in xrange(gp.getDimension())])
+        else:
+            return tuple([(gp.getLevel(d), gp.getIndex(d))
+                          for gp in gps])
 
     def __getitem__(self, key):
         return self._map[key]
