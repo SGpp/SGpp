@@ -10,7 +10,8 @@ from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from EstimatedDist import EstimatedDist
-from pysgpp.pysgpp_swig import BandwidthOptimizationType_NONE
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_NONE, \
+    BandwidthOptimizationType_MAXIMUMLIKELIHOOD
 
 
 

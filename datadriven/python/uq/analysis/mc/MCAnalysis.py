@@ -87,3 +87,15 @@ class MCAnalysis(Analysis):
         stats = self.computeMoments()
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
+
+# -----------------------------------------------------------------------------
+
+    def estimateDensity(self, ts=[0], dtype="kde", config={}):
+        if len(ts) == 1:
+            return self._estimateDensityByConfig(dtype, self.__samples[ts[0]].values(), config)
+
+        ans = {}
+        for t, values in time_dependent_values.items():
+            ans[t] = self._estimateDensityByConfig(dtype, values, config)
+
+        return ans

@@ -569,7 +569,15 @@ def evalSGFunctionMulti(grid, alpha, samples):
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
     samples_matrix = DataMatrix(samples)
-    if grid.getType() == GridType_Bspline:
+    if grid.getType() in [GridType_Bspline,
+                          GridType_BsplineClenshawCurtis,
+                          GridType_BsplineBoundary,
+                          GridType_LinearClenshawCurtis,
+                          GridType_LinearClenshawCurtisBoundary,
+                          GridType_ModLinearClenshawCurtis,
+                          GridType_PolyClenshawCurtis,
+                          GridType_PolyClenshawCurtisBoundary,
+                          GridType_ModPolyClenshawCurtis]:
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
         if grid.getType() == GridType_Linear:
@@ -592,7 +600,13 @@ def evalSGFunction(grid, alpha, p):
         alpha_vec = DataVector(alpha)
         if grid.getType() in [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
-                              GridType_BsplineBoundary]:
+                              GridType_BsplineBoundary,
+                              GridType_LinearClenshawCurtis,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_ModLinearClenshawCurtis,
+                              GridType_PolyClenshawCurtis,
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_ModPolyClenshawCurtis]:
             return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
         else:
             return createOperationEval(grid).eval(alpha_vec, p_vec)

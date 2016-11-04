@@ -7,11 +7,19 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
 from pysgpp.pysgpp_swig import DataMatrix
 
 
-def plotFunction1d(f, n=1000):
+def plotFunction1d(f, n=1000, **kws):
     x = np.linspace(0, 1, n, endpoint=True)
-    y = [f(xi) for xi in x]
-    plt.plot(x, y)
+    y = [f(np.array([xi])) for xi in x]
+    plt.plot(x, y, **kws)
 
+def plotCDF1d(U, n=1000, *args, **kws):
+    bounds = U.getBounds()
+    if len(bounds) == 1:
+        bounds = bounds[0]
+    x = np.linspace(bounds[0], bounds[1], n)
+    y = [U.cdf(xi) for xi in x]
+
+    plt.plot(x, y, *args, **kws)
 
 def plotDensity1d(U, n=1000, *args, **kws):
     bounds = U.getBounds()

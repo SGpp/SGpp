@@ -106,6 +106,12 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
@@ -420,6 +426,21 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new base::OperationMultipleEvalLinearClenshawCurtisNaive(grid, dataset);
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationMultipleEvalLinearClenshawCurtisBoundaryNaive(grid, dataset);
+  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
+    return new base::OperationMultipleEvalModLinearClenshawCurtisNaive(grid, dataset);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationMultipleEvalPolyClenshawCurtisNaive(
+        grid, dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new base::OperationMultipleEvalPolyClenshawCurtisBoundaryNaive(
+        grid, dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationMultipleEvalModPolyClenshawCurtisNaive(
+        grid, dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalNaive is not implemented for this grid type.");
