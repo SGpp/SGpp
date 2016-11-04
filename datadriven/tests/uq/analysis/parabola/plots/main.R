@@ -5,12 +5,14 @@ source('plotSurpluses.R')
 source('plotErrorDecay.R')
 source('plotDensity.R')
 
-## devplot('dnorm.pdf',
+basepath <- "plots"
+
+## devplot(paste(basepath, 'dnorm.pdf', sep="/"),
 ##         function() {
 ##           plot2dNormal()
 ##         }, dev = 'latex', width = 5.03, height = 5)
 
-## devplot(paste('expectation-value-data-6.pdf'),
+## devplot(paste(basepath, 'expectation-value-data-6.pdf', sep="/"),
 ##         function() {
 ##           par(mar=c(5.1, 5, 4.1, 16), xpd=FALSE)
 ##           plotExpectationValue(stats$mc$moments,
@@ -45,7 +47,7 @@ source('plotDensity.R')
 ##         }, dev='latex', width = 7.03, height = 5)
 
 
-## devplot(paste('variance-value-0.pdf'),
+## devplot(paste(basepath, 'variance-value-0.pdf', sep=""),
 ##         function() {
 ##           par(mar=c(5.1, 5, 4.1, 15), xpd=FALSE)
 ##           plotVariance(stats$mc$moments, col='black', pch=0, ylim=c(0, 0.012))
@@ -67,7 +69,7 @@ source('plotDensity.R')
 
 
 ## for (i in seq(along = stats$mc$iterative)) {
-##   devplot(paste('MC-expectation-i', i, '.png', sep=''),
+##   devplot(paste(basepath, '/MC-expectation-i', i, '.png', sep=''),
 ##           function() {
 ##             data <- stats$mc$iterative[[i]]
 ##             n <- data[, 'grid_size']
@@ -87,34 +89,35 @@ source('plotDensity.R')
 ##           }, dev='png', width = 5.03, height = 5)
 ## }
 
-## data <- list('fgb0deg1' = stats$fgb0deg1$squared.stats,
-##              'sgb0deg1' = stats$sgb0deg1$squared.stats[1:7, ],
-##              'rss2b0deg1' = stats$rss2b0deg1$squared.stats,
-##              'rev2b0deg1' = stats$rev2b0deg1$squared.stats,
-##              ## 'ava1b0deg1' = stats$ava1b0deg1$squared.stats,
-##              ## 'ava2b0deg1' = stats$ava2b0deg1$squared.stats,
-##              ## 'avc2b0deg1' = stats$avc2b0deg1$squared.stats,
-##              'ava2b0deg1\\_2' = stats$ava2b0deg1_2$squared.stats[c(seq(1, 14), 18, 25, 37), ])
+data <- list('fgb0deg1' = stats$uniform$fgb0deg1$squared.stats,
+             'sgb0deg1' = stats$uniform$sgb0deg1$squared.stats,
+             'sccb0deg1' = stats$uniform$sccb0deg1$squared.stats)
+             ## 'rss2b0deg1' = stats$rss2b0deg1$squared.stats,
+             ## 'rev2b0deg1' = stats$rev2b0deg1$squared.stats,
+             ## ## 'ava1b0deg1' = stats$ava1b0deg1$squared.stats,
+             ## ## 'ava2b0deg1' = stats$ava2b0deg1$squared.stats,
+             ## ## 'avc2b0deg1' = stats$avc2b0deg1$squared.stats,
+             ## 'ava2b0deg1\\_2' = stats$ava2b0deg1_2$squared.stats[c(seq(1, 14), 18, 25, 37), ])
 
-## devplot('l2ErrorDecay_squared.pdf',
-##         function() {
-##           par(mar=c(5.1, 6.6, 4.1, 13), xpd=FALSE)
-##           plotErrorDecay(data, dtype = 'testL2Error',
-##                          log='xy',
-##                          cols=stats$cols,
-##                          pchs=stats$pchs,
-##                          xaxis.base = 10)
-##           par(xpd=TRUE)
-##           title('$L_2$ error' )
-##           legend("topright",
-##                  names(data),
-##                  col = stats$cols,
-##                  pch = stats$pchs,
-##                  box.lwd = 1, box.col = "black", bg = "white",
-##                  cex = 1.3, lty = 1,
-##                  inset=c(-0.42,0))
-##           box()
-##         }, dev="latex", width = 8, height = 5)
+devplot(paste(basepath, 'l2ErrorDecay_squared.pdf', sep="/"),
+        function() {
+          par(mar=c(5.1, 6.6, 4.1, 13), xpd=FALSE)
+          plotErrorDecay(data, dtype = 'testL2Error',
+                         log='xy',
+                         cols=stats$cols,
+                         pchs=stats$pchs,
+                         xaxis.base = 10)
+          par(xpd=TRUE)
+          title('$L_2$ error' )
+          legend("topright",
+                 names(data),
+                 col = stats$cols,
+                 pch = stats$pchs,
+                 box.lwd = 1, box.col = "black", bg = "white",
+                 cex = 1.3, lty = 1,
+                 inset=c(-0.42,0))
+          box()
+        }, dev="latex", output.format="eps", width = 8, height = 5)
 
 
 data <- list('fgb0deg1' = stats$uniform$fgb0deg1$moments,
@@ -128,7 +131,7 @@ data <- list('fgb0deg1' = stats$uniform$fgb0deg1$moments,
              ## 'ava2b0deg1_2' = stats$ava2b0deg1_2$moments[c(seq(1, 14), 18, 25, 37), ])
 
 
-devplot('meanErrorDecay.pdf',
+devplot(paste(basepath, 'meanErrorDecay.pdf', sep="/"),
         function() {
           par(mar=c(5.1, 6.6, 4.1, 13), xpd=FALSE)
           plotErrorDecay(data, dtype = 'meanRelativeDifference',
@@ -146,10 +149,10 @@ devplot('meanErrorDecay.pdf',
                  cex = 1.3, lty = 1,
                  inset=c(-0.42,0))
           box()
-        }, dev="latex", width = 8, height = 5)
+        }, dev="latex", output.format="eps", width = 8, height = 5)
 
 
-devplot('varianceErrorDecay.pdf',
+devplot(paste(basepath, 'varianceErrorDecay.pdf', sep="/"),
         function() {
           par(mar=c(5.1, 6.6, 4.1, 13), xpd=FALSE)
           plotErrorDecay(data, dtype = 'varRelativeDifference',
@@ -167,13 +170,13 @@ devplot('varianceErrorDecay.pdf',
                  cex = 1.3, lty = 1,
                  inset=c(-0.42,0))
           box()
-        }, dev="latex", width = 8, height = 5)
+        }, dev="latex", output.format="eps", width = 8, height = 5)
 
 data <- list('fgb0deg1' = stats$uniform$fgb0deg1$simple.stats,
              'sgb0deg1' = stats$uniform$sgb0deg1$simple.stats,
              'sccb0deg1' = stats$uniform$sccb0deg1$simple.stats)
 
-devplot('l2normDecay.pdf',
+devplot(paste(basepath, 'l2normDecay.pdf', sep="/"),
         function() {
           par(mar=c(5.1, 6.6, 4.1, 13), xpd=FALSE)
           plotErrorDecay(data, dtype = 'testL2Error',
@@ -191,7 +194,7 @@ devplot('l2normDecay.pdf',
                  cex = 1.3, lty = 1,
                  inset=c(-0.42,0))
           box()
-        }, dev="latex", width = 8, height = 5)
+        }, dev="latex", output.format="eps", width = 8, height = 5)
 
 
 
