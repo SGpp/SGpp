@@ -13,7 +13,7 @@ class LinearQuadratureStrategy(HashQuadrature):
     Generic object for quadrature strategies
     """
 
-    def hasValue(self, gpi, d):
+    def hasValue(self, gpi, d=None):
         key = self._map.getKey([gpi], d)
         if key in self._map:
             return True, key
@@ -49,34 +49,44 @@ class LinearQuadratureStrategy(HashQuadrature):
         err = 0.
         # run over all items
         for i, gpi in enumerate(gps):
-            # run over all dimensions
-            for d in xrange(gpi.getDimension()):
-                # compute linear form for one entry
-                value, erri = self.getLinearFormEntry(gs, gpi, basis, d)
-                # collect results
-                b[i] *= value
-                err += erri
+            # compute linear form for one entry
+            value, erri = self.getLinearFormEntry(gs, gpi, basis)
+
+            # collect results
+            b[i] = value
+            err += erri
         return b, err
 
-    def getLinearFormEntry(self, gs, gp, basis, d):
+    def getLinearFormEntry(self, gs, gp, basis):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
         @param gs: HashGridStorage
         @param gp: HashGridPoint
         @param basis: SG++ Basis
-        @param d: int dimension
         """
-        available, key = self.hasValue(gp, d)
+        ans, err = 1.0, 0.0
+
+        available, key = self.hasValue(gp)
         if not available:
-            # there is no information available for the current combination
-            # of grid points
-            val, err = self.computeLinearFormEntry(gs, gp, basis, d)
-            # store value
-            self._map[key] = val, err
+            # run over all dimensions
+            for d in xrange(gp.getDimension()):
+                # compute linear form for one entry
+                available, keyd = self.hasValue(gp, d)
+                if not available:
+                    val, erri = self.computeLinearFormEntry(gs, gp, basis, d)
+                    # store value
+                    self._map[keyd] = val, erri
+                else:
+                    val, erri = self._map[keyd]
+
+                # collect results
+                ans *= val
+                err += erri
         else:
-            val, err = self._map[key]
-        return val, err
+            ans, err = self._map[key]
+
+        return ans, err
 
     def computeLinearFormEntry(self, gs, gp, basis, d):
         """

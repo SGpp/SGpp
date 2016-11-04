@@ -22,21 +22,16 @@ from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
     RegularGridConfiguration, SLinearModifiedBase, SLinearClenshawCurtisBase, \
     SLinearClenshawCurtisBoundaryBase, SLinearModifiedClenshawCurtisBase, \
     SPolyClenshawCurtisBase, SPolyClenshawCurtisBoundaryBase, \
-    SPolyModifiedClenshawCurtisBase, SPolyModifiedBase
+    SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
+    GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
+    GridType_BsplineBoundary
 
 
 #######################################################################
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
-
-    if gridType in [GridType_Poly,
-                    GridType_PolyBoundary,
-                    GridType_ModPoly,
-                    GridType_PolyClenshawCurtis,
-                    GridType_PolyClenshawCurtisBoundary,
-                    GridType_ModPolyClenshawCurtis]:
-        deg = max(deg, grid.getDegree())
+    deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
@@ -101,7 +96,9 @@ def getBasis(grid):
 
     if gridType == GridType_Linear:
         return SLinearBase()
-    elif gridType == GridType_LinearBoundary:
+    elif gridType in [GridType_LinearBoundary,
+                      GridType_LinearL0Boundary,
+                      GridType_LinearTruncatedBoundary]:
         return SLinearBoundaryBase()
     elif gridType == GridType_ModLinear:
         return SLinearModifiedBase()
@@ -124,7 +121,7 @@ def getBasis(grid):
     elif gridType == GridType_ModPolyClenshawCurtis:
         return SPolyModifiedClenshawCurtisBase(grid.getDegree())
     else:
-        raise AttributeError("basis is not supported")
+        raise AttributeError("basis %i is not supported" % gridType)
 
 def getDegree(grid):
     if grid.getType() in [GridType_Poly, GridType_PolyBoundary]:
@@ -593,7 +590,12 @@ def evalSGFunction(grid, alpha, p):
     if len(p.shape) == 1:
         p_vec = DataVector(p)
         alpha_vec = DataVector(alpha)
-        return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
+        if grid.getType() in [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary]:
+            return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
+        else:
+            return createOperationEval(grid).eval(alpha_vec, p_vec)
     else:
         return evalSGFunctionMulti(grid, alpha, p)
 

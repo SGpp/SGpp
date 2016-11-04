@@ -13,7 +13,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
     Generic object for quadrature strategies
     """
 
-    def hasValue(self, gpi, gpj, d):
+    def hasValue(self, gpi, gpj, d=None):
         key = self._map.getKey([gpi, gpj], d)
         if key in self._map:
             return True, key
@@ -63,24 +63,25 @@ class BilinearQuadratureStrategy(HashQuadrature):
         @param gs: HashGridStorage
         @param gpi: HashGridPoint
         @param basisi: SG++ Basis for grid indices i
-        @param gps: list of HashGridPoint
+        @param gpsj: list of HashGridPoint
         @param basisj: SG++ Basis for grid indices j
         @return DataVector
         """
         b = np.ones(len(gpsj))
         err = 0.
-        # run over all entries
+        # run over all items
         for j, gpj in enumerate(gpsj):
-            # run over all dimensions
-            for d in xrange(gpi.getDimension()):
-                # compute bilinear form for one entry
-                s, erri = self.getBilinearFormEntry(gs, gpi, basisi, gpj, basisj, d)
-                # combine different dimensions
-                b[j] *= s
-                err += erri
+            # compute bilinear form for one entry
+            value, erri = self.getBilinearFormEntry(gs, gpi, basisi, gpj, basisj)
+
+            # collect results
+            b[j] = value
+            err += erri
+
         return b, err
 
-    def getBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
+
+    def getBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
@@ -89,18 +90,30 @@ class BilinearQuadratureStrategy(HashQuadrature):
         @param basisi: SG++ Basis
         @param gpj: HashGridPoint
         @param basisj: SG++ Basis
-        @param d: int dimension
         """
-        available, key = self.hasValue(gpi, gpj, d)
+        ans, err = 1.0, 0.0
+
+        available, key = self.hasValue(gpi, gpj)
         if not available:
-            # there is no information available for the current combination
-            # of grid points
-            val, err = self.computeBilinearFormEntry(gs, gpi, basisi, gpj, basisj, d)
-            # store value
-            self._map[key] = val, err
+            # run over all dimensions
+            for d in xrange(gpi.getDimension()):
+                # compute linear form for one entry
+                available, keyd = self.hasValue(gpi, gpj, d)
+                if not available:
+                    val, erri = self.computeBilinearFormEntry(gs, gpi, basisi, gpj, basisj, d)
+                    # store value
+                    self._map[keyd] = val, erri
+                else:
+                    val, erri = self._map[keyd]
+
+                # collect results
+                ans *= val
+                err += erri
         else:
-            val, err = self._map[key]
-        return val, err
+            ans, err = self._map[key]
+
+        return ans, err
+
 
     def computeBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
         """
