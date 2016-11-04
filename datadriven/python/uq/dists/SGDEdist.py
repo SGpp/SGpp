@@ -67,6 +67,14 @@ class SGDEdist(EstimatedDist):
         @param learnerSGDEConfig: dict
         """
         # --------------------------------------------------------------------
+#         config["sgde_makePositive"] = False
+#         config["sgde_makePositive_candidateSearchAlgorithm"] = "intersections"
+#         config["sgde_makePositive_interpolationAlgorithm"] = "setToZero"
+#         config["sgde_makePositive_generateConsistentGrid"] = True
+#         config["sgde_makePositive_verbose"] = False
+#         config["sgde_unitIntegrand"] = True
+#         config["sgde_makePositive_verbose"] = True
+
         # write config to file
         # get temp directory
         filename_config = os.path.join(tempfile.gettempdir(),
@@ -138,7 +146,7 @@ class SGDEdist(EstimatedDist):
         # evaluate the sparse grid density
         fx = evalSGFunction(self.grid, self.alpha, x_unit)
 
-        if self.trans is not None:
+        if self.trans is not None and self.trans.vol() > 1e-14:
             fx *= 1. / self.trans.vol()
 
         # if there is just one value given, extract it from the list

@@ -4,6 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
+from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
 
 """
 @file    ASGC.py
@@ -101,32 +102,16 @@ class ASGCAnalysis(Analysis):
         trans = self.__params.getJointTransformation()
         return trans.probabilisticToUnitMatrix(samples)
 
-    def __estimateDensityByConfig(self, dtype, samples, config={}):
-        if dtype == "gaussianKDE":
-            # compute bounds of samples
-            bounds = np.ndarray((1, 2))
-            bounds[:, 0] = samples.min()
-            bounds[:, 1] = samples.max()
-            return GaussianKDEDist(samples, bounds)
-        elif dtype == "sgde":
-            # compute bounds of samples
-            bounds = np.ndarray((1, 2))
-            bounds[:, 0] = samples.min()
-            bounds[:, 1] = samples.max()
-            return SGDEdist.byLearnerSGDEConfig(samples, bounds, config=config)
-        else:
-            raise AttributeError("density estimation type %s is not known. Select one in [gaussianKDE, sgde]")
-
-    def estimateDensity(self, ts=[0], n=10000, dtype="gaussianKDE", config={}):
+    def estimateDensity(self, ts=[0], n=10000, dtype="kde", config={}):
         samples = self.generateUnitSamples(n)
         time_dependent_values = self.eval(samples, ts=ts)
 
         if len(ts) == 1:
-            return self.__estimateDensityByConfig(dtype, time_dependent_values, config)
+            return self._estimateDensityByConfig(dtype, time_dependent_values, config)
 
         ans = {}
         for t, values in time_dependent_values.items():
-            ans[t] = self.__estimateDensityByConfig(dtype, values, config)
+            ans[t] = self._estimateDensityByConfig(dtype, values, config)
         
         return ans
 

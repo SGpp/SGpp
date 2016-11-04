@@ -14,6 +14,7 @@ __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 from plot1d import (plotFunction1d,
                     plotDensity1d,
                     plotCDF,
+                    plotCDF1d,
                     plotPDF,
                     plotGrid1d,
                     plotSG1d,
