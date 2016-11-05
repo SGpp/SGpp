@@ -363,6 +363,8 @@ Grid* Grid::clone() {
   return newGrid;
 }
 
+std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
+
 Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
