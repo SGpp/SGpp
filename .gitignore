@@ -76,7 +76,18 @@ coverage
 *.org_archive
 
 # ignoring uq tests
-datadriven/tests/uq/analysis
+datadriven/tests/uq/analysis/atan
+
+datadriven/tests/uq/analysis/checkpoints
+datadriven/tests/uq/analysis/convergence
+datadriven/tests/uq/analysis/diffusionEquation
+datadriven/tests/uq/analysis/kraichnanOrszag
+datadriven/tests/uq/analysis/owhadi10Optimal
+datadriven/tests/uq/analysis/parabola/plots/plots
+datadriven/tests/uq/analysis/parabola/results
+datadriven/tests/uq/analysis/parabolaWithSGDE
+datadriven/tests/uq/analysis/rodetest
+
 datadriven/tests/uq/anova
 datadriven/tests/uq/dists
 datadriven/tests/uq/learner

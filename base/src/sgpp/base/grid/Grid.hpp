@@ -476,11 +476,18 @@ class Grid {
   virtual GridGenerator& getGenerator() = 0;
 
   /**
+   * Returns the grid type
+   *
+   * @return value that identifies the grid type uniquely
+   */
+  virtual sgpp::base::GridType getType() = 0;
+
+  /**
    * Returns a string that identifies the grid type uniquely
    *
    * @return string that identifies the grid type uniquely
    */
-  virtual sgpp::base::GridType getType() = 0;
+  std::string getTypeAsString();
 
   /**
    * Returns the Basis class associated with the grid

@@ -178,6 +178,8 @@ public:
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
 
+  std::string getTypeAsString();
+
   Grid* clone();
 };
 }

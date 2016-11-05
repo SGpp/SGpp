@@ -74,17 +74,11 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretchedBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPoly.hpp>
-#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
@@ -96,13 +90,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtis.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
@@ -330,12 +318,6 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
              grid.getType() == base::GridType::LinearTruncatedBoundary ||
              grid.getType() == base::GridType::SquareRoot) {
     return new base::OperationEvalLinearBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-    return new base::OperationEvalLinearClenshawCurtis(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
-    return new base::OperationEvalLinearClenshawCurtisBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
-    return new base::OperationEvalModLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationEvalModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
@@ -347,15 +329,6 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationEvalModPoly(grid.getStorage(),
                                           dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationEvalPolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationEvalPolyClenshawCurtisBoundary(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationEvalModPolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationEvalPrewavelet(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
@@ -389,21 +362,6 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationMultipleEvalModPoly(
         grid, dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationMultipleEvalPolyClenshawCurtis(
-        grid, dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationMultipleEvalPolyClenshawCurtisBoundary(
-        grid, dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationMultipleEvalModPolyClenshawCurtis(
-        grid, dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-    return new base::OperationMultipleEvalLinearClenshawCurtis(grid, dataset);
-  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
-    return new base::OperationMultipleEvalModLinearClenshawCurtis(grid, dataset);
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
-    return new base::OperationMultipleEvalLinearClenshawCurtisBoundary(grid, dataset);
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationMultipleEvalPrewavelet(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearStretched) {
