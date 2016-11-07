@@ -24,7 +24,10 @@ from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
     SPolyClenshawCurtisBase, SPolyClenshawCurtisBoundaryBase, \
     SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
     GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
-    GridType_BsplineBoundary
+    GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
+    GridType_ModBspline
+from pysgpp._pysgpp_swig import GridType_BsplineBoundary_swigconstant, \
+    createOperationMultipleHierarchisation
 
 
 #######################################################################
@@ -572,12 +575,15 @@ def evalSGFunctionMulti(grid, alpha, samples):
     if grid.getType() in [GridType_Bspline,
                           GridType_BsplineClenshawCurtis,
                           GridType_BsplineBoundary,
+                          GridType_ModBsplineClenshawCurtis,
+                          GridType_ModBspline,
                           GridType_LinearClenshawCurtis,
                           GridType_LinearClenshawCurtisBoundary,
                           GridType_ModLinearClenshawCurtis,
                           GridType_PolyClenshawCurtis,
                           GridType_PolyClenshawCurtisBoundary,
                           GridType_ModPolyClenshawCurtis]:
+        print grid.getTypeAsString()
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
         if grid.getType() == GridType_Linear:
@@ -601,6 +607,8 @@ def evalSGFunction(grid, alpha, p):
         if grid.getType() in [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline,
                               GridType_LinearClenshawCurtis,
                               GridType_LinearClenshawCurtisBoundary,
                               GridType_ModLinearClenshawCurtis,
@@ -700,7 +708,15 @@ def hierarchize(grid, nodalValues, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
         alpha = DataVector(nodalValues)
-        createOperationHierarchisation(grid).doHierarchisation(alpha)
+        if grid.getType() in [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline]:
+            createOperationMultipleHierarchisation(grid).doHierarchisation(alpha)
+        else:
+            createOperationHierarchisation(grid).doHierarchisation(alpha)
+
         return alpha.array()
 #         print "using brute force hierarchization"
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)

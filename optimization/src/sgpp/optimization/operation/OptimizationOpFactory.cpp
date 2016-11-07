@@ -21,6 +21,7 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -38,13 +39,12 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 
 #include <cstring>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
 
 namespace sgpp {
 namespace op_factory {
 
-optimization::OperationMultipleHierarchisation*
-createOperationMultipleHierarchisation(base::Grid& grid) {
+optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchisation(
+    base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new optimization::OperationMultipleHierarchisationLinear(
         dynamic_cast<base::LinearGrid&>(grid));
