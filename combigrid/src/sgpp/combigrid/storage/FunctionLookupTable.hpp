@@ -76,6 +76,12 @@ class FunctionLookupTable {
    * @return the number of stored function values.
    */
   size_t getNumEntries() const;
+
+  /**
+   * This is a convenience function that is especially nice for python code.
+   * @return a MultiFunction object that delegates each call to this FunctionLookupTable.
+   */
+  MultiFunction toMultiFunction() const;
 };
 }  // namespace combigrid
 }  // namespace sgpp

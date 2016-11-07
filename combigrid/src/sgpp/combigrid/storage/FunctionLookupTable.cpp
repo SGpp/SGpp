@@ -162,5 +162,8 @@ bool FunctionLookupTable::containsEntry(const base::DataVector& x) {
 }
 
 size_t FunctionLookupTable::getNumEntries() const { return impl->hashmap->size(); }
+
+MultiFunction FunctionLookupTable::toMultiFunction() const { return MultiFunction(*this); }
+
 }  // namespace combigrid
 }  // namespace sgpp
