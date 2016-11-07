@@ -2,11 +2,12 @@
 
 import random
 
-fileName = "chess_4d.arff"
-numElements = 100000
+numElements = 500000
 dim = 4
-fields = dim
+fields = 5
 seed = 135
+
+fileName = "chess_" + str(dim) + "d_" + str(numElements) + ".arff"
 
 random.seed(seed)
 
@@ -21,15 +22,14 @@ for n in range(numElements):
     for i in range(dim):
         r = random.random()
         
-        if i < 2:
-            rang = r/intervalsize
-            irang = int(rang+1.0)
+        rang = r/intervalsize
+        irang = int(rang+1.0)
         
-            # calcualte class
-            if (irang % 2) == 0:
-                b *= 1.0
-            else:
-                b *= (-1.0)
+        # calculate class
+        if (irang % 2) == 0:
+            b *= 1.0
+        else:
+            b *= -1.0
              
         point = point + str(r) + ", "
         
@@ -47,3 +47,5 @@ header += "\n"
 header += "@DATA\n"
 
 outFile.write(header + dat)
+
+print "all done!"

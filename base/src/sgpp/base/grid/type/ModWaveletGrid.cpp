@@ -38,8 +38,8 @@ const SBasis& ModWaveletGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> ModWaveletGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new ModWaveletGrid(istr));
+Grid* ModWaveletGrid::unserialize(std::istream& istr) {
+  return new ModWaveletGrid(istr);
 }
 
 /**

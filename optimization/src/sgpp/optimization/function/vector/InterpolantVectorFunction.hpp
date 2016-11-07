@@ -10,7 +10,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/vector/VectorFunction.hpp>
@@ -48,7 +48,7 @@ class InterpolantVectorFunction : public VectorFunction {
   InterpolantVectorFunction(base::Grid& grid, const base::DataMatrix& alpha)
       : VectorFunction(grid.getDimension(), alpha.getNcols()),
         grid(grid),
-        opEval(op_factory::createOperationNaiveEval(grid)),
+        opEval(op_factory::createOperationEvalNaive(grid)),
         alpha(alpha) {}
 
   /**
@@ -94,7 +94,7 @@ class InterpolantVectorFunction : public VectorFunction {
   /// sparse grid
   base::Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationNaiveEval> opEval;
+  std::unique_ptr<base::OperationEval> opEval;
   /// coefficient matrix
   base::DataMatrix alpha;
 };

@@ -6,12 +6,11 @@
 #ifndef OPERATIONMULTIPLEEVALPOLY_HPP
 #define OPERATIONMULTIPLEEVALPOLY_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -28,9 +27,8 @@ class OperationMultipleEvalPoly : public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset Dataset
    */
-  OperationMultipleEvalPoly(Grid& grid, size_t degree, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
-  }
+  OperationMultipleEvalPoly(Grid& grid, size_t degree, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {}
 
   /**
    * Destructor
@@ -39,6 +37,8 @@ class OperationMultipleEvalPoly : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object
