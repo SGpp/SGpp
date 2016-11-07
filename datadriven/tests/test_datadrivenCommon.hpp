@@ -6,6 +6,8 @@
 #pragma once
 
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include "sgpp/base/datatypes/DataMatrix.hpp"
 #include "sgpp/base/operation/BaseOpFactory.hpp"
@@ -29,12 +31,18 @@ void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp:
 
 double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& resultsCompare);
 
-double compareToReference(sgpp::base::GridType gridType, std::string fileName, size_t level,
-                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
-                          size_t numRefinements = 1);
+void compareDatasets(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                     sgpp::base::GridType gridType, size_t level,
+                     sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
 
+double compareToReference(sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
+
+void compareDatasetsTranspose(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                              sgpp::base::GridType gridType, size_t level,
+                              sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
 double compareToReferenceTranspose(
-    sgpp::base::GridType gridType, std::string fileName, size_t level,
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
 
 #if USE_OCL == 1

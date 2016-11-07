@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
@@ -29,7 +29,7 @@ bool OperationMultipleHierarchisationModBspline::doHierarchisation(base::DataVec
 void OperationMultipleHierarchisationModBspline::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalModBspline opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalModBsplineNaive opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
@@ -52,7 +52,7 @@ bool OperationMultipleHierarchisationModBspline::doHierarchisation(base::DataMat
 void OperationMultipleHierarchisationModBspline::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalModBspline opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalModBsplineNaive opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);

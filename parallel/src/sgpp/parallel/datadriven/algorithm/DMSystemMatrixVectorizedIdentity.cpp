@@ -37,8 +37,8 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(
 
   this->dataset_.transpose();
 
-  this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_,
-                                                                     &this->dataset_);
+  this->B_.reset(sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_,
+                                                                         &this->dataset_));
 }
 
 DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() {

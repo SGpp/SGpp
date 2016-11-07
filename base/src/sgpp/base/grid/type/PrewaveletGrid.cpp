@@ -40,8 +40,8 @@ const SBasis& PrewaveletGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new PrewaveletGrid(istr));
+Grid* PrewaveletGrid::unserialize(std::istream& istr) {
+  return new PrewaveletGrid(istr);
 }
 
 /**

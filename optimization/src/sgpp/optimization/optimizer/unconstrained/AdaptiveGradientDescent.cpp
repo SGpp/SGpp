@@ -30,6 +30,7 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& 
     rhoAlphaPlus(other.rhoAlphaPlus),
     rhoAlphaMinus(other.rhoAlphaMinus),
     rhoLs(other.rhoLs) {
+  other.fGradient->clone(fGradient);
 }
 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
