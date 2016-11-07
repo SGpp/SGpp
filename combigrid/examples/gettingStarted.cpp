@@ -275,7 +275,7 @@ void example4() {
   /**
    * Restore the data into another lookup table. The function is still needed for new evaluations.
    */
-  sgpp::combigrid::FunctionLookupTable restoredLookupTable(func);
+  sgpp::combigrid::FunctionLookupTable restoredLookupTable(loggingFunc);
   restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.log"));
   auto operation2 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
       d, sgpp::combigrid::MultiFunction(restoredLookupTable));

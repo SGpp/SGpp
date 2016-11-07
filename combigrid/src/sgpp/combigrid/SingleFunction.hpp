@@ -37,6 +37,11 @@ class SingleFunction {
   explicit SingleFunction(T f) : func(f) {}
 
   /**
+   * Default constructor, creating a constant zero function.
+   */
+  SingleFunction() : func([](double x) { return 0.0; }) {}
+
+  /**
    * Evaluates the function.
    */
   double operator()(double param);

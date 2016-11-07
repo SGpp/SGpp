@@ -45,6 +45,12 @@
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
 
+%shared_ptr(sgpp::combigrid::LevelManager)
+%shared_ptr(sgpp::combigrid::AveragingLevelManager)
+%shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
+
+%shared_ptr(std::mutex)
+
 
 // %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<FloatScalarVector>)
 // %shared_ptr(sgpp::combigrid::AbstractPermutationIterator)
@@ -153,6 +159,10 @@ namespace std {
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+    
+    // %template(CombiHierarchiesCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
+    // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
+    // %template(CombiEvaluatorsMultiCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     // %template(MultidimFunction) std::function<double(sgpp::base::DataVector const &)>;
 }
 
@@ -169,135 +179,59 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/LevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
 
-%inline %{
-namespace sgpp
-{
-namespace combigrid
-{
+%include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
+%include "combigrid/src/sgpp/combigrid/threading/PtrGuard.hpp"
 
-#include <functional>
+// %include "combigrid/src/sgpp/combigrid/utils/BinaryHeap.hpp" // is a template
+%include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
+%include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
 
-template<typename Out, typename In> class PyFuncWrapper {
-    PyObject *func;
-    std::function<Out(In)> stdfunc;
+// experimental
 
-public:
-    PyFuncWrapper(PyObject *func, std::function<Out(In)> stdfunc) : func(func), stdfunc(stdfunc) {
-        Py_INCREF(func);
-    }
+%feature("director") sgpp::combigrid::MultiFunctionDirector;
+%include "combigrid/src/sgpp/combigrid/MultiFunctionDirector.hpp"
 
-    PyFuncWrapper(PyFuncWrapper<Out, In> const &other) : func(other.func), stdfunc(other.stdfunc) {
-        Py_INCREF(func);
-    }
+%feature("director") sgpp::combigrid::SingleFunctionDirector;
+%include "combigrid/src/sgpp/combigrid/SingleFunctionDirector.hpp"
 
-    ~PyFuncWrapper() {
-        Py_DECREF(func);
-    }
+%pythoncode %{
+class MFDirectorImpl(MultiFunctionDirector):
+    def __init__(self):
+        super(MFDirectorImpl, self).__init__()
 
-    Out operator()(In param) {
-        return stdfunc(param);
-    }
-};
+    def setFuncObj(self, funcObj):
+        self.funcObj = funcObj
 
-/* This function has to match the type and parameters of the
- * C++ callback functions that are used. However, the
- * clientdata pointer is used for holding a reference to a
- * Python callable object.
- */
-static double PythonCallBackFunc(int len, double* a, void *clientdata)
-{
-  PyObject *func, *lst, *arglist;
-   PyObject *result;
-   double    dres = 0;
+    def eval(self, vec):
+        return self.funcObj(vec)
 
-   // get Python function
-   func = (PyObject *) clientdata;
-   // build argument list (only Python list, convert double* to Python list)
-   lst = PyList_New(len);        // alternatively: PyList_New(len)
-   if (!lst) {
-     PyErr_SetString(PyExc_TypeError, "No data provided!");
-     return NULL;
-   }
-   for (int i=0; i<len; i++) {
-     // create new Python double
-     PyObject *num = PyFloat_FromDouble(a[i]);
-     if (!num) {
-       PyErr_SetString(PyExc_TypeError, "No data in list!");
-       Py_DECREF(lst);
-       return NULL;
-     }
-     // steals reference to num:
-     PyList_SetItem(lst, i, num); // alternatively: PyList_SET_ITEM()
-   }
-   // build list of one Python object
-   arglist = Py_BuildValue("(O)", lst);
-   // call Python
-   result = PyEval_CallObject(func,arglist);
-   // trash arglist and lst
-   Py_DECREF(arglist);
-   Py_DECREF(lst);
-   if (result) {
-     dres = PyFloat_AsDouble(result);
-   }
-   Py_XDECREF(result);
+def multiFunc(funcObj):
+    dir = MFDirectorImpl()
+    dir.setFuncObj(funcObj)
+    mf = dir.toMultiFunction()
+    dir.__disown__()
+    return mf
+    
+class SFDirectorImpl(SingleFunctionDirector):
+    def __init__(self):
+        super(SFDirectorImpl, self).__init__()
 
-   return dres;
-}
+    def setFuncObj(self, funcObj):
+        self.funcObj = funcObj
 
-static sgpp::combigrid::MultiFunction multiFunc(PyObject *func) {
-    return MultiFunction(PyFuncWrapper<double, base::DataVector const &>(func, [=](base::DataVector const &vec) -> double {
-        base::DataVector v = vec;
-        return PythonCallBackFunc(vec.getSize(), &v[0], (void *)func);
-    }));
-}
+    def eval(self, vec):
+        return self.funcObj(vec)
 
-/* This function has to match the type and parameters of the
- * C++ callback functions that are used. However, the
- * clientdata pointer is used for holding a reference to a
- * Python callable object.
- */
-static double PythonSingleCallBackFunc(double a, void *clientdata)
-{
-  PyObject *func, *arglist;
-   PyObject *result;
-   double    dres = 0;
-
-   // std::cout << "Call single func with parameter " << a << "\n";
-
-   // get Python function
-   func = (PyObject *) clientdata;
-
-   PyObject *param = PyFloat_FromDouble(a);
-   if (!param) {
-        PyErr_SetString(PyExc_TypeError, "Conversion error in singleFunc()");
-   }
-
-   // build list of one Python object
-   arglist = Py_BuildValue("(O)", param);
-   // call Python
-   result = PyEval_CallObject(func,arglist);
-   // trash arglist
-   Py_DECREF(arglist);
-   Py_DECREF(param);
-   if (result) {
-     dres = PyFloat_AsDouble(result);
-   }
-   Py_XDECREF(result);
-   // std::cout << "Result: " << dres << "\n";
-   return dres;
-}
-
-static sgpp::combigrid::SingleFunction singleFunc(PyObject *func) {
-    return SingleFunction(PyFuncWrapper<double, double>(func, [=](double x) -> double {
-        return PythonSingleCallBackFunc(x, (void *)func);
-    }));
-}
-
-}
-}
+def singleFunc(funcObj):
+    dir = SFDirectorImpl()
+    dir.setFuncObj(funcObj)
+    mf = dir.toSingleFunction()
+    dir.__disown__()
+    return mf
 %}
 
 #endif

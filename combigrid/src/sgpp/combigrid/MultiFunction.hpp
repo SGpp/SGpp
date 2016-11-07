@@ -38,6 +38,11 @@ class MultiFunction {
   explicit MultiFunction(T const &f) : func(f) {}
 
   /**
+   * Default constructor, creating a constant zero function.
+   */
+  MultiFunction() : func([](base::DataVector const &v) { return 0.0; }) {}
+
+  /**
    * Evaluates the function.
    */
   double operator()(base::DataVector const &vec) const;
