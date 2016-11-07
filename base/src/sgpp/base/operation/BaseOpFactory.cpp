@@ -93,7 +93,10 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
@@ -381,9 +384,18 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationMultipleEvalBsplineNaive(
         grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationMultipleEvalBsplineBoundaryNaive(
+        grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new base::OperationMultipleEvalBsplineClenshawCurtisNaive(
+        grid, dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationMultipleEvalModBsplineClenshawCurtisNaive(
+        grid, dynamic_cast<base::ModBsplineClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationMultipleEvalLinearClenshawCurtisNaive(grid, dataset);
   } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
