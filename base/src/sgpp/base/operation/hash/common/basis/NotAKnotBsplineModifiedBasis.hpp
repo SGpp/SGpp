@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -56,7 +57,7 @@ class NotAKnotBsplineModifiedBasis: public Basis<LT, IT> {
   inline double eval(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     double t = x * static_cast<double>(hInv) - static_cast<double>(i);
-    
+
     switch (getDegree()) {
       case 1:
         if (l == 1) {

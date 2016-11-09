@@ -56,7 +56,7 @@ class LagrangeNotAKnotSplineBasis: public Basis<LT, IT> {
   inline double eval(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     double t = x * static_cast<double>(hInv) - static_cast<double>(i);
-    
+
     switch (getDegree()) {
       case 1:
         return lagrangeSplineBasis.eval(l, i, x);
@@ -575,7 +575,8 @@ class LagrangeNotAKnotSplineBasis: public Basis<LT, IT> {
               result = 466887571934189117599818947.0/4175427699541086017618194560.0 + result * t;
               result = 900852630018834225413613481.0/6959046165901810029363657600.0 + result * t;
               result = -1803862625341644565403914429.0/20877138497705430088090972800.0 + result * t;
-              result = -17909619254706717312347840759.0/146139969483938010616636809600.0 + result * t;
+              result = -17909619254706717312347840759.0/146139969483938010616636809600.0 +
+                  result * t;
               return result;
             } else if (t < 0.0) {
               t += 1.0;
