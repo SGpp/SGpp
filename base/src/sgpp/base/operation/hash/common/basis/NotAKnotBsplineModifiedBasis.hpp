@@ -36,7 +36,7 @@ class NotAKnotBsplineModifiedBasis: public Basis<LT, IT> {
    */
   explicit NotAKnotBsplineModifiedBasis(size_t degree) :
         notAKnotBsplineBasis(NotAKnotBsplineBasis<LT, IT>(degree)) {
-    if (getDegree() > 3) {
+    if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
   }
@@ -89,7 +89,7 @@ class NotAKnotBsplineModifiedBasis: public Basis<LT, IT> {
           }
 
           if (l == 2) {
-            // l == 2, i == 1
+            // l = 2, i = 1
             if ((t < -1.0) || (t > 3.0)) {
               return 0.0;
             } else if (t < 1.0) {
@@ -108,7 +108,7 @@ class NotAKnotBsplineModifiedBasis: public Basis<LT, IT> {
               return result;
             }
           } else {
-            // l >= 3, i == 1
+            // l >= 3, i = 1
             if ((t < -1.0) || (t > 2.0)) {
               return 0.0;
             } else if (t < 1.0) {
@@ -124,6 +124,131 @@ class NotAKnotBsplineModifiedBasis: public Basis<LT, IT> {
               result = 1.0/4.0 + result * t;
               result = -1.0/4.0 + result * t;
               result = 1.0/12.0 + result * t;
+              return result;
+            }
+          }
+        }
+
+      case 5:
+        if (l == 1) {
+          // l = 1, i = 1
+          return 1.0;
+        } else if ((i > 1) && (i < hInv - 1)) {
+          // l >= 3, 1 < i < 2^l - 1
+          return notAKnotBsplineBasis.eval(l, i, x);
+        } else {
+          if (i > hInv / 2) {
+            i = hInv - i;
+            t *= -1.0;
+          }
+
+          if (l == 2) {
+            // l = 2, i = 1
+            double result = -3.0/70.0;
+            result = 19.0/210.0 + result * t;
+            result = 37.0/70.0 + result * t;
+            result = -331.0/210.0 + result * t;
+            result = 1.0 + result * t;
+            return result;
+          } else {
+            // l >= 3, i = 1
+            if ((t < -1.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < 2.0) {
+              t += 1.0;
+              double result = 37.0/22680.0;
+              result = -1.0/54.0 + result * t;
+              result = 4.0/63.0 + result * t;
+              result *= t;
+              result = -8.0/21.0 + result * t;
+              result = 8.0/15.0 + result * t;
+              return result;
+            } else {
+              t -= 2.0;
+              double result = -1.0/840.0;
+              result = 1.0/168.0 + result * t;
+              result = -1.0/84.0 + result * t;
+              result = 1.0/84.0 + result * t;
+              result = -1.0/168.0 + result * t;
+              result = 1.0/840.0 + result * t;
+              return result;
+            }
+          }
+        }
+
+      case 7:
+        if (l == 1) {
+          // l = 1, i = 1
+          return 1.0;
+        } else if ((i > 1) && (i < hInv - 1)) {
+          // l >= 3, 1 < i < 2^l - 1
+          return notAKnotBsplineBasis.eval(l, i, x);
+        } else {
+          if (i > hInv / 2) {
+            i = hInv - i;
+            t *= -1.0;
+          }
+
+          if (l == 2) {
+            // l = 2, i = 1
+            double result = -3.0/70.0;
+            result = 19.0/210.0 + result * t;
+            result = 37.0/70.0 + result * t;
+            result = -331.0/210.0 + result * t;
+            result = 1.0 + result * t;
+            return result;
+          } else if (l == 3) {
+            // l = 3, i = 1
+            if ((t < -1.0) || (t > 7.0)) {
+              return 0.0;
+            } else if (t < 3.0) {
+              t += 1.0;
+              double result = 31.0/4942080.0;
+              result = -7.0/41184.0 + result * t;
+              result = 49.0/25740.0 + result * t;
+              result = -14.0/1287.0 + result * t;
+              result = 112.0/3861.0 + result * t;
+              result *= t;
+              result = -3584.0/19305.0 + result * t;
+              result = 2048.0/6435.0 + result * t;
+              return result;
+            } else {
+              t -= 3.0;
+              double result = -1.0/4942080.0;
+              result = 7.0/1235520.0 + result * t;
+              result = -7.0/102960.0 + result * t;
+              result = 7.0/15444.0 + result * t;
+              result = -7.0/3861.0 + result * t;
+              result = 28.0/6435.0 + result * t;
+              result = -112.0/19305.0 + result * t;
+              result = 64.0/19305.0 + result * t;
+              return result;
+            }
+          } else {
+            // l >= 4, i = 1
+            if ((t < -1.0) || (t > 4.0)) {
+              return 0.0;
+            } else if (t < 3.0) {
+              t += 1.0;
+              double result = 2101.0/154828800.0;
+              result = -41.0/122880.0 + result * t;
+              result = 61.0/18432.0 + result * t;
+              result = -25.0/1536.0 + result * t;
+              result = 125.0/3456.0 + result * t;
+              result *= t;
+              result = -125.0/864.0 + result * t;
+              result = 125.0/672.0 + result * t;
+              return result;
+            } else {
+              t -= 3.0;
+              double result = -1.0/151200.0;
+              result = 1.0/21600.0 + result * t;
+              result = -1.0/7200.0 + result * t;
+              result = 1.0/4320.0 + result * t;
+              result = -1.0/4320.0 + result * t;
+              result = 1.0/7200.0 + result * t;
+              result = -1.0/21600.0 + result * t;
+              result = 1.0/151200.0 + result * t;
               return result;
             }
           }
