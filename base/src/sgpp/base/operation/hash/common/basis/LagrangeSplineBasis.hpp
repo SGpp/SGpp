@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -40,7 +41,7 @@ class LagrangeSplineBasis: public Basis<LT, IT> {
     } else if (degree % 2 == 0) {
       this->degree = degree - 1;
     }
-    
+
     if (this->degree > 7) {
       throw std::runtime_error("Unsupported Lagrange spline degree.");
     }
@@ -61,7 +62,7 @@ class LagrangeSplineBasis: public Basis<LT, IT> {
   inline double eval(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     double t = x * static_cast<double>(hInv) - static_cast<double>(i);
-    
+
     switch (degree) {
       case 1:
         return std::max(1.0 - std::abs(t), 0.0);
