@@ -19,14 +19,13 @@ namespace base {
 /**
  * Linear basis on Boundary grids.
  */
-template<class LT, class IT>
-class LinearBoundaryBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class LinearBoundaryBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearBoundaryBasis() override {
-  }
+  ~LinearBoundaryBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -43,9 +42,9 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
         return x;
       }
     } else {
-      return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>
-                                     (1) << l) * x -
-                                     static_cast<double>(i)), 0.0);
+      return std::max(
+          1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x - static_cast<double>(i)),
+          0.0);
     }
   }
 
@@ -61,6 +60,8 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
   inline virtual double eval(LT l, IT i, double x, double q, double t) {
     return eval(l, i, (x - t) / q);
   }
+
+  inline size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)

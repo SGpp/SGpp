@@ -69,7 +69,7 @@ class PolyBoundaryBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() { return polyBasis.getDegree(); }
+  size_t getDegree() const override { return polyBasis.getDegree(); }
 
   double eval(LT level, IT index, double p) override {
     // make sure that the point is inside the unit interval

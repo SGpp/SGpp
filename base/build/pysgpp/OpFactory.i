@@ -6,6 +6,7 @@
 %include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
 
 %newobject sgpp::op_factory::createOperationHierarchisation(sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationArbitraryBoundaryHierarchisation(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationQuadrature(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationFirstMoment(sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationSecondMoment(sgpp::base::Grid& grid);

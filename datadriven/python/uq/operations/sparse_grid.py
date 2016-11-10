@@ -27,7 +27,8 @@ from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
     GridType_ModBspline
 from pysgpp._pysgpp_swig import GridType_BsplineBoundary_swigconstant, \
-    createOperationMultipleHierarchisation
+    createOperationMultipleHierarchisation, \
+    createOperationArbitraryBoundaryHierarchisation
 
 
 #######################################################################
@@ -714,6 +715,11 @@ def hierarchize(grid, nodalValues, ignore=None):
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline]:
             createOperationMultipleHierarchisation(grid).doHierarchisation(alpha)
+        elif grid.getType() in [GridType_LinearBoundary,
+                                GridType_LinearClenshawCurtisBoundary,
+                                GridType_PolyBoundary,
+                                GridType_PolyClenshawCurtisBoundary]:
+            createOperationArbitraryBoundaryHierarchisation(grid).doHierarchisation(alpha)
         else:
             createOperationHierarchisation(grid).doHierarchisation(alpha)
 
@@ -979,10 +985,10 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     p = DataVector(gs.getDimension())
     for i, (nodal, value) in enumerate(zip(nodalValues, evalValues)):
         # compute the relative error
-        abs_error = abs(nodal - value)
+        abs_error = np.abs(nodal - value)
         rel_error = abs_error
         if abs(nodal) > 1e-14:
-            rel_error = abs_error / nodal
+            rel_error = np.abs(abs_error / nodal)
 
         if abs_error > epsilon:
             spacing = 12

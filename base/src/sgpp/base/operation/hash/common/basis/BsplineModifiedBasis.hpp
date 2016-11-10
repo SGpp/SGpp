@@ -21,13 +21,12 @@ namespace base {
  * Modified B-spline basis on Noboundary grids.
  */
 template <class LT, class IT>
-class BsplineModifiedBasis: public Basis<LT, IT> {
+class BsplineModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  BsplineModifiedBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {
-  }
+  BsplineModifiedBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,15 +34,12 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit BsplineModifiedBasis(size_t degree) :
-    bsplineBasis(BsplineBasis<LT, IT>(degree)) {
-  }
+  explicit BsplineModifiedBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {}
 
   /**
    * Destructor.
    */
-  ~BsplineModifiedBasis() override {
-  }
+  ~BsplineModifiedBasis() override {}
 
   /**
    * @param x     evaluation point
@@ -60,8 +56,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         } else if (x < 1.0) {
           return -x + 2.0;
         } else if (x < 2.0) {
-          return 1.0 / 6.0 * x * x * x - 0.5 * x * x - 0.5 * x +
-                 11.0 / 6.0;
+          return 1.0 / 6.0 * x * x * x - 0.5 * x * x - 0.5 * x + 11.0 / 6.0;
         } else {
           return -1.0 / 6.0 * x * x * x + 1.5 * x * x - 4.5 * x + 4.5;
         }
@@ -858,8 +853,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
         } else if (x < 3.0) {
           return 0.5 * x * x * x - 4.0 * x * x + 10.0 * x - 22.0 / 3.0;
         } else {
-          return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x +
-                 32.0 / 3.0;
+          return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x + 32.0 / 3.0;
         }
 
         break;
@@ -1170,9 +1164,9 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
       return modifiedBSpline(x * hInvDbl, bsplineBasis.getDegree());
     } else {
       return bsplineBasis.uniformBSpline(
-               x * hInvDbl - static_cast<double>(i) +
-               static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+          x * hInvDbl - static_cast<double>(i) +
+              static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          bsplineBasis.getDegree());
     }
   }
 
@@ -1202,13 +1196,13 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
     }
 
     if (i == 1) {
-      return dxFactor * modifiedBSplineDx(
-               x * hInvDbl, bsplineBasis.getDegree());
+      return dxFactor * modifiedBSplineDx(x * hInvDbl, bsplineBasis.getDegree());
     } else {
-      return dxFactor * bsplineBasis.uniformBSplineDx(
-               x * hInvDbl - static_cast<double>(i) +
-               static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+      return dxFactor *
+             bsplineBasis.uniformBSplineDx(
+                 x * hInvDbl - static_cast<double>(i) +
+                     static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+                 bsplineBasis.getDegree());
     }
   }
 
@@ -1236,22 +1230,20 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
     }
 
     if (i == 1) {
-      return dxFactor * dxFactor * modifiedBSplineDxDx(
-               x * hInvDbl, bsplineBasis.getDegree());
+      return dxFactor * dxFactor * modifiedBSplineDxDx(x * hInvDbl, bsplineBasis.getDegree());
     } else {
-      return dxFactor * dxFactor * bsplineBasis.uniformBSplineDxDx(
-               x * hInvDbl - static_cast<double>(i) +
-               static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+      return dxFactor * dxFactor *
+             bsplineBasis.uniformBSplineDxDx(
+                 x * hInvDbl - static_cast<double>(i) +
+                     static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+                 bsplineBasis.getDegree());
     }
   }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
-    return bsplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
   /**
    * @param l     level of basis function
@@ -1266,24 +1258,26 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
     const double hInvDbl = static_cast<double>(hInv);
     if (i == 1 || i == hInv - 1) {
       switch (bsplineBasis.getDegree()) {
-      case 1:
-        return 2 / hInvDbl;
-      case 3:
-        return (25.0/12.0) / hInvDbl;
-      case 5:
+        case 1:
+          return 2 / hInvDbl;
+        case 3:
+          return (25.0 / 12.0) / hInvDbl;
+        case 5:
           // 1081/720 + 0.581944 + 0.0819444 + 1/720
-        return (2.0 + 1.0/6.0) / hInvDbl;
-      case 7:
-        // 20243/13440 + 2495/4032 + 479/4032 + 83/13440 + 1/40320 (last part is cut off on level 2)
-        if (l == 2) {
-          return 90718.0/40320.0 / hInvDbl;  // = 2.25 - 2/40320
-        } else {
-          return 90719.0/40320.0 / hInvDbl;  // = 2.25 - 1/4032
-        }
-      default:
-        throw operation_exception("BsplineModifiedBasis::getIntegral() "
-                                  "only implemented for 1 <= degree <= 7");
-        break;
+          return (2.0 + 1.0 / 6.0) / hInvDbl;
+        case 7:
+          // 20243/13440 + 2495/4032 + 479/4032 + 83/13440 + 1/40320 (last part is cut off on level
+          // 2)
+          if (l == 2) {
+            return 90718.0 / 40320.0 / hInvDbl;  // = 2.25 - 2/40320
+          } else {
+            return 90719.0 / 40320.0 / hInvDbl;  // = 2.25 - 1/4032
+          }
+        default:
+          throw operation_exception(
+              "BsplineModifiedBasis::getIntegral() "
+              "only implemented for 1 <= degree <= 7");
+          break;
       }
     } else {
       return bsplineBasis.getIntegral(l, i);
@@ -1296,8 +1290,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef BsplineModifiedBasis<unsigned int, unsigned int>
-SBsplineModifiedBase;
+typedef BsplineModifiedBasis<unsigned int, unsigned int> SBsplineModifiedBase;
 
 }  // namespace base
 }  // namespace sgpp

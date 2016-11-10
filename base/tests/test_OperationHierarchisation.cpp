@@ -25,7 +25,7 @@ using sgpp::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
                                           double (*func)(DataVector&), double tolerance = 0.0,
-                                          bool naiveOp = false) {
+                                          bool naiveOp = false, bool arbitraryBoundary = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
   size_t dim = gridStore.getDimension();
@@ -39,8 +39,12 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
   }
 
   DataVector alpha = DataVector(node_values);
-  std::unique_ptr<OperationHierarchisation> hierarchisation(
-      sgpp::op_factory::createOperationHierarchisation(grid));
+  std::unique_ptr<OperationHierarchisation> hierarchisation;
+  if (arbitraryBoundary) {
+    hierarchisation.reset(sgpp::op_factory::createOperationArbitraryBoundaryHierarchisation(grid));
+  } else {
+    hierarchisation.reset(sgpp::op_factory::createOperationHierarchisation(grid));
+  }
   hierarchisation->doHierarchisation(alpha);
 
   std::unique_ptr<OperationEval> op;
@@ -156,6 +160,17 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim, 0));
     testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationLdBoundary) {
+  int level = 5;
+
+  for (int boundaryLevel = 2; boundaryLevel < level; boundaryLevel++) {
+    for (int dim = 1; dim < 4; dim++) {
+      std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim, boundaryLevel));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true, true);
+    }
   }
 }
 

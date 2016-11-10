@@ -82,7 +82,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() { return degree; }
+  size_t getDegree() const override { return degree; }
 
   double eval(LT level, IT index, double p) override {
     // check if x value is in the unit interval

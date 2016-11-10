@@ -64,6 +64,8 @@ class LinearClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
     }
   }
 
+  inline size_t getDegree() const override { return 1; }
+
  protected:
   /// linear clenshaw curtis basis
   SLinearClenshawCurtisBase basis;

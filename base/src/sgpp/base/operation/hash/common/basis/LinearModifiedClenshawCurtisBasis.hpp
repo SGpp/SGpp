@@ -114,6 +114,8 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     return result;
   }
 
+  inline size_t getDegree() const override { return 1; }
+
  private:
   /**
    * Evaluate a basis function.

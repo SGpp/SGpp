@@ -13,7 +13,6 @@
 
 #include <cmath>
 
-
 namespace sgpp {
 namespace base {
 
@@ -22,14 +21,13 @@ namespace base {
  * And here we have another implicit dependence on tensor products
  *
  */
-template<class LT, class IT>
-class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
+template <class LT, class IT>
+class LinearStretchedBoundaryBasis : public LinearBoundaryBasis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearStretchedBoundaryBasis() override {
-  }
+  ~LinearStretchedBoundaryBasis() override {}
 
   /*  *
    * Evaluate a basis function.
@@ -96,9 +94,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  double stretchedEval(double p, double pos0, double pos1) {
-    return (p - pos0) / (pos1 - pos0);
-  }
+  double stretchedEval(double p, double pos0, double pos1) { return (p - pos0) / (pos1 - pos0); }
 
   /// Index and level rae not necessary, maybe function could be changed
   /*
@@ -106,8 +102,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  double eval(LT level, IT index, double p, double pos0,
-               double pos1) override {
+  double eval(LT level, IT index, double p, double pos0, double pos1) override {
     //    if(level == 0){
     //      if(index == 0){
     //
@@ -124,11 +119,12 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
     //    return 0.0;
     return (p - pos0) / (pos1 - pos0);
   }
+
+  inline size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)
-typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int>
-SLinearStretchedBoundaryBase;
+typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
 
 }  // namespace base
 }  // namespace sgpp

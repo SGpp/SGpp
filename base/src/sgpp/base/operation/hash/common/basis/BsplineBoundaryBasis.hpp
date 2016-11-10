@@ -20,13 +20,12 @@ namespace base {
  * B-spline basis on Boundary grids.
  */
 template <class LT, class IT>
-class BsplineBoundaryBasis: public Basis<LT, IT> {
+class BsplineBoundaryBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  BsplineBoundaryBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {
-  }
+  BsplineBoundaryBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -34,15 +33,12 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit BsplineBoundaryBasis(size_t degree) :
-    bsplineBasis(BsplineBasis<LT, IT>(degree)) {
-  }
+  explicit BsplineBoundaryBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {}
 
   /**
    * Destructor.
    */
-  ~BsplineBoundaryBasis() override {
-  }
+  ~BsplineBoundaryBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -54,9 +50,8 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return bsplineBasis.uniformBSpline(
-             x * hInv - static_cast<double>(i) +
-             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-             bsplineBasis.getDegree());
+        x * hInv - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+        bsplineBasis.getDegree());
   }
 
   /**
@@ -68,10 +63,11 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
   inline double evalDx(LT l, IT i, double x) {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hInv * bsplineBasis.uniformBSplineDx(
-             x * hInv - static_cast<double>(i) +
-             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-             bsplineBasis.getDegree());
+    return hInv *
+           bsplineBasis.uniformBSplineDx(
+               x * hInv - static_cast<double>(i) +
+                   static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+               bsplineBasis.getDegree());
   }
 
   /**
@@ -83,21 +79,18 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
   inline double evalDxDx(LT l, IT i, double x) {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hInv * hInv * bsplineBasis.uniformBSplineDxDx(
-             x * hInv - static_cast<double>(i) +
-             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-             bsplineBasis.getDegree());
+    return hInv * hInv *
+           bsplineBasis.uniformBSplineDxDx(
+               x * hInv - static_cast<double>(i) +
+                   static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+               bsplineBasis.getDegree());
   }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
-    return bsplineBasis.getDegree();
-  }
-  inline double getIntegral(LT l, IT i) {
-    return bsplineBasis.getIntegral(l, i);
-  }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
+  inline double getIntegral(LT l, IT i) { return bsplineBasis.getIntegral(l, i); }
 
  protected:
   /// B-spline basis for B-spline evaluation

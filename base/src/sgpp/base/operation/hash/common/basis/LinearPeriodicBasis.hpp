@@ -62,6 +62,8 @@ class LinearPeriodicBasis : public Basis<LT, IT> {
                       0.0);
     }
   }
+
+  inline size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)

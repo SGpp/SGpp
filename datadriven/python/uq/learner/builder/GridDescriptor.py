@@ -29,7 +29,7 @@ class GridDescriptor(object):
         self.__deg = 1
         self.level = None
         self.__file = None
-        self.__border = None
+        self.__boundaryLevel = None
         self.__grid = None
         self.__full = None
         self.__clenshaw_curtis = False
@@ -62,12 +62,12 @@ class GridDescriptor(object):
             print "Warning: GridDescriptor.withPolynomialBasis - deg < 2 ignored"
         return self
 
-    def withBorder(self, border):
+    def withBorder(self, boundaryLevel):
         """
         Defines the border type of the grid
-        @param border: border type as defined in bin.learner.Types.BorderTypes
+        @param boundaryLevel: level of the boundary
         """
-        self.__border = border
+        self.__boundaryLevel = boundaryLevel
         return self
 
     def isFull(self):
@@ -100,9 +100,10 @@ class GridDescriptor(object):
         self.__grid = grid
         self.__dim = grid.getDimension()
         self.__deg = getDegree(grid)
-        self.__border = hasBorder(grid)
-        if self.__border:
+        if hasBorder(grid):
+            self.__boundaryLevel = 1
             self.level = 0
+
         return self
 
     def fromFile(self, filename):
@@ -132,11 +133,8 @@ class GridDescriptor(object):
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\
                                      grid")
-            if self.__border is not None:
-                if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                    gridConfig.boundaryLevel_ = 1
-                elif self.__border == BorderTypes.COMPLETEBOUNDARY:
-                    gridConfig.boundaryLevel_ = 0
+            if self.__boundaryLevel is not None:
+                gridConfig.boundaryLevel_ = self.__boundaryLevel
 
             gridConfig.maxDegree_ = self.__deg
 
@@ -197,7 +195,7 @@ class GridDescriptor(object):
                     # insert grid point
                     if not gs.isContaining(gp):
                         gs.insert(HashGridPoint(gp))
-                    if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
+                    if self.__boundaryLevel == 1:
                         insertTruncatedBorder(grid, gp)
                 gs.recalcLeafProperty()
 

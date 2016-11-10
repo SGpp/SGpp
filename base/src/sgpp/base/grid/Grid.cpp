@@ -363,6 +363,55 @@ Grid* Grid::clone() {
   return newGrid;
 }
 
+GridType Grid::getZeroBoundaryType() {
+  switch (getType()) {
+    case GridType::Linear:
+    case GridType::LinearL0Boundary:
+    case GridType::LinearBoundary:
+    case GridType::LinearTruncatedBoundary:
+    case GridType::ModLinear:
+    case GridType::SquareRoot:
+    case GridType::Periodic:
+    case GridType::LinearStencil:
+    case GridType::ModLinearStencil:
+      return GridType::Linear;
+    case GridType::LinearStretched:
+    case GridType::LinearStretchedBoundary:
+      return GridType::LinearStretched;
+    case GridType::Poly:
+    case GridType::PolyBoundary:
+    case GridType::ModPoly:
+      return GridType::Poly;
+    case GridType::ModWavelet:
+    case GridType::Wavelet:
+    case GridType::WaveletBoundary:
+      return GridType::Wavelet;
+    case GridType::Bspline:
+    case GridType::BsplineBoundary:
+    case GridType::ModBspline:
+      return GridType::Bspline;
+    case GridType::Prewavelet:
+      return GridType::Prewavelet;
+      break;
+    case GridType::LinearClenshawCurtis:
+    case GridType::LinearClenshawCurtisBoundary:
+    case GridType::ModLinearClenshawCurtis:
+      return GridType::LinearClenshawCurtis;
+    case GridType::FundamentalSpline:
+    case GridType::ModFundamentalSpline:
+      return GridType::FundamentalSpline;
+    case GridType::PolyClenshawCurtis:
+    case GridType::PolyClenshawCurtisBoundary:
+    case GridType::ModPolyClenshawCurtis:
+      return GridType::PolyClenshawCurtis;
+    // no non-boundary treatment basis available for the following grids
+    case GridType::BsplineClenshawCurtis:
+    case GridType::ModBsplineClenshawCurtis:
+    default:
+      throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
+  }
+}
+
 std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
 
 Grid* Grid::unserialize(const std::string& istr) {

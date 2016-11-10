@@ -36,6 +36,16 @@ namespace op_factory {
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
 base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
+
+/**
+ * Factory method, returning an OperationArbitraryBoundaryHierarchisation for the grid at hand.
+ * Note: object has to be freed after use. This operation should be used if the boundary level
+ * of your grid is larger than 1.
+ *
+ * @param grid Grid which is to be used for hierarchisation
+ * @return Pointer to the new OperationArbitraryBoundaryHierarchisation object for the Grid grid
+ */
+base::OperationHierarchisation* createOperationArbitraryBoundaryHierarchisation(base::Grid& grid);
 /**
  * Factory method, returning an OperationQuadrature for the grid at hand.
  * Note: object has to be freed after use.

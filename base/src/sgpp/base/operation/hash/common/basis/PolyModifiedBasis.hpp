@@ -109,7 +109,7 @@ class PolyModifiedBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() { return polyBasis.getDegree(); }
+  size_t getDegree() const override { return polyBasis.getDegree(); }
 
  private:
   /**
