@@ -14,7 +14,7 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * This is a helper class used internally to wrap python functions into MultiFunction objects.
+ * This is a helper class used internally to wrap python functions into SingleFunction objects.
  */
 class SingleFunctionDirector {
  public:

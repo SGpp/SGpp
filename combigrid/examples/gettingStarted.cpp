@@ -104,7 +104,7 @@ void example2() {
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
 
   /**
-   * Now create a point where to evaluate the function
+   * Now create a point where to evaluate the interpolated function:
    */
   sgpp::base::DataVector evaluationPoint(d);
 
@@ -260,7 +260,7 @@ void example4() {
       d, sgpp::combigrid::MultiFunction(lookupTable));
 
   /**
-   * Do a normal computation
+   * Do a normal computation...
    */
   double result = operation->evaluate(2);
   std::cout << "Result computed: " << result << "\n";
@@ -273,6 +273,12 @@ void example4() {
   sgpp::combigrid::writeToFile("lookupTable.log", lookupTable.serialize());
 
   /**
+   * It is also possible to store which levels have been evaluated:
+   */
+  sgpp::combigrid::writeToFile("levels.log",
+                               operation->getLevelManager()->getSerializedLevelStructure());
+
+  /**
    * Restore the data into another lookup table. The function is still needed for new evaluations.
    */
   sgpp::combigrid::FunctionLookupTable restoredLookupTable(loggingFunc);
@@ -281,16 +287,18 @@ void example4() {
       d, sgpp::combigrid::MultiFunction(restoredLookupTable));
 
   /**
-   * A new evaluation with the same precision does not require new function evaluations:
+   * A new evaluation with the same levels does not require new function evaluations:
    */
-  result = operation2->evaluate(2);
+  operation2->getLevelManager()->addLevelsFromSerializedStructure(
+      sgpp::combigrid::readFromFile("levels.log"));
+  result = operation2->getResult();
   std::cout << "Result computed (2nd time): " << result << "\n";
 
   /**
    * Another less general way of storing the data is directly serializing the storage underlying the
    * operation. This means that retrieval is faster, but it only works if the same grid is used
    * again.
-   * For demonstration purposes, we use loggingFunc directly this time without a
+   * For demonstration purposes, we use loggingFunc directly this time without a lookup table:
    */
   sgpp::combigrid::writeToFile("storage.log", operation->getStorage()->serialize());
   auto operation3 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
@@ -378,4 +386,4 @@ int main() {
 
   std::cout << "\nExample 5: \n";
   example5();
-}
+}  // end of main

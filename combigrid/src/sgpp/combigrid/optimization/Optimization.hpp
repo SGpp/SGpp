@@ -16,6 +16,8 @@ namespace optimize {
 
 // TODO(holzmudd) destructor
 
+// Source: https://people.sc.fsu.edu/~jburkardt/cpp_src/brent/brent.html
+
 /**
  * This contains helper classes used internally for optimization (Leja points)
  */

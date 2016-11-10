@@ -302,6 +302,7 @@ void LevelManager::addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> 
   }
 }
 
+// TODO(holzmudd): also provide a parallel version
 void LevelManager::addLevelsFromSerializedStructure(std::string serializedStructure) {
   addLevelsFromStructure(
       TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
