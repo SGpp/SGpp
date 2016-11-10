@@ -69,6 +69,8 @@ class LinearClenshawCurtisBasis : public Basis<LT, IT> {
     return (x2 - x0) / 2.;
   }
 
+  inline size_t getDegree() const override { return 1; }
+
  protected:
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;

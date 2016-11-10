@@ -483,6 +483,13 @@ class Grid {
   virtual sgpp::base::GridType getType() = 0;
 
   /**
+   * Returns the grid type that corresponds to the actual type but does no boundary treatment
+   *
+   * @return grid type
+   */
+  sgpp::base::GridType getZeroBoundaryType();
+
+  /**
    * Returns a string that identifies the grid type uniquely
    *
    * @return string that identifies the grid type uniquely

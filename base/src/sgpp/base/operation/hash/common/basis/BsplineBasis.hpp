@@ -1634,7 +1634,7 @@ class BsplineBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return degree; }
+  inline size_t getDegree() const override { return degree; }
 
   /**
    * @param l     level of basis function
@@ -1712,8 +1712,9 @@ class BsplineBasis : public Basis<LT, IT> {
           }
           break;
         default:
-          throw operation_exception("BsplineBasis::getIntegral() only"
-                                    "implemented for 1 <= degree <= 7");
+          throw operation_exception(
+              "BsplineBasis::getIntegral() only"
+              "implemented for 1 <= degree <= 7");
           break;
       }
     }

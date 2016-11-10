@@ -23,15 +23,13 @@ namespace base {
 /**
  * B-spline basis on Clenshaw-Curtis grids.
  */
-template<class LT, class IT>
-class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  BsplineClenshawCurtisBasis()
-    : BsplineClenshawCurtisBasis(0) {
-  }
+  BsplineClenshawCurtisBasis() : BsplineClenshawCurtisBasis(0) {}
 
   /**
    * Constructor.
@@ -40,16 +38,14 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    *                      (if it's even, degree - 1 is used)
    */
   explicit BsplineClenshawCurtisBasis(size_t degree)
-    : bsplineBasis(BsplineBasis<LT, IT>(degree)),
-      xi(std::vector<double>(degree + 2, 0.0)),
-      clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
-  }
+      : bsplineBasis(BsplineBasis<LT, IT>(degree)),
+        xi(std::vector<double>(degree + 2, 0.0)),
+        clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
   /**
    * Destructor.
    */
-  ~BsplineClenshawCurtisBasis() override {
-  }
+  ~BsplineClenshawCurtisBasis() override {}
 
   /**
    * @param x     evaluation point
@@ -67,10 +63,9 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       return 0.0;
     } else {
       // Cox-de-Boor recursion
-      return (x - xi[k]) / (xi[k + p] - xi[k])
-             * nonUniformBSpline(x, p - 1, k)
-             + (1.0 - (x - xi[k + 1]) / (xi[k + p + 1] - xi[k + 1]))
-             * nonUniformBSpline(x, p - 1, k + 1);
+      return (x - xi[k]) / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k) +
+             (1.0 - (x - xi[k + 1]) / (xi[k + p + 1] - xi[k + 1])) *
+                 nonUniformBSpline(x, p - 1, k + 1);
     }
   }
 
@@ -81,15 +76,16 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of derivative of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline double nonUniformBSplineDx(double x, size_t p, size_t k) const {if (p == 0) {return 0.0;
+  inline double nonUniformBSplineDx(double x, size_t p, size_t k) const {
+    if (p == 0) {
+      return 0.0;
     } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
       return 0.0;
     } else {
       const double pDbl = static_cast<double>(p);
 
-      return pDbl / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k)
-             - pDbl / (xi[k + p + 1] - xi[k + 1])
-             * nonUniformBSpline(x, p - 1, k + 1);
+      return pDbl / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k) -
+             pDbl / (xi[k + p + 1] - xi[k + 1]) * nonUniformBSpline(x, p - 1, k + 1);
     }
   }
 
@@ -100,8 +96,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline double nonUniformBSplineDxDx(
-    double x, size_t p, size_t k) const {
+  inline double nonUniformBSplineDxDx(double x, size_t p, size_t k) const {
     if (p <= 1) {
       return 0.0;
     } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
@@ -112,14 +107,11 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       const double alphaKp1P = pDbl / (xi[k + p + 1] - xi[k + 1]);
       const double alphaKPm1 = (pDbl - 1.0) / (xi[k + p - 1] - xi[k]);
       const double alphaKp1Pm1 = (pDbl - 1.0) / (xi[k + p] - xi[k + 1]);
-      const double alphaKp2Pm1 = (pDbl - 1.0) /
-                                  (xi[k + p + 1] - xi[k + 2]);
+      const double alphaKp2Pm1 = (pDbl - 1.0) / (xi[k + p + 1] - xi[k + 2]);
 
-      return alphaKP * alphaKPm1 * nonUniformBSpline(x, p - 2, k)
-             - (alphaKP + alphaKp1P) * alphaKp1Pm1
-             * nonUniformBSpline(x, p - 2, k + 1)
-             + alphaKp1P * alphaKp2Pm1 *
-             nonUniformBSpline(x, p - 2, k + 2);
+      return alphaKP * alphaKPm1 * nonUniformBSpline(x, p - 2, k) -
+             (alphaKP + alphaKp1P) * alphaKp1Pm1 * nonUniformBSpline(x, p - 2, k + 1) +
+             alphaKp1P * alphaKp2Pm1 * nonUniformBSpline(x, p - 2, k + 2);
     }
   }
 
@@ -185,11 +177,9 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
 
     for (IT k = 0; k < degree + 2; k++) {
       if (i + k >= degreePlusOneHalved) {
-        xi[k] = clenshawCurtisPoint(
-                  l, i + k - degreePlusOneHalved, hInv);
+        xi[k] = clenshawCurtisPoint(l, i + k - degreePlusOneHalved, hInv);
       } else {
-        xi[k] = clenshawCurtisPointNegativeIndex(
-                  l, degreePlusOneHalved - i - k, hInv);
+        xi[k] = clenshawCurtisPointNegativeIndex(l, degreePlusOneHalved - i - k, hInv);
       }
     }
   }
@@ -203,9 +193,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline double eval(LT l, IT i, double x) override {
     if (l == 0) {
       return bsplineBasis.uniformBSpline(
-               x - static_cast<double>(i)
-               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+          x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          bsplineBasis.getDegree());
     } else {
       const IT hInv = static_cast<IT>(1) << l;
       constructKnots(l, i, hInv);
@@ -223,9 +212,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline double evalDx(LT l, IT i, double x) {
     if (l == 0) {
       return bsplineBasis.uniformBSplineDx(
-               x - static_cast<double>(i)
-               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+          x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          bsplineBasis.getDegree());
     } else {
       const IT hInv = static_cast<IT>(1) << l;
       constructKnots(l, i, hInv);
@@ -243,9 +231,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   inline double evalDxDx(LT l, IT i, double x) {
     if (l == 0) {
       return bsplineBasis.uniformBSplineDxDx(
-               x - static_cast<double>(i)
-               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
-               bsplineBasis.getDegree());
+          x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          bsplineBasis.getDegree());
     } else {
       const IT hInv = static_cast<IT>(1) << l;
       constructKnots(l, i, hInv);
@@ -256,9 +243,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
-    return bsplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
   /**
    * @param l     level of basis function
@@ -271,9 +256,9 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
     }
     const IT hInv = static_cast<IT>(1) << l;
     size_t degree = bsplineBasis.getDegree();
-    size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
-    size_t letzter_abschnitt = std::min(degree, hInv + (degree+1)/2 - i - 1);
-    size_t quadLevel = (degree + 1)/2;
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
+    size_t letzter_abschnitt = std::min(degree, hInv + (degree + 1) / 2 - i - 1);
+    size_t quadLevel = (degree + 1) / 2;
     if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
@@ -290,7 +275,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
         double x = (h * coordinates[c]) + left;
-        temp_res += weights[c]*nonUniformBSpline(x, degree, 0);
+        temp_res += weights[c] * nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;
     }
@@ -310,8 +295,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int>
-SBsplineClenshawCurtisBase;
+typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int> SBsplineClenshawCurtisBase;
 
 }  // namespace base
 }  // namespace sgpp

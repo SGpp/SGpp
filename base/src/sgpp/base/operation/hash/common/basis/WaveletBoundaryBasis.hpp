@@ -19,13 +19,12 @@ namespace base {
  * Wavelet basis on Boundary grids.
  */
 template <class LT, class IT>
-class WaveletBoundaryBasis: public Basis<LT, IT> {
+class WaveletBoundaryBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~WaveletBoundaryBasis() override {
-  }
+  ~WaveletBoundaryBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -81,9 +80,10 @@ class WaveletBoundaryBasis: public Basis<LT, IT> {
     }
 
     const double t2 = t * t;
-    return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) *
-           std::exp(-t2) * hinv * hinv;
+    return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) * std::exp(-t2) * hinv * hinv;
   }
+
+  inline size_t getDegree() const override { return 0; }
 };
 
 // default type-def (unsigned int for level and index)

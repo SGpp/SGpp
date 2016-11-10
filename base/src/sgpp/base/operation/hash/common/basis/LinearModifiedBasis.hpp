@@ -19,14 +19,13 @@ namespace base {
 /**
  * Modified linear basis on Noboundary grids.
  */
-template<class LT, class IT>
-class LinearModifiedBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class LinearModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearModifiedBasis() override {
-  }
+  ~LinearModifiedBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -46,14 +45,14 @@ class LinearModifiedBasis: public Basis<LT, IT> {
       return ((x <= 2.0 / hInvDbl) ? (2.0 - hInvDbl * x) : 0.0);
     } else if (i == hInv - 1) {
       // right modified basis function
-      return ((x >= 1.0 - 2.0 / hInvDbl) ?
-              (hInvDbl * x - static_cast<double>(i) + 1.0) : 0.0);
+      return ((x >= 1.0 - 2.0 / hInvDbl) ? (hInvDbl * x - static_cast<double>(i) + 1.0) : 0.0);
     } else {
       // interior basis function
-      return std::max(1.0 - std::abs(hInvDbl * x -
-                                     static_cast<double>(i)), 0.0);
+      return std::max(1.0 - std::abs(hInvDbl * x - static_cast<double>(i)), 0.0);
     }
   }
+
+  inline size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)

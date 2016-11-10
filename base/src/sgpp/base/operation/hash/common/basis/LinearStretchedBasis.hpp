@@ -14,7 +14,6 @@
 #include <cmath>
 #include <algorithm>
 
-
 namespace sgpp {
 namespace base {
 
@@ -22,14 +21,13 @@ namespace base {
  * linearstretched base functions.
  * And here we have another implicit dependence on tensor products
  */
-template<class LT, class IT>
-class LinearStretchedBasis: public LinearBasis<LT, IT> {
+template <class LT, class IT>
+class LinearStretchedBasis : public LinearBasis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearStretchedBasis() override {
-  }
+  ~LinearStretchedBasis() override {}
 
   /**
    * Evaluate a basis function.
@@ -46,9 +44,9 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  double stretchedEval(double p, double pos0, double pos1) {
-    return (p - pos0) / (pos1 - pos0);
-  }
+  double stretchedEval(double p, double pos0, double pos1) { return (p - pos0) / (pos1 - pos0); }
+
+  inline size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)

@@ -19,13 +19,12 @@ namespace base {
  * Modified wavelet basis on Noboundary grids.
  */
 template <class LT, class IT>
-class WaveletModifiedBasis: public Basis<LT, IT> {
+class WaveletModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~WaveletModifiedBasis() override {
-  }
+  ~WaveletModifiedBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -45,12 +44,11 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
 
     if ((i == 1) && (x < 1.560231504260063 * h)) {
       // left modified basis function
-      return 0.501309319347014 + 1.38033323862282 *
-             (0.560231504260063 - x * hInvDbl + 1.0);
+      return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 - x * hInvDbl + 1.0);
     } else if ((i == hInv - 1) && (x > 1.0 - 1.560231504260063 * h)) {
       // right modified basis function
-      return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 +
-             x * hInvDbl - static_cast<double>(i));
+      return 0.501309319347014 +
+             1.38033323862282 * (0.560231504260063 + x * hInvDbl - static_cast<double>(i));
     } else {
       // interior basis function
       // (or modified function, but x is in the non-modified part)
@@ -137,10 +135,11 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
 
       const double t2 = t * t;
       const double t4 = t2 * t2;
-      return -2.0 * (2.0 * t4 - 7.0 * t2 + 2.0) *
-             std::exp(-t2) * hInvDbl * hInvDbl;
+      return -2.0 * (2.0 * t4 - 7.0 * t2 + 2.0) * std::exp(-t2) * hInvDbl * hInvDbl;
     }
   }
+
+  inline size_t getDegree() const override { return 0; }
 };
 
 // default type-def (unsigned int for level and index)

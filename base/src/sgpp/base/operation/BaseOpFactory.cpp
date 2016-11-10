@@ -45,6 +45,8 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtisBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModLinearClenshawCurtis.hpp>
 
+#include <sgpp/base/operation/hash/OperationArbitraryBoundaryHierarchisation.hpp>
+
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -223,6 +225,10 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
     throw base::factory_exception(
         "createOperationHierarchisation is not implemented for this grid type.");
   }
+}
+
+base::OperationHierarchisation* createOperationArbitraryBoundaryHierarchisation(base::Grid& grid) {
+  return new base::OperationArbitraryBoundaryHierarchisation(grid);
 }
 
 base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
