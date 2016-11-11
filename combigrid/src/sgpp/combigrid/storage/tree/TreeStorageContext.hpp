@@ -8,8 +8,6 @@
 
 #include <sgpp/combigrid/definitions.hpp>
 
-#include <mutex>
-
 namespace sgpp {
 namespace combigrid {
 
@@ -30,6 +28,6 @@ class TreeStorageContext {
 };
 
 } /* namespace combigrid */
-} /* namespace sgpp*/
+} /* namespace sgpp */
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_TREESTORAGECONTEXT_HPP_ */

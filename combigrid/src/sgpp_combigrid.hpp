@@ -8,7 +8,9 @@
 
 // --------- put here the header files of the combigrid package -----------
 #include <sgpp/combigrid/MultiFunction.hpp>
+#include <sgpp/combigrid/MultiFunctionDirector.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/SingleFunctionDirector.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
@@ -38,10 +40,10 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
@@ -54,6 +56,10 @@
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
+#include <sgpp/combigrid/utils/BinaryHeap.hpp>
+#include <sgpp/combigrid/utils/Stopwatch.hpp>
+#include <sgpp/combigrid/utils/Utils.hpp>
 
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 

@@ -27,7 +27,7 @@ for module in moduleNames:
     pyEnv["CPPDEFINES"][module] = "1"
 
 # build python module with swig
-swigFlags = ["-c++", "-python", "-fvirtual"]
+swigFlags = ["-c++", "-python", "-fvirtual", "-threads"] # TODO(holzmudd): Added -threads option
 
 swigFlags.extend(["-D" + c + "=" + pyEnv["CPPDEFINES"][c]
                   for c in pyEnv["CPPDEFINES"]])

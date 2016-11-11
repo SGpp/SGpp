@@ -104,7 +104,7 @@ void example2() {
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
 
   /**
-   * Now create a point where to evaluate the function
+   * Now create a point where to evaluate the interpolated function:
    */
   sgpp::base::DataVector evaluationPoint(d);
 
@@ -215,8 +215,9 @@ void example3() {
   sgpp::combigrid::Stopwatch stopwatch;
   sgpp::base::DataVector result = operation->evaluate(3, parameters);
   stopwatch.log();
-  std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
-  std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
+  std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0])
+            << std::endl
+            << "Second result: " << result[1] << ", function value: " << func(parameters[1])
             << "\n";
 
   /**
@@ -233,7 +234,7 @@ void example3() {
   std::cout << "First result: " << result[0] << ", function value: " << func(parameters[0]) << "\n";
   std::cout << "Second result: " << result[1] << ", function value: " << func(parameters[1])
             << "\n";
-}
+}  // end example3
 
 /**
  * @section combigrid_example_4 Example 4: Serialization and lookup tables
@@ -259,7 +260,7 @@ void example4() {
       d, sgpp::combigrid::MultiFunction(lookupTable));
 
   /**
-   * Do a normal computation
+   * Do a normal computation...
    */
   double result = operation->evaluate(2);
   std::cout << "Result computed: " << result << "\n";
@@ -269,32 +270,40 @@ void example4() {
    * The serialization is not compressed and will roughly use 60 Bytes per entry. If you have lots
    * of data, you might consider compressing it.
    */
-  sgpp::combigrid::writeToFile("lookupTable.txt", lookupTable.serialize());
+  sgpp::combigrid::writeToFile("lookupTable.log", lookupTable.serialize());
+
+  /**
+   * It is also possible to store which levels have been evaluated:
+   */
+  sgpp::combigrid::writeToFile("levels.log",
+                               operation->getLevelManager()->getSerializedLevelStructure());
 
   /**
    * Restore the data into another lookup table. The function is still needed for new evaluations.
    */
-  sgpp::combigrid::FunctionLookupTable restoredLookupTable(func);
-  restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.txt"));
+  sgpp::combigrid::FunctionLookupTable restoredLookupTable(loggingFunc);
+  restoredLookupTable.deserialize(sgpp::combigrid::readFromFile("lookupTable.log"));
   auto operation2 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
       d, sgpp::combigrid::MultiFunction(restoredLookupTable));
 
   /**
-   * A new evaluation with the same precision does not require new function evaluations:
+   * A new evaluation with the same levels does not require new function evaluations:
    */
-  result = operation2->evaluate(2);
+  operation2->getLevelManager()->addLevelsFromSerializedStructure(
+      sgpp::combigrid::readFromFile("levels.log"));
+  result = operation2->getResult();
   std::cout << "Result computed (2nd time): " << result << "\n";
 
   /**
    * Another less general way of storing the data is directly serializing the storage underlying the
    * operation. This means that retrieval is faster, but it only works if the same grid is used
    * again.
-   * For demonstration purposes, we use loggingFunc directly this time without a
+   * For demonstration purposes, we use loggingFunc directly this time without a lookup table:
    */
-  sgpp::combigrid::writeToFile("storage.txt", operation->getStorage()->serialize());
+  sgpp::combigrid::writeToFile("storage.log", operation->getStorage()->serialize());
   auto operation3 = sgpp::combigrid::CombigridOperation::createLinearLejaQuadrature(
       d, sgpp::combigrid::MultiFunction(loggingFunc));
-  operation3->getStorage()->deserialize(sgpp::combigrid::readFromFile("storage.txt"));
+  operation3->getStorage()->deserialize(sgpp::combigrid::readFromFile("storage.log"));
   result = operation3->evaluate(2);
   std::cout << "Result computed (3rd time): " << result << "\n";
 }
@@ -377,4 +386,4 @@ int main() {
 
   std::cout << "\nExample 5: \n";
   example5();
-}
+}  // end of main
