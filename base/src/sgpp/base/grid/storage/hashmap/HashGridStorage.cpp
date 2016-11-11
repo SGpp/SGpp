@@ -267,6 +267,16 @@ size_t HashGridStorage::insert(point_type& index) {
   return (map[insert] = list.size() - 1);
 }
 
+void HashGridStorage::insert(HashGridStorage& storage) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
+    HashGridPoint& point = storage[i];
+
+    if (isInvalidSequenceNumber(getSequenceNumber(point))) {
+      insert(point);
+    }
+  }
+}
+
 void HashGridStorage::update(point_type& index, size_t pos) {
   if (pos < list.size()) {
     // Remove old element at pos

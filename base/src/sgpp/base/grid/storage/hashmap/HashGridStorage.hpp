@@ -227,6 +227,15 @@ class HashGridStorage {
   size_t insert(point_type& index);
 
   /**
+   * Insert all the points from the given argument (another HashGridStorage) in this
+   * HashGridStorage. Points which already exist in this HashGridStorage are not inserted
+   * twice. The other HashGridStorage is not modified.
+   *
+   * @param storage other HashGridStorage (source of points to insert in this storage)
+   */
+  void insert(HashGridStorage& storage);
+
+  /**
    * updates an already stored index
    *
    * @param index reference to the index that should be updated
