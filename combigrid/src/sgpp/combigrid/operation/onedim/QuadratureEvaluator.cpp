@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iomanip>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
-#include <iomanip>
 #include <vector>
 
 namespace sgpp {
@@ -32,6 +32,7 @@ struct LagrangePolynom {
 
 /*
  *	Implementation of Gauss-Legendre quadrature
+ *	From: http://rosettacode.org/wiki/Numerical_integration/Gauss-Legendre_Quadrature#C.2B.2B
  */
 class GaussLegendreQuadrature {
  public:

@@ -11,6 +11,7 @@
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

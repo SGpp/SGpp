@@ -59,7 +59,7 @@ struct FunctionLookupTableImpl {
   MultiFunction func;
   std::mutex tableMutex;
 
-  FunctionLookupTableImpl(MultiFunction func)
+  explicit FunctionLookupTableImpl(MultiFunction func)
       : hashmap(
             new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()),
         func(func),
@@ -162,5 +162,8 @@ bool FunctionLookupTable::containsEntry(const base::DataVector& x) {
 }
 
 size_t FunctionLookupTable::getNumEntries() const { return impl->hashmap->size(); }
+
+MultiFunction FunctionLookupTable::toMultiFunction() const { return MultiFunction(*this); }
+
 }  // namespace combigrid
 }  // namespace sgpp
