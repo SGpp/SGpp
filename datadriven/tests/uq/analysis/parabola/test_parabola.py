@@ -22,6 +22,7 @@ from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+from pysgpp.pysgpp_swig import GridType_LinearClenshawCurtis, GridType_Linear
 
 
 # class ASGCParabolaTest(object):
@@ -181,9 +182,7 @@ class ASGCParabolaTest(unittest.TestCase):
         print "V(f) = %.14f, %g" % cls.V_ana
         print "-" * 60
 
-    def buildSetting(self, label, level, deg,
-                     clenshaw_curtis=False,
-                     modified=False,
+    def buildSetting(self, label, level, gridType, deg=1,
                      nsamples=1000,
                      isFull=False,
                      epsilon=1e-15,
@@ -206,15 +205,11 @@ class ASGCParabolaTest(unittest.TestCase):
 
         samplerSpec = builder.defineSampler()
         gridSpec = samplerSpec.withGrid()
-        gridSpec.withLevel(level)
+        gridSpec.withLevel(level).hasType(gridType)
         if deg > 1:
-            gridSpec.withPolynomialBase(deg)
+            gridSpec.withDegree(deg)
         if isFull:
             gridSpec.isFull()
-        if clenshaw_curtis:
-            gridSpec.isClenshawCurtis()
-        if modified:
-            gridSpec.withModifiedBasis()
 
         if adaptive is not None:
             # specify the refinement
@@ -340,7 +335,8 @@ class ASGCParabolaTest(unittest.TestCase):
         for level in xrange(1, 10):
             # run setting
             clabel = "%s_l%i" % (label, level)
-            uqManager = self.buildSetting(label, level, deg=deg)
+            uqManager = self.buildSetting(label, level, GridType_Linear,
+                                          deg=deg)
             blabel = "%sb0deg%i" % (label, deg)
             self.runSampler(uqManager, label, blabel, clabel)
             analysis = self.defineASGCAnalysis(uqManager).andGetResult()
@@ -351,7 +347,8 @@ class ASGCParabolaTest(unittest.TestCase):
         for level in xrange(1, 7):
             # run setting
             clabel = "%s_l%i" % (label, level)
-            uqManager = self.buildSetting(label, level, deg=1, isFull=True)
+            uqManager = self.buildSetting(label, level, GridType_Linear,
+                                          deg=1, isFull=True)
             blabel = "%sb0deg%i" % (label, 1)
             self.runSampler(uqManager, label, blabel, clabel)
             analysis = self.defineASGCAnalysis(uqManager).andGetResult()
@@ -362,8 +359,9 @@ class ASGCParabolaTest(unittest.TestCase):
         for level in xrange(1, 10):
             # run setting
             clabel = "%s_l%i" % (label, level)
-            uqManager = self.buildSetting(label, level, deg=deg,
-                                          clenshaw_curtis=True)
+            uqManager = self.buildSetting(label, level,
+                                          GridType_LinearClenshawCurtis,
+                                          deg=deg)
             blabel = "%sb0deg%i" % (label, deg)
             self.runSampler(uqManager, label, blabel, clabel)
             analysis = self.defineASGCAnalysis(uqManager).andGetResult()
@@ -374,7 +372,8 @@ class ASGCParabolaTest(unittest.TestCase):
         for level in xrange(2, 6):
             # run setting
             clabel = "%s_l%i" % (label, level)
-            uqManager = self.buildSetting(label, level, deg=deg, isFull=False,
+            uqManager = self.buildSetting(label, level, GridType_Linear,
+                                          deg=deg, isFull=False,
                                           epsilon=epsilon, adaptive="simple",
                                           knowledgeFilename=knowledgeFilename)
             # run setting

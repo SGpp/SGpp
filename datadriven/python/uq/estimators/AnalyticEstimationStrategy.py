@@ -144,9 +144,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         \int\limits_{[0, 1]^d} f_N(x) * pdf(x) dx
         """
         # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
-        D = T.getTransformations()
-
+        vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_mean, err = self.getSystemMatrixForMean(grid, W, D)
 
         moment = alpha.array().dot(A_mean)
@@ -160,9 +158,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         \int\limits_{[0, 1]^d} (f(x) - E(f))^2 * pdf(x) dx
         """
         # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
-        D = T.getTransformations()
-
+        vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_var, err = self.getSystemMatrixForVariance(grid, W, D)
 
         moment = vol * alpha.array().dot(A_var.dot(alpha.array()))

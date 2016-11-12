@@ -1,5 +1,4 @@
-from pysgpp import (Grid, HashGridPoint, SPolyBoundaryBase,
-                    SLinearBoundaryBase, SLinearBase, SPolyBase)
+from pysgpp import (Grid, HashGridPoint)
 
 from sparse_grid import createGrid, isValid
 import numpy as np

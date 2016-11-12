@@ -140,8 +140,9 @@ class ASGCUQManager(object):
     def learnDataWithoutTest(self, *args, **kws):
         # learn data
         if self.verbose:
-            print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
-                                              self.sampler.getGrid().getSize())
+            print "learning (i=%i, gs=%i, type=%s)" % (self.sampler.getCurrentIterationNumber(),
+                                                       self.sampler.getGrid().getSize(),
+                                                       self.sampler.getGrid().getTypeAsString())
         self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
             knowledge = {}

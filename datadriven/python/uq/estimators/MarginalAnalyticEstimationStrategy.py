@@ -39,8 +39,7 @@ class MarginalAnalyticEstimationStrategy(SparseGridEstimationStrategy):
         @return: expectation value
         """
         # extract correct pdf for moment estimation
-        _, W = self._extractPDFforMomentEstimation(U, T)
-        D = T.getTransformations()
+        _, W, D = self._extractPDFforMomentEstimation(U, T)
 
         # flatten dd
         dd = [d for di in dd for d in di]
