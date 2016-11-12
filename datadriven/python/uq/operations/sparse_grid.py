@@ -25,7 +25,9 @@ from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
     SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
     GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
-    GridType_ModBspline
+    GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
+    SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
+    SBsplineModifiedClenshawCurtisBase
 from pysgpp._pysgpp_swig import GridType_BsplineBoundary_swigconstant, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
@@ -124,6 +126,16 @@ def getBasis(grid):
         return SPolyClenshawCurtisBoundaryBase(grid.getDegree())
     elif gridType == GridType_ModPolyClenshawCurtis:
         return SPolyModifiedClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_Bspline:
+        return SBsplineBase(grid.getDegree())
+    elif gridType == GridType_BsplineBoundary:
+        return SBsplineBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModBspline:
+        return SBsplineModifiedBase(grid.getDegree())
+    elif gridType == GridType_BsplineClenshawCurtis:
+        return SBsplineClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_ModBsplineClenshawCurtis:
+        return SBsplineModifiedClenshawCurtisBase(grid.getDegree())
     else:
         raise AttributeError("basis %i is not supported" % gridType)
 
@@ -141,7 +153,9 @@ def hasBorder(grid):
                               GridType_LinearBoundary,
                               GridType_LinearL0Boundary,
                               GridType_LinearClenshawCurtisBoundary,
-                              GridType_PolyClenshawCurtisBoundary]
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_BsplineBoundary,
+                              GridType_BsplineClenshawCurtis]
 
 
 def isValid1d(grid, level, index):
@@ -584,7 +598,6 @@ def evalSGFunctionMulti(grid, alpha, samples):
                           GridType_PolyClenshawCurtis,
                           GridType_PolyClenshawCurtisBoundary,
                           GridType_ModPolyClenshawCurtis]:
-        print grid.getTypeAsString()
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
     else:
         if grid.getType() == GridType_Linear:

@@ -5,6 +5,7 @@ Created on Aug 6, 2014
 """
 from LinearQuadratureStrategy import LinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 
 
 class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
@@ -36,7 +37,8 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 
         # ----------------------------------------------------
         # use gauss-legendre-quadrature
-        if self._U is None:
+        if self._U is None or (isinstance(self._U[d], Uniform) and \
+                               self._U[d].getBounds() == [0.0, 1.0]):
             def f(p):
                 return basis.eval(lid, iid, p)
         else:

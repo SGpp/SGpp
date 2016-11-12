@@ -15,7 +15,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         where x_i are the sparse grid collocation points
         """
         # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
+        vol, W, D = self._extractPDFforMomentEstimation(U, T)
 
         # get nodal values
         res = dehierarchize(grid, alpha)
@@ -25,7 +25,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.getCoordinates(gs.getPoint(i), p)
-            res[i] *= W.pdf(T.unitToProbabilistic(p))
+            res[i] *= W.pdf(D.unitToProbabilistic(p))
 
         # calc moment
         return vol * res.sum() / len(res)
@@ -39,7 +39,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         where x_i are the sparse grid collocation points
         """
         # extract correct pdf for moment estimation
-        vol, W = self._extractPDFforMomentEstimation(U, T)
+        vol, W, D = self._extractPDFforMomentEstimation(U, T)
 
         # get nodal values
         res = dehierarchize(grid, alpha).array()
@@ -49,7 +49,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.getCoordinates(gs.getPoint(i), p)
-            res[i] *= (res[i] - mean) * W.pdf(T.unitToProbabilistic(p))
+            res[i] *= (res[i] - mean) * D.pdf(T.unitToProbabilistic(p))
 
         # calc sample variance
         return vol * np.sum(res) / (len(res) - 1.)

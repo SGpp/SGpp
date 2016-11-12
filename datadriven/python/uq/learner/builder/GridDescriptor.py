@@ -12,7 +12,9 @@ from pysgpp import RegularGridConfiguration, GridType_PolyBoundary, \
     GridType_LinearClenshawCurtisBoundary, GridType_LinearClenshawCurtis, \
     GridType_ModPolyClenshawCurtis, GridType_ModLinearClenshawCurtis, \
     GridType_ModLinear, GridType_ModPoly, GridType_LinearBoundary
-from pysgpp.pysgpp_swig import GridType_Poly, GridType_Linear
+from pysgpp.pysgpp_swig import GridType_Poly, GridType_Linear, GridType_Bspline, \
+    GridType_BsplineBoundary, GridType_BsplineClenshawCurtis, \
+    GridType_ModBsplineClenshawCurtis, GridType_ModBspline
 
 
 class GridDescriptor(object):
@@ -31,6 +33,7 @@ class GridDescriptor(object):
         self.__file = None
         self.__boundaryLevel = None
         self.__grid = None
+        self.__gridType = GridType_Linear
         self.__full = None
         self.__clenshaw_curtis = False
         self.__modified = False
@@ -51,18 +54,26 @@ class GridDescriptor(object):
         self.level = level
         return self
 
-    def withPolynomialBase(self, deg):
+    def hasType(self, gridType):
         """
-        Defines the polynomial base of the grid
+        Defines the grid type
+        @param gridType: type of the grid
+        """
+        self.__gridType = gridType
+        return self
+
+    def withDegree(self, deg):
+        """
+        Defines the polynomial degree of the basis
         @param deg: degree of polynomial base as integer
         """
         if deg > 1:
             self.__deg = deg
         else:
-            print "Warning: GridDescriptor.withPolynomialBasis - deg < 2 ignored"
+            print "Warning: GridDescriptor.withDegree - deg < 2 ignored"
         return self
 
-    def withBorder(self, boundaryLevel):
+    def withBoundaryLevel(self, boundaryLevel):
         """
         Defines the border type of the grid
         @param boundaryLevel: level of the boundary
@@ -75,20 +86,6 @@ class GridDescriptor(object):
         Defines if a full grid should be generated
         """
         self.__full = True
-        return self
-
-    def isClenshawCurtis(self):
-        """
-        Defines if a clenshaw curtis grid should be generated
-        """
-        self.__clenshaw_curtis = True
-        return self
-
-    def withModifiedBasis(self):
-        """
-        define a basis with extrapolation towards the boundary
-        """
-        self.__modified = True
         return self
 
     def fromGrid(self, grid):
@@ -138,41 +135,26 @@ class GridDescriptor(object):
 
             gridConfig.maxDegree_ = self.__deg
 
-            # identify grid type
-            if self.__border is not None:
-                if self.__clenshaw_curtis:
-                    if self.__deg > 1:
-                        gridConfig.type_ = GridType_PolyClenshawCurtisBoundary
-                    else:
-                        gridConfig.type_ = GridType_LinearClenshawCurtisBoundary
-                else:
-                    if self.__deg > 1:
-                        gridConfig.type_ = GridType_PolyBoundary
-                    else:
-                        gridConfig.type_ = GridType_LinearBoundary
-            else:
-                if self.__modified:
-                    if self.__clenshaw_curtis:
-                        if self.__deg > 1:
-                            gridConfig.type_ = GridType_ModPolyClenshawCurtis
-                        else:
-                            gridConfig.type_ = GridType_ModLinearClenshawCurtis
-                    else:
-                        if self.__deg > 1:
-                            gridConfig.type_ = GridType_ModPoly
-                        else:
-                            gridConfig.type_ = GridType_ModLinear
-                else:
-                    if self.__clenshaw_curtis:
-                        if self.__deg > 1:
-                            gridConfig.type_ = GridType_PolyClenshawCurtis
-                        else:
-                            gridConfig.type_ = GridType_LinearClenshawCurtis
-                    else:
-                        if self.__deg > 1:
-                            gridConfig.type_ = GridType_Poly
-                        else:
-                            gridConfig.type_ = GridType_Linear
+            if self.__gridType not in [GridType_Linear,
+                                       GridType_LinearBoundary,
+                                       GridType_ModLinear,
+                                       GridType_LinearClenshawCurtis,
+                                       GridType_LinearClenshawCurtisBoundary,
+                                       GridType_ModLinearClenshawCurtis,
+                                       GridType_Poly,
+                                       GridType_PolyBoundary,
+                                       GridType_ModPoly,
+                                       GridType_PolyClenshawCurtis,
+                                       GridType_PolyClenshawCurtisBoundary,
+                                       GridType_ModPolyClenshawCurtis,
+                                       GridType_Bspline,
+                                       GridType_ModBspline,
+                                       GridType_BsplineBoundary,
+                                       GridType_BsplineClenshawCurtis,
+                                       GridType_ModBsplineClenshawCurtis]:
+                print "Warning: grid type not fully supported"
+
+            gridConfig.type_ = self.__gridType
 
             # generate the grid
             grid = Grid.createGrid(gridConfig)

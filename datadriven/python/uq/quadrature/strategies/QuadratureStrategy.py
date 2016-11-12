@@ -29,7 +29,9 @@ class QuadratureStrategy(object):
             if s[0] > 1e-14:
                 err /= s[0]
 
-            s[0] = s[1]
+            if deg < self._n:
+                s[0] = s[1]
+
             # increase degree
             deg += 1
 

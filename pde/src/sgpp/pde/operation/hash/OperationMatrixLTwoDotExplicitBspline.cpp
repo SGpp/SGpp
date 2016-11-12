@@ -44,7 +44,7 @@ void OperationMatrixLTwoDotExplicitBspline::buildMatrix(sgpp::base::Grid* grid) 
 
   sgpp::base::DataVector coordinates;
   sgpp::base::DataVector weights;
-  sgpp::base::GaussLegendreQuadRule1D gauss;
+  sgpp::base::GaussLegendreQuadRule1D& gauss = sgpp::base::GaussLegendreQuadRule1D::getInstance();
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
 
   for (size_t i = 0; i < gridSize; i++) {

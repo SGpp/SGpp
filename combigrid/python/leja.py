@@ -94,11 +94,13 @@ def leja_points(start, count, lower_bound, upper_bound, weight=lambda x : 1, deb
     return sorted(leja)
 
 def calc_min(f, lower_bound, upper_bound):
-    startvalue = (upper_bound - lower_bound) / 2 + lower_bound
-    return minimize(f, startvalue, method='nelder-mead').x
+    startvalue = (upper_bound + lower_bound) / 2.
+    xopt = minimize(f, startvalue, method="nelder-mead",
+                    options={'xtol': 1e-14, 'disp': True})
+    return xopt.x
 
 if __name__ == '__main__':
-    weight = lambda x : np.sin(x * np.pi)
+    weight = lambda x : 1.0  # np.sin(x * np.pi)
     start = 0.5
     lower_bound = 0
     upper_bound = 1
@@ -107,6 +109,7 @@ if __name__ == '__main__':
         from scipy.optimize import minimize
         points = leja_points(start, count, lower_bound, upper_bound, weight)
         print "Sorted:"
-        print points
+        for i, point in enumerate(points):
+            print "%i: %s" % (i, point)
     except:
         pass

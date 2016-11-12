@@ -392,7 +392,6 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::Bspline;
     case GridType::Prewavelet:
       return GridType::Prewavelet;
-      break;
     case GridType::LinearClenshawCurtis:
     case GridType::LinearClenshawCurtisBoundary:
     case GridType::ModLinearClenshawCurtis:

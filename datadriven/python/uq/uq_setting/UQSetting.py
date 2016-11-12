@@ -843,8 +843,36 @@ class UQSetting(object):
 
         return B
 
-    def getResults(self, *args, **kws):
-        return self.getTimeDependentResults([0], *args, **kws)
+    def getResults(self, qoi="_", sampleType=UQSampleType.RAW):
+        """
+        Collects the simulation results assuming that ts = [0].
+        If just a selection of parameters is needed, one
+        can specify it using the ps parameter.
+        @param sampleType:
+        @return: dictionary {0: {<Sample>: value}}
+        """
+        # collect samples
+        ans = {}
+
+        # collect all available results -> just the ones which have
+        # an entry in the post processing table
+        ps = [None] * len(self.__stats_postprocessor)
+        for i, (q, value) in enumerate(self.__stats_postprocessor.items()):
+            p = self.__stats_preprocessor_reverse[q]
+            if p not in self.__stats_samples:
+                raise AttributeError('Sample is missing for %s' % (p,))
+
+            # select the key
+            sample = self.__stats_samples[p]
+            if sampleType == UQSampleType.PREPROCESSED:
+                key = self.__stats_preprocessor[tuple(p.getExpandedUnit())]
+            else:
+                # sampleType == UQSampleType.RAW
+                key = p
+
+            ans[key] = value[qoi]
+        
+        return {0: ans}
 
     def getSamplesStats(self):
         return self.__stats_samples

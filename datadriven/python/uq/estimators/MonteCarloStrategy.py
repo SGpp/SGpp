@@ -145,10 +145,10 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         @return: (mean, error of bootstrapping)
         """
         # init
-        _, W = self._extractPDFforMomentEstimation(U, T)
+        _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, T, self.__n)
+            samples = self.__getSamples(W, D, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
@@ -173,10 +173,10 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         @return: (variance, error of bootstrapping)
         """
         # init
-        _, W = self._extractPDFforMomentEstimation(U, T)
+        _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, T, self.__n)
+            samples = self.__getSamples(W, D, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
