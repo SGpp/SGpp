@@ -15,8 +15,14 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv3.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
