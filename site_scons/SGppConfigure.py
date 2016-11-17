@@ -63,9 +63,21 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and
     # -q is the relevant flag to make it use integrated assembler
     env.AppendUnique(CPPFLAGS=["-Wa,-q"])
-    env.AppendUnique(CPPPATH="/usr/local/include")
-    env.AppendUnique(LIBPATH="/usr/local/lib")
+    # include and library paths for osx and homebrew
+    osx_includes = list("/usr/local/include")
+    osx_libs = list("/usr/local/lib")
+    env.AppendUnique(CPPPATH=["/usr/local/include"])
+    env.AppendUnique(LIBPATH=["/usr/local/lib"])
+    # if the OSX user is using macports, we need to add the macports include and library paths, too:
+    macports_inc = "/opt/local/include"
+    macports_lib = "/opt/local/lib"
+    if os.listdir(macports_inc):
+        env.AppendUnique(CPPPATH= [macports_inc])
+    if os.listdir(macports_lib):
+        env.AppendUnique(LIBPATH= [macports_lib])
+    # osx dynamic libraries are suffixed by .dylib    
     env["SHLIBSUFFIX"] = ".dylib"
+    
   elif env["PLATFORM"] == "cygwin":
     # required to find the static libraries compiled before the shared libraries
     # the static libraries are required as the linker on windows cannot ignore undefined symbols
