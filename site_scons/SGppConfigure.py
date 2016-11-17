@@ -64,6 +64,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # -q is the relevant flag to make it use integrated assembler
     env.AppendUnique(CPPFLAGS=["-Wa,-q"])
     # include and library paths for osx and homebrew
+    osx_includes = list("/usr/local/include")
+    osx_libs = list("/usr/local/lib")
     env.AppendUnique(CPPPATH=["/usr/local/include"])
     env.AppendUnique(LIBPATH=["/usr/local/lib"])
     # if the OSX user is using macports, we need to add the macports include and library paths, too:
