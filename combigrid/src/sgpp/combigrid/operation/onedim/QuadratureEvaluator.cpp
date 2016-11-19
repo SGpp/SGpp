@@ -3,9 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iomanip>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+
+#include <iomanip>
 #include <vector>
 
 namespace sgpp {
@@ -28,129 +31,26 @@ struct LagrangePolynom {
     }
     return result;
   }
+
+  size_t degree() { return points.size(); }
 };
 
-/*
- *	Implementation of Gauss-Legendre quadrature
- *	From: http://rosettacode.org/wiki/Numerical_integration/Gauss-Legendre_Quadrature#C.2B.2B
- */
-class GaussLegendreQuadrature {
- public:
-  explicit GaussLegendreQuadrature(size_t eDEGREE)
-      : s_LegendrePolynomial(eDEGREE), eDEGREE(eDEGREE) {}
+double doGaussLegendreQuadrature(double a, double b, LagrangePolynom& f) {
+  // load gauss weights and roots for Gauss Legendre quadrature
+  size_t level = f.degree() + 1;
+  base::DataVector roots;
+  base::DataVector weights;
+  auto quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  quadRule.getLevelPointsAndWeightsNormalized(level, roots, weights);
 
-  /*! Compute the integral of a functor
-   *
-   *   @param a    lower limit of integration
-   *   @param b    upper limit of integration
-   *   @param f    the polynomial to integrate
-   */
-  double integrate(double a, double b, LagrangePolynom f) {
-    double p = (b - a) / 2;
-    double q = (b + a) / 2;
-    const LegendrePolynomial& legpoly = s_LegendrePolynomial;
-
-    double sum = 0;
-    for (size_t i = 1; i <= eDEGREE; ++i) {  // TODO(holzmudd): warum hier ab 1?
-      sum += legpoly.weight(i) * f.evaluate(p * legpoly.root(i) + q);
-    }
-
-    return p * sum;
+  // evaluate the Lagrange polynomial at the roots of the
+  // Legendre polynomials
+  double width = (b - a) / 2.;
+  double sum = 0.0;
+  for (size_t i = 0; i < roots.getSize(); ++i) {
+    sum += weights[i] * f.evaluate(width * roots[i] + a);
   }
-
- private:
-  /*
-   * Implementation of the Legendre polynomials that form
-   * the basis of this quadrature
-   */
-  class LegendrePolynomial {
-    size_t eDEGREE;
-
-   public:
-    explicit LegendrePolynomial(size_t eDEGREE) : eDEGREE(eDEGREE) {
-      _r = std::vector<double>(
-          eDEGREE + 1,
-          0.0);  // TODO(holzmudd): die beiden waren (eDEGREE, 0.0), wie rum ist es richtig?
-      _w = std::vector<double>(eDEGREE + 1, 0.0);
-      // Solve roots and weights
-      for (size_t i = 0; i <= eDEGREE;
-           ++i) {  // TODO(holzmudd): war i <= eDEGREE, wie rum ist es richtig?
-        double dr = 1;
-
-        // Find zero
-        Evaluation eval(
-            cos(M_PI * (static_cast<double>(i) - 0.25) / (static_cast<double>(eDEGREE) + 0.5)),
-            eDEGREE);
-        do {
-          dr = eval.v() / eval.d();
-          eval.evaluate(eval.x() - dr);
-        } while (fabs(dr) > 2e-16);
-
-        this->_r[i] = eval.x();
-        this->_w[i] = 2 / ((1 - eval.x() * eval.x()) * eval.d() * eval.d());
-      }
-    }
-
-    double root(size_t i) const { return this->_r[i]; }
-    double weight(size_t i) const { return this->_w[i]; }
-
-   private:
-    std::vector<double> _r;
-    std::vector<double> _w;
-
-    /*
-     * Evaluate the value *and* derivative of the
-     * Legendre polynomial
-     */
-    class Evaluation {
-      size_t eDEGREE;
-
-     public:
-      explicit Evaluation(double x, size_t eDEGREE) : eDEGREE(eDEGREE), _x(x), _v(1), _d(0) {
-        this->evaluate(x);
-      }
-
-      void evaluate(double x) {
-        this->_x = x;
-
-        double vsub1 = x;
-        double vsub2 = 1;
-        double f = 1 / (x * x - 1);
-
-        for (size_t i = 2; i <= eDEGREE; ++i) {  // TODO(holzmudd): wirklich hier ab 2?
-          this->_v = ((2 * static_cast<double>(i) - 1) * x * vsub1 -
-                      (static_cast<double>(i) - 1) * vsub2) /
-                     static_cast<double>(i);
-          this->_d = static_cast<double>(i) * f * (x * this->_v - vsub1);
-
-          vsub2 = vsub1;
-          vsub1 = this->_v;
-        }
-      }
-
-      double v() const { return this->_v; }
-      double d() const { return this->_d; }
-      double x() const { return this->_x; }
-
-     private:
-      double _x;
-      double _v;
-      double _d;
-    };
-  };
-
-  /*
-   * Pre-compute the weights and abscissae of the Legendre polynomials
-   */
-  LegendrePolynomial s_LegendrePolynomial;
-  size_t eDEGREE;
-};
-
-double gauss(LagrangePolynom polynom) {
-  size_t size = polynom.points.size() + 1;
-  GaussLegendreQuadrature quad(
-      size);  // TODO(holzmudd): kann man optimieren, indem man das nicht immer neu erstellt
-  return quad.integrate(0.0, 1.0, polynom);
+  return width * sum;
 }
 
 /**
@@ -158,7 +58,7 @@ double gauss(LagrangePolynom polynom) {
  */
 double integrate(LagrangePolynom polynom) {
   // return romberg2(polynom);
-  return gauss(polynom);
+  return doGaussLegendreQuadrature(0.0, 1.0, polynom);
 }
 
 /**
