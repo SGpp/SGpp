@@ -199,26 +199,8 @@ public:
 // extend the grid by a function that returns the maximum degree of the basis
 // which is important for polynomials and bsplines
 %extend sgpp::base::Grid{
-    int getDegree() {
-        if ($self->getType() == sgpp::base::GridType::Poly) {
-            return ((sgpp::base::PolyGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
-            return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::ModPoly) {
-            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::PolyClenshawCurtis) {
-            return ((sgpp::base::PolyClenshawCurtisGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::PolyClenshawCurtisBoundary) {
-            return ((sgpp::base::PolyClenshawCurtisBoundaryGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::ModPolyClenshawCurtis) {
-            return ((sgpp::base::ModPolyClenshawCurtisGrid*) $self)->getDegree();
-        };
-        return 1;
+    size_t getDegree() {
+	return $self->getBasis().getDegree();
     };
 };
 

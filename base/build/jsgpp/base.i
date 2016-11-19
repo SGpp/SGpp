@@ -157,11 +157,17 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
@@ -188,11 +194,17 @@ namespace std {
 %template(SLinearBase) sgpp::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sgpp::base::LinearBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearClenshawCurtisBase) sgpp::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SLinearClenshawCurtisBoundaryBase) sgpp::base::LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearModifiedClenshawCurtisBase) sgpp::base::LinearModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) sgpp::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) sgpp::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearModifiedBase) sgpp::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) sgpp::base::PolyBasis<unsigned int, unsigned int>;
-//%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyBoundaryBase) sgpp::base::PolyBoundaryBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyClenshawCurtisBase) sgpp::base::PolyClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SPolyClenshawCurtisBoundaryBase) sgpp::base::PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedClenshawCurtisBase) sgpp::base::PolyModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) sgpp::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) sgpp::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
 %template(SWaveletModifiedBase) sgpp::base::WaveletModifiedBasis<unsigned int, unsigned int>;

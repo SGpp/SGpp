@@ -39,20 +39,31 @@
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 //%apply std::vector<double> *INPUT { std::vector<double>& point };
 
+%include "datadriven/src/sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
+
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
+
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
-
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
+
+// --------------------------------------
+// renaming ambiguous function declarations for python
+%ignore base::datadriven::OperationRosenblattTransformation::doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf, size_t dim_start);
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
