@@ -27,15 +27,13 @@ GzipFileSampleDecorator::GzipFileSampleDecorator(FileSampleProvider* fileSampleP
 
 GzipFileSampleDecorator::~GzipFileSampleDecorator() {}
 
-Dataset* GzipFileSampleDecorator::getNextSamples(size_t howMany) {
+std::unique_ptr<Dataset> GzipFileSampleDecorator::getNextSamples(size_t howMany) {
   return fileSampleProvider->getNextSamples(howMany);
 }
 
-Dataset* GzipFileSampleDecorator::getAllSamples() { return fileSampleProvider->getAllSamples(); }
-
-size_t GzipFileSampleDecorator::getDim() { return fileSampleProvider->getDim(); }
-
-size_t GzipFileSampleDecorator::getDatasetSize() { return fileSampleProvider->getDatasetSize(); }
+std::unique_ptr<Dataset> GzipFileSampleDecorator::getAllSamples() {
+  return fileSampleProvider->getAllSamples();
+}
 
 void GzipFileSampleDecorator::readFile(const std::string& fileName) {
   // TODO(lettrich): check if this is efficient and maybe optimize

@@ -25,9 +25,9 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   virtual ~ArffFileSampleProvider();
 
-  Dataset* getNextSamples(size_t howMany);
+  std::unique_ptr<Dataset> getNextSamples(size_t howMany);
 
-  Dataset* getAllSamples();
+  std::unique_ptr<Dataset> getAllSamples();
 
   size_t getDim();
 

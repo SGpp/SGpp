@@ -24,15 +24,9 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
 
   virtual ~GzipFileSampleDecorator();
 
-  Dataset* getNextSamples(size_t howMany);
+  std::unique_ptr<Dataset> getNextSamples(size_t howMany);
 
-  Dataset* getAllSamples();
-
-  size_t getDim();
-
-  size_t getDatasetSize();
-
-  // size_t getNumClasses();
+  std::unique_ptr<Dataset> getAllSamples();
 
   void readFile(const std::string& fileName);
 
