@@ -29,9 +29,10 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
    * @param coordinates returns the x-coordinates in [0, 1]
    * @param weights returns the corresponding weights (scaled by 0.5)
    */
-  void getLevelPointsAndWeightsNormalized(size_t level,
-                                          base::DataVector& coordinates,
+  void getLevelPointsAndWeightsNormalized(size_t level, base::DataVector& coordinates,
                                           base::DataVector& weights);
+
+  static GaussLegendreQuadRule1D& getInstance();
 };
 
 }  // namespace base
