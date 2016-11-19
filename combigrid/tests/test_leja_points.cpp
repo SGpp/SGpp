@@ -89,6 +89,7 @@ void testLejaSinusWithNormalDistribution() {
   BOOST_CHECK_CLOSE(leja.compute(1, 4), 0.92906611726964328, tolerance);
 }
 
+#ifdef USE_DLIB
 /**
  * Warning: This tests are made for a epsilon of 0.00001 in the leja class (for the optimizer)!
  */
@@ -100,3 +101,4 @@ BOOST_AUTO_TEST_CASE(testLeja) {
   // more complex test case
   testLejaSinusWithNormalDistribution();
 }
+#endif
