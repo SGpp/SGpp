@@ -11,7 +11,6 @@
 
 #include <cmath>
 #include <vector>
-#include <iostream>
 
 // in %
 double tolerance = 0.01;

@@ -5,10 +5,6 @@
 
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 
-#ifndef USE_DLIB
-#define USE_DLIB
-#endif
-
 #ifdef USE_DLIB
 #include <dlib/optimization.h>
 #endif
