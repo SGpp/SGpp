@@ -42,10 +42,10 @@ Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
-    return sampleProvider->getAllSamples();
+    return sampleProvider->getAllSamples().release();
   } else {
     currentIteration++;
-    return sampleProvider->getNextSamples(config.batchSize);
+    return sampleProvider->getNextSamples(config.batchSize).release();
   }
 }
 

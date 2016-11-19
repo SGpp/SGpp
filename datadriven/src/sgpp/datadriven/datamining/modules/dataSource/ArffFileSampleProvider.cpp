@@ -47,17 +47,17 @@ void ArffFileSampleProvider::readFile(const std::string& fileName) {
   dataset = ARFFTools::readARFF(fileName);
 }
 
-Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
+std::unique_ptr<Dataset> ArffFileSampleProvider::getNextSamples(size_t howMany) {
   if ((dataset.getDimension() != 0) && (counter + howMany) < dataset.getNumberInstances()) {
-    return splitDataset(howMany);
+    return std::unique_ptr<Dataset>{splitDataset(howMany)};
   } else {
     throw base::data_exception("Demanded more samples then available.");
   }
 }
 
-Dataset* ArffFileSampleProvider::getAllSamples() {
+std::unique_ptr<Dataset> ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset(dataset);
+    return std::make_unique<Dataset>(dataset);
   } else {
     throw base::file_exception("No dataset loaded.");
   }

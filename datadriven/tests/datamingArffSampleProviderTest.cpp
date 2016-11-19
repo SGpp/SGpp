@@ -64,7 +64,7 @@ const double tolerance = 1E-5;
 BOOST_AUTO_TEST_CASE(arffTestReadFile) {
   auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath);
-  auto dataset = std::unique_ptr<Dataset>(sampleProvider.getAllSamples());
+  auto dataset = sampleProvider.getAllSamples();
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();
@@ -88,12 +88,6 @@ BOOST_AUTO_TEST_CASE(arffTestReadFile) {
     // changed, we need a else if here and a boost check small.
     BOOST_CHECK_CLOSE(classes.get(rowIdx), testValues[rowIdx], tolerance);
   }
-}
-
-BOOST_AUTO_TEST_CASE(arffTestGetDim) {
-  auto sampleProvider = ArffFileSampleProvider();
-  sampleProvider.readFile(datasetPath);
-  BOOST_CHECK_EQUAL(datasetDim, sampleProvider.getDim());
 }
 
 BOOST_AUTO_TEST_CASE(arffTestgetSize) {
