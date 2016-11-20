@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 
 #include <iomanip>
 #include <vector>
@@ -40,12 +40,12 @@ double doGaussLegendreQuadrature(double a, double b, LagrangePolynom& f) {
   size_t level = f.degree() + 1;
   base::DataVector roots;
   base::DataVector weights;
-  auto quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
   quadRule.getLevelPointsAndWeightsNormalized(level, roots, weights);
 
   // evaluate the Lagrange polynomial at the roots of the
   // Legendre polynomials
-  double width = (b - a) / 2.;
+  double width = b - a;
   double sum = 0.0;
   for (size_t i = 0; i < roots.getSize(); ++i) {
     sum += weights[i] * f.evaluate(width * roots[i] + a);

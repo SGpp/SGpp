@@ -7,13 +7,15 @@
 
 #ifdef USE_DLIB
 #include <dlib/optimization.h>
+#else
+#include <sgpp/combigrid/optimization/TrisectionOptimizer.hpp>
 #endif
 
-#include <functional>
-#include <vector>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -32,7 +34,6 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
                                              double lower_bound, double upper_bound,
                                              std::function<double(double)> weight_func,
                                              double epsilon) {
-#ifdef USE_DLIB
   // calculates the next NUMBER leja points
   for (int i = 0; i < number; ++i) {
     // find the local optimum
@@ -62,10 +63,18 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
 
       // optimize the remainder polynomial if the current patch is wide enough
       if (std::abs(x_lower - x_upper) > 1e-10) {
+#ifdef USE_DLIB
         try {
           y_val = dlib::find_min_single_variable(leja_func, x_val, x_lower, x_upper, epsilon, 500);
         } catch (dlib::optimize_single_variable_failure& e) {
         }
+#else
+        auto myLejaFunc = SingleFunction(leja_func);
+        auto result = TrisectionOptimizer(myLejaFunc)
+                          .refine(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
+        x_val = result.b;
+        y_val = result.fb;
+#endif /*USE_DLIB*/
       }
 
       // check if the maximum of the current patch is larger then
@@ -94,11 +103,6 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       sortedPoints.push_back(x_opt);
     }
   }
-
-#else
-  std::cerr << "Error in sgpp::combigrid::calc_leja_points: "
-            << "SG++ was compiled without Dlib support!\n";
-#endif /* USE_DLIB */
 }
 
 /**
@@ -106,7 +110,6 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
  * and searching via optimizer for the maximum
  */
 double LejaPointDistribution::calcStartingPoint(double epsilon) {
-#ifdef USE_DLIB
   // weight the weight function with the normal distribution
   std::function<double(double)> w = [this](double x) {
     const double factor = 0.2;
@@ -116,16 +119,17 @@ double LejaPointDistribution::calcStartingPoint(double epsilon) {
 
   // optimize it
   double x_val = 0.5;
+#ifdef USE_DLIB
   try {
     dlib::find_min_single_variable(w, x_val, 0.0, 1.0, epsilon, 100, 0.5);
   } catch (dlib::optimize_single_variable_failure& e) {
   }
-  return x_val;
 #else
-  std::cerr << "Error in sgpp::combigrid::calcPointDistribution: "
-            << "SG++ was compiled without Dlib support!\n";
-  return -1.0;
+  auto myFunc = SingleFunction(w);
+  auto result = TrisectionOptimizer(myFunc).refine(OptimizationGuess::initial(0.0, 1.0, myFunc));
+  x_val = result.b;
 #endif /* USE_DLIB */
+  return x_val;
 }
 
 LejaPointDistribution::LejaPointDistribution(SingleFunction weightFunction)
