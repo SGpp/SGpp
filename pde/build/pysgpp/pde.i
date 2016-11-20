@@ -3,6 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// Shared pointers.
+%shared_ptr(sgpp::pde::UpDownOneOpDim)
+%shared_ptr(sgpp::pde::UpDownOneOpDimWithShadow)
+%shared_ptr(sgpp::pde::OperationMatrixLTwoDotExplicitPeriodic)
+%shared_ptr(sgpp::pde::OperationMatrixLTwoDotPeriodic)
+%shared_ptr(sgpp::pde::OperationParabolicPDESolverSystemDirichlet)
+%shared_ptr(sgpp::pde::HeatEquationParabolicPDESolverSystem)
+%shared_ptr(sgpp::pde::OperationParabolicPDESolverSystemFreeBoundaries)
+%shared_ptr(sgpp::solver::OperationParabolicPDESolverSystem)
+%shared_ptr(sgpp::pde::OperationLaplaceLinear)
+%shared_ptr(sgpp::pde::OperationLaplaceLinearBoundary)
+%shared_ptr(sgpp::pde::OperationLaplaceModLinear)
+%shared_ptr(sgpp::pde::OperationLaplacePrewavelet)
+%shared_ptr(sgpp::pde::OperationLaplaceLinearStretched)
+%shared_ptr(sgpp::pde::OperationLaplaceLinearStretchedBoundary)
+
 // The Good, i.e. without any modifications
 %include "solver/src/sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"

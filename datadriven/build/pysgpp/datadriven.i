@@ -3,6 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// Shared pointers.
+%shared_ptr(sgpp::datadriven::DMSystemMatrixBase)
+%shared_ptr(sgpp::datadriven::DMSystemMatrix)
+%shared_ptr(sgpp::datadriven::DensitySystemMatrix)
+%shared_ptr(sgpp::datadriven::OperationRegularizationDiagonal)
+
 %{
 #include <sgpp/solver/TypesSolver.hpp>
 %}
