@@ -4,27 +4,19 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/optimization/Optimization.hpp>
+
+#ifdef USE_DLIB
+#include <dlib/optimization.h>
+#endif
+
 #include <functional>
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {
-
-const double epsilon = 0.00001;
-
-class leja_f : public optimize::func_base {
- public:
-  explicit leja_f(std::function<double(double)> f) { this->func = f; }
-  virtual ~leja_f() {}
-
-  double operator()(double x) { return func(x); }
-
- private:
-  std::function<double(double)> func;
-};
 
 /**
  * calculates Leja points
@@ -35,65 +27,86 @@ class leja_f : public optimize::func_base {
  * @param upper_bound upper bound for the range of the points
  * @param weight_func the weight function
  */
-void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points, int number,
-                      double lower_bound, double upper_bound,
-                      std::function<double(double)> weight_func) {
+void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
+                                             std::vector<double>& points, int number,
+                                             double lower_bound, double upper_bound,
+                                             std::function<double(double)> weight_func,
+                                             double epsilon) {
+#ifdef USE_DLIB
   // calculates the next NUMBER leja points
   for (int i = 0; i < number; ++i) {
-    std::vector<double> tries;
-    std::vector<double> values;
+    // find the local optimum
+    double x_opt = 0.0;
+    double y_min = 0.0;
 
-    double low, up;
+    // define remainder polynomial based on the current leja sequence
+    // stored in sortedPoints
+    std::function<double(double)> leja_func = [sortedPoints, weight_func](double x) {
+      double prod = 1;
+      for (size_t i = 0; i < sortedPoints.size(); ++i) {
+        prod *= std::abs(x - sortedPoints.at(i));
+      }
+      return -prod * weight_func(x);
+    };
+
+    // optimize each interval of the remainder polynomial
+    double x_lower = 0.0;
+    double x_upper = lower_bound;
     for (size_t j = 0; j <= sortedPoints.size(); ++j) {
-      low = (j == 0) ? lower_bound : sortedPoints.at(j - 1);
-      up = (j == sortedPoints.size()) ? upper_bound : sortedPoints.at(j);
+      // update the interval
+      x_lower = x_upper;
+      x_upper = (j < sortedPoints.size()) ? sortedPoints[j] : upper_bound;
 
-      std::function<double(double)> leja_func = [sortedPoints, weight_func](double x) {
-        double prod = 1;
-        for (size_t i = 0; i < sortedPoints.size(); ++i) {
-          prod *= std::abs(x - sortedPoints.at(i));
+      double x_val = (x_upper + x_lower) / 2.;
+      double y_val = 0.0;
+
+      // optimize the remainder polynomial if the current patch is wide enough
+      if (std::abs(x_lower - x_upper) > 1e-10) {
+        try {
+          y_val = dlib::find_min_single_variable(leja_func, x_val, x_lower, x_upper, epsilon, 500);
+        } catch (dlib::optimize_single_variable_failure& e) {
         }
-        return (-1) * prod * weight_func(x);
-      };
+      }
 
-      double x_val = (low + up) / 2;
-
-      leja_f f(leja_func);
-      double y_val = optimize::local_min(low, up, epsilon, f, x_val);
-
-      tries.push_back(x_val);
-      values.push_back(y_val);
-    }
-
-    double min_val = 100;
-    size_t idx = 0;
-    for (size_t j = 0; j < values.size(); ++j) {
-      if (values.at(j) < min_val) {
-        min_val = values.at(j);
-        idx = j;
+      // check if the maximum of the current patch is larger then
+      // the maximum of the previous ones
+      if (y_val < y_min) {
+        x_opt = x_val;
+        y_min = y_val;
       }
     }
 
-    double next_point = tries.at(idx);
-    points.push_back(next_point);
+    // add the current optimum to the sequence
+    if (x_opt < 0 || x_opt > 1) {
+      std::cout << "stop right here" << std::endl;
+    }
+    points.push_back(x_opt);
+
     // insertion sort
     for (size_t j = 0; j < sortedPoints.size(); ++j) {
-      if (sortedPoints.at(j) > next_point) {
-        sortedPoints.insert(sortedPoints.begin() + j, next_point);
+      if (sortedPoints.at(j) > x_opt) {
+        sortedPoints.insert(sortedPoints.begin() + j, x_opt);
         break;
       }
     }
-    if (sortedPoints.at(sortedPoints.size() - 1) < next_point) {
-      sortedPoints.push_back(next_point);
+
+    if (sortedPoints.at(sortedPoints.size() - 1) < x_opt) {
+      sortedPoints.push_back(x_opt);
     }
   }
+
+#else
+  std::cerr << "Error in sgpp::combigrid::calc_leja_points: "
+            << "SG++ was compiled without Dlib support!\n";
+#endif /* USE_DLIB */
 }
 
 /**
  * Calculates the Starting Point by weighting the weight function with a wide normal distribution
  * and searching via optimizer for the maximum
  */
-double LejaPointDistribution::calcStartingPoint() {
+double LejaPointDistribution::calcStartingPoint(double epsilon) {
+#ifdef USE_DLIB
   // weight the weight function with the normal distribution
   std::function<double(double)> w = [this](double x) {
     const double factor = 0.2;
@@ -102,12 +115,17 @@ double LejaPointDistribution::calcStartingPoint() {
   };
 
   // optimize it
-  leja_f f(w);
-  // starting x value
   double x_val = 0.5;
-  optimize::local_min(0.0, 1.0, epsilon, f, x_val);
-
+  try {
+    dlib::find_min_single_variable(w, x_val, 0.0, 1.0, epsilon, 100, 0.5);
+  } catch (dlib::optimize_single_variable_failure& e) {
+  }
   return x_val;
+#else
+  std::cerr << "Error in sgpp::combigrid::calcPointDistribution: "
+            << "SG++ was compiled without Dlib support!\n";
+  return -1.0;
+#endif /* USE_DLIB */
 }
 
 LejaPointDistribution::LejaPointDistribution(SingleFunction weightFunction)

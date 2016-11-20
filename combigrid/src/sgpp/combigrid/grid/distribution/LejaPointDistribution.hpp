@@ -17,11 +17,6 @@
 namespace sgpp {
 namespace combigrid {
 
-// used only internally and for the test cases
-void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points, int number,
-                      double lower_bound, double upper_bound,
-                      std::function<double(double)> weight_func);
-
 /**
  * Provides Leja points (which are nested, i. e. the set of n leja points is a subset of the set of
  * n+1 leja points). Also accepts a weight function to compute weighted Leja points.
@@ -33,7 +28,7 @@ class LejaPointDistribution : public AbstractPointDistribution {
 
   double startingPoint;
 
-  double calcStartingPoint();
+  double calcStartingPoint(double epsilon = 1e-12);
   // normal distribution to weight the weight function
   std::function<double(double)> normalDistribution;
 
@@ -44,6 +39,11 @@ class LejaPointDistribution : public AbstractPointDistribution {
   virtual ~LejaPointDistribution();
 
   virtual double compute(size_t numPoints, size_t j);
+
+  // used only internally and for the test cases
+  static void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points,
+                               int number, double lower_bound, double upper_bound,
+                               std::function<double(double)> weight_func, double epsilon = 1e-12);
 };
 
 } /* namespace combigrid */
