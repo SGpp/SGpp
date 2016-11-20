@@ -534,15 +534,15 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[19]->set(19, 0.017614007139150);
 }
 
-GaussLegendreQuadRule1D::~GaussLegendreQuadRule1D() {
-}
+GaussLegendreQuadRule1D::~GaussLegendreQuadRule1D() {}
 
 void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
-    DataVector& pcoordinates, DataVector& pweights) {
+                                                                 DataVector& pcoordinates,
+                                                                 DataVector& pweights) {
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
-      "GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized : "
-      "order of gauss quadrature has to be within {1, ..., 20}");
+        "GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized : "
+        "order of gauss quadrature has to be within {1, ..., 20}");
   }
 
   getLevelPointsAndWeights(level, pcoordinates, pweights);
@@ -555,6 +555,11 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
 
   // transform weights according to the volume of the linear transformation
   pweights.mult(0.5f);
+}
+
+GaussLegendreQuadRule1D& GaussLegendreQuadRule1D::getInstance() {
+  static GaussLegendreQuadRule1D gaussLegendreQuadRule1D;
+  return gaussLegendreQuadRule1D;
 }
 
 }  // namespace base

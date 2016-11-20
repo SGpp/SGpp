@@ -532,16 +532,16 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[19]->set(19, 0.000000000000126);
 }
 
-GaussHermiteQuadRule1D::~GaussHermiteQuadRule1D() {
-}
+GaussHermiteQuadRule1D::~GaussHermiteQuadRule1D() {}
 
 void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
-    DataVector& pcoordinates, DataVector& pweights, double mean,
-    double stdd) {
+                                                                DataVector& pcoordinates,
+                                                                DataVector& pweights, double mean,
+                                                                double stdd) {
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
-      "GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized : "
-      "order of gauss quadrature has to be within {1, ..., 20}");
+        "GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized : "
+        "order of gauss quadrature has to be within {1, ..., 20}");
   }
 
   getLevelPointsAndWeights(level, pcoordinates, pweights);
@@ -550,6 +550,11 @@ void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
   for (size_t i = 0; i < level; i++) {
     pcoordinates[i] = (pcoordinates[i] + mean) * stdd;
   }
+}
+
+GaussHermiteQuadRule1D& GaussHermiteQuadRule1D::getInstance() {
+  static GaussHermiteQuadRule1D gaussHermiteQuadRule1D;
+  return gaussHermiteQuadRule1D;
 }
 
 }  // namespace base
