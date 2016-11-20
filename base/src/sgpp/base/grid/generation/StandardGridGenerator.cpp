@@ -35,7 +35,7 @@ void StandardGridGenerator::regular(size_t level, double T) {
 void StandardGridGenerator::regularInter(size_t level,
                                          const std::vector<std::vector<size_t>>& terms, double T) {
   HashGenerator gen;
-  gen.regularInter(this->storage, level, terms, T);
+  gen.regularInter(this->storage, static_cast<level_t>(level), terms, T);
 }
 
 void StandardGridGenerator::cliques(size_t level, size_t clique_size) {

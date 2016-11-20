@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -15,11 +17,9 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/fista/FistaBase.hpp>
-#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,6 +31,8 @@ class RegressionLearner {
  public:
   // Fista and (Bi)-CG do not share a common interace.
   // This is why we need this slightly dirty solution.
+  // Excluded from SWIG.
+  #ifndef SWIG
   class Solver {
    public:
     enum class solverCategory { cg, fista, none } type = solverCategory::none;
@@ -111,6 +113,8 @@ class RegressionLearner {
       std::unique_ptr<sgpp::solver::FistaBase> solverFista;
     };
   };
+  #endif  // end inner class
+
   /**
    * @brief RegressionLearner
    * @param gridConfig
@@ -137,7 +141,6 @@ class RegressionLearner {
    * @param solverConfig is the solver used during each adaptivity step
    * @param finalSolverConfig is the solver used to build the final model
    * @param regularizationConfig
-   * @param terms is a vector that contains all desired interaction terms
    */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
                     sgpp::base::AdpativityConfiguration adaptivityConfig,

@@ -51,18 +51,15 @@ sgpp::datadriven::RegressionLearner getLearner(
 std::string showRegularizationConfiguration(
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig) {
   std::ostringstream ss;
-  switch (regularizationConfig.regType_) {
-    case sgpp::datadriven::RegularizationType::Diagonal:
-      ss << "type: DiagonalMatrix\t";
-      break;
-    case sgpp::datadriven::RegularizationType::Identity:
-      ss << "type: IdentityMatrix\t";
-      break;
-    case sgpp::datadriven::RegularizationType::Laplace:
-      ss << "type: Laplace\t";
-      break;
-    default:
-      ss << "type: unknown\t";
+  const auto regType = regularizationConfig.regType_;
+  if (regType == sgpp::datadriven::RegularizationType::Diagonal) {
+     ss << "type: DiagonalMatrix\t";
+  } else if (regType == sgpp::datadriven::RegularizationType::Identity) {
+     ss << "type: IdentityMatrix\t";
+  } else if (regType == sgpp::datadriven::RegularizationType::Laplace) {
+     ss << "type: Laplace\t";
+  } else {
+     ss << "type: unknown\t";
   }
 
   ss << "lambda: " << regularizationConfig.lambda_
