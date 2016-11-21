@@ -17,6 +17,9 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
   GaussHermiteQuadRule1D();
   ~GaussHermiteQuadRule1D() override;
 
+  // delete the copy constructor
+  GaussHermiteQuadRule1D(const GaussHermiteQuadRule1D& that) = delete;
+
   /**
    * load gauss quadrature points for standard normal weight function. The points
    * and the weights are generated with numpy.polynomial.hermite.hermgauss,

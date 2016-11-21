@@ -22,6 +22,9 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
   GaussLegendreQuadRule1D();
   ~GaussLegendreQuadRule1D() override;
 
+  // delete the copy constructor
+  GaussLegendreQuadRule1D(const GaussLegendreQuadRule1D& that) = delete;
+
   /**
    * the coordinates are normalized to [0, 1].
    *
