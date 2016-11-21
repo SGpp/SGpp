@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace combigrid {
 
-OptimizationGuess TrisectionOptimizer::refine(OptimizationGuess guess, size_t numIterations,
+OptimizationGuess TrisectionOptimizer::minimize(OptimizationGuess guess, size_t numIterations,
                                               size_t numCandidates) {
   auto oldHeap = std::make_shared<BinaryHeap<OptimizationGuess, std::greater<OptimizationGuess>>>();
   auto newHeap = std::make_shared<BinaryHeap<OptimizationGuess, std::greater<OptimizationGuess>>>();

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/optimization/TrisectionOptimizer.hpp>
+#include <sgpp/combigrid/optimization/MixedOptimizer.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -59,8 +59,8 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       // optimize the remainder polynomial if the current patch is wide enough
       if (std::abs(x_lower - x_upper) > 1e-10) {
         auto myLejaFunc = SingleFunction(leja_func);
-        auto result = TrisectionOptimizer(myLejaFunc)
-                          .refine(OptimizationGuess::initial(0.0, 1.0, myLejaFunc), 50, 5);
+        auto result =
+            MixedOptimizer(myLejaFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
         x_val = result.b;
         y_val = result.fb;
       }
@@ -108,7 +108,7 @@ double LejaPointDistribution::calcStartingPoint(double epsilon) {
   // optimize it
   double x_val = 0.5;
   auto myFunc = SingleFunction(w);
-  auto result = TrisectionOptimizer(myFunc).refine(OptimizationGuess::initial(0.0, 1.0, myFunc));
+  auto result = MixedOptimizer(myFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myFunc));
   x_val = result.b;
   return x_val;
 }
