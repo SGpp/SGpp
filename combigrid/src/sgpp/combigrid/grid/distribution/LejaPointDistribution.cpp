@@ -60,7 +60,7 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       if (std::abs(x_lower - x_upper) > 1e-10) {
         auto myLejaFunc = SingleFunction(leja_func);
         auto result = TrisectionOptimizer(myLejaFunc)
-                          .refine(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
+                          .refine(OptimizationGuess::initial(0.0, 1.0, myLejaFunc), 50, 5);
         x_val = result.b;
         y_val = result.fb;
       }
