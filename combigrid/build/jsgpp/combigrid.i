@@ -45,6 +45,12 @@
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
 
+%shared_ptr(sgpp::combigrid::LevelManager)
+%shared_ptr(sgpp::combigrid::AveragingLevelManager)
+%shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
+
+%shared_ptr(std::mutex)
+
 
 // %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<FloatScalarVector>)
 // %shared_ptr(sgpp::combigrid::AbstractPermutationIterator)
@@ -153,6 +159,10 @@ namespace std {
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+
+    // %template(CombiHierarchiesCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
+    // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
+    // %template(CombiEvaluatorsMultiCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     // %template(MultidimFunction) std::function<double(sgpp::base::DataVector const &)>;
 }
 
@@ -169,7 +179,23 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/LevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
+
+%include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
+%include "combigrid/src/sgpp/combigrid/threading/PtrGuard.hpp"
+
+// %include "combigrid/src/sgpp/combigrid/utils/BinaryHeap.hpp" // is a template
+%include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
+%include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
+
+// experimental
+
+%feature("director") sgpp::combigrid::MultiFunctionDirector;
+%include "combigrid/src/sgpp/combigrid/MultiFunctionDirector.hpp"
+
+%feature("director") sgpp::combigrid::SingleFunctionDirector;
+%include "combigrid/src/sgpp/combigrid/SingleFunctionDirector.hpp"
 
 #endif
