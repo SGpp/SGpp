@@ -231,7 +231,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     bKernel->start_rhs_generation(datasetVector, start_id, chunksize);
   }
 
-  void finalize_rhs_generation(sgpp::base::DataVector &b, size_t start_id, size_t chunksize) override {
+  void finalize_rhs_generation(sgpp::base::DataVector &b, size_t start_id,
+                               size_t chunksize) override {
     std::vector<T> bVector(b.getSize());
     bKernel->finalize_rhs_generation(bVector, start_id, chunksize);
     for (size_t i = 0; i < b.getSize(); i++)

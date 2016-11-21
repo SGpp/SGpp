@@ -19,12 +19,14 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include <exception>
 
 namespace sgpp {
 namespace datadriven {
 namespace DensityAVX {
 class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::OperationDensity {
  private:
+  size_t actual_gridsize;
   size_t used_gridsize;
   size_t dimensions;
 
@@ -41,8 +43,8 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     result = NULL;
     // Store grid into int array and add values until it is divisible through 128
     // (required for opencl comparison)
-    size_t actual_gridsize = grid.getSize();
-    used_gridsize = actual_gridsize + actual_gridsize % 128;
+    actual_gridsize = grid.getSize();
+    used_gridsize = actual_gridsize + 4 - actual_gridsize % 4;
     dimensions = grid.getDimension();
     gridpoints = new int[used_gridsize * 2 * dimensions];
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -65,15 +67,25 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     positions = new double[used_gridsize * dimensions];
     hs = new double[used_gridsize * dimensions];
     hs_inverse = new double[used_gridsize * dimensions];
-    for (size_t i = 0; i < actual_gridsize; ++i) {
-      for (size_t dim = 0; dim < dimensions; dim++) {
-        hs_inverse[i * dimensions + dim] = (1 << gridpoints[i*2*dimensions + 2*dim + 1]);
-          hs[i * dimensions + dim]= (static_cast<double>(1.0 /
-                                                    (1 << gridpoints[i*2*dimensions + 2*dim + 1])));
-          positions[i * dimensions + dim]= (static_cast<double>(gridpoints[i*2*dimensions + 2*dim]) /
-                              static_cast<double>(1 << gridpoints[i*2*dimensions + 2*dim + 1]));
+
+    for (size_t dim = 0; dim < dimensions; dim++) {
+      for (size_t i = 0; i < used_gridsize; ++i) {
+        hs_inverse[dim * used_gridsize + i] = ((int)1 << gridpoints[i*2*dimensions + 2*dim + 1]);
+        hs[dim * used_gridsize + i]
+            = (static_cast<double>(1.0 / ((int)1 << gridpoints[i*2*dimensions + 2*dim + 1])));
+        positions[dim * used_gridsize + i]
+            = (static_cast<double>(gridpoints[i*2*dimensions + 2*dim]) /
+               static_cast<double>(1 << gridpoints[i*2*dimensions + 2*dim + 1]));
       }
     }
+    // padding
+    // for (size_t i = actual_gridsize; i < used_gridsize; ++i) {
+    //   for (size_t d = 0; d < dimensions; d++) {
+    //     hs_inverse[i * dimensions + d] = 0;
+    //     hs[i * dimensions + d] = 0;
+    //     positions[i * dimensions + d] = 0;
+    //   }
+    // }
   }
   virtual ~OperationDensityMultiplicationAVX() {
     delete [] gridpoints;
@@ -94,6 +106,7 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   }
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
   virtual void start_partial_mult(double *alpha, int start_id, int chunksize) {
+    std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // Copy into SIMD vectors
     __m256d current_workitems;
     __m256d tmp;
@@ -108,26 +121,35 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     __m256d bitmask;
     __m256d bitmask2;
     __m256d zellenintegral;
-    for (int workitem = 0; workitem < chunksize; workitem+=4) {
+    for (int workitem = 0; workitem < used_gridsize; workitem+=4) {
       current_workitems = _mm256_setzero_pd();
       tmp = _mm256_setzero_pd();
       // load workitem positions
       for (size_t d = 0; d < dimensions; ++d) {
         workitem_positions[d] =
-            _mm256_loadu_pd(&positions[workitem * dimensions + start_id * dimensions + d]);
+            _mm256_loadu_pd(&positions[d * used_gridsize + workitem]);
         workitem_hs[d] =
-            _mm256_loadu_pd(&hs[workitem * dimensions + start_id * dimensions + d]);
+            _mm256_loadu_pd(&hs[d * used_gridsize + workitem]);
         workitem_hs_inverse[d] =
-            _mm256_loadu_pd(&hs_inverse[workitem * dimensions + start_id * dimensions + d]);
+            _mm256_loadu_pd(&hs_inverse[d * used_gridsize + workitem]);
       }
 
       for (size_t point = 0; point < used_gridsize; point++) {
         zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
         for (size_t dim = 0; dim < dimensions; dim++) {
           // load gridpoint positions;
-          current_positions = _mm256_loadu_pd(&positions[point * dimensions + dim]);
-          current_hs = _mm256_loadu_pd(&hs[point * dimensions + dim]);
-          current_hs_inverse = _mm256_loadu_pd(&hs_inverse[point * dimensions + dim]);
+          current_positions = _mm256_set_pd(positions[dim * used_gridsize + point],
+                                            positions[dim * used_gridsize + point],
+                                            positions[dim * used_gridsize + point],
+                                            positions[dim * used_gridsize + point]);
+          current_hs = _mm256_set_pd(hs[dim * used_gridsize + point],
+                                            hs[dim * used_gridsize + point],
+                                            hs[dim * used_gridsize + point],
+                                            hs[dim * used_gridsize + point]);
+          current_hs_inverse = _mm256_set_pd(hs_inverse[dim * used_gridsize + point],
+                                            hs_inverse[dim * used_gridsize + point],
+                                            hs_inverse[dim * used_gridsize + point],
+                                            hs_inverse[dim * used_gridsize + point]);
           tmp = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
           // Calculate distance
           distance = _mm256_sub_pd(current_positions, workitem_positions[dim]);
@@ -139,7 +161,7 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
           tmp_alternative = _mm256_fnmadd_pd(distance, current_hs_inverse,
                                  _mm256_set_pd(1.0, 1.0, 1.0, 1.0));
           tmp_alternative = _mm256_max_pd(tmp_alternative,_mm256_setzero_pd());
-          tmp = _mm256_fmadd_pd(tmp_alternative, current_hs, tmp);
+          tmp = _mm256_fmadd_pd(tmp_alternative, workitem_hs[dim], tmp);
           bitmask = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_EQ_OQ);
           tmp_alternative = _mm256_mul_pd(_mm256_set_pd(1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0), tmp);
           bitmask2 = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_NEQ_OQ);
@@ -148,14 +170,21 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
           zellenintegral = _mm256_mul_pd(zellenintegral, tmp);
         }
         current_workitems =
-            _mm256_fmadd_pd(zellenintegral, _mm256_set_pd(alpha[point], alpha[point], alpha[point],
-                                                                      alpha[point]),
-                                          current_workitems);
+            _mm256_fmadd_pd(zellenintegral,
+                            _mm256_set_pd(alpha[point], alpha[point], alpha[point], alpha[point]),
+                            current_workitems);
       }
-      double test[4];
-      _mm256_storeu_pd(&result[workitem], current_workitems);
+      if (workitem + 4 < actual_gridsize)
+        _mm256_storeu_pd(&result[workitem], current_workitems);
     }
   }
+  void print_avx_register(__m256d reg) {
+    double tmp_result[4];
+    _mm256_storeu_pd(tmp_result, reg);
+    std::cout << tmp_result[0] << " " << tmp_result[1] << " " << tmp_result[2] << " "
+              << tmp_result[3] << std::endl;
+  }
+  /// Just a dummy function
   virtual void finish_partial_mult(double *result, int start_id, int chunksize) {
   }
   /// Generates the right hand side vector for the density equation
