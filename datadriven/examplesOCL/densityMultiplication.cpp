@@ -24,9 +24,8 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 5, k = 5;
-  double lambda = 0.00001, treshold = 1.5;
-  std::string filename = "dataset2_dim10.arff";
+  size_t dimension = 2, tiefe = 5;
+  double lambda = 0.00001;
 
   // Create Grid
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dimension);
@@ -48,7 +47,7 @@ int main() {
     out_mult << result[i] << " ";
   }
 
-  for (size_t i = 0; i < 100; ++i)
+  for (size_t i = 0; i < gridsize; ++i)
     std::cout << result[i] << " ";
   out_mult.close();
 }
