@@ -4,12 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-
-#ifdef USE_DLIB
-#include <dlib/optimization.h>
-#else
 #include <sgpp/combigrid/optimization/TrisectionOptimizer.hpp>
-#endif
 
 #include <algorithm>
 #include <cmath>
@@ -63,18 +58,11 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
 
       // optimize the remainder polynomial if the current patch is wide enough
       if (std::abs(x_lower - x_upper) > 1e-10) {
-#ifdef USE_DLIB
-        try {
-          y_val = dlib::find_min_single_variable(leja_func, x_val, x_lower, x_upper, epsilon, 500);
-        } catch (dlib::optimize_single_variable_failure& e) {
-        }
-#else
         auto myLejaFunc = SingleFunction(leja_func);
         auto result = TrisectionOptimizer(myLejaFunc)
                           .refine(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
         x_val = result.b;
         y_val = result.fb;
-#endif /*USE_DLIB*/
       }
 
       // check if the maximum of the current patch is larger then
@@ -119,16 +107,9 @@ double LejaPointDistribution::calcStartingPoint(double epsilon) {
 
   // optimize it
   double x_val = 0.5;
-#ifdef USE_DLIB
-  try {
-    dlib::find_min_single_variable(w, x_val, 0.0, 1.0, epsilon, 100, 0.5);
-  } catch (dlib::optimize_single_variable_failure& e) {
-  }
-#else
   auto myFunc = SingleFunction(w);
   auto result = TrisectionOptimizer(myFunc).refine(OptimizationGuess::initial(0.0, 1.0, myFunc));
   x_val = result.b;
-#endif /* USE_DLIB */
   return x_val;
 }
 
