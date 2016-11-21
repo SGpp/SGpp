@@ -38,6 +38,7 @@ base/doc/doxygen/examples_*.doxy
 base/doc/doxygen/modules.doxy
 base/doc/doxygen/example_*.doxy
 combigrid/doc/doxygen/example_*.doxy
+combigrid/doc/doxygen/combigrid_gettingStarted_py.doxy
 datadriven/doc/doxygen/example_*.doxy
 finance/doc/doxygen/example_*.doxy
 misc/doc/doxygen/example_*.doxy
