@@ -13,8 +13,8 @@ class LinearQuadratureStrategy(HashQuadrature):
     Generic object for quadrature strategies
     """
 
-    def hasValue(self, gpi, d=None):
-        key = self._map.getKey([gpi], d)
+    def hasValue(self, gpi, d):
+        key = self._map.getKey(self._U[d], [gpi], d)
         if key in self._map:
             return True, key
         return False, key
@@ -67,24 +67,20 @@ class LinearQuadratureStrategy(HashQuadrature):
         """
         ans, err = 1.0, 0.0
 
-        available, key = self.hasValue(gp)
-        if not available:
-            # run over all dimensions
-            for d in xrange(gp.getDimension()):
-                # compute linear form for one entry
-                available, keyd = self.hasValue(gp, d)
-                if not available:
-                    val, erri = self.computeLinearFormEntry(gs, gp, basis, d)
-                    # store value
-                    self._map[keyd] = val, erri
-                else:
-                    val, erri = self._map[keyd]
+        # run over all dimensions
+        for d in xrange(gp.getDimension()):
+            # compute linear form for one entry
+            available, keyd = self.hasValue(gp, d)
+            if not available:
+                val, erri = self.computeLinearFormEntry(gs, gp, basis, d)
+                # store value
+                self._map[keyd] = val, erri
+            else:
+                val, erri = self._map[keyd]
 
-                # collect results
-                ans *= val
-                err += erri
-        else:
-            ans, err = self._map[key]
+            # collect results
+            ans *= val
+            err += erri
 
         return ans, err
 

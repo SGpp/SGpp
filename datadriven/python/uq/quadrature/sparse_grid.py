@@ -10,12 +10,11 @@ from pysgpp.pysgpp_swig import GridType_PolyClenshawCurtis, \
     GridType_LinearClenshawCurtisBoundary, GridType_ModLinearClenshawCurtis, \
     GridType_LinearTruncatedBoundary, GridType_Bspline, GridType_BsplineBoundary, \
     GridType_ModBspline, GridType_BsplineClenshawCurtis, \
-    GridType_ModBsplineClenshawCurtis
+    GridType_ModBsplineClenshawCurtis, GridType_ModLinear
 
 
 def getIntegral(grid, level, index):
     # create new grid
-    print grid.getTypeAsString()
     if grid.getType() in [GridType_LinearBoundary,
                           GridType_LinearTruncatedBoundary,
                           GridType_LinearL0Boundary]:

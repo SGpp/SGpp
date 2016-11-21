@@ -13,8 +13,8 @@ class BilinearQuadratureStrategy(HashQuadrature):
     Generic object for quadrature strategies
     """
 
-    def hasValue(self, gpi, gpj, d=None):
-        key = self._map.getKey([gpi, gpj], d)
+    def hasValue(self, gpi, gpj, d):
+        key = self._map.getKey(self._U[d], [gpi, gpj], d)
         if key in self._map:
             return True, key
         return False, key
@@ -93,24 +93,20 @@ class BilinearQuadratureStrategy(HashQuadrature):
         """
         ans, err = 1.0, 0.0
 
-        available, key = self.hasValue(gpi, gpj)
-        if not available:
-            # run over all dimensions
-            for d in xrange(gpi.getDimension()):
-                # compute linear form for one entry
-                available, keyd = self.hasValue(gpi, gpj, d)
-                if not available:
-                    val, erri = self.computeBilinearFormEntry(gs, gpi, basisi, gpj, basisj, d)
-                    # store value
-                    self._map[keyd] = val, erri
-                else:
-                    val, erri = self._map[keyd]
+        # run over all dimensions
+        for d in xrange(gpi.getDimension()):
+            # compute linear form for one entry
+            available, keyd = self.hasValue(gpi, gpj, d)
+            if not available:
+                val, erri = self.computeBilinearFormEntry(gs, gpi, basisi, gpj, basisj, d)
+                # store value
+                self._map[keyd] = val, erri
+            else:
+                val, erri = self._map[keyd]
 
-                # collect results
-                ans *= val
-                err += erri
-        else:
-            ans, err = self._map[key]
+            # collect results
+            ans *= val
+            err += erri
 
         return ans, err
 

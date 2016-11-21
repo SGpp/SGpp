@@ -103,7 +103,7 @@ class ASGCSampler(Sampler):
         p = DataVector(gs.getDimension())
         ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float')
         for i, gp in enumerate(newCollocationNodes):
-            gs.getCoordinates(gp, j)
+            gs.getCoordinates(gp, p)
             ans[i, :] = p.array()
 
         return ans

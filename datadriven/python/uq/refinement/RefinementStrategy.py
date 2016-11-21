@@ -4,9 +4,12 @@ from pysgpp.extensions.datadriven.uq.operations import (estimateConvergence,
                                estimateSurplus)
 from pysgpp import DataVector, DataMatrix, createOperationEvalNaive
 import numpy as np
+from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
 
 
 class Ranking(object):
@@ -17,7 +20,7 @@ class Ranking(object):
     def getKnowledgeType(self):
         return self._dtype
 
-    def update(self, grid, v, admissibleSet):
+    def update(self, grid, v, admissibleSet, params):
         return
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
@@ -47,7 +50,10 @@ class SquaredSurplusRanking(Ranking):
         self._dtype = KnowledgeTypes.SQUARED
 
     def rank(self, grid, gp, alphas, *args, **kws):
-        return np.abs(alphas[grid.getStorage().getSequenceNumber(gp)])
+        if grid.getStorage().isContaining(gp):
+            return np.abs(alphas[grid.getStorage().getSequenceNumber(gp)])
+        else:
+            raise AttributeError("this should never happen")
 
 
 class SurplusRatioRanking(Ranking):
@@ -67,7 +73,7 @@ class ExpectationValueOptRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinate(gp, j) for j in xrange(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -88,39 +94,61 @@ class ExpectationValueOptRanking(Ranking):
 
 class VarianceOptRanking(Ranking):
 
-    def __init__(self, strategy):
+    def __init__(self):
         super(self.__class__, self).__init__()
-        self._strategy = strategy
+        self._linearForm = LinearGaussQuadratureStrategy()
+        self._bilinearForm = BilinearGaussQuadratureStrategy()
         self._ranking = {}
 
-    def update(self, grid, v, admissibleSet):
+    def update(self, grid, v, admissibleSet, params):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} | v_i (2 A_i v_i - v_i b_i) |
+
+        @param grid: Grid grid
+        @param v: DataVector coefficients
+        @param admissibleSet: AdmissibleSet
+        """
+        # update the quadrature operations
+        self._linearForm.setGridType(grid.getType())
+        self._bilinearForm.setGridType(grid.getType())
+        U = params.getDistributions()
+        T = params.getTransformations()
+        self._linearForm.setDistributionAndTransformation(U, T)
+        self._bilinearForm.setDistributionAndTransformation(U, T)
+
         # prepare data
         gpsi = admissibleSet.values()
+        gs = grid.getStorage()
+        w = np.ndarray(len(gpsi))
+        for i, gp in enumerate(gpsi):
+            w[i] = v[gs.getSequenceNumber(gp)]
 
         # prepare list of grid points
-        gs = grid.getStorage()
-        gpsj = [None] * gs.size()
-        for i in xrange(gs.size()):
+        gpsj = [None] * gs.getSize()
+        for i in xrange(gs.getSize()):
             gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)
-        A = self._strategy.computeBilinearFormByList(basis, gpsi, gpsj)
+        A, _ = self._bilinearForm.computeBilinearFormByList(gs, gpsi, basis, gpsj, basis)
         # compute the expectation value term for the new points
-        b = self._strategy.computeBilinearFormIdentity(basis, gpsi)
+        b, _ = self._linearForm.computeLinearFormByList(gs, gpsi, basis)
 
         # update the ranking
-        values = self.__computeRanking(v, A, b)
+        v = v.array()
+        values = np.abs(w * (2 * np.dot(A, v) - w * b))
         self._ranking = {}
-        for i, gpi in enumerate(admissibleSet.values()):
-            self._ranking[gpi.hash()] = values[i]
+        for i, gpi in enumerate(gpsi):
+            self._ranking[gpi.getHash()] = values[i]
 
 #         fig = plt.figure()
 #         p = DataVector(gs.getDimension())
 #         plotDensity2d(J(U))
 #         for gp in admissibleSet.values():
 #             gp.getStandardCoordinates(p)
-#             r = self._ranking[gp.hash()]
+#             r = self._ranking[gp.getHash()]
 #             plt.plot(p[0], p[1], marker="o")
 #             plt.text(p[0], p[1], "%i" % r,
 #                      color='yellow', fontsize=12)
@@ -129,37 +157,9 @@ class VarianceOptRanking(Ranking):
 #         fig.show()
 #         plt.show()
 
-    def __computeRanking(self, v, A, b):
-        """
-        Compute ranking for variance estimation
-
-        \argmax_{i \in \A} | v (2 Av - vb) |
-
-        @param v: DataVector, coefficients of known grid points
-        @param A: DataMatrix, stiffness matrix
-        @param b: DataVector, squared expectation value contribution
-        @return: numpy array, contains the ranking for the given samples
-        """
-        # update the ranking
-        av = DataVector(A.getNrows())
-        av.setAll(0.0)
-        # = Av
-        for i in xrange(A.getNrows()):
-            for j in xrange(A.getNcols()):
-                av[i] += A.get(i, j) * v[j]
-        av.mult(2.)  # = 2 * Av
-        b.componentwise_mult(v)  # = v * b
-        av.sub(b)  # = 2 * Av - v * b
-
-        w = DataVector(v)
-        w.componentwise_mult(av)  # = v * (2 * Av - v * b)
-        w.abs()  # = | v * (2 * Av - v * b) |
-
-        return w.array()
-
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
-        return self._ranking[gp.hash()]
+        return self._ranking[gp.getHash()]
 
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
@@ -189,8 +189,8 @@ class VarianceBFRanking(Ranking):
 
         # prepare list of grid points
         gs = grid.getStorage()
-        gpsj = [None] * gs.size()
-        for i in xrange(gs.size()):
+        gpsj = [None] * gs.getSize()
+        for i in xrange(gs.getSize()):
             gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
@@ -209,14 +209,14 @@ class VarianceBFRanking(Ranking):
         values = self.__computeRanking(v, w, A, b)
         self._ranking = {}
         for i, gpi in enumerate(admissibleSet.values()):
-            self._ranking[gpi.hash()] = values[i]
+            self._ranking[gpi.getHash()] = values[i]
 
 #         fig = plt.figure()
 #         p = DataVector(gs.getDimension())
 #         plotDensity2d(J(U))
 #         for gp in admissibleSet.values():
 #             gp.getStandardCoordinates(p)
-#             r = self._ranking[gp.hash()]
+#             r = self._ranking[gp.getHash()]
 #             plt.plot(p[0], p[1], marker="o")
 #             plt.text(p[0], p[1], "%i" % r,
 #                      color='yellow', fontsize=12)
@@ -254,7 +254,7 @@ class VarianceBFRanking(Ranking):
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
-        return self._ranking[gp.hash()]
+        return self._ranking[gp.getHash()]
 
 
 class ExpectationValueBFRanking(Ranking):

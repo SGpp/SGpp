@@ -4,7 +4,8 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
-from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
+from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
@@ -22,22 +23,23 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
-        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
+        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid, self._gridType)
+        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd, self._gridType)
 
         xlow = max(xlowi, xlowj)
         xhigh = min(xhighi, xhighj)
 
         # same level, different index
-        if lid == ljd and iid != ijd and lid > 0:
+        if self._gridType not in bsplineGridTypes and lid == ljd and iid != ijd and lid > 0:
             val = err = 0
         # the support does not overlap
-        elif lid != ljd and xlow >= xhigh:
+        elif self._gridType not in bsplineGridTypes and lid != ljd and xlow >= xhigh:
             val = err = 0
         else:
             # ----------------------------------------------------
             # use scipy for integration
-            if self._U is None:
+            if self._U is None or (isinstance(self._U[d], Uniform) and \
+                                   self._U[d].getBounds() == [0.0, 1.0]):
                 def f(p):
                     return basisi.eval(lid, iid, p) * \
                         basisj.eval(ljd, ijd, p)
@@ -54,10 +56,9 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
             else:
                 xcenter = gs.getCoordinate(gpj, d)
 
-            sleft, err1dleft = self.quad(f, xlow, xcenter,
-                                         deg=2 * (gpi.getLevel(d) + 1) + 1)
-            sright, err1dright = self.quad(f, xcenter, xhigh,
-                                           deg=2 * (gpi.getLevel(d) + 1) + 1)
+            deg = 2 * (gpi.getLevel(d) + 1) + 1
+            sleft, err1dleft = self.quad(f, xlow, xcenter, deg=deg)
+            sright, err1dright = self.quad(f, xcenter, xhigh, deg=deg)
 
             val = val * (sleft + sright)
             err += val * (err1dleft + err1dright)

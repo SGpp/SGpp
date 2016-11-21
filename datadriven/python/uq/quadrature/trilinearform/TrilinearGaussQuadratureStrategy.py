@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, bsplineGridTypes
 
 
 class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
@@ -28,9 +28,9 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of all
         # three basis functions
-        xlowk, xhighk = getBoundsOfSupport(gs, lkd, ikd)
-        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
-        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
+        xlowk, xhighk = getBoundsOfSupport(gs, lkd, ikd, self._gridType)
+        xlowi, xhighi = getBoundsOfSupport(gs, lid, iid, self._gridType)
+        xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd, self._gridType)
 
         # compute overlapping support
         xlow = max(xlowk, xlowi, xlowj)
@@ -54,10 +54,12 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
             else:
                 xcenter = gs.getCoordinate(gpk, d)
 
-            sleft, err1dleft = self.quad(f, xlow, xcenter,
-                                         deg=2 * (gpi.getLevel(d) + 1) + 1)
-            sright, err1dright = self.quad(f, xcenter, xhigh,
-                                           deg=2 * (gpi.getLevel(d) + 1) + 1)
+            deg = None
+            if self._gridType not in bsplineGridTypes:
+                deg = 2 * (gpi.getLevel(d) + 1) + 1
+
+            sleft, err1dleft = self.quad(f, xlow, xcenter, deg=deg)
+            sright, err1dright = self.quad(f, xcenter, xhigh, deg=deg)
 #             # -----------------------------------------
 #             # plot the basis
 #             import matplotlib.pyplot as plt

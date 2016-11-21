@@ -4,7 +4,7 @@ from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadrature
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 
 
-def __doMarginalize(grid, alpha, dd, measure=None):
+def __doMarginalize(grid, alpha, linearForm, dd, measure=None):
     gs = grid.getStorage()
 
     dim = gs.getDimension()
@@ -66,10 +66,10 @@ def __doMarginalize(grid, alpha, dd, measure=None):
             q, err = getIntegral(grid, dd_level, dd_index), 0.
         else:
             dist, trans = measure[0][dd], measure[1][dd]
-            lf = LinearGaussQuadratureStrategy([dist], [trans])
+            linearForm.setDistributionAndTransformation([dist], [trans])
             gpdd = HashGridPoint(1)
             gpdd.set(0, dd_level, dd_index)
-            q, err = lf.computeLinearFormByList(gs, [gpdd], basis)
+            q, err = linearForm.computeLinearFormByList(gs, [gpdd], basis)
             q = q[0] * trans.vol()
             err *= trans.vol()
 
@@ -80,13 +80,13 @@ def __doMarginalize(grid, alpha, dd, measure=None):
     return n_grid, n_alpha, err
 
 
-def doMarginalize(grid, alpha, dd, measure=None):
+def doMarginalize(grid, alpha, linearForm, dd, measure=None):
     if isinstance(dd, (int, long)):
-        return __doMarginalize(grid, alpha, dd)
+        return __doMarginalize(grid, alpha, linearForm, dd)
 
     n_grid, n_alpha = grid, DataVector(alpha)
 
     for d in sorted(dd, reverse=True):
-        n_grid, n_alpha, err = __doMarginalize(n_grid, n_alpha, d, measure=measure)
+        n_grid, n_alpha, err = __doMarginalize(n_grid, n_alpha, linearForm, d, measure=measure)
 
     return n_grid, n_alpha, err

@@ -22,8 +22,20 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         # system matrices for mean and mean^2
         self.A_mean = {}
         self.A_var = {}
+        self.linearForm = None
+        self.bilinearForm = None
+        self.trilinearForm = None
+
+    def initQuadratureStrategy(self, grid):
+        if self.linearForm is None:
+            self.linearForm = LinearGaussQuadratureStrategy(grid.getType())
+        if self.bilinearForm is None:
+            self.bilinearForm = BilinearGaussQuadratureStrategy(grid.getType())
+        if self.trilinearForm is None:
+            self.trilinearForm = TrilinearGaussQuadratureStrategy(grid.getType())
 
     def getSystemMatrixForMean(self, grid, W, D):
+        self.initQuadratureStrategy(grid)
         hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
         if hash_value not in self.A_var:
             self.A_mean[hash_value] = self.computeSystemMatrixForMean(grid, W, D)
@@ -52,9 +64,9 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 gpsj, basisj = project(dist.grid, range(len(dims)))
 
                 # compute the bilinear form
-                bf = BilinearGaussQuadratureStrategy()
-                A, erri = bf.computeBilinearFormByList(gpsi, basisi,
-                                                       gpsj, basisj)
+                self.bilinearForm.setDistributionAndTransformation([dist], [trans])
+                A, erri = self.bilinearForm.computeBilinearFormByList(gpsi, basisi,
+                                                                      gpsj, basisj)
                 # weight it with the coefficient of the density function
                 tmp = A.dot(dist.alpha.array())
             else:
@@ -66,8 +78,8 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     dist = [dist]
                     trans = [trans]
 
-                lf = LinearGaussQuadratureStrategy(dist, trans)
-                tmp, erri = lf.computeLinearFormByList(gs, gpsi, basisi)
+                self.linearForm.setDistributionAndTransformation(dist, trans)
+                tmp, erri = self.linearForm.computeLinearFormByList(gs, gpsi, basisi)
 
             # print error stats
             # print "%s: %g -> %g" % (str(dims), err, err + D[i].vol() * erri)
@@ -83,6 +95,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
 
     def getSystemMatrixForVariance(self, grid, W, D):
+        self.initQuadratureStrategy(grid)
         hash_value = (grid.hash_hexdigest(), hash(tuple(W)), hash(tuple(D)))
         if hash_value not in self.A_var:
             self.A_var[hash_value] = self.computeSystemMatrixForVariance(grid, W, D)
@@ -110,12 +123,12 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 # the current dimensions
                 gpsk, basisk = project(dist.grid, range(len(dims)))
                 # compute the bilinear form
-                tf = TrilinearGaussQuadratureStrategy([dist], trans)
-                A_idim, erri = tf.computeTrilinearFormByList(ngs,
-                                                             gpsk, basisk,
-                                                             dist.alpha,
-                                                             psi, basisi,
-                                                             psi, basisi)
+                self.trilinearForm.setDistributionAndTransformation([dist], [trans])
+                A_idim, erri = self.trilinearForm.computeTrilinearFormByList(ngs,
+                                                                             gpsk, basisk,
+                                                                             dist.alpha,
+                                                                             psi, basisi,
+                                                                             psi, basisi)
             else:
                 # we compute the bilinear form of the grids
                 # compute the bilinear form
@@ -123,10 +136,10 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                     dist = [dist]
                     trans = [trans]
 
-                bf = BilinearGaussQuadratureStrategy(dist, trans)
-                A_idim, erri = bf.computeBilinearFormByList(ngs,
-                                                            gpsi, basisi,
-                                                            gpsi, basisi)
+                self.bilinearForm.setDistributionAndTransformation(dist, trans)
+                A_idim, erri = self.bilinearForm.computeBilinearFormByList(ngs,
+                                                                           gpsi, basisi,
+                                                                           gpsi, basisi)
             # accumulate the results
             A_var *= A_idim
 
