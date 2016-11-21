@@ -6,8 +6,8 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 
 #include <cmath>
 #include <vector>
@@ -83,10 +83,10 @@ void testLejaSinusWithNormalDistribution() {
   BOOST_CHECK_CLOSE(leja.compute(0, 0), 0.5, tolerance);
 
   // check the next few points
-  BOOST_CHECK_CLOSE(leja.compute(1, 1), 0.22614641471525609, tolerance);
-  BOOST_CHECK_CLOSE(leja.compute(1, 2), 0.81695850918945612, tolerance);
-  BOOST_CHECK_CLOSE(leja.compute(1, 3), 0.088181946121442964, tolerance);
-  BOOST_CHECK_CLOSE(leja.compute(1, 4), 0.92906611726964328, tolerance);
+  BOOST_CHECK_CLOSE(leja.compute(1, 1), 1 - 0.22614641471525609, tolerance);
+  BOOST_CHECK_CLOSE(leja.compute(1, 2), 1 - 0.81695850918945612, tolerance);
+  BOOST_CHECK_CLOSE(leja.compute(1, 3), 1 - 0.088181946121442964, tolerance);
+  BOOST_CHECK_CLOSE(leja.compute(1, 4), 1 - 0.92906611726964328, tolerance);
 }
 
 /**
