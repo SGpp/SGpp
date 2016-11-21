@@ -11,7 +11,7 @@ from pysgpp import Grid, HashRefinement, HashGridPoint, \
     SurplusRefinementFunctor, DataVector, SubspaceRefinement
 
 
-class Test_SubspaceANOVA(unittest.TestCase):
+class TestSubspaceRefinement(unittest.TestCase):
 
 
 
@@ -40,7 +40,6 @@ class Test_SubspaceANOVA(unittest.TestCase):
         decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
-            print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 33)
         
@@ -64,7 +63,6 @@ class Test_SubspaceANOVA(unittest.TestCase):
         decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
-            print i, HashGridPoint.toString()
 
         self.assertEqual(self.grid.getSize(), 33)
         
