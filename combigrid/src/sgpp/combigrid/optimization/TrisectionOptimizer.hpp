@@ -16,7 +16,7 @@ class TrisectionOptimizer {
  public:
   explicit TrisectionOptimizer(SingleFunction f) : f(f) {}
 
-  OptimizationGuess refine(OptimizationGuess guess, size_t numIterations = 50,
+  OptimizationGuess minimize(OptimizationGuess guess, size_t numIterations = 50,
                            size_t numCandidates = 1);
 };
 
