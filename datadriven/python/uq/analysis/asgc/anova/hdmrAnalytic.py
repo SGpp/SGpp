@@ -92,7 +92,7 @@ class HDMRAnalytic(object):
         Sort keys with respect (1) to their length and (2) their lexical order
         @param keys:
         """
-        ans = [tuple()] * len(keys)
+        ans = [None] * len(keys)
         ix = 0
         for x in sorted(np.unique(map(len, keys))):
             for ck in sorted(filter(lambda k: len(k) == x, keys)):
@@ -141,7 +141,9 @@ class HDMRAnalytic(object):
                 expec[tuple([d for di in perm for d in di])] = grid, alpha
 
                 if self._verbose:
-                    print "L2 err = %g" % err
+                    print "# dims = %i, # grid points = %i, L2 err = %g" % (grid.getStorage().getDimension(),
+                                                                            grid.getSize(),
+                                                                            err)
 
                 # plot result
 #                 if len(perm) == 1:

@@ -9,7 +9,8 @@ from pysgpp import (DataVector, HashGridPoint,
                     GridType_PolyBoundary)
 
 import numpy as np
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, \
+    polyGridTypes, bsplineGridTypes, linearGridTypes
 from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 
@@ -120,12 +121,7 @@ class RefinementManager(object):
 
     def refineGrid(self, grid, knowledge, params=None, qoi="_", refinets=[0]):
         # check if this method is used in the right context
-        if grid.getType() not in (GridType_Linear,
-                                  GridType_LinearL0Boundary,
-                                  GridType_LinearBoundary,
-                                  GridType_ModLinear,
-                                  GridType_Poly,
-                                  GridType_PolyBoundary):
+        if grid.getType() not in polyGridTypes + bsplineGridTypes + linearGridTypes:
                 raise AttributeError('Grid type %s is not supported' %
                                      grid.getType())
 
@@ -169,7 +165,7 @@ class RefinementManager(object):
             # get surpluses
             alphas = knowledge.getAlpha(qoi, t, dtype)
             # update refinement criterion
-            self._criterion.update(grid, alphas, self._admissibleSet)
+            self._criterion.update(grid, alphas, self._admissibleSet, params)
             # rank each admissible point
             for j, gp in enumerate(data):
                 # run over all time steps for current grid point

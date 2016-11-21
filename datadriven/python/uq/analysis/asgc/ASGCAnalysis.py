@@ -165,7 +165,7 @@ class ASGCAnalysis(Analysis):
     # ----------------------------------------------------------------
     # sensitivity analysis
     # ----------------------------------------------------------------
-    def getAnovaDecomposition(self, t=0, dtype="analytical", *args, **kws):
+    def getAnovaDecomposition(self, t=0, *args, **kws):
         # init dictionary
         if self._qoi not in self.__anova:
             self.__anova[self._qoi] = {}
@@ -178,11 +178,7 @@ class ASGCAnalysis(Analysis):
         grid, alpha = self.__knowledge\
                           .getSparseGridFunction(self._qoi, t=t,
                                                  dtype=KnowledgeTypes.SIMPLE)
-        if dtype == "interpolation":
-            anova = HDMR(grid, alpha, self.__params, *args, **kws)
-        else:
-            anova = HDMRAnalytic(grid, alpha, self.__params, *args, **kws)
-#         anova = HDMR(grid, alpha, self.__params, *args, **kws)
+        anova = HDMRAnalytic(grid, alpha, self.__params, *args, **kws)
         anova.doDecomposition()
 
         # store it ...

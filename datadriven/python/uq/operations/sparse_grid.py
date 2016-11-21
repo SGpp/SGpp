@@ -34,34 +34,56 @@ from pysgpp._pysgpp_swig import GridType_BsplineBoundary_swigconstant, \
 
 
 #######################################################################
+bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
+                            GridType_BsplineClenshawCurtis]
+bsplineNoBoundaryGridTypes = [GridType_Bspline,
+                              GridType_ModBspline,
+                              GridType_ModBsplineClenshawCurtis]
+bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
+
+polyBoundaryGridTypes = [GridType_PolyBoundary,
+                         GridType_PolyClenshawCurtisBoundary]
+polyNoBoundaryGridTypes = [GridType_Poly,
+                           GridType_ModPoly,
+                           GridType_PolyClenshawCurtis,
+                           GridType_ModPolyClenshawCurtis]
+polyGridTypes = polyNoBoundaryGridTypes + polyBoundaryGridTypes
+
+linearBoundaryGridTypes = [GridType_LinearBoundary,
+                           GridType_LinearL0Boundary,
+                           GridType_LinearTruncatedBoundary,
+                           GridType_LinearClenshawCurtisBoundary]
+linearNoBoundaryGridTypes = [GridType_Linear,
+                             GridType_ModLinear,
+                             GridType_LinearClenshawCurtis,
+                             GridType_ModLinearClenshawCurtis]
+linearGridTypes = linearNoBoundaryGridTypes + linearBoundaryGridTypes
+#######################################################################
+
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
     deg = max(deg, grid.getDegree())
 
     # print gridType, deg
-    if deg > 1:
-        if gridType in [GridType_LinearBoundary, GridType_PolyBoundary,
-                        GridType_LinearL0Boundary]:
-            return Grid.createPolyBoundaryGrid(dim, deg)
-        elif gridType in [GridType_Linear, GridType_Poly]:
-            return Grid.createPolyGrid(dim, deg)
-        elif gridType in [GridType_LinearClenshawCurtis, GridType_PolyClenshawCurtis]:
-            return Grid.createPolyClenshawCurtisGrid(dim, deg)
-        elif gridType in [GridType_LinearClenshawCurtisBoundary,
-                          GridType_PolyClenshawCurtisBoundary]:
-            return Grid.createPolyClenshawCurtisBoundaryGrid(dim, deg)
-        elif gridType in [GridType_ModLinear, GridType_ModPoly]:
-            return Grid.createModPolyGrid(dim, deg)
-        elif gridType in [GridType_ModLinearClenshawCurtis,
-                          GridType_ModPolyClenshawCurtis]:
-            return Grid.createModPolyClenshawCurtisGrid(dim, deg)
-        else:
-            raise Exception('unknown grid type %s' % gridType)
+    if deg > 1 and gridType in [GridType_Linear]:
+        return Grid.createPolyGrid(dim, deg)
+    if deg > 1 and gridType in [GridType_LinearBoundary,
+                                GridType_LinearL0Boundary]:
+        return Grid.createPolyBoundaryGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_LinearClenshawCurtis]:
+        return Grid.createPolyClenshawCurtisGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_LinearClenshawCurtisBoundary]:
+        return Grid.createPolyClenshawCurtisBoundaryGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_ModLinear]:
+        return Grid.createModPolyGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_ModLinearClenshawCurtis]:
+        return Grid.createModPolyClenshawCurtisGrid(dim, deg)
     else:
         gridConfig = RegularGridConfiguration()
         gridConfig.type_ = gridType
-        gridConfig.dim_ = grid.getStorage().getDimension()
+        gridConfig.dim_ = dim
+        gridConfig.maxDegree_ = deg
         return Grid.createGrid(gridConfig)
 
 
@@ -808,16 +830,29 @@ def balance(grid):
     return newgps
 
 
-def getBoundsOfSupport(gs, level, index):
+def getBoundsOfSupport(gs, level, index, gridType):
     if level > 0:
-        gp = HashGridPoint(1)
-        gp.set(0, level, index)
-        gp.getLeftBoundaryPoint(0)
-        xleft = gs.getCoordinate(gp, 0)
-        gp.set(0, level, index)
-        gp.getRightBoundaryPoint(0)
-        xright = gs.getCoordinate(gp, 0)
-        return xleft, xright
+        if gridType in bsplineGridTypes:
+            # this is just an approximation of the real boundaries
+            gp = HashGridPoint(1)
+            gp.set(0, level, index)
+            xcenter = gs.getCoordinate(gp, 0)
+            gp.getLeftBoundaryPoint(0)
+            xleft = gs.getCoordinate(gp, 0)
+            gp.set(0, level, index)
+            gp.getRightBoundaryPoint(0)
+            xright = gs.getCoordinate(gp, 0)
+            return (max(0.0, xcenter - level * (xcenter - xleft)),
+                    min(1.0, xcenter + level * (xright - xcenter)))
+        else:
+            gp = HashGridPoint(1)
+            gp.set(0, level, index)
+            gp.getLeftBoundaryPoint(0)
+            xleft = gs.getCoordinate(gp, 0)
+            gp.set(0, level, index)
+            gp.getRightBoundaryPoint(0)
+            xright = gs.getCoordinate(gp, 0)
+            return xleft, xright
     else:
         return 0., 1.
 
