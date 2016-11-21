@@ -97,7 +97,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 # Check if point is refinable
                 #
 
-                if storage.has_key(leftChild) or storage.has_key(rightChild):
+                if storage.isContaining(leftChild) or storage.isContaining(rightChild):
                     continue
 
                 #

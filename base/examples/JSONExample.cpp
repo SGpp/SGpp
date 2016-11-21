@@ -3,17 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../src/sgpp/base/tools/json/JSON.hpp"
-#include "../src/sgpp/base/tools/json/json_exception.hpp"
-
-#include "../src/sgpp/base/tools/json/TextNode.hpp"
 /**
- * \page json_example_cpp JSONExample.cpp
+ * \page example_json_cpp Using JSON
  *
  * This example demonstrates how to use the basic functionality of SG++ JSON API.
  * The goal of this API is to facilitate generation and parsing of complex configuration files.
  * Also it permits easy but limited object serialization functionality.
  */
+
+#include "../src/sgpp/base/tools/json/JSON.hpp"
+#include "../src/sgpp/base/tools/json/json_exception.hpp"
+
+#include "../src/sgpp/base/tools/json/TextNode.hpp"
+
 int main(int argc, char **argv) {
   try {
     /**
