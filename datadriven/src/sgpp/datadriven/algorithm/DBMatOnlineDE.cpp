@@ -51,6 +51,7 @@ void DBMatOnlineDE::readOffline(DBMatOffline* o) {
 }
 
 void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_b, bool do_cv, std::list<size_t> *deletedPoints, unsigned int newPoints) {
+  if (m.getNrows() > 0) {
 	
 	sgpp::base::DataMatrix* lhsMatrix = offlineObject_->getDecomposedMatrix();
 
@@ -122,11 +123,11 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 	}
 
 	//Solve the system:
-	//if (alpha_ != NULL)
-	//	delete alpha_;
+	if (alpha_ != NULL)
+		delete alpha_;
+	alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
 
-	//alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
-        alpha_->resizeZero(lhsMatrix->getNcols());
+        //alpha_->resizeZero(lhsMatrix->getNcols());
 
 	DBMatDecompostionType type = offlineObject_->getConfig()->decomp_type_;
 	if (type == DBMatDecompLU) {
@@ -191,6 +192,7 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 				"Unsupported decomposition type!");
 	}
 	functionComputed_ = true;
+  }
 
 }
 

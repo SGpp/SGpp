@@ -25,6 +25,8 @@ class LearnerSVM {
   std::shared_ptr<base::DataVector> trainLabels;
   std::shared_ptr<base::DataMatrix> testData;
   std::shared_ptr<base::DataVector> testLabels;
+  std::shared_ptr<base::DataMatrix> validData;
+  std::shared_ptr<base::DataVector> validLabels;
   
   std::shared_ptr<PrimalDualSVM> svm;
 
@@ -48,7 +50,9 @@ class LearnerSVM {
   virtual ~LearnerSVM();
   
   virtual void initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
-                          base::DataMatrix& pTestData, base::DataVector& pTestLabels);
+                          base::DataMatrix& pTestData, base::DataVector& pTestLabels,
+                          std::shared_ptr<base::DataMatrix> pValidData,
+                          std::shared_ptr<base::DataVector> pValidLabels);
 
   /**
    * Implements support vector learning with sparse grid kernels.
@@ -56,6 +60,10 @@ class LearnerSVM {
    * @param 
    * */
   virtual void train(size_t dataNum);
+
+  virtual void storeResults(sgpp::base::DataMatrix& testDataset,
+                            sgpp::base::DataVector& testLabels,
+                            double threshold);
 
   virtual double getAccuracy(sgpp::base::DataMatrix& testDataset,
                              const sgpp::base::DataVector& classesReference,
@@ -68,7 +76,11 @@ class LearnerSVM {
   virtual void predict(sgpp::base::DataMatrix& testData,
                        sgpp::base::DataVector& computedLabels);  
 
+  virtual double getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
+                          std::string errorType);
+
   double error;
+  sgpp::base::DataVector avgErrors;
 
 };
 

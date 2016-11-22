@@ -152,8 +152,10 @@ void ImpurityRefinement::refineGridpointsCollection(
     point.setLeaf(false); // this is done within refineGridpoint() already    
   }
   // if SVM learner -> extend w1 and w2 vectors
-  for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
-    impurityIndicator.update(storage.getPoint(seqNr));
+  if ( (impurityIndicator.w1 != NULL) && (impurityIndicator.w1 != NULL) && (impurityIndicator.alphas != NULL) ) {
+    for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
+      impurityIndicator.update(storage.getPoint(seqNr));
+    }
   }
   collection.empty();
 }

@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
-  gridConfig.level_ = 2;
+  gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
