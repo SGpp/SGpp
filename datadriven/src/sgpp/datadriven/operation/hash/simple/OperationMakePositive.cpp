@@ -45,6 +45,7 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
   size_t candidateSearchMaxLevel = maxLevel;
   if (maxLevel == 0) {
     candidateSearchMaxLevel = gridStorage.getMaxLevel();
+    maxLevel = candidateSearchMaxLevel;
   }
   minimumLevelSum = numDims;
   maximumLevelSum = maxLevel * numDims;
@@ -149,7 +150,6 @@ void OperationMakePositive::addFullGridPoints(
   // compute the function values of the new candidates
   base::DataMatrix data(numCandidates, numDims);
   for (size_t i = 0; i < candidates.size(); ++i) {
-    gridStorage.getCoordinates(gridStorage.getPoint(i), x);
     gridStorage.getCoordinates(*candidates[i], x);
     data.setRow(i, x);
   }
@@ -205,13 +205,8 @@ void OperationMakePositive::makePositive(base::Grid& grid, base::DataVector& alp
       grid.getType() != base::GridType::LinearBoundary &&
       grid.getType() != base::GridType::LinearL0Boundary &&
       grid.getType() != base::GridType::LinearTruncatedBoundary &&
-      grid.getType() != base::GridType::LinearClenshawCurtisBoundary &&
-      grid.getType() != base::GridType::Poly && grid.getType() != base::GridType::PolyBoundary &&
-      (grid.getType() == base::GridType::Poly &&
-       (static_cast<base::PolyGrid*>(&grid)->getDegree() != 2 || !generateConsistentGrid)) &&
-      (grid.getType() == base::GridType::PolyBoundary &&
-       (static_cast<base::PolyBoundaryGrid*>(&grid)->getDegree() != 2 ||
-        !generateConsistentGrid))) {
+      grid.getType() != base::GridType::LinearClenshawCurtis &&
+      grid.getType() != base::GridType::LinearClenshawCurtisBoundary) {
     throw base::factory_exception(
         "OperationMakePositive::makePositive - this operation not implemented for this grid "
         "type");
