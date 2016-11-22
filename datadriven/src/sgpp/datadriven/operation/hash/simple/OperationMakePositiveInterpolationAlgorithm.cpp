@@ -19,19 +19,7 @@ OperationMakePositiveInterpolationAlgorithm::OperationMakePositiveInterpolationA
 
 OperationMakePositiveInterpolationAlgorithm::~OperationMakePositiveInterpolationAlgorithm() {}
 
-void OperationMakePositiveInterpolationAlgorithm::initialize(base::Grid& grid) {
-  if (grid.getType() == base::GridType::Linear ||
-      grid.getType() == base::GridType::LinearBoundary ||
-      grid.getType() == base::GridType::LinearL0Boundary ||
-      grid.getType() == base::GridType::LinearTruncatedBoundary) {
-    offset = 0.0;
-  } else if (grid.getType() == base::GridType::Poly ||
-             grid.getType() == base::GridType::PolyBoundary) {
-    size_t numDims = grid.getStorage().getDimension();
-    // which is the 1d maximum of the poly basis -> see Bungartz, 1998, Habil.
-    offset = static_cast<double>(numDims) * 1.117;
-  }
-}
+void OperationMakePositiveInterpolationAlgorithm::initialize(base::Grid& grid) { offset = 0.0; }
 
 // -------------------------------------------------------------------------------------------
 

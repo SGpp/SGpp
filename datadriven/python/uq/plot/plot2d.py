@@ -198,7 +198,7 @@ def plotGrid2d(grid, alpha=None, show_numbers=True):
     p = DataVector(2)
     numbers = []
     for i in xrange(gs.getSize()):
-        gs.getCoordinats(gs.getPoint(i), p)
+        gs.getCoordinates(gs.getPoint(i), p)
         if alpha is None or alpha[i] >= 0:
             gps['p'] = np.vstack((gps['p'], p.array()))
         else:
