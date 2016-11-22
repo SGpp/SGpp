@@ -44,11 +44,14 @@ class LearnerSGD {
                           sgpp::base::DataVector& pTrainLabels,
                           sgpp::base::DataMatrix& pTestData,
                           sgpp::base::DataVector& pTestLabels,
+                          std::shared_ptr<sgpp::base::DataMatrix> pValData,
+                          std::shared_ptr<sgpp::base::DataVector> pValLabels,
                           double lambda,
                           double gamma,
                           double smoothedErrorDecline,
                           size_t batchSize,
-                          size_t bufferSize);
+                          size_t bufferSize,
+                          bool useValidData);
 
   /*
    * Implements stochastic gradient descent.
@@ -65,6 +68,7 @@ class LearnerSGD {
   virtual ~LearnerSGD();
 
   double error;
+  sgpp::base::DataVector avgErrors;
 
  protected:
 
@@ -125,8 +129,6 @@ class LearnerSGD {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   //sgpp::datadriven::RegularizationType regularization;
 
-  std::list<double> smoothedErrorDeclineBuffer;
-  double currentBatchError;
   double lambda;
   double gamma;
   double currentGamma;
@@ -134,6 +136,8 @@ class LearnerSGD {
 
   size_t batchSize;
   size_t smoothedErrorDeclineBufferSize;
+
+  bool useValidData;
 };
 
 }  // namespace datadriven

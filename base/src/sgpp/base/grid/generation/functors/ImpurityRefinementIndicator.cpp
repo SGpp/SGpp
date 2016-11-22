@@ -24,7 +24,7 @@ namespace base {
 
 
 ImpurityRefinementIndicator::ImpurityRefinementIndicator(Grid& grid, DataMatrix& dataset, 
-  DataVector& alphas, DataVector& w1, DataVector& w2, DataVector& classesComputed,
+  DataVector* alphas, DataVector* w1, DataVector* w2, DataVector& classesComputed,
   double threshold, size_t refinements_num) :
       grid(grid),
       dataset(dataset),
@@ -150,14 +150,18 @@ void ImpurityRefinementIndicator::update(GridPoint& point) {
       value *= basis.eval(level, index, valueInDim);
     }
 
-    res = value * alphas.get(row); 
+    //res = value * alphas.get(row); 
+    res = value * alphas->get(row);
     w1_new += res;
-    res = value * std::abs(alphas.get(row));
+    //res = value * std::abs(alphas.get(row));
+    res = value * std::abs(alphas->get(row));
     w2_new += res;
   }
 
-  w1.append(w1_new);
-  w2.append(w2_new);
+  //w1.append(w1_new);
+  //w2.append(w2_new);
+  w1->append(w1_new);
+  w2->append(w2_new);
 }
 
 

@@ -47,7 +47,7 @@ class ImpurityRefinementIndicator: public RefinementFunctor {
    * @param dataset contains all points of the source data set.
    */
   ImpurityRefinementIndicator(Grid& grid, DataMatrix& dataset,
-                              DataVector& alphas, DataVector& w1, DataVector& w2,
+                              DataVector* alphas, DataVector* w1, DataVector* w2,
                               DataVector& classesComputed,
                               double threshold = 0.0,
                               size_t refinements_num = 1);
@@ -106,15 +106,21 @@ class ImpurityRefinementIndicator: public RefinementFunctor {
 
   void update(GridPoint& point);
 
- protected:
-  // data set that will be evaluated
-  DataMatrix& dataset;
-
-  DataVector& alphas; // for svm only
+  /*DataVector& alphas; // for svm only
 
   DataVector& w1;     // for svm only
 
-  DataVector& w2;     // for svm only
+  DataVector& w2;     // for svm only*/
+
+  DataVector* alphas; // for svm only
+
+  DataVector* w1;     // for svm only
+
+  DataVector* w2;     // for svm only
+
+ protected:
+  // data set that will be evaluated
+  DataMatrix& dataset;
 
   DataVector& classesComputed;
 

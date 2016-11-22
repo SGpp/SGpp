@@ -169,15 +169,16 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   virtual void trainOnline(base::DataVector& plabels, 
                            base::DataMatrix& ptestData, base::DataVector& ptestLabels,
-                           size_t dataNum);
+                           base::DataMatrix* pvalidData, base::DataVector* pvalidLabels,
+                           size_t dataNum,
+                           bool usePrior);
 
   virtual void storeResults(base::DataMatrix& testDataset,
                             const base::DataVector& classesReference,
                             const double threshold);
 
   virtual void predict(base::DataMatrix& testData,
-                       base::DataVector& computedLabels,
-                       bool usePrior = false);
+                       base::DataVector& computedLabels);
   
   virtual double getAccuracy(base::DataMatrix& testDataset,
                              const base::DataVector& classesReference,
@@ -187,7 +188,11 @@ class LearnerSGDE : public datadriven::DensityEstimator {
                              const base::DataVector& classesReference,
                              const double threshold);
 
+  virtual double getError(base::DataMatrix& data, const base::DataVector& labels, 
+                          const double threshold, std::string errorType);
+
   double error;
+  sgpp::base::DataVector avgErrors;
 
  protected:
   /**
@@ -241,13 +246,16 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   std::map<int, std::shared_ptr<base::Grid>> grids;  
   std::shared_ptr<base::DataVector> alpha;
   // mapping of current alpha vectors to labels
-  std::map<int, std::shared_ptr<base::DataVector>> alphas;  
-  // mapping previous alpha vectors (stored in a queue) to labels -> needed for weighting
-  //std::map<int, std::deque<std::shared_ptr<base::DataVector>>> alphaStorage;  
+  std::map<int, std::shared_ptr<base::DataVector>> alphas;    
   // mapping of number of appeared samples to labels
   std::map<int, size_t> appearances;  
   std::shared_ptr<base::DataMatrix> trainData;
   std::shared_ptr<base::DataVector> labels;
+
+  std::vector<double> classLabels;
+
+  std::map<int, double> priors;
+  bool usePrior;
 
   double lambdaReg;
 

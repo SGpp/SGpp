@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
@@ -264,21 +265,14 @@ void LearnerSGDE::initialize(base::DataMatrix& samples) {
   grid = createRegularGrid();
   alpha = std::make_shared<base::DataVector>(grid->getSize());
 
-  // optimize the regularization parameter
-  //double lambdaReg = 0.0; // define as member of LearnerSGDE
-
+  // optimize the regularization parameter if cv enabled
   if (crossvalidationConfig.enable_) {
     lambdaReg = optimizeLambdaCV();
   } else {
     lambdaReg = crossvalidationConfig.lambda_;
   }
   
-  //lambdaReg *= 5000.0;
   std::cout << "lambda: " << lambdaReg << std::endl;
-
-  // batch mode
-  // learn the data -> do the density estimation
-  //train(*grid, *alpha, *trainData, lambdaReg);
   
 }
 
@@ -495,14 +489,12 @@ double LearnerSGDE::optimizeLambdaCV() {
 }
 
 void LearnerSGDE::train() {
-  // batch mode
   // learn the data -> do the density estimation
   train(*grid, *alpha, *trainData, lambdaReg);
 }
 
 void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
                         double lambdaReg) {
-//void LearnerSGDE::train() {
   size_t dim = trainData.getNcols();
 
   base::GridStorage& gridStorage = grid.getStorage();
@@ -568,46 +560,94 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
 
 void LearnerSGDE::trainOnline(base::DataVector& plabels,
                               base::DataMatrix& ptestData, base::DataVector& ptestLabels,
-                              size_t dataNum) {
+                              base::DataMatrix* pvalidData, base::DataVector* pvalidLabels,
+                              size_t dataNum, bool usePrior) {
   labels = std::make_shared<base::DataVector>(plabels);
+  this->usePrior = usePrior;
   size_t dim = trainData->getNcols();
 
   /*base::GridStorage& gridStorage = grid->getStorage();
   base::GridGenerator& gridGen = grid->getGenerator();
   base::DataVector rhs(grid->getSize());
   alpha->resize(grid->getSize());
-  alpha->setAll(0.0);
+  alpha->setAll(0.0);*/
 
-  if (!crossvalidationConfig.silent_) {
-    std::cout << "# LearnerSGDE: grid points " << grid->getSize() << std::endl;
-  }*/
+  std::cout << "# Initial grid points: " << grid->getSize() << std::endl;
   
-  size_t maxIterations = 2; //ToDo: pass as parameter
+  size_t maxIterations = 15; //ToDo: pass as parameter
   size_t numIterations = 0;
+  size_t processedPoints = 0;
 
   // refinement parameters - ToDo: pass to Learner as parameters (adaptivityConfig)
   size_t numRefSteps = adaptivityConfig.numRefinements_;
-  size_t refPeriod = 15; //Ripley 25 - Banana 100 / 200
   size_t numPoints = adaptivityConfig.noPoints_;
   double threshold = adaptivityConfig.threshold_;
 
   // map number of already performed refinements to grids
   std::map<int, size_t> refCnts;
   
+  //periodic monitor
+  size_t refPeriod = 400;
+  //convergence monitor
+  double accDeclineThreshold = 0.00005;
+  size_t accDeclineBufferSize = 200;
+  double currentValidError = 0.0;
+  double currentTrainError = 0.0;
+  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(accDeclineThreshold,
+                                                                     accDeclineBufferSize,
+                                                                     100));
   bool doRefine = false;      // set true by monitor to trigger refinement
-  size_t refSteps = 0;
+  size_t refCnt = 0;
 
   // for error plotting
   base::DataVector errors;
   //base::DataVector gridSizes;
   // for plotting only
-  //double acc = getAccuracy(*trainData, *labels, 0.0);
   double acc = getAccuracy(ptestData, ptestLabels, 0.0);
-  errors.append(1.0 - acc);
+  //errors.append(1.0 - acc);  //simple
+  avgErrors.append(1.0 - acc);  //5-fold
+  base::DataVector runtimes;
 
-  while (numIterations < maxIterations) {			
+  while (numIterations < maxIterations) {	
+    ////////////////////////////////////////////////
+    /*    bool bufferFull;
+        base::DataMatrix* validBatch = new base::DataMatrix(0,4);
+        base::DataMatrix* trainBatch = new base::DataMatrix(0,4);
+        base::DataVector* validBatch_c = new base::DataVector(0);
+        base::DataVector* trainBatch_c = new base::DataVector(0);
+        for (size_t idx_ = 0; idx_ < 250; idx_++) {
+          int divisor = RAND_MAX / static_cast<int>(pvalidData->getNrows());
+          int r;
+          do {
+            r = rand() / divisor;
+          } while (r > (static_cast<int>(pvalidData->getNrows())-1));
+          base::DataVector x(4);
+          pvalidData->getRow((size_t)r, x);
+          double y = pvalidLabels->get((size_t)r);
+          validBatch->appendRow(x);
+          validBatch_c->append(y);
+        }
+        for (size_t idx_ = 0; idx_ < 250; idx_++) {
+          int divisor = RAND_MAX / static_cast<int>(trainData->getNrows());
+          int r;
+          do {
+            r = rand() / divisor;
+          } while (r > (static_cast<int>(trainData->getNrows())-1));
+          base::DataVector x(4);
+          trainData->getRow((size_t)r, x);
+          double y = labels->get((size_t)r);
+          trainBatch->appendRow(x);
+          trainBatch_c->append(y);
+        }*/
+    ///////////////////////////////////////////////////////////////////		
     for (size_t i = 0; i < trainData->getNrows(); i++) {
-      //std::cout << "iteration: " << i << std::endl;
+      
+      //time measure start
+      clock_t begin;
+      //if ( (processedPoints == 0) or ((processedPoints+1) % 1000 == 0) ) {
+      begin = clock();
+      //}
+
       // Get next training sample x and its label y
       sgpp::base::DataVector x(dim);					
       trainData->getRow((size_t)i, x);
@@ -645,23 +685,23 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
         
         appearances.insert(std::pair<int, size_t>(label, 0));
         refCnts.insert(std::pair<int, size_t>(label, 0));
+        priors.insert(std::pair<int, double>(label, 0.0));
+        classLabels.push_back(label);
       }
       appearances.at(label) += 1;
 
-      grid = grids.at(label); // &*grids.at(label)
-      alpha = alphas.at(label); // &*alphas.at(label)
+      /*//time measure start
+      clock_t begin;
+      if ( (processedPoints == 0) or (processedPoints % 1000 == 0) ) {
+        begin = clock();
+      }*/
+
+      grid = grids.at(label); 
+      alpha = alphas.at(label); 
       base::DataVector newAlpha(*alpha);
-      //base::DataVector newAlpha(grid->getSize());
-      //newAlpha.setAll(0.0);
-      base::GridStorage& gridStorage = grid->getStorage();
-      base::GridGenerator& gridGen = grid->getGenerator();
+
       base::DataVector rhs(grid->getSize());
-      //base::GridStorage& gridStorage = grids.at(label)->getStorage();
-      //base::GridGenerator& gridGen = grids.at(label)->getGenerator();
-      //base::DataVector rhs(grids.at(label)->getSize());
       
-      //std::shared_ptr<base::DataMatrix> dataSample = new base::DataMatrix(0, dim);
-      //dataSample->append(x);
       base::DataMatrix dataSample(0, dim);
       dataSample.appendRow(x);
       std::unique_ptr<base::OperationMatrix> C = computeRegularizationMatrix(*grid);
@@ -671,9 +711,9 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
       solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
       myCG.solve(SMatrix, newAlpha, rhs, false, false, solverConfig.threshold_);
 
-      if (myCG.getResiduum() > solverConfig.threshold_) {
-        throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
-      }
+      //if (myCG.getResiduum() > solverConfig.threshold_) {
+      //  throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
+      //}
 
       // store new alpha vector
       //alphaStorage.at(label).push_back(alpha);
@@ -687,43 +727,83 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
       // determine new surplus vector
       alpha->add(newAlpha);
       alpha->mult(1.0/static_cast<double>(alphaCnt));
-      
-      //alphas.at(label)->copyFrom(*alpha);
 
-      //if ( (i > 0) && (i % refPeriod == 0) ) {
-      if ( (appearances.at(label) > 0) && (appearances.at(label) % refPeriod == 0) ) {
+      //time measure end
+      /*clock_t end;
+      if ( (processedPoints == 0) or (processedPoints % 1000 == 0) ) {
+        end = clock();
+        double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
+        //std::cout << "#time needed: " << elapsed_secs << std::endl;
+      }*/
+
+      //periodic monitor
+      if ( (refCnt < numRefSteps)
+      &&   (processedPoints > 0)
+      &&   ((processedPoints+1) % refPeriod == 0) ) {
         doRefine = true;
       }
-      // Refinement
-      if ( (refCnts.at(label) < numRefSteps) && doRefine ) {
-        // Surplus refinement 
-        // Weight surplus with function evaluation at grid points
-        std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
-        base::DataVector p(dim);
-        base::DataVector alphaWeight(alpha->getSize());
-        for (size_t j = 0; j < grid->getSize(); j++) {
-          gridStorage.getPoint(j).getStandardCoordinates(p);
-          alphaWeight[j] = alpha->get(j) * opEval->eval(*alpha, p);
+
+      //convergence monitor
+      /*if (refCnt < numRefSteps) {
+        currentValidError = getError(*pvalidData, *pvalidLabels, 0.0, "Acc");
+        //currentTrainError = getError(*trainData, plabels, 0.0, "Acc");
+
+        if (monitor->nextRefCnt > 0) {
+          monitor->nextRefCnt--;
         }
+        monitor->pushToBuffer(currentValidError,currentTrainError);
+        if (monitor->nextRefCnt == 0) {
+          doRefine = monitor->checkConvergence();
+        } 
+      }*/
 
-        base::SurplusRefinementFunctor srf(alphaWeight, numPoints, threshold);
-        //base::SurplusRefinementFunctor srf(*alpha, numPoints, threshold);
-        //gridGen.refine(srf);
-        
-        // Impurity refinement
-        // ToDo:
+      /*if (refCnt < numRefSteps) {
+        /////////////////////////////////////////////////
+        if (processedPoints % 500 == 0) {
+          bufferFull = false;
+        }
+        if (not bufferFull) {
+        /////////////////////////////////////////////////
+          //currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
+          //currentTrainError = getError(*trainData, *trainLabels, 0.0, "Acc");
+          currentValidError = getError(*validBatch, *validBatch_c, 0.0, "Acc");
+          currentTrainError = getError(*trainBatch, *trainBatch_c, 0.0, "Acc");
+          monitor->pushToBuffer(currentValidError,currentTrainError);
+        ////
+        }
+        ////
+        if (monitor->nextRefCnt > 0) {
+          monitor->nextRefCnt--;
+        }
+        ///////////////////////////////////////////////
+        if (monitor->validErrorDeclineBuffer.size() == accDeclineBufferSize) {
+          bufferFull = true;
+        /////////////////////////////////////////////////
+          if (monitor->nextRefCnt == 0) {
+            doRefine = monitor->checkConvergence();
+            /////////////////////////////////////
+            monitor->validErrorDeclineBuffer.clear();
+            monitor->trainErrorDeclineBuffer.clear();
+            /////////////////////////////////////
+          }
+        }
+      }*/
 
-        // zero-crossing / data-based refinement
+      // Refinement
+      if (doRefine) {
+        //acc = getAccuracy(ptestData, ptestLabels, 0.0);
+        //avgErrors.append(1.0 - acc);  
+        std::cout << "Refinement at iteration: " << processedPoints+1 << std::endl;
+        // Bundle grids and surplus vector pointer needed for refinement 
+        // (for zero-crossings refinement, data-based refinement)
         std::vector<sgpp::base::Grid*> ref_grids;
         std::vector<sgpp::base::DataVector*> ref_alphas;
-        //for (auto const& g : grids) {
-        ref_grids.push_back(&*grids.at(-1));
-        ref_grids.push_back(&*grids.at(1));
-        ref_alphas.push_back(&*alphas.at(-1));
-        ref_alphas.push_back(&*alphas.at(1));
-
+        for (auto& g : grids) {
+          ref_grids.push_back(&*(g.second));
+          ref_alphas.push_back(&*(alphas.at(g.first)));
+        }
         bool levelPenalize = false;  // Multiplies penalzing term for fine levels
-        bool preCompute = true;      // Precomputes and caches evals for zrcr & grid
+        bool preCompute = true;      // Precomputes and caches evals for zrcr 
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(ref_grids, ref_alphas,
@@ -732,74 +812,111 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
                                                                  preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // were determined by testing (aim at ~10 % of the training data is
-        // to be marked relevant. Cross-validation or similar can/should be employed
+        // to be marked relevant). Cross-validation or similar can/should be employed
         // to determine this value.
         std::vector<double> coeffA;
-        coeffA.push_back(1.2);
-        coeffA.push_back(1.2);
+        coeffA.push_back(1.0); //banana 1.0 - ripley 1.2
+        coeffA.push_back(1.0); //banana 1.0 - ripley 1.2
         base::DataMatrix* ref_trainData = trainData.get();
         base::DataVector* ref_trainLabels = labels.get();
-        sgpp::datadriven::DataBasedRefinementFunctor funcData(ref_grids, ref_alphas,
-                                                              ref_trainData,
-                                                              ref_trainLabels,
+        /*sgpp::datadriven::DataBasedRefinementFunctor funcData(ref_grids, ref_alphas,
+                                                              pvalidData,
+                                                              pvalidLabels,
                                                               numPoints,
                                                               levelPenalize,
-                                                              coeffA);
-        //func = &funcZrcr;
-        func = &funcData;
-        if (preCompute) {
-          // precompute the evals. Needs to be done once per step, before
-          // any refinement is done
-          func->preComputeEvaluations();
-        }
-        if (label == -1) {
-          func->setGridIndex(0);
-        }
-        else {
-          func->setGridIndex(1);
-        }
-        grid->getGenerator().refine(*func);
+                                                              coeffA);*/
+        func = &funcZrcr;
+        //func = &funcData;
 
-        std::cout << "# LearnerSGDE (label " << label << "): ref " << refCnts.at(label)+1 << "/" << numRefSteps
-                  << " new grid size: " << grids.at(label)->getSize() << std::endl;
+        int g_idx = 0;
+        for (auto& g : grids) {
+          grid = g.second;
+          alpha = alphas.at(g.first);
+          // Surplus refinement 
+          // Weight surplus with function evaluation at grid points
+          /*base::GridStorage& gridStorage = grid->getStorage();
+          std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+          base::DataVector p(dim);
+          base::DataVector alphaWeight(alpha->getSize());
+          for (size_t j = 0; j < grid->getSize(); j++) {
+            gridStorage.getPoint(j).getStandardCoordinates(p);
+            alphaWeight[j] = alpha->get(j) * opEval->eval(*alpha, p);
+          }
 
-        //alpha->resize(grid->getSize());
-        //alpha->setAll(0.0); 
-        // keep computed alpha values and append zeros only for new points
-        alpha->resizeZero(grid->getSize()); 
+          //base::SurplusRefinementFunctor srf(alphaWeight, numPoints, threshold);
+          //base::SurplusRefinementFunctor srf(*alpha, numPoints, threshold);
+          //grid->getGenerator().refine(srf);*/
 
-        //refSteps++;
-        refCnts.at(label) += 1;
-        doRefine = false;        
+          if (preCompute) {
+            // precompute the evals. Needs to be done once per step, before
+            // any refinement is done
+            func->preComputeEvaluations();
+          }
+
+          func->setGridIndex(g_idx);
+
+          grid->getGenerator().refine(*func);
+
+          std::cout << "# LearnerSGDE (class " << g_idx << "): ref " << refCnt+1 << "/" << numRefSteps
+                    << " new grid size: " << grid->getSize() << std::endl;
+ 
+          // keep computed alpha values and append zeros only for new points
+          alpha->resizeZero(grid->getSize());   
+          g_idx++;
+        }  
+
+        refCnt++;
+        doRefine = false;  
+        monitor->nextRefCnt = monitor->minRefInterval;   
       }
-      // for plotting only
-      //if ((i > 0) && ((i+1) % 50 == 0)) {
-      //if ((i > 0) && ((i+1) % 10 == 0)) {
-        //acc = getAccuracy(*trainData, *labels, 0.0);
-        acc = getAccuracy(ptestData, ptestLabels, 0.0);
-        errors.append(1.0 - acc); 
-      //}
-    }
-    //refSteps = 0;
-    numIterations++;
 
+      // update prior probabilities
+      priors[label] = ((priors[label] * i) + 1)/(1 + i);
+      //priors[label] = ((priors[label] * processedPoints) + 1)/(1 + processedPoints);
+
+      clock_t end;
+      //if ( (processedPoints == 0) or (processedPoints % 1000 == 0) ) {
+      end = clock();
+      double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
+      runtimes.append(elapsed_secs);
+        //std::cout << "#time needed: " << elapsed_secs << std::endl;
+      //}
+
+      // for plotting only
+      if ((processedPoints > 0) && ((processedPoints+1) % 36000 == 0)) {
+        acc = getAccuracy(ptestData, ptestLabels, 0.0);
+        avgErrors.append(1.0 - acc);  //5-fold
+        //errors.append(1.0 - acc);  //simple
+      }
+      //acc = getAccuracy(ptestData, ptestLabels, 0.0);
+      //errors.append(1.0 - acc);  //simple  
+      //avgErrors.append(1.0 - acc);  //5-fold
+
+      processedPoints++;
+      //std::cout << processedPoints << std::endl;  
+    }
+
+    numIterations++;
+    //processedPoints = 0;
+
+    classLabels.clear();
   }
   //write error evaluation to .csv
   std::ofstream output;
-  output.open("SGDE_ripley_err_rate_dataBased_train_"+std::to_string(dataNum)+".csv");
-  //output.open("ripley_err_rate_surplusRef_train_1.csv");
-  //output.open("ripley_err_rate_impurity_train_1.csv");
-  //output.open("banana_err_rate_surplusRef_train_10.csv");
-  //output.open("banana_err_rate_impurity_train_1.csv");
+  //output.open("SGDE_banana_error_monitor_zerocrossing_runtimes_"+std::to_string(dataNum)+".csv");
+  //output.open("SGDE_banana_error_monitor_databased_runtimes_"+std::to_string(dataNum)+".csv");
+  output.open("SGDE_banana_periodic_monitor_zerocrossing_runtimes_"+std::to_string(dataNum)+".csv");
+  //output.open("SGDE_banana_periodic_monitor_databased_runtimes_"+std::to_string(dataNum)+".csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
   else {
-    for (size_t i = 0; i < errors.getSize(); i++) {					
-      output << errors.get(i) << ";" << std::endl;
+    for (size_t i = 0; i < runtimes.getSize(); i++) {					
+      output << runtimes.get(i) << ";" << std::endl;
     }
     output.close();
   }
+
   error = 1.0 - getAccuracy(ptestData, ptestLabels, 0.0);
 }
 
@@ -812,10 +929,10 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
 
   std::ofstream output;
   //write computed classes to .csv
-  //output.open("banana_impurity_predicted_train_1.csv");
-  //output.open("banana_surplus_predicted_train_1.csv");
-  //output.open("ripley_impurity_predicted_train_.csv");
-  output.open("SGDE_ripley_databased_predicted.csv");
+  //output.open("SGDE_ripley_errormonitor_zerocrossing_predicted.csv");
+  //output.open("SGDE_ripley_periodicmonitor_zerocrossing_predicted.csv");
+  output.open("SGDE_banana_errormonitor_zerocrossing_predicted.csv");
+  //output.open("SGDE_banana_periodicmonitor_zerocrossing_predicted.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -828,10 +945,10 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
     output.close();
   }
   //write grid to .csv
-  //output.open("banana_impurity_grid_1_train_1.csv");
-  //output.open("banana_surplus_grid_1_train_1.csv");
-  //output.open("ripley_impurity_grid_1_train_.csv");
-  output.open("SGDE_ripley_databased_grid_1.csv");
+  //output.open("SGDE_ripley_errormonitor_zerocrossing_grid_1.csv");
+  //output.open("SGDE_ripley_periodicmonitor_zerocrossing_grid_1.csv");
+  output.open("SGDE_banana_errormonitor_zerocrossing_grid_1.csv");
+  //output.open("SGDE_banana_periodicmonitor_zerocrossing_grid_1.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -853,10 +970,10 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
     }
     output.close();
   }
-  //output.open("banana_impurity_grid_1_train_2.csv");
-  //output.open("banana_surplus_grid_2_train_1.csv");
-  //output.open("ripley_impurity_grid_2_train_.csv");
-  output.open("SGDE_ripley_databased_grid_2.csv");
+  //output.open("SGDE_ripley_errormonitor_zerocrossing_grid_-1.csv");
+  //output.open("SGDE_ripley_periodicmonitor_zerocrossing_grid_-1.csv");
+  output.open("SGDE_banana_errormonitor_zerocrossing_grid_-1.csv");
+  //output.open("SGDE_banana_periodicmonitor_zerocrossing_grid_-1.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -882,12 +999,10 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
   //write density function evaluations to .csv
   double stepSize = 0.01;
   base::DataMatrix values(0,2);
-  //std::cout << values.getNrows() << std::endl;
   base::DataVector range(101);
   for (size_t i = 0; i < 101; i++) {
     range.set(i, stepSize*(static_cast<double>(i)));
   }
-  //std::cout << range.getSize() << std::endl;
   for (size_t i = 0; i < range.getSize(); i++) {
     for (size_t j = 0; j < range.getSize(); j++) {
       base::DataVector row(2);
@@ -896,17 +1011,18 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
       values.appendRow(row);
     }
   }
-  //std::cout << values.getNrows() << std::endl;
-  // evaluate each density function at all points from values
+  // evaluate each density function at all points from 'values'
   // and write result to csv file
   for (auto const& g : grids) {
-    output.open("SGDE_databased_density_fun_"+std::to_string(g.first)+"_evals.csv");
+    //output.open("SGDE_ripley_errormonitor_zerocrossing_density_fun_"+std::to_string(g.first)+"_evals.csv");
+    //output.open("SGDE_ripley_periodicmonitor_zerocrossing_density_fun_"+std::to_string(g.first)+"_evals.csv");
+    output.open("SGDE_banana_errormonitor_zerocrossing_density_fun_"+std::to_string(g.first)+"_evals.csv");
+    //output.open("SGDE_banana_periodicmonitor_zerocrossing_density_fun_"+std::to_string(g.first)+"_evals.csv");
     std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
     for (size_t i = 0; i < values.getNrows(); i++) {
       // Get next test sample x 
       base::DataVector x(2);					
       values.getRow(i, x);
-      //std::cout << x[0] << " , " << x[1] << std::endl;
       double res = opEval->eval(*alphas.at(g.first), x);
       output << res << ";" << std::endl;
     }
@@ -938,8 +1054,6 @@ double LearnerSGDE::getAccuracy(const base::DataVector& classesComputed,
   size_t correct = 0;
 
   for (size_t i = 0; i < classesComputed.getSize(); i++) {
-    //std::cout << "computed: " << classesComputed.get(i) << std::endl;
-    //std::cout << "reference: " << classesReference.get(i) << std::endl;
     if ((classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0) ||
        (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0)) {
       correct++;
@@ -952,8 +1066,7 @@ double LearnerSGDE::getAccuracy(const base::DataVector& classesComputed,
 }
 
 void LearnerSGDE::predict(base::DataMatrix& testData,
-                          base::DataVector& computedLabels,
-                          bool usePrior) {
+                          base::DataVector& computedLabels) {
   computedLabels.resize(testData.getNrows());
   size_t dim = testData.getNcols(); 
 
@@ -972,7 +1085,7 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
       double res = opEval->eval(*alphas.at(g.first), x);
       // determine prior
       if (usePrior) {
-        prior = static_cast<double>(appearances.at(g.first)) / static_cast<double>(appearances.size());
+        prior = priors.at(g.first);
       }
       else {
         prior = 1.0;
@@ -988,6 +1101,17 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
 
     computedLabels.set(i, compLabel); 
   }
+}
+
+double LearnerSGDE::getError(base::DataMatrix& data, const base::DataVector& labels, 
+                             const double threshold, std::string errorType) {
+  double res = -1.0;
+
+  if (errorType == "Acc") {
+    res = 1.0 - getAccuracy(data,labels,threshold);
+  }
+  
+  return res;
 }
 
 double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
