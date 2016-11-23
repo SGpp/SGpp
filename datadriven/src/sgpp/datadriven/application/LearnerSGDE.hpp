@@ -152,6 +152,9 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   */
   virtual std::shared_ptr<base::DataVector> getSurpluses();
 
+  /**
+  * returns the grid
+  */
   virtual std::shared_ptr<base::Grid> getGrid();
 
   /**
@@ -165,34 +168,87 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
                      double lambdaReg);
   
+  /**
+   * Learns the data.
+   */
   virtual void train();
 
-  virtual void trainOnline(base::DataVector& plabels, 
-                           base::DataMatrix& ptestData, base::DataVector& ptestLabels,
-                           base::DataMatrix* pvalidData, base::DataVector* pvalidLabels,
-                           size_t dataNum,
+  /**
+   * Performs the sparse grid density estimation via online learning.
+   *
+   * @param trainLabels The training data
+   * @param testData The test data 
+   * @param testLabels The corresponding test labels 
+   * @param validData The validation data
+   * @param validLabels The corresponding validation labels
+   * @param usePrior Specifies whether prior probabilities should be used to predict class labels
+   */
+  virtual void trainOnline(base::DataVector& trainLabels, 
+                           base::DataMatrix& testData, base::DataVector& testLabels,
+                           base::DataMatrix* validData, base::DataVector* validLabels,
                            bool usePrior);
 
+  /**
+   * Stores classified data, grids and density function evaluations to csv files.
+   *
+   * @param testDataset The data for which class labels should be predicted
+   * @param referenceLabels The corresponding actual class labels 
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   */
   virtual void storeResults(base::DataMatrix& testDataset,
-                            const base::DataVector& classesReference,
+                            const base::DataVector& referenceLabels,
                             const double threshold);
-
-  virtual void predict(base::DataMatrix& testData,
-                       base::DataVector& computedLabels);
+  /**
+   * Predicts class labels based on the trained model.
+   *
+   * @param testDataset The data for which class labels should be predicted
+   * @param predictedLabels The predicted class labels 
+   */
+  virtual void predict(base::DataMatrix& testDataset,
+                       base::DataVector& predictedLabels);
   
+  /**
+   * Computes the classification accuracy.
+   *
+   * @param testDataset The data for which class labels should be predicted
+   * @param referenceLabels The corresponding actual class labels
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   * @return The resulting accuracy 
+   */
   virtual double getAccuracy(base::DataMatrix& testDataset,
-                             const base::DataVector& classesReference,
+                             const base::DataVector& referenceLabels,
                              const double threshold);
 
-  virtual double getAccuracy(const base::DataVector& classesComputed,
-                             const base::DataVector& classesReference,
-                             const double threshold);
+  /**
+   * Computes the classification accuracy.
+   *
+   * @param referenceLabels The actual class labels
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   * @param predictedLabels The predicted class labels
+   * @return The resulting accuracy 
+   */
+  virtual double getAccuracy(const base::DataVector& referenceLabels,
+                             const double threshold,
+                             const base::DataVector& predictedLabels);
 
+  /**
+   * Error evaluation required for convergence-based refinement.
+   *
+   * @param data The data points to measure the error on
+   * @param labels The corresponding class labels
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   * @param errorType The error type (only "Acc" possible, i.e. classification error 
+   *        based on accuracy)
+   * @return The error evaluation
+   */
   virtual double getError(base::DataMatrix& data, const base::DataVector& labels, 
                           const double threshold, std::string errorType);
 
+  // The final classification error
   double error;
-  sgpp::base::DataVector avgErrors;
+
+  // A vector to store error evaluations
+  base::DataVector avgErrors;
 
  protected:
   /**
@@ -241,24 +297,30 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   double variance(base::Grid& grid, base::DataVector& alpha);
   double mean(base::Grid& grid, base::DataVector& alpha);
 
+  // the sparse grid
   std::shared_ptr<base::Grid> grid;
-  // mapping of grids to labels
+  // contains sparse grids mapped to class labels (used in trainOnline(...))
   std::map<int, std::shared_ptr<base::Grid>> grids;  
+  // the density defining coefficient vector (surpluses)
   std::shared_ptr<base::DataVector> alpha;
-  // mapping of current alpha vectors to labels
+  // contains coefficient vectors mapped to class labels (used in trainOnline(...))
   std::map<int, std::shared_ptr<base::DataVector>> alphas;    
-  // mapping of number of appeared samples to labels
+  // mapping of number of appeared data points to class labels (used in trainOnline(...))
   std::map<int, size_t> appearances;  
+  // the training data
   std::shared_ptr<base::DataMatrix> trainData;
+  // the corresponding class labels
   std::shared_ptr<base::DataVector> labels;
-
+  // contains all occurring class labels (e.g. -1, 1)
   std::vector<double> classLabels;
-
+  // stores prior values mapped to class labels
   std::map<int, double> priors;
+  // specifies whether prior probabilities should be used to predict class labels
   bool usePrior;
-
+  // regularization parameter
   double lambdaReg;
 
+  // configurations
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
