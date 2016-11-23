@@ -8,7 +8,6 @@
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-//#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
@@ -25,10 +24,13 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSGDEOnOff::LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& dconf,
-                                   sgpp::base::DataMatrix& trainData, sgpp::base::DataVector& trainDataLabels,
-                                   sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testDataLabels,
-                                   sgpp::base::DataMatrix* validData, sgpp::base::DataVector* validDataLabels,
-                                   sgpp::base::DataVector& classLabels, int classNumber, 
+                                   sgpp::base::DataMatrix& trainData, 
+                                   sgpp::base::DataVector& trainDataLabels,
+                                   sgpp::base::DataMatrix& testData, 
+                                   sgpp::base::DataVector& testDataLabels,
+                                   sgpp::base::DataMatrix* validData, 
+                                   sgpp::base::DataVector* validDataLabels,
+                                   sgpp::base::DataVector& classLabels, unsigned int classNumber, 
                                    bool usePrior, double beta, double lambda) 
      : trainData(&trainData),
        trainLabels(&trainDataLabels),
@@ -37,13 +39,13 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& 
        validData(validData),
        validLabels(validDataLabels),
        classLabels(classLabels),
-       classNumber(classNumber),
-       destFunctions_(nullptr), 
+       classNumber(classNumber), 
        trained(false), 
        initDone(false),
        usePrior(usePrior),  
        beta(beta),
-       error(0.0) {
+       destFunctions(nullptr),
+       error(-1.0) {
 
   offline = new DBMatOffline(dconf);
   offline->buildMatrix();
@@ -52,23 +54,19 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& 
   //clock_t end = clock();
   //double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
   //std::cout << "#Decompose matrix: " << elapsed_secs << std::endl;*/
-
-  //set number of classes and class labels
-  //this->classNumber = classNumber;
-  //this->classLabels = classLabels;
   
   readOffline(offline); // set offlineObject_ of DBMatOnline class
 
-  //if the Cholesky decomposition is chosen declare separate Online-objects for every class
+  // if the Cholesky decomposition is chosen declare separate Online-objects for every class
   if (offline->getConfig()->decomp_type_== DBMatDecompChol) {
-    destFunctions_ = new vector<std::pair<DBMatOnlineDE*, double> >(classNumber);
-    //every class gets his own online object
-    for (int i = 0; i < classNumber; i++) {
+    destFunctions = new vector<std::pair<DBMatOnlineDE*, double>>(classNumber);
+    // every class gets his own online object
+    for (unsigned int i = 0; i < classNumber; i++) {
       DBMatOnlineDE* densEst = new DBMatOnlineDE(beta);
       DBMatOffline* offlineRead = new DBMatOffline(*offline);
       densEst->readOffline(offlineRead);
       pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[i]);
-      (*destFunctions_)[i] = pdest;
+      (*destFunctions)[i] = pdest;
     }
     initDone = true;
   }
@@ -76,15 +74,10 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& 
     init();
   }
 
-  //this->trainData = &trainData;
-  //this->trainLabels = &trainDataLabels;
-  //this->testData = &testData;
-  //this->testLabels = &testDataLabels;
-
-  cv_saved = false;
+  cvSaved = false;
   processedPoints = 0;
 
-  for (size_t i = 0; i < classNumber; i++) {
+  for (unsigned int i = 0; i < classNumber; i++) {
     prior.insert(std::pair<double, double>(classLabels[i], 0.0));
   } 
 
@@ -95,27 +88,27 @@ void LearnerSGDEOnOff::init() {
   if (initDone) {
     return;
   }
-  destFunctions_ = new vector<std::pair<DBMatOnlineDE*, double> >(classNumber);
-  for (int idx = 0; idx < classNumber; idx++) {
+  destFunctions = new vector<std::pair<DBMatOnlineDE*, double>>(classNumber);
+  for (unsigned int idx = 0; idx < classNumber; idx++) {
     DBMatOnlineDE* densEst = new DBMatOnlineDE(beta);
     densEst->readOffline(offline);
     pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[idx]);
-    (*destFunctions_)[idx] = pdest;
+    (*destFunctions)[idx] = pdest;
   }
-  if (cv_saved) {
-    setCrossValidationParameters(cv_save_lambda_step, cv_save_lambda_start, 
-                                 cv_save_lambda_end, cv_save_test, 
-                                 cv_save_test_cc, cv_save_logscale);
+  if (cvSaved) {
+    setCrossValidationParameters(cvSaveLambdaStep, cvSaveLambdaStart, 
+                                 cvSaveLambdaEnd, cvSaveTest, 
+                                 cvSaveTestRes, cvSaveLogscale);
   }
   initDone = true;
 }
 
 LearnerSGDEOnOff::~LearnerSGDEOnOff() {
-  if (destFunctions_ != nullptr) {
-    for (unsigned int i = 0; i < destFunctions_->size(); i++) {
-      delete (*destFunctions_)[i].first;
+  if (destFunctions != nullptr) {
+    for (unsigned int i = 0; i < destFunctions->size(); i++) {
+      delete (*destFunctions)[i].first;
     }    
-    delete destFunctions_;    
+    delete destFunctions;    
   }
 }
 
@@ -123,36 +116,36 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
                              string refType, string refMonitor, 
                              size_t refPeriod, double accDeclineThreshold, 
                              size_t accDeclineBufferSize, size_t minRefInterval,
-                             bool enableCv, unsigned int nextCvStep, size_t dataNum) {
-  //counts total number of processed data points
+                             bool enableCv, unsigned int nextCvStep) {
+  // counts total number of processed data points
   size_t totalInstances = 0;
-  //the next batch(data points + class labels) to be processed
-  std::pair<sgpp::base::DataMatrix*, sgpp::base::DataVector*> cur_pair;
-  //contains list of removed grid points and number of added grid points
-  //(is updated in each refinement/coarsening step)	
-  std::vector<std::pair<std::list<size_t>, unsigned int>>*  RefineCoarse_ = 
+  // the next batch(data points + class labels) to be processed
+  std::pair<sgpp::base::DataMatrix*, sgpp::base::DataVector*> curPair;
+  // contains list of removed grid points and number of added grid points
+  // (is updated in each refinement/coarsening step)	
+  std::vector<std::pair<std::list<size_t>, unsigned int>>*  refineCoarse = 
     new vector<std::pair<std::list<size_t>, unsigned int>>(classNumber);
 
-  //auxiliary variables
-  sgpp::base::DataVector* alpha_work; //required for surplus refinement
+  // auxiliary variables
+  sgpp::base::DataVector* alphaWork; // required for surplus refinement
   sgpp::base::DataVector p(trainData->getNcols());
 
-  //initialize counter for dataset passes 
+  // initialize counter for dataset passes 
   size_t cntDataPasses = 0;
 
   // refinement variables
-  bool doRefine = false; //is set to 'true' by refinement monitor 
+  bool doRefine = false; // is set to 'true' by refinement monitor 
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
-  //create convergence monitor object
+  // create convergence monitor object
   std::shared_ptr<ConvergenceMonitor> monitor( new ConvergenceMonitor(
                                                  accDeclineThreshold,
                                                  accDeclineBufferSize,
                                                  minRefInterval) );
-  //counts number of performed refinements
+  // counts number of performed refinements
   size_t refCnt = 0;
 
-  //coarsening
+  // coarsening
   //size_t coarseCnt = 0;
   //size_t maxCoarseNum = 5;
   //size_t coarsePeriod = 50;
@@ -165,26 +158,31 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
   std::vector<std::pair<DBMatOnlineDE*, double>>* onlineObjects;
 
   size_t dim = trainData->getNcols();
-  //determine number of batches to process
+  // determine number of batches to process
   size_t numBatch = trainData->getNrows() / batchSize;
 
+  // print initial grid size
   onlineObjects = getDestFunctions();
-  for (int i = 0; i < classNumber; i++) {
+  for (unsigned int i = 0; i < classNumber; i++) {
     DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
     sgpp::base::Grid* grid = densEst->getOffline()->getGridPointer();
     std::cout << "#Initial grid size of grid " << i << " : " << grid->getSize() << std::endl;
   }
 
-  //auxiliary variable for accuracy (error) measurement 
+  // auxiliary variable for accuracy (error) measurement 
   double acc = 0.0;
   //acc = getAccuracy();
   //avgErrors.append(1.0 - acc);  
 
+
+  // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {
     std::cout << "#batch-size: " << batchSize << std::endl;
     std::cout << "#batches to process: " << numBatch << std::endl;
-    size_t cnt = 0; //data point counter - determines offset when selecting next batch
+    size_t cnt = 0; // data point counter - determines offset when selecting next batch
+    // iterate over total number of batches 
     for (size_t step = 1; step <= numBatch; step++) {  
+      // check if cross-validation should be performed
       bool doCv = false;
       if (enableCv) {  
         if(nextCvStep == step) {
@@ -192,6 +190,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           nextCvStep *= 5;  
         }         
       }
+      // assemble next batch
       sgpp::base::DataMatrix* batch = new sgpp::base::DataMatrix(batchSize, dim);
       sgpp::base::DataVector* batchLabels = new sgpp::base::DataVector(batchSize);
       for (size_t j = 0; j < batchSize; j++) {
@@ -201,21 +200,21 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
         batch->setRow(j, x);
         batchLabels->set(j, y);
       }
- 
-      cur_pair = std::pair<sgpp::base::DataMatrix*, sgpp::base::DataVector*>(batch, batchLabels);
+      curPair = std::pair<sgpp::base::DataMatrix*, sgpp::base::DataVector*>(batch, batchLabels);
       cnt += batchSize;
+      
+      // train the model with current batch
+      train(*(curPair.first), *(curPair.second), doCv, refineCoarse);
 
-      train(*(cur_pair.first), *(cur_pair.second), doCv, RefineCoarse_);
-
-      totalInstances += (cur_pair.first)->getNrows();
-      //std::cout << totalInstances << std::endl;
+      totalInstances += (curPair.first)->getNrows();
     
-      //access DBMatOnlineDE-objects of all classes in order 
-      //to apply adaptivity to the specific sparse grids later on
+      // access DBMatOnlineDE-objects of all classes in order 
+      // to apply adaptivity to the specific sparse grids later on
       onlineObjects = getDestFunctions();
 
+      // check if refinement should be performed
       if (refMonitor == "periodic") {
-        //check periodic monitor
+        // check periodic monitor
         if ( (offline->getConfig()->decomp_type_== DBMatDecompChol)
         &&   (totalInstances > 0)
         &&   (totalInstances % refPeriod == 0)
@@ -224,13 +223,17 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
         }
       }
       else if (refMonitor == "convergence") {
-        //check convergence monitor
+        // check convergence monitor
+        if (validData == nullptr) {
+          throw base::data_exception(
+	    "No validation data for checking convergence provided!");
+        }
         if ( (offline->getConfig()->decomp_type_== DBMatDecompChol)  
         &&   (refCnt < offline->getConfig()->numRefinements_) ) {
           currentValidError = getError(validData, validLabels, "Acc");
-          currentTrainError = getError(trainData, trainLabels, "Acc"); //if train dataset is large
-                                                                       //use a subset for error 
-                                                                       //evaluation
+          currentTrainError = getError(trainData, trainLabels, "Acc"); // if train dataset is large
+                                                                       // use a subset for error 
+                                                                       // evaluation
           monitor->pushToBuffer(currentValidError,currentTrainError);
           if (monitor->nextRefCnt > 0) {
             monitor->nextRefCnt--;
@@ -240,15 +243,14 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           } 
         }
       }
-
-      //if the Cholesky decomposition is chosen as factorization method refinement 
-      //and coarsening methods can be applied
+      // if the Cholesky decomposition is chosen as factorization method refinement 
+      // and coarsening methods can be applied
       if (doRefine) {
         //acc = getAccuracy();
         //avgErrors.append(1.0 - acc);
         std::cout << "refinement at iteration: "<< totalInstances << std::endl;
-        //bundle grids and surplus vector pointer needed for refinement
-        //(for zero-crossings refinement, data-based refinement)
+        // bundle grids and surplus vector pointer needed for refinement
+        // (for zero-crossings refinement, data-based refinement)
         std::vector<sgpp::base::Grid*> grids;
         std::vector<sgpp::base::DataVector*> alphas;
         for (unsigned int i = 0; i < getNumClasses(); i++) {
@@ -301,29 +303,32 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           
           sgpp::base::GridGenerator& gridGen = grid->getGenerator();
           if (refType == "surplus") {
-            std::unique_ptr<sgpp::base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+            std::unique_ptr<sgpp::base::OperationEval> opEval(
+              op_factory::createOperationEval(*grid));
 	    sgpp::base::GridStorage& gridStorage = grid->getStorage();	  	
-	    alpha_work = densEst->getAlpha();		
-	    sgpp::base::DataVector alphaWeight(alpha_work->getSize());			
-	    //Determine surpluses
+	    alphaWork = densEst->getAlpha();		
+	    sgpp::base::DataVector alphaWeight(alphaWork->getSize());			
+	    // determine surpluses
 	    for (unsigned int k = 0; k < gridStorage.getSize(); k++) {
-              //Sets values of p to the coordinates of the given GridPoint gp
+              // sets values of p to the coordinates of the given GridPoint gp
               gridStorage.getPoint(k).getStandardCoordinates(p);
-	      //Multiply k-th alpha with the evaluated function at grind-point k
-	      alphaWeight[k] = alpha_work->get(k)*opEval->eval(*alpha_work, p);
+	      // multiply k-th alpha with the evaluated function at grind-point k
+	      alphaWeight[k] = alphaWork->get(k)*opEval->eval(*alphaWork, p);
 	    }
 
-            //Perform Coarsening (surplus based)
+            // Perform Coarsening (surplus based)
             /*if (coarseCnt < maxCoarseNum) {
 	      sgpp::base::HashCoarsening coarse_;
 	      //std::cout << std::endl << "Start coarsening" << std::endl;
 		
-	      //Coarsening based on surpluses
-	      sgpp::base::SurplusCoarseningFunctor scf(alphaWeight, coarseNumPoints, coarseThreshold);
+	      // Coarsening based on surpluses
+	      sgpp::base::SurplusCoarseningFunctor scf(
+                alphaWeight, coarseNumPoints, coarseThreshold);
 
 	      //std::cout << "Size before coarsening:" << grid->getSize() << std::endl; 
 	      //int old_size = grid->getSize();
-	      coarse_.free_coarsen_NFirstOnly(grid->getStorage(), scf, alphaWeight, grid->getSize());
+	      coarse_.free_coarsen_NFirstOnly(
+                grid->getStorage(), scf, alphaWeight, grid->getSize());
 
 	      std::cout << "Size after coarsening:" << grid->getSize() << std::endl << std::endl;
 	      //int new_size = grid->getSize();
@@ -331,14 +336,14 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 	      deletedGridPoints.clear();
 	      deletedGridPoints = coarse_.getDeletedPoints();
 			
-	      (*RefineCoarse_)[idx].first = deletedGridPoints;
+	      (*refineCoarse)[idx].first = deletedGridPoints;
 
               coarseCnt++;
             }*/ 
 
-	    //Perform refinement (surplus based)				
+	    // perform refinement (surplus based)				
 	    sizeBeforeRefine = grid->getSize();
-	    //simple refinement based on surpluses
+	    // simple refinement based on surpluses
 	    sgpp::base::SurplusRefinementFunctor srf(alphaWeight, 
                                                      offline->getConfig()->ref_noPoints_);
 	    gridGen.refine(srf);
@@ -346,12 +351,12 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           }
           else if ( (refType == "data") || (refType == "zero") ) {
             if (preCompute) {
-              //precompute the evals (needs to be done once per step, before
-              //any refinement is done
+              // precompute the evals (needs to be done once per step, before
+              // any refinement is done
               func->preComputeEvaluations();
             }
             func->setGridIndex(idx);
-            //Perform refinement (zero-crossings-based / data-based)
+            // perform refinement (zero-crossings-based / data-based)
             sizeBeforeRefine = grid->getSize();
             gridGen.refine(*func);
             sizeAfterRefine = grid->getSize();
@@ -360,12 +365,13 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 	  std::cout << "grid size after adaptivity: " << grid->getSize() << std::endl;
 
 	  newPoints = sizeAfterRefine - sizeBeforeRefine;
-	  (*RefineCoarse_)[idx].second = newPoints;
+	  (*refineCoarse)[idx].second = newPoints;
 
-	  //Apply grid changes to the Cholesky factorization	
-	  densEst->getOffline()->choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
-          //Update alpha vector
-          densEst->updateAlpha(&(*RefineCoarse_)[idx].first, (*RefineCoarse_)[idx].second);
+	  // apply grid changes to the Cholesky factorization	
+	  densEst->getOffline()->choleskyModification(
+            newPoints, deletedGridPoints, densEst->getBestLambda());
+          // update alpha vector
+          densEst->updateAlpha(&(*refineCoarse)[idx].first, (*refineCoarse)[idx].second);
         }
         refCnt += 1;
         doRefine = false;
@@ -373,10 +379,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           monitor->nextRefCnt = monitor->minRefInterval;
         }
       }
-      delete cur_pair.first;
-      delete cur_pair.second;
+      delete curPair.first;
+      delete curPair.second;
      
-      //save current error
+      // save current error
       /*if (totalInstances % 10 == 0) {
         acc = getAccuracy();
         avgErrors.append(1.0 - acc);  
@@ -386,83 +392,87 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
     cntDataPasses++;
     processedPoints = 0;
 
-  } //end while
+  } // end while
 
   std::cout << "#Training finished" << std::endl;
 
   //error = 1.0 - getAccuracy();
 
   //delete offline;
-  delete RefineCoarse_;
+  delete refineCoarse;
 }
 
 void LearnerSGDEOnOff::train(sgpp::base::DataMatrix& trainData,
-			     sgpp::base::DataVector& trainClasses, bool do_cv, 
-                             std::vector<std::pair<std::list<size_t>,unsigned int>>* RefineCoarse_) {
+			     sgpp::base::DataVector& trainClasses, bool doCv, 
+                             std::vector<std::pair<std::list<size_t>,unsigned int>>* refineCoarse) {
   if (initDone) {
-	if (trainData.getNrows() != trainClasses.getSize())
-	  throw sgpp::base::data_exception(
-	    "Sizes of train data set and class label vector do not fit!");
-	
-	int dim = trainData.getNcols();
+    if (trainData.getNrows() != trainClasses.getSize()) {
+      throw sgpp::base::data_exception(
+        "Sizes of train data set and class label vector do not fit!");
+    }
+    size_t dim = trainData.getNcols();
 
-	//create an empty matrix for every class:
-	std::vector<std::pair<sgpp::base::DataMatrix*, double>> trainDataClasses;
-	std::map<double, int> classIndices; //maps class labels to indices
-	int index = 0;
-        for (size_t i = 0; i < classLabels.getSize(); i++) {
-		sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(0, dim);
-		pair<sgpp::base::DataMatrix*, double> p(m, classLabels[i]);
-		trainDataClasses.push_back(p);
-                classIndices.insert(std::pair<double, int>(classLabels[i], index));
-		index++;
-	}
-	//split the data into the different classes:
-	for (size_t i = 0; i < trainData.getNrows(); i++) {
-		double classLabel = trainClasses[i];
-		sgpp::base::DataVector vec(dim);
-		trainData.getRow(i, vec);
-		pair<sgpp::base::DataMatrix*, double> p =
-				trainDataClasses[classIndices[classLabel]];
-		p.first->appendRow(vec);
-	}
-	//compute density functions
-	train(trainDataClasses, do_cv, RefineCoarse_);
+    // create an empty matrix for every class:
+    std::vector<std::pair<sgpp::base::DataMatrix*, double>> trainDataClasses;
+    std::map<double, int> classIndices; // maps class labels to indices
+    int index = 0;
+    for (size_t i = 0; i < classLabels.getSize(); i++) {
+      sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(0, dim);
+      pair<sgpp::base::DataMatrix*, double> p(m, classLabels[i]);
+      trainDataClasses.push_back(p);
+      classIndices.insert(std::pair<double, int>(classLabels[i], index));
+      index++;
+    }
+    // split the data into the different classes:
+    for (size_t i = 0; i < trainData.getNrows(); i++) {
+      double classLabel = trainClasses[i];
+      sgpp::base::DataVector vec(dim);
+      trainData.getRow(i, vec);
+      pair<sgpp::base::DataMatrix*, double> p =
+        trainDataClasses[classIndices[classLabel]];
+      p.first->appendRow(vec);
+    }
+    // compute density functions
+    train(trainDataClasses, doCv, refineCoarse);
 
-	//delete DataMatrix pointers:
-	for (size_t i = 0; i < trainDataClasses.size(); i++) {
-		delete trainDataClasses[i].first;
-	}
+    // delete DataMatrix pointers:
+    for (size_t i = 0; i < trainDataClasses.size(); i++) {
+      delete trainDataClasses[i].first;
+    }
   }
 }
 
 void LearnerSGDEOnOff::train(
   std::vector<std::pair<sgpp::base::DataMatrix*, double>>& trainDataClasses, 
-  bool do_cv, 
-  std::vector<std::pair<std::list<size_t>, unsigned int>>*  RefineCoarse_) {
+  bool doCv, 
+  std::vector<std::pair<std::list<size_t>, unsigned int>>*  refineCoarse) {
 
-	unsigned int numberOfDataPoints = 0;
-	for(unsigned int i = 0; i < trainDataClasses.size(); i++)
-		numberOfDataPoints += trainDataClasses[i].first->getSize();
+  unsigned int numberOfDataPoints = 0;
+  for (unsigned int i = 0; i < trainDataClasses.size(); i++) {
+    numberOfDataPoints += trainDataClasses[i].first->getSize();
+  }
+  for (unsigned int i = 0; i < trainDataClasses.size(); i++) {
+    pair<sgpp::base::DataMatrix*, double> p = trainDataClasses[i];
 
-	for (unsigned int i = 0; i < trainDataClasses.size(); i++) {
-		pair<sgpp::base::DataMatrix*, double> p = trainDataClasses[i];
+    if ((*p.first).getNrows() > 0) {
+      // update density function for current class
+      (*destFunctions)[i].first->computeDensityFunction(
+        *p.first, true, doCv, &(*refineCoarse)[i].first, (*refineCoarse)[i].second);
+      (*refineCoarse)[i].first.clear(); 
+      (*refineCoarse)[i].second = 0;
 
-                if ((*p.first).getNrows() > 0) {
-		  (*destFunctions_)[i].first->computeDensityFunction(*p.first, true, do_cv, &(*RefineCoarse_)[i].first, (*RefineCoarse_)[i].second);
-                  (*RefineCoarse_)[i].first.clear(); 
-                  (*RefineCoarse_)[i].second = 0;
+      if (usePrior) {
+        this->prior[p.second] = ((this->prior[p.second] * processedPoints) + p.first->getSize()) /
+          ((double)numberOfDataPoints + processedPoints);
+      } 
+      else {
+        this->prior[p.second] = 1.;
+      }
+    }
+  }
 
-		  if(usePrior){
-		    this->prior[p.second] = ((this->prior[p.second] * processedPoints) + p.first->getSize())/((double)numberOfDataPoints + processedPoints);
-		  }else
-		    this->prior[p.second] = 1.;
-                }
-	}
-
-	this->processedPoints += numberOfDataPoints;
-
-	trained = true;
+  this->processedPoints += numberOfDataPoints;
+  trained = true;
 }
 
 double LearnerSGDEOnOff::getAccuracy() {
@@ -488,34 +498,35 @@ double LearnerSGDEOnOff::getAccuracy() {
   return acc;
 }
 
-sgpp::base::DataVector LearnerSGDEOnOff::predict(sgpp::base::DataMatrix* data) {
-	sgpp::base::DataVector result(data->getNrows());
+base::DataVector LearnerSGDEOnOff::predict(sgpp::base::DataMatrix* data) {
+  base::DataVector result(data->getNrows());
 
-	/*if(not trained) {
-	  std::cerr << "LearnerSGDEOnOff: Not trained!" << std::endl;
-	  exit(-1);
-	}*/
+  /*if(not trained) {
+    std::cerr << "LearnerSGDEOnOff: Not trained!" << std::endl;
+    exit(-1);
+  }*/
 
-	for (unsigned int i = 0; i < data->getNrows(); i++) {
-		double max = numeric_limits<double>::max()*(-1);
-		double max_class = 0;
-		//Compute the maximum density:
-		sgpp::base::DataVector p(data->getNcols());
-		data->getRow(i, p);
-		for (unsigned int j = 0; j < destFunctions_->size(); j++) {
-			pair<DBMatOnlineDE*, double> pair = (*destFunctions_)[j];
-			//double density = pair.first->eval(p)*this->prior[pair.second];
-                        double density = pair.first->eval(p, true)*this->prior[pair.second];
-			if (density > max) {
-				max = density;
-				max_class = pair.second;
-			}
-		}
-		if(max_class == 0)
-		  std::cerr << "LearnerSGDEOnOff: Warning: no best class found!" << std::endl;
-		result[i] = max_class;
-	}
-	return result;
+  for (unsigned int i = 0; i < data->getNrows(); i++) {
+    double max = numeric_limits<double>::max()*(-1);
+    double max_class = 0;
+    // compute the maximum density:
+    sgpp::base::DataVector p(data->getNcols());
+    data->getRow(i, p);
+    for (unsigned int j = 0; j < destFunctions->size(); j++) {
+      pair<DBMatOnlineDE*, double> pair = (*destFunctions)[j];
+      //double density = pair.first->eval(p)*this->prior[pair.second];
+      double density = pair.first->eval(p, true)*this->prior[pair.second];
+      if (density > max) {
+        max = density;
+        max_class = pair.second;
+      }
+    }
+    if(max_class == 0) {
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!" << std::endl;
+    }
+    result[i] = max_class;
+  }
+  return result;
 }
 
 int LearnerSGDEOnOff::predict(sgpp::base::DataVector &p) {
@@ -539,7 +550,7 @@ double LearnerSGDEOnOff::getError(sgpp::base::DataMatrix* data, sgpp::base::Data
     }
 
     double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
-    res = 1.0 - getAccuracy();
+    res = 1.0 - acc;
   }
   
   return res;
@@ -550,11 +561,8 @@ void LearnerSGDEOnOff::storeResults() {
   sgpp::base::DataVector classesComputed = predict(testData);
 
   std::ofstream output;
-  //write computed classes to .csv
-  //output.open("SGDEOnOff_ripley_errormonitor_zerocrossing_predicted.csv");
-  //output.open("SGDEOnOff_ripley_periodicmonitor_zerocrossing_predicted.csv");
-  output.open("SGDEOnOff_banana_errormonitor_zerocrossing_predicted.csv");
-  //output.open("SGDEOnOff_banana_periodicmonitor_zerocrossing_predicted.csv");
+  // write predicted classes to csv file
+  output.open("SGDEOnOff_predicted_classes.csv");
   if (output.fail()) {
     std::cout << "failed to create .csv file!" << std::endl;  
   }
@@ -566,14 +574,11 @@ void LearnerSGDEOnOff::storeResults() {
     }
     output.close();
   }
-  //write grids to .csv
-  for (int i = 0; i < classNumber; i++) {
-    DBMatOnlineDE* densEst = (*destFunctions_)[i].first;
+  // write grids to csv file
+  for (unsigned int i = 0; i < classNumber; i++) {
+    DBMatOnlineDE* densEst = (*destFunctions)[i].first;
     sgpp::base::Grid* grid = densEst->getOffline()->getGridPointer();  
-    //output.open("SGDEOnOff_ripley_errormonitor_zerocrossing_grid_"+std::to_string((*destFunctions_)[i].second)+".csv");
-    //output.open("SGDEOnOff_ripley_periodicmonitor_zerocrossing_grid_"+std::to_string((*destFunctions_)[i].second)+".csv");
-    output.open("SGDEOnOff_banana_errormonitor_zerocrossing_grid_"+std::to_string((*destFunctions_)[i].second)+".csv");
-    //output.open("SGDEOnOff_banana_periodicmonitor_zerocrossing_grid_"+std::to_string((*destFunctions_)[i].second)+".csv");
+    output.open("SGDEOnOff_grid_"+std::to_string((*destFunctions)[i].second)+".csv");
     if (output.fail()) {
       std::cout << "failed to create .csv file!" << std::endl;  
     }
@@ -595,10 +600,9 @@ void LearnerSGDEOnOff::storeResults() {
       output.close();
     }
   }
-  //write density function evaluations to .csv
+  // write density function evaluations to csv file
   double stepSize = 0.01;
   sgpp::base::DataMatrix values(0,2);
-  //std::cout << values.getNrows() << std::endl;
   sgpp::base::DataVector range(101);
   for (size_t i = 0; i < 101; i++) {
     range.set(i, stepSize*(static_cast<double>(i)));
@@ -613,17 +617,13 @@ void LearnerSGDEOnOff::storeResults() {
   }
   // evaluate each density function at all points from values
   // and write result to csv file
-  for (unsigned int j = 0; j < destFunctions_->size(); j++) {
-    pair<DBMatOnlineDE*, double> pair = (*destFunctions_)[j];
-    //output.open("SGDEOnOff_ripley_errormonitor_zerocrossing_density_fun_"+std::to_string(pair.second)+"_evals.csv");
-    //output.open("SGDEOnOff_ripley_periodicmonitor_zerocrossing_density_fun_"+std::to_string(pair.second)+"_evals.csv");
-    output.open("SGDEOnOff_banana_errormonitor_zerocrossing_density_fun_"+std::to_string(pair.second)+"_evals.csv");
-    //output.open("SGDEOnOff_banana_periodicmonitor_zerocrossing_density_fun_"+std::to_string(pair.second)+"_evals.csv");
+  for (unsigned int j = 0; j < destFunctions->size(); j++) {
+    pair<DBMatOnlineDE*, double> pair = (*destFunctions)[j];
+    output.open("SGDEOnOff_density_fun_"+std::to_string(pair.second)+"_evals.csv");
     for (size_t i = 0; i < values.getNrows(); i++) {
-      // Get next test sample x 
+      // get next test sample x 
       sgpp::base::DataVector x(2);					
       values.getRow(i, x);
-      //std::cout << x[0] << " , " << x[1] << std::endl;
       double density = pair.first->eval(x, true)*this->prior[pair.second];
       output << density << ";" << std::endl;
     }
@@ -633,51 +633,46 @@ void LearnerSGDEOnOff::storeResults() {
 }
 
 sgpp::base::DataVector LearnerSGDEOnOff::getDensities(sgpp::base::DataVector& point) {
-
-	sgpp::base::DataVector result (destFunctions_->size());
-	for (unsigned int i = 0; i < destFunctions_->size(); i++) {
-		pair<DBMatOnlineDE*, double> pair = (*destFunctions_)[i];
-		result[i] = pair.first->eval(point);
-	}
-	return result;
+  base::DataVector result(destFunctions->size());
+  for (size_t i = 0; i < destFunctions->size(); i++) {
+    pair<DBMatOnlineDE*, double> pair = (*destFunctions)[i];
+    result[i] = pair.first->eval(point);
+  }
+  return result;
 }
 
-void LearnerSGDEOnOff::setCrossValidationParameters(int lambda_step, double lambda_start, double lambda_end,
-                                               sgpp::base::DataMatrix *test, sgpp::base::DataMatrix *test_cc, 
-                                               bool logscale) {
-	if (destFunctions_ != NULL) {
-		for (size_t i = 0; i < destFunctions_->size(); i++) {
-			(*destFunctions_)[i].first->setCrossValidationParameters(lambda_step, lambda_start, lambda_end, test, test_cc, logscale);
-		}
-	}
-	else {
-		cv_save_lambda_step = lambda_step;
-		cv_save_lambda_start = lambda_start;
-		cv_save_lambda_end = lambda_end;
-		cv_save_logscale = logscale;
-		cv_save_test = test;
-		cv_save_test_cc = test_cc;
-		cv_saved = true;
-	}
+void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart, 
+                                                    double lambdaEnd, sgpp::base::DataMatrix *test, 
+                                                    sgpp::base::DataMatrix *testRes, 
+                                                    bool logscale) {
+  if (destFunctions != nullptr) {
+    for (size_t i = 0; i < destFunctions->size(); i++) {
+      (*destFunctions)[i].first->setCrossValidationParameters(
+        lambdaStep, lambdaStart, lambdaEnd, test, testRes, logscale);
+    }
+  }
+  else {
+    cvSaveLambdaStep = lambdaStep;
+    cvSaveLambdaStart = lambdaStart;
+    cvSaveLambdaEnd = lambdaEnd;
+    cvSaveLogscale = logscale;
+    cvSaveTest = test;
+    cvSaveTestRes = testRes;
+    cvSaved = true;
+  }
 }
 
-double LearnerSGDEOnOff::getBestLambda() {
+/*double LearnerSGDEOnOff::getBestLambda() {
   //return online->getBestLambda();
   return 0.; // TODO
-}
+}*/
 
 unsigned int LearnerSGDEOnOff::getNumClasses() {
   return this->classNumber;
 }
 
-/*void LearnerSGDEOnOff::normalize(size_t samples) {
-	for (size_t i = 0; i < destFunctions_->size(); i++) {
-		std::cout << std::endl << (*destFunctions_)[i].first->normalize(samples) << std::endl;
-	}
-}*/
-
 std::vector<std::pair<DBMatOnlineDE*, double> >* LearnerSGDEOnOff::getDestFunctions(){
-  return destFunctions_;
+  return destFunctions;
 }
 
 }  // namespace datadriven

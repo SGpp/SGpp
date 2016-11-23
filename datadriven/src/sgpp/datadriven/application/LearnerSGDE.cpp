@@ -596,59 +596,18 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
   std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(accDeclineThreshold,
                                                                      accDeclineBufferSize,
                                                                      100));
-  bool doRefine = false;      // set true by monitor to trigger refinement
+  bool doRefine = false; // set true by monitor to trigger refinement
   size_t refCnt = 0;
 
-  // for error plotting
-  base::DataVector errors;
-  //base::DataVector gridSizes;
-  // for plotting only
-  double acc = getAccuracy(ptestData, ptestLabels, 0.0);
-  //errors.append(1.0 - acc);  //simple
-  avgErrors.append(1.0 - acc);  //5-fold
-  base::DataVector runtimes;
+  // auxiliary variable for accuracy (error) measurement 
+  double acc = 0.0;
+  //acc = getAccuracy(testData, testLabels, 0.0);
+  //avgErrors.append(1.0 - acc);  
 
-  while (numIterations < maxIterations) {	
-    ////////////////////////////////////////////////
-    /*    bool bufferFull;
-        base::DataMatrix* validBatch = new base::DataMatrix(0,4);
-        base::DataMatrix* trainBatch = new base::DataMatrix(0,4);
-        base::DataVector* validBatch_c = new base::DataVector(0);
-        base::DataVector* trainBatch_c = new base::DataVector(0);
-        for (size_t idx_ = 0; idx_ < 250; idx_++) {
-          int divisor = RAND_MAX / static_cast<int>(pvalidData->getNrows());
-          int r;
-          do {
-            r = rand() / divisor;
-          } while (r > (static_cast<int>(pvalidData->getNrows())-1));
-          base::DataVector x(4);
-          pvalidData->getRow((size_t)r, x);
-          double y = pvalidLabels->get((size_t)r);
-          validBatch->appendRow(x);
-          validBatch_c->append(y);
-        }
-        for (size_t idx_ = 0; idx_ < 250; idx_++) {
-          int divisor = RAND_MAX / static_cast<int>(trainData->getNrows());
-          int r;
-          do {
-            r = rand() / divisor;
-          } while (r > (static_cast<int>(trainData->getNrows())-1));
-          base::DataVector x(4);
-          trainData->getRow((size_t)r, x);
-          double y = labels->get((size_t)r);
-          trainBatch->appendRow(x);
-          trainBatch_c->append(y);
-        }*/
-    ///////////////////////////////////////////////////////////////////		
-    for (size_t i = 0; i < trainData->getNrows(); i++) {
-      
-      //time measure start
-      clock_t begin;
-      //if ( (processedPoints == 0) or ((processedPoints+1) % 1000 == 0) ) {
-      begin = clock();
-      //}
-
-      // Get next training sample x and its label y
+  // main loop which performs the training process
+  while (numIterations < maxIterations) {			
+    for (size_t i = 0; i < trainData->getNrows(); i++) {     
+      // get next training sample x and its label y
       sgpp::base::DataVector x(dim);					
       trainData->getRow((size_t)i, x);
       double y = labels->get(i);
@@ -678,10 +637,6 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
         alphas.insert(std::pair<int, std::shared_ptr<base::DataVector>>(label, 
                       std::make_shared<base::DataVector>(sGrid->getSize())));
         alphas.at(label)->setAll(0.0);
-        // create new queue in alpha storage to collect all 
-        // upcoming alpha vectors corresponding to the new label 
-        //alphaStorage.insert(std::make_pair(label, 
-        //                    std::deque<std::shared_ptr<base::DataVector>>));
         
         appearances.insert(std::pair<int, size_t>(label, 0));
         refCnts.insert(std::pair<int, size_t>(label, 0));
@@ -742,52 +697,6 @@ void LearnerSGDE::trainOnline(base::DataVector& plabels,
       &&   ((processedPoints+1) % refPeriod == 0) ) {
         doRefine = true;
       }
-
-      //convergence monitor
-      /*if (refCnt < numRefSteps) {
-        currentValidError = getError(*pvalidData, *pvalidLabels, 0.0, "Acc");
-        //currentTrainError = getError(*trainData, plabels, 0.0, "Acc");
-
-        if (monitor->nextRefCnt > 0) {
-          monitor->nextRefCnt--;
-        }
-        monitor->pushToBuffer(currentValidError,currentTrainError);
-        if (monitor->nextRefCnt == 0) {
-          doRefine = monitor->checkConvergence();
-        } 
-      }*/
-
-      /*if (refCnt < numRefSteps) {
-        /////////////////////////////////////////////////
-        if (processedPoints % 500 == 0) {
-          bufferFull = false;
-        }
-        if (not bufferFull) {
-        /////////////////////////////////////////////////
-          //currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
-          //currentTrainError = getError(*trainData, *trainLabels, 0.0, "Acc");
-          currentValidError = getError(*validBatch, *validBatch_c, 0.0, "Acc");
-          currentTrainError = getError(*trainBatch, *trainBatch_c, 0.0, "Acc");
-          monitor->pushToBuffer(currentValidError,currentTrainError);
-        ////
-        }
-        ////
-        if (monitor->nextRefCnt > 0) {
-          monitor->nextRefCnt--;
-        }
-        ///////////////////////////////////////////////
-        if (monitor->validErrorDeclineBuffer.size() == accDeclineBufferSize) {
-          bufferFull = true;
-        /////////////////////////////////////////////////
-          if (monitor->nextRefCnt == 0) {
-            doRefine = monitor->checkConvergence();
-            /////////////////////////////////////
-            monitor->validErrorDeclineBuffer.clear();
-            monitor->trainErrorDeclineBuffer.clear();
-            /////////////////////////////////////
-          }
-        }
-      }*/
 
       // Refinement
       if (doRefine) {
@@ -1032,45 +941,45 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset,
 }
 
 double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
-                                const base::DataVector& classesReference,
+                                const base::DataVector& referenceLabels,
                                 const double threshold) {
   // evaluate test dataset
-  base::DataVector classesComputed(testDataset.getNrows());
-  predict(testDataset, classesComputed);
+  base::DataVector predictedLabels(testDataset.getNrows());
+  predict(testDataset, predictedLabels);
 
-  return getAccuracy(classesComputed, classesReference, threshold);
+  return getAccuracy(referenceLabels, threshold, predictedLabels);
 }
 
-double LearnerSGDE::getAccuracy(const base::DataVector& classesComputed,
-                                const base::DataVector& classesReference,
-                                const double threshold) {
+double LearnerSGDE::getAccuracy(const base::DataVector& referenceLabels,
+                                const double threshold,
+                                const base::DataVector& predictedLabels) {
   double result = -1.0;
 
-  if (classesComputed.getSize() != classesReference.getSize()) {
+  if (predictedLabels.getSize() != referenceLabels.getSize()) {
     throw base::application_exception(
         "LearnerSGDE::getAccuracy: lengths of classes vectors do not match!");
   }
 
   size_t correct = 0;
 
-  for (size_t i = 0; i < classesComputed.getSize(); i++) {
-    if ((classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0) ||
-       (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0)) {
+  for (size_t i = 0; i < predictedLabels.getSize(); i++) {
+    if ((predictedLabels.get(i) >= threshold && referenceLabels.get(i) >= 0.0) ||
+       (predictedLabels.get(i) < threshold && referenceLabels.get(i) < 0.0)) {
       correct++;
     }
   }
 
-  result = static_cast<double>(correct) / static_cast<double>(classesComputed.getSize());
+  result = static_cast<double>(correct) / static_cast<double>(predictedLabels.getSize());
 
   return result;
 }
 
 void LearnerSGDE::predict(base::DataMatrix& testData,
-                          base::DataVector& computedLabels) {
-  computedLabels.resize(testData.getNrows());
+                          base::DataVector& predictedLabels) {
+  predictedLabels.resize(testData.getNrows());
   size_t dim = testData.getNcols(); 
 
-  int compLabel;
+  int predLabel;
   double prior; 
 
   for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -1079,7 +988,7 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
     testData.getRow((size_t)i, x);
     // predict label using Bayes Theorem
     double max = 0.0;
-    // compute each density functions for current test sample x
+    // compute each density function for current test sample x
     for (auto const& g : grids) {
       std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
       double res = opEval->eval(*alphas.at(g.first), x);
@@ -1095,11 +1004,11 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
       // check if this class probability is larger than current maximum 
       if (res > max) {
         max = res;
-        compLabel = g.first;
+        predLabel = g.first;
       }
     } 
 
-    computedLabels.set(i, compLabel); 
+    predictedLabels.set(i, predLabel); 
   }
 }
 

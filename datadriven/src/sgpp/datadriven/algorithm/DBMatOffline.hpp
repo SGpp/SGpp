@@ -20,7 +20,7 @@ using namespace sgpp;
 /**
  * Class that is used to decompose and store the left-hand-side matrix for the density based classification approach
  * (The classification is divided into two parts: the offline step that does not
- * depend on the actual data and the online step that depends on the data)
+ * depend on the actual data and the online step that depends on the data). Uses Gnu Scientific Library (GSL).
  */
 
 class DBMatOffline {

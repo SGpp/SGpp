@@ -9,7 +9,6 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 
-#include <ctime>
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -18,8 +17,8 @@ using sgpp::base::DataVector;
 int main() {
   size_t totalSets = 1; 
   size_t totalFolds = 1; 
-  double avgError = 0.0;
-  double avgErrorFolds = 0.0;
+  //double avgError = 0.0;
+  //double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
     //sgpp::base::DataVector avgErrorsFolds(21, 0.0); //to compute average classification error
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
@@ -57,7 +56,7 @@ int main() {
       validLabels = &valDataset.getTargets();
 
       // set number of classes
-      int classNum = 2;
+      unsigned int classNum = 2;
  
       // set class labels
       sgpp::base::DataVector classLabels(classNum);
@@ -102,8 +101,8 @@ int main() {
       //select convergence monitor - perform refinements if algorithm has converged
       //(convergence measured with respect to changes of the classification accuracy)
       refMonitor = "convergence";
-      double accDeclineThreshold = 0.0001; //the convergence threshold
-      size_t accDeclineBufferSize = 100; //number of accuracy measurements which 
+      double accDeclineThreshold = 0.0005; //the convergence threshold
+      size_t accDeclineBufferSize = 50; //number of accuracy measurements which 
                                          //are considered for convergence check
       size_t minRefInterval = 0; //minimum number of iterations before next refinement 
                                  //is allowed to be performed
@@ -163,13 +162,13 @@ int main() {
       learner.train(batchSize, maxDataPasses, refType, 
                     refMonitor, refPeriod, accDeclineThreshold,
                     accDeclineBufferSize, minRefInterval,
-                    enableCv, nextCvStep, numSets+1);
+                    enableCv, nextCvStep);
 
       //compute accuracy
       double acc = learner.getAccuracy();
       std::cout << "# accuracy (test data): " << acc << std::endl;
 
-      //store results
+      //store results (classified data, grids, density functions)
       //learner.storeResults();
 
       //avgErrorFolds += learner.error;
@@ -181,7 +180,7 @@ int main() {
     avgErrorFolds = 0.0;
     avgErrorsFolds.mult(1.0/static_cast<double>(totalFolds));*/
 
-    //write error evaluation to .csv
+    //write error evaluation to csv-file
     /*std::ofstream output;
     output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
     if (output.fail()) {
