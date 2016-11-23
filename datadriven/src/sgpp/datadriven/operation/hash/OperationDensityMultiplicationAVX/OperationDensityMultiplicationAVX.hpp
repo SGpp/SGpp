@@ -44,7 +44,7 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     // Store grid into int array and add values until it is divisible through 128
     // (required for opencl comparison)
     actual_gridsize = grid.getSize();
-    used_gridsize = actual_gridsize + 4 - actual_gridsize % 4;
+    used_gridsize = actual_gridsize + 128 - actual_gridsize % 128;
     dimensions = grid.getDimension();
     gridpoints = new int[used_gridsize * 2 * dimensions];
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -78,6 +78,14 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
                static_cast<double>(1 << gridpoints[i*2*dimensions + 2*dim + 1]));
       }
     }
+    // padding
+    // for (size_t i = actual_gridsize; i < used_gridsize; ++i) {
+    //   for (size_t d = 0; d < dimensions; d++) {
+    //     positions[d * used_gridsize + i] = 0.0;
+    //     hs[d * used_gridsize + i] = 0.0;
+    //     hs_inverse[d * used_gridsize + i] = 0.0;
+    //   }
+    // }
   }
   virtual ~OperationDensityMultiplicationAVX() {
     delete [] gridpoints;
@@ -100,8 +108,10 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   virtual void start_partial_mult(double *alpha, int start_id, int chunksize) {
     std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // Copy into SIMD vectors
+    const size_t blocksize = 128;
     #pragma omp parallel for
-    for (size_t workitem = 0; workitem < used_gridsize; workitem+=4) {
+    for (size_t workitem = 0; workitem < actual_gridsize; workitem+=4) {
+      __m256d zellenintegral[blocksize];
       __m256d *workitem_positions = new __m256d[dimensions];
       __m256d *workitem_hs = new __m256d[dimensions];
       __m256d *workitem_hs_inverse = new __m256d[dimensions];
@@ -114,7 +124,6 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
       __m256d current_hs_inverse;
       __m256d bitmask;
       __m256d bitmask2;
-      __m256d zellenintegral;
       current_workitems = _mm256_setzero_pd();
       tmp = _mm256_setzero_pd();
       // load workitem positions
@@ -127,45 +136,44 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
             _mm256_load_pd(&hs_inverse[d * used_gridsize + workitem]);
       }
 
-      for (size_t point = 0; point < used_gridsize; point++) {
-        zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
-        for (size_t dim = 0; dim < dimensions; dim++) {
-          // load gridpoint positions;
-          current_positions = _mm256_set_pd(positions[dim * used_gridsize + point],
-                                            positions[dim * used_gridsize + point],
-                                            positions[dim * used_gridsize + point],
-                                            positions[dim * used_gridsize + point]);
-          current_hs = _mm256_set_pd(hs[dim * used_gridsize + point],
-                                     hs[dim * used_gridsize + point],
-                                     hs[dim * used_gridsize + point],
-                                     hs[dim * used_gridsize + point]);
-          current_hs_inverse = _mm256_set_pd(hs_inverse[dim * used_gridsize + point],
-                                             hs_inverse[dim * used_gridsize + point],
-                                             hs_inverse[dim * used_gridsize + point],
-                                             hs_inverse[dim * used_gridsize + point]);
-          tmp = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
-          // Calculate distance
-          distance = _mm256_sub_pd(current_positions, workitem_positions[dim]);
-          distance = _mm256_max_pd(_mm256_sub_pd(_mm256_setzero_pd(), distance), distance);
-          tmp = _mm256_fnmadd_pd(distance, workitem_hs_inverse[dim],
-                                 _mm256_set_pd(1.0, 1.0, 1.0, 1.0));
-          tmp = _mm256_mul_pd(tmp, current_hs);
-          tmp = _mm256_max_pd(tmp,_mm256_setzero_pd());
-          tmp_alternative = _mm256_fnmadd_pd(distance, current_hs_inverse,
-                                             _mm256_set_pd(1.0, 1.0, 1.0, 1.0));
-          tmp_alternative = _mm256_max_pd(tmp_alternative,_mm256_setzero_pd());
-          tmp = _mm256_fmadd_pd(tmp_alternative, workitem_hs[dim], tmp);
-          bitmask = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_EQ_OQ);
-          tmp_alternative = _mm256_mul_pd(_mm256_set_pd(1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0), tmp);
-          bitmask2 = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_NEQ_OQ);
-          tmp = _mm256_and_pd(tmp, bitmask2);
-          tmp = _mm256_add_pd(tmp, _mm256_and_pd(tmp_alternative, bitmask));
-          zellenintegral = _mm256_mul_pd(zellenintegral, tmp);
+      for (size_t point = 0; point < used_gridsize / blocksize; point++) {
+        for (size_t i = 0; i < blocksize; ++i) {
+          zellenintegral[i] = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
         }
+        for (size_t dim = 0; dim < dimensions; dim++) {
+          for (size_t i = 0; i < blocksize; ++i) {
+            // load gridpoint positions;
+            current_positions = _mm256_set1_pd(positions[dim * used_gridsize +
+                                                         point * blocksize + i]);
+            current_hs = _mm256_set1_pd(hs[dim * used_gridsize + point * blocksize + i]);
+            current_hs_inverse = _mm256_set1_pd(hs_inverse[dim * used_gridsize +
+                                                          point * blocksize + i]);
+            tmp = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
+            // Calculate distance
+            distance = _mm256_sub_pd(current_positions, workitem_positions[dim]);
+            distance = _mm256_max_pd(_mm256_sub_pd(_mm256_setzero_pd(), distance), distance);
+            tmp = _mm256_fnmadd_pd(distance, workitem_hs_inverse[dim],
+                                   _mm256_set1_pd(1.0));
+            tmp = _mm256_mul_pd(tmp, current_hs);
+            tmp = _mm256_max_pd(tmp,_mm256_setzero_pd());
+            tmp_alternative = _mm256_fnmadd_pd(distance, current_hs_inverse,
+                                               _mm256_set1_pd(1.0));
+            tmp_alternative = _mm256_max_pd(tmp_alternative,_mm256_setzero_pd());
+            tmp = _mm256_fmadd_pd(tmp_alternative, workitem_hs[dim], tmp);
+            bitmask = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_EQ_OQ);
+            tmp_alternative = _mm256_mul_pd(_mm256_set1_pd(1.0/3.0), tmp);
+            bitmask2 = _mm256_cmp_pd(workitem_hs[dim], current_hs, _CMP_NEQ_OQ);
+            tmp = _mm256_and_pd(tmp, bitmask2);
+            tmp = _mm256_add_pd(tmp, _mm256_and_pd(tmp_alternative, bitmask));
+            zellenintegral[i] = _mm256_mul_pd(zellenintegral[i], tmp);
+          }
+        }
+        for (size_t i = 0; i < blocksize; ++i) {
         current_workitems =
-            _mm256_fmadd_pd(zellenintegral,
-                            _mm256_set_pd(alpha[point], alpha[point], alpha[point], alpha[point]),
+            _mm256_fmadd_pd(zellenintegral[i],
+                            _mm256_set1_pd(alpha[point * blocksize + i]),
                             current_workitems);
+        }
       }
       if (workitem + 4 < actual_gridsize)
         _mm256_storeu_pd(&result[workitem], current_workitems);

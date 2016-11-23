@@ -188,7 +188,7 @@ class SimpleQueue {
     }
   }
   /**
-   * Waits for a result from any of the other workers, sends a new workpackage and returns said result
+   * Wait for a result from any of the other workers, send a new workpackage and return said result
    *
    * @param startid Returns the starting index of the package result
    * @param partial_result Buffer containing the package result

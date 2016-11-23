@@ -54,8 +54,9 @@ int main() {
   for (size_t i = 0; i < 100; ++i)
     std::cout << result[i] << " ";
   std::cout << std::endl;
+  gridsize = gridsize + 1024 - gridsize % 1024;
   std::cout << "Duration: " << elapsed_seconds.count() << "\n";
-  std::cout << "GFLOPS: " << (gridsize*gridsize * dimension * 17 + gridsize * gridsize * 2) /
+  std::cout << "GFLOPS: " << (gridsize*gridsize * dimension * 18 + gridsize * gridsize * 2) /
       (elapsed_seconds.count() * 1000 * 1000 * 1000) << "\n";
   out_mult.close();
 }
