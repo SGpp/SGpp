@@ -3,11 +3,18 @@
 
 @short Combination technique functionality.
 
-The functionality of the module include
-- combination technique
-- special variants
-- data structures and algorithms
-- dimensional adaptivity
+The combination technique is an older variant of sparse grids which only allows dimensional, but not spatial adaptivity. However, a central advantage is that global interpolation and quadrature schemes can be used, e.g. polynomial interpolation. This allows for high orders of convergence when using sufficiently smooth functions.
+
+The functionality of the module includes
+- an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D-operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
+- 1D Grids: Uniform, Clenshaw-Curtis, Chebyshev, (weighted) Leja
+- Operators: Polynomial Interpolation, Linear Interpolation, quadrature based on the integrals of Lagrange-Polynomials
+- regular and adaptive (also parallel) level-generation
+- simple C++ and python interfaces to get started quickly
+- serialization and deserialization of computed function values
+- optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once
+
+
 
 Please refer to \ref examples_cpp_module_combigrid "usage examples".
 **/
