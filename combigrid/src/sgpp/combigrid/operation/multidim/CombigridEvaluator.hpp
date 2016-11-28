@@ -15,8 +15,9 @@
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+#include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
-#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmuedd): remove
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmudd): remove
 
 #include <cmath>
 #include <limits>
@@ -189,6 +190,45 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * @return the total number of grid points in a given level.
    */
   size_t numPoints(MultiIndex const &level) { return multiEval->numPoints(level); }
+
+  /**
+   * @return a vector with all grid points where the function has been evaluated (without
+   * duplicates).
+   */
+  std::vector<base::DataVector> getAllGridPoints() {
+    std::unordered_set<base::DataVector, DataVectorHash, DataVectorEqualTo> resultSet;
+
+    auto it = partialDifferences[numDimensions]->getStoredDataIterator();
+
+    while (it->isValid()) {
+      auto fullGridPoints = multiEval->getGridPoints(it->getMultiIndex());
+
+      for (auto &p : fullGridPoints) {
+        resultSet.insert(p);
+      }
+
+      it->moveToNext();
+    }
+
+    std::vector<base::DataVector> result(resultSet.begin(), resultSet.end());
+
+    return result;
+  }
+
+  /**
+   * @return a DataMatrix with all grid points where the function has been evaluated in its columns
+   * (without duplicates)
+   */
+  base::DataMatrix getGridPointMatrix() {
+    auto vec = getAllGridPoints();
+    base::DataMatrix m(vec[0].getSize(), vec.size());  // TODO(holzmudd): safety check
+
+    for (size_t i = 0; i < vec.size(); ++i) {
+      m.setColumn(i, vec[i]);
+    }
+
+    return m;
+  }
 
   /**
    * @return the norm of the difference/Delta value (in the single-evaluation case this is the

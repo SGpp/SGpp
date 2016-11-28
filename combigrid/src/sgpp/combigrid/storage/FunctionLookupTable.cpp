@@ -6,6 +6,7 @@
 #include <sgpp/combigrid/serialization/DefaultSerializationStrategy.hpp>
 #include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
+#include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 
 #include <stdexcept>
@@ -14,41 +15,6 @@
 
 namespace sgpp {
 namespace combigrid {
-
-/**
- * Helper class used internally as an equality predicate.
- */
-class DataVectorEqualTo {
- public:
-  bool operator()(base::DataVector const& first, base::DataVector const& second) const {
-    if (first.getSize() != second.getSize()) {
-      return false;
-    }
-
-    for (size_t i = 0; i < first.getSize(); ++i) {
-      if (first[i] != second[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-};
-
-/**
- * Helper class used internally as a hash function for DataVector objects.
- */
-class DataVectorHash {
- public:
-  size_t operator()(base::DataVector const& vec) const {
-    std::hash<double> h;
-    size_t result = 0;
-    for (size_t i = 0; i < vec.getSize(); ++i) {
-      result ^= h(vec[i]) * (i + 1);
-    }
-    return result;
-  }
-};
 
 /**
  * Helper to realize the PIMPL pattern

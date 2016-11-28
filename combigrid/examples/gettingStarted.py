@@ -12,7 +12,8 @@
 ## At the beginning of the program, we have to import the pysgpp library.
 import pysgpp
 import math
-
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
 ## \f$[0, 1]^d\f$. This particular function can be used with any number of dimensions.
@@ -121,6 +122,19 @@ def example2():
     levelManager.addLevelsAdaptive(60)
     print("Adaptive result: " + str(operation.getResult()))
     print("Total function evaluations: " + str(operation.getStorage().getNumEntries()))
+
+    ## We can also fetch the used grid points and plot the grid:
+    grid = levelManager.getGridPointMatrix()
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
+
+    ax.scatter(gridList[0], gridList[1], gridList[2], c='r', marker='o')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.show()
+
 
 ## @section combigrid_example_3 Example 3: Evaluation at multiple points
 ##
@@ -236,7 +250,6 @@ def example5():
     parameters = pysgpp.DataVector([0.777, 0.14159])
     result = operation.evaluate(2, parameters)
     print("Result: " + str(result))
-
 
 # Call the examples
 
