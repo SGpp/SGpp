@@ -6,6 +6,8 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTLEVELEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTLEVELEVALUATOR_HPP_
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
@@ -22,6 +24,8 @@ namespace combigrid {
  * around its template parameter, e. g. LevelManager. AbstractLevelEvaluator provides the central
  * method addLevel() that does an evaluation on a given level to make its numerical approximation
  * more accurate.
+ *
+ * For function descriptions, refer to CombigridEvaluator();
  */
 class AbstractLevelEvaluator {
  public:
@@ -38,6 +42,8 @@ class AbstractLevelEvaluator {
   virtual size_t dim() const = 0;
   virtual void clear() = 0;
   virtual std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() = 0;
+  virtual std::vector<base::DataVector> getAllGridPoints() = 0;
+  virtual base::DataMatrix getGridPointMatrix() = 0;
 };
 }  // namespace combigrid
 }  // namespace sgpp

@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -102,7 +102,7 @@ class DataMatrix {
    * All new additional entries are uninitialized.
    * If size is smaller than the current size of the quadratic DataMatrix,
    * all superfluous entries are removed.
-   * 
+   *
    * @param size New dimension of quadratic data DataMatrix
    */
   void resizeQuadratic(size_t size);
@@ -130,7 +130,7 @@ class DataMatrix {
 
   /**
    * Resize current matrix to the submatrix Mat[row_1:row_2, col_1:col_2].
-   * 
+   *
    * @param row_1, col_1 corresponding to left upper index of desired submatrix
    * @param row_2, col_2 corresponding to right lower index of desired submatrix
    */
@@ -169,8 +169,8 @@ class DataMatrix {
   /**
    * Appends a new Col with data contained in DataVector vec
    * and returns index of new col.
-   * 
-   * @param vec DataVector (length has to match getNcols()) with data
+   *
+   * @param vec DataVector (length has to match getNrows()) with data
    * @return Index of new col
    */
   size_t appendCol(const DataVector& vec);

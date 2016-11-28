@@ -281,6 +281,18 @@ class LevelManager {
    * Does the same as addLevelsAdaptive(), but with parallel function evaluations.
    */
   virtual void addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThreads);
+
+  /**
+   * @return a vector with all grid points where the function has been evaluated (without
+   * duplicates).
+   */
+  std::vector<base::DataVector> getAllGridPoints() { return combiEval->getAllGridPoints(); }
+
+  /**
+   * @return a DataMatrix with all grid points where the function has been evaluated in its columns
+   * (without duplicates)
+   */
+  base::DataMatrix getGridPointMatrix() { return combiEval->getGridPointMatrix(); }
 };
 }  // namespace combigrid
 }  // namespace sgpp
