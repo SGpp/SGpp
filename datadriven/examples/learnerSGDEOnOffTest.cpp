@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
 
@@ -20,21 +20,24 @@ int main() {
   //double avgError = 0.0;
   //double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
-    //sgpp::base::DataVector avgErrorsFolds(21, 0.0); //to compute average classification error
+    //sgpp::base::DataVector avgErrorsFolds(21, 0.0); // to compute average classification error
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
-      std::string filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_train_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //std::string filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_train_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //std::string filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/50k/DR10_train_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      std::string filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_train_"
+        +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      //std::string filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_train_"
+      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      //std::string filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_train_"
+      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
-      // extract train classes
+      // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
       filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_test.arff";
       //filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_test.arff";
-      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/50k/DR10_test.arff";
+      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -45,9 +48,12 @@ int main() {
       sgpp::base::DataMatrix* validData = nullptr;
       sgpp::base::DataVector* validLabels = nullptr;
       //if fixed validation data should be used (required for convergence monitor):
-      filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_val_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_val_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/50k/DR10_val_"+std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_val_"
+        +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      //filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_val_"+
+      //  std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_val_"+
+      //  std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
       // load validation samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset valDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -76,86 +82,86 @@ int main() {
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
       regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
 
-      //Define decomposition type
+      // define decomposition type
       DBMatDecompostionType dt;
       std::string decompType;
-      //choose "LU decomposition"
+      // choose "LU decomposition"
       //dt = DBMatDecompLU;
       //decompType = "LU decomposition";
-      //choose"Eigen decomposition"
+      // choose"Eigen decomposition"
       //dt = DBMatDecompEigen;
       //decompType = "Eigen decomposition";
-      //choose "Cholesky decomposition"
+      // choose "Cholesky decomposition"
       dt = DBMatDecompChol;
       decompType = "Cholesky decomposition";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
-      //if cholesky choosen -> configure adaptive refinement
+      // if Cholesky is chosen -> configure adaptive refinement
       std::cout << "# create adaptive refinement configuration" << std::endl;
-      //possible refinement  monitors:
-      //periodic monitor, convergence monitor
+      // possible refinement  monitors:
+      // periodic monitor, convergence monitor
       std::string refMonitor;
-      //select periodic monitor - perform refinements in fixed intervals
-      //refMonitor = "periodic";
-      size_t refPeriod = 50; //the refinement interval
-      //select convergence monitor - perform refinements if algorithm has converged
-      //(convergence measured with respect to changes of the classification accuracy)
+      // select periodic monitor - perform refinements in fixed intervals
+      // refMonitor = "periodic";
+      size_t refPeriod = 50; // the refinement interval
+      // select convergence monitor - perform refinements if algorithm has converged
+      // (convergence measured with respect to changes of the classification accuracy)
       refMonitor = "convergence";
-      double accDeclineThreshold = 0.0005; //the convergence threshold
-      size_t accDeclineBufferSize = 50; //number of accuracy measurements which 
-                                         //are considered for convergence check
-      size_t minRefInterval = 0; //minimum number of iterations before next refinement 
-                                 //is allowed to be performed
+      double accDeclineThreshold = 0.0005; // the convergence threshold
+      size_t accDeclineBufferSize = 50; // number of accuracy measurements which 
+                                        // are considered for convergence check
+      size_t minRefInterval = 0; // minimum number of iterations before next refinement 
+                                 // is allowed to be performed
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
-      //possible refinement indicators:
-      //surplus refinement, data-based refinement, zero-crossings-based refinement
+      // possible refinement indicators:
+      // surplus refinement, data-based refinement, zero-crossings-based refinement
       std::string refType;
-      //select surplus refinement
+      // select surplus refinement
       //refType = "surplus";
-      //select data-based refinement
+      // select data-based refinement
       //refType = "data";
-      //select zero-crossings-based refinement
+      // select zero-crossings-based refinement
       refType = "zero";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       adaptConfig.numRefinements_ = 2;
       adaptConfig.noPoints_ = 5;
-      adaptConfig.threshold_ = 0.0; //only required for surplus refinement
+      adaptConfig.threshold_ = 0.0; // only required for surplus refinement
 
-      //initial lambda
+      // initial lambda
       double lambda = 0.1; 
-
+      // initial weighting factor
       double beta = 0.0; 
-
+      // configuration 
       sgpp::datadriven::DBMatDensityConfiguration dconf(&gridConfig, &adaptConfig, 
                                                         regularizationConfig.regType_, 
                                                         lambda, dt);
-
+      // specify if prior should be used to predict class labels
       bool usePrior = false; 
 
-      //create learner
+      // create learner
       std::cout << "# create learner" << std::endl;
       sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainData, trainLabels, 
                                                  testData, testLabels, validData, validLabels,
                                                  classLabels, classNum, lambda, usePrior, 
                                                  beta);
 
-      //enable cv during learning
+      // enable cv during learning
       bool enableCv = false;            
-      //set cv configuration if cv enabled
+      // set cv configuration if cv enabled
       unsigned int nextCvStep = 50;
       double cvLambdaStart = 1e-1; 
       double cvLambdaEnd = 1e-10; 
       int cvLambdaSteps = 10;
       bool cvLogScale = true;
       sgpp::base::DataMatrix* cvTestData = &testData;
-      sgpp::base::DataMatrix* cvTestDataRes = nullptr; //needed?
+      sgpp::base::DataMatrix* cvTestDataRes = nullptr; // needed?
       learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, 
                                            cvTestData, cvTestDataRes, cvLogScale);
 
-      //specify batch size
+      // specify batch size
       size_t batchSize = 1;  
-      //specify max number of passes over train data set
+      // specify max number of passes over traininig data set
       size_t maxDataPasses = 3;
 
       std::cout << "# start to train the learner" << std::endl;
@@ -164,27 +170,28 @@ int main() {
                     accDeclineBufferSize, minRefInterval,
                     enableCv, nextCvStep);
 
-      //compute accuracy
+      // compute accuracy
       double acc = learner.getAccuracy();
       std::cout << "# accuracy (test data): " << acc << std::endl;
 
-      //store results (classified data, grids, density functions)
+      // store results (classified data, grids, density functions)
       //learner.storeResults();
 
       //avgErrorFolds += learner.error;
       //avgErrorsFolds.add(learner.avgErrors);
     }
     /*avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-    std::cout << "Average accuracy on test data (set "+std::to_string(numSets+1)+"): " << (1.0 - avgErrorFolds) << std::endl;
+    std::cout << "Average accuracy on test data (set "+std::to_string(numSets+1)+"): " 
+              << (1.0 - avgErrorFolds) << std::endl;
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
     avgErrorsFolds.mult(1.0/static_cast<double>(totalFolds));*/
 
-    //write error evaluation to csv-file
+    // write error evaluation to csv-file
     /*std::ofstream output;
     output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
     if (output.fail()) {
-      std::cout << "failed to create .csv file!" << std::endl;  
+      std::cout << "failed to create csv file!" << std::endl;  
     }
     else {
       for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {					

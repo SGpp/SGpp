@@ -119,7 +119,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
                              bool enableCv, unsigned int nextCvStep) {
   // counts total number of processed data points
   size_t totalInstances = 0;
-  // the next batch(data points + class labels) to be processed
+  // pointer to the next batch (data points + class labels) to be processed
   std::pair<sgpp::base::DataMatrix*, sgpp::base::DataVector*> curPair;
   // contains list of removed grid points and number of added grid points
   // (is updated in each refinement/coarsening step)	
@@ -133,15 +133,13 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
   // initialize counter for dataset passes 
   size_t cntDataPasses = 0;
 
-  // refinement variables
-  bool doRefine = false; // is set to 'true' by refinement monitor 
+  // initialize refinement variables 
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  std::shared_ptr<ConvergenceMonitor> monitor( new ConvergenceMonitor(
-                                                 accDeclineThreshold,
-                                                 accDeclineBufferSize,
-                                                 minRefInterval) );
+  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
+    accDeclineThreshold, accDeclineBufferSize, minRefInterval));
+  bool doRefine = false; // is set to 'true' by refinement monitor
   // counts number of performed refinements
   size_t refCnt = 0;
 
@@ -271,16 +269,16 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
                                                                 preCompute));
             
         // Data-based refinement. Needs a problem dependent coeffA. The values
-        // were determined by testing (aim at ~10 % of the training data is
-        // to be marked relevant. Cross-validation or similar can/should be employed
+        // can be determined by testing (aim at ~10 % of the training data is
+        // to be marked relevant). Cross-validation or similar can/should be employed
         // to determine this value.
         std::vector<double> coeffA;
         coeffA.push_back(1.2); //ripley 1.2
         coeffA.push_back(1.2); //ripley 1.2
         sgpp::datadriven::DataBasedRefinementFunctor funcData = 
           *(new sgpp::datadriven::DataBasedRefinementFunctor(grids, alphas,
-                                                             validData,
-                                                             validLabels,
+                                                             trainData,
+                                                             trainLabels,
                                                              offline->getConfig()->ref_noPoints_,
                                                              levelPenalize,
                                                              coeffA));  
@@ -302,6 +300,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           std::cout << "Size before adaptivity: " << grid->getSize() << std::endl;
           
           sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+
           if (refType == "surplus") {
             std::unique_ptr<sgpp::base::OperationEval> opEval(
               op_factory::createOperationEval(*grid));
@@ -396,7 +395,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 
   std::cout << "#Training finished" << std::endl;
 
-  //error = 1.0 - getAccuracy();
+  error = 1.0 - getAccuracy();
 
   //delete offline;
   delete refineCoarse;
@@ -564,7 +563,7 @@ void LearnerSGDEOnOff::storeResults() {
   // write predicted classes to csv file
   output.open("SGDEOnOff_predicted_classes.csv");
   if (output.fail()) {
-    std::cout << "failed to create .csv file!" << std::endl;  
+    std::cout << "failed to create csv file!" << std::endl;  
   }
   else {
     for (size_t i = 0; i < classesComputed.getSize(); i++) {
@@ -580,7 +579,7 @@ void LearnerSGDEOnOff::storeResults() {
     sgpp::base::Grid* grid = densEst->getOffline()->getGridPointer();  
     output.open("SGDEOnOff_grid_"+std::to_string((*destFunctions)[i].second)+".csv");
     if (output.fail()) {
-      std::cout << "failed to create .csv file!" << std::endl;  
+      std::cout << "failed to create csv file!" << std::endl;  
     }
     else {
       sgpp::base::GridStorage& storage = grid->getStorage();
@@ -642,8 +641,8 @@ sgpp::base::DataVector LearnerSGDEOnOff::getDensities(sgpp::base::DataVector& po
 }
 
 void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart, 
-                                                    double lambdaEnd, sgpp::base::DataMatrix *test, 
-                                                    sgpp::base::DataMatrix *testRes, 
+                                                    double lambdaEnd, sgpp::base::DataMatrix* test, 
+                                                    sgpp::base::DataMatrix* testRes, 
                                                     bool logscale) {
   if (destFunctions != nullptr) {
     for (size_t i = 0; i < destFunctions->size(); i++) {
@@ -671,7 +670,7 @@ unsigned int LearnerSGDEOnOff::getNumClasses() {
   return this->classNumber;
 }
 
-std::vector<std::pair<DBMatOnlineDE*, double> >* LearnerSGDEOnOff::getDestFunctions(){
+std::vector<std::pair<DBMatOnlineDE*, double>>* LearnerSGDEOnOff::getDestFunctions(){
   return destFunctions;
 }
 

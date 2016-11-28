@@ -11,7 +11,6 @@
 #include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
-
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -28,8 +27,6 @@ using sgpp::base::ImpurityRefinementIndicator;
 namespace sgpp {
 namespace datadriven {
 
-// -------------------- constructors and destructors --------------------
-
 LearnerSVM::LearnerSVM(sgpp::base::RegularGridConfiguration& gridConfig)                      
     : grid(nullptr),
       trainData(nullptr),
@@ -42,8 +39,6 @@ LearnerSVM::LearnerSVM(sgpp::base::RegularGridConfiguration& gridConfig)
       error(0.0) {}
 
 LearnerSVM::~LearnerSVM() {}
-
-// -----------------------------------------------------------------------
 
 void LearnerSVM::initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
                             base::DataMatrix& pTestData, base::DataVector& pTestLabels,
