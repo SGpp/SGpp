@@ -102,7 +102,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param refineCoarse Vector of pairs containing a list representing indices of 
    *        removed grid points and an unsigned int representing added grid points
    */
-  void train(std::vector<std::pair<base::DataMatrix*, double> >& trainDataClasses, bool doCv = false, 
+  void train(std::vector<std::pair<base::DataMatrix*, double>>& trainDataClasses, bool doCv = false, 
              std::vector<std::pair<std::list<size_t>, unsigned int>>*  refineCoarse = nullptr);
 
   /**
@@ -166,8 +166,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        and lambdaEnd are searched using logscale or not
    */
   void setCrossValidationParameters(int lambdaStep, double lambdaStart, 
-                                    double lambdaEnd, base::DataMatrix *test, 
-                                    base::DataMatrix *testRes, bool logscale);
+                                    double lambdaEnd, base::DataMatrix* test, 
+                                    base::DataMatrix* testRes, bool logscale);
 	
   /**
   * In case of crossvalidation, returns the current best lambda.

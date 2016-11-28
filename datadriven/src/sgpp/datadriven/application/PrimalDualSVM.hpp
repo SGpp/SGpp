@@ -50,7 +50,7 @@ class PrimalDualSVM {
   
   virtual void multiply(double scalar);
   
-  virtual void remove(size_t idx); 
+  //virtual void remove(size_t idx); 
   
   //virtual void maintainSVS();
   

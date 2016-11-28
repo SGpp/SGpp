@@ -91,8 +91,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual ~LearnerSGDE();
 
   /**
-   * Estimate a sparse grid density based on the given data set and
-   * the specified configurations.
+   * Create grid and perform cross-validation if enabled.
    *
    * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
    */
@@ -158,11 +157,12 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual std::shared_ptr<base::Grid> getGrid();
 
   /**
-   * Does the learning step on a given grid, training set and regularization parameter lambda
+   * Does the learning step (i.e. computes pdf) on a given grid, 
+   * training set and regularization parameter lambda
    *
    * @param grid grid
    * @param alpha coefficient vector
-   * @param train sample set
+   * @param trainData sample set
    * @param lambdaReg regularization parameter
    */
   virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
@@ -176,28 +176,39 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   /**
    * Performs the sparse grid density estimation via online learning.
    *
-   * @param trainLabels The training data
+   * @param labels The training labels
    * @param testData The test data 
    * @param testLabels The corresponding test labels 
    * @param validData The validation data
    * @param validLabels The corresponding validation labels
+   * @param maxDataPasses The number of passes over the whole training data
+   * @param refType The refinement indicator (surplus, zero-crossings or data-based)
+   * @param refMonitor The refinement strategy (periodic or convergence-based)
+   * @param refPeriod The refinement interval (if periodic refinement is chosen)
+   * @param accDeclineThreshold The convergence threshold 
+   *        (if convergence-based refinement is chosen)
+   * @param accDeclineBufferSize The number of accuracy measurements which are used to check 
+   *        convergence (if convergence-based refinement is chosen)
+   * @param minRefInterval The minimum number of data points (or data batches) which have to be 
+   *        processed before next refinement can be scheduled (if convergence-based refinement 
+   *        is chosen)
    * @param usePrior Specifies whether prior probabilities should be used to predict class labels
    */
-  virtual void trainOnline(base::DataVector& trainLabels, 
+  virtual void trainOnline(base::DataVector& labels, 
                            base::DataMatrix& testData, base::DataVector& testLabels,
                            base::DataMatrix* validData, base::DataVector* validLabels,
+                           size_t maxDataPasses, std::string refType, std::string refMonitor, 
+                           size_t refPeriod, double accDeclineThreshold, 
+                           size_t accDeclineBufferSize, size_t minRefInterval,
                            bool usePrior);
 
   /**
    * Stores classified data, grids and density function evaluations to csv files.
    *
-   * @param testDataset The data for which class labels should be predicted
-   * @param referenceLabels The corresponding actual class labels 
-   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   * @param testDataset The data for which class labels should be predicted 
    */
-  virtual void storeResults(base::DataMatrix& testDataset,
-                            const base::DataVector& referenceLabels,
-                            const double threshold);
+  virtual void storeResults(base::DataMatrix& testDataset);
+
   /**
    * Predicts class labels based on the trained model.
    *
@@ -310,7 +321,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   // the training data
   std::shared_ptr<base::DataMatrix> trainData;
   // the corresponding class labels
-  std::shared_ptr<base::DataVector> labels;
+  std::shared_ptr<base::DataVector> trainLabels;
   // contains all occurring class labels (e.g. -1, 1)
   std::vector<double> classLabels;
   // stores prior values mapped to class labels

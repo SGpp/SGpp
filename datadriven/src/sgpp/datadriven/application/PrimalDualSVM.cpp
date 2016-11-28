@@ -100,9 +100,9 @@ void PrimalDualSVM::add(sgpp::base::Grid& grid, sgpp::base::DataVector& x, doubl
   }
 }
   
-void PrimalDualSVM::remove(size_t idx) {
+/*void PrimalDualSVM::remove(size_t idx) {
 //ToDo:
-}
+}*/
 
 }  // namespace datadriven
 }  // namespace sgpp
