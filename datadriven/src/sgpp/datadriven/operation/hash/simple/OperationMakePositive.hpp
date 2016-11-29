@@ -49,7 +49,6 @@ class OperationMakePositive {
    */
   explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::Intersections,
-                                 size_t maxLevel = 0,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
                                  bool generateConsistentGrid = true, bool verbose = false);

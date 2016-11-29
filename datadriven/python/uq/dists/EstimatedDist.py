@@ -24,13 +24,14 @@ class EstimatedDist(Dist):
 
             if bounds is None:
                 # estimate bounds from data
-                self.bounds = np.vstack((np.min(trainData, axis=0), np.max(trainData, axis=0))).T
-            else:
-                self.bounds = bounds
-
-            self.trans = self.computeLinearTransformation(self.bounds)
-        else:
+                bounds = np.vstack((np.min(trainData, axis=0), np.max(trainData, axis=0))).T
+        
+        if bounds is None:
             self.bounds = [[0, 1]] * self.dim
+        else:
+            self.bounds = bounds
+
+        self.trans = self.computeLinearTransformation(self.bounds)
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)

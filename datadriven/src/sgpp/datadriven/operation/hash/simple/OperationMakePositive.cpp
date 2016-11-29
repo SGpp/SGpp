@@ -25,10 +25,10 @@ namespace sgpp {
 namespace datadriven {
 
 OperationMakePositive::OperationMakePositive(
-    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm, size_t maxLevel,
+    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
     bool verbose)
-    : maxLevel(maxLevel),
+    : maxLevel(0),
       minimumLevelSum(0),
       maximumLevelSum(0),
       generateConsistentGrid(generateConsistentGrid),
@@ -41,12 +41,11 @@ OperationMakePositive::~OperationMakePositive() {}
 void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha) {
   // set range of level sums for candidate search
   base::HashGridStorage& gridStorage = grid.getStorage();
-  auto numDims = gridStorage.getDimension();
-  size_t candidateSearchMaxLevel = maxLevel;
-  if (maxLevel == 0) {
-    candidateSearchMaxLevel = gridStorage.getMaxLevel();
-    maxLevel = candidateSearchMaxLevel;
-  }
+  size_t numDims = gridStorage.getDimension();
+
+  // init max level for candidate search algorithm
+  size_t candidateSearchMaxLevel = gridStorage.getMaxLevel();
+  maxLevel = candidateSearchMaxLevel;
   minimumLevelSum = numDims;
   maximumLevelSum = maxLevel * numDims;
 
