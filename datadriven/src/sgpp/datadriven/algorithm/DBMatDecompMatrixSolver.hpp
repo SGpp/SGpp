@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #ifndef DBMATDECOMPMATRIXSOLVER_HPP_
 #define DBMATDECOMPMATRIXSOLVER_HPP_
 
@@ -11,9 +13,14 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 class DBMatDecompMatrixSolver: public sgpp::solver::SGSolver {
-public:
-	DBMatDecompMatrixSolver ();
-	virtual ~DBMatDecompMatrixSolver();
+
+ public:
+  DBMatDecompMatrixSolver();
+
+  virtual ~DBMatDecompMatrixSolver();
+
 };
 
 #endif /* DBMATDECOMPMATRIXSOLVER_HPP_ */
+
+#endif /* USE_GSL */

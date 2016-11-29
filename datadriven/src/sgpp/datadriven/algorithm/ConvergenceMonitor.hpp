@@ -10,62 +10,70 @@
 #include <sgpp/globaldef.hpp>
 
 /**
- * Description
- * 
- * 
+ * A monitor to decide if a learning algorithm has converged. The
+ * convergence criterion is based on the comparison of error
+ * measurements throughout the training process.
  */
 class ConvergenceMonitor {
   public:
-    /**
-    * Constructor
+   /**
+    * Constructor.
+    *
+    * @param pDeclineThreshold The convergence threshold
+    * @param pBufferSize Number of error measurements which are considered 
+    *        for convergence check
+    * @param pMinRefInterval Minimum number of iterations before next refinement 
+    *        is allowed to be performed
     */
     ConvergenceMonitor(double pDeclineThreshold,
                        size_t pBufferSize, size_t pMinRefInterval);
-
-    /**
-    * Destructor
+   /**
+    * Destructor.
     */
     virtual ~ConvergenceMonitor();
   
-    /**
-    * Description
+   /**
+    * Stores the current error values in the buffer. If the buffer 
+    * has reached the maximum size, the oldest values are removed.
+    * 
+    * @param
+    * @param
     */
-    virtual void pushToBuffer(double currentValidError,
-                              double currentTrainError);
-    
-    /**
-    * Description
+    void pushToBuffer(double currentValidError,
+                      double currentTrainError);
+   /**
+    * Examines the convergence criterion with the current
+    * error observations.
+    *
+    * @return True if converged, false otherwise
     */
-    virtual bool checkConvergence();
+    bool checkConvergence();
 
+    // counts how many iterations are yet to be performed until
+    // next refinement can be triggered (only required if minRefInterval > 0 is chosen)
     size_t nextRefCnt;
     size_t minRefInterval;
+    // stores the latest validation error observations
     std::deque<double> validErrorDeclineBuffer;
+    // stores the latest training error observations
     std::deque<double> trainErrorDeclineBuffer;
 
-  protected:
-
   private:
-    /*sgpp::base::DataMatrix& trainData;
-    sgpp::base::DataMatrix& validData;
-    sgpp::base::DataVector& trainLabels;
-    sgpp::base::DataVector& validLabels;*/
+    // old validation error
     double validErrorSum1;
+    // new validation error
     double validErrorSum2;
+    // old training error
     double trainErrorSum1;
+    // new training error
     double trainErrorSum2;
-    //double validAvgError1;
-    //double validAvgError2;
-    //double trainAvgError1;
-    //double trainAvgError2;
-    //double currentValidError;
-    //double currentTrainError;
-    double validRatio;
-    double trainRatio;
+    // difference between validation error measurements
+    double validDiff;
+    // difference between training error measurements
+    double trainDiff;
+
     double declineThreshold;
-    size_t bufferSize;
-    //std::deque<double> validErrorDeclineBuffer;
-    //std::deque<double> trainErrorDeclineBuffer;   
+    size_t bufferSize;   
 	
 };
 

@@ -6,15 +6,13 @@
 #ifndef IMPURITYREFINEMENT_HPP_
 #define IMPURITYREFINEMENT_HPP_
 
+#include <sgpp/globaldef.hpp>
+
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 
 #include <vector>
-#include <utility>
-
 
 namespace sgpp {
 namespace base {
@@ -54,12 +52,6 @@ class ImpurityRefinement_refinement_key : public
 };
 
 
-/*
- * 
- * 
- * 
- *
- */
 class ImpurityRefinement: public virtual RefinementDecorator {
  public:
   typedef ImpurityRefinement_refinement_key refinement_key_type;
@@ -69,78 +61,70 @@ class ImpurityRefinement: public virtual RefinementDecorator {
     RefinementDecorator(refinement),
     iThreshold_(0.0) {}
 
-
   /**
-   * Refines a grid according to a RefinementFunctor provided.
-   * Refines up to RefinementFunctor::getRefinementsNum() grid points if
-   * possible, and if their refinement value is larger than RefinementFunctor::start()
-   * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+   * Refines a grid according to the impurity refinement indicator provided.
    *
-   * @param storage hashmap that stores the grid points
-   * @param functor a RefinementFunctor specifying the refinement criteria
+   * @param storage Hashmap that stores the grid points
+   * @param functor A RefinementFunctor specifying the refinement criteria
    */
   void free_refine(GridStorage& storage,
                    ImpurityRefinementIndicator& functor);
-
 
  protected:
   using RefinementDecorator::refineGridpointsCollection;
 
   /**
-  * Examines the grid points and stores the indices those that can be refined
+  * Examines the grid points and stores the indices of those that can be refined
   * and have maximal indicator values.
   *
-  * @param storage hashmap that stores the grid points
-  * @param functor an impurity indicator specifying the refinement criteria
-  * @param collection container that contains elements to refine (empty initially)
+  * @param storage Hashmap that stores the grid points
+  * @param functor An impurity indicator specifying the refinement criteria
+  * @param collection Container that contains elements to refine (empty initially)
   */
   void collectRefinablePoints(
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type&  collection) override;
 
-
   /**
-   * Extends the grid adding elements defined in collection
+   * Extends the grid adding points defined in the collection
    *
-   * @param storage hashmap that stores the grid points
-   * @param functor an impurity indicator specifying the refinement criteria
-   * @param collection container that contains elements to refine (empty initially)
+   * @param storage Hashmap that stores the grid points
+   * @param functor An impurity indicator specifying the refinement criteria
+   * @param collection Container that contains elements to refine (empty initially)
    */
   void refineGridpointsCollection(
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
   
-
   /**
   * Generates a list with indicator elements
   *
-  * @param storage grid storage
-  * @param iter iterator
-  * @param functor refinement functor
-  * @return list with indicator elements
+  * @param storage Grid storage
+  * @param iter Iterator
+  * @param functor Refinement functor
+  * @return List with indicator elements
   */
   AbstractRefinement::refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor& functor) const override;
 
-
   /**
-  * Adds elements to the collection. This method is responsible for selection
-  * the elements with most important indicators and to limit the size of collection
-  * to refinements_num elements.
+  * Adds elements to the collection. This method is responsible for selection of
+  * the elements with largest indicator values and to limit the size of collection
+  * to refinementsNum elements.
   *
-  * @param iter storage iterator
-  * @param current_value_list list with elements that contain keys and values that specify refinement
-  * @param refinements_num number of elements to refine
-  * @param collection container where element pairs for refinement need to be stored
+  * @param iter Storage iterator
+  * @param current_value_list List with elements that contain keys and values that specify refinement
+  * @param refinementsNum Number of grid points to refine
+  * @param collection Container where element pairs for refinement need to be stored
   */
   virtual void addElementToCollection(
     const GridStorage::grid_map_iterator& iter,
     AbstractRefinement::refinement_list_type current_value_list,
-    size_t refinements_num,
+    size_t refinementsNum,
     AbstractRefinement::refinement_container_type& collection);
 
  private:
@@ -149,4 +133,5 @@ class ImpurityRefinement: public virtual RefinementDecorator {
 
 }  // namespace base
 }  // namespace sgpp
+
 #endif /* IMPURITYREFINEMENT_HPP_ */

@@ -3,12 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
 DBMatDecompMatrixSolver::DBMatDecompMatrixSolver() :
-		SGSolver(0, 0) {
-}
+  SGSolver(0, 0) {}
 
-DBMatDecompMatrixSolver::~DBMatDecompMatrixSolver() {
-}
+DBMatDecompMatrixSolver::~DBMatDecompMatrixSolver() {}
+
+#endif /* USE_GSL */

@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #ifndef DBMatDMSBackSub_HPP_
 #define DBMatDMSBackSub_HPP_
 
@@ -13,25 +15,28 @@
  */
 
 class DBMatDMSBackSub: public DBMatDecompMatrixSolver {
-public:
-	/**
-	 * (Empty) constructor
-	 */
-	DBMatDMSBackSub();
+ public:
+ /**
+  * (Empty) constructor
+  */
+  DBMatDMSBackSub();
 
-	/**
-	 * (Empty) destructor
-	 */
-	virtual ~DBMatDMSBackSub();
+ /**
+  * (Empty) destructor
+  */
+  virtual ~DBMatDMSBackSub();
 
-	/**
-	 * Solves a system of equations
-	 *
-	 * @param DecompMatrix the LU decomposed left hand side
-	 * @param alpha the vector of unknowns (the result is stored there)
-	 * @param b the right hand vector of the equation system
-	 */
-	void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-				sgpp::base::DataVector& b);
+ /**
+  * Solves a system of equations
+  *
+  * @param DecompMatrix the LU decomposed left hand side
+  * @param alpha the vector of unknowns (the result is stored there)
+  * @param b the right hand vector of the equation system
+  */
+  void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
+             sgpp::base::DataVector& b);
 };
+
 #endif /* DBMatDMSBackSub_HPP_ */
+
+#endif /* USE_GSL */

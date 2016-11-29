@@ -9,17 +9,16 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
-//#include <sgpp/base/grid/Grid.hpp>
 
 #include <string>
 
 int main() {
   size_t totalSets = 1; 
   size_t totalFolds = 1; 
-  double avgError = 0.0;
-  double avgErrorFolds = 0.0;
+  //double avgError = 0.0;
+  //double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
-    sgpp::base::DataVector avgErrorsFolds(21, 0.0); 
+    //sgpp::base::DataVector avgErrorsFolds(21, 0.0); // to compute average classification error
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
       std::string filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_train_"
         +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
@@ -128,7 +127,7 @@ int main() {
                     errorDeclineBufferSize, minRefInterval);
 
       // store results (classified data, grid, function evaluations)
-      //learner.storeResults(testData, testLabels, 0.0);
+      //learner.storeResults(testData);
 
       // test learner
       double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
