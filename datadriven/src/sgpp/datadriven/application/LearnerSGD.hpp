@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-//#include <list>
 #include <string>
 #include <vector>
 
@@ -78,7 +77,7 @@ class LearnerSGD {
    *        (if convergence-based refinement is chosen)
    * @param errorDeclineBufferSize The number of error measurements which are used to check 
    *        convergence (if convergence-based refinement is chosen)
-   * @param minRefInterval The minimum number of data points (or data batches) which have to be 
+   * @param minRefInterval The minimum number of data points which have to be 
    *        processed before next refinement can be scheduled (if convergence-based refinement 
    *        is chosen)
    */

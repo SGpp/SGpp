@@ -5,9 +5,6 @@
 
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
-#include <iostream>
-//#include <cmath>
-
 ConvergenceMonitor::ConvergenceMonitor(double pDeclineThreshold,
                                        size_t pBufferSize, size_t pMinRefInterval) 
     : nextRefCnt(0),
@@ -16,8 +13,8 @@ ConvergenceMonitor::ConvergenceMonitor(double pDeclineThreshold,
       validErrorSum2(0.0),
       trainErrorSum1(0.0),
       trainErrorSum2(0.0),
-      validRatio(1.0),
-      trainRatio(1.0),
+      validDiff(1.0),
+      trainDiff(1.0),
       declineThreshold(pDeclineThreshold),
       bufferSize(pBufferSize) {}
 
@@ -50,27 +47,21 @@ bool ConvergenceMonitor::checkConvergence() {
       trainErrorSum2 += trainErrorDeclineBuffer[idx+maxIdx];
     }  
 
-    validRatio = validErrorSum2/double(maxIdx) - validErrorSum1/double(maxIdx);
-    trainRatio = trainErrorSum2/double(maxIdx) - trainErrorSum1/double(maxIdx);
+    validDiff = validErrorSum2/double(maxIdx) - validErrorSum1/double(maxIdx);
+    trainDiff = trainErrorSum2/double(maxIdx) - trainErrorSum1/double(maxIdx);
 
-    /*std::cout << "validErrorSum1: " << validErrorSum1 << std::endl;
-    std::cout << "validErrorSum2: " << validErrorSum2 << std::endl;
-    std::cout << "validRatio: " << validRatio << std::endl;
-    std::cout << "trainRatio: " << trainRatio << std::endl;*/
   }
 
-  if (validRatio >= 0.0) { 
-    if (validRatio < declineThreshold) {
-      //std::cout << "crit. 1 refinement" << std::endl;
+  if (validDiff >= 0.0) { 
+    if (validDiff < declineThreshold) {
       result = true;
     }
   }
-  /*else if (validRatio < 0.0) {
-    if (trainRatio < 0.0) {
-      //std::cout << "crit. 2 refinement" << std::endl;
+  else if (validDiff < 0.0) {
+    if (trainDiff < 0.0) {
       result = true;
     }
-  }*/
+  }
   return result;
 
 }

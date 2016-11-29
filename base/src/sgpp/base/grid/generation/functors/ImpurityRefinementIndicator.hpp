@@ -6,7 +6,6 @@
 #ifndef IMPURITYREFINEMENTINDICATOR_HPP_
 #define IMPURITYREFINEMENTINDICATOR_HPP_
 
-
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -14,24 +13,16 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
-
-#include <unordered_map>
-#include <utility>
-
 
 namespace sgpp {
 namespace base {
 
 /**
  *  A refinement indicator for classification problems based on impurity measures
- *  (gini impurity, entropy impurity etc.).
- *  It calculates local impurities based on the information from the dataset:
- *  For a grid point g on level l and index i, it calculates the indicator as a
- *  
- * 
+ *  (e.g. gini impurity, entropy impurity,...). It calculates local impurities based
+ *  on the information from the provided data set. If the indicator is applied within
+ *  the SVM learner, the normal vector needs to be extended after each refinement. 
  */
 
 class ImpurityRefinementIndicator: public RefinementFunctor {
@@ -43,53 +34,52 @@ class ImpurityRefinementIndicator: public RefinementFunctor {
   /**
    * Constructor.
    *
-   * @param grid DataVector that is basis for refinement decisions. The i-th entry corresponds to the i-th grid point.
-   * @param dataset contains all points of the source data set.
+   * @param grid The grid to refine.
+   * @param dataset The set of data points used to compute impurities
+   * @param alphas The weights corresponding to the support vectors (only required for SVM learner)
+   * @param w1 Normal vector (only required for SVM learner)
+   * @param w2 Normal vector computed with abs values (only required for SVM learner)
+   * @param classesComputed The predicted labels for the data points from dataset
+   * @param threshold The refinement threshold; Only grid points with 
+   *        indicator values greater than this threshold will be refined
+   * @param refinementsNum The max amount of grid points to be refined
    */
   ImpurityRefinementIndicator(Grid& grid, DataMatrix& dataset,
                               DataVector* alphas, DataVector* w1, DataVector* w2,
                               DataVector& classesComputed,
                               double threshold = 0.0,
-                              size_t refinements_num = 1);
-
+                              size_t refinementsNum = 1);
 
   /**
    * Destructor
    */
   virtual ~ImpurityRefinementIndicator() {}
 
-
   /**
-   * This should be returning a refinement indicator for the specified grid point
+   * This should be returning a refinement indicator for the specified grid point.
    * The point with the highest value will be refined first.
    *
-   * @param point for which to calculate an indicator value
-   * @return refinement value
+   * @param point The grid point for which to calculate an indicator value
+   * @return The indicator value
    */
   virtual double operator()(GridPoint& point) const;
 
-  //double runOperator(GridStorage& storage, size_t seq);
-
-
   /**
    * Returns the maximal number of points that should be refined.
-   *
    * The maximal number of points to refine is set in the constructor of the implementing class.
    *
-   * @return number of points that should refined. Default value: 1.
+   * @return Number of points that should refined. Default value: 1.
    */
   size_t getRefinementsNum() const override;
 
   /**
    * Returns the threshold for refinement.
-   *
    * Only the grid points with absolute value of refinement criterion greater
-   * or equal to this threshold will be refined.
+   * than this threshold will be refined.
    *
-   * @return threshold value for refinement. Default value: 0.
+   * @return Threshold value for refinement. Default value: 0.
    */
   double getRefinementThreshold() const override;
-
 
   double start() const override;
 
@@ -97,49 +87,44 @@ class ImpurityRefinementIndicator: public RefinementFunctor {
   * This should be returning a refinement value for every grid point.
   * The point with the highest value will be refined first.
   *
-  * @param storage reference to the grids storage object
-  * @param seq sequence number in the coefficients array
+  * @param storage Reference to the grids storage object
+  * @param seq Sequence number in the coefficients array
   *
   * @return refinement value
   */
   double operator()(GridStorage& storage, size_t seq) const override;
 
+  /**
+   * Update normal vector of SVM. For each new grid point the normal vector
+   * has to be extended by one component. Only required for SVMLearner! 
+   *
+   * @param point The new grid point 
+   */
   void update(GridPoint& point);
 
-  /*DataVector& alphas; // for svm only
+  DataVector* alphas; // for svm learner only
 
-  DataVector& w1;     // for svm only
+  DataVector* w1;     // for svm learner only
 
-  DataVector& w2;     // for svm only*/
-
-  DataVector* alphas; // for svm only
-
-  DataVector* w1;     // for svm only
-
-  DataVector* w2;     // for svm only
+  DataVector* w2;     // for svm learner only
 
  protected:
   // data set that will be evaluated
   DataMatrix& dataset;
-
+  // the corresponding computed class labels
   DataVector& classesComputed;
-
-  /// number of grid points to refine
+  // max number of grid points to refine
   size_t refinementsNum;
-
-  /// threshold, only the points with greater to equal absolute values
+  // threshold, only the points with greater absolute values
   // of the refinement criterion will be refined
   double threshold;
 
  private:
-  /*
-   * integer representation of the grid type needed for evaluation of basis functions.
-   */
-  //sgpp::base::GridType gridType;
-
+  // the grid to refine
   Grid& grid;
 };
 
 }  // namespace base
 }  // namespace sgpp
+
 #endif /* IMPURITYREFINEMENTINDICATOR_HPP_ */

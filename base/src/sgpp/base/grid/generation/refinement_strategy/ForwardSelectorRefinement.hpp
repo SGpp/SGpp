@@ -6,21 +6,21 @@
 #ifndef FORWARDSELECTORREFINEMENT_HPP_
 #define FORWARDSELECTORREFINEMENT_HPP_
 
+#include <sgpp/globaldef.hpp>
+
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
 
 #include <vector>
-#include <utility>
+//#include <utility>
 
 
 namespace sgpp {
 namespace base {
 
 /**
- * Container type for svm refinement collection
+ * Container type for forward selector (combined-measure) refinement collection
  */
 class ForwardSelectorRefinement_refinement_key : public
   AbstractRefinement_refinement_key {
@@ -54,12 +54,6 @@ class ForwardSelectorRefinement_refinement_key : public
 };
 
 
-/*
- * 
- * 
- * 
- *
- */
 class ForwardSelectorRefinement: public virtual RefinementDecorator {
  public:
   typedef ForwardSelectorRefinement_refinement_key refinement_key_type;
@@ -71,13 +65,10 @@ class ForwardSelectorRefinement: public virtual RefinementDecorator {
 
 
   /**
-   * Refines a grid according to a RefinementFunctor provided.
-   * Refines up to RefinementFunctor::getRefinementsNum() grid points if
-   * possible, and if their refinement value is larger than RefinementFunctor::start()
-   * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+   * Refines a grid according to the ForwardSelectorRefinementIndicator provided.
    *
-   * @param storage hashmap that stores the grid points
-   * @param functor a RefinementFunctor specifying the refinement criteria
+   * @param storage Hashmap that stores the grid points
+   * @param functor A RefinementFunctor specifying the refinement criteria
    */
   void free_refine(GridStorage& storage,
                    ForwardSelectorRefinementIndicator& functor);
@@ -87,60 +78,59 @@ class ForwardSelectorRefinement: public virtual RefinementDecorator {
   using RefinementDecorator::refineGridpointsCollection;
 
   /**
-  * Examines the grid points and stores the indices those that can be refined
-  * and have maximal indicator values.
+  * Examines the grid points and stores the indices of those that can be refined
+  * and have largest indicator values.
   *
-  * @param storage hashmap that stores the grid points
-  * @param functor a ForwardSelectorRefinementIndicator specifying the refinement criteria
-  * @param collection container that contains elements to refine (empty initially)
+  * @param storage Hashmap that stores the grid points
+  * @param functor A ForwardSelectorRefinementIndicator specifying the refinement criteria
+  * @param collection Container that contains elements to refine (empty initially)
   */
   void collectRefinablePoints(
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type&  collection) override;
 
-
   /**
-   * Extends the grid adding elements defined in collection
+   * Extends the grid adding grid points defined in the collection.
    *
-   * @param storage hashmap that stores the grid points
-   * @param functor a ForwardSelectorRefinementIndicator specifying the refinement criteria
-   * @param collection container that contains elements to refine (empty initially)
+   * @param storage Hashmap that stores the grid points
+   * @param functor A ForwardSelectorRefinementIndicator 
+   *        specifying the refinement criteria
+   * @param collection Container that contains elements to refine (empty initially)
    */
   void refineGridpointsCollection(
     GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
   
-
   /**
-  * Generates a list with indicator elements
+  * Generates a list with indicator elements.
   *
-  * @param storage grid storage
-  * @param iter iterator
-  * @param functor refinement functor
-  * @return list with indicator elements
+  * @param storage Grid storage
+  * @param iter Iterator
+  * @param functor Refinement functor
+  * @return List with indicator elements
   */
   AbstractRefinement::refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor& functor) const override;
 
-
   /**
-  * Adds elements to the collection. This method is responsible for selection
-  * the elements with most important indicators and to limit the size of collection
-  * to refinements_num elements.
+  * Adds elements to the collection. This method is responsible for the selection
+  * of the elements with largest indicator values and to limit the size of the collection
+  * to refinementsNum elements.
   *
-  * @param iter storage iterator
-  * @param current_value_list list with elements that contain keys and values that specify refinement
-  * @param refinements_num number of elements to refine
-  * @param collection container where element pairs for refinement need to be stored
+  * @param iter Storage iterator
+  * @param current_value_list List with elements that contain keys and values 
+  *        that specify refinement indicator
+  * @param refinementsNum Number of grid points to refine
+  * @param collection Container where element pairs for refinement need to be stored
   */
   virtual void addElementToCollection(
     const GridStorage::grid_map_iterator& iter,
     AbstractRefinement::refinement_list_type current_value_list,
-    size_t refinements_num,
+    size_t refinementsNum,
     AbstractRefinement::refinement_container_type& collection);
 
  private:

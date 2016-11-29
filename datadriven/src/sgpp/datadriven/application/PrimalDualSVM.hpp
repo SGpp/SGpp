@@ -12,47 +12,91 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <iostream>
-
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Implementation of a support vector machine in primal 
+ * formulation which additionally stores support vectors.
+ * For non-linear classification, sparse grid kernels are applied. 
+ */
+
 class PrimalDualSVM {
- protected:
-
-  double b; 
-  
-  int B;
-  
-  bool useBias;
- 
  public:
+  /**
+   * Constructor.
+   *
+   * @param dim The dimension of the feature space (i.e. grid size)
+   * @param inputDim The dimension of the data
+   * @param budget The max number of support vectors
+   * @param useBias Indicates whether bias should be used
+   */
+  PrimalDualSVM(size_t dim, size_t inputDim, size_t budget, bool useBias);
+  
+  /**
+   * Destructor.
+   */
+  ~PrimalDualSVM();
+  
+  /**
+   * Raw prediction for a given data point and grid.
+   *
+   * @param grid The sparse grid which defines the transformation
+   * @param x The data point
+   * @param dataDim Dimension of x
+   * @param trans Indicates whether x is already transformed into feature space  
+   * @return The raw prediction value
+   */
+  double predictRaw(sgpp::base::Grid& grid, sgpp::base::DataVector& x, 
+                    size_t dataDim, bool trans = false);
+  
+  /**
+   * Class prediction for a given data point and grid.
+   *
+   * @param grid The sparse grid which defines the transformation
+   * @param x The data point
+   * @param dataDim Dimension of x  
+   * @return The predicted class label (-1 or 1)
+   */
+  int predict(sgpp::base::Grid& grid, sgpp::base::DataVector& x, size_t dataDim);
+   
+  /**
+   * Adds a data point to the set of support vectors.
+   *
+   * @param grid The sparse grid which defines the transformation
+   * @param x The data point
+   * @param alpha The corresponding weight
+   * @param dataDim Dimension of x
+   */
+  void add(sgpp::base::Grid& grid, sgpp::base::DataVector& x, double alpha, size_t dataDim); 
+  
+  /**
+   * Scales the normal vector w.
+   *
+   * @param scalar The scaling factor
+   */
+  void multiply(double scalar);
+  
+  //void remove(size_t idx); 
 
+  // the set of support vectors
   std::shared_ptr<base::DataMatrix> svs; 
-  
+  // alphas corresponding to support vectors (sv weights, signed) 
   std::shared_ptr<base::DataVector> alphas; 
-  
+  // stores the norm of each support vector in the feature space
   std::shared_ptr<base::DataVector> norms; 
-  
+  // the normal vector (defines decision hyperplane)
   std::shared_ptr<base::DataVector> w; 
-  
+  // normal vector computed with absolute alpha values
   std::shared_ptr<base::DataVector> w2;
 
-  PrimalDualSVM(size_t dim, size_t inputDim, int B, bool useBias);
-  
-  virtual ~PrimalDualSVM();
-  
-  virtual double predictRaw(sgpp::base::Grid& grid, sgpp::base::DataVector& x, size_t dataDim, bool trans = false);
-  
-  virtual int predict(sgpp::base::Grid& grid, sgpp::base::DataVector& x, size_t dataDim);
-  
-  virtual void add(sgpp::base::Grid& grid, sgpp::base::DataVector& x, double alpha, size_t dataDim); 
-  
-  virtual void multiply(double scalar);
-  
-  //virtual void remove(size_t idx); 
-  
-  //virtual void maintainSVS();
+ protected: 
+  // number of max support vectors to be stored
+  size_t budget;
+  // specifies whether bias should be applied or not
+  bool useBias;
+  // parameter to change position of decision hyperplane
+  double bias;
   
 };
 

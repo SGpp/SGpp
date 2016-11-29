@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 
 namespace sgpp {
@@ -17,13 +19,13 @@ DBMatDensityConfiguration::DBMatDensityConfiguration(sgpp::base::RegularGridConf
        grid_dim_(gc->dim_), 
        grid_level_(gc->level_),
        numRefinements_(ac->numRefinements_), 
-       ref_threshold_(ac->threshold_), 
-       //ref_maxLevelType_(ac->maxLevelType_), 
+       ref_threshold_(ac->threshold_),  
        ref_noPoints_(ac->noPoints_),
-       //ref_percent_(ac->percent_),
        regularization_(reg), 
        lambda_(lambda),
        decomp_type_(dt) {}
 
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif /* USE_GSL */

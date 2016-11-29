@@ -3,28 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/globaldef.hpp>
-
-#include <map>
-#include <string>
-#include <utility>
 #include <cmath>
 #include <stdexcept>
-#include <algorithm>
-
 
 namespace sgpp {
 namespace base {
 
 
 ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(Grid& grid, DataMatrix& svs, 
-    DataVector& alphas, DataVector& w1, DataVector& w2, double beta, double threshold, size_t refinements_num) :
+  DataVector& alphas, DataVector& w1, DataVector& w2, 
+  double beta, double threshold, size_t refinementsNum) :
         grid(grid),
         svs(svs),
         alphas(alphas),
@@ -34,16 +30,15 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(Grid& gri
         rv1(new DataVector(grid.getSize(), 0.0)),
         rv2(new DataVector(grid.getSize(), 0.0)) 
  {
-  // set global Variables accordingly
-  this->refinementsNum = refinements_num;
+  this->refinementsNum = refinementsNum;
   this->threshold = threshold;
   
   // compute current loss using set of support vectors  
-  DataVector losses(svs.getNrows()); // define as member of indicator if needed again later
+  DataVector losses(svs.getNrows()); 
   for (size_t i = 0; i < svs.getNrows(); i++) {
     DataVector x(svs.getNcols());
-    svs.getRow((size_t)i, x);
-    // compute transformation of current sv -> maybe call opSGKernel here ?
+    svs.getRow(i, x);
+    // compute transformation of current sv
     DataVector xTrans(grid.getSize()); 
     DataMatrix xMatrix(1,svs.getNcols());
     xMatrix.setRow(0,x);
@@ -63,9 +58,8 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(Grid& gri
 
 double ForwardSelectorRefinementIndicator::operator()(GridStorage& storage, size_t seq) const {
   double epsilon = 0.000001;
-  double measure = std::abs(w1.get(seq) + epsilon) / (std::pow(w2.get(seq),beta) * rv2->get(seq) + epsilon); 
-  
-  //std::cout << "measure: " << measure << std::endl;
+  double measure = std::abs(w1.get(seq) + epsilon) / 
+    (std::pow(w2.get(seq),beta) * rv2->get(seq) + epsilon); 
 
   return measure;
 }
@@ -92,7 +86,7 @@ double ForwardSelectorRefinementIndicator::operator()(GridPoint& point) const {
                          "for svm indicators.");
 }
 
-//void ForwardSelectorRefinementIndicator::update(ForwardSelectorRefinement::insertables_container_type& insertables) {
+
 void ForwardSelectorRefinementIndicator::update(GridPoint& point) {
   SBasis& basis = const_cast<SBasis&>(grid.getBasis());
 
@@ -114,13 +108,13 @@ void ForwardSelectorRefinementIndicator::update(GridPoint& point) {
       valueInDim = svs.get(row, dim);
       value *= basis.eval(level, index, valueInDim);
     }
-
+    // compute new component of normal vector
     res = value * alphas.get(row); 
     w1_new += res;
     res = value * std::abs(alphas.get(row));
     w2_new += res;
   }
-
+  // update normal vector
   w1.append(w1_new);
   w2.append(w2_new);
 }
