@@ -24,7 +24,7 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 6;
+  size_t dimension = 4, tiefe = 10;
   double lambda = 0.00001;
 
   // Create Grid
