@@ -39,7 +39,7 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None):
+    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None, unitIntegrand=True):
         super(SGDEdist, self).__init__(trainData, bounds)
 
         self.grid = grid
@@ -48,14 +48,12 @@ class SGDEdist(EstimatedDist):
 
         if trainData is None:
             self.dim = grid.getStorage().getDimension()
-            if bounds is None:
-                self.bounds = [[0, 1]] * self.dim
         elif self.dim != grid.getStorage().getDimension():
             raise AttributeError("the dimensionality of the data differs from the one of the grid")
 
         assert self.grid.getSize() == len(self.alpha)
-        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
-        if self.vol > 1e-13:
+        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha) * self.trans.vol()
+        if unitIntegrand and self.vol > 1e-13:
             self.alpha.mult(1. / self.vol)
 
     @classmethod
@@ -146,8 +144,8 @@ class SGDEdist(EstimatedDist):
         # evaluate the sparse grid density
         fx = evalSGFunction(self.grid, self.alpha, x_unit)
 
-        if self.trans is not None and self.trans.vol() > 1e-14:
-            fx *= 1. / self.trans.vol()
+#         if self.trans is not None and self.trans.vol() > 1e-14:
+#             fx *= 1. / self.trans.vol()
 
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
@@ -227,17 +225,19 @@ class SGDEdist(EstimatedDist):
         else:
             first_moment = 0.0
             gs = self.grid.getStorage()
+            bounds = self.trans.getBounds()
             for i in xrange(gs.getSize()):
                 gp = gs.getPoint(i)
                 p = 1.0
                 for idim in xrange(gs.getDimension()):
-                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    a, b = bounds[idim, :]
                     index, level = gp.getIndex(idim), gp.getLevel(idim)
                     p *= (b - a) * index * 4 ** -level + a * 2 ** -level
 
                 first_moment += self.alpha[i] * p
 
-            return first_moment
+            vol = np.abs(np.prod(np.diff(bounds, axis=1)))
+            return vol * first_moment
 
     def var(self):
         if self.trans is None:
@@ -246,16 +246,19 @@ class SGDEdist(EstimatedDist):
             # compute the second moment
             second_moment = 0.0
             gs = self.grid.getStorage()
+            bounds = self.trans.getBounds()
             for i in xrange(gs.getSize()):
                 gp = gs.getPoint(i)
                 p = 1.0
                 for idim in xrange(gs.getDimension()):
-                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    a, b = bounds[idim, :]
                     index, level = gp.getIndex(idim), gp.getLevel(idim)
                     p *= (b - a) ** 2 * (index * index + 1. / 6.) * 8 ** -level + 2 * (b - a) * a * index * 4 ** -level + a * a * 2 ** -level
 
                 second_moment += self.alpha[i] * p
 
+            vol = np.abs(np.prod(np.diff(bounds, axis=1)))
+            second_moment *= vol
             # compute the variance
             return second_moment - self.mean() ** 2
 

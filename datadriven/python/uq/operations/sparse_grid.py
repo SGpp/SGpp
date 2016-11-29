@@ -637,7 +637,11 @@ def evalSGFunctionMulti(grid, alpha, samples):
 
 
 def evalSGFunction(grid, alpha, p):
+    if grid.getSize() != len(alpha):
+        raise AttributeError("grid size differs from length of coefficient vector")
     if len(p.shape) == 1:
+        if grid.getStorage().getDimension() != p.shape[0]:
+            raise AttributeError("grid dimension differs from dimension of sample")
         p_vec = DataVector(p)
         alpha_vec = DataVector(alpha)
         if grid.getType() in [GridType_Bspline,
@@ -655,6 +659,8 @@ def evalSGFunction(grid, alpha, p):
         else:
             return createOperationEval(grid).eval(alpha_vec, p_vec)
     else:
+        if grid.getStorage().getDimension() != p.shape[1]:
+            raise AttributeError("grid dimension differs from dimension of samples")
         return evalSGFunctionMulti(grid, alpha, p)
 
 def evalHierToTop(basis, grid, coeffs, gp, d):

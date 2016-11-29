@@ -198,8 +198,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
-    size_t maxLevel = 0, datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-                             datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool generateConsistentGrid = true, bool verbose = false);
 
 /**
@@ -212,8 +212,8 @@ datadriven::OperationMakePositive* createOperationMakePositive(
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
-    size_t maxLevel = 0, datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-                             datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool verbose = false);
 
 }  // namespace op_factory
