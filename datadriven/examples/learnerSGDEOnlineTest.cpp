@@ -15,18 +15,18 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 int main() {
-  size_t totalSets = 1; 
-  size_t totalFolds = 1;
+  size_t totalSets = 1; // 1-10 possible (10 differently ordered data sets)
+  size_t totalFolds = 1; // set to 5 to perform 5-fold cv 
   //double avgError = 0.0;
   //double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
     //sgpp::base::DataVector avgErrorsFolds(21, 0.0); // to compute average classification error
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
-      std::string filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_train_"
+      std::string filename = "../tests/data/ripley/5_fold/ripley_train_"
         +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //std::string filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_train_"
+      //std::string filename = "../tests/data/banana/5_fold/banana_train_"
       //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //std::string filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_train_"
+      //std::string filename = "../tests/data/SDSS_DR10/5_fold/DR10_train_"
       //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
@@ -35,9 +35,9 @@ int main() {
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
-      filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_test.arff";
-      //filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_test.arff";
-      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_test.arff";
+      filename = "../tests/data/ripley/5_fold/ripley_test.arff";
+      //filename = "../tests/data/banana/5_fold/banana_test.arff";
+      //filename = "../tests/data/SDSS_DR10/5_fold/DR10_test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -48,11 +48,11 @@ int main() {
       sgpp::base::DataMatrix* validData = nullptr;
       sgpp::base::DataVector* validLabels = nullptr;
       //if fixed validation data should be used (required for convergence monitor):
-      filename = "/media/sf_Downloads/MA/ripley/5_fold/fixed_train_seed42/ripley_val_"
+      filename = "../tests/data/ripley/5_fold/ripley_val_"
         +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //filename = "/media/sf_Downloads/MA/banana/5_fold/fixed_train_seed42/banana_val_"
+      //filename = "../tests/data/banana/5_fold/banana_val_"
       //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      //filename = "/media/sf_Downloads/MA/DR10/5_fold/fixed_train_seed42/SDSS/DR10_val_"
+      //filename = "../tests/data/SDSS_DR10/5_fold/DR10_val_"
       //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
       // load validation samples
       std::cout << "# loading file: " << filename << std::endl;
