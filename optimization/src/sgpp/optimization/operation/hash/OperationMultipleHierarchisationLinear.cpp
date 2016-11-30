@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalLinear.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearNaive.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
@@ -29,7 +29,7 @@ bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataVector&
 void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalLinear opNaiveEval(storage);
+  base::OperationEvalLinearNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
@@ -52,7 +52,7 @@ bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataMatrix&
 void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationNaiveEvalLinear opNaiveEval(storage);
+  base::OperationEvalLinearNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);

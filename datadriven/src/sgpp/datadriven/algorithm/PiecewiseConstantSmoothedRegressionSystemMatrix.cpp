@@ -25,7 +25,7 @@ PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegres
   piecewiseRegressor(piecewiseRegressor), grid(grid) {
   this->lambda = lambdaRegression;
 
-  this->A = op_factory::createOperationLTwoDotProduct(grid).release();
+  this->A = op_factory::createOperationLTwoDotProduct(grid);
   //      this->B = op_factory::createOperationMultipleEval(grid, *(this->data));
   this->C = &C;
 }

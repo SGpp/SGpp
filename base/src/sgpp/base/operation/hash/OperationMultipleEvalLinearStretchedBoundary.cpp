@@ -5,31 +5,29 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretchedBoundary.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
   LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalLinearStretchedBoundary::multTranspose(
-  DataVector& source, DataVector& result) {
+void OperationMultipleEvalLinearStretchedBoundary::multTranspose(DataVector& source,
+                                                                 DataVector& result) {
   AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
   LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalLinearStretchedBoundary::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

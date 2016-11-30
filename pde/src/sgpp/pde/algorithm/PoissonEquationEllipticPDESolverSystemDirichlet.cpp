@@ -15,8 +15,8 @@ namespace pde {
 PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(
     sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& rhs)
     : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
-  this->Laplace_Complete = op_factory::createOperationLaplace(*this->BoundGrid).release();
-  this->Laplace_Inner = op_factory::createOperationLaplace(*this->InnerGrid).release();
+  this->Laplace_Complete = op_factory::createOperationLaplace(*this->BoundGrid);
+  this->Laplace_Inner = op_factory::createOperationLaplace(*this->InnerGrid);
 }
 
 PoissonEquationEllipticPDESolverSystemDirichlet::
