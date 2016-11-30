@@ -575,9 +575,6 @@ void LearnerSGDE::trainOnline(base::DataVector& labels,
   // counter for number of processed data points
   size_t processedPoints = 0;
 
-  // map number of already performed refinements to grids
-  //std::map<int, size_t> refCnts;
-
   // initialize refinement variables
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
@@ -590,8 +587,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels,
 
   // auxiliary variable for accuracy (error) measurement 
   double acc = 0.0;
-  //acc = getAccuracy(testData, testLabels, 0.0);
-  //avgErrors.append(1.0 - acc);  
+  acc = getAccuracy(testData, testLabels, 0.0);
+  avgErrors.append(1.0 - acc);  
 
   // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {			
@@ -629,7 +626,6 @@ void LearnerSGDE::trainOnline(base::DataVector& labels,
         alphas.at(label)->setAll(0.0);
         
         appearances.insert(std::pair<int, size_t>(label, 0));
-        //refCnts.insert(std::pair<int, size_t>(label, 0));
         priors.insert(std::pair<int, double>(label, 0.0));
         classLabels.push_back(label);
       }
@@ -793,10 +789,10 @@ void LearnerSGDE::trainOnline(base::DataVector& labels,
                       (1 + static_cast<double>(i));
 
       // save current error
-      /*if ((processedPoints > 0) && ((processedPoints+1) % 10 == 0)) {
+      if ((processedPoints > 0) && ((processedPoints+1) % 10 == 0)) {
         acc = getAccuracy(testData, testLabels, 0.0);
         avgErrors.append(1.0 - acc);  
-      }*/
+      }
 
       processedPoints++;  
     }

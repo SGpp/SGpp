@@ -169,9 +169,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 
   // auxiliary variable for accuracy (error) measurement 
   double acc = 0.0;
-  //acc = getAccuracy();
-  //avgErrors.append(1.0 - acc);  
-
+  acc = getAccuracy();
+  avgErrors.append(1.0 - acc);  
 
   // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {
@@ -382,10 +381,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
       delete curPair.second;
      
       // save current error
-      /*if (totalInstances % 10 == 0) {
+      if (totalInstances % 10 == 0) {
         acc = getAccuracy();
         avgErrors.append(1.0 - acc);  
-      }*/
+      }
 
     }
     cntDataPasses++;

@@ -14,14 +14,45 @@
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
+/**
+ * This example shows how to perform online-classification using sparse 
+ * grid density estimation and conjugate gradients method. It creates an 
+ * instance of LearnerSGDE and runs the function trainOnline() where the 
+ * main functionality is implemented. 
+ *  
+ * Currently, only binary classification with class labels -1 and 1 is possible.
+ *
+ * The example provides the option to execute up to 10 runs over differently 
+ * ordered data and perform a 5-fold cross-validation within each run. Therefore,
+ * already randomly ordered and partitioned data is provided in datadriven/tests/data
+ * (ripley, banana, SDSS_DR10).
+ * Average results from several runs might be more reliable in an online-learning
+ * scenario, because the ordering of the data points seen by the learner
+ * can affect the result.
+ */
+
 int main() {
+  /**
+   * Specify the number of runs to perform. 
+   * If only one specific example should be executed, set 
+   * totalSets=1.
+   */
   size_t totalSets = 1; // 1-10 possible (10 differently ordered data sets)
-  size_t totalFolds = 1; // set to 5 to perform 5-fold cv 
-  //double avgError = 0.0;
-  //double avgErrorFolds = 0.0;
+  size_t totalFolds = 5; // set to 5 to perform 5-fold cv 
+  double avgError = 0.0;
+  double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
-    //sgpp::base::DataVector avgErrorsFolds(21, 0.0); // to compute average classification error
+    /**
+     * A vector to compute average classification error throughout
+     * the learning process. The length of the vector determines
+     * the total number of error observations.
+     */
+    sgpp::base::DataVector avgErrorsFolds(81, 0.0); 
+
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
+      /**
+       * Get the training, test and validation data
+       */
       std::string filename = "../tests/data/ripley/5_fold/ripley_train_"
         +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
       //std::string filename = "../tests/data/banana/5_fold/banana_train_"
@@ -61,7 +92,9 @@ int main() {
       // extract validation classes
       validLabels = &valDataset.getTargets();
 
-      // configure grid
+      /**
+       * The grid configuration.
+       */
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
@@ -69,25 +102,29 @@ int main() {
       gridConfig.type_ = sgpp::base::GridType::Linear;
       //gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-      // configure adaptive refinement
+      /**
+       * Configure adaptive refinement. As refinement 
+       * monitor the periodic monitor or the convergence monitor
+       * can be chosen. Possible refinement indicators are
+       * surplus refinement, data-based refinement, zero-crossings-based refinement.
+       */
       std::cout << "# create adaptive refinement config" << std::endl;
-      // possible refinement  monitors:
-      // periodic monitor, convergence monitor
       std::string refMonitor;
       // select periodic monitor - perform refinements in fixed intervals
       // refMonitor = "periodic";
-      size_t refPeriod = 50; // the refinement interval
+      size_t refPeriod = 65; // the refinement interval
       // select convergence monitor - perform refinements if algorithm has converged
       // (convergence measured with respect to changes of the classification accuracy)
       refMonitor = "convergence";
-      double accDeclineThreshold = 0.0005; // the convergence threshold
-      size_t accDeclineBufferSize = 50; // number of accuracy measurements which 
-                                        // are considered for convergence check
-      size_t minRefInterval = 0; // minimum number of iterations before next refinement 
-                                 // is allowed to be performed
+      // the convergence threshold
+      double accDeclineThreshold = 0.001; 
+      // number of accuracy measurements which
+      // are considered for convergence check
+      size_t accDeclineBufferSize = 140;       
+      // minimum number of iterations before next refinement 
+      // is allowed to be performed                                   
+      size_t minRefInterval = 10; 
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
-      // possible refinement indicators:
-      // surplus refinement, data-based refinement, zero-crossings-based refinement
       std::string refType;
       // select surplus refinement
       //refType = "surplus";
@@ -96,12 +133,20 @@ int main() {
       // select zero-crossings-based refinement
       refType = "zero";
       std::cout << "Refinement type: " << refType << std::endl;
+      /**
+       * Specify number of refinement steps and the max number 
+       * of grid points to refine each step.
+       */
       sgpp::base::AdpativityConfiguration adaptConfig;
       adaptConfig.numRefinements_ = 2; 
-      adaptConfig.noPoints_ = 5; 
+      adaptConfig.noPoints_ = 12; 
       adaptConfig.threshold_ = 0.0; // only required for surplus refinement
 
-      // configure CG-solver
+      /**
+       * Configure the CG solver. Note that the max number of 
+       * iterations should be limited in order to obtain
+       * feasible runtimes, especially for large grids.  
+       */
       std::cout << "# create solver config" << std::endl;
       sgpp::solver::SLESolverConfiguration solverConfig;
       solverConfig.type_ = sgpp::solver::SLESolverType::CG;
@@ -109,16 +154,20 @@ int main() {
       solverConfig.eps_ = 1e-10; 
       solverConfig.threshold_ = 1e-10; 
 
-      // configure regularization
+      /**
+       * Configure regularization.
+       */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
       regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
       //regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
-      // configure cross-validation
+      /**
+       * Configure cross-validation.
+       */
       std::cout << "# create cross-validation config" << std::endl;
       sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
-      crossvalidationConfig.lambda_ = 0.2;
+      crossvalidationConfig.lambda_ = 0.01;
       crossvalidationConfig.enable_ = false; // set 'true' to perform cv
 
       crossvalidationConfig.kfold_ = 5; 
@@ -130,7 +179,9 @@ int main() {
       crossvalidationConfig.seed_ = 1234567;
       crossvalidationConfig.silent_ = true;
 
-      // create learner
+      /**
+       * Create the learner.
+       */
       std::cout << "# creating the learner" << std::endl;
       sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, 
                                             regularizationConfig, crossvalidationConfig);
@@ -139,9 +190,11 @@ int main() {
       // specify if prior should be used to predict class labels
       bool usePrior = false;
       // specify max number of passes over traininig data set
-      size_t maxDataPasses = 3;
+      size_t maxDataPasses = 4;
 
-      // learn data
+      /**
+       * Learn the data.
+       */
       std::cout << "# start to train the learner" << std::endl;
       learner.trainOnline(trainLabels, testData, testLabels, validData, validLabels,
                           maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
@@ -149,7 +202,9 @@ int main() {
 
       std::cout << "# finished training" << std::endl;
 
-      // test learner
+      /**
+       * Accuracy on test and training data after each fold.
+       */
       double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
       std::cout << "Acc (train): " << accTrain << std::endl;
       double accTest = learner.getAccuracy(testData, testLabels, 0.0);
@@ -158,16 +213,19 @@ int main() {
       // store results (classified data, grids, density functions)
       //learner.storeResults(testData);
 
-      //avgErrorFolds += learner.error;
-      //avgErrorsFolds.add(learner.avgErrors);
+      avgErrorFolds += learner.error;
+      avgErrorsFolds.add(learner.avgErrors);
     }
-    /*avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
+    avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
+    /**
+     * Average accuracy on test data reagarding 5-fold cv.
+     */
     std::cout << "Average accuracy on test data (set "+std::to_string(numSets+1)+"): " 
               << (1.0 - avgErrorFolds) << std::endl;
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
 
-    avgErrorsFolds.mult(1.0/static_cast<double>(totalFolds));*/
+    avgErrorsFolds.mult(1.0/static_cast<double>(totalFolds));
 
     // write error evaluation to csv file
     /*std::ofstream output;

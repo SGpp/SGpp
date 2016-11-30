@@ -114,8 +114,8 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
     errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
 
   // auxiliary variable for accuracy (error) measurement
-  //double acc = getAccuracy(*testData, *testLabels, 0.0);
-  //avgErrors.append(1.0 - acc); 
+  double acc = getAccuracy(*testData, *testLabels, 0.0);
+  avgErrors.append(1.0 - acc); 
  
   // counts total number of processed data points
   size_t processedPoints = 0;
@@ -213,10 +213,10 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
       }
 
       // save current error
-      /*if (processedPoints % 10 == 0) {
+      if (processedPoints % 10 == 0) {
         acc = getAccuracy(*testData, *testLabels, 0.0);
         avgErrors.append(1.0 - acc);
-      }*/
+      }
 
     }
     cntDataPasses++;
