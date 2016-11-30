@@ -37,10 +37,19 @@ void OperationDensityMargTo1DLinear::margToDimXs(base::DataVector* alpha, base::
                                                  std::vector<size_t>& dim_x) {
   size_t numDims = this->grid->getDimension();
 
+  if (numDims == dim_x.size()) {
+    // no marginalization required, just copy the grid and the coefficient vector
+    grid_x = grid->clone();
+    alpha_x->resize(alpha->getSize());
+    for (size_t i = 0; i < alpha->getSize(); i++) {
+      alpha_x->set(i, alpha->get(i));
+    }
+    return;
+  }
+
   // prepare dimensions over which we want to integrate
   std::vector<size_t> margDims;
   computeMarginalizationIndices(dim_x, numDims, margDims);
-
   // do the integration
   marg_next_dim(grid, alpha, grid_x, alpha_x, margDims, 0);
 }

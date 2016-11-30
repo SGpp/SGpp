@@ -13,8 +13,12 @@ namespace datadriven {
 void OperationDensityMargTo1D::computeMarginalizationIndices(std::vector<size_t>& dim_x,
                                                              size_t numDims,
                                                              std::vector<size_t>& margDims) {
-  size_t count = 0;
+  if (dim_x.size() == numDims) {
+    margDims.clear();
+    return;
+  }
 
+  size_t count = 0;
   for (size_t idim = 0; idim < numDims; idim++) {
     size_t i = 0;
     bool marginalize = true;

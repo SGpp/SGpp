@@ -95,13 +95,13 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
-  sgdeConfig.makePositive_ = false;
+  sgdeConfig.makePositive_ = true;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
       sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       sgpp::datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
   sgdeConfig.makePositive_verbose_ = false;
-  sgdeConfig.unitIntegrand_ = false;
+  sgdeConfig.unitIntegrand_ = true;
 
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
@@ -122,12 +122,12 @@ int main(int argc, char** argv) {
             << std::endl;
   std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
             << std::endl;
-  /*std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
+  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
             << std::endl;
   std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
-            << std::endl;*/
+            << std::endl;
 
-  /*sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
+  sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
   std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
   learner.cov(C);
   std::cout << C.toString() << std::endl;
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
   kde.cov(C);
   std::cout << C.toString() << std::endl;
 
-  std::cout << "------------------------------------------------------" << std::endl;*/
+  std::cout << "------------------------------------------------------" << std::endl;
 
   // inverse Rosenblatt transformation
   auto opInvRos =

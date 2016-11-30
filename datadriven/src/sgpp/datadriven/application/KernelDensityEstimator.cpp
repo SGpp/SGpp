@@ -286,9 +286,8 @@ double KernelDensityEstimator::evalKernel(base::DataVector& x, size_t i) {
 
 void KernelDensityEstimator::cov(base::DataMatrix& cov) {
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
-    // throw error -> covariance matrix has wrong size
-    throw base::data_exception(
-        "KernelDensityEstimator::cov : covariance matrix has the wrong size");
+    // covariance matrix has wrong size -> resize
+    cov.resize(ndim, ndim);
   }
 
   // prepare covariance marix

@@ -300,6 +300,13 @@ LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   sgdeConfig = learnerSGDE.sgdeConfig;
 }
 
+LearnerSGDE::LearnerSGDE(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& samples) {
+  std::shared_ptr<base::Grid> sGrid(grid.clone());
+  this->grid = sGrid;
+  this->alpha = std::make_shared<base::DataVector>(alpha);
+  this->samples = std::make_shared<base::DataMatrix>(samples);
+}
+
 LearnerSGDE::~LearnerSGDE() {}
 
 // -----------------------------------------------------------------------------------------------
@@ -364,14 +371,14 @@ double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
 double LearnerSGDE::mean() { return mean(*grid, *alpha); }
 
 double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
+  std::unique_ptr<base::OperationFirstMoment> opFirstMoment(
+      op_factory::createOperationFirstMoment(grid));
+  double firstMoment = opFirstMoment->doQuadrature(alpha);
   std::unique_ptr<base::OperationSecondMoment> opSecondMoment(
       op_factory::createOperationSecondMoment(grid));
   double secondMoment = opSecondMoment->doQuadrature(alpha);
-
   // use Steiners translation theorem to compute the variance
-  double firstMoment = mean();
-  double res = secondMoment - firstMoment * firstMoment;
-  return res;
+  return secondMoment - firstMoment * firstMoment;
 }
 
 double LearnerSGDE::variance() { return variance(*grid, *alpha); }
@@ -398,11 +405,11 @@ void LearnerSGDE::cov(base::DataMatrix& cov) {
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
 
   for (size_t idim = 0; idim < ndim; idim++) {
+    // marginalize and normalize
     opMarg->margToDimX(&*alpha, marginalizedGrid, marginalizedAlpha, idim);
     // store moments
     means[idim] = mean(*marginalizedGrid, *marginalizedAlpha);
     variances[idim] = variance(*marginalizedGrid, *marginalizedAlpha);
-
     delete marginalizedGrid;
   }
 

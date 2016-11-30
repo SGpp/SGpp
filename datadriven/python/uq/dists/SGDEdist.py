@@ -39,12 +39,17 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None, unitIntegrand=True):
+    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None,
+                 learner=None, unitIntegrand=True):
         super(SGDEdist, self).__init__(trainData, bounds)
 
         self.grid = grid
         self.alpha = DataVector(alpha)
         self.config = config
+        if learner is None and trainData is not None:
+            self.learner = LearnerSGDE(self.grid, self.alpha, trainData)
+        else:
+            self.learner = learner
 
         if trainData is None:
             self.dim = grid.getStorage().getDimension()
@@ -103,7 +108,7 @@ class SGDEdist(EstimatedDist):
         alpha = np.array(learner.getSurpluses().array())
 
         # load sgde distribution
-        ans = cls(grid, alpha, samples, bounds, config)
+        ans = cls(grid, alpha, samples, bounds, config, learner)
 
         return ans
 
@@ -263,13 +268,14 @@ class SGDEdist(EstimatedDist):
             return second_moment - self.mean() ** 2
 
     def cov(self):
-        raise NotImplementedError
+        covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
+        self.learner.cov(covMatrix)
+        return covMatrix.array()
 
     def corrcoef(self):
-        raise NotImplementedError
-#         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-#         self.dist.corrcoef(corrMatrix)
-#         return corrMatrix.array()
+        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
+        self.dist.corrcoef(corrMatrix)
+        return corrMatrix.array()
 
 
     def rvs(self, n=1):

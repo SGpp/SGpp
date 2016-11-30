@@ -102,6 +102,15 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
 
+  /**
+   * construct learner from given grid and coefficients
+   *
+   * @param grid
+   * @param alpha
+   * @param samples
+   */
+  LearnerSGDE(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& samples);
+
   LearnerSGDE(const LearnerSGDE& learnerSGDE);
 
   virtual ~LearnerSGDE();
@@ -138,7 +147,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual double variance();
 
   /**
-   * WARNING: Not yet implemented
+   * Computes the covariance of the density function
    */
   virtual void cov(base::DataMatrix& cov);
 
