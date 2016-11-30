@@ -109,8 +109,14 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // Copy into SIMD vectors
     const size_t blocksize = 128;
-#pragma omp parallel for
-    for (size_t workitem = 0; workitem < actual_gridsize; workitem+=blocksize) {
+    // size_t counter = 0;
+    // size_t sicherheit = 0;
+
+    #pragma omp parallel for
+    for (size_t workitem = 0; workitem < used_gridsize; workitem+=blocksize) {
+      double *last_positions = new double[dimensions];
+      __m256d *last_integral = new __m256d[dimensions];
+      __m256d *last_integral_unrolled = new __m256d[dimensions];
       __m256d *workitem_positions = new __m256d[blocksize / 4 * dimensions];
       __m256d *workitem_hs = new __m256d[blocksize / 4 * dimensions];
       __m256d *workitem_hs_inverse = new __m256d[blocksize / 4 * dimensions];
@@ -134,7 +140,11 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
                             hs_inverse[(workitem + i * 4 + 0) * dimensions + d]);
         }
       }
+
       for (size_t point = 0; point < used_gridsize / blocksize; point++) {
+      for (size_t dim = 0; dim < dimensions; ++dim) {
+        last_positions[dim] = -1.0;
+      }
         for (size_t local_item = 0; local_item < blocksize / 4; local_item+=2) {
           const size_t unrolled_local_item = local_item + 1;
           __m256d currentworkitem = _mm256_load_pd(&result[workitem + local_item * 4]);
@@ -144,9 +154,19 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
             __m256d zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
             __m256d zellenintegral_unrolled = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
             for (size_t dim = 0; dim < dimensions; dim++) {
+              // sicherheit++;
+              if (std::fabs(positions[(point * blocksize + i) * dimensions + dim] -
+                            last_positions[dim]) < std::numeric_limits<double>::epsilon()) {
+                zellenintegral = _mm256_mul_pd(zellenintegral, last_integral[dim]);
+                zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled,
+                                                        last_integral_unrolled[dim]);
+                // counter++;
+                continue;
+              }
               // load gridpoint positions;
               const __m256d current_positions =
                   _mm256_set1_pd(positions[(point * blocksize + i) * dimensions + dim]);
+              last_positions[dim] = positions[(point * blocksize + i) * dimensions + dim];
               const __m256d current_hs =
                   _mm256_set1_pd(hs[(point * blocksize + i) * dimensions + dim]);
               const __m256d current_hs_inverse =
@@ -203,8 +223,11 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
               tmp_unrolled = _mm256_add_pd(tmp_unrolled,
                                            _mm256_and_pd(tmp_alternative_unrolled,
                                                          bitmask_unrolled));
+              last_integral[dim] = tmp;
+              last_integral_unrolled[dim] = tmp_unrolled;
               zellenintegral = _mm256_mul_pd(zellenintegral, tmp);
               zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled, tmp_unrolled);
+
             }
             currentworkitem =
                 _mm256_fmadd_pd(zellenintegral,
@@ -223,6 +246,10 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
       delete [] workitem_hs;
       delete [] workitem_hs_inverse;
     }
+    // size_t maximum = sicherheit;
+    // std::cout << "Skipped " << counter << " out of " << maximum << " ["
+    //           << double(counter) / double(maximum) * 100.0 << "%]" << std::endl;
+    // std::cout << "Calculated " << maximum - counter << std::endl;
   }
   void print_avx_register(__m256d reg) {
     double tmp_result[4];

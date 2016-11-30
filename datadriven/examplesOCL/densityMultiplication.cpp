@@ -24,7 +24,7 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 4, tiefe = 10;
+  size_t dimension = 10, tiefe = 6;
   double lambda = 0.00001;
 
   // Create Grid
@@ -56,7 +56,8 @@ int main() {
   std::cout << std::endl;
   gridsize = gridsize + 1024 - gridsize % 1024;
   std::cout << "Duration: " << elapsed_seconds.count() << "\n";
-  std::cout << "GFLOPS: " << (gridsize*gridsize * dimension * 18 + gridsize * gridsize * 2) /
+  std::cout << "GFLOPS: " << (gridsize*gridsize * dimension * (0.15 * 17 + 1) +
+                              gridsize * gridsize * 2) /
       (elapsed_seconds.count() * 1000 * 1000 * 1000) << "\n";
   out_mult.close();
 }
