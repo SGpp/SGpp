@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
-#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -32,17 +32,17 @@ PrimalDualSVM::~PrimalDualSVM() {}
 
 
 double PrimalDualSVM::predictRaw(sgpp::base::Grid& grid, sgpp::base::DataVector& x, 
-                                 size_t dataDim, bool trans) {
-  //SGKernel evaluation operation
-  std::unique_ptr<datadriven::OperationEvalSGKernel> opSGKernel =
-    op_factory::createOperationEvalSGKernel(grid);       
-  
+                                 size_t dataDim, bool trans) { 
   sgpp::base::DataVector xTrans(grid.getSize()); 
   if (trans) {
     xTrans = x;
   }
   else {
-    opSGKernel->phi(x, xTrans, dataDim);
+    // SGKernel evaluation
+    sgpp::base::DataMatrix xMatrix(1,dataDim);
+    xMatrix.setRow(0,x);
+    sgpp::base::DataVector unitAlpha(1,1.0);
+    op_factory::createOperationMultipleEval(grid, xMatrix)->multTranspose(unitAlpha, xTrans);
   }
   double res = w->dotProduct(xTrans);
   if (useBias) {
@@ -81,12 +81,13 @@ void PrimalDualSVM::multiply(double scalar) {
 void PrimalDualSVM::add(sgpp::base::Grid& grid, sgpp::base::DataVector& x, 
                         double alpha, size_t dataDim) {
   if (svs->getNrows() < budget) {
-    // SGKernel evaluation operation
-    std::unique_ptr<datadriven::OperationEvalSGKernel> opSGKernel =
-      op_factory::createOperationEvalSGKernel(grid);      
-	  
+          	  
     sgpp::base::DataVector xTrans(grid.getSize());  
-    opSGKernel->phi(x, xTrans, dataDim);
+    // SGKernel evaluation 
+    sgpp::base::DataMatrix xMatrix(1,dataDim);
+    xMatrix.setRow(0,x);
+    sgpp::base::DataVector unitAlpha(1,1.0);
+    op_factory::createOperationMultipleEval(grid, xMatrix)->multTranspose(unitAlpha, xTrans);
 
     svs->appendRow(x);
     alphas->append(alpha);  

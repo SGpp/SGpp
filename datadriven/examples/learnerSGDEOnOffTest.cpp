@@ -5,8 +5,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#endif /* USE_GSL */
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -32,6 +34,7 @@ using sgpp::base::DataVector;
  */
 
 int main() {
+#ifdef USE_GSL
   /**
    * Specify the number of runs to perform. 
    * If only one specific example should be executed, set 
@@ -261,6 +264,9 @@ int main() {
       output.close();
     }*/
   }
- 
+#endif /* USE_GSL */
 }
+
+
+
 

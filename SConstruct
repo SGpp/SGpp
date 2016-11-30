@@ -137,7 +137,7 @@ vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
-                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", True)) #new
+                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", True))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))

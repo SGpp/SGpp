@@ -33,7 +33,9 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#endif /* USE_GSL */
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
 #include <sgpp/datadriven/application/LearnerSVM.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
@@ -48,7 +50,6 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
-#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>

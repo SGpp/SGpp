@@ -26,7 +26,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
-#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -180,16 +179,6 @@ datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE
  */
 datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
     datadriven::GaussianKDE& kde);
-	
-/**
- * Factory method, returning an OperationEvalSGKernel for the sparse grid kernel evaluation.
- *
- * @param grid Grid which is to be used for the operation
- * @param dim dimension of input data
- * @return Pointer to new OperationEvalSGKernel
- */
-std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
-    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.

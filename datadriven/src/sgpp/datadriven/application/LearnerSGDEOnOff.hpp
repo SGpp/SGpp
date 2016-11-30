@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #ifndef LEARNERSGDEONOFF_HPP
 #define LEARNERSGDEONOFF_HPP
 
@@ -254,3 +256,6 @@ class LearnerSGDEOnOff : public DBMatOnline {
 }  // namespace sgpp
 
 #endif /* LEARNERSGDEONOFF_HPP */
+
+#endif /* USE_GSL */
+

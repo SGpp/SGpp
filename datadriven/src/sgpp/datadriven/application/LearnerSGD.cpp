@@ -112,10 +112,10 @@ std::shared_ptr<base::Grid> LearnerSGD::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::Linear) {
-    uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
+    uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
   } 
   else if (gridConfig.type_ == base::GridType::ModLinear) {
-    uGrid = base::Grid::createModLinearGrid(gridConfig.dim_);
+    uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
   } 
   else {
     throw base::application_exception("LearnerSGD::initialize : grid type is not supported");
@@ -488,8 +488,7 @@ double LearnerSGD::getAccuracy(sgpp::base::DataVector& testLabels,
 void LearnerSGD::predict(sgpp::base::DataMatrix& testData,
                          sgpp::base::DataVector& predictedLabels) {
   predictedLabels.resize(testData.getNrows());
-  sgpp::base::DataVector result(testData.getNrows());
-  size_t dim = testData.getNcols();  
+  sgpp::base::DataVector result(testData.getNrows());  
 
   std::unique_ptr<base::OperationMultipleEval> opEval
     (op_factory::createOperationMultipleEval(*grid, testData));
