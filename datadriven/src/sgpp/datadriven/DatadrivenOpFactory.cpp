@@ -205,16 +205,6 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
   return new datadriven::OperationDensityConditionalKDE(kde);
 }
 
-std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
-    base::Grid& grid) {
-  if (grid.getType() == base::GridType::ModLinear)
-    return std::unique_ptr<datadriven::OperationEvalSGKernel>(
-        new datadriven::OperationEvalSGKernel(grid));
-  else
-    throw base::factory_exception(
-        "OperationEvalSGKernel is not implemented for this grid type.");
-}
-
 base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {

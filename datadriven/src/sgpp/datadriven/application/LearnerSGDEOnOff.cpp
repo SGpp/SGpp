@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
@@ -675,3 +677,6 @@ std::vector<std::pair<DBMatOnlineDE*, double>>* LearnerSGDEOnOff::getDestFunctio
 
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif /* USE_GSL */
+

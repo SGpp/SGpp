@@ -604,10 +604,10 @@ void LearnerSGDE::trainOnline(base::DataVector& labels,
       if (grids.find(label) == grids.end()) {
         std::unique_ptr<base::Grid> uGrid;
         if (gridConfig.type_ == base::GridType::Linear) {
-          uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
+          uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
         } 
         else if (gridConfig.type_ == base::GridType::ModLinear) {
-          uGrid = base::Grid::createModLinearGrid(gridConfig.dim_);
+          uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
         } 
         else {
           throw base::application_exception(

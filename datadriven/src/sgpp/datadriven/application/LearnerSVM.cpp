@@ -69,7 +69,7 @@ std::shared_ptr<base::Grid> LearnerSVM::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::ModLinear) {
-    uGrid = base::Grid::createModLinearGrid(gridConfig.dim_);
+    uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
   } 
   else {
     throw base::application_exception(
