@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 

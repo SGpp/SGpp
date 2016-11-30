@@ -10,19 +10,19 @@
 
 #include <omp.h>
 
-#include <sgpp_mpi.hpp>
-#include <sgpp_base.hpp>
-#include <sgpp_parallel.hpp>
-#include <sgpp_datadriven.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
+#include <sgpp_base.hpp>
+#include <sgpp_datadriven.hpp>
+#include <sgpp_mpi.hpp>
+#include <sgpp_parallel.hpp>
 
-#include <string>
-#include <iostream>
-#include <ostream>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
+#include <ostream>
+#include <string>
 
 // print grid in gnuplot readable format (1D and 2D only)
 // #define GNUPLOT
@@ -122,8 +122,6 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
               << std::endl;
     exit(-1);
 #endif
-  } else if (vecType == sgpp::parallel::ArBB) {
-    std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::Hybrid_X86SIMD_MIC) {
@@ -267,6 +265,45 @@ void printResults() {
             << std::endl;
 }
 
+void adaptClassificationTestRecursive(
+    sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes, sgpp::base::DataMatrix& testdata,
+    sgpp::base::DataVector& testclasses, bool isRegression,
+    sgpp::base::RegularGridConfiguration& GridConfig,
+    const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
+    const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
+    const sgpp::base::AdpativityConfiguration& AdaptConfig, const double lambda,
+    const sgpp::parallel::VectorizationType vecType) {
+  sgpp::datadriven::LearnerBase* myLearner;
+  sgpp::datadriven::RegularizationType C_type;
+
+#ifdef USE_REC_LAPLACE
+  C_type = sgpp::datadriven::RegularizationType::Laplace;
+#else
+  C_type = sgpp::datadriven::RegularizationType::Identity;
+#endif
+  myLearner = new sgpp::datadriven::Learner(C_type, isRegression, true);
+
+  // training
+  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
+                              AdaptConfig, false, lambda);
+
+  // testing
+  gtrainAcc = myLearner->getAccuracy(data, classes);
+  gtestAcc = myLearner->getAccuracy(testdata, testclasses);
+
+  if (!isRegression) {
+    gTrainQual = myLearner->getCassificatorQuality(data, classes);
+    gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
+  }
+
+#ifdef GNUPLOT
+#endif
+
+  delete myLearner;
+
+  printResults();
+}
+
 void adaptClassificationTest(sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes,
                              sgpp::base::DataMatrix& testdata, sgpp::base::DataVector& testclasses,
                              bool isRegression, sgpp::base::RegularGridConfiguration& GridConfig,
@@ -316,48 +353,6 @@ void adaptClassificationTest(sgpp::base::DataMatrix& data, sgpp::base::DataVecto
               << "Test  Qual: " << time_gTestQual << " s" << std::endl;
   }
 
-#ifdef GNUPLOT
-#endif
-
-  delete myLearner;
-
-  printResults();
-}
-
-void adaptClassificationTestRecursive(
-    sgpp::base::DataMatrix& data, sgpp::base::DataVector& classes, sgpp::base::DataMatrix& testdata,
-    sgpp::base::DataVector& testclasses, bool isRegression,
-    sgpp::base::RegularGridConfiguration& GridConfig,
-    const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
-    const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-    const sgpp::base::AdpativityConfiguration& AdaptConfig, const double lambda,
-    const sgpp::parallel::VectorizationType vecType) {
-  sgpp::datadriven::LearnerBase* myLearner;
-  sgpp::datadriven::RegularizationType C_type;
-
-#ifdef USE_REC_LAPLACE
-  C_type = sgpp::datadriven::RegularizationType::Laplace;
-#else
-  C_type = sgpp::datadriven::RegularizationType::Identity;
-#endif
-  myLearner = new sgpp::datadriven::Learner(C_type, isRegression, true);
-
-  // training
-  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
-                              AdaptConfig, false, lambda);
-
-  // testing
-  gtrainAcc = myLearner->getAccuracy(data, classes);
-  gtestAcc = myLearner->getAccuracy(testdata, testclasses);
-
-  if (!isRegression) {
-    gTrainQual = myLearner->getCassificatorQuality(data, classes);
-    gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
-  }
-
-#ifdef GNUPLOT
-#endif
-
   delete myLearner;
 
   printResults();
@@ -390,9 +385,6 @@ void adaptClassificationTestSP(sgpp::base::DataMatrixSP& dataSP,
     gTestQual = myLearner->getCassificatorQuality(testdataSP, testclassesSP);
   }
 
-#ifdef GNUPLOT
-#endif
-
   delete myLearner;
 
   printResults();
@@ -420,7 +412,7 @@ void printHelp() {
   std::cout << "  #points refined" << std::endl;
   std::cout << "  CG max. iterations, first refinement steps" << std::endl;
   std::cout << "  CG epsilon, first refinement steps" << std::endl;
-  std::cout << "  Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
+  std::cout << "  Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL; " << std::endl;
   std::cout << "    for classical sparse grid algorithms choose: REC" << std::endl
             << std::endl
             << std::endl;
@@ -540,8 +532,6 @@ int main(int argc, char* argv[]) {
       vecType = sgpp::parallel::OpenCL;
     } else if (vectorization == "HYBRID_X86SIMD_OCL") {
       vecType = sgpp::parallel::Hybrid_X86SIMD_OpenCL;
-    } else if (vectorization == "ArBB") {
-      vecType = sgpp::parallel::ArBB;
     } else if (vectorization == "MIC") {
       vecType = sgpp::parallel::MIC;
     } else if (vectorization == "HYBRID_X86SIMD_MIC") {

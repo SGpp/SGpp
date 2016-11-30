@@ -36,8 +36,8 @@ const SBasis& ModFundamentalSplineGrid::getBasis() { return *basis_; }
 
 size_t ModFundamentalSplineGrid::getDegree() { return this->degree; }
 
-std::unique_ptr<Grid> ModFundamentalSplineGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new ModFundamentalSplineGrid(istr));
+Grid* ModFundamentalSplineGrid::unserialize(std::istream& istr) {
+  return new ModFundamentalSplineGrid(istr);
 }
 
 void ModFundamentalSplineGrid::serialize(std::ostream& ostr, int version) {

@@ -101,15 +101,15 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<sgpp::base::OperationMatrix> vect;
 
   if (lmb == 1) {
-    updown = sgpp::op_factory::createOperationLaplace(*myGrid, lambda);
-    vect = sgpp::op_factory::createOperationLaplaceVectorized(
+    updown.reset(sgpp::op_factory::createOperationLaplace(*myGrid, lambda));
+    vect.reset(sgpp::op_factory::createOperationLaplaceVectorized(
         *myGrid, lambda,
-        sgpp::parallel::X86SIMD);  /// @todo: check for parallelization type
+        sgpp::parallel::X86SIMD));  /// @todo: check for parallelization type
   } else {
-    updown = sgpp::op_factory::createOperationLaplace(*myGrid);
-    vect = sgpp::op_factory::createOperationLaplaceVectorized(
+    updown.reset(sgpp::op_factory::createOperationLaplace(*myGrid));
+    vect.reset(sgpp::op_factory::createOperationLaplaceVectorized(
         *myGrid,
-        sgpp::parallel::X86SIMD);  /// @todo: check for parallelization type
+        sgpp::parallel::X86SIMD));  /// @todo: check for parallelization type
   }
 
   std::cout << std::endl;

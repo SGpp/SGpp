@@ -5,16 +5,6 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
-// -------------------------------------------------------
-// shared pointer declarations
-// this needs to be done before the declarations of the types themselves
-//%include <std_shared_ptr.i>
-//%shared_ptr(sgpp::base::Grid)
-//%shared_ptr(sgpp::base::DataVector)
-//%shared_ptr(sgpp::base::DataMatrix)
-// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
-// -------------------------------------------------------
-
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
 namespace std {
@@ -76,10 +66,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationConvert.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEval.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalGradient.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalHessian.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
 %include "OperationQuadratureMC.i"
@@ -94,6 +83,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "base/src/sgpp/base/grid/generation/hashmap/ANOVAHashRefinement.hpp"
 %feature("director") sgpp::base::SubspaceRefinement;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
@@ -107,6 +97,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
