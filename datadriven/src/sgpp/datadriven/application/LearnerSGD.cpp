@@ -152,8 +152,8 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType, std::string re
   double lGamma = 0.001;
 
   // auxiliary variable for accuracy (error) measurement 
-  //double acc = getAccuracy(*testData, *testLabels, 0.0);
-  //avgErrors.append(1.0 - acc);  
+  double acc = getAccuracy(*testData, *testLabels, 0.0);
+  avgErrors.append(1.0 - acc);  
 
   // parameters for ADAM
   /*sgpp::base::DataVector m(alpha->getSize(), 0.0);
@@ -306,10 +306,10 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType, std::string re
       }
 
       // save current error
-      /*if ((processedPoints+1) % 10 == 0) {
+      if ((processedPoints+1) % 10 == 0) {
         acc = getAccuracy(*testData, *testLabels, 0.0);
         avgErrors.append(1.0 - acc);  
-      }*/ 
+      } 
 
       processedPoints++; 
     }
@@ -319,8 +319,6 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType, std::string re
   std::cout << "final grid size: " << grid->getSize() << std::endl;
   //double mse = getError(*testData, *testLabels, "MSE");
   //std::cout << "MSE: " << mse << std::endl;
-  /*acc = getAccuracy(*testData, *testLabels, 0.0);
-  std::cout << "accuracy: " << acc << std::endl;*/
 
   error = 1.0 - getAccuracy(*testData, *testLabels, 0.0);
 
