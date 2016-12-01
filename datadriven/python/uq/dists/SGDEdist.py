@@ -225,47 +225,24 @@ class SGDEdist(EstimatedDist):
                 return B.array()
 
     def mean(self):
+        opQuad = createOperationFirstMoment(self.grid)
         if self.trans is None:
-            return createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
+            firstMoment = opQuad.doQuadrature(self.alpha)
         else:
-            first_moment = 0.0
-            gs = self.grid.getStorage()
-            bounds = self.trans.getBounds()
-            for i in xrange(gs.getSize()):
-                gp = gs.getPoint(i)
-                p = 1.0
-                for idim in xrange(gs.getDimension()):
-                    a, b = bounds[idim, :]
-                    index, level = gp.getIndex(idim), gp.getLevel(idim)
-                    p *= (b - a) * index * 4 ** -level + a * 2 ** -level
+            bounds = DataMatrix(self.trans.getBounds())
+            firstMoment = opQuad.doQuadrature(self.alpha, bounds)
 
-                first_moment += self.alpha[i] * p
-
-            vol = np.abs(np.prod(np.diff(bounds, axis=1)))
-            return vol * first_moment
+        return firstMoment
 
     def var(self):
+        opQuad = createOperationSecondMoment(self.grid)
         if self.trans is None:
-            return createOperationSecondMoment(self.grid).doQuadrature(self.alpha) - self.mean() ** 2
+            secondMoment = opQuad.doQuadrature(self.alpha)
         else:
-            # compute the second moment
-            second_moment = 0.0
-            gs = self.grid.getStorage()
-            bounds = self.trans.getBounds()
-            for i in xrange(gs.getSize()):
-                gp = gs.getPoint(i)
-                p = 1.0
-                for idim in xrange(gs.getDimension()):
-                    a, b = bounds[idim, :]
-                    index, level = gp.getIndex(idim), gp.getLevel(idim)
-                    p *= (b - a) ** 2 * (index * index + 1. / 6.) * 8 ** -level + 2 * (b - a) * a * index * 4 ** -level + a * a * 2 ** -level
+            bounds = DataMatrix(self.trans.getBounds())
+            secondMoment = opQuad.doQuadrature(self.alpha, bounds)
 
-                second_moment += self.alpha[i] * p
-
-            vol = np.abs(np.prod(np.diff(bounds, axis=1)))
-            second_moment *= vol
-            # compute the variance
-            return second_moment - self.mean() ** 2
+        return secondMoment - self.mean() ** 2
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
