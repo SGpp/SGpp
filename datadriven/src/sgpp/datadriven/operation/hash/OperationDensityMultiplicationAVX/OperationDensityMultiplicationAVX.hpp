@@ -35,7 +35,6 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   double *positions;
   double *hs;
   double *hs_inverse;
-  short *dimensionscache;
 
   double *alpha;
 
@@ -79,36 +78,6 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
                static_cast<double>(1 << gridpoints[i*2*dimensions + 2*dim + 1]));
       }
     }
-
-    dimensionscache = new short[used_gridsize * (dimensions + 1)];
-    double *last_positions = new double[dimensions];
-    for (size_t i = 0; i < dimensions; ++i) {
-      last_positions[i] = - 1.0;
-    }
-
-    for (size_t i = 0; i < used_gridsize; ++i) {
-      // Look for the ones where nothing changes
-      short counter_not_changed = 0;
-      for (size_t dim = 0; dim < dimensions; dim++) {
-        if (std::fabs(last_positions[dim] - positions[i * dimensions + dim]) <
-            std::numeric_limits<double>::epsilon()) {
-          dimensionscache[i * (dimensions + 1) + counter_not_changed + 1] = dim;
-          counter_not_changed++;
-        }
-      }
-      // First entry is the number of unchanged entries
-      dimensionscache[i * (dimensions + 1)] = counter_not_changed;
-      // Fill up all other entries
-      for (size_t dim = 0; dim < dimensions; dim++) {
-        if (std::fabs(last_positions[dim] - positions[i * dimensions + dim]) >
-            std::numeric_limits<double>::epsilon()) {
-          dimensionscache[i * (dimensions + 1) + counter_not_changed + 1] = dim;
-          counter_not_changed++;
-        }
-      }
-    }
-    delete [] last_positions;
-
     // padding
     // for (size_t i = actual_gridsize; i < used_gridsize; ++i) {
     //   for (size_t d = 0; d < dimensions; d++) {
@@ -123,7 +92,6 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     delete [] positions;
     delete [] hs;
     delete [] hs_inverse;
-    delete [] dimensionscache;
   }
 
   /// Execute one matrix-vector multiplication with the density matrix
@@ -185,26 +153,16 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
           for (size_t i = 0; i < blocksize; ++i) {
             __m256d zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
             __m256d zellenintegral_unrolled = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
-            short number_unchanged =
-                dimensionscache[(point * blocksize + i) * (dimensions + 1)];
-            for (short entry = 1; entry <= number_unchanged; ++entry) {
-                short dim = dimensionscache[(point * blocksize + i) * (dimensions + 1) + entry];
+            for (size_t dim = 0; dim < dimensions; dim++) {
+              // sicherheit++;
+              if (std::fabs(positions[(point * blocksize + i) * dimensions + dim] -
+                            last_positions[dim]) < std::numeric_limits<double>::epsilon()) {
                 zellenintegral = _mm256_mul_pd(zellenintegral, last_integral[dim]);
                 zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled,
                                                         last_integral_unrolled[dim]);
-            }
-
-            for (size_t entry = number_unchanged + 1; entry <= dimensions; ++entry) {
-              short dim = dimensionscache[(point * blocksize + i) * (dimensions + 1) + entry];
-              // sicherheit++;
-              // if (std::fabs(positions[(point * blocksize + i) * dimensions + dim] -
-              //               last_positions[dim]) < std::numeric_limits<double>::epsilon()) {
-              //   zellenintegral = _mm256_mul_pd(zellenintegral, last_integral[dim]);
-              //   zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled,
-              //                                           last_integral_unrolled[dim]);
-              //   // counter++;
-              //   continue;
-              // }
+                // counter++;
+                continue;
+              }
               // load gridpoint positions;
               const __m256d current_positions =
                   _mm256_set1_pd(positions[(point * blocksize + i) * dimensions + dim]);
@@ -284,9 +242,6 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
           _mm256_store_pd(&result[workitem + unrolled_local_item * 4], currentworkitem_unrolled);
         }
       }
-      delete [] last_positions;
-      delete [] last_integral;
-      delete [] last_integral_unrolled;
       delete [] workitem_positions;
       delete [] workitem_hs;
       delete [] workitem_hs_inverse;
