@@ -10,7 +10,7 @@
 
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>  // TODO(holzmudd): remove
+#include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
@@ -293,6 +293,18 @@ class LevelManager {
    * (without duplicates)
    */
   base::DataMatrix getGridPointMatrix() { return combiEval->getGridPointMatrix(); }
+
+  /**
+   * @return the total number of different (multi-dimensional) grid points that have been used for
+   * the current evaluation. This number is reset when clear() is called on the CombigridEvaluator.
+   * This method is currently not optimized and can be slow!
+   */
+  size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
+
+  /**
+   * Calls addLevel() on the underlying CombigridEvaluator.
+   */
+  void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }
 };
 }  // namespace combigrid
 }  // namespace sgpp

@@ -13,7 +13,7 @@ namespace combigrid {
 
 /**
  * This is a simple LevelManager implementation that does level norm prediction for adaptive
- * refinement by averaging the norms of predecessor levels.
+ * refinement by averaging the norms of predecessor levels divided by their number of new points.
  */
 class AveragingLevelManager : public LevelManager {
  protected:

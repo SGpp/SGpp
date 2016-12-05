@@ -19,7 +19,7 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
 
   for (auto& predLevel : predecessors) {  // TODO(holzmudd): num points in previous levels
     auto data = levelData->get(predLevel);
-    sum += data->norm;
+    sum += data->norm / data->maxNewPoints;
   }
 
   return sum / static_cast<double>(predecessors.size());
