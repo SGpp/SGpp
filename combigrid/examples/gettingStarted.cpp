@@ -80,11 +80,9 @@ void example1() {
             << ", analytical solution: " << pow(1 - 1.0 / M_E, static_cast<double>(d)) << "\n";
 
   /**
-   * We can also find out how many function evaluations have been used by accessing the storage
-   * which stores computed function values:
+   * We can also find out how many function evaluations have been used:
    */
-  std::cout << "Number of function evaluations: " << operation->getStorage()->getNumEntries()
-            << "\n";
+  std::cout << "Number of function evaluations: " << operation->numGridPoints() << "\n";
 }
 
 /**
@@ -127,7 +125,7 @@ void example2() {
   /**
    * Again, print the number of function evaluations:
    */
-  std::cout << "Function evaluations: " << operation->getStorage()->getNumEntries() << "\n";
+  std::cout << "Function evaluations: " << operation->numGridPoints() << "\n";
 
   /**
    * Now, let's do another (more sophisticated) evaluation at a different point, so change the point
@@ -152,11 +150,11 @@ void example2() {
    * The result can be fetched from the CombigridOperation:
    */
   std::cout << "Regular result 1: " << operation->getResult() << "\n";
-  std::cout << "Total function evaluations: " << operation->getStorage()->getNumEntries() << "\n";
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
 
   /**
    * We can also add more points in a regular structure, using at most 50 new function evaluations.
-   * All level-adding variants of levelManager also have a parallelized version. This version
+   * Most level-adding variants of levelManager also have a parallelized version. This version
    * executes the calls to func in parallel with a specified number of threads, which is okay here
    * since func supports parallel evaluations. Since func takes very little time to evaluate and the
    * parallelization only concerns function evaluations and not the computations on the resulting
@@ -165,7 +163,7 @@ void example2() {
    */
   levelManager->addRegularLevelsByNumPointsParallel(50, 4);
   std::cout << "Regular result 2: " << operation->getResult() << "\n";
-  std::cout << "Total function evaluations: " << operation->getStorage()->getNumEntries() << "\n";
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
 
   /**
    * We can also use adaptive level generation. The adaption strategy depends on the subclass of
@@ -181,7 +179,7 @@ void example2() {
    */
   levelManager->addLevelsAdaptive(60);
   std::cout << "Adaptive result: " << operation->getResult() << "\n";
-  std::cout << "Total function evaluations: " << operation->getStorage()->getNumEntries() << "\n";
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
 }
 
 /**
@@ -370,6 +368,11 @@ void example5() {
   double result = operation->evaluate(2, parameters);
   std::cout << "Result: " << result << "\n";
 }
+
+/**
+ * For more information on how to access grid points, compare the results to a full grid etc. please
+ * refer to the python tutorials.
+ */
 
 int main() {
   std::cout << "Example 1: \n";

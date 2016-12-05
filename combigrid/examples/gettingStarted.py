@@ -57,7 +57,7 @@ def example1():
 
     ## We can also find out how many function evaluations have been used by accessing the storage
     ## which stores computed function values:
-    print("Number of function evaluations: " + str(operation.getStorage().getNumEntries()))
+    print("Number of function evaluations: " + str(operation.numGridPoints()))
 
 ## @section combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
@@ -81,7 +81,7 @@ def example2():
     print("Interpolation result: " + str(result) + ", function value: " + str(func(evaluationPoint)))
 
     ## Again, print the number of function evaluations:
-    print("Function evaluations: " + str(operation.getStorage().getNumEntries()))
+    print("Function evaluations: " + str(operation.numGridPoints()))
 
     ## Now, let's do another (more sophisticated) evaluation at a different point, so change the point
     ## and re-set the parameter. This method will automatically clear all intermediate values that
@@ -98,10 +98,10 @@ def example2():
 
     ## The result can be fetched from the CombigridOperation:
     print("Regular result 1: " + str(operation.getResult()))
-    print("Total function evaluations: " + str(operation.getStorage().getNumEntries()))
+    print("Total function evaluations: " + str(operation.numGridPoints()))
 
     ## We can also add more points in a regular structure, using at most 50 new function evaluations.
-    ## All level-adding variants of levelManager also have a parallelized version. This version
+    ## Most level-adding variants of levelManager also have a parallelized version. This version
     ## executes the calls to func in parallel with a specified number of threads, which is okay here
     ## since func supports parallel evaluations. Since func takes very little time to evaluate and the
     ## parallelization only concerns function evaluations and not the computations on the resulting
@@ -109,7 +109,7 @@ def example2():
     ## We will use 4 threads for the function evaluations.
     levelManager.addRegularLevelsByNumPointsParallel(50, 4)
     print("Regular result 2: " + str(operation.getResult()))
-    print("Total function evaluations: " + str(operation.getStorage().getNumEntries()))
+    print("Total function evaluations: " + str(operation.numGridPoints()))
 
     ## We can also use adaptive level generation. The adaption strategy depends on the subclass of
     ## LevelManager that is used. If you do not want to use the default LevelManager, you can specify
@@ -118,10 +118,10 @@ def example2():
     levelManager = operation.getLevelManager()
 
     ## It was necessary to use setLevelManager(), because this links the LevelManager to the
-    ## computation. Now, let's add at most 80 more function evaluations adaptively:
+    ## computation. Now, let's add at most 60 more function evaluations adaptively:
     levelManager.addLevelsAdaptive(60)
     print("Adaptive result: " + str(operation.getResult()))
-    print("Total function evaluations: " + str(operation.getStorage().getNumEntries()))
+    print("Total function evaluations: " + str(operation.numGridPoints()))
 
     ## We can also fetch the used grid points and plot the grid:
     grid = levelManager.getGridPointMatrix()
@@ -250,6 +250,7 @@ def example5():
     parameters = pysgpp.DataVector([0.777, 0.14159])
     result = operation.evaluate(2, parameters)
     print("Result: " + str(result))
+
 
 # Call the examples
 

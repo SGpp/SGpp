@@ -33,7 +33,6 @@ class FloatSerializationStrategy : public AbstractSerializationStrategy<T> {
  public:
   virtual ~FloatSerializationStrategy() {}
 
-  // TODO(holzmudd): handle nan and inf
   virtual std::string serialize(T const &value) {
     if (std::isnan(value)) {
       return std::string(1, nanPrefix);

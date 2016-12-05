@@ -17,7 +17,7 @@
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
-#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmudd): remove
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmudd): remove with deprecated methods
 
 #include <cmath>
 #include <limits>
