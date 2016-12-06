@@ -212,20 +212,36 @@ def checkSWIG(config):
 
 def checkPython(config):
   if config.env["SG_PYTHON"]:
-    config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    Helper.printInfo("pythonpath = " + distutils.sysconfig.get_python_inc())
+    if config.env["USE_PYTHON3_FOR_PYSGPP"]:
+      pythonpath = subprocess.check_output(["python3", "-c",
+          "import distutils.sysconfig; "
+          "print(distutils.sysconfig.get_python_inc())"]).decode().strip()
+      package = "python3-dev"
+    else:
+      pythonpath = distutils.sysconfig.get_python_inc()
+      package = "python-dev"
+
+    config.env.AppendUnique(CPPPATH=[pythonpath])
+    Helper.printInfo("pythonpath = " + pythonpath)
 
     if not config.CheckCXXHeader("Python.h"):
       Helper.printErrorAndExit("Python.h not found, but required for SG_PYTHON.",
                                "Check path to Python include files:",
-                               distutils.sysconfig.get_python_inc(),
-                               "Hint: You might have to install the package python-dev.")
+                               pythonpath,
+                               "Hint: You might have to install the package " + package + ".")
 
     if not config.CheckCXXHeader("pyconfig.h"):
       Helper.printErrorAndExit("pyconfig.h not found, but required for SG_PYTHON.",
                                "Check path to Python include files:",
-                               distutils.sysconfig.get_python_inc(),
-                               "Hint: You might have to install the package python-dev.")
+                               pythonpath,
+                               "Hint: You might have to install the package " + package + ".")
+
+    if config.env["USE_PYTHON3_FOR_PYSGPP"]:
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because "
+                            "they are not supported on Python 3.x.")
+        config.env["RUN_PYTHON_TESTS"] = False
+      return
 
     try:
       import numpy

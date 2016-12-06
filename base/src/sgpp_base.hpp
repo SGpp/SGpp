@@ -15,6 +15,14 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv3.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
@@ -22,6 +30,9 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -92,6 +103,8 @@
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
+#include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -105,8 +118,11 @@
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>

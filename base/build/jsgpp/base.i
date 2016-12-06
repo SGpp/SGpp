@@ -154,12 +154,23 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv3.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
@@ -203,6 +214,17 @@ namespace std {
 %template(SBsplineModifiedClenshawCurtisBase) sgpp::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineBase) sgpp::base::FundamentalSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
+%template(SLagrangeSplineBase) sgpp::base::LagrangeSplineBasis<unsigned int, unsigned int>;
+%template(SLagrangeSplineBaseDeriv1) sgpp::base::LagrangeSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SLagrangeSplineBaseDeriv2) sgpp::base::LagrangeSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SLagrangeSplineBaseDeriv3) sgpp::base::LagrangeSplineBasisDeriv3<unsigned int, unsigned int>;
+%template(SLagrangeNotAKnotSplineBase) sgpp::base::LagrangeNotAKnotSplineBasis<unsigned int, unsigned int>;
+%template(SLagrangeNotAKnotSplineBaseDeriv1) sgpp::base::LagrangeNotAKnotSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SLagrangeNotAKnotSplineBaseDeriv2) sgpp::base::LagrangeNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SLagrangeNotAKnotSplineBaseDeriv3) sgpp::base::LagrangeNotAKnotSplineBasisDeriv3<unsigned int, unsigned int>;
+%template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineBase) sgpp::base::NotAKnotBsplineBasis<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineModifiedBase) sgpp::base::NotAKnotBsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
