@@ -6,9 +6,9 @@
 #ifndef LEARNERSGD_HPP
 #define LEARNERSGD_HPP
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -24,7 +24,6 @@ namespace datadriven {
 
 class LearnerSGD {
  public:
-  
   /**
    * Constructor.
    *
@@ -38,7 +37,7 @@ class LearnerSGD {
    * Destructor.
    */
   ~LearnerSGD();
-  
+
   /**
    * Initializes the SGD learner.
    *
@@ -50,7 +49,7 @@ class LearnerSGD {
    * @param pValLabels The corresponding validation labels
    * @param lambda The regularization parameter
    * @param gamma The learning parameter (i.e. step width)
-   * @param batchSize The number of data points which are considered 
+   * @param batchSize The number of data points which are considered
    *        to compute the error contributions for predictive refinement
    * @param useValidData Specifies if validation data should be used
    *        for all error computations
@@ -61,27 +60,28 @@ class LearnerSGD {
                   sgpp::base::DataVector& pTestLabels,
                   std::shared_ptr<sgpp::base::DataMatrix> pValData,
                   std::shared_ptr<sgpp::base::DataVector> pValLabels,
-                  double lambda,
-                  double gamma,
-                  size_t batchSize,
+                  double lambda, double gamma, size_t batchSize,
                   bool useValidData);
 
   /**
    * Implements online learning using stochastic gradient descent.
    *
    * @param maxDataPasses The number of passes over the whole training data
-   * @param refType The refinement indicator (surplus, zero-crossings or data-based)
+   * @param refType The refinement indicator (surplus, zero-crossings or
+   * data-based)
    * @param refMonitor The refinement strategy (periodic or convergence-based)
    * @param refPeriod The refinement interval (if periodic refinement is chosen)
-   * @param errorDeclineThreshold The convergence threshold 
+   * @param errorDeclineThreshold The convergence threshold
    *        (if convergence-based refinement is chosen)
-   * @param errorDeclineBufferSize The number of error measurements which are used to check 
+   * @param errorDeclineBufferSize The number of error measurements which are
+   * used to check
    *        convergence (if convergence-based refinement is chosen)
-   * @param minRefInterval The minimum number of data points which have to be 
-   *        processed before next refinement can be scheduled (if convergence-based refinement 
+   * @param minRefInterval The minimum number of data points which have to be
+   *        processed before next refinement can be scheduled (if
+   * convergence-based refinement
    *        is chosen)
    */
-  void train(size_t maxDataPasses, std::string refType, std::string refMonitor, 
+  void train(size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double errorDeclineThreshold,
              size_t errorDeclineBufferSize, size_t minRefInterval);
 
@@ -90,12 +90,12 @@ class LearnerSGD {
    *
    * @param testData The data for which class labels should be predicted
    * @param testLabels The corresponding actual class labels
-   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
-   * @return The resulting accuracy 
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 ->
+   * threshold = 0)
+   * @return The resulting accuracy
    */
-  double getAccuracy(sgpp::base::DataMatrix& testData, 
-                     sgpp::base::DataVector& testLabels, 
-                     double threshold);
+  double getAccuracy(sgpp::base::DataMatrix& testData,
+                     sgpp::base::DataVector& testLabels, double threshold);
 
   /**
    * Stores classified data, grids and function evaluations to csv files.
@@ -110,7 +110,6 @@ class LearnerSGD {
   sgpp::base::DataVector avgErrors;
 
  protected:
-
   /**
    * Generates a regular grid.
    *
@@ -126,7 +125,7 @@ class LearnerSGD {
    * @param errorType The type of the error measurement (MSE or Hinge loss)
    * @return The error estimation
    */
-  double getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
+  double getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels,
                   std::string errorType);
 
   /**
@@ -135,28 +134,29 @@ class LearnerSGD {
    *
    * @param data The data points
    * @param labels The corresponding class labels
-   * @param error The vector which contains the error contributions 
+   * @param error The vector which contains the error contributions
    */
-  void getBatchError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
+  void getBatchError(sgpp::base::DataMatrix& data,
+                     sgpp::base::DataVector& labels,
                      sgpp::base::DataVector& error);
 
   /**
    * Computes the classification accuracy.
    *
    * @param testLabels The actual class labels
-   * @param threshold The decision threshold (e.g. for class labels -1, 1 -> threshold = 0)
+   * @param threshold The decision threshold (e.g. for class labels -1, 1 ->
+   * threshold = 0)
    * @param predictedLabels The predicted class labels
-   * @return The resulting accuracy 
+   * @return The resulting accuracy
    */
-  double getAccuracy(sgpp::base::DataVector& testLabels,
-                     double threshold,
+  double getAccuracy(sgpp::base::DataVector& testLabels, double threshold,
                      sgpp::base::DataVector& predictedLabels);
-  
+
   /**
    * Predicts class labels based on the trained model.
    *
    * @param testData The data for which class labels should be predicted
-   * @param predictedLabels The predicted class labels 
+   * @param predictedLabels The predicted class labels
    */
   void predict(sgpp::base::DataMatrix& testData,
                sgpp::base::DataVector& predictedLabels);
@@ -169,7 +169,6 @@ class LearnerSGD {
    * @param y The corresponding class label
    */
   void pushToBatch(sgpp::base::DataVector& x, double y);
-
 
   std::shared_ptr<base::Grid> grid;
   std::shared_ptr<base::DataVector> alpha;
@@ -198,4 +197,3 @@ class LearnerSGD {
 }  // namespace sgpp
 
 #endif /* LEARNERSGD_HPP */
-

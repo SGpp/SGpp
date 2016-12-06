@@ -5,33 +5,28 @@
 
 #ifdef USE_GSL
 
-#include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 
-DBMatOnline::DBMatOnline (): offlineObject_(nullptr){}
+DBMatOnline::DBMatOnline() : offlineObject_(nullptr) {}
 
-DBMatOnline::DBMatOnline(DBMatOffline* o) {
-  readOffline(o);
-}
+DBMatOnline::DBMatOnline(DBMatOffline* o) { readOffline(o); }
 
-DBMatOnline::~DBMatOnline(){}
+DBMatOnline::~DBMatOnline() {}
 
-void DBMatOnline::setLambda (double lambda){
-  if(offlineObject_->getConfig()->decomp_type_ == DBMatDecompEigen)
+void DBMatOnline::setLambda(double lambda) {
+  if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompEigen)
     offlineObject_->getConfig()->lambda_ = lambda;
-  else if(offlineObject_->getConfig()->decomp_type_ == DBMatDecompChol)
+  else if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompChol)
     offlineObject_->getConfig()->lambda_ = lambda;
   else
     throw sgpp::base::application_exception(
-      "Lambda can not be changed in the online step for this decomposition type!");
+        "Lambda can not be changed in the online step for this decomposition "
+        "type!");
 }
 
-void DBMatOnline::readOffline(DBMatOffline* o) {
-  offlineObject_ = o;
-}
+void DBMatOnline::readOffline(DBMatOffline* o) { offlineObject_ = o; }
 
-DBMatOffline* DBMatOnline::getOffline() {
-  return offlineObject_;
-}
+DBMatOffline* DBMatOnline::getOffline() { return offlineObject_; }
 
 #endif /* USE_GSL */

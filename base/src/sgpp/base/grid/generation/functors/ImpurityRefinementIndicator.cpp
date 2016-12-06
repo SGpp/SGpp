@@ -15,19 +15,18 @@
 namespace sgpp {
 namespace base {
 
-ImpurityRefinementIndicator::ImpurityRefinementIndicator(Grid& grid, DataMatrix& dataset, 
-  DataVector* alphas, DataVector* w1, DataVector* w2, DataVector& classesComputed,
-  double threshold, size_t refinementsNum) :
-      grid(grid),
+ImpurityRefinementIndicator::ImpurityRefinementIndicator(
+    Grid& grid, DataMatrix& dataset, DataVector* alphas, DataVector* w1,
+    DataVector* w2, DataVector& classesComputed, double threshold,
+    size_t refinementsNum)
+    : alphas(alphas),  // required for svm only
+      w1(w1),          // required for svm only
+      w2(w2),          // required for svm only
       dataset(dataset),
-      alphas(alphas),    // for svm only
-      w1(w1),            // for svm only
-      w2(w2),            // for svm only
-      classesComputed(classesComputed)
-  {
-    this->refinementsNum = refinementsNum;
-    this->threshold = threshold;
-}
+      classesComputed(classesComputed),
+      refinementsNum(refinementsNum),
+      threshold(threshold),
+      grid(grid) {}
 
 double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
   // initialize the value of the impurity indicator
@@ -35,7 +34,7 @@ double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
   // counter of datapoints lying on support of corresponding basis function
   size_t cnt = 0;
 
-  size_t numClasses = 2; // ToDo: pass number of classes/labels as parameter
+  size_t numClasses = 2;  // ToDo: pass number of classes/labels as parameter
 
   DataVector fractions(numClasses);
   fractions.setAll(0);
@@ -54,13 +53,13 @@ double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
     for (size_t dim = 0; dim < point.getDimension(); ++dim) {
       level = point.getLevel(dim);
       index = point.getIndex(dim);
-      h = std::pow(2, (-1.0)*static_cast<double>(level));
+      h = std::pow(2, (-1.0) * static_cast<double>(level));
 
       valueInDim = dataset.get(row, dim);
-      
-      if ( (valueInDim >= (static_cast<double>(index) - 1.0)*h) 
-      &&   (valueInDim <= (static_cast<double>(index) + 1.0)*h) ) {
-        cntSupDim ++;
+
+      if ((valueInDim >= (static_cast<double>(index) - 1.0) * h) &&
+          (valueInDim <= (static_cast<double>(index) + 1.0) * h)) {
+        cntSupDim++;
       }
     }
 
@@ -69,20 +68,21 @@ double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
       double c = classesComputed.get(row);
       // increase respective fraction
       if (c == 1) {
-        fractions.set(0, fractions.get(0)+1);
+        fractions.set(0, fractions.get(0) + 1);
+      } else {
+        fractions.set(1, fractions.get(1) + 1);
       }
-      else {
-        fractions.set(1, fractions.get(1)+1);
-      }
-      cnt ++;
+      cnt++;
     }
   }
-  
+
   if (cnt > 0) {
     // Gini impurity
     for (size_t i = 0; i < numClasses; ++i) {
-      impurityInd += std::pow(fractions.get(i)/static_cast<double>(cnt), 2); //relative
-      //impurityInd += std::pow(fractions.get(i)/dataset.getNrows(), 2); //absolute
+      impurityInd +=
+          std::pow(fractions.get(i) / static_cast<double>(cnt), 2);  // relative
+      // impurityInd += std::pow(fractions.get(i)/dataset.getNrows(), 2);
+      // //absolute
     }
     impurityInd = 1.0 - impurityInd;
   }
@@ -98,14 +98,13 @@ double ImpurityRefinementIndicator::getRefinementThreshold() const {
   return threshold;
 }
 
-double ImpurityRefinementIndicator::start() const {
-  return 0.0;
-}
+double ImpurityRefinementIndicator::start() const { return 0.0; }
 
 double ImpurityRefinementIndicator::operator()(GridStorage& storage,
-    size_t seq) const {
-  throw std::logic_error("This form of the operator() is not implemented "
-                         "for impurity indicators.");
+                                               size_t seq) const {
+  throw std::logic_error(
+      "This form of the operator() is not implemented "
+      "for impurity indicators.");
 }
 
 void ImpurityRefinementIndicator::update(GridPoint& point) {

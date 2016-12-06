@@ -5,11 +5,10 @@
 
 #ifdef USE_GSL
 
-#include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 
-DBMatDecompMatrixSolver::DBMatDecompMatrixSolver() :
-  SGSolver(0, 0) {}
+DBMatDecompMatrixSolver::DBMatDecompMatrixSolver() : SGSolver(0, 0) {}
 
 DBMatDecompMatrixSolver::~DBMatDecompMatrixSolver() {}
 
