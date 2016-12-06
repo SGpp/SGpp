@@ -13,8 +13,6 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineNotAKnotBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineNotAKnotModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
@@ -92,7 +90,6 @@
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
-#include <sgpp/base/grid/type/BsplineNotAKnotBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
@@ -105,7 +102,6 @@
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineNotAKnotGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>

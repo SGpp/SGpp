@@ -30,8 +30,6 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
-#include <sgpp/base/grid/type/BsplineNotAKnotBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineNotAKnotGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
@@ -135,14 +133,6 @@ Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
   return new ModFundamentalSplineGrid(dim, degree);
 }
 
-Grid* Grid::createBsplineNotAKnotBoundaryGrid(size_t dim, size_t degree) {
-  return new BsplineNotAKnotBoundaryGrid(dim, degree);
-}
-
-Grid* Grid::createModBsplineNotAKnotGrid(size_t dim, size_t degree) {
-  return new ModBsplineNotAKnotGrid(dim, degree);
-}
-
 Grid* Grid::createSquareRootGrid(size_t dim) {
   return new SquareRootGrid(dim);
 }
@@ -222,10 +212,6 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
-      case GridType::BsplineNotAKnotBoundary:
-        return Grid::createBsplineNotAKnotBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
-      case GridType::ModBsplineNotAKnot:
-        return Grid::createModBsplineNotAKnotGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -330,14 +316,6 @@ Grid* Grid::clone() {
     case GridType::ModLinearStencil:
       newGrid = Grid::createModLinearGridStencil(numDims);
       break;
-    case GridType::BsplineNotAKnotBoundary:
-      degree = dynamic_cast<BsplineNotAKnotBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createBsplineNotAKnotBoundaryGrid(numDims, degree);
-      break;
-    case GridType::ModBsplineNotAKnot:
-      degree = dynamic_cast<ModBsplineNotAKnotGrid*>(this)->getDegree();
-      newGrid = Grid::createModBsplineNotAKnotGrid(numDims, degree);
-      break;
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
@@ -434,10 +412,6 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearTruncatedBoundary",
                                                        LinearTruncatedBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("bsplineNotAKnotBoundary",
-                                                       BsplineNotAKnotBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("modBsplineNotAKnot",
-                                                       ModBsplineNotAKnotGrid::unserialize));
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -468,9 +442,6 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
     tMap->insert(
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("bsplineNotAKnotBoundary",
-                                BsplineNotAKnotBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("modBsplineNotAKnot", ModBsplineNotAKnotGrid::unserialize));
 #endif
   }
 
@@ -531,10 +502,6 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::Periodic, "periodic"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::BsplineNotAKnotBoundary, "bsplineNotAKnotBoundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModBsplineNotAKnot,
-                                                                    "modBsplineNotAKnot"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -564,9 +531,6 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::Periodic, "periodic"));
     verboseMap->insert(
         std::make_pair(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
-    verboseMap->insert(std::make_pair(GridType::BsplineNotAKnotBoundary,
-                                      "bsplineNotAKnotBoundary"));
-    verboseMap->insert(std::make_pair(GridType::ModBsplineNotAKnot, "modBsplineNotAKnot"));
 #endif
   }
 
