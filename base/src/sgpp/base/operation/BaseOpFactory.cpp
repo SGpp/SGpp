@@ -25,6 +25,8 @@
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLagrangeNotAKnotSplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLagrangeSplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
@@ -32,8 +34,11 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationModNotAKnotBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationNaturalBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationNotAKnotBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
@@ -172,6 +177,21 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::NaturalBsplineBoundary) {
+    return new base::OperationHierarchisationNaturalBsplineBoundary(
+        dynamic_cast<base::NaturalBsplineBoundaryGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::NotAKnotBsplineBoundary) {
+    return new base::OperationHierarchisationNotAKnotBsplineBoundary(
+        dynamic_cast<base::NotAKnotBsplineBoundaryGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::ModNotAKnotBspline) {
+    return new base::OperationHierarchisationModNotAKnotBspline(
+        dynamic_cast<base::ModNotAKnotBsplineGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
+    return new base::OperationHierarchisationLagrangeSplineBoundary(
+        dynamic_cast<base::LagrangeSplineBoundaryGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
+    return new base::OperationHierarchisationLagrangeNotAKnotSplineBoundary(
+        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid*>(&grid));
   } else {
     throw base::factory_exception(
         "createOperationHierarchisation is not implemented for this grid type.");
