@@ -8,17 +8,15 @@
 #ifndef DBMATDECOMPMATRIXSOLVER_HPP_
 #define DBMATDECOMPMATRIXSOLVER_HPP_
 
-#include <sgpp/solver/SGSolver.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/solver/SGSolver.hpp>
 
-class DBMatDecompMatrixSolver: public sgpp::solver::SGSolver {
-
+class DBMatDecompMatrixSolver : public sgpp::solver::SGSolver {
  public:
   DBMatDecompMatrixSolver();
 
   virtual ~DBMatDecompMatrixSolver();
-
 };
 
 #endif /* DBMATDECOMPMATRIXSOLVER_HPP_ */

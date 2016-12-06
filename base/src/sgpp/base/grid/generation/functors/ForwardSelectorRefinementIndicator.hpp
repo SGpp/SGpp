@@ -8,22 +8,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+
+#include <utility>
 
 namespace sgpp {
 namespace base {
 
 /**
- *  A refinement indicator for support vector classification using 
- *  sparse grids (according to König BA). 
+ *  A refinement indicator for support vector classification using
+ *  sparse grids (according to König BA).
  */
 
-class ForwardSelectorRefinementIndicator: public RefinementFunctor {
+class ForwardSelectorRefinementIndicator : public RefinementFunctor {
  public:
   typedef std::pair<size_t, double> value_type;
 
@@ -37,16 +39,15 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
    * @param alphas The weights corresponding to the support vectors
    * @param w1 The normal vector
    * @param w2 The normal vector computted with abs weights
-   * @param beta Specifies relevance of grid points (default: equal relevance for all grid points)
-   * @param threshold The refinement threshold; Only grid points with 
+   * @param beta Specifies relevance of grid points (default: equal relevance
+   * for all grid points)
+   * @param threshold The refinement threshold; Only grid points with
    *        indicator values greater than this threshold will be refined
-   * @param refinementsNum The max amount of grid points to be refined  
+   * @param refinementsNum The max amount of grid points to be refined
    */
   ForwardSelectorRefinementIndicator(Grid& grid, DataMatrix& svs,
-                                     DataVector& alphas,
-                                     DataVector& w1,
-                                     DataVector& w2,
-                                     double beta,
+                                     DataVector& alphas, DataVector& w1,
+                                     DataVector& w2, double beta,
                                      double threshold = 0.0,
                                      size_t refinementsNum = 1);
 
@@ -54,7 +55,7 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
    * Destructor
    */
   virtual ~ForwardSelectorRefinementIndicator() {}
-  
+
   /**
   * This should be returning a refinement indication value for every grid point.
   * The grid point with the highest value will be refined first.
@@ -69,7 +70,8 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
 
   /**
    * Returns the maximal number of points that should be refined.
-   * The maximal number of points to refine is set in the constructor of the implementing class.
+   * The maximal number of points to refine is set in the constructor of the
+   * implementing class.
    *
    * @return number of points that should refined. Default value: 1.
    */
@@ -87,7 +89,8 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
   double start() const override;
 
   /**
-   * This should be returning a refinement indicator for the specified grid point
+   * This should be returning a refinement indicator for the specified grid
+   * point
    * The point with the highest value will be refined first.
    *
    * @param point Grid point for which to calculate an indicator value
@@ -99,7 +102,7 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
    * Update normal vector of SVM. For each new grid point the normal vector
    * has to be extended by one component.
    *
-   * @param point The new grid point 
+   * @param point The new grid point
    */
   void update(GridPoint& point);
 
@@ -113,7 +116,7 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
   // the weights corresponding to the support vectors
   DataVector& alphas;
   // current loss
-  std::shared_ptr<DataVector> rv1; 
+  std::shared_ptr<DataVector> rv1;
   // current loss (abs)
   std::shared_ptr<DataVector> rv2;
   // specifies relevance of grid points
@@ -126,7 +129,6 @@ class ForwardSelectorRefinementIndicator: public RefinementFunctor {
  private:
   // the sparse grid
   Grid& grid;
-
 };
 
 }  // namespace base

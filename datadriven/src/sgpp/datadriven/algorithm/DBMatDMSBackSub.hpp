@@ -14,27 +14,27 @@
  * Class to solve the system of equations with a LU-decomposed matrix
  */
 
-class DBMatDMSBackSub: public DBMatDecompMatrixSolver {
+class DBMatDMSBackSub : public DBMatDecompMatrixSolver {
  public:
- /**
-  * (Empty) constructor
-  */
+  /**
+   * (Empty) constructor
+   */
   DBMatDMSBackSub();
 
- /**
-  * (Empty) destructor
-  */
+  /**
+   * (Empty) destructor
+   */
   virtual ~DBMatDMSBackSub();
 
- /**
-  * Solves a system of equations
-  *
-  * @param DecompMatrix the LU decomposed left hand side
-  * @param alpha the vector of unknowns (the result is stored there)
-  * @param b the right hand vector of the equation system
-  */
-  void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-             sgpp::base::DataVector& b);
+  /**
+   * Solves a system of equations
+   *
+   * @param DecompMatrix the LU decomposed left hand side
+   * @param alpha the vector of unknowns (the result is stored there)
+   * @param b the right hand vector of the equation system
+   */
+  void solve(sgpp::base::DataMatrix& DecompMatrix,
+             sgpp::base::DataVector& alpha, sgpp::base::DataVector& b);
 };
 
 #endif /* DBMatDMSBackSub_HPP_ */

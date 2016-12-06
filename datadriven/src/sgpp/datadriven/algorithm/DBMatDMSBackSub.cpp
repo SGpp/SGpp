@@ -7,17 +7,17 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
 
-#include <iostream>
 #include <ctime>
+#include <iostream>
 
 DBMatDMSBackSub::DBMatDMSBackSub() {}
 
 DBMatDMSBackSub::~DBMatDMSBackSub() {}
 
 void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
-                            sgpp::base::DataVector& alpha, 
+                            sgpp::base::DataVector& alpha,
                             sgpp::base::DataVector& b) {
-  unsigned int resultSize = alpha.getSize();
+  size_t resultSize = alpha.getSize();
 
   clock_t end;
   clock_t begin;
@@ -26,28 +26,28 @@ void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
 
   begin = clock();
 
-  //Forward Substitution:
+  // Forward Substitution:
   sgpp::base::DataVector y(resultSize);
-  for (unsigned int i = 0; i < resultSize; i++) {
+  for (size_t i = 0; i < resultSize; i++) {
     y[i] = b[i];
-    for (unsigned int j = 0; j < i; j++) {
+    for (size_t j = 0; j < i; j++) {
       y[i] -= DecompMatrix.get(i, j) * y[j];
     }
-    //There is no need to divide by the diagonal element, because all
-    //of them are 1 in L
+    // There is no need to divide by the diagonal element, because all
+    // of them are 1 in L
   }
 
-  //Backward Substitution:
-  for (int i = resultSize - 1; i >= 0; i--) {
+  // Backward Substitution:
+  for (int i = static_cast<int>(resultSize) - 1; i >= 0; i--) {
     alpha[i] = y[i];
-    for (unsigned int j = i + 1; j < resultSize; j++) {
+    for (size_t j = i + 1; j < resultSize; j++) {
       alpha[i] -= DecompMatrix.get(i, j) * alpha[j];
     }
     alpha[i] /= DecompMatrix.get(i, i);
   }
 
   end = clock();
-  elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
+  elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
   std::cout << "Solve LU: " << elapsed_secs;
 }
 

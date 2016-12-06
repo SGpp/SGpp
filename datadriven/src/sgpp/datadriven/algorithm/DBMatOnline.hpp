@@ -42,7 +42,7 @@ class DBMatOnline {
   virtual void readOffline(DBMatOffline* o);
 
   /**
-   * Changes the weighting factor for the regularization term, 
+   * Changes the weighting factor for the regularization term,
    * if possible (might depend on the kind of decomposition for classification)
    */
   virtual void setLambda(double lambda);
@@ -59,4 +59,3 @@ class DBMatOnline {
 #endif /* DBMATONLINE_HPP_ */
 
 #endif /* USE_GSL */
-
