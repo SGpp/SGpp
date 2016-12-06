@@ -226,8 +226,7 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   }
 }
 
-Grid* Grid::clone() {
-  // clone grid of the same type
+Grid* Grid::createGridOfEquivalentType() {
   Grid* newGrid = nullptr;
 
   size_t numDims = storage.getDimension();
@@ -351,7 +350,12 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
+  return newGrid;
+}
 
+Grid* Grid::clone() {
+  // clone grid of the same type
+  Grid* newGrid = createGridOfEquivalentType();
   base::HashGridStorage& newGridStorage = newGrid->getStorage();
 
   // run through grid and add points to newGrid

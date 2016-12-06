@@ -5,7 +5,6 @@ import numpy as np
 from sparse_grid import(copyGrid,
                         insertPoint,
                         getBasis,
-                        hasBorder,
                         getDegree)
 
 

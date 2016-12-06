@@ -170,21 +170,21 @@ def getDegree(grid):
 #######################################################################
 
 
-def hasBorder(grid):
-    return grid.getType() in [GridType_PolyBoundary,
-                              GridType_LinearBoundary,
-                              GridType_LinearL0Boundary,
-                              GridType_LinearClenshawCurtisBoundary,
-                              GridType_PolyClenshawCurtisBoundary,
-                              GridType_BsplineBoundary,
-                              GridType_BsplineClenshawCurtis]
+def hasBorder(gridType):
+    return gridType in [GridType_LinearBoundary,
+                        GridType_LinearL0Boundary,
+                        GridType_LinearClenshawCurtisBoundary,
+                        GridType_PolyBoundary,
+                        GridType_PolyClenshawCurtisBoundary,
+                        GridType_BsplineBoundary,
+                        GridType_BsplineClenshawCurtis]
 
 
 def isValid1d(grid, level, index):
-    minLevel = 0 if hasBorder(grid) else 1
+    minLevel = 0 if hasBorder(grid.getType()) else 1
     maxLevel = 31
-    minIndex = 0 if hasBorder(grid) else 1
-    maxIndex = 2 ** level if hasBorder(grid) else 2 ** level - 1
+    minIndex = 0 if hasBorder(grid.getType()) else 1
+    maxIndex = 2 ** level if hasBorder(grid.getType()) else 2 ** level - 1
 
     return minLevel <= level <= maxLevel and \
         minIndex <= index <= maxIndex
@@ -201,7 +201,7 @@ def isValid(grid, gp):
     # additional security check for starters
     if valid:
         gs = grid.getStorage()
-        minLevel = 0 if hasBorder(grid) else 1
+        minLevel = 0 if hasBorder(grid.getType()) else 1
         for d in xrange(gp.getDimension()):
             x = gs.getCoordinate(gp, d)
             if x > 1 or x < 0:
@@ -663,20 +663,61 @@ def evalSGFunction(grid, alpha, p):
             raise AttributeError("grid dimension differs from dimension of samples")
         return evalSGFunctionMulti(grid, alpha, p)
 
+def hierarchizeEvalHierToTop(grid, nodalValues):
+    gs = grid.getStorage()
+    numDims = gs.getDimension()
+    # load a new empty grid which we fill step by step
+    newGrid = grid.createGridOfEquivalentType()
+    newGs = newGrid.getStorage()
+    alpha = np.ndarray(1)
+    # add root node to the new grid
+    newGs.insert(gs.getPoint(0))
+    alpha[0] = nodalValues[0] 
+    
+    # sort points by levelsum
+    ixs = {}
+    for i in xrange(gs.getSize()):
+        levelsum = gs.getPoint(i).getLevelSum()
+        # skip root node
+        if levelsum > numDims:
+            if levelsum in ixs:
+                ixs[levelsum].append(i)
+            else:
+                ixs[levelsum] = [i]
+    
+    # run over the grid points by level sum
+    for levelsum in np.sort(ixs.keys()):
+        # add the grid points of the current level to the new grid
+        newixs = [None] * len(ixs[levelsum])
+        for i, ix in enumerate(ixs[levelsum]):
+            newixs[i] = (newGs.insert(gs.getPoint(ix)), nodalValues[ix])
+        
+        # update the alpha values
+        alpha = np.append(alpha, np.zeros(newGs.getSize() - len(alpha)))
+        newAlpha = np.copy(alpha)
+        x = DataVector(numDims)
+        for ix, nodalValue in newixs:
+            gs.getCoordinates(newGs.getPoint(ix), x)
+            alpha[ix] = nodalValue - evalSGFunction(newGrid, newAlpha, x.array())
+
+    # store alphas according to indices of grid
+    ans = np.ndarray(gs.getSize())
+    for i in xrange(gs.getSize()):
+        j = newGs.getSequenceNumber(gs.getPoint(i))
+        ans[i] = alpha[j]
+
+    return ans
+
 def evalHierToTop(basis, grid, coeffs, gp, d):
     gs = grid.getStorage()
     gpa = parent(grid, gp, d)
     ans = 0.
-    # print "======== evalHierToTop (%i, %i) ========" % (gp.getLevel(0), gp.getIndex(0))
     while gpa is not None:
         ix = gs.getSequenceNumber(gpa)
         accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gs.getCoordinate(gp, d)
         b = basis.eval(accLevel, i, p)
-#         print "%i, %i, %.20f: %.20f * %.20f = %.20f (%.20f)" % \
-#             (accLevel, i, p, coeffs[ix], b, coeffs[ix] * b, ans)
         ans += coeffs[ix] * b
         gpa = parent(grid, gpa, d)
-    # print "==============================="
     return ans
 
 

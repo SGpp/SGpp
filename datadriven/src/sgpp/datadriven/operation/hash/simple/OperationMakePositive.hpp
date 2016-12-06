@@ -20,7 +20,8 @@ namespace datadriven {
 enum class MakePositiveCandidateSearchAlgorithm {
   FullGrid,
   Intersections,
-  HybridFullIntersections
+  HybridFullIntersections,
+  IntersectionsJoin
 };
 enum class MakePositiveInterpolationAlgorithm {
   SetToZero,
