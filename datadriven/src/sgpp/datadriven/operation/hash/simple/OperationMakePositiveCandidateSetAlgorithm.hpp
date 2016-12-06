@@ -69,7 +69,7 @@ class OperationMakePositiveFindIntersectionCandidates
       base::Grid& grid, base::DataVector& alpha, size_t levelSum,
       std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res);
 
-  void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
+  virtual void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints);
 
   void computeIntersection(base::HashGridPoint& gpi, base::HashGridPoint& gpj,
                            base::HashGridPoint& gpintersection);
@@ -85,6 +85,21 @@ class OperationMakePositiveFindIntersectionCandidates
 
   // statistics
   base::DataVector numCandidatesIteration;
+};
+
+// -------------------------------------------------------------------------------------------
+class OperationMakePositiveFindIntersectionCandidatesJoin
+    : public OperationMakePositiveFindIntersectionCandidates {
+ public:
+  OperationMakePositiveFindIntersectionCandidatesJoin(size_t maxLevel);
+  virtual ~OperationMakePositiveFindIntersectionCandidatesJoin();
+
+ protected:
+  virtual void findIntersections(
+      base::Grid& grid, base::DataVector& alpha, size_t levelSum,
+      std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) override;
+
+  void initializeCandidates(base::Grid& grid, std::vector<size_t>& negativeGridPoints) override;
 };
 
 // -------------------------------------------------------------------------------------------

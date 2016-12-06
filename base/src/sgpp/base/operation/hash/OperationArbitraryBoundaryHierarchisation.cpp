@@ -51,6 +51,12 @@ OperationArbitraryBoundaryHierarchisation::OperationArbitraryBoundaryHierarchisa
         "there are no inner points available. Use the standard hierarchisation operation "
         "'base::op_factory::createOperationHierarchisation' instead");
   }
+
+  if (boundaryGrid->getSize() == 0) {
+    throw algorithm_exception(
+        "there are no boundary points available. Use the standard hierarchisation operation "
+        "'base::op_factory::createOperationHierarchisation' instead");
+  }
 }
 
 OperationArbitraryBoundaryHierarchisation::~OperationArbitraryBoundaryHierarchisation() {}

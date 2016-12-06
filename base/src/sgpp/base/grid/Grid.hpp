@@ -436,6 +436,11 @@ class Grid {
   Grid* clone();
 
   /**
+   * creates an equivalent grid without copying the grid points
+   */
+  Grid* createGridOfEquivalentType();
+
+  /**
    * gets a reference to the GridStorage object
    *
    * @return reference to the GridStorage obeject

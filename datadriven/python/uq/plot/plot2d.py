@@ -191,26 +191,36 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     return res
 
 
-def plotGrid2d(grid, alpha=None, show_numbers=True):
+def plotGrid2d(grid, alpha=None, show_numbers=True,
+               xlim=(0, 1), ylim=(0, 1),
+               *args, **kws):
     gs = grid.getStorage()
-    gps = {'p': np.zeros([0, 2]),
-           'n': np.zeros([0, 2])}
+    gps = {'a': np.ndarray((0, 2)),
+           'p': np.ndarray((0, 2)),
+           'n': np.ndarray((0, 2))}
+
     p = DataVector(2)
     numbers = []
     for i in xrange(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
-        if alpha is None or alpha[i] >= 0:
-            gps['p'] = np.vstack((gps['p'], p.array()))
+        if alpha is None:
+            gps['a'] = np.vstack((gps['a'], p.array()))
         else:
-            gps['n'] = np.vstack((gps['n'], p.array()))
+            if alpha[i] >= 0:
+                gps['p'] = np.vstack((gps['p'], p.array()))
+            else:
+                gps['n'] = np.vstack((gps['n'], p.array()))
 
         numbers.append((i, p[0], p[1]))
 
     # plot the grid points
-    plt.plot(gps['p'][:, 0], gps['p'][:, 1], "^ ", color='blue')
-    plt.plot(gps['n'][:, 0], gps['n'][:, 1], "v ", color='red')
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
+    if alpha is None:
+        plt.plot(gps['a'][:, 0], gps['a'][:, 1], "o ", color='black', *args, **kws)
+    else:
+        plt.plot(gps['p'][:, 0], gps['p'][:, 1], "^ ", color='blue', *args, **kws)
+        plt.plot(gps['n'][:, 0], gps['n'][:, 1], "v ", color='red', *args, **kws)
+    plt.xlim(xlim[0], xlim[1])
+    plt.ylim(ylim[0], ylim[1])
 
     if show_numbers:
         for i, x, y in numbers:

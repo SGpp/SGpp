@@ -117,7 +117,7 @@ double OperationMakePositiveInterpolateBoundaryOfSupport::computeMinimum(base::G
       rightValue = 0.0;
     }
 
-    double interpolatedValue = std::abs(leftValue + rightValue) / 8.0;
+    double interpolatedValue = std::abs(leftValue + rightValue) / 2.0;
 
     if (idim == 0 || (interpolatedValue > 0 && interpolatedValue < minimumInterpolatedValue)) {
       minimumInterpolatedValue = interpolatedValue;

@@ -22,7 +22,7 @@ class AddNode(LocalRefinementStrategy):
         gs.insert(gp, ixs)
 #         ans = insertPoint(grid, gp)
 #         ans += insertHierarchicalAncestors(grid, gp)
-#         if hasBorder(grid):
+#         if hasBorder(grid.getType()):
 #             ans += insertTruncatedBorder(grid, gp)
 
         gs.recalcLeafProperty()
@@ -45,7 +45,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
             if isValid(grid, gpl):
                 ans += insertPoint(grid, gpl)
                 ans += insertHierarchicalAncestors(grid, gpl)
-                if hasBorder(grid):
+                if hasBorder(grid.getType()):
                     ans += insertTruncatedBorder(grid, gpl)
 
             gpr = HashGridPoint(gp)
@@ -53,7 +53,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
             if isValid(grid, gpr):
                 ans += insertPoint(grid, gpr)
                 ans += insertHierarchicalAncestors(grid, gpr)
-                if hasBorder(grid):
+                if hasBorder(grid.getType()):
                     ans += insertTruncatedBorder(grid, gpr)
 
         gs.recalcLeafProperty()

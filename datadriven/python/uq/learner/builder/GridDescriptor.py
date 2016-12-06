@@ -97,7 +97,7 @@ class GridDescriptor(object):
         self.__grid = grid
         self.__dim = grid.getDimension()
         self.__deg = getDegree(grid)
-        if hasBorder(grid):
+        if hasBorder(grid.getType()):
             self.__boundaryLevel = 1
             self.level = 0
 
