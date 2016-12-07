@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP
-#define HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP
+#ifndef HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
+#define HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -16,10 +16,10 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for hierarchization with Lagrange splines via
- * BreadthFirstSearch.
+ * Functor for hierarchization with modified Lagrange splines with not-a-knot boundary conditions
+ * via BreadthFirstSearch.
  */
-class HierarchisationLagrangeSplineBoundary {
+class HierarchisationModLagrangeNotAKnotSpline {
  protected:
   /// grid iterator
   typedef GridStorage::grid_iterator grid_iterator;
@@ -30,12 +30,12 @@ class HierarchisationLagrangeSplineBoundary {
    *
    * @param grid grid
    */
-  explicit HierarchisationLagrangeSplineBoundary(LagrangeSplineBoundaryGrid* grid);
+  explicit HierarchisationModLagrangeNotAKnotSpline(ModLagrangeNotAKnotSplineGrid* grid);
 
   /**
    * Destructor.
    */
-  virtual ~HierarchisationLagrangeSplineBoundary();
+  virtual ~HierarchisationModLagrangeNotAKnotSpline();
 
   /**
    * Functor operator.
@@ -67,7 +67,7 @@ class HierarchisationLagrangeSplineBoundary {
 
  protected:
   /// grid
-  LagrangeSplineBoundaryGrid* grid;
+  ModLagrangeNotAKnotSplineGrid* grid;
   /// grid storage
   GridStorage& storage;
 };
@@ -75,4 +75,4 @@ class HierarchisationLagrangeSplineBoundary {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP */
+#endif /* HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP */

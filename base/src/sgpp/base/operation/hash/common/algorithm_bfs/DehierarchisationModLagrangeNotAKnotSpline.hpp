@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP
-#define HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP
+#ifndef DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
+#define DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -16,10 +16,10 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for hierarchization with Lagrange splines via
- * BreadthFirstSearch.
+ * Functor for dehierarchization with modified Lagrange splines with not-a-knot boundary conditions
+ * via BreadthFirstSearch.
  */
-class HierarchisationLagrangeSplineBoundary {
+class DehierarchisationModLagrangeNotAKnotSpline {
  protected:
   /// grid iterator
   typedef GridStorage::grid_iterator grid_iterator;
@@ -30,17 +30,18 @@ class HierarchisationLagrangeSplineBoundary {
    *
    * @param grid grid
    */
-  explicit HierarchisationLagrangeSplineBoundary(LagrangeSplineBoundaryGrid* grid);
+  explicit DehierarchisationModLagrangeNotAKnotSpline(
+      ModLagrangeNotAKnotSplineGrid* grid);
 
   /**
    * Destructor.
    */
-  virtual ~HierarchisationLagrangeSplineBoundary();
+  virtual ~DehierarchisationModLagrangeNotAKnotSpline();
 
   /**
    * Functor operator.
-   * For each grid point, subtract the value of basis function at
-   * the given iterator from the entry in result corresponding to the
+   * For each grid point, add the value of basis function at
+   * the given iterator to the entry in result corresponding to the
    * grid point.
    *
    * @param[in]  source     node values
@@ -53,8 +54,8 @@ class HierarchisationLagrangeSplineBoundary {
 
   /**
    * Functor operator.
-   * For each grid point, subtract the value of basis function at
-   * the given iterator from the row in result corresponding to the
+   * For each grid point, add the value of basis function at
+   * the given iterator to the row in result corresponding to the
    * grid point.
    *
    * @param[in]  source     node values
@@ -67,7 +68,7 @@ class HierarchisationLagrangeSplineBoundary {
 
  protected:
   /// grid
-  LagrangeSplineBoundaryGrid* grid;
+  ModLagrangeNotAKnotSplineGrid* grid;
   /// grid storage
   GridStorage& storage;
 };
@@ -75,4 +76,4 @@ class HierarchisationLagrangeSplineBoundary {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* HIERARCHISATIONLAGRANGESPLINEBOUNDARY_HPP */
+#endif /* DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP */

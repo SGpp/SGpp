@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for dehierarchization with fundamental splines via
+ * Functor for dehierarchization with Lagrange splines with not-a-knot boundary conditions via
  * BreadthFirstSearch.
  */
 class DehierarchisationLagrangeNotAKnotSplineBoundary {

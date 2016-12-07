@@ -35,6 +35,7 @@
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
@@ -178,6 +179,10 @@ Grid* Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree) 
   return new LagrangeNotAKnotSplineBoundaryGrid(dim, degree);
 }
 
+Grid* Grid::createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree) {
+  return new ModLagrangeNotAKnotSplineGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -248,6 +253,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::LagrangeNotAKnotSplineBoundary:
         return Grid::createLagrangeNotAKnotSplineBoundaryGrid(gridConfig.dim_,
                                                               gridConfig.maxDegree_);
+      case GridType::ModLagrangeNotAKnotSpline:
+        return Grid::createModLagrangeNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -372,6 +379,10 @@ Grid* Grid::clone() {
       degree = dynamic_cast<LagrangeNotAKnotSplineBoundaryGrid*>(this)->getDegree();
       newGrid = Grid::createLagrangeNotAKnotSplineBoundaryGrid(numDims, degree);
       break;
+    case GridType::ModLagrangeNotAKnotSpline:
+      degree = dynamic_cast<ModLagrangeNotAKnotSplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModLagrangeNotAKnotSplineGrid(numDims, degree);
+      break;
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
@@ -478,6 +489,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        LagrangeSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
         "lagrangeNotaknotSplineBoundary", LagrangeNotAKnotSplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "modLagrangeNotaknotSpline", ModLagrangeNotAKnotSplineGrid::unserialize));
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -518,6 +531,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                 LagrangeSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("lagrangeNotaknotSplineBoundary",
                                 LagrangeNotAKnotSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modLagrangeNotaknotSpline",
+                                ModLagrangeNotAKnotSplineGrid::unserialize));
 #endif
   }
 
@@ -588,6 +603,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         GridType::LagrangeSplineBoundary, "lagrangeSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::LagrangeNotAKnotSplineBoundary, "lagrangeNotaknotSplineBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::ModLagrangeNotAKnotSpline, "modLagrangeNotaknotSpline"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -627,6 +644,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::make_pair(GridType::LagrangeSplineBoundary, "lagrangeSplineBoundary"));
     verboseMap->insert(
         std::make_pair(GridType::LagrangeNotAKnotSplineBoundary, "lagrangeNotaknotSplineBoundary"));
+    verboseMap->insert(
+        std::make_pair(GridType::ModLagrangeNotAKnotSpline, "modLagrangeNotaknotSpline"));
 #endif
   }
 
