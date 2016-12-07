@@ -49,6 +49,6 @@ class LassoFunction : public RegularizationFunction {
 };
 
 }  //  namespace solver
-}  //  namepsace sgpp
+}  //  namespace sgpp
 
 #endif  // LASSOFUNCTION_HPP

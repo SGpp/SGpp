@@ -37,7 +37,7 @@ class Fista : public FistaBase {
    * @brief Fista
    * @param g is the regularization function.
    */
-  Fista(F g) : g(g) {}
+  explicit Fista(F g) : g(g) {}
   /**
    * @brief solve solves the problem.
    * @param op
@@ -173,6 +173,6 @@ class Fista : public FistaBase {
 };
 
 }  // namespace solver
-}  // namepsace sgpp
+}  // namespace sgpp
 
 #endif  // FISTA_HPP

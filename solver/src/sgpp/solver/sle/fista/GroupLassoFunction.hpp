@@ -6,12 +6,13 @@
 #ifndef GROUPLASSOFUNCTION_HPP
 #define GROUPLASSOFUNCTION_HPP
 
-#include <algorithm>
-#include <cmath>
-#include <numeric>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/solver/sle/fista/RegularizationFunction.hpp>
+
+#include <cmath>
+#include <algorithm>
+#include <numeric>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -105,7 +106,7 @@ class GroupLassoFunction : public RegularizationFunction {
       norms[i] = std::sqrt(norms[i]);
     }
 
-    return std::make_pair<std::vector<double>, std::vector<size_t>>(std::move(norms),
+    return std::pair<std::vector<double>, std::vector<size_t>>(std::move(norms),
                                                                     std::move(groupSizes));
   }
 
@@ -141,6 +142,6 @@ class GroupLassoFunction : public RegularizationFunction {
 };
 
 }  //  namespace solver
-}  //  namepsace sgpp
+}  //  namespace sgpp
 
 #endif  // GROUPLASSOFUNCTION_HPP

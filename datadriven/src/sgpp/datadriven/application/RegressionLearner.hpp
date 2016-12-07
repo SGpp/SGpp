@@ -6,9 +6,6 @@
 #ifndef REGRESSIONLEARNER_H
 #define REGRESSIONLEARNER_H
 
-#include <algorithm>
-#include <memory>
-#include <vector>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -20,6 +17,11 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/fista/FistaBase.hpp>
+
+#include <algorithm>
+#include <memory>
+#include <vector>
+#include <utility>
 
 namespace sgpp {
 namespace datadriven {
@@ -37,11 +39,11 @@ class RegressionLearner {
    public:
     enum class solverCategory { cg, fista, none } type = solverCategory::none;
     Solver() {}
-    explicit Solver(std::unique_ptr<sgpp::solver::SLESolver>&& s) {
+    explicit Solver(std::unique_ptr<sgpp::solver::SLESolver>&& s) {  // NOLINT(build/c++11)
       new (&solverCG) std::unique_ptr<sgpp::solver::SLESolver>{std::move(s)};
       type = solverCategory::cg;
     }
-    explicit Solver(std::unique_ptr<sgpp::solver::FistaBase>&& s) {
+    explicit Solver(std::unique_ptr<sgpp::solver::FistaBase>&& s) {  // NOLINT(build/c++11)
       new (&solverFista) std::unique_ptr<sgpp::solver::FistaBase>{std::move(s)};
       type = solverCategory::fista;
     }
@@ -85,9 +87,9 @@ class RegressionLearner {
     }
 
     Solver(const Solver&) = delete;
-    Solver(Solver&& other) : Solver() { swap(*this, other); }
+    Solver(Solver&& other) : Solver() { swap(*this, other); }  // NOLINT(build/c++11)
     Solver& operator=(const Solver&) = delete;
-    Solver& operator=(Solver&& other) {
+    Solver& operator=(Solver&& other) {  // NOLINT(build/c++11)
       swap(*this, other);
       return *this;
     }

@@ -14,9 +14,6 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-#include <cassert>
-#include <limits>
-#include <random>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
@@ -24,6 +21,11 @@
 #include <sgpp/solver/sle/fista/GroupLassoFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/RidgeFunction.hpp>
+
+#include <cassert>
+#include <limits>
+#include <random>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -69,8 +71,8 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
     systemMatrix = createDMSystem(trainDataset);
   }
 
-  op = std::unique_ptr<sgpp::base::OperationMultipleEval>
-          (sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset));
+  op = std::unique_ptr<sgpp::base::OperationMultipleEval>(
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset));
 
   for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
@@ -205,9 +207,9 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
-  return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset,
-                                                      std::shared_ptr<base::OperationMatrix>(opMatrix),
-                                                      regularizationConfig.lambda_);
+  return std::make_unique<datadriven::DMSystemMatrix>(
+      *grid, trainDataset, std::shared_ptr<base::OperationMatrix>(opMatrix),
+      regularizationConfig.lambda_);
 }
 
 RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {

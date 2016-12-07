@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cstdlib>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
-#include <vector>
-#include <unordered_set>
+#include <cstdlib>
 #include <tuple>
+#include <unordered_set>
+#include <vector>
 
 /**
  * @brief decodeCoords
@@ -18,11 +18,10 @@
  * corresponding dimension is used, i.e. not equal to 0.5
  */
 void decodeCoords(sgpp::base::DataVector& coords, std::vector<bool>& result) {
-    for (size_t i = 0; i < coords.getSize(); ++i) {
-        result[i] = coords[i] != 0.5;
-    }
+  for (size_t i = 0; i < coords.getSize(); ++i) {
+    result[i] = coords[i] != 0.5;
+  }
 }
-
 
 /**
  * @brief main creates a grid with dimension three and level five and
@@ -32,7 +31,7 @@ void decodeCoords(sgpp::base::DataVector& coords, std::vector<bool>& result) {
  * one feature, then we add the pairwise interactions and finally
  * all interactions. The differences between the grids are printed.
  */
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   auto dimensions = 3;
   auto level = 5;
 
@@ -45,87 +44,82 @@ int main(int argc, char **argv) {
   // Add bias.
   terms.insert(std::vector<bool>(dimensions, false));
 
-
   // Add all variables, without interaction
   for (auto dim = 0; dim < dimensions; ++dim) {
-      auto vec = std::vector<bool>(dimensions, false);
-      vec[dim] = true;
-      terms.insert(vec);
+    auto vec = std::vector<bool>(dimensions, false);
+    vec[dim] = true;
+    terms.insert(vec);
   }
-
 
   {
-  auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
-  auto& storage = grid->getStorage();
-  auto generator = sgpp::base::HashGenerator();
+    auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
+    auto& storage = grid->getStorage();
+    auto generator = sgpp::base::HashGenerator();
 
-  generator.regular_inter(storage, level, terms);
+    generator.regular_inter(storage, level, terms);
 
-  std::cout << "Grid size with one level terms is " << grid->getSize() << std::endl;
-  for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
-    gridIndex.getStandardCoordinates(coords);
-    decodeCoords(coords, boolCoords);
-    std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
-    if (isInserted) {
+    std::cout << "Grid size with one level terms is " << grid->getSize() << std::endl;
+    for (size_t i = 0; i < grid->getSize(); ++i) {
+      sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+      gridIndex.getStandardCoordinates(coords);
+      decodeCoords(coords, boolCoords);
+      std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
+      if (isInserted) {
         std::cout << "New point" << coords.toString() << std::endl;
-    }
-  }
-  }
-
-  //Add all two-level-interactions
-  for (auto i = 0; i < dimensions; ++i) {
-      for (auto j = 0; j < dimensions; ++j) {
-          auto vec = std::vector<bool>(dimensions, false);
-          vec[i] = true;
-          vec[j] = true;
-          terms.insert(vec);
       }
+    }
+  }
+
+  // Add all two-level-interactions
+  for (auto i = 0; i < dimensions; ++i) {
+    for (auto j = 0; j < dimensions; ++j) {
+      auto vec = std::vector<bool>(dimensions, false);
+      vec[i] = true;
+      vec[j] = true;
+      terms.insert(vec);
+    }
   }
 
   {
-  auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
-  auto& storage = grid->getStorage();
-  auto generator = sgpp::base::HashGenerator();
+    auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
+    auto& storage = grid->getStorage();
+    auto generator = sgpp::base::HashGenerator();
 
-  generator.regular_inter(storage, level, terms);
+    generator.regular_inter(storage, level, terms);
 
-  std::cout << "Grid size with two level terms is " << grid->getSize() << std::endl;
-  for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
-    gridIndex.getStandardCoordinates(coords);
-    decodeCoords(coords, boolCoords);
-    std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
-    if (isInserted) {
+    std::cout << "Grid size with two level terms is " << grid->getSize() << std::endl;
+    for (size_t i = 0; i < grid->getSize(); ++i) {
+      sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+      gridIndex.getStandardCoordinates(coords);
+      decodeCoords(coords, boolCoords);
+      std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
+      if (isInserted) {
         std::cout << "New point" << coords.toString() << std::endl;
+      }
     }
   }
-  }
 
-  //Add three-level-interaction
+  // Add three-level-interaction
   auto vec = std::vector<bool>(dimensions, true);
   terms.insert(vec);
 
   {
-  auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
-  auto& storage = grid->getStorage();
-  auto generator = sgpp::base::HashGenerator();
+    auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
+    auto& storage = grid->getStorage();
+    auto generator = sgpp::base::HashGenerator();
 
-  generator.regular_inter(storage, level, terms);
+    generator.regular_inter(storage, level, terms);
 
-  std::cout << "Grid size with three level terms is " << grid->getSize() << std::endl;
+    std::cout << "Grid size with three level terms is " << grid->getSize() << std::endl;
 
-  for (size_t i = 0; i < grid->getSize(); ++i) {
-    sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
-    gridIndex.getStandardCoordinates(coords);
-    decodeCoords(coords, boolCoords);
-    std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
-    if (isInserted) {
+    for (size_t i = 0; i < grid->getSize(); ++i) {
+      sgpp::base::HashGridPoint gridIndex = storage.getPoint(i);
+      gridIndex.getStandardCoordinates(coords);
+      decodeCoords(coords, boolCoords);
+      std::tie(std::ignore, isInserted) = realCoords.insert(boolCoords);
+      if (isInserted) {
         std::cout << "New point" << coords.toString() << std::endl;
+      }
     }
   }
-  }
 }
-
-
-

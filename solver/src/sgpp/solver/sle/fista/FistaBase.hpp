@@ -9,13 +9,11 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-
 namespace sgpp {
 namespace solver {
 
 class FistaBase {
  public:
-
   virtual void solve(base::OperationMultipleEval& op, base::DataVector& weights,
                      const base::DataVector& classes, size_t maxIt, double treshold,
                      double L = 0.5) = 0;
@@ -26,6 +24,6 @@ class FistaBase {
 };
 
 }  // namespace solver
-}  // namepsace sgpp
+}  // namespace sgpp
 
 #endif  // FISTABASE_HPP

@@ -11,19 +11,16 @@
 namespace sgpp {
 namespace datadriven {
 
-NearestNeighbors::NearestNeighbors(size_t rows, size_t cols)
-  : rows(rows), cols(cols) {}
+NearestNeighbors::NearestNeighbors(size_t rows, size_t cols) : rows(rows), cols(cols) {}
 
-NearestNeighbors::point_t NearestNeighbors::idxToPoint(size_t idx) const{
+NearestNeighbors::point_t NearestNeighbors::idxToPoint(size_t idx) const {
   // Maybe the other way round? :O
   const auto f = idx / rows;
   const auto s = idx % rows;
   return {f, s};
 }
 
-size_t NearestNeighbors::pointToIdx(point_t p) const{
-    return p.first*rows+p.second;
-}
+size_t NearestNeighbors::pointToIdx(point_t p) const { return p.first * rows + p.second; }
 
 double NearestNeighbors::l2Distance(NearestNeighbors::point_t a,
                                     NearestNeighbors::point_t b) const {
@@ -32,8 +29,8 @@ double NearestNeighbors::l2Distance(NearestNeighbors::point_t a,
   return std::sqrt((d1 * d1) + (d2 * d2));
 }
 
-std::vector<std::vector<size_t>> NearestNeighbors::getAllInteractions(
-    size_t level, double threshold) const {
+std::vector<std::vector<size_t>> NearestNeighbors::getAllInteractions(size_t level,
+                                                                      double threshold) const {
   const auto neighbors = getAllNeighbors(threshold);
   auto allInteractions = std::vector<std::vector<size_t>>();
   for (size_t i = 1; i < level; ++i) {
@@ -61,7 +58,7 @@ std::vector<size_t> NearestNeighbors::getNeighbors(size_t idx, double threshold)
   return neighbors;
 }
 
-std::vector<std::vector<size_t>> NearestNeighbors::getAllNeighbors(double threshold) const{
+std::vector<std::vector<size_t>> NearestNeighbors::getAllNeighbors(double threshold) const {
   auto allN = std::vector<std::vector<size_t>>();
   for (size_t i = 0; i < rows * cols; ++i) {
     allN.emplace_back(getNeighbors(i, threshold));

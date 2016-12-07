@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <set>
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
+
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -58,7 +59,7 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
   // Now we create a learner for each class.
   for (const auto uniqueClass : uniqueClasses) {
     auto newY = generateYOneVsAll(classes, uniqueClass);
-    auto learner = [&]() {
+    auto learner = [this]() {
       if (terms.size() > 0) {
         return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
                                  regularizationConfig, terms);

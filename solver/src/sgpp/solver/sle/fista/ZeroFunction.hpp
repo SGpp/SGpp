@@ -26,6 +26,6 @@ class ZeroFunction : public RegularizationFunction {
 };
 
 }  //  namespace solver
-}  //  namepsace sgpp
+}  //  namespace sgpp
 
 #endif  // ZEROFUNCTION_HPP
