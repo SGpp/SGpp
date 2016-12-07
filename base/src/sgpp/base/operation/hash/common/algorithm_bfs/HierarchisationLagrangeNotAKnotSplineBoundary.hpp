@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HIERARCHISATIONFUNDAMENTALSPLINE_HPP
-#define HIERARCHISATIONFUNDAMENTALSPLINE_HPP
+#ifndef HIERARCHISATIONLAGRANGENOTAKNOTSPLINEBOUNDARY_HPP
+#define HIERARCHISATIONLAGRANGENOTAKNOTSPLINEBOUNDARY_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for hierarchization with fundamental splines via
+ * Functor for hierarchization with Lagrange splines with not-a-knot boundary conditions via
  * BreadthFirstSearch.
  */
 class HierarchisationLagrangeNotAKnotSplineBoundary {
@@ -75,4 +75,4 @@ class HierarchisationLagrangeNotAKnotSplineBoundary {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* HIERARCHISATIONFUNDAMENTALSPLINE_HPP */
+#endif /* HIERARCHISATIONLAGRANGENOTAKNOTSPLINEBOUNDARY_HPP */

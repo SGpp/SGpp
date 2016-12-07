@@ -35,11 +35,12 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
-%newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim);
-%newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim);
-%newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim);
-%newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim);
-%newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim);
+%newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -110,6 +111,7 @@ enum class GridType {
   ModNotAKnotBspline,               // 28
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
+  ModLagrangeNotAKnotSpline,        // 31
 };
 
 class Grid
@@ -147,6 +149,7 @@ public:
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
   static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
   static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 	
   static Grid* unserialize(std::string& istr);
 	
