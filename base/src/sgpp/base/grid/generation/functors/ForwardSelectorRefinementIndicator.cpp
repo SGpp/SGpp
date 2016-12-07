@@ -24,8 +24,8 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(
       w1(w1),
       w2(w2),
       alphas(alphas),
-      rv1(new DataVector(grid.getSize(), 0.0)),
-      rv2(new DataVector(grid.getSize(), 0.0)),
+      rv1(DataVector(grid.getSize(), 0.0)),
+      rv2(DataVector(grid.getSize(), 0.0)),
       beta(beta),
       refinementsNum(refinementsNum),
       threshold(threshold),
@@ -46,9 +46,9 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(
     losses.set(i, 1.0 - w1.dotProduct(xTrans) * t);
 
     if (losses.get(i) > 0) {
-      rv2->add(xTrans);
+      rv2.add(xTrans);
       xTrans.mult(t);
-      rv1->add(xTrans);
+      rv1.add(xTrans);
     }
   }
 }
@@ -57,7 +57,7 @@ double ForwardSelectorRefinementIndicator::operator()(GridStorage& storage,
                                                       size_t seq) const {
   double epsilon = 0.000001;
   double measure = std::abs(w1.get(seq) + epsilon) /
-                   (std::pow(w2.get(seq), beta) * rv2->get(seq) + epsilon);
+                   (std::pow(w2.get(seq), beta) * rv2.get(seq) + epsilon);
 
   return measure;
 }

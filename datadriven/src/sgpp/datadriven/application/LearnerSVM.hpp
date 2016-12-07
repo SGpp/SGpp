@@ -85,7 +85,7 @@ class LearnerSVM {
    *
    * @param maxDataPasses The number of passes over the whole training data
    * @param lambda The regularization parameter
-   * @param beatRef Weighting factor for grid points; used within
+   * @param betaRef Weighting factor for grid points; used within
    *        combined-measure refinement
    * @param refType The refinement indicator (surplus, zero-crossings or
    * data-based)
@@ -116,7 +116,7 @@ class LearnerSVM {
   /**
    * Computes the classification accuracy on the given dataset.
    *
-   * @param testData The data for which class labels should be predicted
+   * @param testDataset The data for which class labels should be predicted
    * @param referenceLabels The corresponding actual class labels
    * @param threshold The decision threshold (e.g. for class labels -1, 1 ->
    * threshold = 0)

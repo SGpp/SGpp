@@ -136,9 +136,9 @@ int main() {
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
       std::string refType;
       // select predictive refinement
-      // refType = "combined-measure";
+      refType = "combined-measure";
       // select impurity-based refinement
-      refType = "impurity";
+      // refType = "impurity";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       /**
