@@ -115,7 +115,7 @@ class LearnerSGD {
    *
    * @return The created grid
    */
-  std::shared_ptr<base::Grid> createRegularGrid();
+  std::unique_ptr<base::Grid> createRegularGrid();
 
   /**
    * Computes specified error type (e.g. MSE).
@@ -137,8 +137,8 @@ class LearnerSGD {
    * @param error The vector which contains the error contributions
    */
   void getBatchError(sgpp::base::DataMatrix& data,
-                     sgpp::base::DataVector& labels,
-                     sgpp::base::DataVector& error);
+                     const sgpp::base::DataVector& labels,
+                     sgpp::base::DataVector& error) const;
 
   /**
    * Computes the classification accuracy.
@@ -158,8 +158,8 @@ class LearnerSGD {
    * @param testData The data for which class labels should be predicted
    * @param predictedLabels The predicted class labels
    */
-  void predict(sgpp::base::DataMatrix& testData,
-               sgpp::base::DataVector& predictedLabels);
+  void predict(base::DataMatrix& testData,
+               base::DataVector& predictedLabels) const;
 
   /**
    * Stores the last 'batchSize' processed data points
@@ -168,9 +168,9 @@ class LearnerSGD {
    * @param x The current data point
    * @param y The corresponding class label
    */
-  void pushToBatch(sgpp::base::DataVector& x, double y);
+  void pushToBatch(sgpp::base::DataVector& x, double y) const;
 
-  std::shared_ptr<base::Grid> grid;
+  std::unique_ptr<base::Grid> grid;
   std::shared_ptr<base::DataVector> alpha;
   std::shared_ptr<base::DataVector> alphaAvg;
   std::shared_ptr<base::DataMatrix> trainData;

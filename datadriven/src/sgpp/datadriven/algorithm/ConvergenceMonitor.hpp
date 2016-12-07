@@ -37,8 +37,8 @@ class ConvergenceMonitor {
    * Stores the current error values in the buffer. If the buffer
    * has reached the maximum size, the oldest values are removed.
    *
-   * @param
-   * @param
+   * @param currentValidError The current validation error
+   * @param currentTrainError The current training error
    */
   void pushToBuffer(double currentValidError, double currentTrainError);
   /**

@@ -52,11 +52,6 @@ class ForwardSelectorRefinementIndicator : public RefinementFunctor {
                                      size_t refinementsNum = 1);
 
   /**
-   * Destructor
-   */
-  virtual ~ForwardSelectorRefinementIndicator() {}
-
-  /**
   * This should be returning a refinement indication value for every grid point.
   * The grid point with the highest value will be refined first.
   *
@@ -116,9 +111,9 @@ class ForwardSelectorRefinementIndicator : public RefinementFunctor {
   // the weights corresponding to the support vectors
   DataVector& alphas;
   // current loss
-  std::shared_ptr<DataVector> rv1;
+  DataVector rv1;
   // current loss (abs)
-  std::shared_ptr<DataVector> rv2;
+  DataVector rv2;
   // specifies relevance of grid points
   double beta;
   // max number of grid points to refine

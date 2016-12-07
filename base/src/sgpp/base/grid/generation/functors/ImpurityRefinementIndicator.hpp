@@ -60,11 +60,6 @@ class ImpurityRefinementIndicator : public RefinementFunctor {
                               size_t refinementsNum = 1);
 
   /**
-   * Destructor
-   */
-  virtual ~ImpurityRefinementIndicator() {}
-
-  /**
    * This should be returning a refinement indicator for the specified grid
    * point.
    * The point with the highest value will be refined first.

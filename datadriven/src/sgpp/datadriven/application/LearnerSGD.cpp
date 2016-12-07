@@ -108,7 +108,7 @@ void LearnerSGD::initialize(sgpp::base::DataMatrix& pTrainData,
   alphaAvg->setAll(0.0);
 }
 
-std::shared_ptr<base::Grid> LearnerSGD::createRegularGrid() {
+std::unique_ptr<base::Grid> LearnerSGD::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::Linear) {
@@ -121,10 +121,7 @@ std::shared_ptr<base::Grid> LearnerSGD::createRegularGrid() {
   }
   uGrid->getGenerator().regular(gridConfig.level_);
 
-  // move the grid to be shared
-  std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
-
-  return sGrid;
+  return uGrid;
 }
 
 void LearnerSGD::train(size_t maxDataPasses, std::string refType,
@@ -434,8 +431,8 @@ double LearnerSGD::getError(sgpp::base::DataMatrix& data,
 }
 
 void LearnerSGD::getBatchError(sgpp::base::DataMatrix& data,
-                               sgpp::base::DataVector& labels,
-                               sgpp::base::DataVector& error) {
+                               const sgpp::base::DataVector& labels,
+                               sgpp::base::DataVector& error) const {
   size_t numData = data.getNrows();
   sgpp::base::DataVector result(numData);
 
@@ -481,8 +478,8 @@ double LearnerSGD::getAccuracy(sgpp::base::DataVector& testLabels,
   return result;
 }
 
-void LearnerSGD::predict(sgpp::base::DataMatrix& testData,
-                         sgpp::base::DataVector& predictedLabels) {
+void LearnerSGD::predict(base::DataMatrix& testData,
+                         base::DataVector& predictedLabels) const {
   predictedLabels.resize(testData.getNrows());
   sgpp::base::DataVector result(testData.getNrows());
 
@@ -499,7 +496,7 @@ void LearnerSGD::predict(sgpp::base::DataMatrix& testData,
   }
 }
 
-void LearnerSGD::pushToBatch(sgpp::base::DataVector& x, double y) {
+void LearnerSGD::pushToBatch(sgpp::base::DataVector& x, double y) const {
   static size_t nextIdx = 0;
   if (batchData->getUnused() > 0) {
     batchData->appendRow(x);
