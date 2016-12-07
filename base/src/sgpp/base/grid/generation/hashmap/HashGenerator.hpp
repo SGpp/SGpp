@@ -7,18 +7,15 @@
 #define HASHGENERATOR_HPP
 
 #include <sgpp/base/grid/GridStorage.hpp>
-
 #include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <algorithm>
 #include <cmath>
+#include <algorithm>
 #include <iostream>
 #include <unordered_set>
 #include <vector>
-
 #include <iterator>
+
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
   if (!v.empty()) {
@@ -610,7 +607,6 @@ class HashGenerator {
 
       // loop over all current grid points
       for (size_t g = 0; g < gridSize; g++) {
-
               level_t levelSum = 0;
               level_t numberOfZeroLevels = 0;
         GridPoint idx(storage.getPoint(g));

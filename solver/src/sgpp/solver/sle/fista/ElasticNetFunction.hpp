@@ -61,6 +61,6 @@ class ElasticNetFunction : public RegularizationFunction {
 };
 
 }  //  namespace solver
-}  //  namepsace sgpp
+}  //  namespace sgpp
 
 #endif  // ELASTICNETFUNCTION_HPP

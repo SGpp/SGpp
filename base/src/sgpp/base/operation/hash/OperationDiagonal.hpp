@@ -29,7 +29,6 @@ namespace base {
  */
 class OperationDiagonal : public OperationMatrix {
  public:
-
    /**
    * @brief Constructor of OperationDiagonal
    * @param gridStorage the grid storage

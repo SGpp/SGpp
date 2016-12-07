@@ -12,8 +12,7 @@
  * image dataset that are in a \f$ 3 \times 3 \f$ neighborhood.
  */
 int main(void) {
-    using namespace sgpp::datadriven;
-    const auto neigh = NearestNeighbors(8,8);
+    const auto neigh = sgpp::datadriven::NearestNeighbors(8, 8);
     const auto combs = neigh.getAllInteractions(3, std::sqrt(2));
     for (const auto& comb : combs) {
         for (const auto term : comb) {

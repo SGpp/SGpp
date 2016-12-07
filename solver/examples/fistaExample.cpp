@@ -60,5 +60,4 @@ int main(int argc, char** argv) {
                   << " |weights|_2 = " << weights.l2Norm() << std::endl;
         std::cout << "Residual = " << rmse << std::endl;
     }
-
 }

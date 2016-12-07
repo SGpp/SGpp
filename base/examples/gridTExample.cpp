@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <cstdlib>
 #include <iostream>
-#include <sgpp/base/grid/Grid.hpp>
 
 /**
  * @brief main creates a generalised grid. The first CLI argument is

@@ -22,7 +22,7 @@ class RidgeFunction : public RegularizationFunction {
    * @brief RidgeFunction
    * @param lambda controls the regularization strength.
    */
-  RidgeFunction(double lambda) : lambda(lambda) {}
+  explicit RidgeFunction(double lambda) : lambda(lambda) {}
 
   // (lambda |x|_2 )
   double eval(sgpp::base::DataVector weights) override {
@@ -44,6 +44,6 @@ class RidgeFunction : public RegularizationFunction {
 };
 
 }  //  namespace solver
-}  //  namepsace sgpp
+}  //  namespace sgpp
 
 #endif  // RIDGEFUNCTION_HPP
