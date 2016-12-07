@@ -4,20 +4,21 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/common/algorithm_bfs/HierarchisationNotAKnotBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_bfs/DehierarchisationModLagrangeNotAKnotSpline.hpp>
 
 namespace sgpp {
 namespace base {
-HierarchisationNotAKnotBsplineBoundary::HierarchisationNotAKnotBsplineBoundary(
-  NotAKnotBsplineBoundaryGrid* grid) :
+DehierarchisationModLagrangeNotAKnotSpline::DehierarchisationModLagrangeNotAKnotSpline(
+  ModLagrangeNotAKnotSplineGrid* grid) :
   grid(grid),
   storage(grid->getStorage()) {
 }
 
-HierarchisationNotAKnotBsplineBoundary::~HierarchisationNotAKnotBsplineBoundary() {
+DehierarchisationModLagrangeNotAKnotSpline::~DehierarchisationModLagrangeNotAKnotSpline(
+    ) {
 }
 
-void HierarchisationNotAKnotBsplineBoundary::operator()(
+void DehierarchisationModLagrangeNotAKnotSpline::operator()(
   const DataVector& source,
   DataVector& result,
   const grid_iterator& iterator) {
@@ -25,7 +26,7 @@ void HierarchisationNotAKnotBsplineBoundary::operator()(
   const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
-  SNotAKnotBsplineBase base(grid->getDegree());
+  SLagrangeNotAKnotSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
     const GridPoint& point = storage[q];
@@ -69,13 +70,13 @@ void HierarchisationNotAKnotBsplineBoundary::operator()(
       }
 
       if (value != 0.0) {
-        result[q] -= result[pointIndex] * value;
+        result[q] += source.get(pointIndex) * value;
       }
     }
   }
 }
 
-void HierarchisationNotAKnotBsplineBoundary::operator()(
+void DehierarchisationModLagrangeNotAKnotSpline::operator()(
   const DataMatrix& source,
   DataMatrix& result,
   const grid_iterator& iterator) {
@@ -83,7 +84,7 @@ void HierarchisationNotAKnotBsplineBoundary::operator()(
   const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
-  SNotAKnotBsplineBase base(grid->getDegree());
+  SLagrangeNotAKnotSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
     const GridPoint& point = storage[q];
@@ -128,8 +129,8 @@ void HierarchisationNotAKnotBsplineBoundary::operator()(
 
       if (value != 0.0) {
         for (size_t j = 0; j < result.getNcols(); j++) {
-          result.set(q, j, result.get(q, j) -
-                     result.get(pointIndex, j) * value);
+          result.set(q, j, result.get(q, j) +
+                     source.get(pointIndex, j) * value);
         }
       }
     }

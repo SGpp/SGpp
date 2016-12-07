@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for hierarchization with fundamental splines via
+ * Functor for hierarchization with Lagrange splines via
  * BreadthFirstSearch.
  */
 class HierarchisationLagrangeSplineBoundary {

@@ -4,20 +4,20 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/common/algorithm_bfs/HierarchisationNaturalBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_bfs/HierarchisationModLagrangeNotAKnotSpline.hpp>
 
 namespace sgpp {
 namespace base {
-HierarchisationNaturalBsplineBoundary::HierarchisationNaturalBsplineBoundary(
-  NaturalBsplineBoundaryGrid* grid) :
+HierarchisationModLagrangeNotAKnotSpline::HierarchisationModLagrangeNotAKnotSpline(
+  ModLagrangeNotAKnotSplineGrid* grid) :
   grid(grid),
   storage(grid->getStorage()) {
 }
 
-HierarchisationNaturalBsplineBoundary::~HierarchisationNaturalBsplineBoundary() {
+HierarchisationModLagrangeNotAKnotSpline::~HierarchisationModLagrangeNotAKnotSpline() {
 }
 
-void HierarchisationNaturalBsplineBoundary::operator()(
+void HierarchisationModLagrangeNotAKnotSpline::operator()(
   const DataVector& source,
   DataVector& result,
   const grid_iterator& iterator) {
@@ -25,7 +25,7 @@ void HierarchisationNaturalBsplineBoundary::operator()(
   const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
-  SNaturalBsplineBase base(grid->getDegree());
+  SLagrangeNotAKnotSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
     const GridPoint& point = storage[q];
@@ -75,7 +75,7 @@ void HierarchisationNaturalBsplineBoundary::operator()(
   }
 }
 
-void HierarchisationNaturalBsplineBoundary::operator()(
+void HierarchisationModLagrangeNotAKnotSpline::operator()(
   const DataMatrix& source,
   DataMatrix& result,
   const grid_iterator& iterator) {
@@ -83,7 +83,7 @@ void HierarchisationNaturalBsplineBoundary::operator()(
   const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
-  SNaturalBsplineBase base(grid->getDegree());
+  SLagrangeNotAKnotSplineModifiedBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
     const GridPoint& point = storage[q];

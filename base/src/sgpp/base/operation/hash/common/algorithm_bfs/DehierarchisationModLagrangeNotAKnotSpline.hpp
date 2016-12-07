@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DEHIERARCHISATIONNATURALSPLINEBOUNDARY_HPP
-#define DEHIERARCHISATIONNATURALSPLINEBOUNDARY_HPP
+#ifndef DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
+#define DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -16,10 +16,10 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for dehierarchization with fundamental splines via
- * BreadthFirstSearch.
+ * Functor for dehierarchization with modified Lagrange splines with not-a-knot boundary conditions
+ * via BreadthFirstSearch.
  */
-class DehierarchisationNaturalBsplineBoundary {
+class DehierarchisationModLagrangeNotAKnotSpline {
  protected:
   /// grid iterator
   typedef GridStorage::grid_iterator grid_iterator;
@@ -30,12 +30,13 @@ class DehierarchisationNaturalBsplineBoundary {
    *
    * @param grid grid
    */
-  explicit DehierarchisationNaturalBsplineBoundary(NaturalBsplineBoundaryGrid* grid);
+  explicit DehierarchisationModLagrangeNotAKnotSpline(
+      ModLagrangeNotAKnotSplineGrid* grid);
 
   /**
    * Destructor.
    */
-  virtual ~DehierarchisationNaturalBsplineBoundary();
+  virtual ~DehierarchisationModLagrangeNotAKnotSpline();
 
   /**
    * Functor operator.
@@ -67,7 +68,7 @@ class DehierarchisationNaturalBsplineBoundary {
 
  protected:
   /// grid
-  NaturalBsplineBoundaryGrid* grid;
+  ModLagrangeNotAKnotSplineGrid* grid;
   /// grid storage
   GridStorage& storage;
 };
@@ -75,4 +76,4 @@ class DehierarchisationNaturalBsplineBoundary {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* DEHIERARCHISATIONNATURALSPLINEBOUNDARY_HPP */
+#endif /* DEHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP */

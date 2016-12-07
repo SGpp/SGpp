@@ -19,6 +19,7 @@
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
@@ -116,6 +117,7 @@
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>

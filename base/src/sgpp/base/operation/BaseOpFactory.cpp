@@ -16,6 +16,7 @@
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
@@ -33,12 +34,10 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationModLagrangeNotAKnotSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModLinear.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationModNotAKnotBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModWavelet.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationNaturalBsplineBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationNotAKnotBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
@@ -89,6 +88,7 @@
 #include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModLagrangeNotAKnotSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModNotAKnotBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
@@ -177,21 +177,15 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::NaturalBsplineBoundary) {
-    return new base::OperationHierarchisationNaturalBsplineBoundary(
-        dynamic_cast<base::NaturalBsplineBoundaryGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::NotAKnotBsplineBoundary) {
-    return new base::OperationHierarchisationNotAKnotBsplineBoundary(
-        dynamic_cast<base::NotAKnotBsplineBoundaryGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::ModNotAKnotBspline) {
-    return new base::OperationHierarchisationModNotAKnotBspline(
-        dynamic_cast<base::ModNotAKnotBsplineGrid*>(&grid));
   } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
     return new base::OperationHierarchisationLagrangeSplineBoundary(
         dynamic_cast<base::LagrangeSplineBoundaryGrid*>(&grid));
   } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
     return new base::OperationHierarchisationLagrangeNotAKnotSplineBoundary(
         dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
+    return new base::OperationHierarchisationModLagrangeNotAKnotSpline(
+        dynamic_cast<base::ModLagrangeNotAKnotSplineGrid*>(&grid));
   } else {
     throw base::factory_exception(
         "createOperationHierarchisation is not implemented for this grid type.");
@@ -372,6 +366,10 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
     return new base::OperationEvalLagrangeNotAKnotSplineBoundaryNaive(
         grid.getStorage(), dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid).
+        getDegree());
+  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
+    return new base::OperationEvalModLagrangeNotAKnotSplineNaive(
+        grid.getStorage(), dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid).
         getDegree());
   } else {
     throw base::factory_exception("createOperationEval is not implemented for this grid type."

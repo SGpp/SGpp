@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DEHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP
-#define DEHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP
+#ifndef HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
+#define HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -16,10 +16,10 @@ namespace sgpp {
 namespace base {
 
 /**
- * Functor for dehierarchization with fundamental splines via
- * BreadthFirstSearch.
+ * Functor for hierarchization with modified Lagrange splines with not-a-knot boundary conditions
+ * via BreadthFirstSearch.
  */
-class DehierarchisationNotAKnotBsplineBoundary {
+class HierarchisationModLagrangeNotAKnotSpline {
  protected:
   /// grid iterator
   typedef GridStorage::grid_iterator grid_iterator;
@@ -30,17 +30,17 @@ class DehierarchisationNotAKnotBsplineBoundary {
    *
    * @param grid grid
    */
-  explicit DehierarchisationNotAKnotBsplineBoundary(NotAKnotBsplineBoundaryGrid* grid);
+  explicit HierarchisationModLagrangeNotAKnotSpline(ModLagrangeNotAKnotSplineGrid* grid);
 
   /**
    * Destructor.
    */
-  virtual ~DehierarchisationNotAKnotBsplineBoundary();
+  virtual ~HierarchisationModLagrangeNotAKnotSpline();
 
   /**
    * Functor operator.
-   * For each grid point, add the value of basis function at
-   * the given iterator to the entry in result corresponding to the
+   * For each grid point, subtract the value of basis function at
+   * the given iterator from the entry in result corresponding to the
    * grid point.
    *
    * @param[in]  source     node values
@@ -53,8 +53,8 @@ class DehierarchisationNotAKnotBsplineBoundary {
 
   /**
    * Functor operator.
-   * For each grid point, add the value of basis function at
-   * the given iterator to the row in result corresponding to the
+   * For each grid point, subtract the value of basis function at
+   * the given iterator from the row in result corresponding to the
    * grid point.
    *
    * @param[in]  source     node values
@@ -67,7 +67,7 @@ class DehierarchisationNotAKnotBsplineBoundary {
 
  protected:
   /// grid
-  NotAKnotBsplineBoundaryGrid* grid;
+  ModLagrangeNotAKnotSplineGrid* grid;
   /// grid storage
   GridStorage& storage;
 };
@@ -75,4 +75,4 @@ class DehierarchisationNotAKnotBsplineBoundary {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* DEHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP */
+#endif /* HIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP */

@@ -55,6 +55,7 @@ enum class GridType {
   ModNotAKnotBspline,               // 28
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
+  ModLagrangeNotAKnotSpline,        // 31
 };
 
 /**
@@ -333,6 +334,7 @@ class Grid {
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
   static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
   static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 
   /**
    * reads a grid out of a string

@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP
-#define OPERATIONHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP
+#ifndef OPERATIONHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
+#define OPERATIONHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -18,21 +18,21 @@ namespace base {
 /**
  * Hierarchisation on sparse grid, fundamental spline basis
  */
-class OperationHierarchisationNotAKnotBsplineBoundary :
+class OperationHierarchisationModLagrangeNotAKnotSpline :
   public OperationHierarchisation {
  public:
   /**
-   * Constructor of OperationHierarchisationNotAKnotBsplineBoundary
+   * Constructor of OperationHierarchisationModLagrangeNotAKnotSpline
    *
    * @param grid Pointer to the grid
    */
-  explicit OperationHierarchisationNotAKnotBsplineBoundary(
-    NotAKnotBsplineBoundaryGrid* grid);
+  explicit OperationHierarchisationModLagrangeNotAKnotSpline(
+      ModLagrangeNotAKnotSplineGrid* grid);
 
   /**
    * Destructor.
    */
-  ~OperationHierarchisationNotAKnotBsplineBoundary() override;
+  ~OperationHierarchisationModLagrangeNotAKnotSpline() override;
 
   void doHierarchisation(DataVector& node_values) override;
   void doDehierarchisation(DataVector& alpha) override;
@@ -42,10 +42,10 @@ class OperationHierarchisationNotAKnotBsplineBoundary :
 
  protected:
   /// grid
-  NotAKnotBsplineBoundaryGrid* grid;
+  ModLagrangeNotAKnotSplineGrid* grid;
 };
 
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONHIERARCHISATIONNOTAKNOTBSPLINEBOUNDARY_HPP */
+#endif /* OPERATIONHIERARCHISATIONMODLAGRANGENOTAKNOTSPLINE_HPP */

@@ -37,6 +37,7 @@
 %newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim);
 %newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim);
+%newobject sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(size_t dim);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -107,6 +108,7 @@ enum class GridType {
   ModNotAKnotBspline,               // 28
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
+  ModLagrangeNotAKnotSpline,        // 31
 };
 
 class Grid
