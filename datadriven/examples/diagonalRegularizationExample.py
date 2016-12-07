@@ -6,10 +6,57 @@
 # To do this, it performs a grid search for both Tikhonov matrices.  #
 ######################################################################
 
+import requests as r
 import numpy as np
-import pysgpp as sg; sg.omp_set_num_threads(4)
 import pandas as pd
+import sklearn.preprocessing as pre
 from sklearn.cross_validation import KFold
+from scipy import stats
+from zipfile import ZipFile
+from StringIO import StringIO
+import pysgpp as sg; sg.omp_set_num_threads(4)
+
+def scale(df, scaler=None):
+    Y = df.ix[:,-1] # save Y (don't need to transform it/useless for cat. data!)
+    X = df.values
+    if scaler:
+        X = scaler.transform(X)
+    else:
+        scaler = pre.MinMaxScaler()
+        X = scaler.fit_transform(X)
+    index = df.index
+    columns = df.columns
+    df = pd.DataFrame(data=X, index=index, columns=columns)
+    df.ix[:,-1] = Y
+    return scaler, df
+
+def transform_cox(df, lambdas):
+    scaler = pre.MinMaxScaler()
+    for variable in lambdas:
+        lamb = lambdas[variable]
+        if lamb == 1:
+            continue # identity transform
+        data_trans = stats.boxcox(df[variable] + 10e-1)
+        df[variable] = scaler.fit_transform(np.array(data_trans[0]).reshape(-1, 1))
+    return df
+
+def get_dataset():
+    data_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip"
+    print "Loading power plant dataset from the UCI repository."
+    resp = r.get(data_url, stream=True)
+    data = ZipFile(StringIO(resp.content))
+    with data.open('CCPP/Folds5x2_pp.xlsx') as xls:
+        df =  pd.read_excel(xls)
+
+    print "Preprocessing dataset."
+    _, df = scale(df)
+    lambdas = {'AP': 0,
+            'AT': 1.3353837296219406,
+            u'PE': 1,
+            'RH': 2.4604945158589104,
+            'V': -0.43989911518156471}
+    df = transform_cox(df, lambdas)   
+    return df
 
 def make_estimator(lambda_reg, prior):
     grid = sg.RegularGridConfiguration()
@@ -66,7 +113,7 @@ def grid_search(X, y, prior):
     return np.sqrt(best_result)
     
 def main():
-    df = pd.read_csv('../../datasets/power_plant/train.csv')
+    df = get_dataset()
     X = np.array(df.ix[:,0:-1])
     y = (df.ix[:,-1]).values
     best_identity = grid_search(X, y, 1.0)
