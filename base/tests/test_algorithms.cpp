@@ -9,7 +9,7 @@
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include "../src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -100,7 +100,7 @@ double ccKnot(level_t l, index_t i) {
           1.0);
 }
 
-void linearClenshawCurtisTest(SBasis& basis) {
+void linearClenshawCurtisBoundaryTest(SBasis& basis) {
   const std::vector<level_t> levels = {1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3};
   const std::vector<level_t> indices = {1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1};
 
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(TestLinearBoundaryBasis) {
 BOOST_AUTO_TEST_CASE(TestLinearClenshawCurtisBasis) {
   sgpp::base::SLinearClenshawCurtisBoundaryBase basis;
   linearLevelZeroTest(basis);
-  linearClenshawCurtisTest(basis);
+  linearClenshawCurtisBoundaryTest(basis);
   derivativesTest(basis, 0, 0);
 }
 
@@ -338,11 +338,11 @@ BOOST_AUTO_TEST_CASE(TestBsplineBoundaryBasis) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisBasis) {
+BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisBoundaryBasis) {
   // Test B-spline ClenshawCurtis basis.
   sgpp::base::SBsplineClenshawCurtisBase basis(1);
   linearLevelZeroTest(basis);
-  linearClenshawCurtisTest(basis);
+  linearClenshawCurtisBoundaryTest(basis);
 
   for (size_t p = 2; p <= 11; p++) {
     sgpp::base::SBsplineClenshawCurtisBase basis(p);
