@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_FactoryException) {
   DataVector coordinates(5);
   factory_exception expectedException(
       "QuadRule1D::getLevelPointsAndWeights : "
-      "order of gauss quadrature has to be within {1, ..., 20}");
+      "order of gauss quadrature has to be within {1, ..., 50}");
   try {
     quadRule1D.getLevelPointsAndWeights(faultyLevel, coordinates, pweight);
   } catch (factory_exception& actualException) {

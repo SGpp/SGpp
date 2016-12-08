@@ -50597,7 +50597,7 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
         "GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized : "
-        "order of gauss quadrature has to be within {1, ..., 20}");
+        "order of gauss quadrature has to be within {1, ..., 50}");
   }
 
   getLevelPointsAndWeights(level, pcoordinates, pweights);
