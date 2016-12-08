@@ -3,23 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP
-#define OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP
+#ifndef OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP
+#define OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Operation for evaluating fundamental sspline linear combinations on Noboundary grids and their
- * gradients.
+ * Operation for evaluating Lagrange spline linear combinations on Boundary grids
+ * and their gradients.
  */
-class OperationEvalGradientFundamentalSplineNaive : public
+class OperationEvalGradientLagrangeSplineBoundaryNaive : public
   OperationEvalGradient {
  public:
   /**
@@ -28,7 +29,7 @@ class OperationEvalGradientFundamentalSplineNaive : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalGradientFundamentalSplineNaive(GridStorage& storage, size_t degree) :
+  OperationEvalGradientLagrangeSplineBoundaryNaive(GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree),
     pointInUnitCube(storage.getDimension()),
@@ -38,7 +39,7 @@ class OperationEvalGradientFundamentalSplineNaive : public
   /**
    * Destructor.
    */
-  ~OperationEvalGradientFundamentalSplineNaive() override {
+  ~OperationEvalGradientLagrangeSplineBoundaryNaive() override {
   }
 
   /**
@@ -65,8 +66,10 @@ class OperationEvalGradientFundamentalSplineNaive : public
  protected:
   /// storage of the sparse grid
   GridStorage& storage;
-  /// 1D B-spline basis
-  SFundamentalSplineBase base;
+  /// 1D spline basis
+  SLagrangeSplineBase base;
+  /// 1D spline basis derivative
+  SLagrangeSplineBaseDeriv1 baseDeriv1;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
   /// inner derivative (temporary vector)
@@ -76,4 +79,4 @@ class OperationEvalGradientFundamentalSplineNaive : public
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP */
+#endif /* OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP */
