@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <map>
 #include <vector>
 
@@ -17,6 +18,13 @@ namespace sgpp {
 namespace datadriven {
 
 // -------------------------------------------------------------------------------------------
+
+struct HashGridPointCompare {
+  bool operator()(const std::shared_ptr<base::HashGridPoint>& lhs,
+                  const std::shared_ptr<base::HashGridPoint>& rhs) {
+    return lhs->getHash() < rhs->getHash();
+  };
+};
 
 class OperationMakePositiveCandidateSetAlgorithm {
  public:
@@ -79,8 +87,8 @@ class OperationMakePositiveFindIntersectionCandidates
 
   std::unordered_map<size_t, std::shared_ptr<std::vector<std::shared_ptr<base::HashGridPoint>>>>
       intersections;
-  std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> currentIntersections;
-  std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> nextIntersections;
+  std::set<std::shared_ptr<base::HashGridPoint>, HashGridPointCompare> currentIntersections;
+  std::set<std::shared_ptr<base::HashGridPoint>, HashGridPointCompare> nextIntersections;
   std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>> candidates;
 
   // statistics
@@ -135,9 +143,6 @@ class OperationMakePositiveHybridFindIntersectionCandidates
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
-
- protected:
-  size_t overallComparisonCosts;
 };
 
 } /* namespace datadriven */
