@@ -41,13 +41,14 @@ class SGDEdist(EstimatedDist):
 
     def __init__(self, grid, alpha, trainData=None, bounds=None, config=None,
                  learner=None, unitIntegrand=True):
-        super(SGDEdist, self).__init__(trainData, bounds)
+        super(SGDEdist, self).__init__(grid.getStorage().getDimension(),
+                                       trainData, bounds)
 
         self.grid = grid
         self.alpha = DataVector(alpha)
         self.config = config
         if learner is None and trainData is not None:
-            self.learner = LearnerSGDE(self.grid, self.alpha, trainData)
+            self.learner = LearnerSGDE(self.grid, self.alpha, DataMatrix(trainData))
         else:
             self.learner = learner
 

@@ -8,11 +8,11 @@ from pysgpp.extensions.datadriven.uq.operations.general import isList, \
 
 class EstimatedDist(Dist):
 
-    def __init__(self, trainData, bounds=None):
+    def __init__(self, numDims, trainData=None, bounds=None):
         super(EstimatedDist, self).__init__()
 
         self.trainData = None
-        self.dim = 0
+        self.dim = numDims
         self.trans = None
         
         if trainData is not None:
@@ -25,9 +25,9 @@ class EstimatedDist(Dist):
             if bounds is None:
                 # estimate bounds from data
                 bounds = np.vstack((np.min(trainData, axis=0), np.max(trainData, axis=0))).T
-        
+
         if bounds is None:
-            self.bounds = [[0, 1]] * self.dim
+            self.bounds = np.array([[0, 1]] * self.dim, dtype="float")
         else:
             self.bounds = bounds
 
