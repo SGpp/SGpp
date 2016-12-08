@@ -28,7 +28,8 @@ from pysgpp import createOperationMakePositive, \
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
 from pysgpp.pysgpp_swig import GridType_PolyBoundary, \
-    MakePositiveCandidateSearchAlgorithm_FullGrid, GridType_LinearClenshawCurtis
+    MakePositiveCandidateSearchAlgorithm_FullGrid, GridType_LinearClenshawCurtis, \
+    MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
 
 
 # parameters
@@ -36,16 +37,18 @@ gridConfig = RegularGridConfiguration()
 # gridConfig.type_ = GridType_Linear
 gridConfig.type_ = GridType_Linear
 gridConfig.boundaryLevel_ = 0
-numDims = 2
+# issues with: d = 5, l = 3, ref = 4
+numDims = 5
 level = 4
 refnums = 0
-consistentGrid = True
+consistentGrid = False
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
-plot = True
+plot = False
 verbose = True
 code = "c++"
 
@@ -56,8 +59,8 @@ gridConfig.maxDegree_ = level + 1
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
 
-dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
-# dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
+# dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
+dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
 # dist = J([Lognormal(0.2, 0.7, 0, 1)] * numDims)  # problems in 5d/l3
 
 trainSamples = dist.rvs(1000)
@@ -143,7 +146,6 @@ print "full grid                  = %i" % ((2 ** level - 1) ** numDims,)
 if code == "c++":
     alpha_vec = DataVector(alpha)
     opMakePositive = createOperationMakePositive(candidateSearchAlgorithm,
-                                                 level + numDims - 1,
                                                  interpolationAlgorithm,
                                                  consistentGrid, verbose)
     opMakePositive.makePositive(grid, alpha_vec)
