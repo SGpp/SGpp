@@ -18,11 +18,12 @@ from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSea
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import addConst
 from pysgpp.pysgpp_swig import MakePositiveInterpolationAlgorithm_InterpolateExp, \
-    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
+    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, \
+    MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d
 
 numDims = 2
-level = 7
+level = 5
 code = "c++"
 side = "both"
 verbose = False
@@ -122,7 +123,7 @@ else:  # both
     sides = ["lower", "upper"]
 
 if code == "c++":
-    opLimit = createOperationLimitFunctionValueRange(MakePositiveCandidateSearchAlgorithm_Intersections,
+    opLimit = createOperationLimitFunctionValueRange(MakePositiveCandidateSearchAlgorithm_IntersectionsJoin,
                                                      interpolationAlgorithm,
                                                      verbose)
 

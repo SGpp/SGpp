@@ -14,7 +14,7 @@ from pysgpp import (createOperationHierarchisation,
 from scipy.interpolate import interp1d
 
 import numpy as np
-from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
+from pysgpp import OperationMultipleEvalType_DEFAULT, \
     GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
     GridType_ModPoly, GridType_ModPolyClenshawCurtis, \
     GridType_LinearClenshawCurtis, GridType_LinearClenshawCurtisBoundary, \
@@ -27,8 +27,7 @@ from pysgpp.pysgpp_swig import OperationMultipleEvalType_DEFAULT, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
     GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
     SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
-    SBsplineModifiedClenshawCurtisBase
-from pysgpp._pysgpp_swig import GridType_BsplineBoundary_swigconstant, \
+    SBsplineModifiedClenshawCurtisBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
 
