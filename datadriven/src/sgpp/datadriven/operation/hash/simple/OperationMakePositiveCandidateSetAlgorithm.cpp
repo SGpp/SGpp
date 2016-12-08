@@ -10,7 +10,6 @@
 #include <vector>
 #include <map>
 #include <algorithm>
-#include <limits>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -153,7 +152,7 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
       std::cout << "# intersections (k=" << k << ") : " << currentIntersections.size();
     }
 
-    size_t minLengthOverlapping = std::numeric_limits<size_t>::max();
+    size_t minLengthOverlapping = grid.getSize();
     size_t maxLengthOverlapping = 0;
     for (auto& candidates : currentIntersections) {
       auto gpi = candidates.second;
@@ -193,7 +192,9 @@ void OperationMakePositiveFindIntersectionCandidates::findIntersections(
           //          auto commonOverlappingIntersections =
           //              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
           //          for (auto& gpk : commonIntersections) {
-          //            if (haveOverlappingSupport(*gpk, *gpintersection)) {
+          //            if (gpi->getHash() != gpk->getHash() && gpj->getHash() != gpk->getHash() &&
+          //                haveOverlappingSupport(*gpk, *gpintersection) &&
+          //                !gpk->isHierarchicalAncestor(*gpintersection)) {
           //              commonOverlappingIntersections->push_back(gpk);
           //              intersectionsk[gpk->getHash()] = intersections[gpk->getHash()];
           //            }
@@ -369,19 +370,23 @@ void OperationMakePositiveFindIntersectionCandidatesJoin::findIntersections(
       std::cout << "# intersections (k=" << k << ") : " << currentIntersections.size();
     }
 
-    size_t minLengthOverlapping = std::numeric_limits<size_t>::max();
+    size_t minLengthOverlapping = grid.getSize();
     size_t maxLengthOverlapping = 0;
     for (auto& candidates : currentIntersections) {
-      auto gpi = candidates.second;
-      auto overlappingGridPoints = intersections[candidates.first];
+      auto& gpi = candidates.second;
+      auto& overlappingGridPoints = intersections[candidates.first];
 
       for (size_t j = 0; j < overlappingGridPoints->size(); j++) {
         costsPerIteration[k - 2]++;
-        auto gpj = (*overlappingGridPoints)[j];
+        auto& gpj = (*overlappingGridPoints)[j];
 
         // find intersection and store it
         auto gpintersection = std::make_shared<base::HashGridPoint>(numDims);
         computeIntersection(*gpi, *gpj, *gpintersection);
+
+        if (nextIntersections.find(gpintersection->getHash()) != nextIntersections.end()) {
+          continue;
+        }
 
         // check if the intersection has already been found
         if ((res.find(gpintersection->getHash()) == res.end()) &&
@@ -389,42 +394,30 @@ void OperationMakePositiveFindIntersectionCandidatesJoin::findIntersections(
           // store the grid point in the result map
           res[gpintersection->getHash()] = gpintersection;
           numCandidatesIteration[k - 2]++;
+        }
 
-          // join the sets for possible intersections searches in the
-          // next iteration
-          auto iintersections = intersections[gpi->getHash()];
-          auto jintersections = intersections[gpj->getHash()];
-
-          // compute intersection of both overlapping candidate list
-          std::vector<std::shared_ptr<base::HashGridPoint>> commonIntersections;
-          std::set_union(iintersections->begin(), iintersections->end(), jintersections->begin(),
-                         jintersections->end(), std::back_inserter(commonIntersections),
-                         compareGridPointsByHash);
-
-          // store the result if the common candidates overlap with the current intersection
-          // initialize the grid points that need to be considered
-          auto commonOverlappingIntersections =
-              std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
-          for (auto& gpk : commonIntersections) {
-            if (gpk->getHash() != gpi->getHash() && gpk->getHash() != gpj->getHash() &&
-                haveOverlappingSupport(*gpk, *gpintersection) &&
-                !gpk->isHierarchicalAncestor(*gpintersection)) {
-              commonOverlappingIntersections->push_back(gpk);
-              intersectionsk[gpk->getHash()] = intersections[gpk->getHash()];
-            }
+        // store intersection with updated overlapping grid points for next iteration
+        auto commonOverlappingIntersections =
+            std::make_shared<std::vector<std::shared_ptr<base::HashGridPoint>>>();
+        for (auto& gpk : *intersections[gpj->getHash()]) {
+          if (haveOverlappingSupport(*gpk, *gpintersection) &&
+              !gpk->isHierarchicalAncestor(*gpintersection) &&
+              !gpintersection->isHierarchicalAncestor(*gpk)) {
+            commonOverlappingIntersections->push_back(gpk);
+            intersectionsk[gpk->getHash()] = intersections[gpk->getHash()];
           }
+        }
 
-          // store the grid point for the next iteration if there are any overlapping
-          // other grid points left
-          if (commonOverlappingIntersections->size() > 0) {
-            nextIntersections[gpintersection->getHash()] = gpintersection;
-            intersectionsk[gpintersection->getHash()] = commonOverlappingIntersections;
-            // stats
-            minLengthOverlapping =
-                std::min(minLengthOverlapping, commonOverlappingIntersections->size());
-            maxLengthOverlapping =
-                std::max(maxLengthOverlapping, commonOverlappingIntersections->size());
-          }
+        // store the grid point for the next iteration if there are any overlapping
+        // other grid points left
+        if (commonOverlappingIntersections->size() > 0) {
+          nextIntersections[gpintersection->getHash()] = gpintersection;
+          intersectionsk[gpintersection->getHash()] = commonOverlappingIntersections;
+          // stats
+          minLengthOverlapping =
+              std::min(minLengthOverlapping, commonOverlappingIntersections->size());
+          maxLengthOverlapping =
+              std::max(maxLengthOverlapping, commonOverlappingIntersections->size());
         }
       }
     }

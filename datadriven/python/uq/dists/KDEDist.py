@@ -27,7 +27,7 @@ class KDEDist(EstimatedDist):
                  bandwidhts=None,
                  bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
                  bounds=None):
-        super(KDEDist, self).__init__(trainData, bounds)
+        super(KDEDist, self).__init__(trainData.shape[1], trainData, bounds)
 
         trainData_matrix = DataMatrix(self.trainData)
         if kde is not None:
