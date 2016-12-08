@@ -3,23 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP
-#define OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP
+#ifndef OPERATIONEVALGRADIENTMODLAGRANGENOTAKNOTSPLINE_HPP
+#define OPERATIONEVALGRADIENTMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasisDeriv1.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Operation for evaluating fundamental sspline linear combinations on Noboundary grids and their
- * gradients.
+ * Operation for evaluating modified Lagrange spline linear combinations on Noboundary grids
+ * and their gradients.
  */
-class OperationEvalGradientFundamentalSplineNaive : public
+class OperationEvalGradientModLagrangeNotAKnotSplineNaive : public
   OperationEvalGradient {
  public:
   /**
@@ -28,7 +29,7 @@ class OperationEvalGradientFundamentalSplineNaive : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalGradientFundamentalSplineNaive(GridStorage& storage, size_t degree) :
+  OperationEvalGradientModLagrangeNotAKnotSplineNaive(GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree),
     pointInUnitCube(storage.getDimension()),
@@ -38,7 +39,7 @@ class OperationEvalGradientFundamentalSplineNaive : public
   /**
    * Destructor.
    */
-  ~OperationEvalGradientFundamentalSplineNaive() override {
+  ~OperationEvalGradientModLagrangeNotAKnotSplineNaive() override {
   }
 
   /**
@@ -65,8 +66,10 @@ class OperationEvalGradientFundamentalSplineNaive : public
  protected:
   /// storage of the sparse grid
   GridStorage& storage;
-  /// 1D B-spline basis
-  SFundamentalSplineBase base;
+  /// 1D spline basis
+  SLagrangeNotAKnotSplineModifiedBase base;
+  /// 1D spline basis derivative
+  SLagrangeNotAKnotSplineModifiedBaseDeriv1 baseDeriv1;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
   /// inner derivative (temporary vector)
@@ -76,4 +79,4 @@ class OperationEvalGradientFundamentalSplineNaive : public
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP */
+#endif /* OPERATIONEVALGRADIENTMODLAGRANGENOTAKNOTSPLINE_HPP */
