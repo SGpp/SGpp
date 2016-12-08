@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <iostream>
 
