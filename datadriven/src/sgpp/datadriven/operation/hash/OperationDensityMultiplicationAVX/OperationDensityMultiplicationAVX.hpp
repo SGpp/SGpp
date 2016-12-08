@@ -29,7 +29,7 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   size_t actual_gridsize;
   size_t used_gridsize;
   size_t dimensions;
-  const int dimensions_memory = 32;
+  const int max_dimensions_memory = 32;
 
   double *result;
   int *gridpoints;
@@ -47,8 +47,15 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     // Store grid into int array and add values until it is divisible through 128
     // (required for opencl comparison)
     actual_gridsize = grid.getSize();
-    used_gridsize = actual_gridsize + blocksize - actual_gridsize % blocksize;
     dimensions = grid.getDimension();
+    if (dimensions > max_dimensions_memory) {
+      std::string msg= std::string("Dimensions of grid too large (>") +
+                    std::to_string(max_dimensions_memory) +
+                    std::string(").\nFixable by changing max_dimensions_memory to a larger value") +
+                    std::string(" (class OperationDensityMultiplicationAVX)");
+      throw std::logic_error(msg);
+    }
+    used_gridsize = actual_gridsize + blocksize - actual_gridsize % blocksize;
     gridpoints = new int[used_gridsize * 2 * dimensions];
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
     for (size_t i = 0; i < actual_gridsize; ++i) {
@@ -114,11 +121,11 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     // size_t sicherheit = 0;
     #pragma omp parallel for
     for (size_t workitem = 0; workitem < used_gridsize; workitem+=blocksize) {
-      double last_positions[dimensions_memory];
-      __m256d last_integral[blocksize / 4 * dimensions_memory];
-      __m256d workitem_positions[blocksize / 4 * dimensions_memory];
-      __m256d workitem_hs[blocksize / 4 * dimensions_memory];
-      __m256d workitem_hs_inverse[blocksize / 4 * dimensions_memory];
+      double last_positions[max_dimensions_memory];
+      __m256d last_integral[blocksize / 4 * max_dimensions_memory];
+      __m256d workitem_positions[blocksize / 4 * max_dimensions_memory];
+      __m256d workitem_hs[blocksize / 4 * max_dimensions_memory];
+      __m256d workitem_hs_inverse[blocksize / 4 * max_dimensions_memory];
       __m256d zellenintegrals[blocksize / 4];
       // load workitem positions
       for (size_t i = 0; i < blocksize / 4; ++i) {
