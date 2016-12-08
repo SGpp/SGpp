@@ -18,7 +18,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Lagrange not-a-knot spline basis.
+ * Modified Lagrange not-a-knot spline basis.
  */
 template <class LT, class IT>
 class LagrangeNotAKnotSplineModifiedBasis: public Basis<LT, IT> {

@@ -104,9 +104,12 @@
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientLagrangeNotAKnotSplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientLagrangeSplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientModLagrangeNotAKnotSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletBoundaryNaive.hpp>
@@ -405,6 +408,16 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalGradientModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
+    return new base::OperationEvalGradientLagrangeNotAKnotSplineBoundaryNaive(
+        grid.getStorage(),
+        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
+    return new base::OperationEvalGradientLagrangeSplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::LagrangeSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
+    return new base::OperationEvalGradientModLagrangeNotAKnotSplineNaive(
+        grid.getStorage(), dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalGradient is not implemented for this grid type.");
