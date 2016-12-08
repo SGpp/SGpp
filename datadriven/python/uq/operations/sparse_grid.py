@@ -1124,7 +1124,6 @@ def checkPositivity(grid, alpha):
     for i in xrange(fullHashGridStorage.getSize()):
         fullHashGridStorage.getCoordinates(fullHashGridStorage.getPoint(i), p)
         A[i, :] = p.array()
-
     negativeGridPoints = {}
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
