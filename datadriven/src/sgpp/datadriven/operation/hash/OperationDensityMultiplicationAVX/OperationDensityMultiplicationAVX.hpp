@@ -38,13 +38,15 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
 
   double *alpha;
 
+  const int blocksize = 128;
+
  public:
   OperationDensityMultiplicationAVX(base::Grid& grid, double lambda) {
     result = NULL;
     // Store grid into int array and add values until it is divisible through 128
     // (required for opencl comparison)
     actual_gridsize = grid.getSize();
-    used_gridsize = actual_gridsize + 256 - actual_gridsize % 256;
+    used_gridsize = actual_gridsize + blocksize - actual_gridsize % blocksize;
     dimensions = grid.getDimension();
     gridpoints = new int[used_gridsize * 2 * dimensions];
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
@@ -108,18 +110,17 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   virtual void start_partial_mult(double *alpha, int start_id, int chunksize) {
     std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // Copy into SIMD vectors
-    const size_t blocksize = 128;
     // size_t counter = 0;
     // size_t sicherheit = 0;
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t workitem = 0; workitem < used_gridsize; workitem+=blocksize) {
       double *last_positions = new double[dimensions];
-      __m256d *last_integral = new __m256d[dimensions];
-      __m256d *last_integral_unrolled = new __m256d[dimensions];
+      __m256d *last_integral = new __m256d[blocksize / 4 * dimensions];
       __m256d *workitem_positions = new __m256d[blocksize / 4 * dimensions];
       __m256d *workitem_hs = new __m256d[blocksize / 4 * dimensions];
       __m256d *workitem_hs_inverse = new __m256d[blocksize / 4 * dimensions];
+      __m256d *zellenintegrals = new __m256d[blocksize / 4];
       // load workitem positions
       for (size_t i = 0; i < blocksize / 4; ++i) {
         for (size_t d = 0; d < dimensions; ++d) {
@@ -142,40 +143,46 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
       }
 
       for (size_t point = 0; point < used_gridsize / blocksize; point++) {
-      for (size_t dim = 0; dim < dimensions; ++dim) {
-        last_positions[dim] = -1.0;
-      }
-        for (size_t local_item = 0; local_item < blocksize / 4; local_item+=2) {
-          const size_t unrolled_local_item = local_item + 1;
-          __m256d currentworkitem = _mm256_load_pd(&result[workitem + local_item * 4]);
-          __m256d currentworkitem_unrolled =
-              _mm256_load_pd(&result[workitem + unrolled_local_item * 4]);
-          for (size_t i = 0; i < blocksize; ++i) {
-            __m256d zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
-            __m256d zellenintegral_unrolled = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
-            for (size_t dim = 0; dim < dimensions; dim++) {
-              // sicherheit++;
-              if (std::fabs(positions[(point * blocksize + i) * dimensions + dim] -
-                            last_positions[dim]) < std::numeric_limits<double>::epsilon()) {
-                zellenintegral = _mm256_mul_pd(zellenintegral, last_integral[dim]);
-                zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled,
-                                                        last_integral_unrolled[dim]);
-                // counter++;
-                continue;
+        for (size_t dim = 0; dim < dimensions; ++dim) {
+          last_positions[dim] = -1.0;
+        }
+        for (size_t i = 0; i < blocksize; ++i) {
+          for (size_t local_item = 0; local_item < blocksize / 4; local_item++) {
+            zellenintegrals[local_item] = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
+          }
+          // __m256d zellenintegral = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
+          // __m256d zellenintegral_unrolled = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
+          for (size_t dim = 0; dim < dimensions; dim++) {
+            // sicherheit++;
+            if (positions[(point * blocksize + i) * dimensions + dim] ==
+                last_positions[dim]) {
+              for (size_t local_item = 0; local_item < blocksize / 4; local_item+=2) {
+                const size_t unrolled_local_item = local_item + 1;
+                zellenintegrals[local_item] =
+                    _mm256_mul_pd(zellenintegrals[local_item],
+                                  last_integral[local_item * dimensions + dim]);
+                zellenintegrals[unrolled_local_item] =
+                    _mm256_mul_pd(zellenintegrals[unrolled_local_item],
+                                  last_integral[unrolled_local_item * dimensions + dim]);
               }
-              // load gridpoint positions;
-              const __m256d current_positions =
-                  _mm256_set1_pd(positions[(point * blocksize + i) * dimensions + dim]);
-              last_positions[dim] = positions[(point * blocksize + i) * dimensions + dim];
-              const __m256d current_hs =
-                  _mm256_set1_pd(hs[(point * blocksize + i) * dimensions + dim]);
-              const __m256d current_hs_inverse =
-                  _mm256_set1_pd(hs_inverse[(point * blocksize + i) * dimensions + dim]);
+              // counter++;
+              continue;
+            }
+            // load gridpoint positions;
+            const __m256d current_positions =
+                _mm256_set1_pd(positions[(point * blocksize + i) * dimensions + dim]);
+            last_positions[dim] = positions[(point * blocksize + i) * dimensions + dim];
+            const __m256d current_hs =
+                _mm256_set1_pd(hs[(point * blocksize + i) * dimensions + dim]);
+            const __m256d current_hs_inverse =
+                _mm256_set1_pd(hs_inverse[(point * blocksize + i) * dimensions + dim]);
+            for (size_t local_item = 0; local_item < blocksize / 4; local_item+=2) {
+              const size_t unrolled_local_item = local_item + 1;
               __m256d tmp = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
               __m256d tmp_unrolled = _mm256_set_pd(1.0, 1.0, 1.0, 1.0);
               // Calculate distance
-              __m256d distance = _mm256_sub_pd(current_positions, workitem_positions[local_item *
-                                                                             dimensions + dim]);
+              __m256d distance =
+                  _mm256_sub_pd(current_positions,workitem_positions[local_item * dimensions + dim]);
               __m256d distance_unrolled =
                   _mm256_sub_pd(current_positions,workitem_positions[unrolled_local_item *
                                                                      dimensions + dim]);
@@ -194,57 +201,68 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
               tmp = _mm256_max_pd(tmp,_mm256_setzero_pd());
               tmp_unrolled = _mm256_max_pd(tmp_unrolled,_mm256_setzero_pd());
               __m256d tmp_alternative = _mm256_fnmadd_pd(distance, current_hs_inverse,
-                                                 _mm256_set1_pd(1.0));
+                                                         _mm256_set1_pd(1.0));
               __m256d tmp_alternative_unrolled =
                   _mm256_fnmadd_pd(distance_unrolled, current_hs_inverse,
-                                                 _mm256_set1_pd(1.0));
+                                   _mm256_set1_pd(1.0));
               tmp_alternative = _mm256_max_pd(tmp_alternative,_mm256_setzero_pd());
               tmp_alternative_unrolled = _mm256_max_pd(tmp_alternative_unrolled,_mm256_setzero_pd());
               tmp = _mm256_fmadd_pd(tmp_alternative,
                                     workitem_hs[local_item * dimensions + dim], tmp);
               tmp_unrolled = _mm256_fmadd_pd(tmp_alternative_unrolled,
-                                    workitem_hs[unrolled_local_item * dimensions + dim],
+                                             workitem_hs[unrolled_local_item * dimensions + dim],
                                              tmp_unrolled);
               const __m256d bitmask = _mm256_cmp_pd(workitem_hs[local_item * dimensions + dim],
                                                     current_hs, _CMP_EQ_OQ);
               const __m256d bitmask_unrolled =
                   _mm256_cmp_pd(workitem_hs[unrolled_local_item * dimensions + dim],
-                                                    current_hs, _CMP_EQ_OQ);
+                                current_hs, _CMP_EQ_OQ);
               tmp_alternative = _mm256_mul_pd(_mm256_set1_pd(1.0/3.0), tmp);
               tmp_alternative_unrolled = _mm256_mul_pd(_mm256_set1_pd(1.0/3.0), tmp_unrolled);
               const __m256d bitmask2 = _mm256_cmp_pd(workitem_hs[local_item * dimensions + dim],
                                                      current_hs, _CMP_NEQ_OQ);
               const __m256d bitmask2_unrolled =
                   _mm256_cmp_pd(workitem_hs[unrolled_local_item * dimensions + dim],
-                                                     current_hs, _CMP_NEQ_OQ);
+                                current_hs, _CMP_NEQ_OQ);
               tmp = _mm256_and_pd(tmp, bitmask2);
               tmp_unrolled = _mm256_and_pd(tmp_unrolled, bitmask2_unrolled);
               tmp = _mm256_add_pd(tmp, _mm256_and_pd(tmp_alternative, bitmask));
               tmp_unrolled = _mm256_add_pd(tmp_unrolled,
                                            _mm256_and_pd(tmp_alternative_unrolled,
                                                          bitmask_unrolled));
-              last_integral[dim] = tmp;
-              last_integral_unrolled[dim] = tmp_unrolled;
-              zellenintegral = _mm256_mul_pd(zellenintegral, tmp);
-              zellenintegral_unrolled = _mm256_mul_pd(zellenintegral_unrolled, tmp_unrolled);
+              last_integral[local_item * dimensions + dim] = tmp;
+              last_integral[unrolled_local_item * dimensions + dim] = tmp_unrolled;
+              zellenintegrals[local_item] = _mm256_mul_pd(zellenintegrals[local_item], tmp);
+              zellenintegrals[unrolled_local_item] =
+                  _mm256_mul_pd(zellenintegrals[unrolled_local_item], tmp_unrolled);
 
             }
+          }
+          for (size_t local_item = 0; local_item < blocksize / 4; local_item+=2) {
+            const size_t unrolled_local_item = local_item + 1;
+            __m256d currentworkitem = _mm256_load_pd(&result[workitem + local_item * 4]);
+            __m256d currentworkitem_unrolled =
+                _mm256_load_pd(&result[workitem + unrolled_local_item * 4]);
             currentworkitem =
-                _mm256_fmadd_pd(zellenintegral,
+                _mm256_fmadd_pd(zellenintegrals[local_item],
                                 _mm256_set1_pd(alpha[point * blocksize + i]),
                                 currentworkitem);
             currentworkitem_unrolled =
-                _mm256_fmadd_pd(zellenintegral_unrolled,
+                _mm256_fmadd_pd(zellenintegrals[unrolled_local_item],
                                 _mm256_set1_pd(alpha[point * blocksize + i]),
                                 currentworkitem_unrolled);
+
+            _mm256_store_pd(&result[workitem + local_item * 4], currentworkitem);
+            _mm256_store_pd(&result[workitem + unrolled_local_item * 4], currentworkitem_unrolled);
           }
-          _mm256_store_pd(&result[workitem + local_item * 4], currentworkitem);
-          _mm256_store_pd(&result[workitem + unrolled_local_item * 4], currentworkitem_unrolled);
         }
       }
       delete [] workitem_positions;
       delete [] workitem_hs;
       delete [] workitem_hs_inverse;
+      delete [] last_positions;
+      delete [] last_integral;
+      delete [] last_integral_unrolled;
     }
     // size_t maximum = sicherheit;
     // std::cout << "Skipped " << counter << " out of " << maximum << " ["
