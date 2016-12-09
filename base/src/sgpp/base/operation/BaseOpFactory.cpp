@@ -118,9 +118,12 @@
 #include <sgpp/base/operation/hash/OperationEvalHessianBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessianLagrangeNotAKnotSplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessianLagrangeSplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianModFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessianModLagrangeNotAKnotSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessianWaveletBoundaryNaive.hpp>
@@ -129,9 +132,12 @@
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPartialDerivativeLagrangeNotAKnotSplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPartialDerivativeLagrangeSplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeModFundamentalSplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPartialDerivativeModLagrangeNotAKnotSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivativeWaveletBoundaryNaive.hpp>
@@ -452,6 +458,16 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalHessianModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
+    return new base::OperationEvalHessianLagrangeNotAKnotSplineBoundaryNaive(
+        grid.getStorage(),
+        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
+    return new base::OperationEvalHessianLagrangeSplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::LagrangeSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
+    return new base::OperationEvalHessianModLagrangeNotAKnotSplineNaive(
+        grid.getStorage(), dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalHessian is not implemented for this grid type.");
@@ -487,6 +503,16 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalPartialDerivativeModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
+    return new base::OperationEvalPartialDerivativeLagrangeNotAKnotSplineBoundaryNaive(
+        grid.getStorage(),
+        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
+    return new base::OperationEvalPartialDerivativeLagrangeSplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::LagrangeSplineBoundaryGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
+    return new base::OperationEvalPartialDerivativeModLagrangeNotAKnotSplineNaive(
+        grid.getStorage(), dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalPartialDerivative is not implemented for "

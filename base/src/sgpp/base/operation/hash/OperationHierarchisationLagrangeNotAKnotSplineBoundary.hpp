@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Hierarchisation on sparse grid, fundamental spline basis
+ * Hierarchisation on sparse grid, Lagrange spline basis with not-a-knot boundary conditions
  */
 class OperationHierarchisationLagrangeNotAKnotSplineBoundary :
   public OperationHierarchisation {
