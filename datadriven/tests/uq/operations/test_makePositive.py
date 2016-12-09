@@ -38,14 +38,14 @@ gridConfig = RegularGridConfiguration()
 gridConfig.type_ = GridType_Linear
 gridConfig.boundaryLevel_ = 0
 # issues with: d = 5, l = 3, ref = 4
-numDims = 5
+numDims = 3
 level = 4
 refnums = 0
 consistentGrid = False
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
-# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
 plot = False

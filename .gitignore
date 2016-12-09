@@ -89,14 +89,6 @@ datadriven/tests/uq/analysis/parabola/results
 datadriven/tests/uq/analysis/parabolaWithSGDE
 datadriven/tests/uq/analysis/rodetest
 
-datadriven/tests/uq/anova
 datadriven/tests/uq/dists
-datadriven/tests/uq/learner
-datadriven/tests/uq/parameters
-datadriven/tests/uq/plot
-datadriven/tests/uq/quadrature
-datadriven/tests/uq/sampler
-datadriven/tests/uq/transformation
-datadriven/tests/uq/uq_setting
 
 /Release/
