@@ -38,7 +38,7 @@ class AnovaTest(unittest.TestCase):
         bs = [1, 2, 5, 10, 20, 50, 100, 500]
 
         def g(x, a):
-            return (abs(4 * x - 2) + a) / (a + 1)
+            return (np.abs(4 * x - 2) + a) / (a + 1)
 
         def f(xs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
@@ -110,12 +110,6 @@ class AnovaTest(unittest.TestCase):
         # ----------------------------------------------------------
         # estimated anova decomposition
         anova = analysis.getAnovaDecomposition(nk=len(self.params))
-
-        # ----------------------------------------------------------
-        # check interpolation and decomposition
-        m = np.random.rand(10, self.params.getDim())
-        for i in range(m.shape[0]):
-            self.assertTrue(abs(analysis.eval(m[i, :]) - anova.eval(m[i, :])) < 1e-14)
 
         # ----------------------------------------------------------
         # main effects
