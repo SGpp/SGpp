@@ -38,17 +38,17 @@ gridConfig = RegularGridConfiguration()
 gridConfig.type_ = GridType_Linear
 gridConfig.boundaryLevel_ = 0
 # issues with: d = 5, l = 3, ref = 4
-numDims = 3
-level = 4
+numDims = 2
+level = 3
 refnums = 0
 consistentGrid = False
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
-# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
-plot = False
+plot = True
 verbose = True
 code = "c++"
 
@@ -59,8 +59,8 @@ gridConfig.maxDegree_ = level + 1
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
 
-# dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
-dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
+dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
+# dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
 # dist = J([Lognormal(0.2, 0.7, 0, 1)] * numDims)  # problems in 5d/l3
 
 trainSamples = dist.rvs(1000)

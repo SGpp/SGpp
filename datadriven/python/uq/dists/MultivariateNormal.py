@@ -3,6 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
+from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 """
 @file    tnormal.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -14,11 +15,10 @@
 
 """
 
-from scipy.stats import multivariate_normal
+from J import J
 from Dist import Dist
 import numpy as np
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
-
 
 class MultivariateNormal(Dist):
     """
@@ -40,13 +40,33 @@ class MultivariateNormal(Dist):
         self.__dim = len(mu)
 
         # standard multivariate normal
-        self._dist = multivariate_normal(mu, cov)
+        dists = [None] * self.__dim
+        for idim in xrange(self.__dim):
+            dists[idim] = Normal.by_alpha(0, 1, 0.001)
+        self.dist = J(dists)
+
+        self.cov_inv = np.linalg.inv(cov)
+        self.norm = 1. / np.sqrt((2 * np.pi) ** self.__dim * np.linalg.det(cov))
+
+        # do cholesky decomposition for nataf transformation
+        self.corr = np.ndarray(cov.shape)
+        for i in xrange(cov.shape[0]):
+            for j in xrange(cov.shape[1]):
+                print i, j, cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
+                self.corr[i, j] = cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
+        self.L = np.linalg.cholesky(self.corr)
 
     def pdf(self, x):
-        return self._dist.pdf(x)
+        z = x - self.__mu
+        return self.norm * np.exp(-0.5 * np.dot(z, np.dot(self.cov_inv, z)))
 
     def rvs(self, n=1):
-        return self._dist.rvs(n)
+        # do a nataf transformation
+        correlated_samples = np.dot(self.L, self.dist.rvs(n).T)
+        ans = np.ndarray(correlated_samples.shape)
+        for idim, sample in enumerate(correlated_samples):
+            ans[idim, :] = self.__mu[idim] + sample * np.sqrt(self.__cov[idim, idim])
+        return ans.T
 
     def getBounds(self):
         ans = np.zeros([self.__dim, 2], dtype="float")
