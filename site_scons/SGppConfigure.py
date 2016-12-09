@@ -186,6 +186,11 @@ def checkDot(config):
         subprocess.check_output(["dot", "-V"], stderr=subprocess.STDOUT).strip() + ".")
 
 def checkOpenCL(config):
+
+  # OpenCL also need boost to build
+  config.env.AppendUnique(CPPPATH=[config.env["BOOST_INCLUDE_PATH"]])
+  config.env.AppendUnique(LIBPATH=[config.env["BOOST_LIBRARY_PATH"]])
+  
   if config.env["USE_OCL"]:
     if "OCL_INCLUDE_PATH" in config.env["ENV"]:
       config.env.AppendUnique(CPPPATH=[config.env["ENV"]["OCL_INCLUDE_PATH"]])
@@ -211,6 +216,17 @@ def checkOpenCL(config):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
+
+    if not config.CheckCXXHeader("zlib.h"):
+      Helper.printErrorAndExit("zlib.h not found, but required for OpenCL",
+                               "On debian-like system the package zlib1g-dev",
+                               "can be installed to solve this issue.")
+      
+    if not config.CheckLib("libz", language="c++", autoadd=0):
+      Helper.printErrorAndExit("libz not found, but required for OpenCL",
+                               "On debian-like system the package zlib1g",
+                               "can be installed to solve this issue.")
+      
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
     
 
