@@ -14,7 +14,7 @@ from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
 from itertools import combinations
-from pysgpp.pysgpp_swig import GridType_ModPolyClenshawCurtis
+from pysgpp import GridType_ModPoly
 
 
 class AnovaTest(unittest.TestCase):
@@ -80,7 +80,7 @@ class AnovaTest(unittest.TestCase):
 
         samplerSpec = builder.defineSampler()
         samplerSpec.withGrid().withLevel(3)\
-                              .hasType(GridType_ModPolyClenshawCurtis)\
+                              .hasType(GridType_ModPoly)\
                               .withDegree(10)
         # ----------------------------------------------------------
         # discretize the stochastic space with the ASGC method
@@ -115,7 +115,8 @@ class AnovaTest(unittest.TestCase):
         # check interpolation and decomposition
         m = np.random.rand(10, self.params.getDim())
         for i in range(m.shape[0]):
-            self.assertTrue(abs(analysis.eval(m[i, :]) - anova.eval(m[i, :])) < 1e-14)
+            print abs(analysis.eval(m[i, :]) - anova.eval(m[i, :]))
+            self.assertTrue(abs(analysis.eval(m[i, :]) - anova.eval(m[i, :])) < 1e-13)
 
         # ----------------------------------------------------------
         # main effects
