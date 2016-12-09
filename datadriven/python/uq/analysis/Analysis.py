@@ -123,6 +123,8 @@ class Analysis(object):
         """
         if iterations is None:
             iterations = self._iterations
+            chooseLastIteration = True
+
         if ts is None:
             ts = self._ts
 
@@ -147,8 +149,9 @@ class Analysis(object):
                 ans[iteration][t] = moment
 
         # remove dict structure if there are just one element
-        if len(iterations) == 1:
-            ans = ans[iterations[0]]
+        if chooseLastIteration or len(iterations) == 1:
+            ans = ans[iterations[-1]]
+
         if len(ts) == 1:
             ans = ans[ts[0]]
 
