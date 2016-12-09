@@ -111,7 +111,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     if ts is None:
         y0 = 0
         for i in xrange(len(sobolIndices)):
-            myplot = plt.bar([0], [sobolIndices[i]], 1, color=colors[i], bottom=[y0])
+            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0])  # color=colors[i]
             y0 += sobolIndices[i]
             plots = [myplot] + plots
 
