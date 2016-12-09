@@ -125,7 +125,7 @@ class LagrangeNotAKnotSplineModifiedBasisDeriv1: public Basis<LT, IT> {
       case 5:
         if (l == 1) {
           // l = 1, i = 1
-          return 1.0;
+          return 0.0;
         } else if ((i > 1) && (i < hInv - 1)) {
           // l >= 3, 1 < i < 2^l - 1
           return lagrangeNotAKnotSplineBasisDeriv1.eval(l, i, x);
@@ -223,7 +223,7 @@ class LagrangeNotAKnotSplineModifiedBasisDeriv1: public Basis<LT, IT> {
       case 7:
         if (l == 1) {
           // l = 1, i = 1
-          return 1.0;
+          return 0.0;
         } else if ((i > 1) && (i < hInv - 1)) {
           // l >= 3, 1 < i < 2^l - 1
           return lagrangeNotAKnotSplineBasisDeriv1.eval(l, i, x);
@@ -236,7 +236,7 @@ class LagrangeNotAKnotSplineModifiedBasisDeriv1: public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1
-            double result = -4.0/35.0;
+            double result = -6.0/35.0;
             result = 19.0/70.0 + result * t;
             result = 37.0/35.0 + result * t;
             result = -331.0/210.0 + result * t;

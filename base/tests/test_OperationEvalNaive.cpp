@@ -103,10 +103,16 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLagrangeNotAKnotSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModLagrangeNotAKnotSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLagrangeSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createNaturalBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createNotAKnotBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModNotAKnotBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModWaveletGrid(d)));
@@ -122,10 +128,16 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLagrangeNotAKnotSplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLagrangeNotAKnotSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLagrangeSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNaturalBsplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNotAKnotBsplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNotAKnotBsplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletModifiedBase()));
@@ -139,13 +151,18 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
     // only test gradients for bases with derivatives
     const bool hasGradients =
-        (grid.getType() == GridType::Bspline) || (grid.getType() == GridType::BsplineBoundary) ||
+        (grid.getType() == GridType::Bspline) ||
+        (grid.getType() == GridType::BsplineBoundary) ||
         (grid.getType() == GridType::BsplineClenshawCurtis) ||
         (grid.getType() == GridType::ModBspline) ||
         (grid.getType() == GridType::ModBsplineClenshawCurtis) ||
         (grid.getType() == GridType::FundamentalSpline) ||
         (grid.getType() == GridType::ModFundamentalSpline) ||
-        (grid.getType() == GridType::Wavelet) || (grid.getType() == GridType::WaveletBoundary) ||
+        (grid.getType() == GridType::LagrangeNotAKnotSplineBoundary) ||
+        (grid.getType() == GridType::ModLagrangeNotAKnotSpline) ||
+        (grid.getType() == GridType::LagrangeSplineBoundary) ||
+        (grid.getType() == GridType::Wavelet) ||
+        (grid.getType() == GridType::WaveletBoundary) ||
         (grid.getType() == GridType::ModWavelet);
 
     // create regular sparse grid
