@@ -38,7 +38,7 @@ class AnovaTest(unittest.TestCase):
         bs = [1, 2, 5, 10, 20, 50, 100, 500]
 
         def g(x, a):
-            return (abs(4 * x - 2) + a) / (a + 1)
+            return (np.abs(4 * x - 2) + a) / (a + 1)
 
         def f(xs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
