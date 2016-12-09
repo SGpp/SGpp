@@ -52,7 +52,6 @@ class MultivariateNormal(Dist):
         self.corr = np.ndarray(cov.shape)
         for i in xrange(cov.shape[0]):
             for j in xrange(cov.shape[1]):
-                print i, j, cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
                 self.corr[i, j] = cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
         self.L = np.linalg.cholesky(self.corr)
 

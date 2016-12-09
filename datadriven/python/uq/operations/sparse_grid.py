@@ -632,6 +632,8 @@ def evalSGFunctionMulti(grid, alpha, samples):
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)
     opEval.mult(alpha_vec, res_vec)
+
+    del opEval
     return res_vec.array()
 
 
@@ -654,9 +656,15 @@ def evalSGFunction(grid, alpha, p):
                               GridType_PolyClenshawCurtis,
                               GridType_PolyClenshawCurtisBoundary,
                               GridType_ModPolyClenshawCurtis]:
-            return createOperationEvalNaive(grid).eval(alpha_vec, p_vec)
+            opEval = createOperationEvalNaive(grid)
+
         else:
-            return createOperationEval(grid).eval(alpha_vec, p_vec)
+            opEval = createOperationEval(grid)
+
+        ans = opEval.eval(alpha_vec, p_vec)
+
+        del opEval
+        return ans
     else:
         if grid.getStorage().getDimension() != p.shape[1]:
             raise AttributeError("grid dimension differs from dimension of samples")
