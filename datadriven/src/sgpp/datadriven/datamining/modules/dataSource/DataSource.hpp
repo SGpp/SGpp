@@ -15,31 +15,66 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/globaldef.hpp>
 
-#include <memory>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
+// forward declaration
 class DataSourceIterator;
 
+/**
+ * Configurable high level object that controlls
+ */
 class DataSource {
  public:
+  /**
+   *
+   * @param config
+   * @param sampleProvider
+   */
   DataSource(DataSourceConfig config, SampleProvider* sampleProvider);
-  virtual ~DataSource();
 
-  DataSourceConfig& getConfig();
+  /**
+   *
+   */
+  const DataSourceConfig& getConfig() const;
+
+  /**
+   *
+   */
   Dataset* getNextSamples();
+  /**
+   *
+   */
   DataSourceIterator begin();
+  /**
+   *
+   */
   DataSourceIterator end();
+
+  /**
+   *
+   */
+  size_t getCurrentIteration() const;
   size_t getCurrentIteration();
 
- protected:
+ private:
+  /**
+   * Configuration file that determines all relevant properties of the object.
+   */
   DataSourceConfig config;
+
+  /**
+   * counter variable if data is requested in batches.
+   */
   size_t currentIteration;
-  std::shared_ptr<SampleProvider> sampleProvider;
+
+  /**
+   * pointer to sample provider that actually returns the data.
+   */
+  std::unique_ptr<SampleProvider> sampleProvider;
 };
 
 } /* namespace datadriven */

@@ -20,17 +20,17 @@
 
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp"
 
-%include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
+//%include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
