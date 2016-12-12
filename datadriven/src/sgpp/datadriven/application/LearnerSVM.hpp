@@ -27,26 +27,27 @@ namespace datadriven {
 
 class LearnerSVM {
  protected:
-  std::shared_ptr<base::Grid> grid;
-  std::shared_ptr<base::DataMatrix> trainData;
-  std::shared_ptr<base::DataVector> trainLabels;
-  std::shared_ptr<base::DataMatrix> testData;
-  std::shared_ptr<base::DataVector> testLabels;
-  std::shared_ptr<base::DataMatrix> validData;
-  std::shared_ptr<base::DataVector> validLabels;
+  std::unique_ptr<base::Grid> grid;
+
+  base::DataMatrix& trainData;
+  base::DataVector& trainLabels;
+  base::DataMatrix& testData;
+  base::DataVector& testLabels;
+  base::DataMatrix* validData;
+  base::DataVector* validLabels;
+
+  base::RegularGridConfiguration gridConfig;
+  base::AdpativityConfiguration adaptivityConfig;
 
   // the svm object
-  std::shared_ptr<PrimalDualSVM> svm;
-
-  sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  std::unique_ptr<PrimalDualSVM> svm;
 
   /**
    * Generates a regular sparse grid.
    *
    * @return The created grid
    */
-  std::shared_ptr<base::Grid> createRegularGrid();
+  std::unique_ptr<base::Grid> createRegularGrid();
 
  public:
   /**
@@ -54,9 +55,21 @@ class LearnerSVM {
    *
    * @param gridConfig The grid configuration
    * @param adaptConfig The refinement configuration
+   * @param pTrainData The training dataset
+   * @param pTrainLabels The corresponding training labels
+   * @param pTestData The test dataset
+   * @param pTestLabels The corresponding test labels
+   * @param pValidData The validation dataset
+   * @param pValidLabels The corresponding validation labels
    */
-  LearnerSVM(sgpp::base::RegularGridConfiguration& gridConfig,
-             sgpp::base::AdpativityConfiguration& adaptConfig);
+  LearnerSVM(base::RegularGridConfiguration& gridConfig,
+             base::AdpativityConfiguration& adaptConfig,
+             base::DataMatrix& pTrainData,
+             base::DataVector& pTrainLabels,
+             base::DataMatrix& pTestData,
+             base::DataVector& pTestLabels,
+             base::DataMatrix* pValidData,
+             base::DataVector* pValidLabels);
 
   /**
    * Destructor.
@@ -66,19 +79,9 @@ class LearnerSVM {
   /**
    * Initializes the SVM learner.
    *
-   * @param pTrainData The training dataset
-   * @param pTrainLabels The corresponding training labels
-   * @param pTestData The test dataset
-   * @param pTestLabels The corresponding test labels
-   * @param pValidData The validation dataset
-   * @param pValidLabels The corresponding validation labels
    * @param budget The max. number of stored support vectors
    */
-  void initialize(base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
-                  base::DataMatrix& pTestData, base::DataVector& pTestLabels,
-                  std::shared_ptr<base::DataMatrix> pValidData,
-                  std::shared_ptr<base::DataVector> pValidLabels,
-                  size_t budget);
+  void initialize(size_t budget);
 
   /**
    * Implements support vector learning with sparse grid kernels.

@@ -30,43 +30,39 @@ using sgpp::base::ImpurityRefinementIndicator;
 namespace sgpp {
 namespace datadriven {
 
-LearnerSVM::LearnerSVM(sgpp::base::RegularGridConfiguration& gridConfig,
-                       sgpp::base::AdpativityConfiguration& adaptConfig)
+LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
+                       base::AdpativityConfiguration& adaptConfig,
+                       base::DataMatrix& pTrainData,
+                       base::DataVector& pTrainLabels,
+                       base::DataMatrix& pTestData,
+                       base::DataVector& pTestLabels,
+                       base::DataMatrix* pValidData,
+                       base::DataVector* pValidLabels)
     : grid(nullptr),
-      trainData(nullptr),
-      trainLabels(nullptr),
-      testData(nullptr),
-      testLabels(nullptr),
-      validData(nullptr),
-      validLabels(nullptr),
+      trainData(pTrainData),
+      trainLabels(pTrainLabels),
+      testData(pTestData),
+      testLabels(pTestLabels),
+      validData(pValidData),
+      validLabels(pValidLabels),
       gridConfig(gridConfig),
       adaptivityConfig(adaptConfig) {}
 
 LearnerSVM::~LearnerSVM() {}
 
-void LearnerSVM::initialize(
-    base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
-    base::DataMatrix& pTestData, base::DataVector& pTestLabels,
-    std::shared_ptr<sgpp::base::DataMatrix> pValidData,
-    std::shared_ptr<sgpp::base::DataVector> pValidLabels, size_t budget) {
-  trainData = std::make_shared<base::DataMatrix>(pTrainData);
-  trainLabels = std::make_shared<base::DataVector>(pTrainLabels);
-  testData = std::make_shared<base::DataMatrix>(pTestData);
-  testLabels = std::make_shared<base::DataVector>(pTestLabels);
-  validData = pValidData;
-  validLabels = pValidLabels;
-  gridConfig.dim_ = trainData->getNcols();
+void LearnerSVM::initialize(size_t budget) {
+  // create grid
   grid = createRegularGrid();
 
   std::cout << "# initial grid size: " << grid->getSize() << std::endl;
   std::cout << "# SVS budget: " << budget << std::endl;
 
-  // generate SVM
-  svm = std::shared_ptr<PrimalDualSVM>(
-      new PrimalDualSVM(grid->getSize(), trainData->getNcols(), budget, false));
+  // create SVM
+  svm = std::unique_ptr<PrimalDualSVM>(
+      new PrimalDualSVM(grid->getSize(), trainData.getNcols(), budget, false));
 }
 
-std::shared_ptr<base::Grid> LearnerSVM::createRegularGrid() {
+std::unique_ptr<base::Grid> LearnerSVM::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::ModLinear) {
@@ -78,10 +74,7 @@ std::shared_ptr<base::Grid> LearnerSVM::createRegularGrid() {
 
   uGrid->getGenerator().regular(gridConfig.level_);
 
-  // move the grid to be shared
-  std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
-
-  return sGrid;
+  return uGrid;
 }
 
 void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
@@ -90,7 +83,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
                        size_t errorDeclineBufferSize, size_t minRefInterval) {
   GridStorage& gridStorage = grid->getStorage();
 
-  size_t dim = trainData->getNcols();
+  size_t dim = trainData.getNcols();
   // initialize counter for dataset passes
   size_t cntDataPasses = 0;
   // iteration counter for computing learning parameter
@@ -113,7 +106,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
       errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
 
   // auxiliary variable for accuracy (error) measurement
-  double acc = getAccuracy(*testData, *testLabels, 0.0);
+  double acc = getAccuracy(testData, testLabels, 0.0);
   avgErrors.append(1.0 - acc);
 
   // counts total number of processed data points
@@ -121,11 +114,11 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
 
   // learn the data
   while (cntDataPasses < maxDataPasses) {
-    for (size_t i = 0; i < trainData->getNrows(); i++) {
+    for (size_t i = 0; i < trainData.getNrows(); i++) {
       // Get next training sample x and its label y
       sgpp::base::DataVector x(dim);
-      trainData->getRow(i, x);
-      double y = trainLabels->get(i);
+      trainData.getRow(i, x);
+      double y = trainLabels.get(i);
 
       t += 1;
       // compute next learning rate
@@ -147,7 +140,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
                 "No validation data for checking convergence provided!");
           }
           currentValidError = getError(*validData, *validLabels, "Hinge");
-          currentTrainError = getError(*trainData, *trainLabels, "Hinge");
+          currentTrainError = getError(trainData, trainLabels, "Hinge");
 
           monitor->pushToBuffer(currentValidError, currentTrainError);
 
@@ -169,7 +162,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
       processedPoints++;
 
       if (doRefine) {
-        // acc = getAccuracy(*testData, *testLabels, 0.0);
+        // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
 
         std::cout << "refinement at iteration: " << processedPoints
@@ -180,20 +173,20 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
           ForwardSelectorRefinement decorator(&refinement);
           // generate indicator
           ForwardSelectorRefinementIndicator indicator(
-              *grid, *(svm->svs), *(svm->alphas), *(svm->w), *(svm->w2),
-              betaRef, adaptivityConfig.threshold_, adaptivityConfig.noPoints_);
+              *grid, svm->svs, svm->alphas, svm->w, svm->w2, betaRef,
+              adaptivityConfig.threshold_, adaptivityConfig.noPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         } else if (refType == "impurity") {
           // compute current labels of support vectors
-          sgpp::base::DataVector svsClassesComputed((svm->svs)->getNrows());
-          predict(*(svm->svs), svsClassesComputed);
+          sgpp::base::DataVector svsClassesComputed((svm->svs).getNrows());
+          predict(svm->svs, svsClassesComputed);
 
           ImpurityRefinement decorator(&refinement);
           // generate indicator
           ImpurityRefinementIndicator indicator(
-              *grid, *(svm->svs), (svm->alphas).get(), (svm->w).get(),
-              (svm->w2).get(), svsClassesComputed, adaptivityConfig.threshold_,
+              *grid, svm->svs, &(svm->alphas), &(svm->w), &(svm->w2),
+              svsClassesComputed, adaptivityConfig.threshold_,
               adaptivityConfig.noPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
@@ -210,17 +203,17 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
 
       // save current error
       if (processedPoints % 10 == 0) {
-        acc = getAccuracy(*testData, *testLabels, 0.0);
+        acc = getAccuracy(testData, testLabels, 0.0);
         avgErrors.append(1.0 - acc);
       }
     }
     cntDataPasses++;
   }
   std::cout << "final grid size: " << grid->getSize() << std::endl;
-  double hinge = getError(*testData, *testLabels, "Hinge");
+  double hinge = getError(testData, testLabels, "Hinge");
   std::cout << "hinge loss: " << hinge << std::endl;
 
-  error = 1.0 - getAccuracy(*testData, *testLabels, 0.0);
+  error = 1.0 - getAccuracy(testData, testLabels, 0.0);
 }
 
 void LearnerSVM::storeResults(sgpp::base::DataMatrix& testDataset) {

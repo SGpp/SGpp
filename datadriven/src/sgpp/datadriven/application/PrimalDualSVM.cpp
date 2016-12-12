@@ -16,15 +16,15 @@ namespace datadriven {
 
 PrimalDualSVM::PrimalDualSVM(size_t dim, size_t dataDim, size_t budget,
                              bool useBias)
-    : svs(new sgpp::base::DataMatrix(0, dataDim)),
-      alphas(new sgpp::base::DataVector(0)),
-      norms(new sgpp::base::DataVector(0)),
-      w(new sgpp::base::DataVector(dim, 0.0)),
-      w2(new sgpp::base::DataVector(dim, 0.0)),
+    : svs(sgpp::base::DataMatrix(0, dataDim)),
+      alphas(sgpp::base::DataVector(0)),
+      norms(sgpp::base::DataVector(0)),
+      w(sgpp::base::DataVector(dim, 0.0)),
+      w2(sgpp::base::DataVector(dim, 0.0)),
       budget(budget),
       useBias(useBias),
       bias(0.0) {
-  svs->setInc(budget);
+  svs.setInc(budget);
 }
 
 PrimalDualSVM::~PrimalDualSVM() {}
@@ -40,10 +40,11 @@ double PrimalDualSVM::predictRaw(sgpp::base::Grid& grid,
     sgpp::base::DataMatrix xMatrix(1, dataDim);
     xMatrix.setRow(0, x);
     sgpp::base::DataVector unitAlpha(1, 1.0);
-    op_factory::createOperationMultipleEval(grid, xMatrix)
-        ->multTranspose(unitAlpha, xTrans);
+    std::unique_ptr<base::OperationMultipleEval> multEval(
+        op_factory::createOperationMultipleEval(grid, xMatrix));
+    multEval->multTranspose(unitAlpha, xTrans);
   }
-  double res = w->dotProduct(xTrans);
+  double res = w.dotProduct(xTrans);
   if (useBias) {
     res += bias;
   }
@@ -62,10 +63,10 @@ int PrimalDualSVM::predict(sgpp::base::Grid& grid, sgpp::base::DataVector& x,
 
 void PrimalDualSVM::multiply(double scalar) {
   if (scalar != 1.0) {
-    w->mult(scalar);
-    w2->mult(scalar);
-    if (alphas->getSize() > 0) {
-      alphas->mult(scalar);
+    w.mult(scalar);
+    w2.mult(scalar);
+    if (alphas.getSize() > 0) {
+      alphas.mult(scalar);
     }
     if (useBias) {
       bias += scalar;
@@ -75,24 +76,25 @@ void PrimalDualSVM::multiply(double scalar) {
 
 void PrimalDualSVM::add(sgpp::base::Grid& grid, sgpp::base::DataVector& x,
                         double alpha, size_t dataDim) {
-  if (svs->getNrows() < budget) {
+  if (svs.getNrows() < budget) {
     sgpp::base::DataVector xTrans(grid.getSize());
     // SG-kernel evaluation
     sgpp::base::DataMatrix xMatrix(1, dataDim);
     xMatrix.setRow(0, x);
     sgpp::base::DataVector unitAlpha(1, 1.0);
-    op_factory::createOperationMultipleEval(grid, xMatrix)
-        ->multTranspose(unitAlpha, xTrans);
+    std::unique_ptr<base::OperationMultipleEval> multEval(
+        op_factory::createOperationMultipleEval(grid, xMatrix));
+    multEval->multTranspose(unitAlpha, xTrans);
 
-    svs->appendRow(x);
-    alphas->append(alpha);
-    norms->append(xTrans.dotProduct(xTrans));
+    svs.appendRow(x);
+    alphas.append(alpha);
+    norms.append(xTrans.dotProduct(xTrans));
 
     sgpp::base::DataVector xTransCopy(xTrans);
     xTrans.mult(alpha);
-    w->add(xTrans);
+    w.add(xTrans);
     xTransCopy.mult(std::abs(alpha));
-    w2->add(xTransCopy);
+    w2.add(xTransCopy);
 
     if (useBias) {
       bias += alpha;

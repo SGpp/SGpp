@@ -29,18 +29,6 @@ class LearnerSGD {
    *
    * @param gridConfig The grid configuration
    * @param adaptivityConfig The refinement configuration
-   */
-  LearnerSGD(sgpp::base::RegularGridConfiguration& gridConfig,
-             sgpp::base::AdpativityConfiguration& adaptivityConfig);
-
-  /**
-   * Destructor.
-   */
-  ~LearnerSGD();
-
-  /**
-   * Initializes the SGD learner.
-   *
    * @param pTrainData The training dataset
    * @param pTrainLabels The corresponding training labels
    * @param pTestData The test dataset
@@ -54,14 +42,26 @@ class LearnerSGD {
    * @param useValidData Specifies if validation data should be used
    *        for all error computations
    */
-  void initialize(sgpp::base::DataMatrix& pTrainData,
-                  sgpp::base::DataVector& pTrainLabels,
-                  sgpp::base::DataMatrix& pTestData,
-                  sgpp::base::DataVector& pTestLabels,
-                  std::shared_ptr<sgpp::base::DataMatrix> pValData,
-                  std::shared_ptr<sgpp::base::DataVector> pValLabels,
-                  double lambda, double gamma, size_t batchSize,
-                  bool useValidData);
+  LearnerSGD(base::RegularGridConfiguration& gridConfig,
+             base::AdpativityConfiguration& adaptivityConfig,
+             base::DataMatrix& pTrainData,
+             base::DataVector& pTrainLabels,
+             base::DataMatrix& pTestData,
+             base::DataVector& pTestLabels,
+             base::DataMatrix* pValData,
+             base::DataVector* pValLabels,
+             double lambda, double gamma,
+             size_t batchSize, bool useValidData);
+
+  /**
+   * Destructor.
+   */
+  ~LearnerSGD();
+
+  /**
+   * Initializes the SGD learner (creates grid etc.).
+   */
+  void initialize();
 
   /**
    * Implements online learning using stochastic gradient descent.
@@ -129,16 +129,14 @@ class LearnerSGD {
                   std::string errorType);
 
   /**
-   * Computes error contribution for each data point of the given data set
-   * (required for predictive refinement indicator).
+   * Computes error contribution for each data point of the given
+   * data set (required for predictive refinement indicator).
    *
    * @param data The data points
    * @param labels The corresponding class labels
-   * @param error The vector which contains the error contributions
    */
   void getBatchError(sgpp::base::DataMatrix& data,
-                     const sgpp::base::DataVector& labels,
-                     sgpp::base::DataVector& error) const;
+                     const sgpp::base::DataVector& labels);
 
   /**
    * Computes the classification accuracy.
@@ -159,7 +157,7 @@ class LearnerSGD {
    * @param predictedLabels The predicted class labels
    */
   void predict(base::DataMatrix& testData,
-               base::DataVector& predictedLabels) const;
+               base::DataVector& predictedLabels);
 
   /**
    * Stores the last 'batchSize' processed data points
@@ -168,21 +166,21 @@ class LearnerSGD {
    * @param x The current data point
    * @param y The corresponding class label
    */
-  void pushToBatch(sgpp::base::DataVector& x, double y) const;
+  void pushToBatch(sgpp::base::DataVector& x, double y);
 
   std::unique_ptr<base::Grid> grid;
-  std::shared_ptr<base::DataVector> alpha;
-  std::shared_ptr<base::DataVector> alphaAvg;
-  std::shared_ptr<base::DataMatrix> trainData;
-  std::shared_ptr<base::DataVector> trainLabels;
-  std::shared_ptr<base::DataMatrix> testData;
-  std::shared_ptr<base::DataVector> testLabels;
-  std::shared_ptr<base::DataMatrix> batchData;
-  std::shared_ptr<base::DataVector> batchLabels;
-  std::shared_ptr<base::DataVector> batchError;
+  base::DataVector alpha;
+  base::DataVector alphaAvg;
+  base::DataMatrix& trainData;
+  base::DataVector& trainLabels;
+  base::DataMatrix& testData;
+  base::DataVector& testLabels;
+  base::DataMatrix* batchData;
+  base::DataVector* batchLabels;
+  base::DataVector batchError;
 
-  sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  base::RegularGridConfiguration gridConfig;
+  base::AdpativityConfiguration adaptivityConfig;
 
   double lambda;
   double gamma;
