@@ -40,8 +40,9 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(
     DataMatrix xMatrix(1, svs.getNcols());
     xMatrix.setRow(0, x);
     DataVector alpha(1, 1.0);
-    op_factory::createOperationMultipleEval(grid, xMatrix)
-        ->multTranspose(alpha, xTrans);
+    std::unique_ptr<base::OperationMultipleEval> multEval(
+        op_factory::createOperationMultipleEval(grid, xMatrix));
+    multEval->multTranspose(alpha, xTrans);
     double t = alphas.get(i);
     losses.set(i, 1.0 - w1.dotProduct(xTrans) * t);
 

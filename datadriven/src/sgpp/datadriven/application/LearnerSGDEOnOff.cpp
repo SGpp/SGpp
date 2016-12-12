@@ -36,10 +36,10 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
     sgpp::base::DataMatrix* validData, sgpp::base::DataVector* validDataLabels,
     sgpp::base::DataVector& classLabels, size_t classNumber,
     bool usePrior, double beta, double lambda)
-    : trainData(&trainData),
-      trainLabels(&trainDataLabels),
-      testData(&testData),
-      testLabels(&testDataLabels),
+    : trainData(trainData),
+      trainLabels(trainDataLabels),
+      testData(testData),
+      testLabels(testDataLabels),
       validData(validData),
       validLabels(validDataLabels),
       classLabels(classLabels),
@@ -130,7 +130,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 
   // auxiliary variables
   sgpp::base::DataVector* alphaWork;  // required for surplus refinement
-  sgpp::base::DataVector p(trainData->getNcols());
+  sgpp::base::DataVector p(trainData.getNcols());
 
   // initialize counter for dataset passes
   size_t cntDataPasses = 0;
@@ -157,9 +157,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 
   std::vector<std::pair<DBMatOnlineDE*, double>>* onlineObjects;
 
-  size_t dim = trainData->getNcols();
+  size_t dim = trainData.getNcols();
   // determine number of batches to process
-  size_t numBatch = trainData->getNrows() / batchSize;
+  size_t numBatch = trainData.getNrows() / batchSize;
 
   // print initial grid size
   onlineObjects = getDestFunctions();
@@ -198,8 +198,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
           new sgpp::base::DataVector(batchSize);
       for (size_t j = 0; j < batchSize; j++) {
         sgpp::base::DataVector x(dim);
-        trainData->getRow(j + cnt, x);
-        double y = trainLabels->get(j + cnt);
+        trainData.getRow(j + cnt, x);
+        double y = trainLabels.get(j + cnt);
         batch->setRow(j, x);
         batchLabels->set(j, y);
       }
@@ -232,7 +232,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
         }
         if ((offline->getConfig()->decomp_type_ == DBMatDecompChol) &&
             (refCnt < offline->getConfig()->numRefinements_)) {
-          currentValidError = getError(validData, validLabels, "Acc");
+          currentValidError = getError(*validData, *validLabels, "Acc");
           currentTrainError = getError(trainData, trainLabels,
                                        "Acc");  // if train dataset is large
                                                 // use a subset for error
@@ -281,9 +281,11 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
         std::vector<double> coeffA;
         coeffA.push_back(1.2);  // ripley 1.2
         coeffA.push_back(1.2);  // ripley 1.2
+        base::DataMatrix* trainDataRef = &trainData;
+        base::DataVector* trainLabelsRef = &trainLabels;
         sgpp::datadriven::DataBasedRefinementFunctor funcData =
             *(new sgpp::datadriven::DataBasedRefinementFunctor(
-                grids, alphas, trainData, trainLabels,
+                grids, alphas, trainDataRef, trainLabelsRef,
                 offline->getConfig()->ref_noPoints_, levelPenalize, coeffA));
         if (refType == "zero") {
           func = &funcZrcr;
@@ -490,12 +492,12 @@ double LearnerSGDEOnOff::getAccuracy() {
   size_t correctLabel1 = 0;
   size_t correctLabel2 = 0;
   for (size_t i = 0; i < computedLabels.getSize(); i++) {
-    if (computedLabels.get(i) == testLabels->get(i)) {
+    if (computedLabels.get(i) == testLabels.get(i)) {
       correct++;
     }
-    if ((computedLabels.get(i) == -1.0) && (testLabels->get(i) == -1.0)) {
+    if ((computedLabels.get(i) == -1.0) && (testLabels.get(i) == -1.0)) {
       correctLabel1++;
-    } else if ((computedLabels.get(i) == 1.0) && (testLabels->get(i) == 1.0)) {
+    } else if ((computedLabels.get(i) == 1.0) && (testLabels.get(i) == 1.0)) {
       correctLabel2++;
     }
   }
@@ -507,20 +509,20 @@ double LearnerSGDEOnOff::getAccuracy() {
   return acc;
 }
 
-base::DataVector LearnerSGDEOnOff::predict(sgpp::base::DataMatrix* data) {
-  base::DataVector result(data->getNrows());
+base::DataVector LearnerSGDEOnOff::predict(sgpp::base::DataMatrix& data) {
+  base::DataVector result(data.getNrows());
 
   /*if(not trained) {
     std::cerr << "LearnerSGDEOnOff: Not trained!" << std::endl;
     exit(-1);
   }*/
 
-  for (size_t i = 0; i < data->getNrows(); i++) {
+  for (size_t i = 0; i < data.getNrows(); i++) {
     double max = numeric_limits<double>::max() * (-1);
     double max_class = 0;
     // compute the maximum density:
-    sgpp::base::DataVector p(data->getNcols());
-    data->getRow(i, p);
+    sgpp::base::DataVector p(data.getNcols());
+    data.getRow(i, p);
     for (size_t j = 0; j < destFunctions->size(); j++) {
       pair<DBMatOnlineDE*, double> pair = (*destFunctions)[j];
       // double density = pair.first->eval(p)*this->prior[pair.second];
@@ -542,12 +544,12 @@ base::DataVector LearnerSGDEOnOff::predict(sgpp::base::DataMatrix* data) {
 int LearnerSGDEOnOff::predict(sgpp::base::DataVector& p) {
   sgpp::base::DataMatrix ptmp(1, p.getSize());
   ptmp.setRow(0, p);
-  sgpp::base::DataVector r = this->predict(&ptmp);
+  sgpp::base::DataVector r = this->predict(ptmp);
   return static_cast<int>(r[0]);
 }
 
-double LearnerSGDEOnOff::getError(sgpp::base::DataMatrix* data,
-                                  sgpp::base::DataVector* labels,
+double LearnerSGDEOnOff::getError(sgpp::base::DataMatrix& data,
+                                  sgpp::base::DataVector& labels,
                                   std::string errorType) {
   double res = -1.0;
 
@@ -555,7 +557,7 @@ double LearnerSGDEOnOff::getError(sgpp::base::DataMatrix* data,
     sgpp::base::DataVector computedLabels = predict(data);
     size_t correct = 0;
     for (size_t i = 0; i < computedLabels.getSize(); i++) {
-      if (computedLabels.get(i) == labels->get(i)) {
+      if (computedLabels.get(i) == labels.get(i)) {
         correct++;
       }
     }
@@ -579,7 +581,7 @@ void LearnerSGDEOnOff::storeResults() {
   } else {
     for (size_t i = 0; i < classesComputed.getSize(); i++) {
       sgpp::base::DataVector x(2);
-      testData->getRow(i, x);
+      testData.getRow(i, x);
       output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
     }
     output.close();
@@ -597,7 +599,7 @@ void LearnerSGDEOnOff::storeResults() {
       sgpp::base::GridStorage::grid_map_iterator end_iter = storage.end();
       for (sgpp::base::GridStorage::grid_map_iterator iter = storage.begin();
            iter != end_iter; iter++) {
-        sgpp::base::DataVector gpCoord(trainData->getNcols());
+        sgpp::base::DataVector gpCoord(trainData.getNcols());
         storage.getCoordinates(*(iter->first), gpCoord);
         for (size_t d = 0; d < gpCoord.getSize(); d++) {
           if (d < gpCoord.getSize() - 1) {

@@ -82,15 +82,15 @@ class PrimalDualSVM {
   // void remove(size_t idx);
 
   // the set of support vectors
-  std::shared_ptr<base::DataMatrix> svs;
-  // alphas corresponding to support vectors (sv weights, signed)
-  std::shared_ptr<base::DataVector> alphas;
+  base::DataMatrix svs;
+  // alphas corresponding to support vectors (sv-weights, signed)
+  base::DataVector alphas;
   // stores the norm of each support vector in the feature space
-  std::shared_ptr<base::DataVector> norms;
+  base::DataVector norms;
   // the normal vector (defines decision hyperplane)
-  std::shared_ptr<base::DataVector> w;
+  base::DataVector w;
   // normal vector computed with absolute alpha values
-  std::shared_ptr<base::DataVector> w2;
+  base::DataVector w2;
 
  protected:
   // number of max support vectors to be stored

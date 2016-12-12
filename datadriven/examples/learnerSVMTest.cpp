@@ -79,8 +79,8 @@ int main() {
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
 
-      std::shared_ptr<sgpp::base::DataMatrix> validData = nullptr;
-      std::shared_ptr<sgpp::base::DataVector> validLabels = nullptr;
+      sgpp::base::DataMatrix* validData = nullptr;
+      sgpp::base::DataVector* validLabels = nullptr;
       // if fixed validation data should be used (required for convergence
       // monitor):
       filename = "../tests/data/ripley/5_fold/ripley_val_" +
@@ -94,11 +94,9 @@ int main() {
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset valDataset =
           sgpp::datadriven::ARFFTools::readARFF(filename);
-      validData =
-          std::make_shared<sgpp::base::DataMatrix>(valDataset.getData());
+      validData = &(valDataset.getData());
       // extract validation classes
-      validLabels =
-          std::make_shared<sgpp::base::DataVector>(valDataset.getTargets());
+      validLabels = &(valDataset.getTargets());
 
       /**
        * The grid configuration.
@@ -164,11 +162,13 @@ int main() {
        * Create the learner.
        */
       std::cout << "# creating the learner" << std::endl;
-      sgpp::datadriven::LearnerSVM learner(gridConfig, adaptConfig);
+      sgpp::datadriven::LearnerSVM learner(gridConfig, adaptConfig,
+                                           trainData, trainLabels,
+                                           testData, testLabels,
+                                           validData, validLabels);
 
-      // initialize learner
-      learner.initialize(trainData, trainLabels, testData, testLabels,
-                         validData, validLabels, budget);
+      // initialize learner (create grid, svm)
+      learner.initialize(budget);
 
       /**
        * Learn the data.

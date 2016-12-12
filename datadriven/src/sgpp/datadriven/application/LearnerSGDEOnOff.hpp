@@ -143,7 +143,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param The test data points
    * @return A vector containing the predicted class labels
    */
-  sgpp::base::DataVector predict(base::DataMatrix* test);
+  sgpp::base::DataVector predict(base::DataMatrix& test);
 
   /**
    * Predicts the class label of the given data point.
@@ -163,7 +163,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        based on accuracy)
    * @return The error evaluation
    */
-  double getError(base::DataMatrix* data, base::DataVector* labels,
+  double getError(base::DataMatrix& data, base::DataVector& labels,
                   std::string errorType);
 
   /**
@@ -233,13 +233,13 @@ class LearnerSGDEOnOff : public DBMatOnline {
 
  protected:
   // The training data
-  base::DataMatrix* trainData;
+  base::DataMatrix& trainData;
   // The corresponding training class labels
-  base::DataVector* trainLabels;
+  base::DataVector& trainLabels;
   // The test data
-  base::DataMatrix* testData;
+  base::DataMatrix& testData;
   // The corresponding test class labels
-  base::DataVector* testLabels;
+  base::DataVector& testLabels;
   // The validation data
   base::DataMatrix* validData;
   // The corresponding validation class labels

@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace datadriven {
@@ -330,10 +331,10 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   // the sparse grid
   std::shared_ptr<base::Grid> grid;
-  // contains sparse grids mapped to class labels (used in trainOnline(...))
-  std::map<int, std::shared_ptr<base::Grid>> grids;
   // the density defining coefficient vector (surpluses)
   std::shared_ptr<base::DataVector> alpha;
+  // contains sparse grids mapped to class labels (used in trainOnline(...))
+  std::map<int, std::shared_ptr<base::Grid>> grids;
   // contains coefficient vectors mapped to class labels (used in
   // trainOnline(...))
   std::map<int, std::shared_ptr<base::DataVector>> alphas;
