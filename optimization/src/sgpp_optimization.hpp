@@ -51,6 +51,14 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLagrangeNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLagrangeSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLagrangeNotAKnotSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNotAKnotBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNaturalBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineBoundary.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>

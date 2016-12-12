@@ -24,6 +24,12 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createLagrangeSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearBoundaryGrid(d)));
@@ -31,6 +37,12 @@ void createSupportedGrids(size_t d, size_t p,
       sgpp::base::Grid::createLinearClenshawCurtisGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModLinearGrid(d)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createModNotAKnotBsplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createNaturalBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(

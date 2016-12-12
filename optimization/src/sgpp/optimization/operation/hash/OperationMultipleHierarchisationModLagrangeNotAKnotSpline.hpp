@@ -3,34 +3,37 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINEBOUNDARY_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINEBOUNDARY_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLAGRANGENOTAKNOTSPLINE_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLAGRANGENOTAKNOTSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 /**
- * Hierarchisation operation for B-spline basis functions on Boundary grids.
+ * Hierarchisation operation for modified Lagrange spline basis functions on Noboundary grids
+ * with not-a-knot boundary conditions.
  */
-class OperationMultipleHierarchisationBsplineBoundary : public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationModLagrangeNotAKnotSpline :
+    public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationBsplineBoundary(base::BsplineBoundaryGrid& grid);
+  explicit OperationMultipleHierarchisationModLagrangeNotAKnotSpline(
+      base::ModLagrangeNotAKnotSplineGrid& grid);
 
   /**
    * Destructor.
    */
-  ~OperationMultipleHierarchisationBsplineBoundary() override;
+  ~OperationMultipleHierarchisationModLagrangeNotAKnotSpline() override;
 
   /**
    * @param[in,out] nodeValues before: vector of function values at
@@ -64,9 +67,9 @@ class OperationMultipleHierarchisationBsplineBoundary : public OperationMultiple
 
  protected:
   /// storage of the sparse grid
-  base::BsplineBoundaryGrid& grid;
+  base::ModLagrangeNotAKnotSplineGrid& grid;
 };
 }  // namespace optimization
 }  // namespace sgpp
 
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINEBOUNDARY_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLAGRANGENOTAKNOTSPLINE_HPP */

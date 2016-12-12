@@ -163,39 +163,6 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModFundamentalSpline) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testHierarchisationLagrangeNotAKnotSplineBoundary) {
-  int level = 5;
-
-  for (int dim = 1; dim < 4; dim++) {
-    for (int degree = 1; degree < 6; degree += 2) {
-      std::unique_ptr<Grid> grid(Grid::createLagrangeNotAKnotSplineBoundaryGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
-    }
-  }
-}
-
-BOOST_AUTO_TEST_CASE(testHierarchisationLagrangeSplineBoundary) {
-  int level = 5;
-
-  for (int dim = 1; dim < 2; dim++) {
-    for (int degree = 3; degree < 4; degree += 2) {
-      std::unique_ptr<Grid> grid(Grid::createLagrangeSplineBoundaryGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
-    }
-  }
-}
-
-BOOST_AUTO_TEST_CASE(testHierarchisationModLagrangeNotAKnotSpline) {
-  int level = 5;
-
-  for (int dim = 1; dim < 4; dim++) {
-    for (int degree = 1; degree < 6; degree += 2) {
-      std::unique_ptr<Grid> grid(Grid::createModLagrangeNotAKnotSplineGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
-    }
-  }
-}
-
 BOOST_AUTO_TEST_CASE(testHierarchisationPoly) {
   int level = 5;
   int degree[4] = {2, 3, 5, 8};
