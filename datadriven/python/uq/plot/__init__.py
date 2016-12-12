@@ -40,3 +40,6 @@ from plot3d import (plotFunction3d,
 from plotGrid import plotGrid
 
 from scatterplot import scatterplot_matrix
+
+from colors import intToRGB, rgbTpInt, loadColorSequence
+
