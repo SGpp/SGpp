@@ -276,6 +276,26 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
   }
 }
 
+void lagrangeSplineTest(SBasis& basis, bool modified = false) {
+  const level_t startLevel = 1;
+
+  for (level_t l = startLevel; l < 6; l++) {
+    const index_t hInv = static_cast<index_t>(1) << l;
+
+    for (index_t i = 1; i < hInv; i += 2) {
+      for (index_t i2 = 0; i2 <= hInv; i2 += 2) {
+        // test Lagrange property
+        if ((!modified) || ((i > 1) && (i < hInv - 1)) || ((i2 > 0) && (i2 < hInv))) {
+          const double x = static_cast<double>(i2) / static_cast<double>(hInv);
+          const double fx = basis.eval(l, i, x);
+
+          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-10);
+        }
+      }
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE(TestLinearBasis) {
   sgpp::base::SLinearBase basis;
   linearUniformUnmodifiedTest(basis);
@@ -393,6 +413,33 @@ BOOST_AUTO_TEST_CASE(TestFundamentalSplineModifiedBasis) {
   for (size_t p = 1; p <= pMax; p++) {
     sgpp::base::SFundamentalSplineModifiedBase basis(p);
     fundamentalSplineTest(basis, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestLagrangeNotAKnotSplineBasis) {
+  // Test Lagrange not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SLagrangeNotAKnotSplineBase basis(p);
+    lagrangeSplineTest(basis);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestLagrangeNotAKnotSplineModifiedBasis) {
+  // Test modified Lagrange not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SLagrangeNotAKnotSplineModifiedBase basis(p);
+    lagrangeSplineTest(basis, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestLagrangeSplineBasis) {
+  // Test Lagrange spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SLagrangeSplineBase basis(p);
+    lagrangeSplineTest(basis);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }

@@ -105,7 +105,7 @@ class LagrangeNotAKnotSplineModifiedBasisDeriv3: public Basis<LT, IT> {
       case 5:
         if (l == 1) {
           // l = 1, i = 1
-          return 1.0;
+          return 0.0;
         } else if ((i > 1) && (i < hInv - 1)) {
           // l >= 3, 1 < i < 2^l - 1
           return lagrangeNotAKnotSplineBasisDeriv3.eval(l, i, x);
@@ -185,7 +185,7 @@ class LagrangeNotAKnotSplineModifiedBasisDeriv3: public Basis<LT, IT> {
       case 7:
         if (l == 1) {
           // l = 1, i = 1
-          return 1.0;
+          return 0.0;
         } else if ((i > 1) && (i < hInv - 1)) {
           // l >= 3, 1 < i < 2^l - 1
           return lagrangeNotAKnotSplineBasisDeriv3.eval(l, i, x);

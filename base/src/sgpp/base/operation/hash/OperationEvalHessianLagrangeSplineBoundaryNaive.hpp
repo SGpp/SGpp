@@ -3,25 +3,29 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP
-#define OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP
+#ifndef OPERATIONEVALHESSIANLAGRANGESPLINEBOUNDARY_HPP
+#define OPERATIONEVALHESSIANLAGRANGESPLINEBOUNDARY_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Operation for evaluating Lagrange spline linear combinations on Boundary grids
- * and their gradients.
+ * Operation for evaluating Lagrange spline linear combinations on Boundary grids, their gradients
+ * and their Hessians.
  */
-class OperationEvalGradientLagrangeSplineBoundaryNaive : public
-  OperationEvalGradient {
+class OperationEvalHessianLagrangeSplineBoundaryNaive : public
+  OperationEvalHessian {
  public:
   /**
    * Constructor.
@@ -29,10 +33,11 @@ class OperationEvalGradientLagrangeSplineBoundaryNaive : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalGradientLagrangeSplineBoundaryNaive(GridStorage& storage, size_t degree) :
+  OperationEvalHessianLagrangeSplineBoundaryNaive(GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree),
     baseDeriv1(degree),
+    baseDeriv2(degree),
     pointInUnitCube(storage.getDimension()),
     innerDerivative(storage.getDimension()) {
   }
@@ -40,29 +45,33 @@ class OperationEvalGradientLagrangeSplineBoundaryNaive : public
   /**
    * Destructor.
    */
-  ~OperationEvalGradientLagrangeSplineBoundaryNaive() override {
+  ~OperationEvalHessianLagrangeSplineBoundaryNaive() override {
   }
 
   /**
    * @param       alpha     coefficient vector
    * @param       point     evaluation point
-   * @param[out]  gradient  gradient of linear combination
+   * @param[out]  gradient  gradient vector of the linear combination
+   * @param[out]  hessian   Hessian matrix of the linear combination
    * @return                value of the linear combination
    */
-  double evalGradient(const DataVector& alpha,
-                       const DataVector& point,
-                       DataVector& gradient) override;
+  double evalHessian(const DataVector& alpha,
+                      const DataVector& point,
+                      DataVector& gradient,
+                      DataMatrix& hessian) override;
 
   /**
    * @param       alpha     coefficient matrix (each column is a coefficient vector)
    * @param       point     evaluation point
    * @param[out]  value     values of the linear combination
    * @param[out]  gradient  Jacobian of the linear combination (each row is a gradient vector)
+   * @param[out]  hessian   vector of Hessians of the linear combination
    */
-  void evalGradient(const DataMatrix& alpha,
-                    const DataVector& point,
-                    DataVector& value,
-                    DataMatrix& gradient) override;
+  void evalHessian(const DataMatrix& alpha,
+                   const DataVector& point,
+                   DataVector& value,
+                   DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) override;
 
  protected:
   /// storage of the sparse grid
@@ -71,6 +80,8 @@ class OperationEvalGradientLagrangeSplineBoundaryNaive : public
   SLagrangeSplineBase base;
   /// 1D spline basis derivative
   SLagrangeSplineBaseDeriv1 baseDeriv1;
+  /// 1D spline basis 2nd derivative
+  SLagrangeSplineBaseDeriv2 baseDeriv2;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
   /// inner derivative (temporary vector)
@@ -80,4 +91,4 @@ class OperationEvalGradientLagrangeSplineBoundaryNaive : public
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONEVALGRADIENTLAGRANGESPLINEBOUNDARY_HPP */
+#endif /* OPERATIONEVALHESSIANLAGRANGESPLINEBOUNDARY_HPP */
