@@ -18,13 +18,30 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * #FileSampleProvider is an specialization of #SampleProvider and provides an interface for all
+ * sample providers that get their samples from files.
+ */
 class FileSampleProvider : public SampleProvider {
  public:
-  virtual ~FileSampleProvider() {}
-  virtual size_t getDatasetSize() = 0;
-  // virtual size_t getNumClasses() = 0;
+  /**
+   * Returns the total amount of samples available in the file. Only works after calling #readFile
+   * or #readString.
+   * @return the total amount of samples available in the file.
+   */
+  virtual size_t getNumSamples() const = 0;
 
-  virtual void readFile(const std::string& fileName) = 0;
+  /**
+   * Read the contents of the file at the given path. Has to throw an exception if file can not be
+   * opened or parsed. Results of parsing can be optained via #SampleProvider member functions.
+   * @param filePath valid path to an existing file.
+   */
+  virtual void readFile(const std::string& filePath) = 0;
+
+  /**
+   * Read the contents of a string, e.g. a deflated archive. Has to throw an exception if string can
+   * not be parsed. Results of parsing can be optained via #SampleProvider member functions.
+   */
   virtual void readString(const std::string& input) = 0;
 };
 
