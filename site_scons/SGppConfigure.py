@@ -143,6 +143,10 @@ def checkDot(config):
         subprocess.check_output(["dot", "-V"], stderr=subprocess.STDOUT).strip() + ".")
 
 def checkOpenCL(config):
+
+  config.env.AppendUnique(CPPPATH=[config.env["BOOST_INCLUDE_PATH"]])
+  config.env.AppendUnique(LIBPATH=[config.env["BOOST_LIBRARY_PATH"]])  
+  
   if config.env["USE_OCL"]:
     if "OCL_INCLUDE_PATH" in config.env["ENV"]:
       config.env.AppendUnique(CPPPATH=[config.env["ENV"]["OCL_INCLUDE_PATH"]])
