@@ -10,6 +10,7 @@ import unittest
 
 import numpy as np
 import matplotlib.pyplot as plt
+from pysgpp.extensions.datadriven.uq.helper import findSetBits, sortPermutations
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
@@ -136,8 +137,12 @@ class AnovaIshigamiTest(unittest.TestCase):
         print "-" * 60
         print "#terms = %i" % num_terms
         print "V[x] = %g ~ %g" % (self.vg, pce.variance())
-        for i, sobol_index in enumerate(sobol_indices):
-            print "%i: %g" % (i + 1, sobol_index)
+
+        indices = [findSetBits(i + 1) for i in xrange(len(sobol_indices))]
+        indices, ixs = sortPermutations(indices, index_return=True)
+
+        for index, i in zip(indices, ixs):
+            print "%s: %g" % (index, sobol_indices[i])
         print np.sum(sobol_indices), "==", 1
 
 
