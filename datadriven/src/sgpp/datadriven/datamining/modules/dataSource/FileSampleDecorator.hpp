@@ -22,16 +22,16 @@ namespace datadriven {
  *
  * Using inheritance and deligation we can manipulate input or output of
  * #sgpp::datadriven::FileSampleProvider member functions  in a generic fashion e.g. apply
- * decompression of compressed files before passing them to the actual implementations without
- * limiting ourselves to one specific #sgpp::datadriven::FileSampleProvider. For better
- * understanding see derived classes.
+ * decompression of compressed files before passing them to the actual
+ * #sgpp::datadriven::FileSampleProvider without limiting ourselves to a specific implementation.
+ * Instead we use the decorated object's member functions as a black box.
  */
 class FileSampleDecorator : public FileSampleProvider {
  public:
   /**
    * Constructor.
    *
-   * @param fileSampleProvider: Pointer to a sgpp::datadriven::FileSampleProvider that will be
+   * @param fileSampleProvider: Pointer to a #sgpp::datadriven::FileSampleProvider that will be
    * wrapped as a deligate. The decorator will take ownership
    * of this object and take care of its destruction.
    */
@@ -61,9 +61,10 @@ class FileSampleDecorator : public FileSampleProvider {
 
  protected:
   /**
-   * Delegate sgpp::datadriven::FileSampleProvider object. Calls to the object will be wrapped by
-   * the decorator performing preprocessing or postprocessing to parts of the object, passing
-   * through calls which are not of interrest.
+   * Delegate #sgpp::datadriven::FileSampleProvider object. Calls to the object will be wrapped by
+   * the decorator performing pre-processing or post-processing to member functions which will be
+   * used
+   * by the decorator as a black box, passing through calls which are not overridden.
    */
   std::unique_ptr<FileSampleProvider> fileSampleProvider;
 };
