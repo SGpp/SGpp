@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
 
   GzipFileSampleDecorator sampleProvider = GzipFileSampleDecorator(new ArffFileSampleProvider());
   sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
-  auto dataset = std::unique_ptr<Dataset>(sampleProvider.getAllSamples());
+  auto dataset = sampleProvider.getAllSamples();
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();

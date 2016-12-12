@@ -16,10 +16,10 @@
 #include <algorithm>
 #include <string>
 
-using sgpp::base::data_exception;
-
 namespace sgpp {
 namespace datadriven {
+
+using sgpp::base::data_exception;
 
 enum class DataSourceFileType { NONE, ARFF };
 
@@ -34,7 +34,7 @@ class DataSourceFileTypeParser {
     } else if (inputLower == "none") {
       return DataSourceFileType::NONE;
     } else {
-      std::string errorMsg =
+      const std::string errorMsg =
           "Failed to convert string \"" + input + "\" to any known DataSourceFileType";
       throw data_exception(errorMsg.c_str());
     }
