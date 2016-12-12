@@ -61,7 +61,7 @@ class SampleProvider {
 
   /**
    * Returns the maximal dimensionality of the data.
-   * @return dimensionality of the #Dataset.
+   * @return dimensionality of the #sgpp::datadriven::Dataset.
    */
   virtual size_t getDim() const = 0;
 };

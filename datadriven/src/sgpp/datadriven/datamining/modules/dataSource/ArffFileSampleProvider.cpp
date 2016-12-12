@@ -9,66 +9,85 @@
  *      Author: perun, Michael Lettrich
  */
 
+#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
-#include <memory>
 #include <string>
 
 namespace sgpp {
 
 namespace datadriven {
 
-ArffFileSampleProvider::ArffFileSampleProvider() : dataset(Dataset()), counter(0) {}
+ArffFileSampleProvider::ArffFileSampleProvider()
+    : FileSampleProvider{}, dataset(Dataset{}), counter(0) {}
 
-ArffFileSampleProvider::~ArffFileSampleProvider() {}
+SampleProvider* ArffFileSampleProvider::clone() const {
+  return dynamic_cast<SampleProvider*>(new ArffFileSampleProvider{*this});
+}
 
-size_t ArffFileSampleProvider::getDim() {
+size_t ArffFileSampleProvider::getDim() const {
   if (dataset.getDimension() != 0) {
     return dataset.getDimension();
   } else {
-    throw base::file_exception("No dataset loaded.");
+    throw base::file_exception{"No dataset loaded."};
   }
 }
 
-size_t ArffFileSampleProvider::getDatasetSize() {
+size_t ArffFileSampleProvider::getNumSamples() const {
   if (dataset.getDimension() != 0) {
     return dataset.getNumberInstances();
   } else {
-    throw base::file_exception("No dataset loaded.");
+    throw base::file_exception{"No dataset loaded."};
   }
 }
 
 void ArffFileSampleProvider::readFile(const std::string& fileName) {
-  dataset = ARFFTools::readARFF(fileName);
+  try {
+    dataset = ARFFTools::readARFF(fileName);
+  } catch (...) {
+    // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
+    // exception safe implementation.
+    const std::string msg{"Failed to parse ARFF File " + fileName + "."};
+    throw base::data_exception{msg.c_str()};
+  }
 }
 
 Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
-  if ((dataset.getDimension() != 0) && (counter + howMany) < dataset.getNumberInstances()) {
+  if (dataset.getDimension() != 0) {
     return splitDataset(howMany);
   } else {
-    throw base::data_exception("Demanded more samples then available.");
+    throw base::file_exception("No dataset loaded.");
   }
 }
 
 Dataset* ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset(dataset);
+    return new Dataset{dataset};
   } else {
-    throw base::file_exception("No dataset loaded.");
+    throw base::file_exception{"No dataset loaded."};
   }
 }
 
 void ArffFileSampleProvider::readString(const std::string& input) {
-  dataset = ARFFTools::readARFFFromString(input);
+  try {
+    dataset = ARFFTools::readARFFFromString(input);
+  } catch (...) {
+    // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
+    // exception safe implementation.
+    throw base::data_exception{"Failed to parse ARFF data."};
+  }
 }
 
 Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
-  auto tmpDataset = std::make_unique<Dataset>(howMany, dataset.getDimension());
+  const size_t size = counter + howMany < dataset.getNumberInstances()
+                          ? howMany
+                          : dataset.getNumberInstances() - counter;
+  auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
 
   base::DataMatrix& srcSamples = dataset.getData();
   base::DataVector& srcTargets = dataset.getTargets();
@@ -76,14 +95,16 @@ Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
   base::DataMatrix& destSamples = tmpDataset->getData();
   base::DataVector& destTargets = tmpDataset->getTargets();
 
-  base::DataVector tmpRow(srcSamples.getNcols());
-  for (size_t i = counter; i < counter + howMany; ++i) {
+  base::DataVector tmpRow{srcSamples.getNcols()};
+
+  // copy "size" rows beginning from "counter" to the new dataset.
+  for (size_t i = counter; i < counter + size; ++i) {
     srcSamples.getRow(i, tmpRow);
     destSamples.setRow(i - counter, tmpRow);
 
     destTargets[i - counter] = srcTargets[i];
   }
-  counter = counter + howMany;
+  counter = counter + size;
 
   return tmpDataset.release();
 }
