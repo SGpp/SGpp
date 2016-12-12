@@ -91,4 +91,8 @@ datadriven/tests/uq/analysis/rodetest
 
 datadriven/tests/uq/dists
 
+uqSetting_0.arff
+density2d.csv
+parabola.knowledge.gz
+
 /Release/

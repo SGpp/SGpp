@@ -1,0 +1,3 @@
+#!/bin/bash
+module load swig/swig-3.0.11
+scons -j24 SG_ALL=1 SG_PARALLEL=0 SG_FINANCE=0 SG_MISC=0 SG_PYTHON=1 SG_JAVA=0 RUN_BOOST_TESTS=0 RUN_CPPLINT=0 SWIGFLAGS="-I/usr/local.nfs/sgs/software/swig/local/share/swig/3.0.11/python"
