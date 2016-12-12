@@ -12,51 +12,44 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 
 #include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 
 #include <zlib.h>
-#include <memory>
-#include <sstream>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-GzipFileSampleDecorator::GzipFileSampleDecorator(FileSampleProvider* fileSampleProvider)
+GzipFileSampleDecorator::GzipFileSampleDecorator(FileSampleProvider* const fileSampleProvider)
     : FileSampleDecorator(fileSampleProvider) {}
 
-GzipFileSampleDecorator::~GzipFileSampleDecorator() {}
-
-Dataset* GzipFileSampleDecorator::getNextSamples(size_t howMany) {
-  return fileSampleProvider->getNextSamples(howMany);
+SampleProvider* GzipFileSampleDecorator::clone() const {
+  return dynamic_cast<SampleProvider*>(new GzipFileSampleDecorator{*this});
 }
 
-Dataset* GzipFileSampleDecorator::getAllSamples() { return fileSampleProvider->getAllSamples(); }
-
-size_t GzipFileSampleDecorator::getDim() { return fileSampleProvider->getDim(); }
-
-size_t GzipFileSampleDecorator::getDatasetSize() { return fileSampleProvider->getDatasetSize(); }
-
 void GzipFileSampleDecorator::readFile(const std::string& fileName) {
-  // TODO(lettrich): check if this is efficient and maybe optimize
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
   if (inFileZ == nullptr) {
     throw base::file_exception("failed to open Gzip compressed file.");
-    exit(-1);
   }
 
-  unsigned char unzipBuffer[8192];
-  unsigned int unzippedBytes;
-  std::vector<unsigned char> unzippedData;
+  size_t unzippedBytes = 0;
+  std::vector<char> unzippedData(8192);
+
+  std::string convert;
+  convert.reserve(unzippedData.size());
 
   while (true) {
-    unzippedBytes = gzread(inFileZ, unzipBuffer, 8192);
+    unzippedBytes =
+        gzread(inFileZ, unzippedData.data(), static_cast<unsigned int>(unzippedData.size() - 1));
 
     if (unzippedBytes > 0) {
-      for (size_t i = 0; i < unzippedBytes; i++) {
-        unzippedData.push_back(unzipBuffer[i]);
-      }
+      auto& last = convert.back();
+      last = '\0';
+      convert.append(unzippedData.data());
+
     } else {
       break;
     }
@@ -64,19 +57,7 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName) {
 
   gzclose(inFileZ);
 
-  std::stringstream convert;
-
-  for (size_t i = 0; i < unzippedData.size(); i++) {
-    convert << unzippedData[i];
-  }
-
-  fileSampleProvider->readString(convert.str());
-}
-
-void GzipFileSampleDecorator::readString(const std::string& input) {
-  // TODO(lettrich): implement decompression from string, eg use
-  // https://panthema.net/2007/0328-ZLibString.html as template
-  fileSampleProvider->readString(input);
+  fileSampleProvider->readString(convert);
 }
 
 } /* namespace datadriven */

@@ -13,30 +13,34 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
 
-#include <memory>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
-
+/**
+ * Adds the ability to read gzip compressed files to file sample providers.
+ *
+ * This class wraps any valid #sgpp::datadriven::FileSampleProvider object and adds a decompression
+ * step to the #readFile member function before trying to parse the contents of the file.
+ */
 class GzipFileSampleDecorator : public FileSampleDecorator {
  public:
+  /**
+   * Constructor decorating a FileSampleProvider object.
+   *
+   * @param fileSampleProvider: pointer to the object to be used as a delegate.
+   */
   explicit GzipFileSampleDecorator(FileSampleProvider* fileSampleProvider);
 
-  virtual ~GzipFileSampleDecorator();
+  SampleProvider* clone() const override;
 
-  Dataset* getNextSamples(size_t howMany);
-
-  Dataset* getAllSamples();
-
-  size_t getDim();
-
-  size_t getDatasetSize();
-
-  // size_t getNumClasses();
-
-  void readFile(const std::string& fileName);
-
-  void readString(const std::string& input);
+  /**
+   * Decompress a gzip compressed file at the given path and read its contents using the delegate's
+   * member functions. Throws if the file cannot be opened or parsed.
+   *
+   * @param filePath valid path to a gzip compressed file.
+   */
+  void readFile(const std::string& filePath) override;
 };
 
 } /* namespace datadriven */

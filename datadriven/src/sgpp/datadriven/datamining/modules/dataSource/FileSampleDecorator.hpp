@@ -13,6 +13,8 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 
