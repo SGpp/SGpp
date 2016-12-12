@@ -19,8 +19,8 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * #FileSampleProvider is an specialization of #SampleProvider and provides an interface for all
- * sample providers that get their samples from files.
+ * #sgpp::datadriven::FileSampleProvider is an specialization of #sgpp::datadriven::SampleProvider
+ * and provides an interface for all sample providers that get their samples from files.
  */
 class FileSampleProvider : public SampleProvider {
  public:
@@ -33,14 +33,16 @@ class FileSampleProvider : public SampleProvider {
 
   /**
    * Read the contents of the file at the given path. Has to throw an exception if file can not be
-   * opened or parsed. Results of parsing can be optained via #SampleProvider member functions.
+   * opened or parsed. Results of parsing can be optained via #sgpp::datadriven::SampleProvider
+   * member functions.
    * @param filePath valid path to an existing file.
    */
   virtual void readFile(const std::string& filePath) = 0;
 
   /**
-   * Read the contents of a string, e.g. a deflated archive. Has to throw an exception if string can
-   * not be parsed. Results of parsing can be optained via #SampleProvider member functions.
+   * Read the contents of a string, for example a deflated archive. Has to throw an exception if
+   * string can not be parsed. Results of parsing can be optained via
+   * #sgpp::datadriven::SampleProvider member functions.
    */
   virtual void readString(const std::string& input) = 0;
 };
