@@ -26,15 +26,12 @@
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationLagrangeNotAKnotSplineBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationLagrangeSplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationModLagrangeNotAKnotSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModWavelet.hpp>
@@ -186,15 +183,6 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
-    return new base::OperationHierarchisationLagrangeSplineBoundary(
-        dynamic_cast<base::LagrangeSplineBoundaryGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
-    return new base::OperationHierarchisationLagrangeNotAKnotSplineBoundary(
-        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid*>(&grid));
-  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
-    return new base::OperationHierarchisationModLagrangeNotAKnotSpline(
-        dynamic_cast<base::ModLagrangeNotAKnotSplineGrid*>(&grid));
   } else {
     throw base::factory_exception(
         "createOperationHierarchisation is not implemented for this grid type.");
