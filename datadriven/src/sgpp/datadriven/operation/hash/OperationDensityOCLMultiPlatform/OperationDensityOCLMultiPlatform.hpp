@@ -12,7 +12,6 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include <sgpp/base/opencl/QueueLoadBalancer.hpp>
 
 #include <chrono>
 #include <vector>
