@@ -58,7 +58,6 @@ class DataSource {
    *
    */
   size_t getCurrentIteration() const;
-  size_t getCurrentIteration();
 
  private:
   /**

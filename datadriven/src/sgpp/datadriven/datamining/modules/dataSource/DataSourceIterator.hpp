@@ -13,27 +13,47 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/globaldef.hpp>
-
-#include <memory>
 
 namespace sgpp {
 namespace datadriven {
-
+// forward declaration to break dependency cycle
 class DataSource;
 
+/**
+ * Iterator object for walking convenient walking over the batches of a
+ * #sgpp::datadriven::Datasource
+ */
 class DataSourceIterator {
  public:
+  /**
+   *
+   */
   DataSourceIterator(DataSource& sampleProvider, size_t counter);
 
+  /**
+   *
+   */
   bool operator!=(const DataSourceIterator& other);
 
+  /**
+   *
+   */
   const DataSourceIterator& operator++();
 
+  /**
+   *
+   */
   Dataset* operator*() const;
 
  private:
+  /**
+   * The sample provider to iterate over
+   */
   DataSource& sampleProvider;
+
+  /**
+   * Private counter to keep track of the current iteration.
+   */
   size_t counter;
 };
 
