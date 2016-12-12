@@ -26,9 +26,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   if env["OPT"] == True:
     env.Append(CPPFLAGS=["-O3", "-g"])
+
   else:
     env.Append(CPPFLAGS=["-g", "-O0"])
-
+          
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
   env["ARCH"] = env["ARCH"].lower()
@@ -109,6 +110,41 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
     # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
+  if env["USE_HPX"]:
+    hpxLibs = ["dl", "rt", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options", "boost_regex" ,
+               "boost_system", "boost_thread", "boost_context", "boost_random", "boost_atomic", "tcmalloc_minimal", "hwloc"]
+    if env["OPT"]:
+      hpxLibs += ["hpx", "hpx_init", "hpx_iostreams"]
+      if "HPX_RELEASE_LIBRARY_PATH" in env:
+        config.env.AppendUnique(LIBPATH=env["HPX_RELEASE_LIBRARY_PATH"])
+    else:
+      if "HPX_DEBUG_LIBRARY_PATH" in env:
+        config.env.AppendUnique(LIBPATH=env["HPX_DEBUG_LIBRARY_PATH"])
+      hpxLibs += ["hpxd", "hpx_initd", "hpx_iostreamsd"]
+      
+    for lib in hpxLibs:
+      if not config.CheckLib(lib, language="c++", autoadd=1):
+        Helper.printErrorAndExit("lib" + lib + " not found, but required for HPX")
+    config.env.AppendUnique(LIBS=hpxLibs)
+    config.env["CPPDEFINES"]["USE_HPX"] = "1"
+
+
+    if 'HPX_SHARED_INCLUDE_PATH' in env:
+      config.env.AppendUnique(CPPPATH=env['HPX_SHARED_INCLUDE_PATH'])
+    if env["OPT"]:
+      env.AppendUnique(CPPDEFINES=["HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_RELEASE_INCLUDE_PATH' in env:
+        config.env.AppendUnique(CPPPATH=env['HPX_RELEASE_INCLUDE_PATH'])        
+    else:
+      env.AppendUnique(CPPDEFINES=["HPX_DEBUG", "HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_DEBUG_INCLUDE_PATH' in env:
+        config.env.AppendUnique(CPPPATH=env['HPX_DEBUG_INCLUDE_PATH'])   
+        
+    if not config.CheckCXXHeader("hpx/hpx_init.hpp"):
+      Helper.printErrorAndExit("hpx/hpx_init.hpp not found, but required for HPX")
+    if not config.CheckCXXHeader("hpx/include/actions.hpp"):
+      Helper.printErrorAndExit("hpx/include/actions.hpp not found, but required for HPX")
+
   env = config.Finish()
 
   print "Configuration done."
@@ -116,11 +152,18 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
 def checkCpp11(config):
   # check C++11 support
-  if not config.CheckFlag("-std=c++11"):
-    Helper.printErrorAndExit("The compiler doesn't seem to support the C++11 standard. Abort!")
-    Exit(1)
+  if not config.env['USE_HPX']:
+    if not config.CheckFlag("-std=c++11"):
+      Helper.printErrorAndExit("The compiler doesn't seem to support the C++11 standard. Abort!")
+      Exit(1)
 
-  config.env.AppendUnique(CPPFLAGS="-std=c++11")
+      config.env.AppendUnique(CPPFLAGS="-std=c++11")
+  else:
+    if not config.CheckFlag("-std=c++14"):
+      Helper.printErrorAndExit("HPX requires a compiler that supports the C++14 standard. Abort!")
+      Exit(1)
+      
+      config.env.AppendUnique(CPPFLAGS="-std=c++14")
 
 def checkDoxygen(config):
   # check whether Doxygen installed
@@ -144,8 +187,9 @@ def checkDot(config):
 
 def checkOpenCL(config):
 
+  # OpenCL also need boost to build
   config.env.AppendUnique(CPPPATH=[config.env["BOOST_INCLUDE_PATH"]])
-  config.env.AppendUnique(LIBPATH=[config.env["BOOST_LIBRARY_PATH"]])  
+  config.env.AppendUnique(LIBPATH=[config.env["BOOST_LIBRARY_PATH"]])
   
   if config.env["USE_OCL"]:
     if "OCL_INCLUDE_PATH" in config.env["ENV"]:
@@ -172,6 +216,17 @@ def checkOpenCL(config):
       Helper.printErrorAndExit("libboost-program-options not found, but required for OpenCL",
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
+
+    if not config.CheckCXXHeader("zlib.h"):
+      Helper.printErrorAndExit("zlib.h not found, but required for OpenCL",
+                               "On debian-like system the package zlib1g-dev",
+                               "can be installed to solve this issue.")
+      
+    if not config.CheckLib("libz", language="c++", autoadd=0):
+      Helper.printErrorAndExit("libz not found, but required for OpenCL",
+                               "On debian-like system the package zlib1g",
+                               "can be installed to solve this issue.")
+      
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
     
 
@@ -300,13 +355,19 @@ def configureGNUCompiler(config):
     Helper.printErrorAndExit("Compiler not found!")
 
   allWarnings = \
-      "-Wall -pedantic -Wextra \
+      "-Wall -Wextra \
       -Wcast-qual -Wconversion -Wformat=2 \
       -Wformat-nonliteral -Wformat-security -Winit-self  \
       -Wmissing-format-attribute \
-      -Wmissing-include-dirs -Wpacked -Wredundant-decls \
-      -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused \
+      -Wmissing-include-dirs -Wpacked \
+      -Wunreachable-code -Wunused \
       -Wno-unused-parameter".split(" ")
+      
+  if not config.env['USE_HPX']:
+    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic', '-Wswitch-default'])
+  else:
+    allWarnings.append(['-Wno-conversion', '-Wno-format-nonliteral'])
+    
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
@@ -315,8 +376,12 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse"])
+#   if not config.env["USE_HPX"]:
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
+
+  #   # limit the number of errors display to something reasonable (useful for templated code)
+  #   config.env.Append(CPPFLAGS=["-fmax-errors=5"])
 
   # required for profiling
   config.env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
@@ -377,6 +442,7 @@ def configureClangCompiler(config):
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
   #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
+#   if not config.env["USE_HPX"]:
   config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
   config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
 
@@ -426,6 +492,7 @@ def configureIntelCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
+#   if not config.env["USE_HPX"]:
   config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
   config.env.AppendUnique(LINKFLAGS=["-qopenmp"])
 

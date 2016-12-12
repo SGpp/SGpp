@@ -17,7 +17,7 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
@@ -57,8 +57,8 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
 
   double duration;
 
-  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
-  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+  std::shared_ptr<base::QueueLoadBalancerMutex> queueLoadBalancerMult;
+  std::shared_ptr<base::QueueLoadBalancerMutex> queueLoadBalancerMultTranspose;
 
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
@@ -89,8 +89,8 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     this->commonDatasetPadding = calculateCommonDatasetPadding();
     this->commonGridPadding = calculateCommonGridPadding();
 
-    queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
-    queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancer>();
+    queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancerMutex>();
+    queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancerMutex>();
 
     // initialized in pad
     datasetSizeUnpadded = 0;
@@ -186,6 +186,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
       std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
     }
 
+    result.resize(this->datasetSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -242,6 +243,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
       std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
     }
 
+    result.resize(this->gridSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }

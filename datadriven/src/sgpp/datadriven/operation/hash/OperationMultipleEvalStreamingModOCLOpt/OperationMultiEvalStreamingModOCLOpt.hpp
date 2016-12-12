@@ -17,7 +17,7 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
@@ -67,8 +67,8 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
   std::vector<StreamingModOCLOpt::KernelMult<T>> multKernels;
   std::vector<StreamingModOCLOpt::KernelMultTranspose<T>> multTransposeKernels;
 
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMult;
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMult;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTrans;
 
   size_t overallGridBlockingSize;
   size_t overallDataBlockingSize;
@@ -107,8 +107,8 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
     overallGridBlockingSize = calculateCommonGridPadding();
     overallDataBlockingSize = calculateCommonDatasetPadding();
 
-    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
-    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
+    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
+    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
 
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
@@ -188,6 +188,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
       std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
     }
 
+    resultArray.reserve(this->datasetSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -251,6 +252,7 @@ class OperationMultiEvalStreamingModOCLOpt : public base::OperationMultipleEval 
       std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
     }
 
+    result.resize(this->gridSizeBuffers);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }

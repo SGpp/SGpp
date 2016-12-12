@@ -6,11 +6,15 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {
 
-class QueueLoadBalancer {
+// Very important:
+// The OpenMP mutexes require OpenMP to be enabled and the program of the calling threads have to be OpenMP threads.
+// Otherwise the critical section might not actually provide the mutex functionality.
+class QueueLoadBalancerOpenMP {
  private:
   bool isInitialized;
   size_t start;
@@ -21,7 +25,7 @@ class QueueLoadBalancer {
  public:
   // end is assumed to be padded for blocksize! might return segements that end
   // after end
-  QueueLoadBalancer()
+  QueueLoadBalancerOpenMP()
       : isInitialized(false), start(0), end(0), range(0), currentStart(0) {}
 
   void initialize(const size_t start, const size_t end) {

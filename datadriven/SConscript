@@ -41,6 +41,9 @@ if (env["COMPILER"].lower() == "openmpi") or (env["COMPILER"].lower() == "mpich"
     module.buildExamples("examplesMPI")
 if (env["ARCH"].lower() == "avx2"):
     module.buildExamples("examplesAVX")
+if env["USE_HPX"]:
+    module.buildExamples("examplesHPX")  
+
 
 module.runPythonTests()
 module.buildBoostTests()
