@@ -1,10 +1,9 @@
-from pysgpp import DataVector
-from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
-
 import numpy as np
 import matplotlib.pyplot as plt
+from pysgpp import DataVector, DataMatrix
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
-from pysgpp.pysgpp_swig import DataMatrix
+from pysgpp.extensions.datadriven.uq.plot.colors import loadColorSequence
 
 
 def plotFunction1d(f, n=1000, **kws):
@@ -100,10 +99,10 @@ def plotSurplusLevelWise(data, maxLevel):
 
 
 def plotSobolIndices(sobolIndices, ts=None, legend=False,
-                     names=None,
-                     colors=['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']):
+                     names=None):
     fig = plt.figure()
     plots = []
+    colors = loadColorSequence(len(sobolIndices))
 
     if legend and names is None:
         raise Exception("plotSobolIndices - attribute names is not set")
@@ -111,7 +110,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     if ts is None:
         y0 = 0
         for i in xrange(len(sobolIndices)):
-            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0])  # color=colors[i]
+            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0], color=colors[i])
             y0 += sobolIndices[i]
             plots = [myplot] + plots
 
