@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(arffTestGetDim) {
 BOOST_AUTO_TEST_CASE(arffTestgetSize) {
   auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath);
-  BOOST_CHECK_EQUAL(datasetSize, sampleProvider.getDatasetSize());
+  BOOST_CHECK_EQUAL(datasetSize, sampleProvider.getNumSamples());
 }
 
 BOOST_AUTO_TEST_CASE(arffTestGetNextSamples) {
