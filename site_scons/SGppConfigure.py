@@ -29,7 +29,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   else:
     env.Append(CPPFLAGS=["-g", "-O0"])
-          
+
   # make settings case-insensitive
   env["COMPILER"] = env["COMPILER"].lower()
   env["ARCH"] = env["ARCH"].lower()
@@ -121,7 +121,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       if "HPX_DEBUG_LIBRARY_PATH" in env:
         config.env.AppendUnique(LIBPATH=env["HPX_DEBUG_LIBRARY_PATH"])
       hpxLibs += ["hpxd", "hpx_initd", "hpx_iostreamsd"]
-      
+
     for lib in hpxLibs:
       if not config.CheckLib(lib, language="c++", autoadd=1):
         Helper.printErrorAndExit("lib" + lib + " not found, but required for HPX")
@@ -134,12 +134,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     if env["OPT"]:
       env.AppendUnique(CPPDEFINES=["HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
       if 'HPX_RELEASE_INCLUDE_PATH' in env:
-        config.env.AppendUnique(CPPPATH=env['HPX_RELEASE_INCLUDE_PATH'])        
+        config.env.AppendUnique(CPPPATH=env['HPX_RELEASE_INCLUDE_PATH'])
     else:
       env.AppendUnique(CPPDEFINES=["HPX_DEBUG", "HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
       if 'HPX_DEBUG_INCLUDE_PATH' in env:
-        config.env.AppendUnique(CPPPATH=env['HPX_DEBUG_INCLUDE_PATH'])   
-        
+        config.env.AppendUnique(CPPPATH=env['HPX_DEBUG_INCLUDE_PATH'])
+
     if not config.CheckCXXHeader("hpx/hpx_init.hpp"):
       Helper.printErrorAndExit("hpx/hpx_init.hpp not found, but required for HPX")
     if not config.CheckCXXHeader("hpx/include/actions.hpp"):
@@ -157,12 +157,12 @@ def checkCpp11(config):
       Helper.printErrorAndExit("The compiler doesn't seem to support the C++11 standard. Abort!")
       Exit(1)
 
-      config.env.AppendUnique(CPPFLAGS="-std=c++11")
+    config.env.AppendUnique(CPPFLAGS="-std=c++11")
   else:
     if not config.CheckFlag("-std=c++14"):
       Helper.printErrorAndExit("HPX requires a compiler that supports the C++14 standard. Abort!")
       Exit(1)
-      
+
       config.env.AppendUnique(CPPFLAGS="-std=c++14")
 
 def checkDoxygen(config):
@@ -190,7 +190,7 @@ def checkOpenCL(config):
   # OpenCL also need boost to build
   config.env.AppendUnique(CPPPATH=[config.env["BOOST_INCLUDE_PATH"]])
   config.env.AppendUnique(LIBPATH=[config.env["BOOST_LIBRARY_PATH"]])
-  
+
   if config.env["USE_OCL"]:
     if "OCL_INCLUDE_PATH" in config.env["ENV"]:
       config.env.AppendUnique(CPPPATH=[config.env["ENV"]["OCL_INCLUDE_PATH"]])
@@ -221,14 +221,14 @@ def checkOpenCL(config):
       Helper.printErrorAndExit("zlib.h not found, but required for OpenCL",
                                "On debian-like system the package zlib1g-dev",
                                "can be installed to solve this issue.")
-      
+
     if not config.CheckLib("libz", language="c++", autoadd=0):
       Helper.printErrorAndExit("libz not found, but required for OpenCL",
                                "On debian-like system the package zlib1g",
                                "can be installed to solve this issue.")
-      
+
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    
+
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -362,12 +362,12 @@ def configureGNUCompiler(config):
       -Wmissing-include-dirs -Wpacked \
       -Wunreachable-code -Wunused \
       -Wno-unused-parameter".split(" ")
-      
+
   if not config.env['USE_HPX']:
     allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic', '-Wswitch-default'])
   else:
     allWarnings.append(['-Wno-conversion', '-Wno-format-nonliteral'])
-    
+
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
   #     http://www.swig.org/Release/CHANGES, 03/02/2006
