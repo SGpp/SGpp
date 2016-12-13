@@ -390,6 +390,8 @@ class Grid {
    */
   static Grid* unserialize(std::istream& istr);
 
+  static GridType stringToGridType(const std::string& gridType);
+
  protected:
   /**
    * This constructor creates a new GridStorage out of the stream.

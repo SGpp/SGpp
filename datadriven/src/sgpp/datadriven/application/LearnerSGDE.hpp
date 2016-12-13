@@ -68,7 +68,6 @@ class LearnerSGDEConfiguration : public json::JSON {
   LearnerSGDEConfiguration* clone() override;
 
   void initConfig();
-  sgpp::base::GridType stringToGridType(std::string& gridType);
   sgpp::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
   sgpp::solver::SLESolverType stringToSolverType(std::string& solverType);
 

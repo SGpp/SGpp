@@ -56,8 +56,11 @@ class MultivariateNormal(Dist):
         self.L = np.linalg.cholesky(self.corr)
 
     def pdf(self, x):
-        z = x - self.__mu
-        return self.norm * np.exp(-0.5 * np.dot(z, np.dot(self.cov_inv, z)))
+        if self.__a <= x <= self.__b:
+            z = x - self.__mu
+            return self.norm * np.exp(-0.5 * np.dot(z, np.dot(self.cov_inv, z)))
+        else:
+            return 0.0
 
     def rvs(self, n=1):
         # do a nataf transformation

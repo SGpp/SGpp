@@ -737,5 +737,71 @@ void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   this->storage.setAlgorithmicDimensions(newAlgoDims);
 }
 
+GridType Grid::stringToGridType(const std::string& gridType) {
+  if (gridType.compare("linear") == 0) {
+    return sgpp::base::GridType::Linear;
+  } else if (gridType.compare("linearStretched") == 0) {
+    return sgpp::base::GridType::LinearStretched;
+  } else if (gridType.compare("linearL0Boundary") == 0) {
+    return sgpp::base::GridType::LinearL0Boundary;
+  } else if (gridType.compare("linearBoundary") == 0) {
+    return sgpp::base::GridType::LinearBoundary;
+  } else if (gridType.compare("linearStretchedBoundary") == 0) {
+    return sgpp::base::GridType::LinearStretchedBoundary;
+  } else if (gridType.compare("linearTruncatedBoundary") == 0) {
+    return sgpp::base::GridType::LinearTruncatedBoundary;
+  } else if (gridType.compare("modlinear") == 0) {
+    return sgpp::base::GridType::ModLinear;
+  } else if (gridType.compare("poly") == 0) {
+    return sgpp::base::GridType::Poly;
+  } else if (gridType.compare("polyBoundary") == 0) {
+    return sgpp::base::GridType::PolyBoundary;
+  } else if (gridType.compare("modpoly") == 0) {
+    return sgpp::base::GridType::ModPoly;
+  } else if (gridType.compare("polyClenshawCurtis") == 0) {
+    return sgpp::base::GridType::PolyClenshawCurtis;
+  } else if (gridType.compare("polyClenshawCurtisBoundary") == 0) {
+    return sgpp::base::GridType::PolyClenshawCurtisBoundary;
+  } else if (gridType.compare("modPolyClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModPolyClenshawCurtis;
+  } else if (gridType.compare("modWavelet") == 0) {
+    return sgpp::base::GridType::ModWavelet;
+  } else if (gridType.compare("modBspline") == 0) {
+    return sgpp::base::GridType::ModBspline;
+  } else if (gridType.compare("prewavelet") == 0) {
+    return sgpp::base::GridType::Prewavelet;
+  } else if (gridType.compare("squareRoot") == 0) {
+    return sgpp::base::GridType::SquareRoot;
+  } else if (gridType.compare("periodic") == 0) {
+    return sgpp::base::GridType::Periodic;
+  } else if (gridType.compare("linearClenshawCurtis") == 0) {
+    return sgpp::base::GridType::LinearClenshawCurtis;
+  } else if (gridType.compare("linearClenshawCurtisBoundary") == 0) {
+    return sgpp::base::GridType::LinearClenshawCurtisBoundary;
+  } else if (gridType.compare("bspline") == 0) {
+    return sgpp::base::GridType::Bspline;
+  } else if (gridType.compare("bsplineBoundary") == 0) {
+    return sgpp::base::GridType::BsplineBoundary;
+  } else if (gridType.compare("bsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::BsplineClenshawCurtis;
+  } else if (gridType.compare("wavelet") == 0) {
+    return sgpp::base::GridType::Wavelet;
+  } else if (gridType.compare("waveletBoundary") == 0) {
+    return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("fundamentalSpline") == 0) {
+    return sgpp::base::GridType::FundamentalSpline;
+  } else if (gridType.compare("modFundamentalSpline") == 0) {
+    return sgpp::base::GridType::ModFundamentalSpline;
+  } else if (gridType.compare("modBsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModBsplineClenshawCurtis;
+  } else if (gridType.compare("linearstencil") == 0) {
+    return sgpp::base::GridType::LinearStencil;
+  } else if (gridType.compare("modlinearstencil") == 0) {
+    return sgpp::base::GridType::ModLinearStencil;
+  } else {
+    throw sgpp::base::factory_exception("grid type is unknown");
+  }
+}
+
 }  // namespace base
 }  // namespace sgpp
