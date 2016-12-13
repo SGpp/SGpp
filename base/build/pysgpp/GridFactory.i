@@ -159,6 +159,8 @@ public:
 
   static Grid* unserialize(std::string& istr);
 
+  static sgpp::base::GridType stringToGridType(const std::string& gridType);
+
 protected:
   Grid();
   Grid(Grid& o);

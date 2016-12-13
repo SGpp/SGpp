@@ -29,11 +29,13 @@ class ASGCSamplerBuilder(object):
         """
         Define if spatially adaptive refinement should be done and how...
         """
-        self.__refinementManagerBuilder = RefinementManagerDescriptor()
+        if self.__refinementManagerBuilder is None:
+            self.__refinementManagerBuilder = RefinementManagerDescriptor()
         return self.__refinementManagerBuilder
 
     def withStopPolicy(self):
-        self.__stopPolicyDescriptor = ASGCSamplerStopPolicyDescriptor()
+        if self.__stopPolicyDescriptor is None:
+            self.__stopPolicyDescriptor = ASGCSamplerStopPolicyDescriptor()
         return self.__stopPolicyDescriptor
 
     def __collectGrid(self):

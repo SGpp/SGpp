@@ -1,11 +1,9 @@
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
-import unittest
-
 import numpy as np
 import matplotlib.pyplot as plt
-from pysgpp import GridType_ModPolyClenshawCurtis
+from pysgpp import Grid, GridType_ModPolyClenshawCurtis
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
@@ -14,26 +12,27 @@ from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
-from pysgpp.extensions.datadriven.uq.helper import findSetBits, sortPermutations
+from pysgpp.extensions.datadriven.uq.helper import sortPermutations
+from pysgpp.extensions.datadriven.uq.models import PCEBuilderHeat, TestEnvironmentSG
 from itertools import combinations
 
 from model_cpp import define_homogeneous_input_space
 from polynomial_chaos_cpp import PolynomialChaosExpansion, FULL_TENSOR_BASIS
-from work.probabilistic_transformations_for_inference.sampling import TensorQuadratureSampleGenerationStrategy, \
-    ApproximateFeketeSampleGeneratorStrategy, LejaSampleGeneratorStrategy
 from math_tools_cpp import nchoosek
 from work.probabilistic_transformations_for_inference.solver import solve
 from work.probabilistic_transformations_for_inference.preconditioner import ChristoffelPreconditioner
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
+from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
+from argparse import ArgumentParser
 
 
-class AnovaSobolGFunctionTest(unittest.TestCase):
+class SobolGFunctionSudret2008(object):
 
-    def setUp(self):
+    def __init__(self, solveFullProblem):
         self.radix = 'test_sobolgfunction'
 
         self.numDims = 8
-        self.solveFullProblem = True
+        self.solveFullProblem = solveFullProblem
 
         if self.solveFullProblem:
             self.effectiveDims = self.numDims
@@ -43,11 +42,8 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
         # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
-        builder = ParameterBuilder()
-        up = builder.defineUncertainParameters()
-        for idim in xrange(self.effectiveDims):
-            up.new().isCalled('x%i' % idim).withUniformDistribution(0, 1)
-        self.params = builder.andGetResult()
+        builder = ProbabilisticSpaceSGpp(self.effectiveDims)
+        self.params = builder.uniform()
 
         # --------------------------------------------------------
         # simulation function
@@ -87,9 +83,9 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
         print "-------------- Sobol Indices (t = %i, N= %i) ------------------" % (1, N)
         for perm in sortPermutations(sobol_indices.keys()):
             print "S_%s = %s ~ %s (err = %g%%)" % (perm, self.sobol_indices[perm], sobol_indices[perm],
-                                                 100 * np.abs(self.sobol_indices[perm] - sobol_indices[perm]))
-        print np.sum(sobol_indices.values()), "==", 1
-        print np.sum(self.sobol_indices.values()), "==", 1
+                                                   100 * np.abs(self.sobol_indices[perm] - sobol_indices[perm]))
+        assert np.abs(np.sum(sobol_indices.values()) - 1.0) < 1e-14
+        assert np.abs(np.sum(self.sobol_indices.values()) - 1.0) < 1e-14
 
         names = sortPermutations(sobol_indices.keys())
         values = [sobol_indices[name] for name in names]
@@ -98,10 +94,10 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
         plt.show()
 
 
-    def tesstPCEAnova(self,
-                     expansion="total_degree",
-                     sampling_strategy="leja"):
-        np.random.seed(13579)
+    def run_pce(self,
+                expansion="total_degree",
+                sampling_strategy="leja"):
+        np.random.seed(1234567)
         if self.solveFullProblem:
             degree_1d = 2
         else:
@@ -114,37 +110,30 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
         # define pce
         pce = PolynomialChaosExpansion()
         pce.set_random_variable_transformation(rv_trans, FULL_TENSOR_BASIS)
-#         pce.set_orthonormal(True)
-        if expansion == "full_tensor":
-            pce.define_full_tensor_expansion(degree_1d)
-        else:
-            pce.define_isotropic_expansion(degree_1d, 1.0)
+        pce.set_orthonormal(True)
+
+        builder = PCEBuilderHeat(self.effectiveDims)
+        builder.define_expansion(pce, expansion, degree_1d)
 
         num_samples = num_terms = pce.num_terms()
         if sampling_strategy == "full_tensor":
-            quadrature_strategy = TensorQuadratureSampleGenerationStrategy("uniform", rv_trans, expansion)
+            quadrature_strategy = builder.define_full_tensor_samples("uniform", rv_trans, expansion)
         elif sampling_strategy == "fekete":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
-            quadrature_strategy = ApproximateFeketeSampleGeneratorStrategy(samples, pce, rv_trans)
+            quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, rv_trans)
             num_samples = int(num_samples * 1.2)
         elif sampling_strategy == "leja":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
-            quadrature_strategy = LejaSampleGeneratorStrategy(samples, pce, rv_trans)
+            quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, rv_trans)
             num_samples = int(num_samples * 1.2)
         else:
             raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
         train_samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
-        train_samples = rv_trans.map_from_canonical_distributions(train_samples)
-        train_values = np.ndarray(train_samples.shape[1])
-        for i, sample in enumerate(train_samples.T):
-            train_values[i] = self.simulation(sample)
+        train_values = builder.eval_samples(train_samples, rv_trans, self.simulation)
 
         test_samples = np.random.random((self.effectiveDims, 1000))
-        test_samples = rv_trans.map_from_canonical_distributions(test_samples)
-        test_values = np.ndarray(test_samples.shape[1])
-        for i, sample in enumerate(test_samples.T):
-            test_values[i] = self.simulation(sample)
+        test_values = builder.eval_samples(test_samples, rv_trans, self.simulation)
 
         # compute coefficients of pce
         compute_coefficients(pce, train_samples, train_values, "christoffel")
@@ -158,18 +147,12 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
         print "#terms = %i" % num_terms
         print "V[x] = %g ~ %g" % (self.var, pce.variance())
 
-        # get sobol indices and prepare them for printing in dictionary
-        sobol_indices = pce.sobol_indices()
-        indices = [findSetBits(i + 1) for i in xrange(len(sobol_indices))]
-        indices, ixs = sortPermutations(indices, index_return=True)
-        sobol_indices_dict = {}
-        for index, i in zip(indices, ixs):
-            sobol_indices_dict[index] = sobol_indices[i]
-
-        self.checkSobolIndices(sobol_indices_dict, num_terms)
+        # get sobol indices
+        sobol_indices = builder.getSortedSobolIndices(pce)
+        self.checkSobolIndices(sobol_indices, num_terms)
 
 
-    def testSobolWithSGFunction(self):
+    def run_sparse_grids(self, gridType, level, maxGridSize, isFull, refinement=None):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
@@ -180,33 +163,16 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
             level = 2
             maxGridPoints = 200
 
-        # define UQ setting
-        builder = ASGCUQManagerBuilder()
-        builder.withParameters(self.params)\
-               .withTypesOfKnowledge([KnowledgeTypes.SIMPLE,
-                                      KnowledgeTypes.SQUARED,
-                                      KnowledgeTypes.EXPECTATIONVALUE])\
-               .useInterpolation()
-
-        # define model function
-        builder.defineUQSetting().withSimulation(self.simulation)
-
-        samplerSpec = builder.defineSampler()
-        samplerSpec.withGrid().withLevel(level)\
-                              .hasType(GridType_ModPolyClenshawCurtis)\
-                              .withDegree(10)
-
-        samplerSpec.withRefinement().withAdaptThreshold(1e-3)\
-                                    .withAdaptPoints(3)\
-                                    .withBalancing()\
-                                    .refineMostPromisingNodes().withVarianceOptimizationRanking()\
-                                                               .createAllChildrenOnRefinement()
-        samplerSpec.withStopPolicy().withGridSizeLimit(maxGridPoints)
-
-        # ----------------------------------------------------------
-        # discretize the stochastic space with the ASGC method
-        # ----------------------------------------------------------
-        uqManager = builder.andGetResult()
+        uqManager = TestEnvironmentSG().buildSetting(self.simulation,
+                                                     self.params,
+                                                     level,
+                                                     gridType,
+                                                     deg=10,
+                                                     maxGridSize=maxGridSize,
+                                                     isFull=isFull,
+                                                     adaptive=refinement,
+                                                     adaptPoints=3,
+                                                     epsilon=1e-3)
 
         # ----------------------------------------------
         # first run
@@ -237,9 +203,42 @@ class AnovaSobolGFunctionTest(unittest.TestCase):
 
         self.checkSobolIndices(sobol_indices, uqManager.getGrid().getSize())
 
+
+def run_sobol_g_function_pce(fullModel, sampler, degree):
+    testSetting = SobolGFunctionSudret2008(fullModel)
+    testSetting.run_pce("total_degree", sampler, degree)
+
+def run_sobol_g_function_sg(fullModel, gridType, level, numGridPoints,
+                            fullGrid, refinement):
+    testSetting = SobolGFunctionSudret2008(fullModel)
+    testSetting.run_sparse_grids(Grid.stringToGridType(gridType),
+                                 level, numGridPoints,
+                                 fullGrid, refinement)
+
 # --------------------------------------------------------
 # testing
 # --------------------------------------------------------
 
 if __name__ == "__main__":
-    unittest.main()
+    # parse the input arguments
+    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
+    parser.add_argument('--fullModel', default=False, action="store_true", help='use the full model (D=8) or the reduced model (D=4)')
+    parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
+    parser.add_argument('--gridType', default="poly", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
+    parser.add_argument('--level', default=2, type=int, help='level of sparse grid')
+    parser.add_argument('--refinement', default="var", type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
+    parser.add_argument('--fullGrid', default=False, action='store_true', help='refine the discretized grid adaptively')
+    parser.add_argument('--sampler', default="fekete", type=str, help='define which sample should be used for pce (full_tensor, leja, fekete)')
+    parser.add_argument('--degree', default=3, type=int, help='maximum degree of polynomials in 1d')
+    parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
+    parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
+    parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
+    args = parser.parse_args()
+
+    if args.surrogate == "pce":
+        run_sobol_g_function_pce(args.sampler, args.degree)
+    else:
+        run_sobol_g_function_sg(args.fullModel, args.gridType, args.level,
+                                args.numGridPoints, args.fullGrid,
+                                args.refinement)
