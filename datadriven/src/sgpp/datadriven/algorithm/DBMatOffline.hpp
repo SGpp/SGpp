@@ -13,8 +13,9 @@
 
 #include <gsl/gsl_permutation.h>
 
-using namespace std;
-using namespace sgpp;
+#include <list>
+#include <vector>
+#include <string>
 
 /**
  * Class that is used to decompose and store the left-hand-side
@@ -38,20 +39,14 @@ class DBMatOffline {
   gsl_permutation* perm_;  // Stores the permutation that was
   // applied on the matrix during decomposition
 
-  // An offline object either works on a full grid or on a
-  // hierarchical basis grid, so one of the following
-  // pointers is non-null!
+  // An offline object either works on a
+  // hierarchical basis grid!
   sgpp::base::Grid* grid_;
-  // combigrid::FullGrid<double>* fullgrid_;
 
   /**
    * Method to initialize a sparse grid
    */
   void InitializeGrid();
-  /**
-   * Method to initialize a full grid
-   */
-  // void InitializeFullGrid();
 
  public:
   /**
@@ -59,13 +54,13 @@ class DBMatOffline {
    *
    * @param oc configuration for this offline object
    */
-  DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc);
+  explicit DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc);
   /**
    * Constructor
    *
    * @param fname name of the file that stores the matrix + configuration
    */
-  DBMatOffline(string fname);
+  explicit DBMatOffline(std::string fname);
 
   /**
    * Copy Constructor
@@ -85,12 +80,6 @@ class DBMatOffline {
    * Returns a pointer to the decomposed matrix
    */
   sgpp::base::DataMatrix* getDecomposedMatrix();
-
-  /**
-   * Returns a reference to the full grid
-   * (if this offline object uses a full grid, otherwise NULL)
-   */
-  // combigrid::FullGrid<double>& getFullGrid();
 
   /**
    * Returns a reference to the sparse grid
@@ -171,14 +160,14 @@ class DBMatOffline {
    *
    * @param fname the file name
    */
-  void store(string fname);
+  void store(std::string fname);
 
   /**
    * Loads matrix and configuration from a file
    *
    * @param fname the file name
    */
-  void load(string fname);
+  void load(std::string fname);
 
   /**
    * Destructor
@@ -189,7 +178,7 @@ class DBMatOffline {
   /**
    * Used for reading input files
    */
-  void Tokenize(string&, vector<string>&, string& delimiters);
+  void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
 };
 
 #endif /* DBMATOFFLINE_H_ */

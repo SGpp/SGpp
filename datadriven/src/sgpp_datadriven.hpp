@@ -19,7 +19,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp> 
+#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>

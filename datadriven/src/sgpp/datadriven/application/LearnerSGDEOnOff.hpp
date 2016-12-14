@@ -90,8 +90,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * training process or not
    * @param nextCvStep Determines when next cross-validation has to be triggered
    */
-  void train(size_t batchSize, size_t maxDataPasses, string refType,
-             string refMonitor, size_t refPeriod, double accDeclineThreshold,
+  void train(size_t batchSize, size_t maxDataPasses, std::string refType,
+             std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
              size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
              size_t nextCvStep);
 
@@ -107,7 +107,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    */
   void train(base::DataMatrix& trainData, base::DataVector& classes,
              bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse =
+             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
                  nullptr);
 
   /**
@@ -125,9 +125,9 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * points
    */
   void train(
-      std::vector<std::pair<base::DataMatrix*, double>>& trainDataClasses,
+      std::vector<std::pair<base::DataMatrix*, double> >& trainDataClasses,
       bool doCv = false,
-      std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse =
+      std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
           nullptr);
 
   /**
@@ -220,7 +220,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *
    * @return The density function objects mapped to class labels
    */
-  std::vector<std::pair<DBMatOnlineDE*, double>>* getDestFunctions();
+  std::vector<std::pair<DBMatOnlineDE*, double> >* getDestFunctions();
 
   // Stores prior values mapped to class labels
   std::map<double, double> prior;
@@ -262,7 +262,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
   // The offline object (contains decomposed matrix)
   DBMatOffline* offline;
   // The online objects (density functions)
-  std::vector<std::pair<DBMatOnlineDE*, double>>* destFunctions;
+  std::vector<std::pair<DBMatOnlineDE*, double> >* destFunctions;
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;

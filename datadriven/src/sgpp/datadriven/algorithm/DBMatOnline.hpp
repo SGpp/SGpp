@@ -27,7 +27,7 @@ class DBMatOnline {
    *
    * @param o a offline object
    */
-  DBMatOnline(DBMatOffline* o);
+  explicit DBMatOnline(DBMatOffline* o);
 
   /**
    * Destructor

@@ -189,6 +189,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param testLabels The corresponding test labels
    * @param validData The validation data
    * @param validLabels The corresponding validation labels
+   * @param classLabels The ocurring class labels (e.g. -1,1)
    * @param maxDataPasses The number of passes over the whole training data
    * @param refType The refinement indicator (surplus, zero-crossings or
    * data-based)
@@ -208,13 +209,11 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * predict class labels
    */
   virtual void trainOnline(base::DataVector& labels, base::DataMatrix& testData,
-                           base::DataVector& testLabels,
-                           base::DataMatrix* validData,
-                           base::DataVector* validLabels, size_t maxDataPasses,
-                           std::string refType, std::string refMonitor,
+                           base::DataVector& testLabels, base::DataMatrix* validData,
+                           base::DataVector* validLabels, base::DataVector& classLabels,
+                           size_t maxDataPasses, std::string refType, std::string refMonitor,
                            size_t refPeriod, double accDeclineThreshold,
-                           size_t accDeclineBufferSize, size_t minRefInterval,
-                           bool usePrior);
+                           size_t accDeclineBufferSize, size_t minRefInterval, bool usePrior);
 
   /**
    * Stores classified data, grids and density function evaluations to csv
@@ -345,8 +344,6 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   std::shared_ptr<base::DataMatrix> trainData;
   // the corresponding class labels
   std::shared_ptr<base::DataVector> trainLabels;
-  // contains all occurring class labels (e.g. -1, 1)
-  std::vector<double> classLabels;
   // stores prior values mapped to class labels
   std::map<int, double> priors;
   // specifies whether prior probabilities should be used to predict class
