@@ -168,7 +168,7 @@ class PCEBuilderHeat(object):
         values = np.ndarray(trans_samples.shape[1])
         for i, sample in enumerate(trans_samples.T):
             values[i] = f(sample)
-        return values
+        return trans_samples, values
 
     def getSortedSobolIndices(self, pce):
         sobol_indices = pce.sobol_indices()
@@ -176,5 +176,5 @@ class PCEBuilderHeat(object):
         indices, ixs = sortPermutations(indices, index_return=True)
         sobol_indices_dict = {}
         for index, i in zip(indices, ixs):
-            sobol_indices_dict[index] = sobol_indices[i]
+            sobol_indices_dict[index] = sobol_indices[i][0]
         return sobol_indices_dict
