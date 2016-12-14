@@ -61,6 +61,6 @@ if __name__ == '__main__':
                 else:
                     run_sobol_g_function_pce(model == "full", sampler, degree_1d, True)
 
-#     # run applications in parallel if there are any available
-#     for process in processes:
-#         process.start()
+    # run applications in parallel if there are any available
+    for process in processes:
+        process.start()
