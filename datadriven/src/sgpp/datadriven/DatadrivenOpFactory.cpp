@@ -55,7 +55,7 @@
 #endif
 
 #ifdef USE_MPI
-#include "operation/hash/OperationMultipleEvalMPI/OperationMultiEvalMPI.hpp"
+#include "operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp"
 #endif
 
 #ifdef USE_HPX
@@ -238,7 +238,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
             == sgpp::datadriven::OperationMultipleEvalMPIType::MASTERSLAVE) {
 #ifdef USE_MPI
         if (grid.getType() == base::GridType::Linear) {
-            return new datadriven::OperationMultiEvalMPI(grid, dataset);
+	  return new datadriven::OperationMultiEvalMPI(grid, dataset, sgpp::datadriven::OperationMultipleEvalType::STREAMING, sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
         }
 #else
         throw base::factory_exception(
