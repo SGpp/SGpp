@@ -39,6 +39,10 @@ class LinearBasis : public Basis<LT, IT> {
         0.0);
   }
 
+  double getIntegral(LT level, IT index) {
+    return 1. / static_cast<double>(static_cast<IT>(1) << level);
+  }
+
   size_t getDegree() const override { return 1; }
 };
 

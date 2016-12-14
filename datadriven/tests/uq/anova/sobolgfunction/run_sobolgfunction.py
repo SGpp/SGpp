@@ -15,16 +15,18 @@ if __name__ == '__main__':
     parser.add_argument('--parallel', default=False, action='store_true', help='run in parallel')
     args = parser.parse_args()
     scenarions_sg = {'full': {'gridType': ["linear",
+                                           "poly",
                                            "modlinear",
                                            "modPolyClenshawCurtis",
-                                           "modPoly"],
+                                           "modpoly"],
                               'level': [2, 3],
                               'refinement': ['var', 'simple',
                                              'exp', 'squared']},
                      'reduced': {'gridType': ["linear",
+                                              "poly",
                                               "modlinear",
                                               "modPolyClenshawCurtis",
-                                              "modPoly"],
+                                              "modpoly"],
                                  'level': [2],
                                  'refinement': ['var', 'simple',
                                                 'exp', 'squared']}}
