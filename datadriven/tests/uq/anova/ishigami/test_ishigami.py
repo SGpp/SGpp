@@ -15,7 +15,7 @@ from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
-from pysgpp.extensions.datadriven.uq.helper import sortPermutations
+from pysgpp.extensions.datadriven.uq.helper import sortPermutations, findSetBits
 from pysgpp.extensions.datadriven.uq.models import PCEBuilderHeat, TestEnvironmentSG
 from itertools import combinations
 
@@ -28,6 +28,8 @@ from work.probabilistic_transformations_for_inference.convergence_study import e
 from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
+from work.probabilistic_transformations_for_inference.sampling import ApproximateFeketeSampleGeneratorStrategy, \
+    TensorQuadratureSampleGenerationStrategy, LejaSampleGeneratorStrategy
 
 
 class IshigamiSudret2008(object):
@@ -46,9 +48,6 @@ class IshigamiSudret2008(object):
         self.params = builder.andGetResult()
         self.numDims = self.params.getStochasticDim()
 
-        # define input space
-        self.rv_trans = define_homogeneous_input_space('uniform', self.numDims,
-                                                       ranges=[-np.pi, np.pi])
         # --------------------------------------------------------
         # simulation function
         # --------------------------------------------------------
@@ -83,11 +82,11 @@ class IshigamiSudret2008(object):
 
         def sobol_index(perm):
             if len(perm) == 1:
-                return vi(perm[0])
+                return vi(perm[0]) / var()
             elif len(perm) == 2:
-                return vij(perm[0], perm[1])
+                return vij(perm[0], perm[1]) / var()
             elif len(perm) == 3:
-                return vijk(perm[0], perm[1], perm[2])
+                return vijk(perm[0], perm[1], perm[2]) / var()
             else:
                 raise AttributeError("len of perm must be in {1, 2, 3}")
 
@@ -104,33 +103,38 @@ class IshigamiSudret2008(object):
                 out=False):
         np.random.seed(1234567)
 
+
+        # define input space
+        rv_trans = define_homogeneous_input_space('uniform', self.numDims,
+                                                  ranges=[-np.pi, np.pi])
+
         # define pce
         pce = PolynomialChaosExpansion()
-        pce.set_random_variable_transformation(self.rv_trans, FULL_TENSOR_BASIS)
-        pce.set_orthonormal(True)
+        pce.set_random_variable_transformation(rv_trans, FULL_TENSOR_BASIS)
+#         pce.set_orthonormal(True)
 
         builder = PCEBuilderHeat(self.numDims)
         builder.define_expansion(pce, expansion, degree_1d)
 
         num_samples = num_terms = pce.num_terms()
         if sampling_strategy == "full_tensor":
-            quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
+            quadrature_strategy = builder.define_full_tensor_samples("uniform", rv_trans, expansion)
         elif sampling_strategy == "fekete":
             samples = 2 * np.random.random((self.numDims, 10000)) - 1.
-            quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
+            quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, rv_trans)
             num_samples = int(num_samples * 1.2)
         elif sampling_strategy == "leja":
             samples = 2 * np.random.random((self.numDims, 10000)) - 1.
-            quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
+            quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, rv_trans)
             num_samples = int(num_samples * 1.2)
         else:
-            raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
+            raise AttributeError("sampling strategy '%s' is unknown" % sampling_strategy)
 
-        train_samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
-        train_values = builder.eval_samples(train_samples, self.rv_trans, self.simulation)
+        samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
+        train_samples, train_values = builder.eval_samples(samples, rv_trans, self.simulation)
 
-        test_samples = np.random.random((self.numDims, 1000))
-        test_values = builder.eval_samples(test_samples, self.rv_trans, self.simulation)
+        samples = np.random.random((self.numDims, 1000))
+        test_samples, test_values = builder.eval_samples(samples, rv_trans, self.simulation)
 
         # compute coefficients of pce
         compute_coefficients(pce, train_samples, train_values, "christoffel")
@@ -171,6 +175,7 @@ class IshigamiSudret2008(object):
 
         return sobol_indices, num_terms
 
+
     def run_sparse_grids(self, gridType, level, maxGridSize, isFull,
                          refinement=None, out=False):
         # ----------------------------------------------------------
@@ -208,17 +213,20 @@ class IshigamiSudret2008(object):
 
         iterations = uqManager.getKnowledge().getAvailableIterations()
         stats = [None] * len(iterations)
+        test_samples = np.random.random((1000, self.numDims))
+        trans = self.params.getJointTransformation()
+        test_samples_prob = trans.unitToProbabilisticMatrix(test_samples)
         for k, iteration in enumerate(iterations):
             # ----------------------------------------------------------
             # estimated anova decomposition
-            anova = analysis.getAnovaDecomposition(nk=len(self.params))
+            anova = analysis.getAnovaDecomposition(iteration=iteration,
+                                                   nk=len(self.params))
 
             # estimate the l2 error
-            test_samples = np.random.random((1000, self.numDims))
             test_values = np.ndarray(1000)
-            for i, sample in enumerate(test_samples):
+            for i, sample in enumerate(test_samples_prob):
                 test_values[i] = self.simulation(sample)
-            grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction(iteration=iteration)
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
             # ----------------------------------------------------------
@@ -289,7 +297,7 @@ if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
-    parser.add_argument('--numGridPoints', default=200, type=int, help='maximum number of grid points')
+    parser.add_argument('--numGridPoints', default=300, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="poly", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=2, type=int, help='level of sparse grid')
     parser.add_argument('--refinement', default="var", type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
@@ -302,9 +310,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.surrogate == "pce":
-        sobol_indices_analytic, sobol_indices, N = run_pce(args.sampler,
-                                                           args.degree,
-                                                           args.out)
+        sobol_indices_analytic, sobol_indices, N = run_ishigami_pce(args.sampler,
+                                                                    args.degree,
+                                                                    args.out)
     else:
         sobol_indices_analytic, sobol_indices, N = run_ishigami_sg(args.gridType,
                                                                    args.level,

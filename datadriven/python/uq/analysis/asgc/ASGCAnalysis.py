@@ -178,7 +178,8 @@ class ASGCAnalysis(Analysis):
         # determine the anova representation
         grid, alpha = self.__knowledge\
                           .getSparseGridFunction(self._qoi, t=t,
-                                                 dtype=KnowledgeTypes.SIMPLE)
+                                                 dtype=KnowledgeTypes.SIMPLE,
+                                                 iteration=iteration)
         anova = HDMRAnalytic(grid, alpha, self.__params, *args, **kws)
         anova.doDecomposition()
 

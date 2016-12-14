@@ -115,11 +115,12 @@ class SobolGFunctionSudret2008(object):
         else:
             raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
-        train_samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
-        train_values = builder.eval_samples(train_samples, self.rv_trans, self.simulation)
 
-        test_samples = np.random.random((self.effectiveDims, 1000))
-        test_values = builder.eval_samples(test_samples, self.rv_trans, self.simulation)
+        samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
+        train_samples, train_values = builder.eval_samples(samples, rv_trans, self.simulation)
+
+        samples = np.random.random((self.effectiveDims, 1000))
+        test_samples, test_values = builder.eval_samples(samples, rv_trans, self.simulation)
 
         # compute coefficients of pce
         compute_coefficients(pce, train_samples, train_values, "christoffel")
@@ -201,7 +202,8 @@ class SobolGFunctionSudret2008(object):
         for k, iteration in enumerate(iterations):
             # ----------------------------------------------------------
             # estimated anova decomposition
-            anova = analysis.getAnovaDecomposition(nk=len(self.params))
+            anova = analysis.getAnovaDecomposition(iteration=iteration,
+                                                   nk=len(self.params))
 
             # estimate the l2 error
             test_samples = np.random.random((1000, self.effectiveDims))
@@ -286,13 +288,14 @@ if __name__ == "__main__":
     parser.add_argument('--fullGrid', default=False, action='store_true', help='refine the discretized grid adaptively')
     parser.add_argument('--sampler', default="fekete", type=str, help='define which sample should be used for pce (full_tensor, leja, fekete)')
     parser.add_argument('--degree', default=3, type=int, help='maximum degree of polynomials in 1d')
-    parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
     parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
+    parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
     args = parser.parse_args()
 
     if args.surrogate == "pce":
-        sobol_indices_analytic, sobol_indices, N = run_sobol_g_function_pce(args.sampler,
+        sobol_indices_analytic, sobol_indices, N = run_sobol_g_function_pce(args.fullModel,
+                                                                            args.sampler,
                                                                             args.degree,
                                                                             args.out)
     else:
