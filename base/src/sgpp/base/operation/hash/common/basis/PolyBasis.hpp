@@ -32,7 +32,8 @@ class PolyBasis : public Basis<LT, IT> {
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyBasis(size_t degree) : degree(degree), idxtable(4) {
+  explicit PolyBasis(size_t degree)
+      : degree(degree), idxtable(4), quadRule(GaussLegendreQuadRule1D::getInstance()) {
     if (degree < 2) {
       throw factory_exception("PolyBasis: degree < 2");
     }
@@ -133,7 +134,7 @@ class PolyBasis : public Basis<LT, IT> {
 
  private:
   /// gauss legendre quadrature rule to compute the integral of the bases
-  base::GaussLegendreQuadRule1D quadRule;
+  base::GaussLegendreQuadRule1D& quadRule;
 
   /**
    * Evaluate a basis function.

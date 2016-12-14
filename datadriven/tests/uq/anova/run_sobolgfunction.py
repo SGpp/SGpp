@@ -28,7 +28,7 @@ if __name__ == '__main__':
                                  'level': [2],
                                  'refinement': ['var', 'simple',
                                                 'exp', 'squared']}}
-        
+
     scenarions_pce= {'full': {'sampler': ['fekete', 'leja'],
                               'degree': [2, 3, 4]},
                      'reduced': {'sampler': ['fekete', 'leja'],

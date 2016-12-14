@@ -34,7 +34,10 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
    * @param degree the polynom's max. degree
    */
   explicit PolyClenshawCurtisBasis(size_t degree)
-      : degree(degree), clenshawCurtisTable(ClenshawCurtisTable::getInstance()), idxtable(4) {
+      : degree(degree),
+        clenshawCurtisTable(ClenshawCurtisTable::getInstance()),
+        idxtable(4),
+        quadRule(GaussLegendreQuadRule1D::getInstance()) {
     if (degree < 2) {
       throw factory_exception("PolyClensahwCurtisBasis: degree < 2");
     }
@@ -216,7 +219,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
 
  private:
   /// gauss legendre quadrature rule to compute the integral of the bases
-  base::GaussLegendreQuadRule1D quadRule;
+  base::GaussLegendreQuadRule1D& quadRule;
 };
 
 // default type-def (unsigned int for level and index)
