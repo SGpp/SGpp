@@ -91,6 +91,7 @@ datadriven/tests/uq/analysis/rodetest
 
 datadriven/tests/uq/dists
 datadriven/tests/uq/anova/sobolgfunction/results/
+datadriven/tests/uq/anova/ishigami/results/
 
 uqSetting_0.arff
 density2d.csv

@@ -49,6 +49,10 @@ class SobolGFunctionSudret2008(object):
         builder = ProbabilisticSpaceSGpp(self.effectiveDims)
         self.params = builder.uniform()
 
+        # define input space
+        self.rv_trans = define_homogeneous_input_space('uniform', self.effectiveDims,
+                                                       ranges=[0, 1])
+
         # --------------------------------------------------------
         # simulation function
         # --------------------------------------------------------
@@ -89,13 +93,9 @@ class SobolGFunctionSudret2008(object):
                 out=False):
         np.random.seed(1234567)
 
-        # define input space
-        rv_trans = define_homogeneous_input_space('uniform', self.effectiveDims,
-                                                  ranges=[0, 1])
-
         # define pce
         pce = PolynomialChaosExpansion()
-        pce.set_random_variable_transformation(rv_trans, FULL_TENSOR_BASIS)
+        pce.set_random_variable_transformation(self.rv_trans, FULL_TENSOR_BASIS)
         pce.set_orthonormal(True)
 
         builder = PCEBuilderHeat(self.effectiveDims)
@@ -103,23 +103,23 @@ class SobolGFunctionSudret2008(object):
 
         num_samples = num_terms = pce.num_terms()
         if sampling_strategy == "full_tensor":
-            quadrature_strategy = builder.define_full_tensor_samples("uniform", rv_trans, expansion)
+            quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
         elif sampling_strategy == "fekete":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
-            quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, rv_trans)
+            quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
             num_samples = int(num_samples * 1.2)
         elif sampling_strategy == "leja":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
-            quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, rv_trans)
+            quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
             num_samples = int(num_samples * 1.2)
         else:
             raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
         train_samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
-        train_values = builder.eval_samples(train_samples, rv_trans, self.simulation)
+        train_values = builder.eval_samples(train_samples, self.rv_trans, self.simulation)
 
         test_samples = np.random.random((self.effectiveDims, 1000))
-        test_values = builder.eval_samples(test_samples, rv_trans, self.simulation)
+        test_values = builder.eval_samples(test_samples, self.rv_trans, self.simulation)
 
         # compute coefficients of pce
         compute_coefficients(pce, train_samples, train_values, "christoffel")
@@ -140,9 +140,9 @@ class SobolGFunctionSudret2008(object):
 
         if out:
             # store results
-            filename = os.path.join("results", "sobolgfunction_d%i_%s_deg%i.pkl" % (self.effectiveDims,
-                                                                                    sampling_strategy,
-                                                                                    degree_1d))
+            filename = os.path.join("results", "sobolgfunction_pce_d%i_%s_deg%i.pkl" % (self.effectiveDims,
+                                                                                        sampling_strategy,
+                                                                                        degree_1d))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.effectiveDims,
@@ -166,13 +166,6 @@ class SobolGFunctionSudret2008(object):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
-        if self.solveFullProblem:
-            level = 2
-            maxGridPoints = 72
-        else:
-            level = 2
-            maxGridPoints = 200
-
         uqManager = TestEnvironmentSG().buildSetting(self.simulation,
                                                      self.params,
                                                      level,
@@ -299,17 +292,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.surrogate == "pce":
-        sobol_indices_analytic, sobol_indices, N = testSetting.run_pce(args.fullModel,
-                                                                       args.sampler,
-                                                                       args.degree,
-                                                                       args.out)
+        sobol_indices_analytic, sobol_indices, N = run_sobol_g_function_pce(args.sampler,
+                                                                            args.degree,
+                                                                            args.out)
     else:
-        sobol_indices_analytic, sobol_indices, N = testSetting.run_sparse_grids(args.fullModel,
-                                                                                args.gridType,
-                                                                                args.level,
-                                                                                args.numGridPoints,
-                                                                                args.fullGrid,
-                                                                                args.refinement,
-                                                                                args.out)
+        sobol_indices_analytic, sobol_indices, N = run_sobol_g_function_sg(args.fullModel,
+                                                                           args.gridType,
+                                                                           args.level,
+                                                                           args.numGridPoints,
+                                                                           args.fullGrid,
+                                                                           args.refinement,
+                                                                           args.out)
     if args.plot:
         checkSobolIndices(sobol_indices_analytic, sobol_indices, N, args.plot)
