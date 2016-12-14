@@ -5,7 +5,7 @@ Created on Sep 19, 2016
 '''
 from argparse import ArgumentParser
 from multiprocessing.process import Process
-from uq.anova.test_sobolgfunction import run_sobol_g_function_pce, \
+from uq.anova.sobolgfunction.test_sobolgfunction import run_sobol_g_function_pce, \
     run_sobol_g_function_sg
 
 if __name__ == '__main__':
