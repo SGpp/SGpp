@@ -161,14 +161,19 @@ class ASGCAnalysis(Analysis):
     # ----------------------------------------------------------------
     # sensitivity analysis
     # ----------------------------------------------------------------
-    def getAnovaDecomposition(self, t=0, *args, **kws):
+    def getAnovaDecomposition(self, t=0, iteration=None, *args, **kws):
         # init dictionary
+        if iteration is None:
+            iteration = self.__knowledge.getIteration()
+
         if self._qoi not in self.__anova:
             self.__anova[self._qoi] = {}
+        if iteration not in self.__anova[self._qoi]:
+            self.__anova[self._qoi][iteration] = {}
 
         # check if the decomposition already exists
-        if t in self.__anova[self._qoi]:
-            return self.__anova[self._qoi][t]
+        if t in self.__anova[self._qoi][iteration]:
+            return self.__anova[self._qoi][iteration][t]
 
         # determine the anova representation
         grid, alpha = self.__knowledge\
@@ -178,7 +183,7 @@ class ASGCAnalysis(Analysis):
         anova.doDecomposition()
 
         # store it ...
-        self.__anova[self._qoi][t] = anova
+        self.__anova[self._qoi][iteration][t] = anova
 
         # ... and return it
         return anova
