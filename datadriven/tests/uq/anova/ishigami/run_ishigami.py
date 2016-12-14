@@ -49,6 +49,6 @@ if __name__ == '__main__':
             else:
                 run_ishigami_pce(sampler, degree_1d, True)
 
-#     # run applications in parallel if there are any available
-#     for process in processes:
-#         process.start()
+    # run applications in parallel if there are any available
+    for process in processes:
+        process.start()
