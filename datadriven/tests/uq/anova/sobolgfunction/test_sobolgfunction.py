@@ -235,8 +235,7 @@ class SobolGFunctionSudret2008(object):
                                                                                     grid.getTypeAsString(),
                                                                                     level,
                                                                                     maxGridSize,
-                                                                                    refinement,
-                                                                                    iteration))
+                                                                                    refinement))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
                       'num_dims': self.effectiveDims,
@@ -267,7 +266,7 @@ def checkSobolIndices(sobol_indices_analytic, sobol_indices, N, plot=False):
 
 def run_sobol_g_function_pce(fullModel, sampler, degree, out):
     testSetting = SobolGFunctionSudret2008(fullModel)
-    sobol_indices, N = testSetting.run_pce("total_degree", sampler, degree)
+    sobol_indices, N = testSetting.run_pce("total_degree", sampler, degree, out)
     return testSetting.sobol_indices, sobol_indices, N
 
 def run_sobol_g_function_sg(fullModel, gridType, level, numGridPoints,
@@ -275,7 +274,7 @@ def run_sobol_g_function_sg(fullModel, gridType, level, numGridPoints,
     testSetting = SobolGFunctionSudret2008(fullModel)
     sobol_indices, N = testSetting.run_sparse_grids(Grid.stringToGridType(gridType),
                                                     level, numGridPoints,
-                                                    fullGrid, refinement)
+                                                    fullGrid, refinement, out)
     return testSetting.sobol_indices, sobol_indices, N
 
 # --------------------------------------------------------

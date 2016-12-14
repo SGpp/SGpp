@@ -41,7 +41,7 @@ if __name__ == '__main__':
                 for refinement in surrogate['refinement']:
                     if args.parallel:
                         myargs = (model == "full",
-                                  gridType, level, 200, False, refinement)
+                                  gridType, level, 200, False, refinement, True)
                         processes.append(Process(target=run_sobol_g_function_sg, args=myargs))
                     else:
                         run_sobol_g_function_sg(model == "full",
@@ -49,16 +49,17 @@ if __name__ == '__main__':
                                                 level,
                                                 200,
                                                 False,
-                                                refinement)
+                                                refinement,
+                                                True)
 
     for model, surrogate in scenarions_pce.items():
         for sampler in surrogate['sampler']:
             for degree_1d in surrogate['degree']:
                 if args.parallel:
-                    myargs = (model == "full", sampler, degree_1d)
+                    myargs = (model == "full", sampler, degree_1d, True)
                     processes.append(Process(target=run_sobol_g_function_pce, args=myargs))
                 else:
-                    run_sobol_g_function_pce(model == "full", sampler, degree_1d)
+                    run_sobol_g_function_pce(model == "full", sampler, degree_1d, True)
 
 #     # run applications in parallel if there are any available
 #     for process in processes:
