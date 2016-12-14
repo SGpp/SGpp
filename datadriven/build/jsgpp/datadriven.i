@@ -16,6 +16,17 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
+#endif /* USE_GSL */
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
@@ -30,12 +41,24 @@
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
-//%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
+#endif /* USE_GSL */
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
+%include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"
+
+%include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 #endif
 
-//%apply std::string *INPUT { std::string& istr };
+%apply std::string *INPUT { std::string& istr };
 
-%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
+//%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 //%apply std::vector<double> *INPUT { std::vector<double>& point };
