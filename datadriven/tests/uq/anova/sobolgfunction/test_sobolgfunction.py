@@ -262,9 +262,21 @@ def checkSobolIndices(sobol_indices_analytic, sobol_indices, N, plot=False):
     if plot:
         names = sortPermutations(sobol_indices.keys())
         values = [sobol_indices[name] for name in names]
-        fig = plotSobolIndices(values, legend=True, names=names)
-        fig.show()
+        plotSobolIndices(values, legend=True, names=names)
         plt.show()
+
+def run_sobol_g_function_pce(fullModel, sampler, degree, out):
+    testSetting = SobolGFunctionSudret2008(fullModel)
+    sobol_indices, N = testSetting.run_pce("total_degree", sampler, degree)
+    return testSetting.sobol_indices, sobol_indices, N
+
+def run_sobol_g_function_sg(fullModel, gridType, level, numGridPoints,
+                            fullGrid, refinement, out):
+    testSetting = SobolGFunctionSudret2008(fullModel)
+    sobol_indices, N = testSetting.run_sparse_grids(Grid.stringToGridType(gridType),
+                                                    level, numGridPoints,
+                                                    fullGrid, refinement)
+    return testSetting.sobol_indices, sobol_indices, N
 
 # --------------------------------------------------------
 # testing
@@ -287,18 +299,18 @@ if __name__ == "__main__":
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
     args = parser.parse_args()
 
-    testSetting = SobolGFunctionSudret2008(args.fullModel)
     if args.surrogate == "pce":
-        sobol_indices, N = testSetting.run_pce("total_degree",
-                                               args.sampler,
-                                               args.degree,
-                                               args.out)
+        sobol_indices_analytic, sobol_indices, N = testSetting.run_pce(args.fullModel,
+                                                                       args.sampler,
+                                                                       args.degree,
+                                                                       args.out)
     else:
-        sobol_indices, N = testSetting.run_sparse_grids(Grid.stringToGridType(args.gridType),
-                                                        args.level,
-                                                        args.numGridPoints,
-                                                        args.fullGrid,
-                                                        args.refinement,
-                                                        args.out)
+        sobol_indices_analytic, sobol_indices, N = testSetting.run_sparse_grids(args.fullModel,
+                                                                                args.gridType,
+                                                                                args.level,
+                                                                                args.numGridPoints,
+                                                                                args.fullGrid,
+                                                                                args.refinement,
+                                                                                args.out)
     if args.plot:
-        checkSobolIndices(testSetting.sobol_indices, sobol_indices, N, args.plot)
+        checkSobolIndices(sobol_indices_analytic, sobol_indices, N, args.plot)
