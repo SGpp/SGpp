@@ -36,8 +36,6 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
     : config_(&oc),
       lhsMatrix_(nullptr),
@@ -56,7 +54,7 @@ DBMatOffline::DBMatOffline()
       perm_(nullptr),
       grid_(nullptr) {}
 
-DBMatOffline::DBMatOffline(string fname)
+DBMatOffline::DBMatOffline(std::string fname)
     : config_(nullptr),
       lhsMatrix_(nullptr),
       constructed_(false),
@@ -70,9 +68,9 @@ DBMatOffline::DBMatOffline(string fname)
 
   // Read configuration
   FILE* f = fopen(fname.c_str(), "rb");
-  string line("");
+  std::string line("");
   if (f == nullptr) {
-    cout << "DBMatOffline: Error opening file " << line << endl;
+    std::cout << "DBMatOffline: Error opening file " << line << std::endl;
     exit(-1);
   }
   char c = static_cast<char>(fgetc(f));
@@ -82,14 +80,14 @@ DBMatOffline::DBMatOffline(string fname)
     line += c;
   }
 
-  vector<string> tokens;
-  string delim(",");
+  std::vector<std::string> tokens;
+  std::string delim(",");
   Tokenize(line, tokens, delim);
 
   // ToDo: full grid not supported
   bool fullgrid = atoi(tokens[0].c_str());
   if ((fullgrid && tokens.size() != 8) || (!fullgrid && tokens.size() != 7)) {
-    cout << "DBMatOffline: Wrong file format: " << fname.c_str() << endl;
+    std::cout << "DBMatOffline: Wrong file format: " << fname.c_str() << std::endl;
     exit(-1);
   }
 
@@ -103,8 +101,6 @@ DBMatOffline::DBMatOffline(string fname)
   double lambda = atof(tokens[5].c_str());
   DBMatDecompostionType decomp = (DBMatDecompostionType)atoi(tokens[6].c_str());
 
-  /*sgpp::base::RegularGridConfiguration gconf = {grid_type, grid_dim,
-                                                grid_level};*/
   sgpp::base::RegularGridConfiguration gconf;
   gconf.dim_ = grid_dim;
   gconf.level_ = grid_level;
@@ -167,9 +163,6 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
   }
 
   // Copy configuration
-  /*sgpp::base::RegularGridConfiguration gconf = {old.config_->grid_type_,
-                                                old.config_->grid_dim_,
-                                                old.config_->grid_level_};*/
   sgpp::base::RegularGridConfiguration gconf;
   gconf.dim_ = old.config_->grid_dim_;
   gconf.level_ = old.config_->grid_level_;
@@ -201,8 +194,6 @@ DBMatOffline::~DBMatOffline() {
   if (lhsMatrix_ != nullptr) delete lhsMatrix_;
   if (perm_ != nullptr) delete perm_;
   if (grid_ != nullptr) delete grid_;
-  /*if (fullgrid_ != nullptr)
-    delete fullgrid_;*/
   if (ownsConfig_ && config_ != nullptr) delete config_;
 }
 
@@ -217,10 +208,6 @@ sgpp::base::DataMatrix* DBMatOffline::getDecomposedMatrix() {
     throw sgpp::base::data_exception("Matrix was not decomposed, yet!");
   }*/
 }
-
-// combigrid::FullGrid<double>& DBMatOffline::getFullGrid() {
-//  return *fullgrid_;
-//}
 
 sgpp::base::Grid& DBMatOffline::getGrid() { return *grid_; }
 
@@ -368,7 +355,7 @@ void DBMatOffline::decomposeMatrix() {
   }
 }
 
-void DBMatOffline::store(string fileName) {
+void DBMatOffline::store(std::string fileName) {
   if (!decomposed_) {
     throw sgpp::base::application_exception("Matrix not yet decomposed");
     return;
@@ -377,8 +364,8 @@ void DBMatOffline::store(string fileName) {
   // Write configuration
   FILE* f = fopen(fileName.c_str(), "w");
   if (!(f != 0)) {
-    cout << "libtool: DBMatOffline: Error opening file " << fileName.c_str()
-         << endl;
+    std::cout << "libtool: DBMatOffline: Error opening file " << fileName.c_str()
+         << std::endl;
     exit(-1);
   }
 
@@ -413,17 +400,17 @@ void DBMatOffline::printMatrix() {
   std::cout << std::endl;
 }
 
-void DBMatOffline::Tokenize(string& str, vector<string>& tokens,
-                            string& delimiters) {
+void DBMatOffline::Tokenize(std::string& str, std::vector<std::string>& tokens,
+                            std::string& delimiters) {
   if (!strcmp(delimiters.c_str(), "")) {
     delimiters = " ";
   }
   // Skip delimiters at beginning.
-  string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+  std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
   // Find first "non-delimiter".
-  string::size_type pos = str.find_first_of(delimiters, lastPos);
+  std::string::size_type pos = str.find_first_of(delimiters, lastPos);
 
-  while (string::npos != pos || string::npos != lastPos) {
+  while (std::string::npos != pos || std::string::npos != lastPos) {
     // Found a token, add it to the vector.
     tokens.push_back(str.substr(lastPos, pos - lastPos));
     // Skip delimiters.  Note the "not_of"

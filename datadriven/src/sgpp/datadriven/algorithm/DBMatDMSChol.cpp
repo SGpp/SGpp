@@ -80,7 +80,8 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix,
 // Implement cholesky Update for given Decomposition and update vector
 void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
                                   sgpp::base::DataVector* update, bool do_cv) {
-  size_t i;
+  // int i;
+  size_t i_N;
 
   size_t size = DecompMatrix.getNrows();
 
@@ -148,18 +149,18 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
       wkvec_sub.vector.data[j] = -svec->data[i] * x + cvec->data[i] * y;
     }
     tbuff += (size + 1);
+    i_N = i + 1;
   }
 
   // Apply changes to N-th (last) diagonal element
   // Is outsourced, since only the diagonal element is modified.
-  i = size - 2;
   if (*tbuff != 0.0 || wkvec->data[size - 1] != 0.0) {
-    gsl_blas_drotg(tbuff, wkvec->data + (size - 1), cvec->data + i,
-                   svec->data + i);
+    gsl_blas_drotg(tbuff, wkvec->data + (size - 1), cvec->data + i_N,
+                   svec->data + i_N);
     if ((temp = *tbuff) < 0.0) {
       *tbuff = -temp;
-      cvec->data[i] = -cvec->data[i];
-      svec->data[i] = -svec->data[i];
+      cvec->data[i_N] = -cvec->data[i_N];
+      svec->data[i_N] = -svec->data[i_N];
     } else if (temp == 0.0) {
       throw sgpp::base::data_exception(
           "choleskyUpdate::Matrix not numerical positive definite");
@@ -168,7 +169,6 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
     throw sgpp::base::data_exception(
         "choleskyUpdate::Matrix not numerical positive definite");
   }
-
   gsl_vector_free(wkvec);
   gsl_vector_free(svec);
   gsl_vector_free(cvec);

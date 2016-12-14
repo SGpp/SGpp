@@ -37,6 +37,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
+#include <utility>
 
 namespace sgpp {
 namespace datadriven {
@@ -593,9 +595,10 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
 void LearnerSGDE::trainOnline(
     base::DataVector& labels, base::DataMatrix& testData,
     base::DataVector& testLabels, base::DataMatrix* validData,
-    base::DataVector* validLabels, size_t maxDataPasses, std::string refType,
-    std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-    size_t accDeclineBufferSize, size_t minRefInterval, bool usePrior) {
+    base::DataVector* validLabels, base::DataVector& classLabels,
+    size_t maxDataPasses, std::string refType, std::string refMonitor,
+    size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
+    size_t minRefInterval, bool usePrior) {
   this->trainLabels = std::make_shared<base::DataVector>(labels);
   this->usePrior = usePrior;
 
@@ -616,6 +619,34 @@ void LearnerSGDE::trainOnline(
   // counts number of performed refinement steps
   size_t refCnt = 0;
 
+  // create grid for each class
+  for (size_t i = 0; i < classLabels.getSize(); i++) {
+    int label = static_cast<int>(classLabels[i]);
+    std::unique_ptr<base::Grid> uGrid;
+    if (gridConfig.type_ == base::GridType::Linear) {
+      uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
+    } else if (gridConfig.type_ == base::GridType::ModLinear) {
+      uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
+    } else {
+      throw base::application_exception(
+          "LearnerSGDE::trainOnline : grid type is not supported");
+    }
+
+    uGrid->getGenerator().regular(gridConfig.level_);
+    // move the grid to be shared
+    std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
+    // insert grid into grid collection
+    grids.insert(std::pair<int, std::shared_ptr<base::Grid>>(label, sGrid));
+
+    // create alpha vector for new label
+    alphas.insert(std::pair<int, std::shared_ptr<base::DataVector>>(
+        label, std::make_shared<base::DataVector>(sGrid->getSize())));
+    alphas.at(label)->setAll(0.0);
+
+    appearances.insert(std::pair<int, size_t>(label, 0));
+    priors.insert(std::pair<int, double>(label, 0.0));
+  }
+
   // auxiliary variable for accuracy (error) measurement
   double acc = 0.0;
   acc = getAccuracy(testData, testLabels, 0.0);
@@ -630,34 +661,6 @@ void LearnerSGDE::trainOnline(
       double y = trainLabels->get(i);
       int label = static_cast<int>(y);
 
-      // check class label -> if it appears for the
-      // first time, create new grid
-      if (grids.find(label) == grids.end()) {
-        std::unique_ptr<base::Grid> uGrid;
-        if (gridConfig.type_ == base::GridType::Linear) {
-          uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
-        } else if (gridConfig.type_ == base::GridType::ModLinear) {
-          uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
-        } else {
-          throw base::application_exception(
-              "LearnerSGDE::trainOnline : grid type is not supported");
-        }
-
-        uGrid->getGenerator().regular(gridConfig.level_);
-        // move the grid to be shared
-        std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
-        // insert grid into grid collection
-        grids.insert(std::pair<int, std::shared_ptr<base::Grid>>(label, sGrid));
-
-        // create alpha vector for new label
-        alphas.insert(std::pair<int, std::shared_ptr<base::DataVector>>(
-            label, std::make_shared<base::DataVector>(sGrid->getSize())));
-        alphas.at(label)->setAll(0.0);
-
-        appearances.insert(std::pair<int, size_t>(label, 0));
-        priors.insert(std::pair<int, double>(label, 0.0));
-        classLabels.push_back(label);
-      }
       appearances.at(label) += 1;
 
       grid = grids.at(label);
@@ -827,7 +830,6 @@ void LearnerSGDE::trainOnline(
     }
 
     cntDataPasses++;
-    classLabels.clear();
   }
   std::cout << "# Training finished" << std::endl;
   error = 1.0 - getAccuracy(testData, testLabels, 0.0);
@@ -967,7 +969,6 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
   predictedLabels.resize(testData.getNrows());
   size_t dim = testData.getNcols();
 
-  int predLabel;
   double prior;
 
   for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -975,7 +976,8 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
     base::DataVector x(dim);
     testData.getRow((size_t)i, x);
     // predict label using Bayes’ Theorem
-    double max = 0.0;
+    double max = std::numeric_limits<double>::max() * (-1);
+    int predLabel = 0;
     // compute each density function for current test sample x
     for (auto const& g : grids) {
       std::unique_ptr<base::OperationEval> opEval(
@@ -995,7 +997,10 @@ void LearnerSGDE::predict(base::DataMatrix& testData,
         predLabel = g.first;
       }
     }
-
+    if (predLabel == 0) {
+      std::cerr << "LearnerSGDE::predict: Warning: no best class found!"
+                << std::endl;
+    }
     predictedLabels.set(i, predLabel);
   }
 }

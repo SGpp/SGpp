@@ -47,7 +47,7 @@ void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
   }
 
   end = clock();
-  elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  elapsed_secs = static_cast<double>(end - begin) / CLOCKS_PER_SEC;
   std::cout << "Solve LU: " << elapsed_secs;
 }
 

@@ -102,6 +102,14 @@ int main() {
       validLabels = &valDataset.getTargets();
 
       /**
+       * Specify the ocurring class labels.
+       */
+      size_t classNum = 2;
+      sgpp::base::DataVector classLabels(classNum);
+      classLabels[0] = -1;
+      classLabels[1] = 1;
+
+      /**
        * The grid configuration.
        */
       std::cout << "# create grid config" << std::endl;
@@ -213,9 +221,9 @@ int main() {
        */
       std::cout << "# start to train the learner" << std::endl;
       learner.trainOnline(trainLabels, testData, testLabels, validData,
-                          validLabels, maxDataPasses, refType, refMonitor,
-                          refPeriod, accDeclineThreshold, accDeclineBufferSize,
-                          minRefInterval, usePrior);
+                          validLabels, classLabels, maxDataPasses, refType,
+                          refMonitor, refPeriod, accDeclineThreshold,
+                          accDeclineBufferSize, minRefInterval, usePrior);
 
       std::cout << "# finished training" << std::endl;
 
