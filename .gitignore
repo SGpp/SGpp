@@ -90,6 +90,7 @@ datadriven/tests/uq/analysis/parabolaWithSGDE
 datadriven/tests/uq/analysis/rodetest
 
 datadriven/tests/uq/dists
+datadriven/tests/uq/anova/sobolgfunction/results/
 
 uqSetting_0.arff
 density2d.csv

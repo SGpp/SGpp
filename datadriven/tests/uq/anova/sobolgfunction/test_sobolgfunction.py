@@ -3,6 +3,9 @@
 # --------------------------------------------------------
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle as pkl
+import os
+
 from pysgpp import Grid, GridType_ModPolyClenshawCurtis
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
@@ -24,6 +27,7 @@ from work.probabilistic_transformations_for_inference.preconditioner import Chri
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
 from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
 from argparse import ArgumentParser
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 
 
 class SobolGFunctionSudret2008(object):
@@ -78,30 +82,12 @@ class SobolGFunctionSudret2008(object):
                 self.sobol_indices[tuple(perm)] = sobol_index(perm)
 
 
-
-    def checkSobolIndices(self, sobol_indices, N):
-        print "-------------- Sobol Indices (t = %i, N= %i) ------------------" % (1, N)
-        for perm in sortPermutations(sobol_indices.keys()):
-            print "S_%s = %s ~ %s (err = %g%%)" % (perm, self.sobol_indices[perm], sobol_indices[perm],
-                                                   100 * np.abs(self.sobol_indices[perm] - sobol_indices[perm]))
-        assert np.abs(np.sum(sobol_indices.values()) - 1.0) < 1e-14
-        assert np.abs(np.sum(self.sobol_indices.values()) - 1.0) < 1e-14
-
-        names = sortPermutations(sobol_indices.keys())
-        values = [sobol_indices[name] for name in names]
-        fig = plotSobolIndices(values, legend=True, names=names)
-        fig.show()
-        plt.show()
-
-
     def run_pce(self,
                 expansion="total_degree",
-                sampling_strategy="leja"):
+                sampling_strategy="leja",
+                degree_1d=2,
+                out=False):
         np.random.seed(1234567)
-        if self.solveFullProblem:
-            degree_1d = 2
-        else:
-            degree_1d = 5
 
         # define input space
         rv_trans = define_homogeneous_input_space('uniform', self.effectiveDims,
@@ -139,9 +125,11 @@ class SobolGFunctionSudret2008(object):
         compute_coefficients(pce, train_samples, train_values, "christoffel")
 
         _, _, train_values_pred = eval_pce(pce, train_samples)
-        print "train: |.|_2 = %g" % np.sqrt(np.mean(train_values - train_values_pred) ** 2)
+        l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
+        print "train: |.|_2 = %g" % l2train
         _, _, test_values_pred = eval_pce(pce, test_samples)
-        print "test:  |.|_2 = %g" % np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+        l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+        print "test:  |.|_2 = %g" % l2test
         ###################################################################################################
         print "-" * 60
         print "#terms = %i" % num_terms
@@ -149,10 +137,32 @@ class SobolGFunctionSudret2008(object):
 
         # get sobol indices
         sobol_indices = builder.getSortedSobolIndices(pce)
-        self.checkSobolIndices(sobol_indices, num_terms)
+
+        if out:
+            # store results
+            filename = os.path.join("results", "sobolgfunction_d%i_%s_deg%i.pkl" % (self.effectiveDims,
+                                                                                    sampling_strategy,
+                                                                                    degree_1d))
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'pce',
+                      'num_dims': self.effectiveDims,
+                      'sampling_strategy': sampling_strategy,
+                      'degree_1d': degree_1d,
+                      'expansion': "total_degree",
+                      'num_model_evaluations': num_samples,
+                      'l2test': l2test,
+                      'l2train': l2train,
+                      'var_estimated': pce.variance(),
+                      'var_analytic': self.var,
+                      'sobol_indices_analytic': self.sobol_indices,
+                      'sobol_indices_estimted': sobol_indices}, fd)
+            fd.close()
+
+        return sobol_indices, num_terms
 
 
-    def run_sparse_grids(self, gridType, level, maxGridSize, isFull, refinement=None):
+    def run_sparse_grids(self, gridType, level, maxGridSize, isFull,
+                         refinement=None, out=False):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
@@ -193,27 +203,68 @@ class SobolGFunctionSudret2008(object):
         print "-" * 60
         print "V[x] = %g ~ %s" % (self.var, sg_var)
 
-        # ----------------------------------------------------------
-        # estimated anova decomposition
-        anova = analysis.getAnovaDecomposition(nk=len(self.params))
+        iterations = uqManager.getKnowledge().getAvailableIterations()
+        stats = [None] * len(iterations)
+        for k, iteration in enumerate(iterations):
+            # ----------------------------------------------------------
+            # estimated anova decomposition
+            anova = analysis.getAnovaDecomposition(nk=len(self.params))
 
-        # ----------------------------------------------------------
-        # main effects
-        sobol_indices = anova.getSobolIndices()
+            # estimate the l2 error
+            test_samples = np.random.random((1000, self.effectiveDims))
+            test_values = np.ndarray(1000)
+            for i, sample in enumerate(test_samples):
+                test_values[i] = self.simulation(sample)
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+            test_values_pred = evalSGFunction(grid, alpha, test_samples)
+            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+            # ----------------------------------------------------------
+            # main effects
+            sobol_indices = anova.getSobolIndices()
+            stats[k] = {'num_model_evaluations': grid.getSize(),
+                        'l2test': l2test,
+                        'var_estimated': sg_var[0],
+                        'var_analytic': self.var,
+                        'sobol_indices_estimted': sobol_indices}
 
-        self.checkSobolIndices(sobol_indices, uqManager.getGrid().getSize())
+        if out:
+            # store results
+            filename = os.path.join("results",
+                                    "sobolgfunction_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % ("sg" if not isFull else "fg",
+                                                                                    self.effectiveDims,
+                                                                                    grid.getTypeAsString(),
+                                                                                    level,
+                                                                                    maxGridSize,
+                                                                                    refinement,
+                                                                                    iteration))
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'sg',
+                      'num_dims': self.effectiveDims,
+                      'grid_type': grid.getTypeAsString(),
+                      'level': level,
+                      'max_grid_size': maxGridSize,
+                      'sobol_indices_analytic': self.sobol_indices,
+                      'results': stats},
+                     fd)
+            fd.close()
+        
+        return sobol_indices, grid.getSize()
+    
 
+def checkSobolIndices(sobol_indices_analytic, sobol_indices, N, plot=False):
+    print "-------------- Sobol Indices (t = %i, N= %i) ------------------" % (1, N)
+    for perm in sortPermutations(sobol_indices.keys()):
+        print "S_%s = %s ~ %s (err = %g%%)" % (perm, sobol_indices_analytic[perm], sobol_indices[perm],
+                                               100 * np.abs(sobol_indices_analytic[perm] - sobol_indices[perm]))
+    assert np.abs(np.sum(sobol_indices.values()) - 1.0) < 1e-14
+    assert np.abs(np.sum(sobol_indices_analytic.values()) - 1.0) < 1e-14
 
-def run_sobol_g_function_pce(fullModel, sampler, degree):
-    testSetting = SobolGFunctionSudret2008(fullModel)
-    testSetting.run_pce("total_degree", sampler, degree)
-
-def run_sobol_g_function_sg(fullModel, gridType, level, numGridPoints,
-                            fullGrid, refinement):
-    testSetting = SobolGFunctionSudret2008(fullModel)
-    testSetting.run_sparse_grids(Grid.stringToGridType(gridType),
-                                 level, numGridPoints,
-                                 fullGrid, refinement)
+    if plot:
+        names = sortPermutations(sobol_indices.keys())
+        values = [sobol_indices[name] for name in names]
+        fig = plotSobolIndices(values, legend=True, names=names)
+        fig.show()
+        plt.show()
 
 # --------------------------------------------------------
 # testing
@@ -224,7 +275,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
     parser.add_argument('--fullModel', default=False, action="store_true", help='use the full model (D=8) or the reduced model (D=4)')
-    parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
+    parser.add_argument('--numGridPoints', default=200, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="poly", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=2, type=int, help='level of sparse grid')
     parser.add_argument('--refinement', default="var", type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
@@ -236,9 +287,18 @@ if __name__ == "__main__":
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
     args = parser.parse_args()
 
+    testSetting = SobolGFunctionSudret2008(args.fullModel)
     if args.surrogate == "pce":
-        run_sobol_g_function_pce(args.sampler, args.degree)
+        sobol_indices, N = testSetting.run_pce("total_degree",
+                                               args.sampler,
+                                               args.degree,
+                                               args.out)
     else:
-        run_sobol_g_function_sg(args.fullModel, args.gridType, args.level,
-                                args.numGridPoints, args.fullGrid,
-                                args.refinement)
+        sobol_indices, N = testSetting.run_sparse_grids(Grid.stringToGridType(args.gridType),
+                                                        args.level,
+                                                        args.numGridPoints,
+                                                        args.fullGrid,
+                                                        args.refinement,
+                                                        args.out)
+    if args.plot:
+        checkSobolIndices(testSetting.sobol_indices, sobol_indices, N, args.plot)
