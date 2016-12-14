@@ -55,12 +55,17 @@ class LinearModifiedBasis : public Basis<LT, IT> {
   inline size_t getDegree() const override { return 1; }
 
   double getIntegral(LT level, IT index) {
+    const IT hInv = static_cast<IT>(1) << level;
+
     if (level == 1) {
       // first level
       return 1.0;
+    } else if ((index == 1) || (index == hInv - 1)) {
+      // left and right modified basis functions
+      return 2. / hInv;
     } else {
       // interior basis function
-      return 1. / static_cast<double>(static_cast<IT>(1) << (level - 1));
+      return 1. / hInv;
     }
   }
 };
