@@ -35,7 +35,7 @@ from work.probabilistic_transformations_for_inference.sampling import Approximat
 class IshigamiSudret2008(object):
 
     def __init__(self):
-        self.radix = 'test_ishigami'
+        self.radix = 'ishigami'
 
         # --------------------------------------------------------
         # set distributions of the input parameters
@@ -155,9 +155,10 @@ class IshigamiSudret2008(object):
 
         if out:
             # store results
-            filename = os.path.join("results", "sobolgfunction_pce_d%i_%s_deg%i.pkl" % (self.numDims,
-                                                                                        sampling_strategy,
-                                                                                        degree_1d))
+            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i.pkl" % (self.radix,
+                                                                            self.numDims,
+                                                                            sampling_strategy,
+                                                                            degree_1d))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.numDims,
@@ -241,12 +242,13 @@ class IshigamiSudret2008(object):
         if out:
             # store results
             filename = os.path.join("results",
-                                    "sobolgfunction_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % ("sg" if not isFull else "fg",
-                                                                                    self.numDims,
-                                                                                    grid.getTypeAsString(),
-                                                                                    level,
-                                                                                    maxGridSize,
-                                                                                    refinement))
+                                    "%s_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % (self.radix,
+                                                                        "sg" if not isFull else "fg",
+                                                                        self.numDims,
+                                                                        grid.getTypeAsString(),
+                                                                        level,
+                                                                        maxGridSize,
+                                                                        refinement))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
                       'num_dims': self.numDims,

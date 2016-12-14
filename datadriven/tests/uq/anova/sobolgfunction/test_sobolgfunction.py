@@ -33,7 +33,7 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctio
 class SobolGFunctionSudret2008(object):
 
     def __init__(self, solveFullProblem):
-        self.radix = 'test_sobolgfunction'
+        self.radix = 'sobolgfunction'
 
         self.numDims = 8
         self.solveFullProblem = solveFullProblem
@@ -141,9 +141,10 @@ class SobolGFunctionSudret2008(object):
 
         if out:
             # store results
-            filename = os.path.join("results", "sobolgfunction_pce_d%i_%s_deg%i.pkl" % (self.effectiveDims,
-                                                                                        sampling_strategy,
-                                                                                        degree_1d))
+            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i.pkl" % (self.radix,
+                                                                            self.effectiveDims,
+                                                                            sampling_strategy,
+                                                                            degree_1d))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.effectiveDims,
@@ -225,12 +226,13 @@ class SobolGFunctionSudret2008(object):
         if out:
             # store results
             filename = os.path.join("results",
-                                    "sobolgfunction_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % ("sg" if not isFull else "fg",
-                                                                                    self.effectiveDims,
-                                                                                    grid.getTypeAsString(),
-                                                                                    level,
-                                                                                    maxGridSize,
-                                                                                    refinement))
+                                    "%s_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % (self.radix,
+                                                                        "sg" if not isFull else "fg",
+                                                                        self.effectiveDims,
+                                                                        grid.getTypeAsString(),
+                                                                        level,
+                                                                        maxGridSize,
+                                                                        refinement))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
                       'num_dims': self.effectiveDims,
