@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle as pkl
 import os
+from itertools import combinations
+from argparse import ArgumentParser
 
 from pysgpp import Grid, GridType_ModPolyClenshawCurtis
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
@@ -15,9 +17,10 @@ from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
-from pysgpp.extensions.datadriven.uq.helper import sortPermutations, findSetBits
+from pysgpp.extensions.datadriven.uq.helper import sortPermutations, computeTotalEffects
 from pysgpp.extensions.datadriven.uq.models import PCEBuilderHeat, TestEnvironmentSG
-from itertools import combinations
+from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 
 from model_cpp import define_homogeneous_input_space
 from polynomial_chaos_cpp import PolynomialChaosExpansion, FULL_TENSOR_BASIS
@@ -25,9 +28,6 @@ from math_tools_cpp import nchoosek
 from work.probabilistic_transformations_for_inference.solver import solve
 from work.probabilistic_transformations_for_inference.preconditioner import ChristoffelPreconditioner
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
-from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
-from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 from work.probabilistic_transformations_for_inference.sampling import ApproximateFeketeSampleGeneratorStrategy, \
     TensorQuadratureSampleGenerationStrategy, LejaSampleGeneratorStrategy
 
@@ -96,6 +96,9 @@ class IshigamiSudret2008(object):
             for perm in combinations(range(self.numDims), r=k + 1):
                 self.sobol_indices[tuple(perm)] = sobol_index(perm)
 
+        self.total_effects = computeTotalEffects(self.sobol_indices)
+
+
     def run_pce(self,
                 expansion="total_degree",
                 sampling_strategy="leja",
@@ -152,13 +155,16 @@ class IshigamiSudret2008(object):
 
         # get sobol indices
         sobol_indices = builder.getSortedSobolIndices(pce)
+        total_effects = computeTotalEffects(sobol_indices)
 
         if out:
             # store results
-            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i.pkl" % (self.radix,
-                                                                            self.numDims,
-                                                                            sampling_strategy,
-                                                                            degree_1d))
+            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i_M%i_N%i.pkl" % (self.radix,
+                                                                                    self.numDims,
+                                                                                    sampling_strategy,
+                                                                                    degree_1d,
+                                                                                    num_terms,
+                                                                                    num_samples))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.numDims,
@@ -171,10 +177,13 @@ class IshigamiSudret2008(object):
                       'var_estimated': pce.variance(),
                       'var_analytic': self.var,
                       'sobol_indices_analytic': self.sobol_indices,
-                      'sobol_indices_estimted': sobol_indices}, fd)
+                      'sobol_indices_estimated': sobol_indices,
+                      'total_effects_analytic': self.total_effects,
+                      'total_effects_estimated': total_effects},
+                     fd)
             fd.close()
 
-        return sobol_indices, num_terms
+        return sobol_indices, num_samples
 
 
     def run_sparse_grids(self, gridType, level, maxGridSize, isFull,
@@ -233,11 +242,14 @@ class IshigamiSudret2008(object):
             # ----------------------------------------------------------
             # main effects
             sobol_indices = anova.getSobolIndices()
+            total_effects = computeTotalEffects(sobol_indices)
+
             stats[k] = {'num_model_evaluations': grid.getSize(),
                         'l2test': l2test,
                         'var_estimated': sg_var[0],
                         'var_analytic': self.var,
-                        'sobol_indices_estimted': sobol_indices}
+                        'sobol_indices_estimated': sobol_indices,
+                        'total_effects_estimated': total_effects}
 
         if out:
             # store results
@@ -255,7 +267,10 @@ class IshigamiSudret2008(object):
                       'grid_type': grid.getTypeAsString(),
                       'level': level,
                       'max_grid_size': maxGridSize,
+                      'is_full': isFull,
+                      'refinement': refinement,
                       'sobol_indices_analytic': self.sobol_indices,
+                      'total_effects_analytic': self.total_effects,
                       'results': stats},
                      fd)
             fd.close()
@@ -307,7 +322,7 @@ if __name__ == "__main__":
     parser.add_argument('--sampler', default="fekete", type=str, help='define which sample should be used for pce (full_tensor, leja, fekete)')
     parser.add_argument('--degree', default=3, type=int, help='maximum degree of polynomials in 1d')
     parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
-    parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
+    parser.add_argument('--plot', default=False, action='store_true', help='plot results (1d)')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
     args = parser.parse_args()
 

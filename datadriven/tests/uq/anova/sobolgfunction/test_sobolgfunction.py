@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle as pkl
 import os
+from argparse import ArgumentParser
+from itertools import combinations
 
 from pysgpp import Grid, GridType_ModPolyClenshawCurtis
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
@@ -15,9 +17,10 @@ from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
-from pysgpp.extensions.datadriven.uq.helper import sortPermutations
+from pysgpp.extensions.datadriven.uq.helper import sortPermutations, computeTotalEffects
 from pysgpp.extensions.datadriven.uq.models import PCEBuilderHeat, TestEnvironmentSG
-from itertools import combinations
+from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 
 from model_cpp import define_homogeneous_input_space
 from polynomial_chaos_cpp import PolynomialChaosExpansion, FULL_TENSOR_BASIS
@@ -25,9 +28,6 @@ from math_tools_cpp import nchoosek
 from work.probabilistic_transformations_for_inference.solver import solve
 from work.probabilistic_transformations_for_inference.preconditioner import ChristoffelPreconditioner
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
-from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp
-from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 
 
 class SobolGFunctionSudret2008(object):
@@ -64,7 +64,11 @@ class SobolGFunctionSudret2008(object):
         def f(xs, bs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
 
-        self.simulation = lambda x, **kws: f(x, bs[:len(x)], **kws)
+        if solveFullProblem:
+            self.simulation = lambda x, **kws: f(x, bs, **kws)
+        else:
+            self.simulation = lambda x, **kws: f(np.append(x, 0.5 * np.ones(len(bs) - len(x))),
+                                                 bs, **kws)
 
         # --------------------------------------------------------
         # analytic reference values
@@ -85,6 +89,7 @@ class SobolGFunctionSudret2008(object):
             for perm in combinations(range(self.numDims), r=k + 1):
                 self.sobol_indices[tuple(perm)] = sobol_index(perm)
 
+        self.total_effects = computeTotalEffects(self.sobol_indices)
 
     def run_pce(self,
                 expansion="total_degree",
@@ -117,10 +122,10 @@ class SobolGFunctionSudret2008(object):
 
 
         samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
-        train_samples, train_values = builder.eval_samples(samples, rv_trans, self.simulation)
+        train_samples, train_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
 
         samples = np.random.random((self.effectiveDims, 1000))
-        test_samples, test_values = builder.eval_samples(samples, rv_trans, self.simulation)
+        test_samples, test_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
 
         # compute coefficients of pce
         compute_coefficients(pce, train_samples, train_values, "christoffel")
@@ -138,15 +143,19 @@ class SobolGFunctionSudret2008(object):
 
         # get sobol indices
         sobol_indices = builder.getSortedSobolIndices(pce)
-
+        total_effects = computeTotalEffects(sobol_indices)
         if out:
             # store results
-            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i.pkl" % (self.radix,
-                                                                            self.effectiveDims,
-                                                                            sampling_strategy,
-                                                                            degree_1d))
+            # store results
+            filename = os.path.join("results", "%s_pce_d%i_%s_deg%i_M%i_N%i.pkl" % (self.radix,
+                                                                                    self.effectiveDims,
+                                                                                    sampling_strategy,
+                                                                                    degree_1d,
+                                                                                    num_terms,
+                                                                                    num_samples))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
+                      'model': "full" if self.effectiveDims == 4 else "reduced",
                       'num_dims': self.effectiveDims,
                       'sampling_strategy': sampling_strategy,
                       'degree_1d': degree_1d,
@@ -157,7 +166,10 @@ class SobolGFunctionSudret2008(object):
                       'var_estimated': pce.variance(),
                       'var_analytic': self.var,
                       'sobol_indices_analytic': self.sobol_indices,
-                      'sobol_indices_estimted': sobol_indices}, fd)
+                      'sobol_indices_estimated': sobol_indices,
+                      'total_effects_analytic': self.total_effects,
+                      'total_effects_estimated': total_effects},
+                     fd)
             fd.close()
 
         return sobol_indices, num_terms
@@ -217,29 +229,37 @@ class SobolGFunctionSudret2008(object):
             # ----------------------------------------------------------
             # main effects
             sobol_indices = anova.getSobolIndices()
+            total_effects = computeTotalEffects(sobol_indices)
+
             stats[k] = {'num_model_evaluations': grid.getSize(),
                         'l2test': l2test,
                         'var_estimated': sg_var[0],
                         'var_analytic': self.var,
-                        'sobol_indices_estimted': sobol_indices}
+                        'sobol_indices_estimated': sobol_indices,
+                        'total_effects_estimated': total_effects}
 
         if out:
             # store results
             filename = os.path.join("results",
-                                    "%s_%s_d%i_%s_l%i_Nmax%i_%s.pkl" % (self.radix,
-                                                                        "sg" if not isFull else "fg",
-                                                                        self.effectiveDims,
-                                                                        grid.getTypeAsString(),
-                                                                        level,
-                                                                        maxGridSize,
-                                                                        refinement))
+                                    "%s_%s_d%i_%s_l%i_Nmax%i_%s_N%i.pkl" % (self.radix,
+                                                                            "sg" if not isFull else "fg",
+                                                                            self.effectiveDims,
+                                                                            grid.getTypeAsString(),
+                                                                            level,
+                                                                            maxGridSize,
+                                                                            refinement,
+                                                                            grid.getSize()))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
+                      'model': "full" if self.effectiveDims == 4 else "reduced",
                       'num_dims': self.effectiveDims,
                       'grid_type': grid.getTypeAsString(),
                       'level': level,
                       'max_grid_size': maxGridSize,
+                      'is_full': isFull,
+                      'refinement': refinement,
                       'sobol_indices_analytic': self.sobol_indices,
+                      'total_effects_analytic': self.total_effects,
                       'results': stats},
                      fd)
             fd.close()

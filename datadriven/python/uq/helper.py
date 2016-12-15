@@ -37,3 +37,12 @@ def sortPermutations(perms, index_return=False):
         return ans, indices
     else:
         return ans
+
+def computeTotalEffects(sobol_indices):
+    total_effects = {}
+    for k in [perm for perm in sobol_indices.keys() if len(perm) == 1]:
+        total_effects[k] = 0.0
+        for perm, sobol_index in sobol_indices.items():
+            if k[0] in perm:
+                total_effects[k] += sobol_index
+    return total_effects
