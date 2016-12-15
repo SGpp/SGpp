@@ -44,12 +44,14 @@ class ForwardSelectorRefinementIndicator : public RefinementFunctor {
    * @param threshold The refinement threshold; Only grid points with
    *        indicator values greater than this threshold will be refined
    * @param refinementsNum The max amount of grid points to be refined
+   * @param performUpdate Specifies if normal vector should be updated after refinement
    */
   ForwardSelectorRefinementIndicator(Grid& grid, DataMatrix& svs,
                                      DataVector& alphas, DataVector& w1,
                                      DataVector& w2, double beta,
                                      double threshold = 0.0,
-                                     size_t refinementsNum = 1);
+                                     size_t refinementsNum = 1,
+                                     bool performUpdate = true);
 
   /**
   * This should be returning a refinement indication value for every grid point.
@@ -120,6 +122,8 @@ class ForwardSelectorRefinementIndicator : public RefinementFunctor {
   size_t refinementsNum;
   // threshold, only the points with greater indicator values be refined
   double threshold;
+  // specifies if normal vector should be updated after refinement
+  bool performUpdate;
 
  private:
   // the sparse grid

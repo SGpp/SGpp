@@ -53,6 +53,7 @@ int main() {
       /**
        * Get the training, test and validation data
        */
+      // std::string filename = "../tests/data/ripleyGarcke.train.arff";
       std::string filename = "../tests/data/ripley/5_fold/ripley_train_" +
                              std::to_string(numSets + 1) + "_" +
                              std::to_string(numFolds + 1) + ".arff";
@@ -68,6 +69,7 @@ int main() {
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
+      // filename = "../tests/data/ripleyGarcke.test.arff";
       filename = "../tests/data/ripley/5_fold/ripley_test.arff";
       // filename = "../tests/data/banana/5_fold/banana_test.arff";
       // filename = "../tests/data/SDSS_DR10/5_fold/DR10_test.arff";
@@ -134,9 +136,9 @@ int main() {
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
       std::string refType;
       // select predictive refinement
-      refType = "combined-measure";
+      // refType = "combined-measure";
       // select impurity-based refinement
-      // refType = "impurity";
+      refType = "impurity";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       /**

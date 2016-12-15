@@ -80,9 +80,7 @@ double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
     // Gini impurity
     for (size_t i = 0; i < numClasses; ++i) {
       impurityInd +=
-          std::pow(fractions.get(i) / static_cast<double>(cnt), 2);  // relative
-      // impurityInd += std::pow(fractions.get(i)/dataset.getNrows(), 2);
-      // //absolute
+          std::pow(fractions.get(i) / static_cast<double>(cnt), 2);
     }
     impurityInd = 1.0 - impurityInd;
   }

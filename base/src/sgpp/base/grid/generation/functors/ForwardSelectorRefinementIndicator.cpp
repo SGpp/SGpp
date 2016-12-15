@@ -19,7 +19,8 @@ namespace base {
 
 ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(
     Grid& grid, DataMatrix& svs, DataVector& alphas, DataVector& w1,
-    DataVector& w2, double beta, double threshold, size_t refinementsNum)
+    DataVector& w2, double beta, double threshold, size_t refinementsNum,
+    bool performUpdate)
     : svs(svs),
       w1(w1),
       w2(w2),
@@ -29,6 +30,7 @@ ForwardSelectorRefinementIndicator::ForwardSelectorRefinementIndicator(
       beta(beta),
       refinementsNum(refinementsNum),
       threshold(threshold),
+      performUpdate(performUpdate),
       grid(grid) {
   // compute current loss using set of support vectors
   DataVector losses(svs.getNrows());
@@ -85,35 +87,37 @@ double ForwardSelectorRefinementIndicator::operator()(GridPoint& point) const {
 }
 
 void ForwardSelectorRefinementIndicator::update(GridPoint& point) {
-  SBasis& basis = const_cast<SBasis&>(grid.getBasis());
+  if (performUpdate) {
+    SBasis& basis = const_cast<SBasis&>(grid.getBasis());
 
-  double w1_new = 0.0;
-  double w2_new = 0.0;
-  double res;
+    double w1_new = 0.0;
+    double w2_new = 0.0;
+    double res;
 
-  level_t level;
-  index_t index;
-  double value;
-  double valueInDim;
-  // go through all support vectors
-  for (size_t row = 0; row < svs.getNrows(); ++row) {
-    // evaluate sv at current grid point in each dimension
-    value = 1.0;
-    for (size_t dim = 0; dim < point.getDimension(); ++dim) {
-      level = point.getLevel(dim);
-      index = point.getIndex(dim);
-      valueInDim = svs.get(row, dim);
-      value *= basis.eval(level, index, valueInDim);
+    level_t level;
+    index_t index;
+    double value;
+    double valueInDim;
+    // go through all support vectors
+    for (size_t row = 0; row < svs.getNrows(); ++row) {
+      // evaluate sv at current grid point in each dimension
+      value = 1.0;
+      for (size_t dim = 0; dim < point.getDimension(); ++dim) {
+        level = point.getLevel(dim);
+        index = point.getIndex(dim);
+        valueInDim = svs.get(row, dim);
+        value *= basis.eval(level, index, valueInDim);
+      }
+      // compute new component of normal vector
+      res = value * alphas.get(row);
+      w1_new += res;
+      res = value * std::abs(alphas.get(row));
+      w2_new += res;
     }
-    // compute new component of normal vector
-    res = value * alphas.get(row);
-    w1_new += res;
-    res = value * std::abs(alphas.get(row));
-    w2_new += res;
+    // update normal vector
+    w1.append(w1_new);
+    w2.append(w2_new);
   }
-  // update normal vector
-  w1.append(w1_new);
-  w2.append(w2_new);
 }
 
 }  // namespace base
