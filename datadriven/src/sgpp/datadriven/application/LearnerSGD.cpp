@@ -126,8 +126,8 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
   std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
       errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
 
-  // decay factor for addaptive learning rate
-  double lGamma = 0.001;
+  // reduction factor for addaptive learning rate
+  // double lGamma = 0.001;
 
   // auxiliary variable for accuracy (error) measurement
   double acc = getAccuracy(testData, testLabels, 0.0);
@@ -202,13 +202,16 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
       alpha.axpy(-currentGamma * residual, delta);
 
       // learning rate according to L. Bottou
-      currentGamma =
+      /*currentGamma =
           gamma *
           std::pow(
               (1 + gamma * lGamma * (static_cast<double>(processedPoints) + 1)),
+              -0.75);*/
+      currentGamma =
+          gamma *
+          std::pow(
+              (1 + gamma * lambda * (static_cast<double>(processedPoints) + 1)),
               -0.75);
-      // currentGamma = gamma * std::pow(
-      //  (1 + gamma*lambda*(static_cast<double>(processedPoints)+1)), -0.75);
 
       // smoothing according to L. Bottou
       size_t t1 = (processedPoints > dim + 1) ? processedPoints - dim : 1;
