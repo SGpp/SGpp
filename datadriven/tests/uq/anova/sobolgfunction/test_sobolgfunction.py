@@ -112,11 +112,11 @@ class SobolGFunctionSudret2008(object):
         elif sampling_strategy == "fekete":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
             quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
-            num_samples = int(num_samples * 1.2)
+            num_samples = int(num_samples * 1.6)
         elif sampling_strategy == "leja":
             samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
             quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
-            num_samples = int(num_samples * 1.2)
+            num_samples = int(num_samples * 1.6)
         else:
             raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
