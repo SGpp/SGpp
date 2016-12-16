@@ -13,6 +13,9 @@
 
 #include <list>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class that captures a density function as an online object
  */
@@ -144,6 +147,9 @@ class DBMatOnlineDE : public DBMatOnline {
   double computeL2Error();
   double resDensity(sgpp::base::DataVector*& alpha);
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMATONLINEDE_HPP_ */
 

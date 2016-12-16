@@ -10,6 +10,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class for objects that can be used in the online step of the classification
  * (The classification is divided into two parts: the offline step that does not
@@ -55,6 +58,9 @@ class DBMatOnline {
  protected:
   DBMatOffline* offlineObject_;
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMATONLINE_HPP_ */
 

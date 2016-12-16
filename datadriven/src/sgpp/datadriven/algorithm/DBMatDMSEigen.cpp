@@ -12,6 +12,9 @@
 
 #include <iostream>
 
+namespace sgpp {
+namespace datadriven {
+
 DBMatDMSEigen::DBMatDMSEigen() {}
 
 DBMatDMSEigen::~DBMatDMSEigen() {}
@@ -44,5 +47,8 @@ void DBMatDMSEigen::solve(sgpp::base::DataMatrix& eigenVectors,
   gsl_blas_dgemv(CblasNoTrans, 1., &q.matrix, res, 0., &alphaView.vector);
   gsl_vector_free(res);
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */

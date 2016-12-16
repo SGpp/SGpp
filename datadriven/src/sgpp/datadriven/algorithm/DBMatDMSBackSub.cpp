@@ -10,6 +10,9 @@
 #include <ctime>
 #include <iostream>
 
+namespace sgpp {
+namespace datadriven {
+
 DBMatDMSBackSub::DBMatDMSBackSub() {}
 
 DBMatDMSBackSub::~DBMatDMSBackSub() {}
@@ -50,5 +53,8 @@ void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
   elapsed_secs = static_cast<double>(end - begin) / CLOCKS_PER_SEC;
   std::cout << "Solve LU: " << elapsed_secs;
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */

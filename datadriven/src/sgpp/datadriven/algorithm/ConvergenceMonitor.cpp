@@ -5,6 +5,9 @@
 
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 ConvergenceMonitor::ConvergenceMonitor(double pDeclineThreshold,
                                        size_t pBufferSize,
                                        size_t pMinRefInterval)
@@ -64,3 +67,7 @@ bool ConvergenceMonitor::checkConvergence() {
   }
   return result;
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
+

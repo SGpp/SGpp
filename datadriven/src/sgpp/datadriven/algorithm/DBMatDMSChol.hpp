@@ -10,6 +10,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class to solve the system of equations with a LU-decomposed matrix
  */
@@ -62,6 +65,9 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
   void choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
                         sgpp::base::DataVector* downdate, bool do_cv = false);
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMatDMSChol_HPP_ */
 

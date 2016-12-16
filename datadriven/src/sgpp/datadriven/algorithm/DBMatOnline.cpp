@@ -8,6 +8,9 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 DBMatOnline::DBMatOnline() : offlineObject_(nullptr) {}
 
 DBMatOnline::DBMatOnline(DBMatOffline* o) { readOffline(o); }
@@ -28,5 +31,8 @@ void DBMatOnline::setLambda(double lambda) {
 void DBMatOnline::readOffline(DBMatOffline* o) { offlineObject_ = o; }
 
 DBMatOffline* DBMatOnline::getOffline() { return offlineObject_; }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */
