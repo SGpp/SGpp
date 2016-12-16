@@ -6,6 +6,7 @@ from LocalRefinementStrategy import (CreateAllChildrenRefinement,
 from RefinementManager import RefinementManager
 from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
+                                WeightedSurplusRanking,
                                 ExpectationValueOptRanking,
                                 VarianceOptRanking,
                                 SurplusRatioRanking,
@@ -105,6 +106,11 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
 
     def __init__(self, refinement):
         super(RefineCurrentNodesDescriptor, self).__init__(refinement)
+
+    def withWeightedSurplusRanking(self):
+        ranking = WeightedSurplusRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
 
     def withExpectationValueOptimizationRanking(self):
         ranking = ExpectationValueOptRanking()

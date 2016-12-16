@@ -44,7 +44,6 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
             gpl.getLeftChild(d)
             if isValid(grid, gpl):
                 ans += insertPoint(grid, gpl)
-                ans += insertHierarchicalAncestors(grid, gpl)
                 if hasBorder(grid.getType()):
                     ans += insertTruncatedBorder(grid, gpl)
 
@@ -52,7 +51,6 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
             gpr.getRightChild(d)
             if isValid(grid, gpr):
                 ans += insertPoint(grid, gpr)
-                ans += insertHierarchicalAncestors(grid, gpr)
                 if hasBorder(grid.getType()):
                     ans += insertTruncatedBorder(grid, gpr)
 

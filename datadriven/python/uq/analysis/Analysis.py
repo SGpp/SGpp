@@ -5,6 +5,7 @@
 #
 from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from scipy.stats.mstats_basic import moment
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -85,8 +86,9 @@ class Analysis(object):
 
         ans = {}
         for iteration in iterations:
-            ans[iteration] = {}
-            for i, t in enumerate(self._ts):
+            if len(ts) > 1:
+                ans[iteration] = {}
+            for i, t in enumerate(ts):
                 # compute mean
                 if self._verbose:
                     print "-" * 60
@@ -101,13 +103,14 @@ class Analysis(object):
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'mean')
 
-                ans[iteration][t] = moment
+                if len(ts) > 1:
+                    ans[iteration][t] = moment
+                else:
+                    ans[iteration] = moment
 
         # remove dict structure if there are just one element
         if len(iterations) == 1:
             ans = ans[iterations[0]]
-        if len(ts) == 1:
-            ans = ans[ts[0]]
 
         return ans
 
@@ -123,14 +126,14 @@ class Analysis(object):
         """
         if iterations is None:
             iterations = self._iterations
-            chooseLastIteration = True
 
         if ts is None:
             ts = self._ts
 
         ans = {}
         for iteration in iterations:
-            ans[iteration] = {}
+            if len(ts) > 1:
+                ans[iteration] = {}
             for i, t in enumerate(self._ts):
                 # compute variance
                 if self._verbose:
@@ -146,14 +149,14 @@ class Analysis(object):
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'var')
 
-                ans[iteration][t] = moment
+                if len(ts) > 1:
+                    ans[iteration][t] = moment
+                else:
+                    ans[iteration] = moment
 
         # remove dict structure if there are just one element
-        if chooseLastIteration or len(iterations) == 1:
-            ans = ans[iterations[-1]]
-
-        if len(ts) == 1:
-            ans = ans[ts[0]]
+        if len(iterations) == 1:
+            ans = ans[iterations[0]]
 
         return ans
 

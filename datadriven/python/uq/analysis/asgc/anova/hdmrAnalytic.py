@@ -71,6 +71,9 @@ class HDMRAnalytic(object):
         self.__marginalization = MarginalAnalyticEstimationStrategy()
         self.__estimation = AnalyticEstimationStrategy()
 
+    def setVerbose(self, verbose):
+        self._verbose = verbose
+
     def __computeMean(self):
         if self._verbose:
             print "estimate mean: ",

@@ -30,6 +30,7 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     SBsplineModifiedClenshawCurtisBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
+from pysgpp.pysgpp_swig import IndexVector
 
 
 #######################################################################
@@ -170,14 +171,7 @@ def getDegree(grid):
 
 
 def hasBorder(gridType):
-    return gridType in [GridType_LinearBoundary,
-                        GridType_LinearL0Boundary,
-                        GridType_LinearClenshawCurtisBoundary,
-                        GridType_PolyBoundary,
-                        GridType_PolyClenshawCurtisBoundary,
-                        GridType_BsplineBoundary,
-                        GridType_BsplineClenshawCurtis]
-
+    return gridType in bsplineBoundaryGridTypes + linearBoundaryGridTypes + polyBoundaryGridTypes
 
 def isValid1d(grid, level, index):
     minLevel = 0 if hasBorder(grid.getType()) else 1
@@ -394,61 +388,8 @@ def haveOverlappingSupportByLevelIndex((leveli, indexi), (levelj, indexj)):
     # in all dimensions
     return idim == numDims
 
-
-# def insertHierarchicalAncestors(grid, gp):
-#     """
-#     insert all hierarchical ancestors recursively to the grid
-#     @param grid: Grid
-#     @param gp: HashGridPoint
-#     @return: list of HashGridPoint, contains all the newly added grid points
-#     """
-#     newGridPoints = []
-#     gs = grid.getStorage()
-#     gps = [gp]
-#     while len(gps) > 0:
-#         gp = gps.pop()
-#         gpc = HashGridPoint(gp)
-#         for dim in xrange(gp.getDimension()):
-#             oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
-#             # run up to the root node until you find one existing node
-#             level, index = oldlevel, oldindex
-#             while level > 1:
-#                 level -= 1
-#                 index = index / 2 + ((index + 1) / 2) % 2
-#
-#                 gpc.set(dim, level, index)
-#
-#                 if not gs.isContaining(gpc):
-#                     newGridPoints.append(HashGridPoint(gpc))
-#                 else:
-#                     break
-#
-#             # reset the point
-#             gpc.set(dim, oldlevel, oldindex)
-#
-#         # insert the grid points in a list and add the hierarchical ancestors
-#         # of them
-#         for gp in newGridPoints:
-#             gps += insertPoint(grid, gp)
-#
-#     return newGridPoints
-
-
 def insertHierarchicalAncestors(grid, gp):
-    ans = []
-    gps = [gp]
-
-    while len(gps) > 0:
-        gp = gps.pop()
-        ngps = getNonExistingHierarchicalAncestors(grid, gp)
-        while len(ngps) > 0:
-            _, gp = ngps.pop()
-            res = insertPoint(grid, gp)
-
-            gps += res
-            ans += res
-    return ans
-
+    return insertPoint(grid, gp)
 
 def hasChildren(grid, gp):
     gs = grid.getStorage()
@@ -537,16 +478,14 @@ def insertTruncatedBorder(grid, gp):
     """
     gs = grid.getStorage()
     gps = [gp]
-
+    numDims = gp.getDimension()
     ans = []
     while len(gps) > 0:
-        gp = gps.pop()
-        p = DataVector(gp.getDimension())
-        gs.getCoordinates(gp, p)
-        for d in xrange(gs.getDimension()):
+        gpi = gps.pop()
+        for d in xrange(numDims):
             # right border in d
-            rgp = HashGridPoint(gp)
-            gs.right_levelzero(rgp, d)
+            rgp = HashGridPoint(gpi)
+            rgp.getRightLevelZero(d)
             # insert the point
             if not gs.isContaining(rgp):
                 added_grid_points = insertPoint(grid, rgp)
@@ -555,8 +494,8 @@ def insertTruncatedBorder(grid, gp):
                     gps.append(rgp)
 
             # left border in d
-            lgp = HashGridPoint(gp)
-            gs.left_levelzero(lgp, d)
+            lgp = HashGridPoint(gpi)
+            lgp.getLeftLevelZero(d)
             # insert the point
             if not gs.isContaining(lgp):
                 added_grid_points = insertPoint(grid, lgp)
@@ -576,12 +515,14 @@ def insertPoint(grid, gp):
     if gs.isContaining(gp) or not isValid(grid, gp):
         return []
 
-    success = gs.insert(HashGridPoint(gp)) > -1
-    if success:
-        return [HashGridPoint(gp)]
-    else:
-        raise AttributeError('can not insert this new grid point to the storage')
+    added_grid_points = IndexVector()
+    gs.insert(HashGridPoint(gp), added_grid_points) > -1
 
+    ans = []
+    for i in added_grid_points:
+        ans.append(gs.getPoint(i))
+
+    return ans
 
 def isRefineable(grid, gp):
     gs = grid.getStorage()
@@ -855,10 +796,8 @@ def dehierarchizeList(grid, alpha, gps):
 def balance(grid):
     gs = grid.getStorage()
     newgps = []
-    gps = [gs.getPoint(i) for i in xrange(gs.getSize())]
 
-    while len(gps) > 0:
-        gp = gps.pop()
+    for gp in [gs.getPoint(i) for i in xrange(gs.getSize())]:
         for dim in xrange(gs.getDimension()):
             # left child in dimension dim
             lgp = HashGridPoint(gp)
@@ -875,12 +814,9 @@ def balance(grid):
             else:
                 inserted = []
 
-            # update lists
-            for gpi in inserted:
-                gps.append(gpi)
-                newgps.append(gpi)
+            newgps += inserted
+            gs.recalcLeafProperty()
 
-    gs.recalcLeafProperty()
     return newgps
 
 

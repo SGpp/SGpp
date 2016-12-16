@@ -110,7 +110,7 @@ class RefinementManager(object):
     # @param refinablePoints: integer number of points which can be refined
     # @return: integer number of point which should be refined
     def getNumOfPointsToRefine(self, refinablePoints):
-        ratePoints = self._adaptRate * refinablePoints
+        ratePoints = max(1, int(np.round(self._adaptRate * refinablePoints)))
         if self._adaptPoints == 0:
             return ratePoints
         elif self._adaptRate == 0:

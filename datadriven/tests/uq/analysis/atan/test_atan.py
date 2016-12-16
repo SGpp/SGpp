@@ -7,20 +7,33 @@ import os
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 import numpy as np
+import pickle as pkl
+from itertools import combinations
 
 from pysgpp import DataMatrix
+from pysgpp import Grid, GridType_ModPolyClenshawCurtis
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
-from pysgpp.extensions.datadriven.uq.learner import SimulationLearnerBuilder
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.sampler import MCSampler
 from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
 from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSurplusLevelWise
-from pysgpp.extensions.datadriven.uq.tools import writeDataARFF
-from pysgpp.extensions.datadriven.learner.Types import BorderTypes
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSamples2d
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotNodal3d, plotFunction3d, plotSGNodal3d
+from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
+from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+from pysgpp.extensions.datadriven.uq.helper import sortPermutations, computeTotalEffects
+from pysgpp.extensions.datadriven.uq.models import PCEBuilderHeat, TestEnvironmentSG
+from pysgpp.extensions.datadriven.uq.models.testEnvironments import ProbabilisticSpaceSGpp, \
+    TestEnvironmentMC
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
+
+from model_cpp import define_homogeneous_input_space
+from polynomial_chaos_cpp import PolynomialChaosExpansion, FULL_TENSOR_BASIS
+from math_tools_cpp import nchoosek
+from work.probabilistic_transformations_for_inference.solver import solve
+from work.probabilistic_transformations_for_inference.preconditioner import ChristoffelPreconditioner
+from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
+from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
+from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
 
 
 class AtanPeridynamicExample(object):
@@ -33,26 +46,18 @@ class AtanPeridynamicExample(object):
         # set distributions of the input parameters
         # --------------------------------------------------------
         self.inputSpace = inputSpace
+        self.pathResults = os.path.join("results", self.inputSpace)
+
+        # define input space
+        self.rv_trans = define_homogeneous_input_space('uniform', self.numDims,
+                                                       ranges=[-2, 1, 0, 1])
+
         self.params = self.defineParameters(inputSpace)
         self.simulation = lambda x, **kws: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
-        # available levels
-        levels = ['sg', 'ref']
-        filenames = [self.radix + '.' + label + '.uqSetting.gz'
-                     for label in levels]
-        self.uqSettingsFilenames = dict(zip(levels, filenames))
-
-        # define UQSettings
-        self.uqSettings = {}
-        for label, filename in self.uqSettingsFilenames.items():
-            print "Read %s" % filename,
-            self.uqSettings[label] = self.defineUQSetting(filename)
-            print self.uqSettings[label].getSize(), \
-                self.uqSettings[label].getAvailableQoI()
-            self.uqSettings[label].convert(self.params)
-
         # compute reference values
-        self.computeReferenceValues(self.uqSettings['ref'])
+        self.computeReferenceValues()
+
 
     def defineParameters(self, dtype="uniform"):
         # set distributions of the input parameters
@@ -66,107 +71,256 @@ class AtanPeridynamicExample(object):
             up.new().isCalled('x').withNormalDistribution(0.2, 0.1, 0.01)
             up.new().isCalled('y').withNormalDistribution(0.2, 0.1, 0.01)
 
-        self.params = builder.andGetResult()
+        return builder.andGetResult()
 
-    def defineUQSetting(self, uqSettingFile):
-        def g(x, **kws):
-            return atan(50 * (x[0] - .35)) + pi / 2 + 4 * x[1] ** 3 + exp(x[0] * x[1] - 1)
 
-        self.g = g
-
-        return UQBuilder().withSimulation(g)\
-                          .fromFile(uqSettingFile)\
-                          .andGetResult()
-
-    def computeReferenceValues(self, uqSetting, n=3000):
-        # ----------------------------------------------------------
-        # dicretize the stochastic space with Monte Carlo
-        # ----------------------------------------------------------
-        # if uqSetting.getSize() < n:
-        print "-" * 60
-        print "Latin Hypercube Sampling"
-        print "-" * 60
-        n -= uqSetting.getSize()
-        mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, n)
-        samples = mcSampler.nextSamples(n)
-        uqSetting.runSamples(samples)
-        uqSetting.writeToFile()
-
-        # ----------------------------------------------------------
-        # monte carlo reference values
-        # ----------------------------------------------------------
-        res = uqSetting.getResults()[0].values()
-        self.E_mc = np.mean(res)
-        self.V_mc = np.var(res, ddof=1)
-        self.refSize = len(res)
-
+    def computeReferenceValues(self):
         # ----------------------------------------------------------
         # analytic reference values
         # ----------------------------------------------------------
-        g = uqSetting.getSimulation()
         U = self.params.getIndependentJointDistribution()
         T = self.params.getJointTransformation()
-        self.E_ana = dblquad(lambda x, y: g(T.unitToProbabilistic([x, y])),
+        self.E_ana = dblquad(lambda x, y: self.simulation(T.unitToProbabilistic([x, y])),
                             0, 1, lambda x: 0, lambda x: 1)
-        self.V_ana = dblquad(lambda x, y: (g(T.unitToProbabilistic([x, y])) - self.E_ana[0]) ** 2,
+        self.V_ana = dblquad(lambda x, y: (self.simulation(T.unitToProbabilistic([x, y])) - self.E_ana[0]) ** 2,
                             0, 1, lambda x: 0, lambda x: 1)
-        # ----------------------------------------------
-        # write reference values to file
-        # ----------------------------------------------
-        print "ref"
-        p = DataMatrix(1, 5)
-        p.set(0, 0, 0)
-        p.set(0, 1, self.E_ana[0])
-        p.set(0, 2, self.E_ana[1])
-        p.set(0, 3, self.V_ana[0])
-        p.set(0, 4, self.V_ana[1])
-        stats = {'data': p,
-                 'names': ['time', 'mean', 'meanError', 'var', 'varError'],
-                 'filename': os.path.join(self.pathResults, "ref.moments.arff")}
-        writeDataARFF(stats)
 
-    def runAnalysis(self, analysis, alabel, blabel):
-        # ----------------------------------------------
-        # write stats
-        # ----------------------------------------------
-        pathResults = os.path.join(self.pathResults, alabel, blabel)
-        print "sobol indices"
-        analysis.writeSensitivityValues(os.path.join(pathResults, alabel))
-        print "surpluses"
-        analysis.writeSurplusesLevelWise(os.path.join(pathResults, alabel))
-        print "stats"
-        analysis.writeStats(os.path.join(pathResults, alabel))
-        print "moments"
-        analysis.writeMoments(os.path.join(pathResults, alabel))
-#         print "sampling"
-#         analysis.sampleGrids(os.path.join(pathResults, "samples", alabel))
-        # ----------------------------------------------
-        # do some plotting
-        # ----------------------------------------------
-        learner = analysis.getLearner()
 
-        # scatter plot of surpluses level wise
-        surpluses = analysis.computeSurplusesLevelWise()
-        maxLevel = learner.getKnowledge().getGrid(learner.getQoI())\
-                                         .getStorage().getMaxLevel()
-        fig = plotSurplusLevelWise(surpluses, maxLevel)
-        fig.savefig(os.path.join(pathResults, "surpluses_0.png"))
+    def run_mc(self, N, minExp=4, maxExp=12, out=False):
+                # ----------------------------------------------------------
+        # dicretize the stochastic space with Monte Carlo
+        # ----------------------------------------------------------
+        np.random.seed(1234567)
 
-        grid, alpha = learner.getKnowledge().getSparseGridFunction()
+        print "-" * 60
+        print "Latin Hypercube Sampling"
+        print "-" * 60
+        mcSampler, mcUQSetting = TestEnvironmentMC().buildSetting(self.params, self.simulation, 2 ** maxExp)
+        # ----------------------------------------------------------
+        # Monte Carlo Estimator
+        # ----------------------------------------------------------
+        samples = mcSampler.nextSamples(N)
+        mcUQSetting.runSamples(samples)
+        samples = mcUQSetting.getResults()[0]
+        
+        stats = {}
+        for iN in np.logspace(minExp, maxExp, maxExp - minExp + 1, base=2):
+            # split the results into chunk of Ni samples
+            num_samples = int(iN)
+            isamples = {0: dict(samples.items()[:num_samples])}
+            analysis = MCAnalysis(self.params, isamples)
+            analysis.setVerbose(False)
 
-        fig, ax = plotSGNodal3d(grid, alpha)
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        fig.savefig(os.path.join(pathResults, "nodal.png"))
-        # plot sparse grid approximation
-        fig, ax, _ = plotSG3d(grid, alpha)
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        fig.savefig(os.path.join(pathResults, "function.png"))
-        # --------------------------------------------
+            stats[iN] = {"num_model_evaluations": num_samples,
+                         "mean_estimated": analysis.mean(),
+                         "var_estimated": analysis.var()}
 
-    def run_sparse_grid(self, gridType, level, maxGridSize, isFull,
-                         refinement=None, out=False):
+            print "-" * 60
+            print "#samples = %i" % (num_samples,)
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], analysis.mean()[0],
+                                               np.abs(self.E_ana[0] - analysis.mean()[0]))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], analysis.var()[0],
+                                               np.abs(self.V_ana[0] - analysis.var()[0]))
+
+        if out:
+            # store results
+            filename = os.path.join(self.pathResults, "%s_mc_d%i_%s_N%i.pkl" % (self.radix,
+                                                                                self.numDims,
+                                                                                "latinHypercube",
+                                                                                N))
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'mc',
+                      'num_dims': self.numDims,
+                      'sampling_strategy': "latin_hypercube",
+                      'num_model_evaluations': N,
+                      'mean_analytic': self.E_ana[0],
+                      'var_analytic': self.V_ana[0],
+                      'results': stats},
+                     fd)
+            fd.close()
+
+
+    def run_pce(self,
+                expansion="total_degree",
+                sampling_strategy="leja",
+                maxNumSamples=3000,
+                out=False):
+        np.random.seed(1234567)
+
+        stats = {}
+        degree_1d = 1
+        while True:
+            # define pce
+            pce = PolynomialChaosExpansion()
+            pce.set_random_variable_transformation(self.rv_trans, FULL_TENSOR_BASIS)
+            pce.set_orthonormal(True)
+
+            builder = PCEBuilderHeat(self.numDims)
+            builder.define_expansion(pce, expansion, degree_1d)
+
+            num_samples = num_terms = pce.num_terms()
+
+            if num_samples > maxNumSamples:
+                break
+
+            if sampling_strategy == "gauss":
+                quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
+            elif sampling_strategy == "fekete":
+                samples = 2 * np.random.random((self.numDims, 30000)) - 1.
+                quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
+                num_samples = int(num_samples * 1.0)
+            elif sampling_strategy == "leja":
+                samples = 2 * np.random.random((self.numDims, 30000)) - 1.
+                quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
+                num_samples = int(num_samples * 1.0)
+            else:
+                raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
+
+            samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
+            train_samples, train_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
+
+            samples = np.random.random((self.numDims, 1000))
+            test_samples, test_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
+
+            # compute coefficients of pce
+            compute_coefficients(pce, train_samples, train_values, "christoffel")
+
+            _, _, train_values_pred = eval_pce(pce, train_samples)
+            l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
+            print "train: |.|_2 = %g" % l2train
+            _, _, test_values_pred = eval_pce(pce, test_samples)
+            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+            print "test:  |.|_2 = %g" % l2test
+            ###################################################################################################
+            print "-" * 60
+            print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], pce.mean(),
+                                               np.abs(self.E_ana[0] - pce.mean()))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], pce.variance(),
+                                               np.abs(self.V_ana[0] - pce.variance()))
+
+            # get sobol indices
+            sobol_indices = builder.getSortedSobolIndices(pce)
+            total_effects = computeTotalEffects(sobol_indices)
+    
+            stats[num_samples] = {"sobol_indices_estimated": sobol_indices,
+                                  "total_effects_estimated": total_effects,
+                                  "var_estimated": pce.variance(),
+                                  "mean_estimated": pce.mean(),
+                                  'num_model_evaluations': num_samples,
+                                  'degree_1d': degree_1d,
+                                  'num_terms': num_terms,
+                                  'l2test': l2test,
+                                  'l2train': l2train}
+            
+            degree_1d += 2
+
+        if out:
+            # store results
+            # store results
+            filename = os.path.join(self.pathResults,
+                                    "%s_pce_d%i_%s_N%i.pkl" % (self.radix,
+                                                               self.numDims,
+                                                               sampling_strategy,
+                                                               num_samples))
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'pce',
+                      'num_dims': self.numDims,
+                      'sampling_strategy': sampling_strategy,
+                      'degree_1d_max': degree_1d_max,
+                      'expansion': "total_degree",
+                      'var_analytic': self.V_ana[0],
+                      'results': stats},
+                     fd)
+            fd.close()
+
+
+    def run_regular_sparse_grid(self, gridType, level, maxGridSize,
+                                boundaryLevel=1,
+                                isFull=False, out=False):
+        np.random.seed(1234567)
+        stats = {}
+        while True:
+            uqManager = TestEnvironmentSG().buildSetting(self.simulation,
+                                                         self.params,
+                                                         level,
+                                                         gridType,
+                                                         deg=20,
+                                                         maxGridSize=maxGridSize,
+                                                         isFull=isFull,
+                                                         boundaryLevel=boundaryLevel)
+            if uqManager.sampler.getSize() <= maxGridSize:
+                # ----------------------------------------------
+                # first run
+                while uqManager.hasMoreSamples():
+                    uqManager.runNextSamples()
+
+                # ----------------------------------------------------------
+                # specify ASGC estimator
+                analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                                .withAnalyticEstimationStrategy()\
+                                                .andGetResult()
+                analysis.setVerbose(False)
+                # ----------------------------------------------------------
+                # expectation values and variances
+                sg_mean, sg_var = analysis.mean(), analysis.var()
+
+                print "-" * 60
+                print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[0],
+                                                   np.abs(self.E_ana[0] - sg_mean[0]))
+                print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[0],
+                                                   np.abs(self.V_ana[0] - sg_var[0]))
+
+                # ----------------------------------------------------------
+                # estimate the l2 error
+                test_samples = np.random.random((1000, self.numDims))
+                test_values = np.ndarray(1000)
+                for i, sample in enumerate(test_samples):
+                    test_values[i] = self.simulation(sample)
+                grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+                test_values_pred = evalSGFunction(grid, alpha, test_samples)
+                l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+
+                # ----------------------------------------------------------
+                # estimated anova decomposition
+                anova = analysis.getAnovaDecomposition(nk=len(self.params))
+                sobol_indices = anova.getSobolIndices()
+                total_effects = computeTotalEffects(sobol_indices)
+
+                # ----------------------------------------------------------
+                stats[level] = {'num_model_evaluations': grid.getSize(),
+                                'l2test': l2test,
+                                'mean_estimated': sg_mean[0],
+                                'var_estimated': sg_var[0],
+                                'sobol_indices_estimated': sobol_indices,
+                                'total_effects_estimated': total_effects}
+            level += 1
+
+        if out:
+            # store results
+            filename = os.path.join(self.pathResults,
+                                    "%s_%s_d%i_%s_Nmax%i_%s_N%i.pkl" % (self.radix,
+                                                                        "sg" if not isFull else "fg",
+                                                                        self.numDims,
+                                                                        grid.getTypeAsString(),
+                                                                        maxGridSize,
+                                                                        False))
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'sg',
+                      'num_dims': self.numDims,
+                      'grid_type': grid.getTypeAsString(),
+                      'max_grid_size': maxGridSize,
+                      'is_full': isFull,
+                      'refinement': False,
+                      'mean_analytic': self.E_ana,
+                      'var_analytic': self.V_ana,
+                      'results': stats},
+                     fd)
+            fd.close()
+
+
+    def run_adaptive_sparse_grid(self, gridType, level, maxGridSize, refinement,
+                                 boundaryLevel=None, isFull=False, out=False):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
@@ -178,9 +332,10 @@ class AtanPeridynamicExample(object):
                                                      maxGridSize=maxGridSize,
                                                      isFull=isFull,
                                                      adaptive=refinement,
-                                                     adaptPoints=3,
-                                                     epsilon=1e-10)
-
+                                                     adaptPoints=10,
+                                                     adaptRate=0.05,
+                                                     epsilon=1e-10,
+                                                     boundaryLevel=boundaryLevel)
         # ----------------------------------------------
         # first run
         while uqManager.hasMoreSamples():
@@ -192,24 +347,19 @@ class AtanPeridynamicExample(object):
         analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
                                         .withAnalyticEstimationStrategy()\
                                         .andGetResult()
-
+        analysis.setVerbose(False)
         # ----------------------------------------------------------
         # expectation values and variances
         sg_mean, sg_var = analysis.mean(), analysis.var()
-
-        print "-" * 60
-        print "V[x] = %g ~ %s" % (self.var, sg_var)
-
+        stats = {}
         iterations = uqManager.getKnowledge().getAvailableIterations()
-        stats = [None] * len(iterations)
         for k, iteration in enumerate(iterations):
             # ----------------------------------------------------------
             # estimated anova decomposition
             anova = analysis.getAnovaDecomposition(iteration=iteration,
                                                    nk=len(self.params))
-
             # estimate the l2 error
-            test_samples = np.random.random((1000, self.effectiveDims))
+            test_samples = np.random.random((1000, self.numDims))
             test_values = np.ndarray(1000)
             for i, sample in enumerate(test_samples):
                 test_values[i] = self.simulation(sample)
@@ -221,19 +371,26 @@ class AtanPeridynamicExample(object):
             sobol_indices = anova.getSobolIndices()
             total_effects = computeTotalEffects(sobol_indices)
 
-            stats[k] = {'num_model_evaluations': grid.getSize(),
-                        'l2test': l2test,
-                        'var_estimated': sg_var[0],
-                        'var_analytic': self.var,
-                        'sobol_indices_estimated': sobol_indices,
-                        'total_effects_estimated': total_effects}
+            print "-" * 60
+            print "iteration=%i" % (iteration,)
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration][0],
+                                               np.abs(self.E_ana[0] - sg_mean[iteration][0]))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration][0],
+                                               np.abs(self.V_ana[0] - sg_var[iteration][0]))
+
+            stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
+                                     'l2test': l2test,
+                                     'mean_estimated': sg_mean[iteration][0],
+                                     'var_estimated': sg_var[iteration][0],
+                                     'sobol_indices_estimated': sobol_indices,
+                                     'total_effects_estimated': total_effects}
 
         if out:
             # store results
-            filename = os.path.join("results",
+            filename = os.path.join(self.pathResults,
                                     "%s_%s_d%i_%s_l%i_Nmax%i_%s_N%i.pkl" % (self.radix,
                                                                             "sg" if not isFull else "fg",
-                                                                            self.effectiveDims,
+                                                                            self.numDims,
                                                                             grid.getTypeAsString(),
                                                                             level,
                                                                             maxGridSize,
@@ -241,37 +398,39 @@ class AtanPeridynamicExample(object):
                                                                             grid.getSize()))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
-                      'model': "full" if self.effectiveDims == 4 else "reduced",
-                      'num_dims': self.effectiveDims,
+                      'model': "full" if self.numDims == 4 else "reduced",
+                      'num_dims': self.numDims,
                       'grid_type': grid.getTypeAsString(),
                       'level': level,
                       'max_grid_size': maxGridSize,
                       'is_full': isFull,
                       'refinement': refinement,
-                      'sobol_indices_analytic': self.sobol_indices,
-                      'total_effects_analytic': self.total_effects,
                       'mean_analytic': self.E_ana,
                       'var_analytic': self.V_ana,
                       'results': stats},
                      fd)
             fd.close()
 
-        return sobol_indices, grid.getSize()
-        
 
-def run_atan_pce(sampler, degree, out):
-    testSetting = AtanPeridynamicExample()
-    sobol_indices, N = testSetting.run_pce("total_degree", sampler, degree, out)
-    return testSetting.sobol_indices, sobol_indices, N
+def run_atan_mc(inputspace, maxNumSamples, out):
+    testSetting = AtanPeridynamicExample(inputspace)
+    testSetting.run_mc(maxNumSamples, out=out)
 
-def run_atan_sg(gridType, level, numGridPoints,
-                fullGrid, refinement, out):
-    testSetting = AtanPeridynamicExample()
-    sobol_indices, N = testSetting.run_sparse_grids(Grid.stringToGridType(gridType),
-                                                    level, numGridPoints,
-                                                    fullGrid, refinement, out)
-    return testSetting.sobol_indices, sobol_indices, N
+def run_atan_pce(inputspace, sampler, expansion, maxNumSamples, out):
+    testSetting = AtanPeridynamicExample(inputspace)
+    testSetting.run_pce(expansion, sampler, maxNumSamples, out)
 
+def run_atan_sg(inputspace, gridType, level, numGridPoints,
+                boundaryLevel, fullGrid, refinement, out):
+    testSetting = AtanPeridynamicExample(inputspace)
+    if refinement is not None:
+        testSetting.run_adaptive_sparse_grid(Grid.stringToGridType(gridType),
+                                             level, numGridPoints, refinement,
+                                             boundaryLevel, fullGrid, out)
+    else:
+        testSetting.run_regular_sparse_grid(Grid.stringToGridType(gridType),
+                                            level, numGridPoints, boundaryLevel,
+                                            fullGrid, out)
 # ----------------------------------------------------------
 # testing
 # ----------------------------------------------------------
@@ -279,29 +438,38 @@ def run_atan_sg(gridType, level, numGridPoints,
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser.add_argument('--inputspace', default="uniform", type=str, help="define which input space should be used (uniform, normal)")
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
-    parser.add_argument('--numGridPoints', default=200, type=int, help='maximum number of grid points')
-    parser.add_argument('--gridType', default="poly", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
-    parser.add_argument('--level', default=2, type=int, help='level of sparse grid')
-    parser.add_argument('--refinement', default="var", type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
+    parser.add_argument('--numGridPoints', default=100, type=int, help='maximum number of grid points')
+    parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
+    parser.add_argument('--level', default=1, type=int, help='level of the sparse grid')
+    parser.add_argument('--boundaryLevel', default=1, type=int, help='level of the boundary of the sparse grid')
+    parser.add_argument('--refinement', default=None, type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
     parser.add_argument('--fullGrid', default=False, action='store_true', help='refine the discretized grid adaptively')
     parser.add_argument('--sampler', default="fekete", type=str, help='define which sample should be used for pce (full_tensor, leja, fekete)')
-    parser.add_argument('--degree', default=3, type=int, help='maximum degree of polynomials in 1d')
+    parser.add_argument('--maxSamples', default=3000, type=int, help='maximum number of model evaluations to build pce')
+    parser.add_argument('--expansion', default="total_degree", type=str, help="define which tensor product basis should be used for pce(full_tensor, total_degree)")
     parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
     parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
     args = parser.parse_args()
 
     if args.surrogate == "pce":
-        run_atan_pce(args.sampler,
-                     args.degree,
+        run_atan_pce(args.inputspace,
+                     args.sampler,
+                     args.expansion,
+                     args.maxSamples,
                      args.out)
-    else:
-        run_atan_sg(args.gridType,
+    elif args.surrogate == "sg":
+        run_atan_sg(args.inputspace,
+                    args.gridType,
                     args.level,
                     args.numGridPoints,
+                    args.boundaryLevel,
                     args.fullGrid,
                     args.refinement,
                     args.out)
-    if args.plot:
-        checkSobolIndices(sobol_indices_analytic, sobol_indices, N, args.plot)
+    else:
+        run_atan_mc(args.inputspace,
+                    args.maxSamples,
+                    args.out)
