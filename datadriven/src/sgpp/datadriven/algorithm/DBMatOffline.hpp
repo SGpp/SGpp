@@ -17,6 +17,9 @@
 #include <vector>
 #include <string>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class that is used to decompose and store the left-hand-side
  * matrix for the density based classification approach
@@ -167,7 +170,7 @@ class DBMatOffline {
    *
    * @param fname the file name
    */
-  void load(std::string fname);
+  /*void load(std::string fname);*/
 
   /**
    * Destructor
@@ -180,6 +183,9 @@ class DBMatOffline {
    */
   void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMATOFFLINE_H_ */
 

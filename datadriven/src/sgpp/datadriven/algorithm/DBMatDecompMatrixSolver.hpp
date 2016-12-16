@@ -12,12 +12,18 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/solver/SGSolver.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 class DBMatDecompMatrixSolver : public sgpp::solver::SGSolver {
  public:
   DBMatDecompMatrixSolver();
 
   virtual ~DBMatDecompMatrixSolver();
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMATDECOMPMATRIXSOLVER_HPP_ */
 

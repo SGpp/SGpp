@@ -15,6 +15,9 @@
 #include <ctime>
 #include <iostream>
 
+namespace sgpp {
+namespace datadriven {
+
 DBMatDMSChol::DBMatDMSChol() {}
 
 DBMatDMSChol::~DBMatDMSChol() {}
@@ -275,5 +278,8 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
 
   return;
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */

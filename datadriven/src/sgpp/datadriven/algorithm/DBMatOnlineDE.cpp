@@ -25,6 +25,9 @@
 #include <list>
 #include <vector>
 
+namespace sgpp {
+namespace datadriven {
+
 DBMatOnlineDE::DBMatOnlineDE(double beta)
     : alpha_(nullptr),
       functionComputed_(false),
@@ -325,5 +328,8 @@ double DBMatOnlineDE::normalize(size_t samples) {
   }
   return this->normFactor = static_cast<double>(samples) / sum;
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */

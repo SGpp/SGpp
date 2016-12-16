@@ -10,6 +10,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class to solve the system of equations with a LU-decomposed matrix
  */
@@ -38,6 +41,9 @@ class DBMatDMSEigen : public DBMatDecompMatrixSolver {
              sgpp::base::DataVector& eigenValues, sgpp::base::DataVector& alpha,
              sgpp::base::DataVector& rhs, double lambda);
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMATDMSEigen_HPP_ */
 

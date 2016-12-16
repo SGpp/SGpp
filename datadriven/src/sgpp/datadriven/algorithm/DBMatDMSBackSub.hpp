@@ -10,6 +10,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * Class to solve the system of equations with a LU-decomposed matrix
  */
@@ -36,6 +39,9 @@ class DBMatDMSBackSub : public DBMatDecompMatrixSolver {
   void solve(sgpp::base::DataMatrix& DecompMatrix,
              sgpp::base::DataVector& alpha, sgpp::base::DataVector& b);
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* DBMatDMSBackSub_HPP_ */
 

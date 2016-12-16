@@ -10,6 +10,9 @@
 
 #include <deque>
 
+namespace sgpp {
+namespace datadriven {
+
 /**
  * A monitor to decide if a learning algorithm has converged. The
  * convergence criterion is based on the comparison of error
@@ -76,5 +79,8 @@ class ConvergenceMonitor {
   double declineThreshold;
   size_t bufferSize;
 };
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* CONVERGENCEMONITOR_HPP */

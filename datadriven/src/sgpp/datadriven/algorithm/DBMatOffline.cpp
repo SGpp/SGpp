@@ -28,13 +28,15 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
 #include <ctime>
 #include <fstream>
 #include <algorithm>
 #include <list>
 #include <vector>
 #include <string>
+
+namespace sgpp {
+namespace datadriven {
 
 DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
     : config_(&oc),
@@ -402,7 +404,8 @@ void DBMatOffline::printMatrix() {
 
 void DBMatOffline::Tokenize(std::string& str, std::vector<std::string>& tokens,
                             std::string& delimiters) {
-  if (!strcmp(delimiters.c_str(), "")) {
+  /*if (!strcmp(delimiters.c_str(), "")) {*/
+  if (!delimiters.compare("")) {
     delimiters = " ";
   }
   // Skip delimiters at beginning.
@@ -744,5 +747,8 @@ void DBMatOffline::choleskyPermutation(size_t k, size_t l, size_t job) {
 
   return;
 }
+
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* USE_GSL */
