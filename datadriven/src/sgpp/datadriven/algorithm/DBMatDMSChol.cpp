@@ -153,7 +153,7 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
     tbuff += (size + 1);
   }
 
-  size_t i_N = size -1;
+  size_t i_N = size - 1;
   // Apply changes to N-th (last) diagonal element
   // Is outsourced, since only the diagonal element is modified.
   if (*tbuff != 0.0 || wkvec->data[size - 1] != 0.0) {
