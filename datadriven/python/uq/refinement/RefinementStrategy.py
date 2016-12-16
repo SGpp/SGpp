@@ -39,9 +39,34 @@ class SurplusRanking(Ranking):
     def rank(self, grid, gp, alphas, *args, **kws):
         gs = grid.getStorage()
         if gs.isContaining(gp):
-            return abs(alphas[grid.getStorage().getSequenceNumber(gp)])
+            ix = grid.getStorage().getSequenceNumber(gp)
+            return abs(alphas[ix])
         else:
             raise AttributeError("SurplusRanking - rank: the grid point does not exist in the current grid")
+
+
+class WeightedSurplusRanking(Ranking):
+
+    def __init__(self):
+        super(WeightedSurplusRanking, self).__init__()
+
+    def rank(self, grid, gp, alphas, params, *args, **kws):
+        # get grid point associated to ix
+        gs = grid.getStorage()
+        p = DataVector(gs.getDimension())
+        gs.getCoodinates(gp, p)
+
+        # get joint distribution
+        ap = params.activeParams()
+        U = ap.getIndependentJointDistribution()
+        T = ap.getJointTransformation()
+        q = T.unitToProbabilistic(p.array())
+
+        # scale surplus by probability density
+        ix = gs.getSequenceNumber(gp)
+
+        return abs(alphas[ix]) * U.pdf(q)
+
 
 class SquaredSurplusRanking(Ranking):
 

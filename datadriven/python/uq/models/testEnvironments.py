@@ -7,6 +7,8 @@ from work.probabilistic_transformations_for_inference.sampling import TensorQuad
     ApproximateFeketeSampleGeneratorStrategy, LejaSampleGeneratorStrategy
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.sampler import MCSampler
+from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 
 class TestEnvironmentSG(object):
 
@@ -18,9 +20,11 @@ class TestEnvironmentSG(object):
                      deg=1,
                      maxGridSize=1000,
                      isFull=False,
+                     boundaryLevel=None,
                      epsilon=1e-15,
                      adaptive=None,
                      adaptPoints=3,
+                     adaptRate=None,
                      uqSetting=None,
                      uqSettingRef=None,
                      knowledgeFilename=None):
@@ -51,6 +55,8 @@ class TestEnvironmentSG(object):
             gridSpec.withDegree(deg)
         if isFull:
             gridSpec.isFull()
+        if boundaryLevel is not None:
+            gridSpec.withBoundaryLevel(boundaryLevel)
 
         if adaptive is not None:
             # specify the refinement
@@ -59,10 +65,15 @@ class TestEnvironmentSG(object):
                        .withAdaptPoints(adaptPoints)\
                        .withBalancing()
 
+            if adaptRate is not None:
+                samplerSpec.withRefinement().withAdaptRate(adaptRate)
+
             refinement = samplerSpec.withRefinement().refineMostPromisingNodes()
             refinement.createAllChildrenOnRefinement()
             if adaptive == "simple":
                 refinement.withSurplusRanking()
+            elif adaptive == "weighted":
+                refinement.withWeightedSurplusRanking()
             elif adaptive == "exp":
                 refinement.withExpectationValueOptimizationRanking()
             elif adaptive == "var":
@@ -101,6 +112,17 @@ class TestEnvironmentSG(object):
 
         # write the setting to file
         uqManager.uqSetting.writeToFile()
+
+
+class TestEnvironmentMC(object):
+
+    def buildSetting(self,
+                     params,
+                     simulation,
+                     N):
+        mcSampler = MCSampler.withLatinHypercubeSampleGenerator(params, N)
+        uqSetting = UQBuilder().withSimulation(simulation).andGetResult()
+        return mcSampler, uqSetting
 
 
 class ProbabilisticSpaceSGpp(object):

@@ -181,6 +181,7 @@ class ASGCAnalysis(Analysis):
                                                  dtype=KnowledgeTypes.SIMPLE,
                                                  iteration=iteration)
         anova = HDMRAnalytic(grid, alpha, self.__params, *args, **kws)
+        anova.setVerbose(self._verbose)
         anova.doDecomposition()
 
         # store it ...
