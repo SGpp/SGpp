@@ -77,7 +77,8 @@ coverage
 *.org_archive
 
 # ignoring uq tests
-datadriven/tests/uq/analysis/atan
+datadriven/tests/uq/analysis/atan/results
+datadriven/tests/uq/analysis/atan/plots
 
 datadriven/tests/uq/analysis/checkpoints
 datadriven/tests/uq/analysis/convergence
