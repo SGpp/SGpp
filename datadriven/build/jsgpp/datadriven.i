@@ -41,7 +41,7 @@
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+//%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif /* USE_GSL */
