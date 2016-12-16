@@ -110,11 +110,11 @@ class SobolGFunctionSudret2008(object):
         if sampling_strategy == "full_tensor":
             quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
         elif sampling_strategy == "fekete":
-            samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
+            samples = 2 * np.random.random((self.effectiveDims, 30000)) - 1.
             quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
             num_samples = int(num_samples * 1.6)
         elif sampling_strategy == "leja":
-            samples = 2 * np.random.random((self.effectiveDims, 10000)) - 1.
+            samples = 2 * np.random.random((self.effectiveDims, 30000)) - 1.
             quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
             num_samples = int(num_samples * 1.6)
         else:
@@ -161,6 +161,7 @@ class SobolGFunctionSudret2008(object):
                       'degree_1d': degree_1d,
                       'expansion': "total_degree",
                       'num_model_evaluations': num_samples,
+                      'num_terms': num_terms,
                       'l2test': l2test,
                       'l2train': l2train,
                       'var_estimated': pce.variance(),
@@ -172,7 +173,7 @@ class SobolGFunctionSudret2008(object):
                      fd)
             fd.close()
 
-        return sobol_indices, num_terms
+        return sobol_indices, num_samples
 
 
     def run_sparse_grids(self, gridType, level, maxGridSize, isFull,
