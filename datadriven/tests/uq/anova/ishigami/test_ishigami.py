@@ -171,6 +171,7 @@ class IshigamiSudret2008(object):
                       'sampling_strategy': sampling_strategy,
                       'degree_1d': degree_1d,
                       'expansion': "total_degree",
+                      'num_terms': num_terms,
                       'num_model_evaluations': num_samples,
                       'l2test': l2test,
                       'l2train': l2train,

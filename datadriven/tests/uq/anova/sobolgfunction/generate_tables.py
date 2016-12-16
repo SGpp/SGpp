@@ -32,26 +32,7 @@ latexcode_full_model = r"""
     %s \\
     %s \\
     \hline
-    \multicolumn{2}{c}{degree 1d $p$} &
-    \multicolumn{1}{c}{$2$} &
-    \multicolumn{1}{c}{$2$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} \\
-    \multicolumn{2}{c}{grid level $\level$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$2$} \\
-    \multicolumn{2}{c}{\# unknown coefficients} &
-    \multicolumn{1}{c}{$45$} &
-    \multicolumn{1}{c}{$45$} &
-    \multicolumn{1}{c}{$161$} &
-    \multicolumn{1}{c}{$75$} \\
-    \multicolumn{2}{c}{\# model evaluations $N$} &
-    \multicolumn{1}{c}{$72$} &
-    \multicolumn{1}{c}{$72$} &
-    \multicolumn{1}{c}{$161$} &
-    \multicolumn{1}{c}{$75$} \\
+    %s
     \bottomrule
   \end{tabularx}
   \caption{blubb}
@@ -86,50 +67,7 @@ latexcode_reduced_model = r"""
     %s \\
     %s \\
     \hline
-    \multicolumn{2}{c}{degree 1d $p$} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} \\
-    \multicolumn{2}{c}{grid level $\level$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$4$} &
-    \multicolumn{1}{c}{$2$} &
-    \multicolumn{1}{c}{$2$} \\
-    \multicolumn{2}{c}{\# unknown coefficients} &
-    \multicolumn{1}{c}{$35$} &
-    \multicolumn{1}{c}{$126$} &
-    \multicolumn{1}{c}{$35$} &
-    \multicolumn{1}{c}{$126$} &
-    \multicolumn{1}{c}{$35$} &
-    \multicolumn{1}{c}{$126$} &
-    \multicolumn{1}{c}{$49$} &
-    \multicolumn{1}{c}{$209$} &
-    \multicolumn{1}{c}{$103$} &
-    \multicolumn{1}{c}{$201$} \\
-    \multicolumn{2}{c}{\# model evaluations $N$} &
-    \multicolumn{1}{c}{$73$} &
-    \multicolumn{1}{c}{$233$} &
-    \multicolumn{1}{c}{$56$} &
-    \multicolumn{1}{c}{$201$} &
-    \multicolumn{1}{c}{$56$} &
-    \multicolumn{1}{c}{$201$} &
-    \multicolumn{1}{c}{$49$} &
-    \multicolumn{1}{c}{$209$} &
-    \multicolumn{1}{c}{$103$} &
-    \multicolumn{1}{c}{$201$} \\
+    %s
     \bottomrule
   \end{tabularx}
   \caption{blubb}
@@ -150,6 +88,72 @@ row_entries = {"full": [r"$ST_1$ & 0.6342 & %.4f & %.4f & %.4f & %.4f",
                            r"$ST_2$ & 0.2945 & 0.2611 & 0.3057 & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f",
                            r"$ST_3$ & 0.0756 & 0.0581 & 0.0756 & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f",
                            r"$ST_4$ & 0.0227 & 0.0164 & 0.0220 & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f"]}
+
+
+unknowns = {"full": r"""    \multicolumn{2}{l}{degree 1d $p$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} \\
+    \multicolumn{2}{l}{grid level $\level$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# unknown coefficients} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# model evaluations $N$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\""",
+                        "reduced": r"""    \multicolumn{2}{l}{degree 1d $p$} &
+    \multicolumn{1}{l}{$3$} &
+    \multicolumn{1}{l}{$5$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} \\
+    \multicolumn{2}{l}{grid level $\level$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# unknown coefficients} &
+    \multicolumn{1}{l}{$35$} &
+    \multicolumn{1}{l}{$126$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# model evaluations $N$} &
+    \multicolumn{1}{l}{$73$} &
+    \multicolumn{1}{l}{$233$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\"""}
 
 latexcode = {"full": latexcode_full_model,
              "reduced": latexcode_reduced_model}
@@ -221,8 +225,25 @@ if __name__ == "__main__":
                                                          np.abs(results[model]["pce"][pce[model][1]]["total_effects_estimated"][perm]),
                                                          np.abs(results[model]["sg"][sg[model][0]]["results"][-1]["total_effects_estimated"][perm]),
                                                          np.abs(results[model]["sg"][sg[model][1]]["results"][-1]["total_effects_estimated"][perm]))
+
+    unknowns[model] = unknowns[model] % (results[model]["pce"][pce[model][0]]["degree_1d"],
+                                         results[model]["pce"][pce[model][1]]["degree_1d"],
+                                         results[model]["sg"][sg[model][0]]["level"],
+                                         results[model]["sg"][sg[model][1]]["level"],
+                                         # ---------------------------------------------------------
+                                         results[model]["pce"][pce[model][0]]["num_terms"],
+                                         results[model]["pce"][pce[model][1]]["num_terms"],
+                                         results[model]["sg"][sg[model][0]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][1]]["results"][-1]["num_model_evaluations"],
+                                         # ---------------------------------------------------------
+                                         results[model]["pce"][pce[model][0]]["num_model_evaluations"],
+                                         results[model]["pce"][pce[model][1]]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][0]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][1]]["results"][-1]["num_model_evaluations"]
+                                         )
+
     fd = open(os.path.join("tables", "sobolgfunction_%s_results_table.tex" % model), "w")
-    fd.write(latexcode[model] % tuple(row_entries[model]))
+    fd.write(latexcode[model] % tuple(row_entries[model] + [unknowns[model]]))
     fd.close()
 
     model = "reduced"
@@ -237,8 +258,36 @@ if __name__ == "__main__":
                                                          np.abs(results[model]["sg"][sg[model][2]]["results"][-1]["total_effects_estimated"][perm]),
                                                          np.abs(results[model]["sg"][sg[model][3]]["results"][-1]["total_effects_estimated"][perm]))
 
+    unknowns[model] = unknowns[model] % (results[model]["pce"][pce[model][0]]["degree_1d"],
+                                         results[model]["pce"][pce[model][1]]["degree_1d"],
+                                         results[model]["pce"][pce[model][2]]["degree_1d"],
+                                         results[model]["pce"][pce[model][3]]["degree_1d"],
+                                         results[model]["sg"][sg[model][0]]["level"],
+                                         results[model]["sg"][sg[model][1]]["level"],
+                                         results[model]["sg"][sg[model][2]]["level"],
+                                         results[model]["sg"][sg[model][3]]["level"],
+                                         # ---------------------------------------------------------
+                                         results[model]["pce"][pce[model][0]]["num_terms"],
+                                         results[model]["pce"][pce[model][1]]["num_terms"],
+                                         results[model]["pce"][pce[model][2]]["num_terms"],
+                                         results[model]["pce"][pce[model][3]]["num_terms"],
+                                         results[model]["sg"][sg[model][0]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][1]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][2]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][3]]["results"][-1]["num_model_evaluations"],
+                                         # ---------------------------------------------------------
+                                         results[model]["pce"][pce[model][0]]["num_model_evaluations"],
+                                         results[model]["pce"][pce[model][1]]["num_model_evaluations"],
+                                         results[model]["pce"][pce[model][2]]["num_model_evaluations"],
+                                         results[model]["pce"][pce[model][3]]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][0]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][1]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][2]]["results"][-1]["num_model_evaluations"],
+                                         results[model]["sg"][sg[model][3]]["results"][-1]["num_model_evaluations"]
+                                         )
+
     fd = open(os.path.join("tables", "sobolgfunction_%s_results_table.tex" % model), "w")
-    fd.write(latexcode[model] % tuple(row_entries[model]))
+    fd.write(latexcode[model] % tuple(row_entries[model] + [unknowns[model]]))
     fd.close()
 
 

@@ -42,56 +42,59 @@ latexcode = r"""
     %s \\
     %s \\
     \hline
-    \multicolumn{2}{c}{degree 1d $p$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$9$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$9$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$9$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} \\
-    \multicolumn{2}{c}{grid level $\level$} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{-} &
-    \multicolumn{1}{c}{$3$} &
-    \multicolumn{1}{c}{$5$} &
-    \multicolumn{1}{c}{$2$} &
-    \multicolumn{1}{c}{$2$} \\
-    \multicolumn{2}{c}{\# unknown coefficients} &
-    \multicolumn{1}{c}{$56$} &
-    \multicolumn{1}{c}{$220$} &
-    \multicolumn{1}{c}{$56$} &
-    \multicolumn{1}{c}{$220$} &
-    \multicolumn{1}{c}{$56$} &
-    \multicolumn{1}{c}{$220$} &
-    \multicolumn{1}{c}{$31$} &
-    \multicolumn{1}{c}{$351$} &
-    \multicolumn{1}{c}{$73$} &
-    \multicolumn{1}{c}{$247$} \\
-    \multicolumn{2}{c}{\# model evaluations $N$} &
-    \multicolumn{1}{c}{$77$} &
-    \multicolumn{1}{c}{$291$} &
-    \multicolumn{1}{c}{$67$} &
-    \multicolumn{1}{c}{$264$} &
-    \multicolumn{1}{c}{$67$} &
-    \multicolumn{1}{c}{$264$} &
-    \multicolumn{1}{c}{$31$} &
-    \multicolumn{1}{c}{$351$} &
-    \multicolumn{1}{c}{$73$} &
-    \multicolumn{1}{c}{$247$} \\
+    %s
     \bottomrule
   \end{tabularx}
   \caption{blubb}
   \label{tab::ishigami-anova}
 \end{table}
+"""
 
+unknowns = r"""
+    \multicolumn{2}{l}{degree 1d $p$} &
+    \multicolumn{1}{l}{$5$} &
+    \multicolumn{1}{l}{$9$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} \\
+    \multicolumn{2}{l}{grid level $\level$} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{-} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# unknown coefficients} &
+    \multicolumn{1}{l}{$56$} &
+    \multicolumn{1}{l}{$220$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
+    \multicolumn{2}{l}{\# model evaluations $N$} &
+    \multicolumn{1}{l}{$77$} &
+    \multicolumn{1}{l}{$291$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} &
+    \multicolumn{1}{l}{$%i$} \\
 """
 
 def get_key_pce(sampling_strategy, degree_1d):
@@ -158,6 +161,34 @@ if __name__ == "__main__":
                                            np.abs(results["sg"][sg[2]]["results"][-1]["sobol_indices_estimated"][perm]),
                                            np.abs(results["sg"][sg[3]]["results"][-1]["sobol_indices_estimated"][perm]))
 
+    unknowns = unknowns % (results["pce"][pce[0]]["degree_1d"],
+                           results["pce"][pce[1]]["degree_1d"],
+                           results["pce"][pce[2]]["degree_1d"],
+                           results["pce"][pce[3]]["degree_1d"],
+                           results["sg"][sg[0]]["level"],
+                           results["sg"][sg[1]]["level"],
+                           results["sg"][sg[2]]["level"],
+                           results["sg"][sg[3]]["level"],
+                           # ---------------------------------------------------------
+                           results["pce"][pce[0]]["num_terms"],
+                           results["pce"][pce[1]]["num_terms"],
+                           results["pce"][pce[2]]["num_terms"],
+                           results["pce"][pce[3]]["num_terms"],
+                           results["sg"][sg[0]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[1]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[2]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[3]]["results"][-1]["num_model_evaluations"],
+                           # ---------------------------------------------------------
+                           results["pce"][pce[0]]["num_model_evaluations"],
+                           results["pce"][pce[1]]["num_model_evaluations"],
+                           results["pce"][pce[2]]["num_model_evaluations"],
+                           results["pce"][pce[3]]["num_model_evaluations"],
+                           results["sg"][sg[0]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[1]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[2]]["results"][-1]["num_model_evaluations"],
+                           results["sg"][sg[3]]["results"][-1]["num_model_evaluations"]
+                           )
+
     fd = open(os.path.join("tables", "ishigami_results_table.tex"), "w")
-    fd.write(latexcode % tuple(row_entries))
+    fd.write(latexcode % tuple(row_entries + [unknowns]))
     fd.close()
