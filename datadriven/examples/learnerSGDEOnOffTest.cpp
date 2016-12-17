@@ -206,7 +206,7 @@ int main() {
       std::cout << "# create learner" << std::endl;
       sgpp::datadriven::LearnerSGDEOnOff learner(
           dconf, trainData, trainLabels, testData, testLabels, validData,
-          validLabels, classLabels, classNum, lambda, usePrior, beta);
+          validLabels, classLabels, classNum, usePrior, beta, lambda);
 
       /**
        * Configure cross-validation.

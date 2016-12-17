@@ -376,7 +376,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses,
 
           newPoints = sizeAfterRefine - sizeBeforeRefine;
           (*refineCoarse)[idx].second = newPoints;
-
           // apply grid changes to the Cholesky factorization
           densEst->getOffline()->choleskyModification(
               newPoints, deletedGridPoints, densEst->getBestLambda());

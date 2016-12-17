@@ -76,6 +76,8 @@ The following software can be installed for full functionality:
   is optional and generates inheritance diagrams in the Doxygen documentation.
 - <a href="http://www.mathworks.com/" target="_blank">MATLAB</a>,
   if you want to use SG++ within MATLAB.
+- <a href="https://www.gnu.org/software/gsl/" target="_blank">Gnu Scientific Library (GSL)</a>,
+  is required for some functionalities of the SG_DATADRIVEN module.
 
 @subsection mingw_dependencies_installation Installation
 
@@ -177,6 +179,12 @@ b2 --with-test ^
 12. MATLAB:
    1. Install MATLAB with the installer.
    2. Prepend <tt>C:\\PATH_TO_MATLAB\\bin</tt> to the <tt>PATH</tt>
+      environment variable.
+13. GSL:
+   1. Download <tt>gsl-1.8.exe</tt> from the
+      <a href="http://gnuwin32.sourceforge.net/packages/gsl.htm" target="_blank">GSL SourceForge page</a>.
+   2. Run the installer.
+   3. Prepend <tt>C:\\PATH_TO_GSL\\bin</tt> to the <tt>PATH</tt>
       environment variable.
 
 
