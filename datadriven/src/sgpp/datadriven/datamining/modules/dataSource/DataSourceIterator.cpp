@@ -16,7 +16,7 @@ namespace datadriven {
 DataSourceIterator::DataSourceIterator(DataSource& sampleProvider, size_t counter)
     : sampleProvider(sampleProvider), counter(counter) {}
 
-bool DataSourceIterator::operator!=(const DataSourceIterator& other) {
+bool DataSourceIterator::operator!=(const DataSourceIterator& other) const {
   return (counter != other.counter);
 }
 
@@ -25,9 +25,7 @@ const DataSourceIterator& DataSourceIterator::operator++() {
   return *this;
 }
 
-Dataset* DataSourceIterator::operator*() const {
-  return sampleProvider.getNextSamples();
-}
+Dataset* DataSourceIterator::operator*() { return sampleProvider.getNextSamples(); }
 
 } /* namespace datadriven */
 } /* namespace sgpp */
