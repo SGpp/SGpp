@@ -61,8 +61,8 @@ The following software can be installed for full functionality:
   is optional and generates inheritance diagrams in the Doxygen documentation.
 - <a href="http://www.mathworks.com/" target="_blank">MATLAB</a>,
   if you want to use SG++ within MATLAB.
-- <a href="https://www.gnu.org/software/gsl/" target="_blank">Gnu Scientific Library (GSL)</a>,
-  is required for some functionalities of the SG_DATADRIVEN module.
+- <a href="https://www.gnu.org/software/gsl/" target="_blank">GNU Scientific Library (GSL)</a>,
+  is required for some functionalities of the <tt>SG_DATADRIVEN</tt> module.
 
 @subsection linux_dependencies_installation Installation
 
