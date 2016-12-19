@@ -27,27 +27,20 @@ class AnalysisHash(object):
     def reset(self):
         self._moments = {}
 
+    def getKey(self, iteration, qoi, t, idd):
+        return (iteration, qoi, t, idd)
+
     def hasMoment(self, iteration, qoi, t, idd='mean'):
-        return iteration in self._moments and \
-            qoi in self._moments[iteration] and \
-            t in self._moments[iteration][qoi] and \
-            idd in self._moments[iteration][qoi][t]
+        return self.getKey(iteration, qoi, t, idd) in self._moments
 
     def setMoment(self, iteration, qoi, t, idd, value):
-        # check if dictionary is available
-        if iteration not in self._moments:
-            self._moments[iteration] = {}
-        if qoi not in self._moments[iteration]:
-            self._moments[iteration][qoi] = {}
-        if t not in self._moments[iteration][qoi]:
-            self._moments[iteration][qoi][t] = {}
-
-        # store the value in the dictionary
-        self._moments[iteration][qoi][t][idd] = value
+        key = self.getKey(iteration, qoi, t, idd)
+        self._moments[key] = value
 
     def getMoment(self, iteration, qoi, t, idd):
+        key = self.getKey(iteration, qoi, t, idd)
         if self.hasMoment(iteration, qoi, t, idd):
-            return self._moments[iteration][qoi][t][idd]
+            return self._moments[key]
         else:
             return None
 

@@ -35,7 +35,8 @@ from plot3d import (plotFunction3d,
                     plotKDE3d,
                     plotSG3d,
                     plotNodal3d,
-                    plotSGNodal3d)
+                    plotSGNodal3d,
+                    plotError3d)
 
 from plotGrid import plotGrid
 

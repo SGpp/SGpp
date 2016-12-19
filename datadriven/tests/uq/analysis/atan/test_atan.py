@@ -34,6 +34,7 @@ from work.probabilistic_transformations_for_inference.preconditioner import Chri
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
 from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, plotError3d
 
 
 class AtanPeridynamicExample(object):
@@ -86,7 +87,94 @@ class AtanPeridynamicExample(object):
                             0, 1, lambda x: 0, lambda x: 1)
 
 
-    def run_mc(self, N, minExp=4, maxExp=12, out=False):
+    def getTestSamples(self, num_samples=50):
+        trans = self.params.getJointTransformation()
+        test_samples = np.ndarray(((num_samples + 1) ** self.numDims, self.numDims))
+        test_values = np.zeros(test_samples.shape[0])
+        x = np.linspace(0, 1, num_samples + 1, endpoint=True)
+        i = 0
+        for xi in x:
+            for yi in x:
+                test_samples[i, 0] = xi
+                test_samples[i, 1] = yi
+                test_values[i] = self.simulation(trans.unitToProbabilistic([xi, yi]))
+                i += 1
+
+        return test_samples, test_values
+
+    def plotResultsPCE(self, pce, train_samples, expansion, sampling_strategy,
+                       num_samples, degree_1d, out):
+        fig, ax, _ = plotFunction3d(lambda x: pce.evaluate(x), xlim=[-2, 1], ylim=[0, 1])
+        ax.scatter(train_samples[0, :],
+                   train_samples[1, :],
+                   np.zeros(num_samples))
+        if out:
+            filename = os.path.join(self.pathResults,
+                                    "%s_eval_pce_d%i_%s_%s_N%i_deg%i.pdf" % (self.radix,
+                                                                             self.numDims,
+                                                                             expansion,
+                                                                             sampling_strategy,
+                                                                             num_samples,
+                                                                             degree_1d))
+            plt.savefig(filename)
+
+        fig, ax, _ = plotError3d(lambda x: self.simulation(x),
+                                 lambda x: pce.evaluate(x),
+                                 xlim=[-2, 1], ylim=[0, 1])
+        if out:
+            filename = os.path.join(self.pathResults,
+                                    "%s_eval_pce_d%i_%s_%s_N%i_deg%i.pdf" % (self.radix,
+                                                                             self.numDims,
+                                                                             expansion,
+                                                                             sampling_strategy,
+                                                                             num_samples,
+                                                                             degree_1d))
+            plt.savefig(filename)
+
+        if not out:
+            plt.show()
+
+        
+    def plotResultsSG(self, grid, alpha, level, maxGridSize, refinement, iteration, out):
+        fig, ax, _ = plotSG3d(grid, alpha)
+        ax.set_title("eval")
+        if out:
+            filename = os.path.join(self.pathResults,
+                "%s_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
+                                                              "sg" if not isFull else "fg",
+                                                              self.numDims,
+                                                              grid.getTypeAsString(),
+                                                              level,
+                                                              maxGridSize,
+                                                              grid.getSize(),
+                                                              refinement,
+                                                              iteration))
+            plt.savefig(filename)
+
+        trans = self.params.getJointTransformation()
+        fig, ax, _ = plotError3d(lambda x: self.simulation(x),
+                                 lambda x: evalSGFunction(grid, alpha, trans.probabilisticToUnit(x)),
+                                 xlim=[-2, 1], ylim=[0, 1])
+        ax.set_title("error")
+        if out:
+            filename = os.path.join(self.pathResults,
+                "%s_error_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
+                                                                    "sg" if not isFull else "fg",
+                                                                    self.numDims,
+                                                                    grid.getTypeAsString(),
+                                                                    level,
+                                                                    maxGridSize,
+                                                                    grid.getSize(),
+                                                                    refinement,
+                                                                    iteration))
+            plt.savefig(filename)
+
+        if not out:
+            plt.show()
+
+
+
+    def run_mc(self, N, minExp=4, maxExp=12, out=False, plot=False):
                 # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
@@ -144,7 +232,8 @@ class AtanPeridynamicExample(object):
                 expansion="total_degree",
                 sampling_strategy="leja",
                 maxNumSamples=3000,
-                out=False):
+                out=False,
+                plot=False):
         np.random.seed(1234567)
 
         stats = {}
@@ -177,27 +266,27 @@ class AtanPeridynamicExample(object):
                 quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
                 samples = quadrature_strategy.get_quadrature_samples((degree_1d + 1) ** self.numDims, degree_1d + 1)
                 quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
+                num_samples = int(num_samples * 1.0)
             else:
-                raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
+                raise AttributeError("sampling strategy '%s' is unknown" % sampling_strategy)
 
             samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
             train_samples, train_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
 
-            samples = np.random.random((self.numDims, 1000))
-            test_samples, test_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
+            test_samples, test_values = self.getTestSamples()
+            test_samples = test_samples.T
 
             # compute coefficients of pce
             compute_coefficients(pce, train_samples, train_values, "christoffel")
-
             _, _, train_values_pred = eval_pce(pce, train_samples)
             l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
-            print "train: |.|_2 = %g" % l2train
             _, _, test_values_pred = eval_pce(pce, test_samples)
             l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
-            print "test:  |.|_2 = %g" % l2test
             ###################################################################################################
             print "-" * 60
             print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
+            print "train: |.|_2 = %g" % l2train
+            print "test:  |.|_2 = %g" % l2test
             print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], pce.mean(),
                                                np.abs(self.E_ana[0] - pce.mean()))
             print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], pce.variance(),
@@ -216,23 +305,27 @@ class AtanPeridynamicExample(object):
                                   'num_terms': num_terms,
                                   'l2test': l2test,
                                   'l2train': l2train}
-            
-            degree_1d += 2
+
+            if plot:
+                self.plotResultsPCE(pce, train_samples, expansion, sampling_strategy,
+                                    num_samples, degree_1d, out)
+
+            degree_1d = 2 * degree_1d + 1
 
         if out:
             # store results
-            # store results
             filename = os.path.join(self.pathResults,
-                                    "%s_pce_d%i_%s_N%i.pkl" % (self.radix,
-                                                               self.numDims,
-                                                               sampling_strategy,
-                                                               num_samples))
+                                    "%s_pce_d%i_%s_%s_N%i.pkl" % (self.radix,
+                                                                  self.numDims,
+                                                                  expansion,
+                                                                  sampling_strategy,
+                                                                  num_samples))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.numDims,
                       'sampling_strategy': sampling_strategy,
                       'degree_1d_max': degree_1d_max,
-                      'expansion': "total_degree",
+                      'expansion': expansion,
                       'var_analytic': self.V_ana[0],
                       'results': stats},
                      fd)
@@ -241,8 +334,13 @@ class AtanPeridynamicExample(object):
 
     def run_regular_sparse_grid(self, gridType, level, maxGridSize,
                                 boundaryLevel=1,
-                                isFull=False, out=False):
+                                isFull=False,
+                                out=False,
+                                plot=False):
         np.random.seed(1234567)
+
+        test_samples, test_values = self.getTestSamples()
+
         stats = {}
         while True:
             print "-" * 80
@@ -255,62 +353,65 @@ class AtanPeridynamicExample(object):
                                                          maxGridSize=maxGridSize,
                                                          isFull=isFull,
                                                          boundaryLevel=boundaryLevel)
-            if uqManager.sampler.getSize() <= maxGridSize:
-                # ----------------------------------------------
-                # first run
-                while uqManager.hasMoreSamples():
-                    uqManager.runNextSamples()
 
-                # ----------------------------------------------------------
-                # specify ASGC estimator
-                analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
-                                                .withAnalyticEstimationStrategy()\
-                                                .andGetResult()
-                analysis.setVerbose(False)
-                # ----------------------------------------------------------
-                # expectation values and variances
-                sg_mean, sg_var = analysis.mean(), analysis.var()
+            if uqManager.sampler.getSize() > maxGridSize:
+                print "DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize)
+                break
 
-                print "-" * 60
-                print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[0],
-                                                   np.abs(self.E_ana[0] - sg_mean[0]))
-                print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[0],
-                                                   np.abs(self.V_ana[0] - sg_var[0]))
+            # ----------------------------------------------
+            # first run
+            while uqManager.hasMoreSamples():
+                uqManager.runNextSamples()
 
-                # ----------------------------------------------------------
-                # estimate the l2 error
-                test_samples = np.random.random((1000, self.numDims))
-                test_values = np.ndarray(1000)
-                for i, sample in enumerate(test_samples):
-                    test_values[i] = self.simulation(sample)
-                grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
-                test_values_pred = evalSGFunction(grid, alpha, test_samples)
-                l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+            # ----------------------------------------------------------
+            # specify ASGC estimator
+            analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                            .withAnalyticEstimationStrategy()\
+                                            .andGetResult()
+            analysis.setVerbose(False)
+            # ----------------------------------------------------------
+            # expectation values and variances
+            sg_mean, sg_var = analysis.mean(), analysis.var()
 
-                # ----------------------------------------------------------
-                # estimated anova decomposition
-                anova = analysis.getAnovaDecomposition(nk=len(self.params))
-                sobol_indices = anova.getSobolIndices()
-                total_effects = computeTotalEffects(sobol_indices)
+            # ----------------------------------------------------------
+            # estimate the l2 error
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+            test_values_pred = evalSGFunction(grid, alpha, test_samples)
+            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
 
-                # ----------------------------------------------------------
-                stats[level] = {'num_model_evaluations': grid.getSize(),
-                                'l2test': l2test,
-                                'mean_estimated': sg_mean[0],
-                                'var_estimated': sg_var[0],
-                                'sobol_indices_estimated': sobol_indices,
-                                'total_effects_estimated': total_effects}
+            print "-" * 60
+            print "test:  |.|_2 = %g" % l2test
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[0],
+                                               np.abs(self.E_ana[0] - sg_mean[0]))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[0],
+                                               np.abs(self.V_ana[0] - sg_var[0]))
+            # ----------------------------------------------------------
+            # estimated anova decomposition
+            anova = analysis.getAnovaDecomposition(nk=len(self.params))
+            sobol_indices = anova.getSobolIndices()
+            total_effects = computeTotalEffects(sobol_indices)
+            # ----------------------------------------------------------
+            stats[level] = {'num_model_evaluations': grid.getSize(),
+                            'l2test': l2test,
+                            'mean_estimated': sg_mean[0],
+                            'var_estimated': sg_var[0],
+                            'sobol_indices_estimated': sobol_indices,
+                            'total_effects_estimated': total_effects}
+
+            if plot:
+                self.plotResultsSG(grid, alpha, level, maxGridSize, False, 0, out)
             level += 1
 
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s_%s_d%i_%s_Nmax%i_%s_N%i.pkl" % (self.radix,
-                                                                        "sg" if not isFull else "fg",
-                                                                        self.numDims,
-                                                                        grid.getTypeAsString(),
-                                                                        maxGridSize,
-                                                                        False))
+                                    "%s_%s_d%i_%s_Nmax%i_r%i_N%i.pkl" % (self.radix,
+                                                                         "sg" if not isFull else "fg",
+                                                                         self.numDims,
+                                                                         grid.getTypeAsString(),
+                                                                         maxGridSize,
+                                                                         False,
+                                                                         grid.getSize()))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
                       'num_dims': self.numDims,
@@ -326,7 +427,11 @@ class AtanPeridynamicExample(object):
 
 
     def run_adaptive_sparse_grid(self, gridType, level, maxGridSize, refinement,
-                                 boundaryLevel=None, isFull=False, out=False):
+                                 boundaryLevel=None, isFull=False, out=False,
+                                 plot=False):
+
+        test_samples, test_values = self.getTestSamples()
+
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
@@ -365,10 +470,6 @@ class AtanPeridynamicExample(object):
             anova = analysis.getAnovaDecomposition(iteration=iteration,
                                                    nk=len(self.params))
             # estimate the l2 error
-            test_samples = np.random.random((1000, self.numDims))
-            test_values = np.ndarray(1000)
-            for i, sample in enumerate(test_samples):
-                test_values[i] = self.simulation(sample)
             grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
@@ -391,17 +492,22 @@ class AtanPeridynamicExample(object):
                                      'sobol_indices_estimated': sobol_indices,
                                      'total_effects_estimated': total_effects}
 
+            if plot:
+                self.plotResultsSG(grid, alpha, level,
+                                   maxGridSize, refinement,
+                                   iteration, out)
+
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s_%s_d%i_%s_l%i_Nmax%i_%s_N%i.pkl" % (self.radix,
-                                                                            "sg" if not isFull else "fg",
-                                                                            self.numDims,
-                                                                            grid.getTypeAsString(),
-                                                                            level,
-                                                                            maxGridSize,
-                                                                            refinement,
-                                                                            grid.getSize()))
+                                    "%s_%s_d%i_%s_l%i_Nmax%i_r%s_N%i.pkl" % (self.radix,
+                                                                             "sg" if not isFull else "fg",
+                                                                             self.numDims,
+                                                                             grid.getTypeAsString(),
+                                                                             level,
+                                                                             maxGridSize,
+                                                                             refinement,
+                                                                             grid.getSize()))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'sg',
                       'model': "full" if self.numDims == 4 else "reduced",
@@ -418,25 +524,26 @@ class AtanPeridynamicExample(object):
             fd.close()
 
 
-def run_atan_mc(inputspace, maxNumSamples, out):
+def run_atan_mc(inputspace, maxNumSamples, out, plot):
     testSetting = AtanPeridynamicExample(inputspace)
-    testSetting.run_mc(maxNumSamples, out=out)
+    testSetting.run_mc(maxNumSamples, out=out, plot=plot)
 
-def run_atan_pce(inputspace, sampler, expansion, maxNumSamples, out):
+def run_atan_pce(inputspace, sampler, expansion, maxNumSamples, out, plot):
     testSetting = AtanPeridynamicExample(inputspace)
-    testSetting.run_pce(expansion, sampler, maxNumSamples, out)
+    return testSetting.run_pce(expansion, sampler, maxNumSamples, out, plot)
 
 def run_atan_sg(inputspace, gridType, level, numGridPoints,
-                boundaryLevel, fullGrid, refinement, out):
+                boundaryLevel, fullGrid, refinement, out, plot):
     testSetting = AtanPeridynamicExample(inputspace)
     if refinement is not None:
         testSetting.run_adaptive_sparse_grid(Grid.stringToGridType(gridType),
                                              level, numGridPoints, refinement,
-                                             boundaryLevel, fullGrid, out)
+                                             boundaryLevel, fullGrid, out,
+                                             plot)
     else:
         testSetting.run_regular_sparse_grid(Grid.stringToGridType(gridType),
                                             level, numGridPoints, boundaryLevel,
-                                            fullGrid, out)
+                                            fullGrid, out, plot)
 # ----------------------------------------------------------
 # testing
 # ----------------------------------------------------------
@@ -465,7 +572,8 @@ if __name__ == "__main__":
                      args.sampler,
                      args.expansion,
                      args.maxSamples,
-                     args.out)
+                     args.out,
+                     args.plot)
     elif args.surrogate == "sg":
         run_atan_sg(args.inputspace,
                     args.gridType,
@@ -474,8 +582,10 @@ if __name__ == "__main__":
                     args.boundaryLevel,
                     args.fullGrid,
                     args.refinement,
-                    args.out)
+                    args.out,
+                    args.plot)
     else:
         run_atan_mc(args.inputspace,
                     args.maxSamples,
-                    args.out)
+                    args.out,
+                    args.plot)

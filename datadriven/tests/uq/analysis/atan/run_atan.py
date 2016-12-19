@@ -18,9 +18,9 @@ if __name__ == '__main__':
 
     scenarions_sg = {'uniform': {'gridType': ["linear",
                                               "linearBoundry",
-                                              "modLinear",
+                                              "modlinear",
                                               "polyBoundary",
-                                              "modPoly",
+                                              "modpoly",
                                               "polyClenshawCurtisBoundary",
                                               "modPolyClenshawCurtis"],
                                  'full': [True, False],
@@ -33,12 +33,12 @@ if __name__ == '__main__':
                                                 'exp'],
                                  'maxGridPoints': [3000]},
                      'normal': {'gridType': ["linear",
-                                             "linearBoundry",
-                                             "modLinear",
-                                             "polyBoundary",
-                                             "modPoly",
-                                             "polyClenshawCurtisBoundary",
-                                             "modPolyClenshawCurtis"],
+                                              "linearBoundry",
+                                              "modlinear",
+                                              "polyBoundary",
+                                              "modpoly",
+                                              "polyClenshawCurtisBoundary",
+                                              "modPolyClenshawCurtis"],
                                  'full': [True, False],
                                  'level': [3],
                                  'refinement': [None,
@@ -49,12 +49,12 @@ if __name__ == '__main__':
                                                 'exp'],
                                  'maxGridPoints': [3000]}}
 
-    scenarions_pce = {'uniform': {'sampler': ['fekete', 'leja', 'gauss', 'gauss_leja'],
+    scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
                                   'expansion': ["full_tensor", "total_degree"],
-                                  'max_num_samples': [3000]},
-                      'normal': {'sampler': ['fekete', 'leja', 'gauss', 'gauss_leja'],
+                                  'max_num_samples': [1000]},
+                      'normal': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
                                  'expansion': ["full_tensor", "total_degree"],
-                                 'max_num_samples': [3000]}}
+                                 'max_num_samples': [1000]}}
 
     processes = []
     if args.surrogate in ["both", "sg"]:
