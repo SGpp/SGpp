@@ -245,6 +245,8 @@ class AtanPeridynamicExample(object):
         np.random.seed(1234567)
         stats = {}
         while True:
+            print "-" * 80
+            print "level = %i" % level
             uqManager = TestEnvironmentSG().buildSetting(self.simulation,
                                                          self.params,
                                                          level,
