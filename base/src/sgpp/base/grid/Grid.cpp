@@ -753,6 +753,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::LinearTruncatedBoundary;
   } else if (gridType.compare("modlinear") == 0) {
     return sgpp::base::GridType::ModLinear;
+  } else if (gridType.compare("modLinearClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModLinearClenshawCurtis;
   } else if (gridType.compare("poly") == 0) {
     return sgpp::base::GridType::Poly;
   } else if (gridType.compare("polyBoundary") == 0) {
