@@ -181,10 +181,14 @@ b2 --with-test ^
    2. Prepend <tt>C:\\PATH_TO_MATLAB\\bin</tt> to the <tt>PATH</tt>
       environment variable.
 13. GSL:
-   1. Download <tt>gsl-1.8.exe</tt> from the
-      <a href="http://gnuwin32.sourceforge.net/packages/gsl.htm" target="_blank">GSL SourceForge page</a>.
-   2. Run the installer.
-   3. Prepend <tt>C:\\PATH_TO_GSL\\bin</tt> to the <tt>PATH</tt>
+   1. Download <tt>gsl-1.15-x64.7z</tt> from the
+      <a href="https://sourceforge.net/projects/mingw-w64/files/External%20binary%20packages%20%28Win64%20hosted%29/Binaries%20%2864-bit%29/" target="_blank">MinGW-w64 SourceForge page</a>.
+   2. Extract the archive.
+   3. Copy <tt>C:\\PATH_TO_GSL\\bin\\libgsl-0.dll</tt> to
+      <tt>C:\\PATH_TO_GSL\\bin\\libgsl.dll</tt> and
+	  <tt>C:\\PATH_TO_GSL\\bin\\libgslcblas-0.dll</tt> to
+      <tt>C:\\PATH_TO_GSL\\bin\\libgslcblas.dll</tt>.
+   4. Prepend <tt>C:\\PATH_TO_GSL\\bin</tt> to the <tt>PATH</tt>
       environment variable.
 
 
