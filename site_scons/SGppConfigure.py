@@ -93,6 +93,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
+  checkGSL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
@@ -169,7 +170,20 @@ def checkOpenCL(config):
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    
+
+def checkGSL(config):
+  if config.env["USE_GSL"]:
+    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
+    config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
+
+    if not config.CheckCXXHeader("gsl/gsl_version.h"):
+      Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
+    if not config.CheckLib("gsl", language="c++", autoadd=1):
+      Helper.printErrorAndExit("libsgl not found, but required for GSL")
+    if not config.CheckLib("gslcblas", language="c++", autoadd=1):
+      Helper.printErrorAndExit("libgslcblas not found, but required for GSL")
+
+    config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
