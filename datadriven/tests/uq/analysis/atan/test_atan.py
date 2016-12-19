@@ -87,19 +87,17 @@ class AtanPeridynamicExample(object):
                             0, 1, lambda x: 0, lambda x: 1)
 
 
-    def getTestSamples(self, num_samples=50):
+    def getTestSamples(self, num_samples=1000, dtype="unit"):
         trans = self.params.getJointTransformation()
-        test_samples = np.ndarray(((num_samples + 1) ** self.numDims, self.numDims))
+        test_samples = np.random.random((num_samples, self.numDims))
         test_values = np.zeros(test_samples.shape[0])
         x = np.linspace(0, 1, num_samples + 1, endpoint=True)
         i = 0
-        for xi in x:
-            for yi in x:
-                test_samples[i, 0] = xi
-                test_samples[i, 1] = yi
-                test_values[i] = self.simulation(trans.unitToProbabilistic([xi, yi]))
-                i += 1
-
+        for i, x in enumerate(test_samples):
+            y = trans.unitToProbabilistic(x)
+            test_values[i] = self.simulation(y)
+            if dtype == "prob":
+                test_samples[i, :] = y
         return test_samples, test_values
 
     def plotResultsPCE(self, pce, train_samples, expansion, sampling_strategy,
@@ -236,6 +234,9 @@ class AtanPeridynamicExample(object):
                 plot=False):
         np.random.seed(1234567)
 
+        test_samples, test_values = self.getTestSamples(dtype="prob")
+        test_samples = test_samples.T
+
         stats = {}
         degree_1d = 1
         while True:
@@ -250,6 +251,7 @@ class AtanPeridynamicExample(object):
             num_samples = num_terms = pce.num_terms()
 
             if num_samples > maxNumSamples:
+                print "DONE: %i > %i" % (num_samples, maxNumSamples)
                 break
 
             if sampling_strategy == "gauss":
@@ -266,18 +268,16 @@ class AtanPeridynamicExample(object):
                 quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
                 samples = quadrature_strategy.get_quadrature_samples((degree_1d + 1) ** self.numDims, degree_1d + 1)
                 quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
-                num_samples = int(num_samples * 1.0)
+                num_samples = int((num_terms - 1) * degree_1d)
             else:
                 raise AttributeError("sampling strategy '%s' is unknown" % sampling_strategy)
 
             samples = quadrature_strategy.get_quadrature_samples(num_samples, degree_1d)
             train_samples, train_values = builder.eval_samples(samples, self.rv_trans, self.simulation)
 
-            test_samples, test_values = self.getTestSamples()
-            test_samples = test_samples.T
-
             # compute coefficients of pce
-            compute_coefficients(pce, train_samples, train_values, "christoffel")
+            _, residual, _, cond_preconditioned = \
+                compute_coefficients(pce, train_samples, train_values, "christoffel")
             _, _, train_values_pred = eval_pce(pce, train_samples)
             l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
             _, _, test_values_pred = eval_pce(pce, test_samples)
@@ -285,8 +285,9 @@ class AtanPeridynamicExample(object):
             ###################################################################################################
             print "-" * 60
             print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
-            print "train: |.|_2 = %g" % l2train
+            print "train: |.|_2 = %g (res=%g)" % (l2train, residual)
             print "test:  |.|_2 = %g" % l2test
+            print "cond:  %g" % cond_preconditioned
             print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], pce.mean(),
                                                np.abs(self.E_ana[0] - pce.mean()))
             print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], pce.variance(),
@@ -479,7 +480,7 @@ class AtanPeridynamicExample(object):
             total_effects = computeTotalEffects(sobol_indices)
 
             print "-" * 60
-            print "iteration=%i" % (iteration,)
+            print "iteration=%i, N=%i" % (iteration, grid.getSize())
             print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration][0],
                                                np.abs(self.E_ana[0] - sg_mean[iteration][0]))
             print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration][0],

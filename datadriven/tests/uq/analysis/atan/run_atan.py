@@ -13,12 +13,14 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--surrogate', default="both", type=str, help="define which surrogate model should be used (sg, pce)")
     parser.add_argument('--out', default=False, action='store_true', help='write results to file')
+    parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
     parser.add_argument('--parallel', default=False, action='store_true', help='run in parallel')
     args = parser.parse_args()
 
-    scenarions_sg = {'uniform': {'gridType': ["linear",
-                                              "linearBoundry",
+    scenarions_sg = {'uniform': {'gridType': ["linearBoundary",
                                               "modlinear",
+                                              "linearClenshawCurtisBoundary",
+                                              "modLinearClenshawCurtis",
                                               "polyBoundary",
                                               "modpoly",
                                               "polyClenshawCurtisBoundary",
@@ -32,9 +34,10 @@ if __name__ == '__main__':
                                                 'var',
                                                 'exp'],
                                  'maxGridPoints': [3000]},
-                     'normal': {'gridType': ["linear",
-                                              "linearBoundry",
+                     'normal': {'gridType': ["linearBoundary",
                                               "modlinear",
+                                              "linearClenshawCurtisBoundary",
+                                              "modLinearClenshawCurtis",
                                               "polyBoundary",
                                               "modpoly",
                                               "polyClenshawCurtisBoundary",
@@ -51,10 +54,10 @@ if __name__ == '__main__':
 
     scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
                                   'expansion': ["full_tensor", "total_degree"],
-                                  'max_num_samples': [1000]},
+                                  'max_num_samples': [4000]},
                       'normal': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
                                  'expansion': ["full_tensor", "total_degree"],
-                                 'max_num_samples': [1000]}}
+                                 'max_num_samples': [4000]}}
 
     processes = []
     if args.surrogate in ["both", "sg"]:
@@ -80,7 +83,8 @@ if __name__ == '__main__':
     
                                     if args.parallel:
                                         myargs = (model, gridType, level, maxGridPoint,
-                                                  1, full, refinement, args.out)
+                                                  1, full, refinement, args.out,
+                                                  args.plot)
                                         processes.append(Process(target=run_atan_sg, args=myargs))
                                     else:
                                         run_atan_sg(model,
@@ -90,7 +94,8 @@ if __name__ == '__main__':
                                                     1,
                                                     full,
                                                     refinement,
-                                                    args.out)
+                                                    args.out,
+                                                    args.plot)
 
     if args.surrogate in ["both", "pce"]:
         for model, surrogate in scenarions_pce.items():
@@ -104,10 +109,10 @@ if __name__ == '__main__':
                         print "-" * 80
 
                         if args.parallel:
-                            myargs = (model, sampler, expansion, max_num_samples, args.out)
+                            myargs = (model, sampler, expansion, max_num_samples, args.out, args.plot)
                             processes.append(Process(target=run_atan_pce, args=myargs))
                         else:
-                            run_atan_pce(model, sampler, expansion, max_num_samples, args.out)
+                            run_atan_pce(model, sampler, expansion, max_num_samples, args.out, args.plot)
 
     # run applications in parallel if there are any available
     for process in processes:
