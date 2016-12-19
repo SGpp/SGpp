@@ -174,7 +174,8 @@ def checkOpenCL(config):
 def checkGSL(config):
   if config.env["USE_GSL"]:
     config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
-    config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
+    if "GSL_LIBRARY_PATH" in config.env:
+	  config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
 
     if not config.CheckCXXHeader("gsl/gsl_version.h"):
       Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
