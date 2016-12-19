@@ -45,7 +45,7 @@ class AtanPeridynamicExample(object):
         # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
-        self.inputSpace = inputSpace
+        self.inputSpace = "uniform"
         self.pathResults = os.path.join("results", self.inputSpace)
 
         # define input space
