@@ -174,3 +174,30 @@ def plotKDE3d(values):
     x, y = values
     ax.scatter(x, y, density, color='red')
     return fig, ax
+
+def plotError3d(f1, f2, xlim=[0, 1], ylim=[0, 1], n=32):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
+    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
+    Z = np.zeros((n + 1, n + 1))
+
+    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
+    for i in xrange(len(x)):
+        for j in xrange(len(y)):
+            xi = np.array([xv[j, i], yv[j, i]])
+            Z[j, i] = np.abs(f1(xi) - f2(xi))
+
+    ax.plot_wireframe(xv, yv, Z, color="black")
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
+
+#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+#                            linewidth=0, antialiased=False)
+    ax.set_xlim(xlim[0], xlim[1])
+    ax.set_ylim(ylim[0], ylim[1])
+    # ax.set_zlim(0, 2)
+
+#     fig.colorbar(surf, shrink=0.5, aspect=5)
+    return fig, ax, Z
