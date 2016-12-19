@@ -54,7 +54,7 @@ class WeightedSurplusRanking(Ranking):
         # get grid point associated to ix
         gs = grid.getStorage()
         p = DataVector(gs.getDimension())
-        gs.getCoodinates(gp, p)
+        gs.getCoordinates(gp, p)
 
         # get joint distribution
         ap = params.activeParams()
