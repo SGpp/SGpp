@@ -45,6 +45,7 @@
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <utility>
 #include <map>
@@ -799,7 +800,9 @@ GridType Grid::stringToGridType(const std::string& gridType) {
   } else if (gridType.compare("modlinearstencil") == 0) {
     return sgpp::base::GridType::ModLinearStencil;
   } else {
-    throw sgpp::base::factory_exception("grid type is unknown");
+    std::stringstream errorString;
+    errorString << "grid type '" << gridType << "' is unknown" << std::endl;
+    throw base::application_exception(errorString.str().c_str());
   }
 }
 
