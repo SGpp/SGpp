@@ -116,6 +116,8 @@ vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent direct
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
 vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
+vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
+vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
