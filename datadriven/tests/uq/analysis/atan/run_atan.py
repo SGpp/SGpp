@@ -49,10 +49,10 @@ if __name__ == '__main__':
                                                 'exp'],
                                  'maxGridPoints': [3000]}}
 
-    scenarions_pce = {'uniform': {'sampler': ['fekete', 'leja', 'gauss'],
+    scenarions_pce = {'uniform': {'sampler': ['fekete', 'leja', 'gauss', 'gauss_leja'],
                                   'expansion': ["full_tensor", "total_degree"],
                                   'max_num_samples': [3000]},
-                      'normal': {'sampler': ['fekete', 'leja', 'gauss'],
+                      'normal': {'sampler': ['fekete', 'leja', 'gauss', 'gauss_leja'],
                                  'expansion': ["full_tensor", "total_degree"],
                                  'max_num_samples': [3000]}}
 
@@ -64,31 +64,33 @@ if __name__ == '__main__':
             for level in surrogate["level"]:
                 for gridType in surrogate['gridType']:
                     for refinement in surrogate['refinement']:
-                        maxGridPoints = [surrogate['maxGridPoints'][-1]]
-                        fulls = [True]
+                        maxGridPoints = surrogate['maxGridPoints']
+                        fulls = surrogate['full']
                         if refinement is not None:
-                            maxGridPoints = surrogate['maxGridPoints']
-                            fulls = surrogate['full']
-                        for maxGridPoint in maxGridPoints:
-                            for full in fulls:
-                                print "-" * 80
-                                print "scenario: (%s, %s, %i, %s, %s)" % (model, gridType, maxGridPoint, refinement,
-                                                                          "full" if full else "sparse")
-                                print "-" * 80
+                            fulls = [False]
+                            maxGridPoints = [surrogate['maxGridPoints'][-1]]
 
-                                if args.parallel:
-                                    myargs = (model, gridType, level, maxGridPoint,
-                                              1, full, refinement, args.out)
-                                    processes.append(Process(target=run_atan_sg, args=myargs))
-                                else:
-                                    run_atan_sg(model,
-                                                gridType,
-                                                level,
-                                                maxGridPoint,
-                                                1,
-                                                full,
-                                                refinement,
-                                                args.out)
+                        for full in fulls:
+                            for maxGridPoint in maxGridPoints:
+                                for full in fulls:
+                                    print "-" * 80
+                                    print "scenario: (%s, %s, %i, %s, %s)" % (model, gridType, maxGridPoint, refinement,
+                                                                              "full" if full else "sparse")
+                                    print "-" * 80
+    
+                                    if args.parallel:
+                                        myargs = (model, gridType, level, maxGridPoint,
+                                                  1, full, refinement, args.out)
+                                        processes.append(Process(target=run_atan_sg, args=myargs))
+                                    else:
+                                        run_atan_sg(model,
+                                                    gridType,
+                                                    level,
+                                                    maxGridPoint,
+                                                    1,
+                                                    full,
+                                                    refinement,
+                                                    args.out)
 
     if args.surrogate in ["both", "pce"]:
         for model, surrogate in scenarions_pce.items():
