@@ -45,6 +45,9 @@ javaEnv.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",
 javaEnv.AppendUnique(LIBPATH=BUILD_DIR)
 javaEnv.AppendUnique(LIBS=flattenedDependencyGraph)
 
+if env["USE_GSL"]:
+  javaEnv.AppendUnique(LIBS=["gsl", "gslcblas"])
+
 libJava = javaEnv.SharedLibrary(target="jsgpp", source=["jsgpp.i"])
 
 installLibJava = javaEnv.Install(JSGPP_BUILD_PATH, libJava)

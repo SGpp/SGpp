@@ -12,7 +12,9 @@ moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
 if env["USE_OCL"]:
-    additionalDependencies += ["OpenCL"]
+  additionalDependencies += ["OpenCL"]
+if env["USE_GSL"]:
+  additionalDependencies += ["gsl", "gslcblas"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
