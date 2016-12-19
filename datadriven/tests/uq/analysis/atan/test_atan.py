@@ -173,6 +173,10 @@ class AtanPeridynamicExample(object):
                 samples = 2 * np.random.random((self.numDims, 30000)) - 1.
                 quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
                 num_samples = int(num_samples * 1.0)
+            elif sampling_strategy == "gauss_leja":
+                quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
+                samples = quadrature_strategy.get_quadrature_samples((degree_1d + 1) ** self.numDims, degree_1d + 1)
+                quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
             else:
                 raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
