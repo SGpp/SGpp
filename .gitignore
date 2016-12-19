@@ -12,6 +12,7 @@
 *.os
 *.so
 *.exe
+*.dll
 *.a
 *.dylib
 *.dSYM
@@ -74,3 +75,7 @@ coverage
 
 # ignoring uq tests
 datadriven/tests/uq/
+
+# ignoring Windows build directories
+build/
+dist/
