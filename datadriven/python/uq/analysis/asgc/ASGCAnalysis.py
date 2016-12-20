@@ -420,14 +420,12 @@ class ASGCAnalysis(Analysis):
 
 # -----------------------------------------------------------------------------
     def computeL2ErrorSurpluses(self, qoi, t, dtype, iteration):
-        v1 = self.__knowledge.getAlpha(qoi, t, dtype, iteration)
-        v1.abs()
-        s = v1.sum()
+        v1 = np.abs(self.__knowledge.getAlpha(qoi, t, dtype, iteration))
+        s = np.sum(v1)
 
         if iteration > 1:
-            v2 = self.__knowledge.getAlpha(qoi, t, dtype, iteration - 1)
-            v2.abs()
-            s -= v2.sum()
+            v2 = np.abs(self.__knowledge.getAlpha(qoi, t, dtype, iteration - 1))
+            s -= np.sum(v2)
         return s
 
     def computeStats(self, dtype):
