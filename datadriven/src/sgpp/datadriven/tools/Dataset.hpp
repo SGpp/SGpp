@@ -6,8 +6,8 @@
 #ifndef DATASET_HPP
 #define DATASET_HPP
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -47,9 +47,19 @@ class Dataset {
   sgpp::base::DataVector& getTargets();
 
   /**
+   * @return classes data of the dataset
+   */
+  const sgpp::base::DataVector& getTargets() const;
+
+  /**
    * @return training data of the dataset
    */
   sgpp::base::DataMatrix& getData();
+
+  /**
+   * @return training data of the dataset
+   */
+  const sgpp::base::DataMatrix& getData() const;
 
   void setData(const sgpp::base::DataMatrix&);
   void setTargets(const sgpp::base::DataVector& targets);
