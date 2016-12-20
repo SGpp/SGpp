@@ -100,6 +100,17 @@ class AtanPeridynamicExample(object):
                 test_samples[i, :] = y
         return test_samples, test_values
 
+
+    def getErrors(self, test_values, test_values_estimated,
+                  var_estimated, mean_estimated):
+        l2error = np.sqrt(np.mean(test_values - test_values_estimated) ** 2)
+        l1error = np.mean(np.abs(test_values - test_values_estimated))
+        maxError = np.max(np.abs(test_values - test_values_estimated))
+        mean_error = np.abs(mean_estimated - self.E_ana[0])
+        var_error = np.abs(var_estimated - self.V_ana[0])
+        return l2error, l1error, maxError, mean_error, var_error
+
+
     def plotResultsPCE(self, pce, train_samples, expansion, sampling_strategy,
                        num_samples, degree_1d, out):
         fig, ax, _ = plotFunction3d(lambda x: pce.evaluate(x), xlim=[-2, 1], ylim=[0, 1])
@@ -169,7 +180,6 @@ class AtanPeridynamicExample(object):
 
         if not out:
             plt.show()
-
 
 
     def run_mc(self, N, minExp=4, maxExp=12, out=False, plot=False):
@@ -268,7 +278,7 @@ class AtanPeridynamicExample(object):
                 quadrature_strategy = builder.define_full_tensor_samples("uniform", self.rv_trans, expansion)
                 samples = quadrature_strategy.get_quadrature_samples((degree_1d + 1) ** self.numDims, degree_1d + 1)
                 quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
-                num_samples = int((num_terms - 1) * degree_1d)
+                num_samples = int((self.numDims - 1) * num_terms)
             else:
                 raise AttributeError("sampling strategy '%s' is unknown" % sampling_strategy)
 
@@ -281,7 +291,9 @@ class AtanPeridynamicExample(object):
             _, _, train_values_pred = eval_pce(pce, train_samples)
             l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
             _, _, test_values_pred = eval_pce(pce, test_samples)
-            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+            l2test, l1test, maxErrorTest, meanError, varError = \
+                self.getErrors(test_values, test_values_pred,
+                               pce.variance(), pce.mean())
             ###################################################################################################
             print "-" * 60
             print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
@@ -304,8 +316,13 @@ class AtanPeridynamicExample(object):
                                   'num_model_evaluations': num_samples,
                                   'degree_1d': degree_1d,
                                   'num_terms': num_terms,
+                                  'l2train': l2train,
                                   'l2test': l2test,
-                                  'l2train': l2train}
+                                  'l1test': l1test,
+                                  'maxErrorTest': maxErrorTest,
+                                  'mean_error': meanError,
+                                  'var_error': varError,
+                                  'cond_vand': cond_preconditioned}
 
             if plot:
                 self.plotResultsPCE(pce, train_samples, expansion, sampling_strategy,
@@ -325,8 +342,9 @@ class AtanPeridynamicExample(object):
             pkl.dump({'surrogate': 'pce',
                       'num_dims': self.numDims,
                       'sampling_strategy': sampling_strategy,
-                      'degree_1d_max': degree_1d_max,
+                      'max_num_samples': maxNumSamples,
                       'expansion': expansion,
+                      'mean_analytic': self.E_ana[0],
                       'var_analytic': self.V_ana[0],
                       'results': stats},
                      fd)
@@ -378,8 +396,9 @@ class AtanPeridynamicExample(object):
             # estimate the l2 error
             grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
-            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
-
+            l2test, l1test, maxErrorTest, meanError, varError = \
+                self.getErrors(test_values, test_values_pred,
+                               sg_mean[0], sg_var[0])
             print "-" * 60
             print "test:  |.|_2 = %g" % l2test
             print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[0],
@@ -393,7 +412,12 @@ class AtanPeridynamicExample(object):
             total_effects = computeTotalEffects(sobol_indices)
             # ----------------------------------------------------------
             stats[level] = {'num_model_evaluations': grid.getSize(),
+                            'l2train': l2train,
                             'l2test': l2test,
+                            'l1test': l1test,
+                            'maxErrorTest': maxErrorTest,
+                            'mean_error': meanError,
+                            'var_error': varError,
                             'mean_estimated': sg_mean[0],
                             'var_estimated': sg_var[0],
                             'sobol_indices_estimated': sobol_indices,
@@ -418,10 +442,12 @@ class AtanPeridynamicExample(object):
                       'num_dims': self.numDims,
                       'grid_type': grid.getTypeAsString(),
                       'max_grid_size': maxGridSize,
+                      'level': level,
+                      'boundaryLevel': boundaryLevel,
                       'is_full': isFull,
                       'refinement': False,
-                      'mean_analytic': self.E_ana,
-                      'var_analytic': self.V_ana,
+                      'mean_analytic': self.E_ana[0],
+                      'var_analytic': self.V_ana[0],
                       'results': stats},
                      fd)
             fd.close()
@@ -471,9 +497,11 @@ class AtanPeridynamicExample(object):
             anova = analysis.getAnovaDecomposition(iteration=iteration,
                                                    nk=len(self.params))
             # estimate the l2 error
-            grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction(iteration=iteration)
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
-            l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
+            l2test, l1test, maxErrorTest, meanError, varError = \
+                self.getErrors(test_values, test_values_pred,
+                               sg_mean[0], sg_var[0])
             # ----------------------------------------------------------
             # main effects
             sobol_indices = anova.getSobolIndices()
@@ -487,7 +515,12 @@ class AtanPeridynamicExample(object):
                                                np.abs(self.V_ana[0] - sg_var[iteration][0]))
 
             stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
+                                     'l2train': l2train,
                                      'l2test': l2test,
+                                     'l1test': l1test,
+                                     'maxErrorTest': maxErrorTest,
+                                     'mean_error': meanError,
+                                     'var_error': varError,
                                      'mean_estimated': sg_mean[iteration][0],
                                      'var_estimated': sg_var[iteration][0],
                                      'sobol_indices_estimated': sobol_indices,
@@ -518,8 +551,8 @@ class AtanPeridynamicExample(object):
                       'max_grid_size': maxGridSize,
                       'is_full': isFull,
                       'refinement': refinement,
-                      'mean_analytic': self.E_ana,
-                      'var_analytic': self.V_ana,
+                      'mean_analytic': self.E_ana[0],
+                      'var_analytic': self.V_ana[0],
                       'results': stats},
                      fd)
             fd.close()

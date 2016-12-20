@@ -52,10 +52,10 @@ if __name__ == '__main__':
                                                 'exp'],
                                  'maxGridPoints': [3000]}}
 
-    scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
+    scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
                                   'expansion': ["full_tensor", "total_degree"],
                                   'max_num_samples': [4000]},
-                      'normal': {'sampler': ['gauss', 'gauss_leja'],  # , 'fekete', 'leja', ],
+                      'normal': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
                                  'expansion': ["full_tensor", "total_degree"],
                                  'max_num_samples': [4000]}}
 
