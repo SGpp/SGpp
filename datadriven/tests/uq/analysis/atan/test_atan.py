@@ -412,7 +412,6 @@ class AtanPeridynamicExample(object):
             total_effects = computeTotalEffects(sobol_indices)
             # ----------------------------------------------------------
             stats[level] = {'num_model_evaluations': grid.getSize(),
-                            'l2train': l2train,
                             'l2test': l2test,
                             'l1test': l1test,
                             'maxErrorTest': maxErrorTest,
@@ -501,7 +500,7 @@ class AtanPeridynamicExample(object):
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test, l1test, maxErrorTest, meanError, varError = \
                 self.getErrors(test_values, test_values_pred,
-                               sg_mean[0], sg_var[0])
+                               sg_mean[iteration][0], sg_var[iteration][0])
             # ----------------------------------------------------------
             # main effects
             sobol_indices = anova.getSobolIndices()
@@ -515,7 +514,6 @@ class AtanPeridynamicExample(object):
                                                np.abs(self.V_ana[0] - sg_var[iteration][0]))
 
             stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
-                                     'l2train': l2train,
                                      'l2test': l2test,
                                      'l1test': l1test,
                                      'maxErrorTest': maxErrorTest,
