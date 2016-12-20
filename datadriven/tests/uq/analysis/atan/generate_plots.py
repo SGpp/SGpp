@@ -55,23 +55,17 @@ def load_results(path="results"):
     return ans
 
 
-def getErrorValue(error_type, values):
-    if "l2" in error_type:
-        return values["l2test"]
-    elif "var" in error_type:
-        return values[""]
-
-
 if __name__ == "__main__":
     results = load_results()
 
-    for error_type in ["l2test", "mean_estimated", "var_estimated"]:
+    for error_type in ["l2test", "mean_error", "var_error"]:
         # extract the ones needed for the table
         pce_settings = [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]
         sg_settings = [("polyBoundary", 0, 3000, False, True),
                        ("polyBoundary", 0, 3000, False, False),
-                       ("polyBoundary", 2, 3000, "var", False),
+                       ("polyBoundary", 0, 100, False, False),
+                       ("polyBoundary", 1, 100, "var", False),
                        ("polyBoundary", 2, 3000, "squared", False),
                        ("polyBoundary", 2, 3000, "weighted", False),
                        ("polyBoundary", 2, 3000, "exp", False)]
@@ -101,6 +95,6 @@ if __name__ == "__main__":
             plt.loglog(num_evals[ixs], errors[ixs], "o-",
                        label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
 
-
+        plt.title(error_type)
         plt.legend(loc="lower left")
         plt.show()
