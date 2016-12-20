@@ -249,7 +249,7 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
       if (doRefine) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
-        std::cout << "refinement at iteration: " << processedPoints
+        std::cout << "refinement at iteration: " << processedPoints + 1
                   << std::endl;
 
         base::GridStorage& gridStorage = grid->getStorage();

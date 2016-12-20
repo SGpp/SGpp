@@ -20,12 +20,10 @@
  *
  * Currently, only binary classification with class labels -1 and 1 is possible.
  *
- * The example provides the option to execute up to 10 runs over differently
+ * The example provides the option to execute several runs over differently
  * ordered data and perform a 5-fold cross-validation within each run.
  * Therefore,
- * already randomly ordered and partitioned data is provided in
- * datadriven/tests/data
- * (ripley, banana, SDSS_DR10).
+ * already randomly ordered and partitioned data is required.
  * Average results from several runs might be more reliable in an
  * online-learning
  * scenario, because the ordering of the data points seen by the learner
@@ -38,8 +36,8 @@ int main() {
    * If only one specific example should be executed, set
    * totalSets=1.
    */
-  size_t totalSets = 1;   // 1-10 possible (10 differently ordered data sets)
-  size_t totalFolds = 5;  // set to 5 to perform 5-fold cv
+  size_t totalSets = 1;
+  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
   double avgError = 0.0;
   double avgErrorFolds = 0.0;
   for (size_t numSets = 0; numSets < totalSets; numSets++) {
@@ -48,19 +46,13 @@ int main() {
      * the learning process. The length of the vector determines
      * the total number of error observations.
      */
-    sgpp::base::DataVector avgErrorsFolds(81, 0.0);
+    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
 
     for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../tests/data/ripley/5_fold/ripley_train_" +
-                             std::to_string(numSets + 1) + "_" +
-                             std::to_string(numFolds + 1) + ".arff";
-      // std::string filename = "../tests/data/banana/5_fold/banana_train_"
-      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      // std::string filename = "../tests/data/SDSS_DR10/5_fold/DR10_train_"
-      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset =
@@ -69,9 +61,7 @@ int main() {
       // extract train classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
-      filename = "../tests/data/ripley/5_fold/ripley_test.arff";
-      // filename = "../tests/data/banana/5_fold/banana_test.arff";
-      // filename = "../tests/data/SDSS_DR10/5_fold/DR10_test.arff";
+      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset =
@@ -85,13 +75,7 @@ int main() {
       bool useValidData = false;
       // if fixed validation data should be used (required for convergence
       // monitor):
-      filename = "../tests/data/ripley/5_fold/ripley_val_" +
-                 std::to_string(numSets + 1) + "_" +
-                 std::to_string(numFolds + 1) + ".arff";
-      // filename = "../tests/data/banana/5_fold/banana_val_"
-      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
-      // filename = "../tests/data/SDSS_DR10/5_fold/DR10_val_"
-      //  +std::to_string(numSets+1)+"_"+std::to_string(numFolds+1)+".arff";
+      /*filename = "";  // specify file containing validation data here
       // load validation samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset valDataset =
@@ -99,7 +83,7 @@ int main() {
       validData = &(valDataset.getData());
       // extract validation classes
       validLabels = &(valDataset.getTargets());
-      useValidData = true;
+      useValidData = true;*/
 
       /**
        * The grid configuration.
@@ -120,12 +104,12 @@ int main() {
       std::cout << "# create adaptive refinement config" << std::endl;
       std::string refMonitor;
       // select periodic monitor - perform refinements in fixed intervals
-      // refMonitor = "periodic";
-      size_t refPeriod = 50;  // the refinement interval
+      refMonitor = "periodic";
+      size_t refPeriod = 40;  // the refinement interval
       // select convergence monitor - perform refinements if algorithm has
       // converged
       // (convergence measured with respect to MSE or Hinge loss observations)
-      refMonitor = "convergence";
+      // refMonitor = "convergence";
       // the convergence threshold
       double errorDeclineThreshold = 0.0005;
       // number of error measurements which
@@ -146,16 +130,16 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 4;
-      adaptConfig.noPoints_ = 6;
+      adaptConfig.numRefinements_ = 3;
+      adaptConfig.noPoints_ = 5;
       adaptConfig.threshold_ = 0.0;
 
       // additional parameters:
 
       // specify max number of passes over traininig data set
-      size_t maxDataPasses = 4;
+      size_t maxDataPasses = 2;
       // regularization parameter
-      double lambda = 0.1;
+      double lambda = 0.01;
       // initial learning rate
       double gamma = 0.25;
 
@@ -192,7 +176,7 @@ int main() {
       // learner.storeResults(testData);
 
       /**
-       * Accuracy on test and training data after each fold.
+       * Accuracy on test and current training data.
        */
       double accTrain = learner.getAccuracy(trainData, trainLabels, 0.0);
       std::cout << "Acc (train): " << accTrain << std::endl;
@@ -203,12 +187,14 @@ int main() {
       avgErrorsFolds.add(learner.avgErrors);
     }
     avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-    /**
-     * Average accuracy on test data reagarding 5-fold cv.
-     */
-    std::cout << "Average accuracy on test data (set " +
-                     std::to_string(numSets + 1) + "): "
-              << (1.0 - avgErrorFolds) << std::endl;
+    if ( (totalSets > 1) && (totalFolds > 1) ) {
+      /**
+       * Average accuracy on test data reagarding 5-fold cv.
+       */
+      std::cout << "Average accuracy on test data (set " +
+                       std::to_string(numSets + 1) + "): "
+                << (1.0 - avgErrorFolds) << std::endl;
+    }
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
 
