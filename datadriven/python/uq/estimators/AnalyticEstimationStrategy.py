@@ -46,7 +46,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
     def computeSystemMatrixForMean(self, grid, W, D):
         # compute the integral of the product
         gs = grid.getStorage()
-        tmp = DataVector(gs.getSize())
         A_mean = np.ones(gs.getSize())
         err = 0
         # run over all dimensions
@@ -68,7 +67,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 A, erri = self.bilinearForm.computeBilinearFormByList(gpsi, basisi,
                                                                       gpsj, basisj)
                 # weight it with the coefficient of the density function
-                tmp = A.dot(dist.alpha.array())
+                tmp = A.dot(dist.alpha)
             else:
                 # the distribution is given analytically, handle them
                 # analytically in the integration of the basis functions
@@ -160,7 +159,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_mean, err = self.getSystemMatrixForMean(grid, W, D)
 
-        moment = alpha.array().dot(A_mean)
+        moment = np.dot(alpha, A_mean)
         return vol * moment, err
 
     def var(self, grid, alpha, U, T, mean):
@@ -174,7 +173,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_var, err = self.getSystemMatrixForVariance(grid, W, D)
 
-        moment = vol * alpha.array().dot(A_var.dot(alpha.array()))
+        moment = vol * np.dot(alpha, A_var.dot(alpha))
 
         var = moment - mean ** 2
 

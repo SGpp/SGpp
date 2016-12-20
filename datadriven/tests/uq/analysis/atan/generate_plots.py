@@ -64,8 +64,7 @@ if __name__ == "__main__":
                         ('total_degree', 'gauss_leja', 4000)]
         sg_settings = [("polyBoundary", 0, 3000, False, True),
                        ("polyBoundary", 0, 3000, False, False),
-                       ("polyBoundary", 0, 100, False, False),
-                       ("polyBoundary", 1, 100, "var", False),
+                       ("polyBoundary", 2, 3000, "var", False),
                        ("polyBoundary", 2, 3000, "squared", False),
                        ("polyBoundary", 2, 3000, "weighted", False),
                        ("polyBoundary", 2, 3000, "exp", False)]

@@ -1072,6 +1072,10 @@ class UQSetting(object):
             return len(self.__stats_simulation)
         elif item == "postprocessor":
             return len(self.__stats_postprocessor)
+        elif item == "samples":
+            return len(self.__stats_samples)
+        else:
+            raise AttributeError("item attribute '%s' unknown" % item)
 
     def mergeStats(self, newSetting):
         """

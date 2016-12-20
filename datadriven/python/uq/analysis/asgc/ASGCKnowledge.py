@@ -131,7 +131,7 @@ class ASGCKnowledge(object):
             iteration = self.__iteration
 
         if self.hasAlpha(iteration, qoi, t, dtype):
-            return DataVector(self.__alphas[iteration][qoi][dtype][t])
+            return self.__alphas[iteration][qoi][dtype][t]
         else:
             raise AttributeError('no knowledge for (i=%i, t=%g, qoi=%s, dtype=%i)' % (iteration, t, qoi,
                                                                                       dtype))
@@ -195,7 +195,7 @@ class ASGCKnowledge(object):
         """
         Update the knowledge
         @param grid: Grid
-        @param alpha: DataVector surplus vector
+        @param alpha: numpy array surplus vector
         @param qoi: string quantity of interest
         @param t: float time step
         @param dtype: KnowledgeType
@@ -219,7 +219,7 @@ class ASGCKnowledge(object):
         # store knowledge
         self.__iteration = iteration
         self.__grids[iteration][qoi] = copyGrid(grid)
-        self.__alphas[iteration][qoi][dtype][t] = DataVector(alpha)
+        self.__alphas[iteration][qoi][dtype][t] = alpha
 
     def clearAlphas(self):
         self.__alphas = {}
@@ -285,7 +285,7 @@ class ASGCKnowledge(object):
                     for dtype, v3 in v2.items():
                         d3 = {}
                         for t, alpha in v3.items():
-                            d3[float(t)] = DataVector(alpha)
+                            d3[float(t)] = DataVector(alpha).array()
                         d2[int(dtype)] = d3
                     d1[qoi] = d2
                 alphas[int(iteration)] = d1

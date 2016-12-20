@@ -431,15 +431,17 @@ class ASGCAnalysis(Analysis):
         return s
 
     def computeStats(self, dtype):
-        names = ['time',
-                 'iteration',
-                 'level',
-                 'grid_size',
-                 'trainMSE',
-                 'trainL2Error',
-                 'testMSE',
-                 'testL2Error',
-                 'L2ErrorSurpluses']
+        names = ['time',  # 0
+                 'iteration',  # 1
+                 'level',  # 2
+                 'grid_size',  # 3
+                 'trainMSE',  # 4
+                 'trainL2Error',  # 5
+                 'testMSE',  # 6
+                 'testL2Error',  # 7
+                 'testL1Error',  # 8
+                 'testMaxError',  # 9
+                 'L2ErrorSurpluses']  # 10
 
         knowledge = self.__uqManager.getKnowledge()
         ts = knowledge.getAvailableTimeSteps()
@@ -455,7 +457,6 @@ class ASGCAnalysis(Analysis):
             for iteration in iterations:
                 v[0] = t
                 v[1] = iteration
-                blub = self.__uqManager
                 v[2] = self.__uqManager.stats.level[dtype][iteration]
                 v[3] = self.__uqManager.stats.numberPoints[dtype][iteration]
                 v[4] = self.__uqManager.stats.trainMSE[dtype][t][iteration]
@@ -464,8 +465,10 @@ class ASGCAnalysis(Analysis):
                         len(self.__uqManager.stats.trainMSE[dtype][t]):
                     v[6] = self.__uqManager.stats.testMSE[dtype][t][iteration]
                     v[7] = self.__uqManager.stats.testL2Norm[dtype][t][iteration]
-                v[8] = self.computeL2ErrorSurpluses(self._qoi, t,
-                                                    dtype, iteration)
+                    v[8] = self.__uqManager.stats.testL1Norm[dtype][t][iteration]
+                    v[9] = self.__uqManager.stats.testMaxError[dtype][t][iteration]
+                v[10] = self.computeL2ErrorSurpluses(self._qoi, t,
+                                                     dtype, iteration)
                 # write results to matrix
                 data.setRow(row, v)
                 row += 1

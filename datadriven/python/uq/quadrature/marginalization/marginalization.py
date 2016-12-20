@@ -1,4 +1,6 @@
-from pysgpp import DataVector, HashGridPoint
+import numpy as np
+
+from pysgpp import HashGridPoint
 from pysgpp.extensions.datadriven.uq.operations import createGrid, getBasis
 from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
@@ -41,8 +43,7 @@ def __doMarginalize(grid, alpha, linearForm, dd, measure=None):
     n_gs.recalcLeafProperty()
 
     # create coefficient vector
-    n_alpha = DataVector(n_gs.getSize())
-    n_alpha.setAll(0.0)
+    n_alpha = np.zeros(n_gs.getSize())
 
     basis = getBasis(grid)
     # set function values for n_alpha
@@ -84,7 +85,7 @@ def doMarginalize(grid, alpha, linearForm, dd, measure=None):
     if isinstance(dd, (int, long)):
         return __doMarginalize(grid, alpha, linearForm, dd)
 
-    n_grid, n_alpha = grid, DataVector(alpha)
+    n_grid, n_alpha = grid, alpha
 
     for d in sorted(dd, reverse=True):
         n_grid, n_alpha, err = __doMarginalize(n_grid, n_alpha, linearForm, d, measure=measure)

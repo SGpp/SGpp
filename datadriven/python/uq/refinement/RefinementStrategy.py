@@ -132,7 +132,7 @@ class VarianceOptRanking(Ranking):
         \argmax_{i \in \A} | v_i (2 A_i v_i - v_i b_i) |
 
         @param grid: Grid grid
-        @param v: DataVector coefficients
+        @param v: numpy array coefficients
         @param admissibleSet: AdmissibleSet
         """
         # update the quadrature operations
