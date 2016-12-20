@@ -179,10 +179,8 @@ def checkGSL(config):
 
     if not config.CheckCXXHeader("gsl/gsl_version.h"):
       Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
-    if not config.CheckLib("gsl", language="c++", autoadd=0):
-      Helper.printErrorAndExit("libsgl not found, but required for GSL")
-    if not config.CheckLib("gslcblas", language="c++", autoadd=0):
-      Helper.printErrorAndExit("libgslcblas not found, but required for GSL")
+    if not config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
+      Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
 
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
