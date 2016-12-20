@@ -17,25 +17,36 @@ namespace sgpp {
 namespace datadriven {
 
 Scorer::Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
-    : metric(std::shared_ptr<Metric>(metric)),
-      shuffling(std::shared_ptr<ShufflingFunctor>(shuffling)) {
+    : metric{std::unique_ptr<Metric>{metric}},
+      shuffling{std::unique_ptr<ShufflingFunctor>{shuffling}} {
   if (seed != -1) {
     shuffling->setSeed(seed);
   }
 }
 
-Scorer::~Scorer() {}
+Scorer::Scorer(const Scorer& rhs) {
+  metric = std::unique_ptr<Metric>{rhs.metric->clone()};
+  shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
+}
 
-void Scorer::randomizeIndices(std::vector<size_t>& randomizedIndices, size_t size) {
-  for (size_t i = 0; i < size; i++) {
+Scorer& Scorer::operator=(const Scorer& rhs) {
+  if (this != &rhs) {
+    metric = std::unique_ptr<Metric>{rhs.metric->clone()};
+    shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
+  }
+  return *this;
+}
+
+void Scorer::randomizeIndices(std::vector<size_t>& randomizedIndices) {
+  for (size_t i = 0; i < randomizedIndices.size(); i++) {
     randomizedIndices[i] = i;
   }
   shuffling->shuffle(randomizedIndices);
 }
 
-void Scorer::splitSet(Dataset& dataset, Dataset& trainDataset, Dataset& testDataset,
-                      size_t trainSize, size_t testSize,
+void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& testDataset,
                       const std::vector<size_t>& randomizedIndices, size_t offset) {
+  size_t testSize = testDataset.getNumberInstances();
   size_t dim = dataset.getDimension();
   DataVector tmpRow(dim);
   double tmpEntry = 0;
@@ -76,10 +87,10 @@ void Scorer::splitSet(Dataset& dataset, Dataset& trainDataset, Dataset& testData
 double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
   model.fit(trainDataset);
 
-  auto predictedValues = std::make_unique<DataVector>(testDataset.getNumberInstances());
-  model.evaluate(testDataset.getData(), *predictedValues);
+  DataVector predictedValues{testDataset.getNumberInstances()};
+  model.evaluate(testDataset.getData(), predictedValues);
   // set score
-  return (*metric)(*predictedValues, testDataset.getTargets());
+  return (*metric)(predictedValues, testDataset.getTargets());
 }
 
 } /* namespace datadriven */
