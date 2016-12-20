@@ -20,7 +20,6 @@ from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrate
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                                         isNumerical)
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-from pysgpp import DataVector
 
 import itertools as it
 import numpy as np
@@ -211,7 +210,7 @@ class HDMRAnalytic(object):
         """
         Evaluate the higher order components
         @param fi: linear combination of marginalized functions
-        @param x: DataVector coordinate to be evaluated
+        @param x: numpy array coordinate to be evaluated
         """
         # constant term
         sign, f0 = fi['const']

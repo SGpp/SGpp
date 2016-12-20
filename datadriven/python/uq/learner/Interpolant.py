@@ -78,7 +78,7 @@ class Interpolant(Learner):
 #         fig, _ = plotSG3d(self.grid, alpha)
 #         fig.show()
 
-        err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-12)
+        err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-10)
 
         if len(err) > 0:
             print "interpolation property not met"
@@ -139,7 +139,7 @@ class Interpolant(Learner):
         computes the discrete L2-error of the sparse grid interpolant
         with respect to some MC samples at given time steps
         @param data: DataContainer samples
-        @param alpha: DataVector hierarchical coefficients
+        @param alpha: numpy array hierarchical coefficients
         @return: mean squared error
         """
         # check if points are in [0, 1]^d
@@ -178,6 +178,18 @@ class Interpolant(Learner):
             value = np.mean(self.testErrors ** 2)
             
         return np.sqrt(value)
+
+    def getL1NormError(self, dtype="train"):
+        """
+        calculate L2-norm of error
+        @return: last L2-norm of error
+        """
+        if dtype == "train":
+            value = np.mean(np.abs(self.trainErrors))
+        else:
+            value = np.mean(np.abs(self.testErrors))
+
+        return value
 
     def getMaxError(self, dtype="train"):
         """

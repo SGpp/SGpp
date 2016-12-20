@@ -1,7 +1,6 @@
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
-from pysgpp import DataMatrix, DataVector
 
 from ASGCStatistics import ASGCStatistics
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
@@ -159,7 +158,7 @@ class ASGCUQManager(object):
 
                     # update the knowledge
                     self.knowledge.update(copyGrid(self.learner.grid),
-                                          DataVector(self.learner.alpha),
+                                          self.learner.alpha,
                                           self._qoi,
                                           t,
                                           dtype,
@@ -178,7 +177,8 @@ class ASGCUQManager(object):
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             # do the learning
-            for t, dataContainer in values.items():
+            for t in np.sort(values.keys()):
+                dataContainer = values[t]
                 if self.verbose:
                     print "t = %g, " % t,
 
@@ -189,7 +189,7 @@ class ASGCUQManager(object):
 
                     # update the knowledge
                     self.knowledge.update(copyGrid(self.learner.grid),
-                                          DataVector(self.learner.alpha),
+                                          self.learner.alpha,
                                           self._qoi,
                                           t,
                                           dtype,
