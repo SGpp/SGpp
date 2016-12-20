@@ -225,7 +225,7 @@ class VarianceBFRanking(Ranking):
         b = self._strategy.computeBilinearFormIdentity(basis, gpsi)
 
         # estimate missing coefficients
-        w = DataVector(admissibleSet.getSize())
+        w = np.ndarray(admissibleSet.getSize())
         for i, gp in enumerate(admissibleSet.values()):
             w[i] = estimateSurplus(grid, gp, v)
             # w[i] = estimateConvergence(grid, gp, v)
@@ -256,25 +256,14 @@ class VarianceBFRanking(Ranking):
 
         \argmax_{i \in \A} | w (2 Av + wb) |
 
-        @param v: DataVector, coefficients of known grid points
-        @param w: DataVector, estimated coefficients of unknown grid points
-        @param A: DataMatrix, stiffness matrix
-        @param b: DataVector, squared expectation value contribution
+        @param v: coefficients of known grid points
+        @param w: estimated coefficients of unknown grid points
+        @param A: stiffness matrix
+        @param b: squared expectation value contribution
         @return: numpy array, contains the ranking for the given samples
         """
         # update the ranking
-        av = DataVector(A.getNrows())
-        av.setAll(0.0)
-        # = Av
-        for i in xrange(A.getNrows()):
-            for j in xrange(A.getNcols()):
-                av[i] += A.get(i, j) * v[j]
-        av.mult(2.)  # 2 * Av
-        b.componentwise_mult(w)  # w * b
-        av.add(b)  # 2 * Av + w * b
-        w.componentwise_mult(av)  # = w * (2 * Av + w * b)
-        w.abs()  # = | w * (2 * Av + w * b) |
-
+        return np.abs(w * (2 * A.dot(v) + w * b))
         return w.array()
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
