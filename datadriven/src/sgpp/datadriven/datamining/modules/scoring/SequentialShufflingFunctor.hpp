@@ -17,13 +17,22 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Sequential Shuffling does not permute indices at all and thus keeps their order unchanged. To be
+ * used on  datasets that are already arranged in the desired manner.
+ */
 class SequentialShufflingFunctor : public ShufflingFunctor {
  public:
-  SequentialShufflingFunctor() : ShufflingFunctor(){};
-  virtual ~SequentialShufflingFunctor(){};
-  virtual void shuffle(std::vector<size_t>& indices){
-      // doesn't do any permutation to provided indices, since we're using the entries sequentially
-  };
+  ShufflingFunctor* clone() const override { return new SequentialShufflingFunctor{*this}; }
+
+  /**
+   * Does not permute indices and just returns the same permutation passed as a parameter. To be
+   * used on datasets that are already arranged as desired.
+   * @param indices vector of indices to permute.
+   */
+  void shuffle(std::vector<size_t>& indices) override {
+    // doesn't do any permutation to provided indices, since we're using the entries sequentially
+  }
 };
 
 } /* namespace datadriven */

@@ -1,8 +1,13 @@
 /*
- * Metrics.hpp
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * Metric.hpp
  *
  *  Created on: Feb 8, 2016
- *      Author: perun
+ *      Author: Michael Lettrich
  */
 
 #pragma once
@@ -11,22 +16,42 @@
 
 #include <sgpp/globaldef.hpp>
 
-using namespace sgpp::base;
-
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::DataVector;
+
 /**
- * Metrics.
- *
- * The metrics should be calculated in the way that smaller is always better. This means, for
- *example that accuracy should be negated.
+ * We use metrics to quantify approximation quality of a trained model. It should be calculated in
+ * the way that smaller is always better. This means, for example that classification accuracy
+ * should be negated.
  */
 class Metric {
  public:
-  Metric(){};
-  virtual ~Metric(){};
-  virtual double operator()(const DataVector& predictedValues, const DataVector& trueValues) = 0;
+  // Default constructors and assign operators as well as virtual destructor
+  Metric() = default;
+  Metric(const Metric& rhs) = default;
+  Metric(Metric&& rhs) = default;
+  Metric& operator=(const Metric& rhs) = default;
+  Metric& operator=(Metric&& rhs) = default;
+  virtual ~Metric() = default;
+
+  /**
+   * Polymorphic clone pattern
+   * @return deep copy of this object. New object is owned by caller.
+   */
+  virtual Metric* clone() const = 0;
+
+  /**
+   * Quantify the difference between predicted values and actual values. Does not have an inner
+   * state.
+   *
+   * @param predictedValues values calculated by the model for testing data
+   * @param trueValues actual values as taken from the dataset.
+   * @return Quantification of the difference. Smaller is better.
+   */
+  virtual double operator()(const DataVector& predictedValues,
+                            const DataVector& trueValues) const = 0;
 };
 
 } /* namespace datadriven */

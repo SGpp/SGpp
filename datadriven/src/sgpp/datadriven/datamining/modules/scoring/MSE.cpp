@@ -1,24 +1,27 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * MSE.hpp
+ *
+ * Created on: Feb 8, 2016
+ * Author: Michael Lettrich
+ */
 
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
-
-#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-MSE::MSE() {}
+Metric* MSE::clone() const { return new MSE(*this); }
 
-MSE::~MSE() {}
-
-double MSE::operator()(const DataVector& predictedValues, const DataVector& trueValues) {
+double MSE::operator()(const DataVector& predictedValues, const DataVector& trueValues) const {
   DataVector tmp(predictedValues);
   tmp.sub(trueValues);
   double error = tmp.l2Norm();
-  return error * error / static_cast<double>(tmp.getSize());
+  return (error * error / static_cast<double>(tmp.getSize()));
 }
 
 } /* namespace datadriven */

@@ -9,19 +9,19 @@
  *      Author: Michael Lettrich
  */
 
-#include "CrossValidation.hpp"
+#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
+
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-CrossValidation::~CrossValidation() {}
-
 CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
                                  size_t foldNumber)
-    : Scorer(metric, shuffling), foldNumber(foldNumber) {}
+    : Scorer{metric, shuffling}, foldNumber{foldNumber} {}
+
+Scorer* CrossValidation::clone() const { return new CrossValidation{*this}; }
 
 double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {
@@ -29,7 +29,7 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
 
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(randomizedIndices, dataset.getNumberInstances());
+  randomizeIndices(randomizedIndices);
 
   // perform actual folding
 
@@ -49,15 +49,15 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     std::cout << "starting fold " << fold << " with full set:" << dataset.getNumberInstances()
               << ", test size:" << testSize << ", train size:" << trainSize << std::endl;
     // create testing & training datasets;
-    auto testDataset = std::make_unique<Dataset>(testSize, dim);
-    auto trainDataset = std::make_unique<Dataset>(trainSize, dim);
+    Dataset testDataset{testSize, dim};
+    Dataset trainDataset{trainSize, dim};
 
     // fill them
-    splitSet(dataset, *trainDataset, *testDataset, trainSize, testSize, randomizedIndices, offset);
+    splitSet(dataset, trainDataset, testDataset, randomizedIndices, offset);
 
     // fit model
     std::cout << "###############" << std::endl << "fitting model" << std::endl;
-    scores[fold] = train(model, *trainDataset, *testDataset);
+    scores[fold] = train(model, trainDataset, testDataset);
     std::cout << "###############" << std::endl
               << "accuracy of fit:" << scores[fold] << std::endl
               << std::endl;

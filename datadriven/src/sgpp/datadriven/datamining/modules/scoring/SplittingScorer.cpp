@@ -20,15 +20,15 @@ using base::DataVector;
 
 SplittingScorer::SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
                                  double trainPortion)
-    : Scorer(metric, shuffling, seed), trainPortion(trainPortion) {}
+    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion} {}
 
-SplittingScorer::~SplittingScorer() {}
+Scorer* SplittingScorer::clone() const { return new SplittingScorer{*this}; }
 
 double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(randomizedIndices, dataset.getNumberInstances());
+  randomizeIndices(randomizedIndices);
 
   // calculate size of testing and training portions
   size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
@@ -40,13 +40,13 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
             << "train size:" << trainSize << std::endl;
 
   // create test and train datasets.
-  auto testDataset = std::make_unique<Dataset>(testSize, dim);
-  auto trainDataset = std::make_unique<Dataset>(trainSize, dim);
-  splitSet(dataset, *trainDataset, *testDataset, trainSize, testSize, randomizedIndices);
+  Dataset testDataset{testSize, dim};
+  Dataset trainDataset{trainSize, dim};
+  splitSet(dataset, trainDataset, testDataset, randomizedIndices);
 
   // fit model
   std::cout << "###############" << std::endl << "fitting model" << std::endl;
-  double score = train(model, *trainDataset, *testDataset);
+  double score = train(model, trainDataset, testDataset);
   std::cout << "###############" << std::endl
             << "accuracy of fit:" << score << std::endl
             << std::endl;
