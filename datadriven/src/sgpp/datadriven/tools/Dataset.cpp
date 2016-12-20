@@ -41,7 +41,15 @@ size_t Dataset::getDimension() const { return dimension; }
 
 sgpp::base::DataVector& Dataset::getTargets() { return targets; }
 
+const sgpp::base::DataVector& sgpp::datadriven::Dataset::getTargets() const {
+  return const_cast<sgpp::base::DataVector&>(static_cast<const Dataset&>(*this).getTargets());
+}
+
 sgpp::base::DataMatrix& Dataset::getData() { return data; }
+
+const sgpp::base::DataMatrix& sgpp::datadriven::Dataset::getData() const {
+  return const_cast<sgpp::base::DataMatrix&>(static_cast<const Dataset&>(*this).getData());
+}
 
 void Dataset::setData(const sgpp::base::DataMatrix& data) { this->data = data; }
 
