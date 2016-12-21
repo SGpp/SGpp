@@ -20,7 +20,7 @@ Metric* MSE::clone() const { return new MSE(*this); }
 double MSE::operator()(const DataVector& predictedValues, const DataVector& trueValues) const {
   DataVector tmp(predictedValues);
   tmp.sub(trueValues);
-  double error = tmp.l2Norm();
+  const double error = tmp.l2Norm();
   return (error * error / static_cast<double>(tmp.getSize()));
 }
 

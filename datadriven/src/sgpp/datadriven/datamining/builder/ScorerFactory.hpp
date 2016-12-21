@@ -34,8 +34,8 @@ class ScorerFactory {
   virtual Scorer* buildScorer(const DataMiningConfigParser& parser) = 0;
 
  protected:
-  std::unique_ptr<Metric> buildMetric(ScorerMetric config) {
-    if (config == ScorerMetric::MSE) {
+  std::unique_ptr<Metric> buildMetric(ScorerMetricType config) {
+    if (config == ScorerMetricType::MSE) {
       return std::make_unique<MSE>();
     } else {
       return nullptr;
