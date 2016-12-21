@@ -16,7 +16,11 @@
 namespace sgpp {
 namespace datadriven {
 /**
+ * Supervised learning with cross validation used to fit a model and quantify accuracy using a
+ * #sgpp::datadriven::Metric.
  *
+ * Splits a dataset into testing and training parts, trains the model and measures average accuracy
+ * and standard deviation of the fits.
  */
 class CrossValidation : public Scorer {
  public:
