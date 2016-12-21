@@ -102,7 +102,7 @@ class AtanPeridynamicExample(object):
 
 
     def getErrors(self, test_values, test_values_estimated,
-                  var_estimated, mean_estimated):
+                  mean_estimated, var_estimated):
         l2error = np.sqrt(np.mean(test_values - test_values_estimated) ** 2)
         l1error = np.mean(np.abs(test_values - test_values_estimated))
         maxError = np.max(np.abs(test_values - test_values_estimated))
@@ -293,7 +293,7 @@ class AtanPeridynamicExample(object):
             _, _, test_values_pred = eval_pce(pce, test_samples)
             l2test, l1test, maxErrorTest, meanError, varError = \
                 self.getErrors(test_values, test_values_pred,
-                               pce.variance(), pce.mean())
+                               pce.mean(), pce.variance())
             ###################################################################################################
             print "-" * 60
             print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
