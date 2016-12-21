@@ -16,6 +16,8 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
@@ -122,7 +124,7 @@ bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config
         parseInt(*scorerTestingConfig, "randomSeed", defaults.randomSeed, "testing");
     // parse metric type
     if (scorerTestingConfig->contains("metric")) {
-      config.metric = ScorerMetricParser::parse((*scorerTestingConfig)["metric"].get());
+      config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
     } else {
       std::cout << "# Did not find testing[metric]. Setting default value "
                 << asInteger(defaults.metric) << "." << std::endl;
@@ -158,7 +160,7 @@ bool DataMiningConfigParser::getScorerCrossValidationConfig(
         parseInt(*scorerTestingConfig, "randomSeed", defaults.randomSeed, "crossValidation");
     // parse metric type
     if (scorerTestingConfig->contains("metric")) {
-      config.metric = ScorerMetricParser::parse((*scorerTestingConfig)["metric"].get());
+      config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
     } else {
       std::cout << "# Did not find crossValidation[metric]. Setting default value "
                 << asInteger(defaults.metric) << "." << std::endl;

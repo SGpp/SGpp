@@ -33,7 +33,7 @@ class SplittingScorer : public Scorer {
    * this object.
    * @param seed seed for randomization in #sgpp::datadriven::ShufflingFunctor. Default is -1 which
    * puts a random seed.
-   * @param trainPortion value between 0 and 1 to specify the ration between testing set and
+   * @param trainPortion value between 0 and 1 to specify the ratio between testing set and
    * training set.
    */
   SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
