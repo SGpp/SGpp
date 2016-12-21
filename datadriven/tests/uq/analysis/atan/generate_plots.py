@@ -33,6 +33,11 @@ def load_results(path="results"):
                     key = get_key_pce(currentStats["expansion"],
                                       currentStats["sampling_strategy"],
                                       currentStats["max_num_samples"])
+                    # recompute errors and write to file
+                    for i, values in enumerate(currentStats["results"].values()):
+                        currentStats["results"]["mean_error"] = np.abs(currentStats["mean_analytic"] - values["mean_estimated"])
+                        currentStats["results"]["var_error"] = np.abs(currentStats["var_analytic"] - values["var_estimated"])
+
                     ans["pce"][key] = currentStats
                 elif currentStats["surrogate"] == "sg":
                     level = 0
@@ -43,11 +48,22 @@ def load_results(path="results"):
                                      currentStats["max_grid_size"],
                                      currentStats["refinement"],
                                      currentStats["is_full"])
+
+                    # recompute errors and write to file
+                    for i, (it, values) in enumerate(currentStats["results"].items()):
+                        currentStats["results"][it]["mean_error"] = np.abs(currentStats["mean_analytic"] - values["mean_estimated"])
+                        currentStats["results"][it]["var_error"] = np.abs(currentStats["var_analytic"] - values["var_estimated"])
+
                     ans["sg"][key] = currentStats
                 else:
                     key = get_key_mc(currentStats["sampling_strategy"],
                                      currentStats["num_model_evaluations"])
                     ans["mc"][key] = currentStats
+
+#                 # write back to file
+#                 fd = open(path, "w")
+#                 currentStats = pkl.dump(currentStats, fd)
+#                 fd.close()
 
                 print "-" * 80
                 print "loaded '%s'" % (key,)
@@ -76,6 +92,9 @@ if __name__ == "__main__":
             num_evals = np.ndarray(n)
             errors = np.ndarray(n)
             for i, (num_samples, values) in enumerate(results["pce"][key]["results"].items()):
+                if num_samples == "var_error":
+                    import ipdb; ipdb.set_trace()
+                print key, error_type, num_samples, values[error_type]
                 num_evals[i] = num_samples
                 errors[i] = values[error_type]
             ixs = np.argsort(num_evals)
@@ -94,6 +113,6 @@ if __name__ == "__main__":
             plt.loglog(num_evals[ixs], errors[ixs], "o-",
                        label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
 
-        plt.title(error_type)
+        plt.title(error_type.replace("_", " "))
         plt.legend(loc="lower left")
         plt.show()
