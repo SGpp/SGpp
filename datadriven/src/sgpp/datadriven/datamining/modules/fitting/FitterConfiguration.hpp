@@ -14,6 +14,8 @@
 namespace sgpp {
 namespace datadriven {
 
+enum class FitterType { RegressionLeastSquares };
+
 class FitterConfiguration {
  public:
   FitterConfiguration();
