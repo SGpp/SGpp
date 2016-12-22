@@ -28,12 +28,40 @@ using sgpp::base::DataVector;
  */
 class Metric {
  public:
-  // Default constructors and assign operators as well as virtual destructor
+  /**
+   * Default constructor
+   */
   Metric() = default;
+
+  /**
+   * Copy constructor
+   * @param rhs const reference to the scorer object to copy from.
+   */
   Metric(const Metric& rhs) = default;
+
+  /**
+   * Move constructor
+   * @param rhs R-value reference to a scorer object to moved from.
+   */
   Metric(Metric&& rhs) = default;
+
+  /**
+   * Copy assign operator
+   * @param rhs const reference to the scorer object to copy from.
+   * @return rerefernce to this with updated values.
+   */
   Metric& operator=(const Metric& rhs) = default;
+
+  /**
+   * Move assign operator
+   * @param rhs R-value reference to an a scorer object to move from.
+   * @return rerefernce to this with updated values.
+   */
   Metric& operator=(Metric&& rhs) = default;
+
+  /**
+   * virtual destructor.
+   */
   virtual ~Metric() = default;
 
   /**
