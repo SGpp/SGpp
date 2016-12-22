@@ -26,14 +26,15 @@ double WeightedRatioLevelManager::computePriority(const MultiIndex& level) {
   }
 
   double ret = -1.0;
-  MultiIndex levelOne(numDimensions, 0.0);
+  MultiIndex levelOne(numDimensions, 0);
   double levelOneNorm = levelData->get(levelOne)->norm;
+  levelOneNorm += 1e-10;  // should not be zero
 
   for (auto& predLevel : predecessors) {
     auto predLevelInfo = levelData->get(predLevel);
     double value1 = (1.0 - w) / static_cast<double>(predLevelInfo->numPoints);
     double value2 = w * predLevelInfo->norm / levelOneNorm;
-    ret = std::max(value1, value2);
+    ret = std::max(ret, std::max(value1, value2));
   }
 
   return ret;
