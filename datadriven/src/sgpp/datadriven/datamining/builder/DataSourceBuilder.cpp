@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 

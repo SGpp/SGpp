@@ -11,35 +11,12 @@
 
 #pragma once
 
-#include <sgpp/base/exception/data_exception.hpp>
-
-#include <algorithm>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::data_exception;
-
 enum class DataSourceFileType { NONE, ARFF };
-
-class DataSourceFileTypeParser {
- public:
-  static DataSourceFileType parse(const std::string& input) {
-    auto inputLower = input;
-    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
-
-    if (inputLower == "arff") {
-      return DataSourceFileType::ARFF;
-    } else if (inputLower == "none") {
-      return DataSourceFileType::NONE;
-    } else {
-      const std::string errorMsg =
-          "Failed to convert string \"" + input + "\" to any known DataSourceFileType";
-      throw data_exception(errorMsg.c_str());
-    }
-  };
-};
 
 struct DataSourceConfig {
   std::string filePath = "";
