@@ -35,7 +35,7 @@ class ScorerMetricTypeParser {
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::ScorerMetricType.
    */
-  static const std::string& stringRepresentation(ScorerMetricType type);
+  static const std::string& toString(ScorerMetricType type);
 
  private:
   /**

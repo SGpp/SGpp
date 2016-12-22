@@ -25,7 +25,7 @@ const std::map<ScorerMetricType, std::string> ScorerMetricTypeParser::metricType
   return std::map<ScorerMetricType, std::string>{std::make_pair(ScorerMetricType::MSE, "MSE")};
 }();
 
-const std::string& ScorerMetricTypeParser::stringRepresentation(ScorerMetricType type) {
+const std::string& ScorerMetricTypeParser::toString(ScorerMetricType type) {
   return metricTypeMap.at(type);
 }
 ScorerMetricType ScorerMetricTypeParser::parse(const std::string& input) {
