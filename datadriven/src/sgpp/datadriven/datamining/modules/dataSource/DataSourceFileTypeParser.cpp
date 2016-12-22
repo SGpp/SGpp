@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * DataSourceFileTypeParser.cpp
  *
  *  Created on: 22.12.2016
@@ -17,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-static DataSourceFileType DataSourceFileTypeParser::parse(const std::string& input) {
+DataSourceFileType DataSourceFileTypeParser::parse(const std::string& input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
