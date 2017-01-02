@@ -311,24 +311,26 @@ class RefinementManager(object):
         if self._balancing:
             newGridPoints += balance(grid)
 
-        # update admissible set
-        if not simulate:
-            self._admissibleSet.update(grid, newGridPoints)
-
 #         if not simulate:
 #             import matplotlib.pyplot as plt
 #             gs = grid.getStorage()
 #             p = DataVector(gs.getDimension())
 #
+#             fig = plt.figure()
 #             for gp in refinedPoints:
 #                 gs.getCoordinates(gp, p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=20,
 #                          linestyle='', color='green')
 #
 #             for i in xrange(gs.getSize()):
-#                 gs.getCoordinates(gs.getPoint(i), p)
-#                 plt.plot(p[0], p[1], marker='o', markersize=10,
-#                          linestyle='', color='blue')
+#                 gpi = gs.getPoint(i)
+#                 gs.getCoordinates(gpi, p)
+#                 if gpi in self._admissibleSet:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='orange')
+#                 else:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='blue')
 #
 #             for gp in newGridPoints:
 #                 gs.getCoordinates(gp, p)
@@ -338,8 +340,13 @@ class RefinementManager(object):
 #             plt.title("size = %i" % gs.getSize())
 #             plt.xlim(0, 1)
 #             plt.ylim(0, 1)
-#             plt.show()
-#             plt.savefig('%i.png' % learner.iteration)
+# #             plt.show()
+#             plt.savefig('/home/franzefn/Desktop/tmp/l2_atan_i%i.png' % gs.getSize())
+#             plt.close(fig)
+
+        # update admissible set
+        if not simulate:
+            self._admissibleSet.update(grid, newGridPoints)
 
         # make sure that I have collected all the new grid points
         assert len(newGridPoints) == gs.getSize() - n1

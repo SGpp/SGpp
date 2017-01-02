@@ -27,7 +27,7 @@ class MCAnalysis(Analysis):
     """
 
     def __init__(self, params, samples, estimator=None,
-                 npaths=20):
+                 npaths=100):
         """
         Constructor
         @param params: ParameterSet
@@ -87,6 +87,13 @@ class MCAnalysis(Analysis):
         stats = self.computeMoments()
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
+
+# -----------------------------------------------------------------------------
+
+    def computeConfidenceInterval(self, iteration, qoi, t):
+        # do the computation
+        values = np.array(self.__samples[t].values())
+        return self.__estimator.confidenceInterval(values)
 
 # -----------------------------------------------------------------------------
 

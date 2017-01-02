@@ -1,22 +1,27 @@
 from Estimator import Estimator
 import numpy as np
 from scipy.stats import norm
+from scikits.bootstrap import ci
 
 
 class MCEstimator(Estimator):
 
-    def __init__(self, npaths=10):
+    def __init__(self, npaths=100):
         """
         Constructor
-        @param n: number of samples
         """
         Estimator.__init__(self)
         self._npaths = npaths
-#         self._c = norm.ppf(1. - beta / 2.)
 
     def getBootstrap(self, samples):
         ixs = np.random.randint(0, len(samples), len(samples))
         return samples[ixs]
+
+    def confidenceInterval(self, samples, alpha=0.01):
+        if not np.all(np.abs(samples) < 1e-14):
+            return ci(samples, alpha=alpha)
+        else:
+            return np.zeros(samples.shape)
 
     def mean(self, samples):
         """

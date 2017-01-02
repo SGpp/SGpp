@@ -74,10 +74,14 @@ class TestEnvironmentSG(object):
                 refinement.withSurplusRanking()
             elif adaptive == "weighted":
                 refinement.withWeightedSurplusRanking()
+            elif adaptive == "l2":
+                refinement.withWeightedL2OptimizationRanking()
             elif adaptive == "exp":
                 refinement.withExpectationValueOptimizationRanking()
             elif adaptive == "var":
                 refinement.withVarianceOptimizationRanking()
+            elif adaptive == "mean_squared":
+                refinement.withMeanSquaredOptRanking()
             elif adaptive == "squared":
                 refinement.withSquaredSurplusRanking()
 

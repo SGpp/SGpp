@@ -90,7 +90,48 @@ class SurplusRatioRanking(Ranking):
         return abs(estimateConvergence(grid, gp, alphas))
 
 
-class ExpectationValueOptRanking(Ranking):
+class WeightedL2OptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._linearForm = BilinearGaussQuadratureStrategy()
+        self._ranking = {}
+
+    def update(self, grid, v, admissibleSet, params):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} | -v_i^2 V(\varphi_i) - 2 v_i Cov(u_indwli \varphi_i)|
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        @param admissibleSet: AdmissibleSet
+        """
+        # update the quadrature operations
+        U = params.getDistributions()
+        T = params.getTransformations()
+        self._linearForm.setGridType(grid.getType())
+        self._linearForm.setDistributionAndTransformation(U, T)
+
+        # prepare data
+        gs = grid.getStorage()
+        basis = getBasis(grid)
+
+        # compute the ranking for each grid point in the admissible set
+        self._ranking = {}
+        for i, gpi in enumerate(admissibleSet.values()):
+            # compute the second moment for the current grid point
+            secondMoment, _ = self._linearForm.getBilinearFormEntry(gs, gpi, basis,
+                                                                    gpi, basis)
+            # update the ranking
+            ix = gs.getSequenceNumber(gpi)
+            self._ranking[gpi.getHash()] = np.abs(v[ix]) * np.sqrt(secondMoment)
+
+    def rank(self, grid, gp, alphas, params, *args, **kws):
+        # get grid point associated to ix
+        return self._ranking[gp.getHash()]
+
+class ApproximatedExpectationValueOptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -117,7 +158,145 @@ class ExpectationValueOptRanking(Ranking):
         return abs(alphas[ix]) * A * U.pdf(q)
 
 
+class ExpectationValueOptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._linearForm = LinearGaussQuadratureStrategy()
+        self._ranking = {}
+
+    def update(self, grid, v, admissibleSet, params):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} | -v_i^2 V(\varphi_i) - 2 v_i Cov(u_indwli \varphi_i)|
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        @param admissibleSet: AdmissibleSet
+        """
+        # update the quadrature operations
+        U = params.getDistributions()
+        T = params.getTransformations()
+        self._linearForm.setGridType(grid.getType())
+        self._linearForm.setDistributionAndTransformation(U, T)
+
+        # prepare data
+        gpsi = admissibleSet.values()
+        gs = grid.getStorage()
+
+        # compute stiffness matrix for next run
+        basis = getBasis(grid)
+        # compute the expectation value term for the new points
+        b, _ = self._linearForm.computeLinearFormByList(gs, gpsi, basis)
+
+        # load coefficients and vectors and matrices for variance and mean
+        # estimation
+        w = np.ndarray(len(gpsi))
+        for i, gpi in enumerate(gpsi):
+            ix = gs.getSequenceNumber(gpi)
+            w[i] = v[ix]
+
+        # update the ranking
+        values = np.abs(w * b)
+
+
+        self._ranking = {}
+        for i, gpi in enumerate(gpsi):
+            self._ranking[gpi.getHash()] = values[i]
+
+    def rank(self, grid, gp, alphas, params, *args, **kws):
+        # get grid point associated to ix
+        return self._ranking[gp.getHash()]
+
+
 class VarianceOptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._linearForm = LinearGaussQuadratureStrategy()
+        self._bilinearForm = BilinearGaussQuadratureStrategy()
+        self._ranking = {}
+
+    def update(self, grid, v, admissibleSet, params):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} | -v_i^2 V(\varphi_i) - 2 v_i Cov(u_indwli \varphi_i)|
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        @param admissibleSet: AdmissibleSet
+        """
+        # update the quadrature operations
+        self._linearForm.setGridType(grid.getType())
+        self._bilinearForm.setGridType(grid.getType())
+        U = params.getDistributions()
+        T = params.getTransformations()
+        self._linearForm.setDistributionAndTransformation(U, T)
+        self._bilinearForm.setDistributionAndTransformation(U, T)
+
+        # prepare data
+        gpsi = admissibleSet.values()
+        gs = grid.getStorage()
+
+        # prepare list of grid points
+        gpsj = [None] * gs.getSize()
+        for i in xrange(gs.getSize()):
+            gpsj[i] = gs.getPoint(i)
+
+        # compute stiffness matrix for next run
+        basis = getBasis(grid)
+        A, _ = self._bilinearForm.computeBilinearFormByList(gs, gpsi, basis, gpsj, basis)
+        # compute the expectation value term for the new points
+        b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
+
+        # load coefficients and vectors and matrices for variance and mean
+        # estimation
+        w = np.ndarray(len(gpsi))
+        variances = np.ndarray(len(gpsi))
+        covariances = np.ndarray(len(gpsi))
+        for i, gpi in enumerate(gpsi):
+            ix = gs.getSequenceNumber(gpi)
+            w[i] = v[ix]
+            variances[i] = A[i, i] - b[i] ** 2
+
+            # compute covariances
+            firstMoment = 0.0
+            secondMoment = 0.0
+            for j, gpj in enumerate(gpsj):
+                jx = gs.getSequenceNumber(gpj)
+                firstMoment += v[jx] * b[j]
+                secondMoment += v[jx] * A[i, j]
+            covariances[i] = secondMoment - firstMoment * b[i]
+
+        # update the ranking
+        values = np.abs(-w ** 2 * variances * -2 * covariances ** 2)
+
+
+        self._ranking = {}
+        for i, gpi in enumerate(gpsi):
+            self._ranking[gpi.getHash()] = values[i]
+
+#         fig = plt.figure()
+#         p = DataVector(gs.getDimension())
+#         for gp in admissibleSet.values():
+#             gp.getStandardCoordinates(p)
+#             r = self._ranking[gp.getHash()]
+#             plt.plot(p[0], p[1], marker="o")
+#             plt.text(p[0], p[1], "%g" % r,
+#                      color='black', fontsize=12)
+#         plt.title("%s" % admissibleSet.getSize())
+#         plt.xlim(0, 1)
+#         fig.show()
+#         plt.show()
+
+    def rank(self, grid, gp, alphas, params, *args, **kws):
+        # get grid point associated to ix
+        return self._ranking[gp.getHash()]
+
+
+class MeanSquaredOptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -162,7 +341,6 @@ class VarianceOptRanking(Ranking):
         b, _ = self._linearForm.computeLinearFormByList(gs, gpsi, basis)
 
         # update the ranking
-        v = v.array()
         values = np.abs(w * (2 * np.dot(A, v) - w * b))
         self._ranking = {}
         for i, gpi in enumerate(gpsi):
