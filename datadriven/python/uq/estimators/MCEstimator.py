@@ -1,7 +1,6 @@
 from Estimator import Estimator
 import numpy as np
 from scipy.stats import norm
-from scikits.bootstrap import ci
 
 
 class MCEstimator(Estimator):
@@ -18,10 +17,14 @@ class MCEstimator(Estimator):
         return samples[ixs]
 
     def confidenceInterval(self, samples, alpha=0.01):
-        if not np.all(np.abs(samples) < 1e-14):
-            return ci(samples, alpha=alpha)
-        else:
-            return np.zeros(samples.shape)
+        try:
+            from scikits.bootstrap import ci
+            if not np.all(np.abs(samples) < 1e-14):
+                return ci(samples, alpha=alpha)
+        except:
+            pass
+
+        return np.zeros(samples.shape)
 
     def mean(self, samples):
         """
