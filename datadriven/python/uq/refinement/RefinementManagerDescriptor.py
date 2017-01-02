@@ -7,8 +7,11 @@ from RefinementManager import RefinementManager
 from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 WeightedSurplusRanking,
+                                WeightedL2OptRanking,
+                                ApproximatedExpectationValueOptRanking,
                                 ExpectationValueOptRanking,
                                 VarianceOptRanking,
+                                MeanSquaredOptRanking,
                                 SurplusRatioRanking,
                                 SurplusRatioEstimationRanking,
                                 ExpectationValueBFRanking,
@@ -112,6 +115,16 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         self._refinement.setRefinementCriterion(ranking)
         return self
 
+    def withWeightedL2OptimizationRanking(self):
+        ranking = WeightedL2OptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withApproximatedExpectationValueOptimizationRanking(self):
+        ranking = ApproximatedExpectationValueOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
     def withExpectationValueOptimizationRanking(self):
         ranking = ExpectationValueOptRanking()
         self._refinement.setRefinementCriterion(ranking)
@@ -119,6 +132,11 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
 
     def withVarianceOptimizationRanking(self):
         ranking = VarianceOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withMeanSquaredOptRanking(self):
+        ranking = MeanSquaredOptRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 

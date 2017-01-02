@@ -37,6 +37,9 @@ class AdmissibleSetGenerator(object):
     def update(self, grid, nps):
         raise NotImplementedError()
 
+    def __contains__(self, elem):
+        return elem.getHash() in self.admissibleSet
+
 
 class RefinableNodesSet(AdmissibleSetGenerator):
 

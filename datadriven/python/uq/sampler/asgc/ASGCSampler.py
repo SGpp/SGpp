@@ -3,7 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 """
 @file    ASGCSampler.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -20,12 +19,16 @@ from pysgpp.extensions.datadriven.uq.dists import Dist
 from pysgpp.extensions.datadriven.uq.parameters import ParameterSet
 from pysgpp.extensions.datadriven.uq.sampler import SampleType, Samples
 from pysgpp.extensions.datadriven.uq.sampler.Sampler import Sampler
+from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
+
 from pysgpp import DataVector
 
 from ASGCSamplerSpecification import ASGCSamplerSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
+
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class ASGCSampler(Sampler):
@@ -82,6 +85,7 @@ class ASGCSampler(Sampler):
 
         # print some information
         if self.__verbose:
+            print "-" * 70
             print "iteration: %i" % self.__iteration
             print "old grid size: %i" % oldGridSize
             print "old AS size: %i" % oldAdmissibleSetSize
@@ -90,13 +94,16 @@ class ASGCSampler(Sampler):
             print "new AS size: %i" % self.__refinementManager\
                                           .getAdmissibleSet()\
                                           .getSize()
+            print "-" * 70
 
-#         fig = plotGrid(self.__grid, self.__learner.getKnowledge().getAlpha(self.getQoI()),
-#                        self.getRefinement().getAdmissibleSet(),
-#                        self.__params, newCollocationNodes)
+#         fig = plt.figure()
+#         plotGrid(self.__grid, knowledge.getAlpha(),
+#                  self.__refinementManager.getAdmissibleSet().values(),
+#                  self.__params, newCollocationNodes)
+#
 # #         fig.savefig('%i.png' % self._learner.iteration)
 #         fig.show()
-#         import pdb; pdb.set_trace()
+#         plt.show()
 
         # parse them to a numpy array
         gs = self.__grid.getStorage()
