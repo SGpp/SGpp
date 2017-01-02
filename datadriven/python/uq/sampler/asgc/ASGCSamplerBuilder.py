@@ -54,19 +54,16 @@ class ASGCSamplerBuilder(object):
             refinementManager = self.__refinementManagerBuilder.create(grid)
             # check sanity
             if refinementManager.getAdmissibleSet() is None:
-                raise AttributeError('You need to specify an admissible set \
-                                    for refinement.')
+                raise AttributeError('You need to specify an admissible set for refinement.')
             if refinementManager.getRefinementCriterion() is None:
-                raise AttributeError('You need to specify the refinement \
-                                    criterion.')
+                raise AttributeError('You need to specify the refinement criterion.')
             return refinementManager
         else:
             return None
 
     def __collectStopPolicy(self):
         if self.__refinementManagerBuilder is not None and self.__stopPolicyDescriptor is None:
-            raise AttributeError('Refinement is enabled but stop policy\
-                                 is missing')
+            raise AttributeError('Refinement is enabled but stop policy is missing')
         if self.__stopPolicyDescriptor is not None:
             return self.__stopPolicyDescriptor.create()
         else:
