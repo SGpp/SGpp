@@ -8,74 +8,78 @@
  * Author: Michael Lettrich
  */
 
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-using base::DataMatrix;
 using base::DataVector;
-using base::OperationMatrix;
 using base::GridType;
 using base::Grid;
-
 using base::GridPoint;
-using base::application_exception;
+using base::factory_exception;
 using base::GridGenerator;
 using base::RegularGridConfiguration;
+using sgpp::solver::SLESolver;
+using sgpp::solver::SLESolverType;
+using sgpp::solver::ConjugateGradients;
+using sgpp::solver::BiCGStab;
+using sgpp::solver::SLESolverConfiguration;
 
-ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {}
-
-ModelFittingBase::~ModelFittingBase() {}
-
-double ModelFittingBase::evaluate(DataVector& sample) {
-  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEval(*grid));
-  return opEval->eval(*alpha, sample);
-}
-
-void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& results) const {
-  auto opMultEval = std::unique_ptr<base::OperationMultipleEval>(
-      op_factory::createOperationMultipleEval(*grid, samples));
-  opMultEval->eval(*alpha, results);
-}
-
-OperationMatrix* ModelFittingBase::getRegularizationMatrix(datadriven::RegularizationType regType) {
-  if (regType == datadriven::RegularizationType::Identity) {
-    return op_factory::createOperationIdentity(*grid);
-  } else if (regType == datadriven::RegularizationType::Laplace) {
-    return op_factory::createOperationLaplace(*grid);
-  } else {
-    throw application_exception(
-        "ModelFittingBase::getRegularizationMatrix - unknown regularization type");
-  }
-}
-
-void ModelFittingBase::initializeGrid(RegularGridConfiguration gridConfig) {
-  // load grid
-  if (gridConfig.type_ == GridType::Linear) {
-    grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
-  } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
-    grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(
-        gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_)));
-  } else if (gridConfig.type_ == GridType::LinearBoundary) {
-    grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
-  } else if (gridConfig.type_ == GridType::ModLinear) {
-    grid = std::shared_ptr<Grid>(Grid::createModLinearGrid(gridConfig.dim_));
-  } else {
-    throw application_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
-  }
-
-  GridGenerator& gridGen = grid->getGenerator();
-  gridGen.regular(gridConfig.level_);
-}
+ModelFittingBase::ModelFittingBase() : config{nullptr}, grid{nullptr}, alpha{}, solver{nullptr} {}
 
 const Grid& ModelFittingBase::getGrid() const { return *grid; }
 
-const DataVector& ModelFittingBase::getSurpluses() const { return *alpha; }
+const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
+
+const FitterConfiguration& ModelFittingBase::getFitterConfiguration() const { return *config; }
+
+Grid* ModelFittingBase::buildGrid(const RegularGridConfiguration& gridConfig) const {
+  // load grid
+  Grid* tmpGrid;
+  if (gridConfig.type_ == GridType::Linear) {
+    tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
+    tmpGrid = Grid::createLinearBoundaryGrid(
+        gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_));
+  } else if (gridConfig.type_ == GridType::LinearBoundary) {
+    tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::ModLinear) {
+    tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
+  } else {
+    throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
+  }
+
+  GridGenerator& gridGen = tmpGrid->getGenerator();
+  gridGen.regular(gridConfig.level_);
+  return tmpGrid;
+}
+
+SLESolver* ModelFittingBase::buildSolver(const SLESolverConfiguration& sleConfig) const {
+  if (sleConfig.type_ == SLESolverType::CG) {
+    return new ConjugateGradients(sleConfig.maxIterations_, sleConfig.eps_);
+  } else if (sleConfig.type_ == SLESolverType::BiCGSTAB) {
+    return new BiCGStab(sleConfig.maxIterations_, sleConfig.eps_);
+  } else {
+    throw factory_exception(
+        "ModelFittingBase: An unsupported SLE solver type was "
+        "chosen");
+  }
+}
+
+void ModelFittingBase::reconfigureSolver(SLESolver& solver,
+                                         const SLESolverConfiguration& sleConfig) const {
+  solver.setMaxIterations(sleConfig.maxIterations_);
+  solver.setEpsilon(sleConfig.eps_);
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

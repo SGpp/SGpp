@@ -3,21 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
-
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
-#include <sgpp/solver/sle/BiCGStab.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-// TODO(lettrich): allow different regularization types
 // TODO(lettrich): allow different refinement types
 // TODO(lettrich): allow different refinement criteria
 
+using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::SurplusRefinementFunctor;
@@ -25,61 +24,63 @@ using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::application_exception;
 
 using sgpp::solver::SLESolver;
-using sgpp::solver::ConjugateGradients;
-using sgpp::solver::BiCGStab;
-using sgpp::solver::SLESolverType;
 
 namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
-    : datadriven::ModelFittingBase(),
-      config(config),
-      systemMatrix(nullptr),
-      solver(nullptr),
-      implementationConfig(OperationMultipleEvalConfiguration()) {
-  solver = std::shared_ptr<SLESolver>(buildSolver(this->config));
+    : datadriven::ModelFittingBase{}, systemMatrix{nullptr} {
+  this->config = std::unique_ptr<FitterConfiguration>(
+      std::make_unique<FitterConfigurationLeastSquares>(config));
+  solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
 }
 
-ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
+double ModelFittingLeastSquares::evaluate(const DataVector& sample) const {
+  auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
+  return opEval->eval(alpha, sample);
+}
+
+void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results) {
+  auto opMultEval = std::unique_ptr<base::OperationMultipleEval>{
+      op_factory::createOperationMultipleEval(*grid, samples, config->getMultipleEvalConfig())};
+  opMultEval->eval(alpha, results);
+}
 
 void ModelFittingLeastSquares::fit(Dataset& dataset) {
   // clear model
-  alpha.reset();
   grid.reset();
   systemMatrix.reset();
 
   // build grid
-  auto gridConfig = config.getGridConfig();
+  auto& gridConfig = config->getGridConfig();
   gridConfig.dim_ = dataset.getDimension();
-  config.setGridConfig(gridConfig);
-  initializeGrid(config.getGridConfig());
+  buildGrid(config->getGridConfig());
   // build surplus vector
-  alpha = std::make_shared<DataVector>(grid->getSize());
+  alpha = DataVector(grid->getSize());
 
   // create sytem matrix
-  systemMatrix =
-      std::shared_ptr<DMSystemMatrixBase>(buildSystemMatrix(dataset.getData(), config.getLambda()));
+  systemMatrix = std::unique_ptr<DMSystemMatrixBase>(buildSystemMatrix(
+      *grid, dataset.getData(), config->getLambda(), config->getMultipleEvalConfig()));
 
   // create right hand side and system matrix
   auto b = std::make_unique<DataVector>(grid->getSize());
   systemMatrix->generateb(dataset.getTargets(), *b);
 
-  configureSolver(config, *solver, FittingSolverState::solve);
-  solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+  reconfigureSolver(*solver, config->getSolverFinalConfig());
+  solver->solve(*systemMatrix, alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
 void ModelFittingLeastSquares::refine() {
   if (grid != nullptr) {
     // create refinement functor
-    SurplusRefinementFunctor refinementFunctor(*alpha, config.getRefinementConfig().noPoints_,
-                                               config.getRefinementConfig().threshold_);
+    SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
+                                               config->getRefinementConfig().threshold_);
     // refine grid
     grid->getGenerator().refine(refinementFunctor);
 
     // tell the SLE manager that the grid changed (for interal data structures)
     // systemMatrix->prepareGrid(); -> empty statement!
-    alpha->resizeZero(grid->getSize());
+    alpha.resizeZero(grid->getSize());
 
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
@@ -90,60 +91,26 @@ void ModelFittingLeastSquares::update(Dataset& dataset) {
   if (grid != nullptr) {
     // create sytem matrix
     systemMatrix.reset();
-    systemMatrix = std::shared_ptr<DMSystemMatrixBase>(
-        buildSystemMatrix(dataset.getData(), config.getLambda()));
+    systemMatrix = std::unique_ptr<DMSystemMatrixBase>(buildSystemMatrix(
+        *grid, dataset.getData(), config->getLambda(), config->getMultipleEvalConfig()));
 
     auto b = std::make_unique<DataVector>(grid->getSize());
     systemMatrix->generateb(dataset.getTargets(), *b);
 
-    configureSolver(config, *solver, FittingSolverState::refine);
-    solver->solve(*systemMatrix, *alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+    reconfigureSolver(*solver, config->getSolverRefineConfig());
+    solver->solve(*systemMatrix, alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
   } else {
     fit(dataset);
   }
 }
 
-DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(DataMatrix& trainDataset,
-                                                                double lambda) {
-  auto systemMatrix = new SystemMatrixLeastSquaresIdentity(*grid, trainDataset, lambda);
-  systemMatrix->setImplementation(implementationConfig);
+DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
+    Grid& grid, DataMatrix& trainDataset, double lambda,
+    OperationMultipleEvalConfiguration& mutipleEvalconfig) const {
+  auto systemMatrix = new SystemMatrixLeastSquaresIdentity(grid, trainDataset, lambda);
+  systemMatrix->setImplementation(mutipleEvalconfig);
 
-  return static_cast<DMSystemMatrixBase*>(systemMatrix);
-}
-
-SLESolver* ModelFittingLeastSquares::buildSolver(FitterConfiguration& config) {
-  SLESolver* solver;
-
-  if (config.getSolverRefineConfig().type_ == SLESolverType::CG) {
-    solver = new ConjugateGradients(config.getSolverFinalConfig().maxIterations_,
-                                    config.getSolverFinalConfig().eps_);
-  } else if (config.getSolverRefineConfig().type_ == SLESolverType::BiCGSTAB) {
-    solver = new BiCGStab(config.getSolverFinalConfig().maxIterations_,
-                          config.getSolverFinalConfig().eps_);
-  } else {
-    throw application_exception(
-        "ModelFittingLeastSquares: An unsupported SLE solver type was "
-        "chosen!");
-  }
-  return solver;
-}
-
-void ModelFittingLeastSquares::configureSolver(FitterConfiguration& config, SLESolver& solver,
-                                               FittingSolverState solverState) {
-  switch (solverState) {
-    case FittingSolverState::solve:
-      solver.setMaxIterations(config.getSolverFinalConfig().maxIterations_);
-      solver.setEpsilon(config.getSolverFinalConfig().eps_);
-      break;
-    case FittingSolverState::refine:
-      solver.setMaxIterations(config.getSolverRefineConfig().maxIterations_);
-      solver.setEpsilon(config.getSolverRefineConfig().eps_);
-      break;
-    default:
-      solver.setMaxIterations(config.getSolverFinalConfig().maxIterations_);
-      solver.setEpsilon(config.getSolverFinalConfig().eps_);
-      break;
-  }
+  return systemMatrix;
 }
 
 }  // namespace datadriven

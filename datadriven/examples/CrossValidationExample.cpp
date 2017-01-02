@@ -54,11 +54,10 @@ int main(int argc, char** argv) {
   // regression
   auto config = FitterConfigurationLeastSquares();
   // set grid dim
-  auto gridConfig = config.getGridConfig();
+  auto& gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;
   gridConfig.type_ = GridType::ModLinear;
   gridConfig.dim_ = dataset->getDimension();
-  config.setGridConfig(gridConfig);
   config.setLambda(10e-1);
 
   std::cout << "starting 5 fold cross validation with seed 42" << std::endl;

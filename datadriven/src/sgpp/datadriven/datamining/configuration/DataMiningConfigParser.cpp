@@ -16,6 +16,7 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>

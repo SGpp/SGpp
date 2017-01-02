@@ -13,65 +13,78 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
 #include <sgpp/solver/SLESolver.hpp>
 
 using sgpp::solver::SLESolver;
 using sgpp::base::DataMatrix;
+using sgpp::base::Grid;
+using sgpp::base::DataVector;
 
 namespace sgpp {
 namespace datadriven {
 
+// TODO(lettrich): allow different refinement techniques.
 /**
- * This class implements standard sparse grid regression
- * with an Identity matrix as regularization operator.
+ * Fitter object that encapsulates the usage of sparse grid based regression with identity as
+ * regularization.
  *
- * Furthermore this Learner provides support for several
- * vectorization approaches covering GPUs, CPUs and coprocessors.
+ * Allows usage of different grids, different solvers and different regularization techniques based
+ * on the provided configuration objects.
  */
 class ModelFittingLeastSquares : public ModelFittingBase {
  public:
   /**
    * Constructor
    *
-   * @param config configuration
+   * @param config configuration object that specifies grid, refinement, and regularization
    */
   ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config);
 
   /**
-   * Destructor
+   * Fit the grid to the given dataset by determining the weights of the initial grid by a least
+   * squares approach.
+   * @param dataset the training dataset that is used to fit the model.
    */
-  virtual ~ModelFittingLeastSquares();
-
-  // new grid and new dataset
   void fit(Dataset& dataset) override;
 
-  // reuse grid and assume old dataset
-  // for grid refinement steps
+  /**
+   * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
+   * recalculate weights.
+   */
   void refine() override;
 
-  // reuse grid and new dataset
-  // for online learning
   void update(Dataset& dataset) override;
-  //
-  //  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration)
-  //  {
-  //    this->implementationConfiguration = operationConfiguration;
-  //  }
 
- protected:
-  virtual DMSystemMatrixBase* buildSystemMatrix(DataMatrix& trainDataset, double lambda);
+  /**
+   * Evaluate the fitted regression model at a single data point - requires a trained grid.
+   * @param sample vector with the coordinates in all dimensions of that sample.
+   * @return evaluation of the trained grid.
+   */
+  double evaluate(const DataVector& sample) const override;
 
-  virtual SLESolver* buildSolver(FitterConfiguration& config);
-
-  void configureSolver(FitterConfiguration& config, SLESolver& solver,
-                       FittingSolverState solverState);
+  /**
+   * Evaluate the fitted model on a set of data points - requires a trained grid.
+   * @param samples matrix where each row represents a sample and the columns contain the
+   * coordinates in all dimensions of that sample.
+   * @param results vector where each row will contain the evaluation of the respective sample on
+   * the current model.
+   */
+  virtual void evaluate(DataMatrix& samples, DataVector& results) override;
 
  private:
-  FitterConfigurationLeastSquares config;
-  std::shared_ptr<DMSystemMatrixBase> systemMatrix;
-  std::shared_ptr<SLESolver> solver;
-  OperationMultipleEvalConfiguration implementationConfig;
+  // TODO (lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
+  // const.
+  /**
+   * Factory function to build the System matrix for least squares regression with identity as
+   * regularization.
+   */
+  DMSystemMatrixBase* buildSystemMatrix(Grid& grid, DataMatrix& trainDataset, double lambda,
+                                        OperationMultipleEvalConfiguration& config) const;
+
+  /**
+   * System matrix for least squares regression.
+   */
+  std::unique_ptr<DMSystemMatrixBase> systemMatrix;
 };
 }
 }
