@@ -53,7 +53,7 @@ if __name__ == '__main__':
 #                                                 'squared',
                                                 'var',
                                                 'exp',
-                                                'weightedl2'],
+                                                'l2'],
                                  'maxGridPoints': [3000]}}
 
     scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
