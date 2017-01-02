@@ -10,8 +10,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 
 namespace sgpp {
 
@@ -20,50 +22,160 @@ using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::RegularGridConfiguration;
+using sgpp::solver::SLESolver;
+using sgpp::solver::SLESolverConfiguration;
 
 namespace datadriven {
 
-enum class FittingSolverState { refine, solve };
-
+/**
+ * Base class for arbitrary machine learning models based on adaptive sparse grids. A model tries to
+ * generalize high dimensional training data by using sparse grids. An underlying model can be
+ * trained using training data, its accuracy can be improved by using the adaptivity of sparse
+ * grids and the underlying grid(s) of a model can be retrained on other data. Once a model is
+ * trained it can be evaluated on unseen data.
+ */
 class ModelFittingBase {
  public:
+  /**
+   * Default constructor
+   */
   ModelFittingBase();
 
-  virtual ~ModelFittingBase();
+  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  /**
+   * Copy constructor - we cannot deep copy all member variables yet.
+   * @param rhs const reference to the scorer object to copy from.
+   */
+  ModelFittingBase(const ModelFittingBase& rhs) = delete;
 
-  /// new grid and new data set
+  /**
+   * Move constructor
+   * @param rhs R-value reference to a scorer object to moved from.
+   */
+  ModelFittingBase(ModelFittingBase&& rhs) = default;
+
+  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  /**
+   * Copy assign operator - we cannot deep copy all member variables yet.
+   * @param rhs const reference to the scorer object to copy from.
+   * @return rerefernce to this with updated values.
+   */
+  ModelFittingBase& operator=(const ModelFittingBase& rhs) = delete;
+
+  /**
+   * Move assign operator
+   * @param rhs R-value reference to an a scorer object to move from.
+   * @return rerefernce to this with updated values.
+   */
+  ModelFittingBase& operator=(ModelFittingBase&& rhs) = default;
+
+  /**
+   * virtual destructor.
+   */
+  virtual ~ModelFittingBase() = default;
+
+  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  /**
+   * Polymorphic clone pattern
+   * @return deep copy of this object. New object is owned by caller.
+   */
+  // virtual ModelFittingBase* clone() const = 0;
+
+  // TODO(lettrich): dataset should be const.
+  /**
+   * Fit the grid to the dataset by determinig the weights of an initial grid
+   * @param dataset the training dataset that is used to fit the model.
+   */
   virtual void fit(Dataset& dataset) = 0;
 
-  /// reuse the grid and assume old data set
+  /**
+   * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
+   */
   virtual void refine() = 0;
 
-  /// reuse grid and new data set
+  // TODO(lettrich): dataset should be const
+  /**
+   * Train the grid of an existing model with new samples.
+   * @param dataset the training dataset that is used to fit the model.
+   */
   virtual void update(Dataset& dataset) = 0;
 
   /**
-   *
-   * @param sample
-   * @return
+   * Evaluate the fitted model at a single data point.
+   * @param sample vector with the coordinates in all dimensions of that sample.
+   * @return evaluation of the model.
    */
-  virtual double evaluate(DataVector& sample);
+  virtual double evaluate(const DataVector& sample) const = 0;
+
+  // TODO(lettrich): this should be a const operation as well as the samples matrix as soon
+  // operation multiple eval has been taken care of.
+  /**
+   * Evaluate the fitted model on a set of data points
+   * @param samples matrix where each row represents a sample and the columns contain the
+   * coordinates in all dimensions of that sample.
+   * @param results vector where each row will contain the evaluation of the respective sample on
+   * the current model.
+   */
+  virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
 
   /**
-   *
-   * @param samples
-   * @param result
-   * @return
+   * Get the underlying grid object for the current model.
+   * @return the grid object.
    */
-  virtual void evaluate(DataMatrix& samples, DataVector& results) const;
+  const Grid& getGrid() const;
 
-  virtual const Grid& getGrid() const;
-  virtual const DataVector& getSurpluses() const;
+  /**
+   * Get the surpluses of the current grid
+   * @return vector of surpluses.
+   */
+  const DataVector& getSurpluses() const;
+
+  /**
+   * Get the configuration of the fitter object.
+   * @return configuration of the fitter object
+   */
+  const FitterConfiguration& getFitterConfiguration() const;
 
  protected:
-  OperationMatrix* getRegularizationMatrix(RegularizationType regType);
-  void initializeGrid(RegularGridConfiguration gridConfig);
+  /**
+   * Factory member function that generates a grid from configuration.
+   * @param gridConfig configuration for the grid object
+   * @return new grid object that is owned by the caller.
+   */
+  Grid* buildGrid(const RegularGridConfiguration& gridConfig) const;
 
-  std::shared_ptr<Grid> grid;
-  std::shared_ptr<DataVector> alpha;
+  /**
+   * Factory member function to build the solver for the least squares regression problem according
+   * to the config.
+   * @param config configuratin for the solver object
+   */
+  SLESolver* buildSolver(const SLESolverConfiguration& config) const;
+
+  /**
+   * Configure solver based on the desired configuration
+   * @param config configuration updating the for the solver.
+   */
+  void reconfigureSolver(SLESolver& solver, const SLESolverConfiguration& config) const;
+
+  /**
+   * Configuration object for the fitter.
+   */
+  std::unique_ptr<FitterConfiguration> config;
+
+  /**
+   * the sparse grid that approximates the data.
+   */
+  std::unique_ptr<Grid> grid;
+
+  /**
+   * hierarchical surpluses of the #grid.
+   */
+  DataVector alpha;
+
+  /**
+   * Solver for the learning problem
+   */
+  std::unique_ptr<SLESolver> solver;
 };
 
 } /* namespace datadriven */

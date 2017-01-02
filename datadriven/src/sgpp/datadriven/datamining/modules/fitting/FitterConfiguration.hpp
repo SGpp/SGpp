@@ -9,6 +9,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 namespace sgpp {
@@ -19,31 +20,38 @@ enum class FitterType { RegressionLeastSquares };
 class FitterConfiguration {
  public:
   FitterConfiguration();
+  FitterConfiguration(const FitterConfiguration& rhs) = default;
+  FitterConfiguration(FitterConfiguration&& rhs) = default;
+  FitterConfiguration& operator=(const FitterConfiguration& rhs) = default;
+  FitterConfiguration& operator=(FitterConfiguration&& rhs) = default;
+  virtual ~FitterConfiguration() = default;
 
-  // we want to make this an abstract class.
-  virtual ~FitterConfiguration() = 0;
+  const base::RegularGridConfiguration& getGridConfig() const;
+  const base::AdpativityConfiguration& getRefinementConfig() const;
+  const solver::SLESolverConfiguration& getSolverRefineConfig() const;
+  const solver::SLESolverConfiguration& getSolverFinalConfig() const;
+  const datadriven::RegularizationConfiguration& getRegularizationConfig() const;
+  const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   base::RegularGridConfiguration& getGridConfig();
   base::AdpativityConfiguration& getRefinementConfig();
   solver::SLESolverConfiguration& getSolverRefineConfig();
   solver::SLESolverConfiguration& getSolverFinalConfig();
   datadriven::RegularizationConfiguration& getRegularizationConfig();
-  double getLambda();
+  datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig();
 
-  void setGridConfig(const base::RegularGridConfiguration& gridConfig);
-  void setRefinementConfig(const base::AdpativityConfiguration& adaptivityConfig);
-  void setSolverRefineConfig(const solver::SLESolverConfiguration& solverRefineConfig);
-  void setSolverFinalConfig(const solver::SLESolverConfiguration& solverFinalConfig);
-  void setRegularizationConfig(const datadriven::RegularizationConfiguration& regularizationConfig);
+  double getLambda();
   void setLambda(double lambda);
 
  protected:
+  virtual void setupDefaults() = 0;
   base::RegularGridConfiguration gridConfig;
   base::AdpativityConfiguration adaptivityConfig;
   solver::SLESolverConfiguration solverRefineConfig;
   solver::SLESolverConfiguration solverFinalConfig;
   datadriven::RegularizationConfiguration regularizationConfig;
   double lambda;
+  datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
 };
 
 }  // namespace base

@@ -32,8 +32,8 @@ class FitterConfigurationLeastSquares : public FitterConfiguration {
     parser.getFitterLambda(lambda, lambda);
   }
 
- private:
-  void setupDefaults() {
+ protected:
+  void setupDefaults() override {
     // configure initial grid
     gridConfig.dim_ = 0;
     gridConfig.level_ = 2;

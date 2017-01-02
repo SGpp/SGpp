@@ -18,50 +18,63 @@ FitterConfiguration::FitterConfiguration()
       regularizationConfig(),
       lambda(0) {}
 
-sgpp::datadriven::FitterConfiguration::~FitterConfiguration() {}
+const base::RegularGridConfiguration& FitterConfiguration::getGridConfig() const {
+  return gridConfig;
+}
 
-base::RegularGridConfiguration& FitterConfiguration::getGridConfig() { return gridConfig; }
-
-base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
+const base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() const {
   return adaptivityConfig;
 }
 
-solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {
+const solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() const {
   return solverRefineConfig;
 }
 
-solver::SLESolverConfiguration& FitterConfiguration::getSolverFinalConfig() {
+const solver::SLESolverConfiguration& FitterConfiguration::getSolverFinalConfig() const {
   return solverFinalConfig;
 }
 
-datadriven::RegularizationConfiguration& FitterConfiguration::getRegularizationConfig() {
+const datadriven::RegularizationConfiguration& FitterConfiguration::getRegularizationConfig()
+    const {
   return regularizationConfig;
 }
 
+const datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMultipleEvalConfig()
+    const {
+  return multipleEvalConfig;
+}
+
+base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
+  return const_cast<base::RegularGridConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getGridConfig());
+}
+
+base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
+  return const_cast<base::AdpativityConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getRefinementConfig());
+}
+
+solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {
+  return const_cast<solver::SLESolverConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getSolverRefineConfig());
+}
+
+solver::SLESolverConfiguration& FitterConfiguration::getSolverFinalConfig() {
+  return const_cast<solver::SLESolverConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getSolverFinalConfig());
+}
+
+datadriven::RegularizationConfiguration& FitterConfiguration::getRegularizationConfig() {
+  return const_cast<datadriven::RegularizationConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getRegularizationConfig());
+}
+
+datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMultipleEvalConfig() {
+  return const_cast<datadriven::OperationMultipleEvalConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getMultipleEvalConfig());
+}
+
 double FitterConfiguration::getLambda() { return lambda; }
-
-void FitterConfiguration::setGridConfig(const base::RegularGridConfiguration& gridConfig) {
-  this->gridConfig = gridConfig;
-}
-
-void FitterConfiguration::setRefinementConfig(
-    const base::AdpativityConfiguration& adaptivityConfig) {
-  this->adaptivityConfig = adaptivityConfig;
-}
-
-void FitterConfiguration::setSolverRefineConfig(
-    const solver::SLESolverConfiguration& solverConfig) {
-  this->solverRefineConfig = solverConfig;
-}
-
-void FitterConfiguration::setSolverFinalConfig(const solver::SLESolverConfiguration& solverConfig) {
-  this->solverFinalConfig = solverConfig;
-}
-
-void FitterConfiguration::setRegularizationConfig(
-    const datadriven::RegularizationConfiguration& regularizationConfig) {
-  this->regularizationConfig = regularizationConfig;
-}
 
 void FitterConfiguration::setLambda(double lambda) { this->lambda = lambda; }
 
