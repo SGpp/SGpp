@@ -7,7 +7,7 @@
 #define FUNCTIONLOOKUPTABLE_HPP_
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/MultiFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <memory>

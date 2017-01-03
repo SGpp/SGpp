@@ -7,9 +7,9 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_COMBIGRIDTREESTORAGE_HPP_
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/MultiFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 

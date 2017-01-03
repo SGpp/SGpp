@@ -5,19 +5,19 @@
 
 #pragma once
 
-namespace sgpp {
-namespace combigrid {
-
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <vector>
+
+namespace sgpp {
+namespace combigrid {
 
 template <typename V>
 class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V> {
@@ -35,7 +35,7 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : AbstractFullGridTensorEvaluator(storage, evaluatorPrototypes, pointHierarchies) {}
+      : AbstractFullGridLinearEvaluator<V>(storage, evaluatorPrototypes, pointHierarchies) {}
 
   virtual ~FullGridLinearCallbackEvaluator() {}
 
@@ -47,17 +47,17 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
    * returned tasks when all tasks for the given level are completed and the level can be added.
    */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
-    size_t numDimensions = evaluators.size();
+    size_t numDimensions = this->evaluators.size();
     MultiIndex multiBounds(numDimensions);
 
     for (size_t d = 0; d < numDimensions; ++d) {
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
     }
 
     MultiIndexIterator it(multiBounds);
     std::vector<bool> orderingConfiguration(numDimensions,
                                             false);  // The request does not need ordered points
-    auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
+    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
 
     std::vector<std::function<double()>> computationTasks;
     std::vector<MultiIndex> multiIndices;

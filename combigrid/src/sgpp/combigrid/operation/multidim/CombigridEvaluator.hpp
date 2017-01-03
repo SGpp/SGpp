@@ -8,10 +8,10 @@
 
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorEvaluator.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>

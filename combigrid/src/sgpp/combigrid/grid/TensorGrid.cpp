@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridLinearEvaluator.hpp>
+#include <sgpp/combigrid/grid/TensorGrid.hpp>
 
 namespace sgpp {
 namespace combigrid {

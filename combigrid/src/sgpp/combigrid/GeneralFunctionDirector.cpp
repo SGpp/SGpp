@@ -3,8 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "FullGridTensorEvaluator.hpp"
+#include <sgpp/combigrid/GeneralFunctionDirector.hpp>
+
+#include <memory>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */
-} /* namespace sgpp*/
+} /* namespace sgpp */
