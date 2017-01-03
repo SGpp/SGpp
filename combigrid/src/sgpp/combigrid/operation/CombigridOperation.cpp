@@ -11,7 +11,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -31,15 +31,28 @@ class CombigridOperationImpl {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
       : storage(storage),
-        fullGridEval(new FullGridTensorEvaluator<FloatScalarVector>(storage, evaluatorPrototypes,
-                                                                    pointHierarchies)),
+        fullGridEval(new FullGridLinearCallbackEvaluator<FloatScalarVector>(
+            storage, evaluatorPrototypes, pointHierarchies)),
+        combiEval(new CombigridEvaluator<FloatScalarVector>(pointHierarchies.size(), fullGridEval)),
+        levelManager(levelManager) {
+    levelManager->setLevelEvaluator(combiEval);
+  }
+
+  CombigridOperationImpl(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      GridFunction gridFunc)
+      : storage(storage),
+        fullGridEval(new FullGridLinearGridBasedEvaluator<FloatScalarVector>(
+            storage, evaluatorPrototypes, pointHierarchies, gridFunc)),
         combiEval(new CombigridEvaluator<FloatScalarVector>(pointHierarchies.size(), fullGridEval)),
         levelManager(levelManager) {
     levelManager->setLevelEvaluator(combiEval);
   }
 
   std::shared_ptr<AbstractCombigridStorage> storage;
-  std::shared_ptr<FullGridTensorEvaluator<FloatScalarVector>> fullGridEval;
+  std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>> fullGridEval;
   std::shared_ptr<CombigridEvaluator<FloatScalarVector>> combiEval;
   std::shared_ptr<LevelManager> levelManager;
 };
@@ -58,6 +71,16 @@ CombigridOperation::CombigridOperation(
     std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
     : impl(new CombigridOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
                                       storage)) {}
+
+CombigridOperation::CombigridOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting)
+    : impl(new CombigridOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
+          gridFunc)) {}
 
 void CombigridOperation::setParameters(const base::DataVector& param) {
   std::vector<FloatScalarVector> scalars(param.getSize());

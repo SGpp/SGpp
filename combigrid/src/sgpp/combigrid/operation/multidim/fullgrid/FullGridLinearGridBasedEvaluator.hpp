@@ -25,11 +25,10 @@ namespace combigrid {
 typedef GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>
     GridFunction;
 
-// TODO(holzmudd): NonNested ist nicht die beste Lösung, weil dadurch auch die Punkte neu berechnet
-// werden müssen. Und außerdem fehlt ein Beispiel.
 /**
  * If you want to be able to use different function values at the same point in different levels
- * (for example because you are implementing a PDE solver), you should use NonNestedPointHierarchy.
+ * (for example because you are implementing a PDE solver), set exploitNesting to false in the
+ * constructor of CombigridTreeStorage.
  */
 template <typename V>
 class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<V> {
