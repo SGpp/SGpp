@@ -188,6 +188,8 @@ class CombigridMultiOperation {
   /**
    * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
    * on a Leja grid with linear growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be integrated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -199,6 +201,8 @@ class CombigridMultiOperation {
   /**
    * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
    * on a Clenshaw-Curtis with exponential growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be integrated.
    */
