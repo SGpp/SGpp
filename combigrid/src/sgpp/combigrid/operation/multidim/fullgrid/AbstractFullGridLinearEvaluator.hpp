@@ -8,7 +8,7 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
@@ -55,7 +55,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : AbstractFullGridEvaluator(storage, pointHierarchies),
+      : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
         partialProducts(evaluatorPrototypes.size()),
         basisValues(evaluatorPrototypes.size()),
         evaluatorPrototypes(evaluatorPrototypes),
@@ -96,14 +96,14 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
 
       for (size_t i = currentEvaluators.size(); i <= currentLevel; ++i) {
         auto eval = evaluatorPrototypes[d]->cloneLinear();
-        eval->setGridPoints(pointHierarchies[d]->getPoints(i, needsOrdered));
+        eval->setGridPoints(this->pointHierarchies[d]->getPoints(i, needsOrdered));
         if (needsParam) {
           eval->setParameter(parameters[paramIndex]);
         }
         currentEvaluators.push_back(eval);
       }
       basisValues[d] = currentEvaluators[currentLevel]->getBasisCoefficients();
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(currentLevel);
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;
 
       if (needsParam) {
@@ -127,7 +127,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
 
     // start iteration
     MultiIndexIterator it(multiBounds);
-    auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
+    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     V sum = V::zero();
 
     CGLOG("FullGridTensorEvaluator::eval(): start loop");

@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_FULLGRIDTENSOREVALUATOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_FULLGRIDTENSOREVALUATOR_HPP_
 
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/AbstractFullGridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
@@ -49,16 +49,10 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
    */
   std::vector<std::vector<V>> basisValues;
 
-  /**
-   * Provides access to the function values (stored or computed on demand)
-   */
-  std::shared_ptr<AbstractCombigridStorage> storage;
   // one per dimension
   std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes;
   // one per dimension and level
   std::vector<std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>>> evaluators;
-  // one per dimension
-  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   // parameters (empty when doing quadrature)
   std::vector<V> parameters;
 
@@ -82,12 +76,11 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : partialProducts(evaluatorPrototypes.size()),
+      : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
+        partialProducts(evaluatorPrototypes.size()),
         basisValues(evaluatorPrototypes.size()),
-        storage(storage),
         evaluatorPrototypes(evaluatorPrototypes),
         evaluators(evaluatorPrototypes.size()),
-        pointHierarchies(pointHierarchies),
         parameters(evaluatorPrototypes.size()) {
     // TODO(holzmudd): check for dimension equality
   }
@@ -100,7 +93,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
    */
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) {
     this->mutexPtr = mutexPtr;
-    storage->setMutex(mutexPtr);
+    this->storage->setMutex(mutexPtr);
   }
 
   /**
@@ -115,13 +108,13 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
     MultiIndex multiBounds(numDimensions);
 
     for (size_t d = 0; d < numDimensions; ++d) {
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
     }
 
     MultiIndexIterator it(multiBounds);
     std::vector<bool> orderingConfiguration(numDimensions,
                                             false);  // The request does not need ordered points
-    auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
+    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
 
     std::vector<std::function<double()>> computationTasks;
     std::vector<MultiIndex> multiIndices;
@@ -193,14 +186,14 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 
       for (size_t i = currentEvaluators.size(); i <= currentLevel; ++i) {
         auto eval = evaluatorPrototypes[d]->cloneLinear();
-        eval->setGridPoints(pointHierarchies[d]->getPoints(i, needsOrdered));
+        eval->setGridPoints(this->pointHierarchies[d]->getPoints(i, needsOrdered));
         if (needsParam) {
           eval->setParameter(parameters[paramIndex]);
         }
         currentEvaluators.push_back(eval);
       }
       basisValues[d] = currentEvaluators[currentLevel]->getBasisCoefficients();
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(currentLevel);
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;
 
       if (needsParam) {
@@ -224,7 +217,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 
     // start iteration
     MultiIndexIterator it(multiBounds);
-    auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
+    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     V sum = V::zero();
 
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
@@ -267,11 +260,6 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
   }
 
   /**
-   * @return Returns the function value storage.
-   */
-  std::shared_ptr<AbstractCombigridStorage> getStorage() { return storage; }
-
-  /**
    * Sets the parameters for the evaluators. Each dimension in which the evaluator does not need a
    * parameter is skipped.
    * So if only the evaluators at dimensions 1 and 3 need a parameter, params.size() should be 2 (or
@@ -307,14 +295,14 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
   virtual size_t maxNewPoints(MultiIndex const &level) {
     size_t result = 1;
 
-    for (size_t d = 0; d < pointHierarchies.size(); ++d) {
+    for (size_t d = 0; d < this->pointHierarchies.size(); ++d) {
       size_t currentLevel = level[d];
-      size_t levelPoints = pointHierarchies[d]->getNumPoints(currentLevel);
+      size_t levelPoints = this->pointHierarchies[d]->getNumPoints(currentLevel);
 
-      if (!pointHierarchies[d]->isNested() || currentLevel == 0) {
+      if (!this->pointHierarchies[d]->isNested() || currentLevel == 0) {
         result *= levelPoints;
       } else {
-        result *= (levelPoints - pointHierarchies[d]->getNumPoints(currentLevel - 1));
+        result *= (levelPoints - this->pointHierarchies[d]->getNumPoints(currentLevel - 1));
       }
     }
 
@@ -327,7 +315,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 
     MultiIndex multiBounds(numDimensions);
     for (size_t d = 0; d < numDimensions; ++d) {
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
     }
 
     MultiIndexIterator it(multiBounds);
@@ -338,7 +326,7 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
       base::DataVector vec(numDimensions);
 
       for (size_t d = 0; d < numDimensions; ++d) {
-        vec[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
+        vec[d] = this->pointHierarchies[d]->getPoint(level[d], index[d]);
       }
 
       result.push_back(vec);
@@ -355,9 +343,9 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
   virtual size_t numPoints(MultiIndex const &level) {
     size_t result = 1;
 
-    for (size_t d = 0; d < pointHierarchies.size(); ++d) {
+    for (size_t d = 0; d < this->pointHierarchies.size(); ++d) {
       size_t currentLevel = level[d];
-      size_t levelPoints = pointHierarchies[d]->getNumPoints(currentLevel);
+      size_t levelPoints = this->pointHierarchies[d]->getNumPoints(currentLevel);
       result *= levelPoints;
     }
 
@@ -367,4 +355,4 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
 }  // namespace combigrid
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRIDTENSOREVALUATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_FULLGRIDTENSOREVALUATOR_HPP_ */

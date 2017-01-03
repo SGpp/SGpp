@@ -3,11 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_ABSTRACTFULLGRIDEVALUATOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_ABSTRACTFULLGRIDEVALUATOR_HPP_
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/grid/TensorGrid.hpp>
+#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 
 #include <memory>
@@ -142,6 +144,10 @@ class AbstractFullGridEvaluator {
     return result;
   }
 
+  virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level) {
+    return std::make_shared<TensorGrid>(getGridPoints(level));
+  }
+
   /**
    * @return the total number of grid points in a given level.
    */
@@ -161,4 +167,4 @@ class AbstractFullGridEvaluator {
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_ABSTRACTFULLGRIDEVALUATOR_HPP_ */

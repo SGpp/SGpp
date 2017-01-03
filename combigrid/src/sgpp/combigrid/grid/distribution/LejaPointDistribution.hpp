@@ -6,9 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 
-#include <sgpp/combigrid/SingleFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <cmath>
 #include <functional>

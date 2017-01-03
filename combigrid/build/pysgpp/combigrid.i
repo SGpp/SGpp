@@ -35,9 +35,17 @@
 
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
+%shared_ptr(sgpp::combigrid::AbstractMultiStorage<double>)
+%shared_ptr(sgpp::combigrid::TreeStorage<double>)
 
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>)
 
@@ -49,6 +57,8 @@
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
 
+%shared_ptr(sgpp::combigrid::TensorGrid)
+
 %shared_ptr(std::mutex)
 
 
@@ -59,8 +69,17 @@
 
 
 
-%include "combigrid/src/sgpp/combigrid/MultiFunction.hpp"
-%include "combigrid/src/sgpp/combigrid/SingleFunction.hpp"
+%include "combigrid/src/sgpp/combigrid/GeneralFunction.hpp"
+
+namespace sgpp {
+namespace combigrid {
+
+    %template(PyMultiFunction) GeneralFunction<base::DataVector const &, double>;
+    %template(PySingleFunction) GeneralFunction<double, double>;
+}
+}
+
+
 %include "combigrid/src/sgpp/combigrid/definitions.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp"
@@ -92,6 +111,7 @@
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
+%include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
 
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
@@ -109,7 +129,11 @@ namespace combigrid {
     %template(FloatScalarVectorMultiStorage) AbstractMultiStorage<FloatScalarVector>;
     %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatArrayVector>;
     %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
-
+    
+    %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
+    %template(DoubleTreeStorage) TreeStorage<double>;
+    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>;
+    
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
 }
@@ -192,11 +216,18 @@ namespace std {
 
 // experimental
 
-%feature("director") sgpp::combigrid::MultiFunctionDirector;
-%include "combigrid/src/sgpp/combigrid/MultiFunctionDirector.hpp"
+%feature("director") sgpp::combigrid::GeneralFunctionDirector;
+%include "combigrid/src/sgpp/combigrid/GeneralFunctionDirector.hpp"
 
-%feature("director") sgpp::combigrid::SingleFunctionDirector;
-%include "combigrid/src/sgpp/combigrid/SingleFunctionDirector.hpp"
+namespace sgpp {
+namespace combigrid {
+    %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<base::DataVector const &, double>>;
+    %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double, double>>;
+    %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>>;
+    
+}
+}
+
 
 %pythoncode %{
 class MFDirectorImpl(MultiFunctionDirector):
@@ -212,7 +243,7 @@ class MFDirectorImpl(MultiFunctionDirector):
 def multiFunc(funcObj):
     dir = MFDirectorImpl()
     dir.setFuncObj(funcObj)
-    mf = dir.toMultiFunction()
+    mf = dir.toFunction()
     dir.__disown__()
     return mf
     
@@ -229,7 +260,24 @@ class SFDirectorImpl(SingleFunctionDirector):
 def singleFunc(funcObj):
     dir = SFDirectorImpl()
     dir.setFuncObj(funcObj)
-    mf = dir.toSingleFunction()
+    mf = dir.toFunction()
+    dir.__disown__()
+    return mf
+
+class GFDirectorImpl(GridFunctionDirector):
+    def __init__(self):
+        super(GFDirectorImpl, self).__init__()
+
+    def setFuncObj(self, funcObj):
+        self.funcObj = funcObj
+
+    def eval(self, vec):
+        return self.funcObj(vec)
+
+def gridFunc(funcObj):
+    dir = GFDirectorImpl()
+    dir.setFuncObj(funcObj)
+    mf = dir.toFunction()
     dir.__disown__()
     return mf
 %}

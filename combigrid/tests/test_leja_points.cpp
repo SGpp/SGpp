@@ -6,7 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 
 #include <cmath>

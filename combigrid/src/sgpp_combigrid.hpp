@@ -7,18 +7,18 @@
 #define COMBIGRID_HPP_
 
 // --------- put here the header files of the combigrid package -----------
-#include <sgpp/combigrid/MultiFunction.hpp>
-#include <sgpp/combigrid/MultiFunctionDirector.hpp>
-#include <sgpp/combigrid/SingleFunction.hpp>
-#include <sgpp/combigrid/SingleFunctionDirector.hpp>
-#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/GeneralFunctionDirector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 
+#include <sgpp/combigrid/grid/TensorGrid.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
@@ -41,7 +41,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
