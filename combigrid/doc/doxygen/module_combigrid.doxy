@@ -30,7 +30,7 @@ The main functionality of the module is containted in
 - grid point and growth classes
 - 1D-operator classes
 - storage classes that store computed function values
-- FullGridTensorEvaluator, which takes the grid points, operators and a storage to compute a value on a regular/full grid \f$X_l\f$
+- FullGrid*Evaluator, which takes the grid points, operators and a storage to compute a value on a regular/full grid \f$X_l\f$
 - CombigridEvaluator, which uses FullGridTensorEvaluator to perform the numeric computation on different regular/full grids and combines the obtained values
 - level manager classes that provide functionality to add a set of levels to the CombigridEvaluator, e.g. regular levels or adaptively generated levels.
 **/
