@@ -11,7 +11,7 @@
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
@@ -84,7 +84,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * For some reason, SWIG cannot convert the shared_ptr into the more abstract type, so we need
    * this 'duplicate'
    */
-  CombigridEvaluator(size_t numDimensions, std::shared_ptr<FullGridTensorEvaluator<V>> multiEval)
+  CombigridEvaluator(size_t numDimensions, std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
       : sum(V::zero()),
         numDimensions(numDimensions),
         partialDifferences(),

@@ -44,7 +44,7 @@ using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
 using sgpp::combigrid::QuadratureEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
-using sgpp::combigrid::FullGridTensorEvaluator;
+using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 
@@ -90,7 +90,7 @@ void quadrature() {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(dummyFunc));
 
-  auto fullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
+  auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
       storage, evaluators, pointHierarchies);
 
   auto combiGridEval =
@@ -123,7 +123,7 @@ void quadrature() {
       pointHierarchies,
       MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
-  auto realFullGridEval = std::make_shared<FullGridTensorEvaluator<FloatArrayVector>>(
+  auto realFullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
       realStorage, evaluators, pointHierarchies);
 
   auto realCombiGridEval =

@@ -7,9 +7,9 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_TREE_COMBIGRIDTREESTORAGE_HPP_
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
@@ -38,6 +38,19 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
   CombigridTreeStorage(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
       MultiFunction p_func);
+
+  /**
+   * @param p_pointHierarchies Point hierarchies generating the points at which the function
+   * should
+   * be evaluated.
+   * @param exploitNesting If this is set to true, identical grid points on different levels can
+   * have different values. This is e.g. relevant for PDE solving.
+   * @param p_func Function generating the values that are stored in the storage.
+   */
+  CombigridTreeStorage(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
+      bool exploitNesting = true,
+      MultiFunction p_func = MultiFunction(constantFunction<base::DataVector const &, double>()));
   virtual ~CombigridTreeStorage();
 
   virtual std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
