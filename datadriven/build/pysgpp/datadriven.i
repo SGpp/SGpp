@@ -10,12 +10,24 @@
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
+#endif
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
@@ -30,6 +42,19 @@
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
+#endif
+
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
+%include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"
+
+%include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 #endif
 
 %apply std::string *INPUT { std::string& istr };

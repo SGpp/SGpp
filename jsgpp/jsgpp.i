@@ -40,6 +40,9 @@
 #ifdef SG_SOLVER
 #include "sgpp_solver.hpp"
 #endif
+#ifdef SG_DATADRIVEN
+#include "sgpp_datadriven.hpp"
+#endif
 #ifdef SG_PARALLEL
 #include "sgpp_parallel.hpp"
 #endif
@@ -72,6 +75,10 @@
 
 #ifdef SG_SOLVER
 %include "solver/build/jsgpp/solver.i"
+#endif
+
+#ifdef SG_DATADRIVEN
+%include "datadriven/build/jsgpp/datadriven.i"
 #endif
 
 #ifdef SG_QUADRATURE

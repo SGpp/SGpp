@@ -91,6 +91,10 @@ namespace std {
 %rename(operatorParentheses) sgpp::base::PredictiveRefinementIndicator::operator();
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
