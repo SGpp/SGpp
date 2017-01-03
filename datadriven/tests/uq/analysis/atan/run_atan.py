@@ -34,7 +34,7 @@ if __name__ == '__main__':
 #                                                 'squared',
                                                 'var',
                                                 'exp',
-                                                'weightedl2'],
+                                                'l2'],
                                  'maxGridPoints': [3000]},
                      'normal': {'gridType': ["linearBoundary",
                                               "modlinear",

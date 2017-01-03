@@ -239,44 +239,40 @@ class VarianceOptRanking(Ranking):
         # prepare data
         gpsi = admissibleSet.values()
         gs = grid.getStorage()
-
-        # prepare list of grid points
-        gpsj = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
-            gpsj[i] = gs.getPoint(i)
-
-        # compute stiffness matrix for next run
         basis = getBasis(grid)
-        A, _ = self._bilinearForm.computeBilinearFormByList(gs, gpsi, basis, gpsj, basis)
-        # compute the expectation value term for the new points
-        b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
 
         # load coefficients and vectors and matrices for variance and mean
         # estimation
-        w = np.ndarray(len(gpsi))
-        variances = np.ndarray(len(gpsi))
-        covariances = np.ndarray(len(gpsi))
+        w = np.ndarray(gs.getSize() - 1)
         for i, gpi in enumerate(gpsi):
             ix = gs.getSequenceNumber(gpi)
-            w[i] = v[ix]
-            variances[i] = A[i, i] - b[i] ** 2
+            
+            # prepare list of grid points
+            gpsj = []
+            jx = 0
+            for j in xrange(gs.getSize()):
+                gpj = gs.getPoint(j)
+                if gpi.getHash() != gpj.getHash():
+                    gpsj.append(gpj)
+                    w[jx] = v[j]
+                    jx += 1
 
-            # compute covariances
-            firstMoment = 0.0
-            secondMoment = 0.0
-            for j, gpj in enumerate(gpsj):
-                jx = gs.getSequenceNumber(gpj)
-                firstMoment += v[jx] * b[j]
-                secondMoment += v[jx] * A[i, j]
-            covariances[i] = secondMoment - firstMoment * b[i]
+            # compute the covariance
+            A, _ = self._bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
+            mean_uwi_phii = np.dot(w, A[0, :])
+            mean_phii, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
+            b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
+            mean_uwi = np.dot(w, b)
+            cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
 
-        # update the ranking
-        values = np.abs(-w ** 2 * variances * -2 * covariances ** 2)
+            # compute the variance of phi_i
+            firstMoment, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
+            secondMoment, _ = self._bilinearForm.getBilinearFormEntry(gs, gpi, basis, gpi, basis)
+            var_phii = secondMoment - firstMoment ** 2
 
-
-        self._ranking = {}
-        for i, gpi in enumerate(gpsi):
-            self._ranking[gpi.getHash()] = values[i]
+            # update the ranking
+            value = np.abs(-v[i] ** 2 * var_phii - 2 * v[i] * cov_uwi_phii)
+            self._ranking[gpi.getHash()] = value 
 
 #         fig = plt.figure()
 #         p = DataVector(gs.getDimension())

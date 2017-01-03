@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
@@ -215,6 +216,15 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool verbose = false);
+
+/**
+ * Factory method, returning an OperationCovariance for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @return Pointer to the new OperationCovariance object for the Grid grid
+ */
+datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid);
 
 }  // namespace op_factory
 }  // namespace sgpp
