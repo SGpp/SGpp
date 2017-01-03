@@ -43,6 +43,7 @@ gridConfig.dim_ = 2
 # dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
 # f = lambda x: dist.pdf(x)
 f = lambda x: np.prod(4 * x * (1 - x))
+f = lambda x: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
 # --------------------------------------------------------------------------
 # define parameters
@@ -76,6 +77,9 @@ quad = AnalyticEstimationStrategy()
 mean, _ = quad.mean(grid, alpha, U, T)
 var, _ = quad.var(grid, alpha, U, T, mean)
 
+print "mean: %g" % mean
+print "var : %g" % var
+print "-" * 80
 # drop arbitrary grid points and compute the mean and the variance
 # -> just use leaf nodes for simplicity
 for i in xrange(gs.getSize()):
@@ -92,11 +96,13 @@ for i in xrange(gs.getSize()):
         ranking = ExpectationValueOptRanking()
         ranking.update(grid, alpha, adm, params)
         mean_rank = ranking.rank(grid, gpi, alpha, params)
+        print "rank mean: %g" % (mean_rank,)
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = VarianceOptRanking()
         ranking.update(grid, alpha, adm, params)
         var_rank = ranking.rank(grid, gpi, alpha, params)
+        print "rank var:  %g" % (var_rank,)
         # --------------------------------------------------------------------------
         # remove one grid point and update coefficients
         toBeRemoved = IndexList()
@@ -116,6 +122,7 @@ for i in xrange(gs.getSize()):
         # compute the covariance
         A, _ = ranking._bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
         b, _ = ranking._linearForm.computeLinearFormByList(gs, gpsj, basis)
+
         mean_uwi_phii = np.dot(new_alpha, A[0, :])
         mean_phii, _ = ranking._linearForm.getLinearFormEntry(gs, gpi, basis)
         mean_uwi = np.dot(new_alpha, b)
@@ -129,8 +136,8 @@ for i in xrange(gs.getSize()):
         # update the ranking
         var_estimated = var_trunc + alpha[i] ** 2 * var_phii + 2 * alpha[i] * cov_uwi_phii
 
-        mean_diff = np.abs(mean - mean_trunc)
-        var_diff = np.abs(var - var_trunc)
+        mean_diff = np.abs(mean_trunc - mean)
+        var_diff = np.abs(var_trunc - var)
 
         print "-" * 80
         print "diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),)

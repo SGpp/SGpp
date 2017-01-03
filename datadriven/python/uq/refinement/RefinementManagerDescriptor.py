@@ -8,7 +8,7 @@ from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 WeightedSurplusRanking,
                                 WeightedL2OptRanking,
-                                ApproximatedExpectationValueOptRanking,
+                                AnchoredExpectationValueOptRanking,
                                 ExpectationValueOptRanking,
                                 VarianceOptRanking,
                                 MeanSquaredOptRanking,
@@ -120,8 +120,8 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         self._refinement.setRefinementCriterion(ranking)
         return self
 
-    def withApproximatedExpectationValueOptimizationRanking(self):
-        ranking = ApproximatedExpectationValueOptRanking()
+    def withAnchoredExpectationValueOptimizationRanking(self):
+        ranking = AnchoredExpectationValueOptRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 
