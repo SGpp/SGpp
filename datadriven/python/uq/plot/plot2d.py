@@ -17,7 +17,7 @@ def plotDensity2d(U, n=50, addContour=True):
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
         for j in xrange(len(y)):
-            Z[j, i] = U.pdf([xv[j, i], yv[j, i]])
+            Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
 

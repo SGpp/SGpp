@@ -56,7 +56,7 @@ class MultivariateNormal(Dist):
         self.L = np.linalg.cholesky(self.corr)
 
     def pdf(self, x):
-        if self.__a <= x <= self.__b:
+        if all([self.__a <= xi <= self.__b for xi in x]):
             z = x - self.__mu
             return self.norm * np.exp(-0.5 * np.dot(z, np.dot(self.cov_inv, z)))
         else:
