@@ -12,6 +12,7 @@
 *.os
 *.so
 *.exe
+*.dll
 *.a
 *.dylib
 *.dSYM
@@ -80,20 +81,6 @@ coverage
 datadriven/tests/uq/analysis/atan/results
 datadriven/tests/uq/analysis/atan/plots
 
-datadriven/tests/uq/analysis/checkpoints
-datadriven/tests/uq/analysis/convergence
-datadriven/tests/uq/analysis/diffusionEquation
-datadriven/tests/uq/analysis/kraichnanOrszag
-datadriven/tests/uq/analysis/owhadi10Optimal
-datadriven/tests/uq/analysis/parabola/plots/plots
-datadriven/tests/uq/analysis/parabola/results
-datadriven/tests/uq/analysis/parabolaWithSGDE
-datadriven/tests/uq/analysis/rodetest
-
-datadriven/tests/uq/dists
-
-uqSetting_0.arff
-density2d.csv
-parabola.knowledge.gz
-
-/Release/
+# ignoring Windows build directories
+build/
+dist/
