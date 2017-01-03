@@ -118,7 +118,13 @@ def example2():
     levelManager = operation.getLevelManager()
 
     ## It was necessary to use setLevelManager(), because this links the LevelManager to the
-    ## computation. Now, let's add at most 60 more function evaluations adaptively:
+    ## computation. Now, let's add at most 60 more function evaluations adaptively.
+    ## Note that the adaption here is only based on the result at our single evaluation point, which
+    ## might give inaccurate results. The same holds for quadrature.
+    ## In practice, you should probably do an interpolation at a lot of Monte-Carlo points via
+    ## CombigridMultiOperation (cf. Example 3) and then transfer the generated level structure to
+    ## another CombigridOperation or CombigridMultiOperation for your actual evaluation (cf. Example
+    ## 4).
     levelManager.addLevelsAdaptive(60)
     print("Adaptive result: " + str(operation.getResult()))
     print("Total function evaluations: " + str(operation.numGridPoints()))
