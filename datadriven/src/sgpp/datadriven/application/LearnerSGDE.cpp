@@ -109,6 +109,12 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       if ((strcmp(candidateSearchStr.c_str(), "intersections") == 0)) {
         sgdeConfig.makePositive_candidateSearchAlgorithm_ =
             datadriven::MakePositiveCandidateSearchAlgorithm::Intersections;
+      } else if ((strcmp(candidateSearchStr.c_str(), "joined") == 0)) {
+        sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+            datadriven::MakePositiveCandidateSearchAlgorithm::IntersectionsJoin;
+      } else if ((strcmp(candidateSearchStr.c_str(), "hybrid") == 0)) {
+        sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+            datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
       } else if ((strcmp(candidateSearchStr.c_str(), "fullGrid") == 0)) {
         sgdeConfig.makePositive_candidateSearchAlgorithm_ =
             datadriven::MakePositiveCandidateSearchAlgorithm::FullGrid;

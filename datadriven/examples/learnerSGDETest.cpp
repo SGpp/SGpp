@@ -106,8 +106,11 @@ int main(int argc, char** argv) {
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig, sgdeConfig);
+
+  std::string s("/tmp/sgde-config-365135c5-fb8a-4377-9fea-e16ef916a5c5.json");
+  sgpp::datadriven::LearnerSGDEConfiguration config2(s);
+  sgpp::datadriven::LearnerSGDE learner2(config2);
   learner.initialize(samples);
-  learner.train();
 
   std::cout << "# estimating a kde" << std::endl;
   sgpp::datadriven::KernelDensityEstimator kde(samples);
