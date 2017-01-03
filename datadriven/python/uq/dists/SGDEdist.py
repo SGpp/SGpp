@@ -71,11 +71,11 @@ class SGDEdist(EstimatedDist):
         @param learnerSGDEConfig: dict
         """
         # --------------------------------------------------------------------
-#         config["sgde_makePositive"] = False
+#         config["sgde_makePositive"] = True
 #         config["sgde_makePositive_candidateSearchAlgorithm"] = "intersections"
 #         config["sgde_makePositive_interpolationAlgorithm"] = "setToZero"
 #         config["sgde_makePositive_generateConsistentGrid"] = True
-#         config["sgde_makePositive_verbose"] = False
+#         config["sgde_makePositive_verbose"] = True
 #         config["sgde_unitIntegrand"] = True
 #         config["sgde_makePositive_verbose"] = True
 
@@ -100,6 +100,7 @@ class SGDEdist(EstimatedDist):
 
         unit_samples_vec = DataMatrix(unit_samples)
         # --------------------------------------------------------------------
+        print filename_config
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)

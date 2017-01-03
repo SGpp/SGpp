@@ -308,5 +308,9 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
                                                           interpolationAlgorithm, verbose);
 }
 
+datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid) {
+  return new datadriven::OperationCovariance(grid);
+}
+
 }  // namespace op_factory
 }  // namespace sgpp

@@ -46,3 +46,4 @@
 %newobject sgpp::op_factory::createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
+%newobject sgpp::op_factory::createOperationCovariance(sgpp::base::Grid& grid);
