@@ -84,6 +84,8 @@ class TestEnvironmentSG(object):
                 refinement.withMeanSquaredOptRanking()
             elif adaptive == "squared":
                 refinement.withSquaredSurplusRanking()
+            elif adaptive == "anchored_exp":
+                refinement.withAnchoredExpectationValueOptimizationRanking()
 
             samplerSpec.withStopPolicy().withGridSizeLimit(maxGridSize)
 

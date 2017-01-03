@@ -131,7 +131,7 @@ class WeightedL2OptRanking(Ranking):
         # get grid point associated to ix
         return self._ranking[gp.getHash()]
 
-class ApproximatedExpectationValueOptRanking(Ranking):
+class AnchoredExpectationValueOptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -150,12 +150,7 @@ class ApproximatedExpectationValueOptRanking(Ranking):
         # scale surplus by probability density
         ix = gs.getSequenceNumber(gp)
 
-        # get area of basis function
-        A = 1.0
-        for d in xrange(gs.getDimension()):
-            A *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
-
-        return abs(alphas[ix]) * A * U.pdf(q)
+        return abs(alphas[ix]) * U.pdf(q)
 
 
 class ExpectationValueOptRanking(Ranking):
@@ -259,9 +254,10 @@ class VarianceOptRanking(Ranking):
 
             # compute the covariance
             A, _ = self._bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
+            b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
+
             mean_uwi_phii = np.dot(w, A[0, :])
             mean_phii, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
-            b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
             mean_uwi = np.dot(w, b)
             cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
 
@@ -271,7 +267,7 @@ class VarianceOptRanking(Ranking):
             var_phii = secondMoment - firstMoment ** 2
 
             # update the ranking
-            value = np.abs(-v[i] ** 2 * var_phii - 2 * v[i] * cov_uwi_phii)
+            value = np.abs(-v[ix] ** 2 * var_phii - 2 * v[ix] * cov_uwi_phii)
             self._ranking[gpi.getHash()] = value 
 
 #         fig = plt.figure()
@@ -280,12 +276,11 @@ class VarianceOptRanking(Ranking):
 #             gp.getStandardCoordinates(p)
 #             r = self._ranking[gp.getHash()]
 #             plt.plot(p[0], p[1], marker="o")
-#             plt.text(p[0], p[1], "%g" % r,
+#             plt.text(p[0], p[1], "%g/%g" % (v[gs.getSequenceNumber(gp)], r),
 #                      color='black', fontsize=12)
 #         plt.title("%s" % admissibleSet.getSize())
 #         plt.xlim(0, 1)
 #         fig.show()
-#         plt.show()
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
