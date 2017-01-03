@@ -311,36 +311,36 @@ class RefinementManager(object):
         if self._balancing:
             newGridPoints += balance(grid)
 
-        if not simulate:
-            import matplotlib.pyplot as plt
-            gs = grid.getStorage()
-            p = DataVector(gs.getDimension())
-
-            fig = plt.figure()
-            for gp in refinedPoints:
-                gs.getCoordinates(gp, p)
-                plt.plot(p[0], p[1], marker='o', markersize=20,
-                         linestyle='', color='green')
-
-            for i in xrange(gs.getSize()):
-                gpi = gs.getPoint(i)
-                gs.getCoordinates(gpi, p)
-                if gpi in self._admissibleSet:
-                    plt.plot(p[0], p[1], marker='o', markersize=10,
-                             linestyle='', color='orange')
-                else:
-                    plt.plot(p[0], p[1], marker='o', markersize=10,
-                             linestyle='', color='blue')
-
-            for gp in newGridPoints:
-                gs.getCoordinates(gp, p)
-                plt.plot(p[0], p[1], marker='o', markersize=10,
-                         linestyle='', color='red')
-
-            plt.title("size = %i" % gs.getSize())
-            plt.xlim(0, 1)
-            plt.ylim(0, 1)
-            plt.show()
+#         if not simulate:
+#             import matplotlib.pyplot as plt
+#             gs = grid.getStorage()
+#             p = DataVector(gs.getDimension())
+#
+#             fig = plt.figure()
+#             for gp in refinedPoints:
+#                 gs.getCoordinates(gp, p)
+#                 plt.plot(p[0], p[1], marker='o', markersize=20,
+#                          linestyle='', color='green')
+#
+#             for i in xrange(gs.getSize()):
+#                 gpi = gs.getPoint(i)
+#                 gs.getCoordinates(gpi, p)
+#                 if gpi in self._admissibleSet:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='orange')
+#                 else:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='blue')
+#
+#             for gp in newGridPoints:
+#                 gs.getCoordinates(gp, p)
+#                 plt.plot(p[0], p[1], marker='o', markersize=10,
+#                          linestyle='', color='red')
+#
+#             plt.title("size = %i" % gs.getSize())
+#             plt.xlim(0, 1)
+#             plt.ylim(0, 1)
+# #             plt.show()
 #             plt.savefig('/home/franzefn/Desktop/tmp/var_atan_i%i.png' % gs.getSize())
 #             plt.close(fig)
 
