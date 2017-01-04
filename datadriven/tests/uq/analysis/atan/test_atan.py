@@ -469,7 +469,7 @@ class AtanPeridynamicExample(object):
                                                      maxGridSize=maxGridSize,
                                                      isFull=isFull,
                                                      adaptive=refinement,
-                                                     adaptPoints=1,  # == 10
+                                                     adaptPoints=10,
                                                      adaptRate=0.05,
                                                      epsilon=1e-10,
                                                      boundaryLevel=boundaryLevel)

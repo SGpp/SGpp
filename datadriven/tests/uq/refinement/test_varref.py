@@ -94,13 +94,11 @@ for i in xrange(gs.getSize()):
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = ExpectationValueOptRanking()
-        ranking.update(grid, alpha, adm, params)
         mean_rank = ranking.rank(grid, gpi, alpha, params)
         print "rank mean: %g" % (mean_rank,)
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = VarianceOptRanking()
-        ranking.update(grid, alpha, adm, params)
         var_rank = ranking.rank(grid, gpi, alpha, params)
         print "rank var:  %g" % (var_rank,)
         # --------------------------------------------------------------------------
