@@ -16,6 +16,7 @@ class Ranking(object):
 
     def __init__(self):
         self._dtype = KnowledgeTypes.SIMPLE
+        self._ranking = {}
 
     def getKnowledgeType(self):
         return self._dtype
@@ -101,7 +102,6 @@ class WeightedL2OptRanking(Ranking):
     def __init__(self):
         super(self.__class__, self).__init__()
         self._linearForm = BilinearGaussQuadratureStrategy()
-        self._ranking = {}
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -158,7 +158,6 @@ class ExpectationValueOptRanking(Ranking):
     def __init__(self):
         super(self.__class__, self).__init__()
         self._linearForm = LinearGaussQuadratureStrategy()
-        self._ranking = {}
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -195,7 +194,6 @@ class VarianceOptRanking(Ranking):
         super(self.__class__, self).__init__()
         self._linearForm = LinearGaussQuadratureStrategy()
         self._bilinearForm = BilinearGaussQuadratureStrategy()
-        self._ranking = {}
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -257,7 +255,6 @@ class MeanSquaredOptRanking(Ranking):
         super(self.__class__, self).__init__()
         self._linearForm = LinearGaussQuadratureStrategy()
         self._bilinearForm = BilinearGaussQuadratureStrategy()
-        self._ranking = {}
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -278,6 +275,7 @@ class MeanSquaredOptRanking(Ranking):
         self._bilinearForm.setDistributionAndTransformation(U, T)
 
         # prepare list of grid points
+        gs = grid.getStorage()
         gpsi = [None] * gs.getSize()
         for i in xrange(gs.getSize()):
             gpsi[i] = gs.getPoint(i)
@@ -293,7 +291,6 @@ class MeanSquaredOptRanking(Ranking):
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
 # ------------------------------------------------------------------------------
-
 
 class SquaredSurplusBFRanking(Ranking):
 

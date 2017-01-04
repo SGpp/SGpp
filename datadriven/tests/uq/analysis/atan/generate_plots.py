@@ -69,7 +69,7 @@ if __name__ == "__main__":
                        ("linearBoundary", 0, 3000, False, False),
                        ("modlinear", 0, 3000, False, False),
                        # ---------------------------------------------
-                       ("polyBoundary", 2, 3000, "var", False),
+                       ("polyBoundary", 2, 200, "var", False),
                        ("polyClenshawCurtisBoundary", 2, 3000, "var", False),
                        ("modpoly", 2, 3000, "var", False),
                        ("modPolyClenshawCurtis", 2, 3000, "var", False)]
