@@ -164,8 +164,6 @@ class RefinementManager(object):
         for i, t in enumerate(ts):
             # get surpluses
             alphas = knowledge.getAlpha(qoi, t, dtype)
-            # update refinement criterion
-            self._criterion.update(grid, alphas, self._admissibleSet, params)
             # rank each admissible point
             for j, gp in enumerate(data):
                 # run over all time steps for current grid point
