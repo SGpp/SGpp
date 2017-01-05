@@ -81,7 +81,8 @@ settings = {'uniform': {'sg': [("polyBoundary", 0, 3000, False, False),
 #                             ("polyBoundary", 2, 3000, "simple", False),
 #                             ("polyBoundary", 2, 3000, "exp", False)
                             ],
-                     'pce': []}}
+                     'pce': [("full_tensor", 'gauss', 4000),
+                             ('total_degree', 'gauss_leja', 4000)]}}
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
