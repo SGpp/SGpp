@@ -34,7 +34,8 @@ from work.probabilistic_transformations_for_inference.preconditioner import Chri
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
 from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, plotError3d
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, plotError3d, \
+    plotDensity3d
 
 
 class AtanPeridynamicExample(object):
@@ -46,13 +47,18 @@ class AtanPeridynamicExample(object):
         # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
-        self.inputSpace = "uniform"
+        self.inputSpace = inputSpace
         self.pathResults = os.path.join("results", self.inputSpace)
 
         # define input space
-        self.rv_trans = define_homogeneous_input_space('uniform', self.numDims,
-                                                       ranges=[-2, 1, 0, 1])
-
+        if inputSpace == "uniform":
+            self.rv_trans = define_homogeneous_input_space('uniform', self.numDims,
+                                                           ranges=[-2, 1, 0, 1])
+        else:
+            self.rv_trans = define_homogeneous_input_space('beta', self.numDims,
+                                                           dist_params_1d=[10., 5.],
+                                                           # dist_params_1d=[2., 5.],
+                                                           ranges=[-2, 1, 0, 1])
         self.params = self.defineParameters(inputSpace)
         self.simulation = lambda x, **kws: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
@@ -68,23 +74,40 @@ class AtanPeridynamicExample(object):
         if dtype == "uniform":
             up.new().isCalled('x').withUniformDistribution(-2, 1)
             up.new().isCalled('y').withUniformDistribution(0, 1)
-        else:
+        elif dtype == "beta":
+            up.new().isCalled('x').withBetaDistribution(10, 5, -2, 3)
+            up.new().isCalled('y').withBetaDistribution(10, 5, 0, 1)
+        elif dtype == "normal":
             up.new().isCalled('x').withNormalDistribution(0.2, 0.1, 0.01)
             up.new().isCalled('y').withNormalDistribution(0.2, 0.1, 0.01)
-
+        else:
+            raise AttributeError("dtype '%s' is unknown" % dtype)
+        
         return builder.andGetResult()
 
 
-    def computeReferenceValues(self):
+    def computeReferenceValues(self, dtype="uniform"):
         # ----------------------------------------------------------
         # analytic reference values
         # ----------------------------------------------------------
         U = self.params.getIndependentJointDistribution()
         T = self.params.getJointTransformation()
-        self.E_ana = dblquad(lambda x, y: self.simulation(T.unitToProbabilistic([x, y])),
-                            0, 1, lambda x: 0, lambda x: 1)
-        self.V_ana = dblquad(lambda x, y: (self.simulation(T.unitToProbabilistic([x, y])) - self.E_ana[0]) ** 2,
-                            0, 1, lambda x: 0, lambda x: 1)
+
+        vol = T.vol()
+
+        def mean(x, y):
+            p = np.array(T.unitToProbabilistic([x, y]))
+            return self.simulation(p) * U.pdf(p)
+
+        def squared(x, y):
+            p = np.array(T.unitToProbabilistic([x, y]))
+            return self.simulation(p) ** 2 * U.pdf(p)
+
+        E_unit = dblquad(mean, 0, 1, lambda x: 0, lambda x: 1)
+        self.E_ana = vol * E_unit[0], E_unit[1]
+        E_squared = vol * dblquad(squared, 0, 1, lambda x: 0, lambda x: 1)
+        E_squared = vol * E_squared[0], E_squared[1]
+        self.V_ana = E_squared[0] - self.E_ana[0] ** 2, E_squared[1] + self.E_ana[0]
 
 
     def getTestSamples(self, num_samples=1000, dtype="unit"):

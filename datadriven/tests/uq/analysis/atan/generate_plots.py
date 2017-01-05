@@ -63,17 +63,17 @@ if __name__ == "__main__":
         # extract the ones needed for the table
         pce_settings = [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]
-        sg_settings = [("modpoly", 0, 3000, False, False),
-                       ("modPolyClenshawCurtis", 0, 3000, False, False),
-                       ("polyBoundary", 0, 3000, False, False),
+        sg_settings = [("polyBoundary", 0, 3000, False, False),
                        ("linearBoundary", 0, 3000, False, False),
-                       ("modlinear", 0, 3000, False, False),
+                       ("polyClenshawCurtisBoundary", 0, 3000, False, False),
                        # ---------------------------------------------
-                       ("polyBoundary", 2, 200, "var", False),
-                       ("polyClenshawCurtisBoundary", 2, 3000, "var", False),
-                       ("modpoly", 2, 3000, "var", False),
-                       ("modPolyClenshawCurtis", 2, 3000, "var", False)]
-
+                       ("linearBoundary", 2, 3000, "var", False),
+                       ("polyBoundary", 2, 3000, "var", False),
+                       ("polyBoundary", 2, 3000, "squared", False),
+                       ("polyBoundary", 2, 3000, "weighted", False),
+                       ("polyBoundary", 2, 3000, "simple", False),
+                       ("polyBoundary", 2, 3000, "exp", False),
+                       ]
         plt.figure()
         for expansion, sampling_strategy, N in pce_settings:
             key = get_key_pce(expansion, sampling_strategy, N)
