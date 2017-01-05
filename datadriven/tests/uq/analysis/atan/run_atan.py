@@ -62,9 +62,9 @@ if __name__ == '__main__':
     scenarions_pce = {'uniform': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
                                   'expansion': ["full_tensor", "total_degree"],
                                   'max_num_samples': [4000]},
-                      'normal': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
-                                 'expansion': ["full_tensor", "total_degree"],
-                                 'max_num_samples': [4000]}}
+                      'beta': {'sampler': ['gauss', 'gauss_leja', 'fekete', 'leja', ],
+                               'expansion': ["full_tensor", "total_degree"],
+                               'max_num_samples': [4000]}}
 
     processes = []
     if args.surrogate in ["both", "sg"]:
