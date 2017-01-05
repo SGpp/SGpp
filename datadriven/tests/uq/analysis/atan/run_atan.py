@@ -68,6 +68,7 @@ if __name__ == '__main__':
 
     processes = []
     if args.surrogate in ["both", "sg"]:
+        surrogate = scenarions_sg[args.model]
         for level in surrogate["level"]:
             for gridType in surrogate['gridType']:
                 for refinement in surrogate['refinement']:
@@ -102,6 +103,7 @@ if __name__ == '__main__':
                                                 args.plot)
 
     if args.surrogate in ["both", "pce"]:
+        surrogate = scenarions_pce[args.model]
         for sampler in surrogate['sampler']:
             for expansion in surrogate["expansion"]:
                 for max_num_samples in surrogate["max_num_samples"]:
