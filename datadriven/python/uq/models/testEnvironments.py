@@ -15,8 +15,9 @@ class TestEnvironmentSG(object):
     def buildSetting(self,
                      f,
                      params,
-                     level,
-                     gridType,
+                     level=None,
+                     gridType=None,
+                     grid=None,
                      deg=1,
                      maxGridSize=1000,
                      isFull=False,
@@ -50,13 +51,18 @@ class TestEnvironmentSG(object):
 
         samplerSpec = builder.defineSampler()
         gridSpec = samplerSpec.withGrid()
-        gridSpec.withLevel(level).hasType(gridType)
-        if deg > 1:
-            gridSpec.withDegree(deg)
-        if isFull:
-            gridSpec.isFull()
-        if boundaryLevel is not None:
-            gridSpec.withBoundaryLevel(boundaryLevel)
+        if grid is not None:
+            gridSpec.fromGrid(grid)
+        else:
+            assert level is not None
+            assert gridType is not None
+            gridSpec.withLevel(level).hasType(gridType)
+            if deg > 1:
+                gridSpec.withDegree(deg)
+            if isFull:
+                gridSpec.isFull()
+            if boundaryLevel is not None:
+                gridSpec.withBoundaryLevel(boundaryLevel)
 
         if adaptive is not None:
             # specify the refinement

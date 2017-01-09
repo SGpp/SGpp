@@ -72,14 +72,12 @@ settings = {'uniform': {'sg': [("polyBoundary", 0, 3000, False, False),
             'beta': {'sg': [("polyBoundary", 0, 3000, False, False),
                             ("linearBoundary", 0, 3000, False, False),
                             # ---------------------------------------------
-                            ('polyBoundary', 4, 3000, 'squared', False),
-                            ('modpoly', 4, 3000, 'squared', False)
-#                             ("linearBoundary", 2, 3000, "var", False),
-#                             ("polyBoundary", 2, 3000, "var", False),
-#                             ("polyBoundary", 2, 3000, "squared", False),
-#                             ("polyBoundary", 2, 3000, "weighted", False),
-#                             ("polyBoundary", 2, 3000, "simple", False),
-#                             ("polyBoundary", 2, 3000, "exp", False)
+                            ("linearBoundary", 2, 3000, "var", False),
+                            ("polyBoundary", 2, 3000, "var", False),
+                            ("polyBoundary", 2, 3000, "squared", False),
+                            ("polyBoundary", 2, 3000, "weighted", False),
+                            ("polyBoundary", 2, 3000, "simple", False),
+                            ("polyBoundary", 2, 3000, "exp", False)
                             ],
                      'pce': [("full_tensor", 'gauss', 4000),
                              ('total_degree', 'gauss_leja', 4000)]}}
