@@ -166,7 +166,9 @@ class ASGCUQManager(object):
 
                     # update results
                     self.stats.updateResults(dtype, t, self.learner)
-            print
+
+            if self.verbose:
+                print
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
         if self.verbose:
@@ -198,7 +200,8 @@ class ASGCUQManager(object):
                     # update results
                     self.stats.updateResults(dtype, t, self.learner)
 
-            print
+            if self.verbose:
+                print
 
 
     def recomputeStats(self):
@@ -246,7 +249,9 @@ class ASGCUQManager(object):
 
                         # update stats -> copy
                         self.stats.updateResults(dtype, t, self.learner)
-            print
+
+            if self.verbose:
+                print
         
 
     def getParameters(self):
