@@ -14,7 +14,12 @@ class LinearQuadratureStrategy(HashQuadrature):
     """
 
     def hasValue(self, gpi, d):
-        key = self._map.getKey(self._U[d], [gpi], d)
+        if len(self._U) < d:
+            U = self._U[d]
+        else:
+            U = self._U[-1]
+
+        key = self._map.getKey(U, [gpi], d)
         if key in self._map:
             return True, key
         return False, key

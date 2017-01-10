@@ -7,9 +7,13 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis, \
+    parents
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.trilinearform.TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.estimators.AnalyticEstimationStrategy import AnalyticEstimationStrategy
 
 
 class Ranking(object):
@@ -101,33 +105,39 @@ class WeightedL2OptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self._linearForm = BilinearGaussQuadratureStrategy()
+        self._estimationStrategy = AnalyticEstimationStrategy()
+        self.initialized = False
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
         Compute ranking for variance estimation
 
-        \argmax_{i \in \A} | -v_i^2 V(\varphi_i) - 2 v_i Cov(u_indwli \varphi_i)|
+        \argmax_{i \in \A} |v_i| \sqrt{\varphi_i^2}
 
         @param grid: Grid grid
         @param v: numpy array coefficients
         """
         # update the quadrature operations
-        U = params.getDistributions()
-        T = params.getTransformations()
-        self._linearForm.setGridType(grid.getType())
-        self._linearForm.setDistributionAndTransformation(U, T)
+        if not self.initialized:
+            self._estimationStrategy.initQuadratureStrategy(grid)
+            params.getIndependentJointDistribution()
+            T = params.getJointTransformation()
+            self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
+            self.initialized = True
+
 
         # prepare data
         gs = grid.getStorage()
-        basis = getBasis(grid)
+        basisi = getBasis(grid)
 
         # compute the second moment for the current grid point
-        secondMoment, _ = self._linearForm.getBilinearFormEntry(gs, gpi, basis,
-                                                                gpi, basis)
+        secondMoment, _ = \
+        self._estimationStrategy.computeSystemMatrixEntryForVariance(grid,
+                                                                     gpi, basisi,
+                                                                     self.W, self.D)
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
-        return np.abs(v[ix]) * np.sqrt(secondMoment)
+        return np.abs(v[ix]) * np.sqrt(max(0.0, vol * secondMoment))
 
 
 class AnchoredExpectationValueOptRanking(Ranking):
@@ -194,6 +204,7 @@ class VarianceOptRanking(Ranking):
         super(self.__class__, self).__init__()
         self._linearForm = LinearGaussQuadratureStrategy()
         self._bilinearForm = BilinearGaussQuadratureStrategy()
+        self._trilinearForm = TrilinearGaussQuadratureStrategy()
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -301,6 +312,31 @@ class SquaredSurplusBFRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         return np.abs(estimateSurplus(grid, gp, alphas))
 
+class WeightedSurplusBFRanking(Ranking):
+
+    def __init__(self):
+        super(WeightedSurplusBFRanking, self).__init__()
+
+    def update(self, grid, alphas, gpi, params, *args, **kws):
+        gs = grid.getStorage()
+        # get maximum coefficient of ancestors
+        vi = 0.0
+        for _, gpp in parents(grid, gpi):
+            if gs.isContaining(gpp):
+                ix = gs.getSequenceNumber(gpp)
+                vi = max(vi, np.abs(alphas[ix]))
+
+        p = DataVector(gs.getDimension())
+        gs.getCoordinates(gpi, p)
+
+        # get joint distribution
+        ap = params.activeParams()
+        U = ap.getIndependentJointDistribution()
+        T = ap.getJointTransformation()
+        q = T.unitToProbabilistic(p.array())
+
+        # scale surplus by probability density
+        return np.abs(vi) * U.pdf(q)
 
 class VarianceBFRanking(Ranking):
 

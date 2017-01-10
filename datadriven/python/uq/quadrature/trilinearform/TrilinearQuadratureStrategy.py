@@ -3,6 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+import numpy as np
+
 from pysgpp import DataMatrix, DataVector
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -12,10 +14,15 @@ class TrilinearQuadratureStrategy(HashQuadrature):
     Generic object for quadrature strategies
     """
     def hasValue(self, gpk, gpi, gpj, d):
-        key = self._map.getKey(self._U[d], [gpk, gpi, gpj], d)
+        if len(self._U) < d:
+            U = self._U[d]
+        else:
+            U = self._U[-1]
+
+        key = self._map.getKey(U, [gpk, gpi, gpj], d)
         if key in self._map:
             return True, key
-        key = self._map.getKey(self._U[d], [gpk, gpj, gpi], d)
+        key = self._map.getKey(U, [gpk, gpj, gpi], d)
         if key in self._map:
             return True, key
         return False, key
@@ -45,11 +52,12 @@ class TrilinearQuadratureStrategy(HashQuadrature):
             # run over all columns
             for j, gpj in enumerate(gpsj):
                 # run over all gpks
-                b, erri = self.computeTrilinearFormByRow(gpsk, basisk,
+                b, erri = self.computeTrilinearFormByRow(gs,
+                                                         gpsk, basisk,
                                                          gpi, basisi,
                                                          gpj, basisj)
                 # get the overall contribution in the current dimension
-                A[i, j] = alphak.array().dot(b)
+                A[i, j] = alphak.dot(b)
 
                 # error statistics
                 err += erri
@@ -79,10 +87,10 @@ class TrilinearQuadratureStrategy(HashQuadrature):
             # run over all dimensions
             for d in xrange(gpi.getDimension()):
                 # compute trilinear form for one entry
-                value, erri = self.getTrilinearFormEntry(gpk, basisk,
+                value, erri = self.getTrilinearFormEntry(gs,
+                                                         gpk, basisk,
                                                          gpi, basisi,
-                                                         gpj, basisj,
-                                                         d)
+                                                         gpj, basisj)
                 b[k] *= value
                 err += erri
         return b, err
@@ -112,11 +120,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
             if not available:
                 # there is no information available for the current combination
                 # of grid points
-                val, err = self.computeTrilinearFormEntry(gs,
-                                                          gpk, basisk,
-                                                          gpi, basisi,
-                                                          gpj, basisj,
-                                                          d)
+                val, erri = self.computeTrilinearFormEntry(gs,
+                                                           gpk, basisk,
+                                                           gpi, basisi,
+                                                           gpj, basisj,
+                                                           d)
                 # store value
                 self._map[keyd] = val, erri
             else:

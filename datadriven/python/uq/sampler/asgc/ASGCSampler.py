@@ -45,7 +45,7 @@ class ASGCSampler(Sampler):
 
         self.__samples = None
         self.__iteration = 0
-        self.__verbose = True
+        self.__verbose = False
 
     def getGrid(self):
         return self.__grid

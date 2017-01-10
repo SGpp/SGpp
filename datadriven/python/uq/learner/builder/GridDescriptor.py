@@ -95,8 +95,9 @@ class GridDescriptor(object):
         @param grid:
         """
         self.__grid = grid
-        self.__dim = grid.getDimension()
+        self.__dim = grid.getStorage().getDimension()
         self.__deg = getDegree(grid)
+        self.__gridType = grid.getType()
         if hasBorder(grid.getType()):
             self.__boundaryLevel = 1
             self.level = 0
@@ -121,11 +122,7 @@ class GridDescriptor(object):
             grid = gridFormatter.deserializeFromFile(self.__file)
         else:
             gridConfig = RegularGridConfiguration()
-
-            if self.__grid is not None:
-                gridConfig.dim_ = self.__grid.getDimension()
-            else:
-                gridConfig.dim_ = self.__dim
+            gridConfig.dim_ = self.__dim
 
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\
@@ -172,7 +169,7 @@ class GridDescriptor(object):
                 copygs = self.__grid.getStorage()
 
                 # insert grid points
-                for i in xrange(copygs.size()):
+                for i in xrange(copygs.getSize()):
                     gp = copygs.getPoint(i)
                     # insert grid point
                     if not gs.isContaining(gp):
