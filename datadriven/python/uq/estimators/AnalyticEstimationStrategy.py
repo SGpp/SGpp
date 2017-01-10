@@ -126,8 +126,8 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 A_idim, erri = self.trilinearForm.computeTrilinearFormByList(ngs,
                                                                              gpsk, basisk,
                                                                              dist.alpha,
-                                                                             psi, basisi,
-                                                                             psi, basisi)
+                                                                             gpsi, basisi,
+                                                                             gpsi, basisi)
             else:
                 # we compute the bilinear form of the grids
                 # compute the bilinear form
@@ -147,6 +147,49 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
         return A_var, err
 
+
+    def computeSystemMatrixEntryForVariance(self, grid, gpi, basisi, W, D):
+        # compute the integral of the product times the pdf
+        gs = grid.getStorage()
+
+        A_var = 1.0
+        err = 0
+        for i, dims in enumerate(W.getTupleIndices()):
+            dist = W[i]
+            trans = D[i]
+            # get the objects needed for integrating
+            # the current dimensions
+
+            if isinstance(dist, SGDEdist):
+                # project distribution on desired dimensions
+                # get the objects needed for integrating
+                # the current dimensions
+                gpsk, basisk = project(dist.grid, range(len(dims)))
+                # compute the trilinear form
+                self.trilinearForm.setDistributionAndTransformation([dist], [trans])
+                A_idim, erri = self.trilinearForm.computeTrilinearFormByRow(gs,
+                                                                            gpsk, basisk,
+                                                                            gpi, basisi,
+                                                                            gpi, basisi)
+                A_idim = np.dot(dist.alpha, A_idim)
+            else:
+                # we compute the bilinear form of the grids
+                # compute the bilinear form
+                if len(dims) == 1:
+                    dist = [dist]
+                    trans = [trans]
+
+                self.bilinearForm.setDistributionAndTransformation(dist, trans)
+                A_idim, erri = self.bilinearForm.computeBilinearFormByRow(gs,
+                                                                          gpi, basisi,
+                                                                          gpi, basisi)
+            # accumulate the results
+            A_var *= A_idim
+
+            # accumulate the error
+            err += np.mean(A_var) * erri
+
+        return A_var, err
 
     def mean(self, grid, alpha, U, T):
         r"""

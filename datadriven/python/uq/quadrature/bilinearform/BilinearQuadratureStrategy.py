@@ -14,7 +14,12 @@ class BilinearQuadratureStrategy(HashQuadrature):
     """
 
     def hasValue(self, gpi, gpj, d):
-        key = self._map.getKey(self._U[d], [gpi, gpj], d)
+        if len(self._U) < d:
+            U = self._U[d]
+        else:
+            U = self._U[-1]
+
+        key = self._map.getKey(U, [gpi, gpj], d)
         if key in self._map:
             return True, key
         return False, key

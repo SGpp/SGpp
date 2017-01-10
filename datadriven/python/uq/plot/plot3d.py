@@ -103,8 +103,8 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
     ax.plot_wireframe(xv, yv, Z, color="black")
     if np.any(np.abs(alpha) > 1e-13):
         cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
+        cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
+        cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
 
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)

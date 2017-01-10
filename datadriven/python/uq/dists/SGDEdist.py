@@ -45,10 +45,13 @@ class SGDEdist(EstimatedDist):
                                        trainData, bounds)
 
         self.grid = grid
-        self.alpha = DataVector(alpha)
+        self.alpha = alpha
+        self.alpha_vec = DataVector(alpha)
+        self.trainData = trainData
+        self.trainData_vec = DataMatrix(trainData)
         self.config = config
         if learner is None and trainData is not None:
-            self.learner = LearnerSGDE(self.grid, self.alpha, DataMatrix(trainData))
+            self.learner = LearnerSGDE(self.grid, self.alpha_vec, self.trainData_vec)
         else:
             self.learner = learner
 
@@ -58,9 +61,10 @@ class SGDEdist(EstimatedDist):
             raise AttributeError("the dimensionality of the data differs from the one of the grid")
 
         assert self.grid.getSize() == len(self.alpha)
-        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha) * self.trans.vol()
+        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec) * self.trans.vol()
         if unitIntegrand and self.vol > 1e-13:
-            self.alpha.mult(1. / self.vol)
+            self.alpha /= self.vol
+            self.alpha_vec.mult(1. / self.vol)
 
     @classmethod
     def byLearnerSGDEConfig(cls, samples, bounds=None, config={}):
@@ -100,7 +104,6 @@ class SGDEdist(EstimatedDist):
 
         unit_samples_vec = DataMatrix(unit_samples)
         # --------------------------------------------------------------------
-        print filename_config
         learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)
@@ -136,7 +139,9 @@ class SGDEdist(EstimatedDist):
                 raise Exception('The data file "%s" does not exist' % trainDataFile)
 
         return cls(grid, alpha, trainData, bounds, config)
-        
+    
+    def getJointTransformation(self):
+        return self.computeLinearTransformation(self.bounds)
 
     def pdf(self, x):
         # convert the parameter to the right format
@@ -177,7 +182,7 @@ class SGDEdist(EstimatedDist):
             op = createOperationRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
             for i, xi in enumerate(x_unit[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha, xi)
+                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
@@ -189,7 +194,7 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationRosenblattTransformation(self.grid)
-            op.doTransformation(self.alpha, A, B)
+            op.doTransformation(self.alpha_vec, A, B)
 
             # extract the outcome
             if x_unit.shape == (1, 1):
@@ -206,7 +211,7 @@ class SGDEdist(EstimatedDist):
             op = createOperationInverseRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
             for i, xi in enumerate(x[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha, xi)
+                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
@@ -218,7 +223,7 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationInverseRosenblattTransformation(self.grid)
-            op.doTransformation(self.alpha, A, B)
+            op.doTransformation(self.alpha_vec, A, B)
 
             # extract the outcome
             if x.shape == (1, 1):
@@ -229,20 +234,20 @@ class SGDEdist(EstimatedDist):
     def mean(self):
         opQuad = createOperationFirstMoment(self.grid)
         if self.trans is None:
-            firstMoment = opQuad.doQuadrature(self.alpha)
+            firstMoment = opQuad.doQuadrature(self.alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
-            firstMoment = opQuad.doQuadrature(self.alpha, bounds)
+            firstMoment = opQuad.doQuadrature(self.alpha_vec, bounds)
 
         return firstMoment
 
     def var(self):
         opQuad = createOperationSecondMoment(self.grid)
         if self.trans is None:
-            secondMoment = opQuad.doQuadrature(self.alpha)
+            secondMoment = opQuad.doQuadrature(self.alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
-            secondMoment = opQuad.doQuadrature(self.alpha, bounds)
+            secondMoment = opQuad.doQuadrature(self.alpha_vec, bounds)
 
         return secondMoment - self.mean() ** 2
 

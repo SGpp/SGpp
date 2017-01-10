@@ -162,7 +162,7 @@ def getBasis(grid):
         raise AttributeError("basis %i is not supported" % gridType)
 
 def getDegree(grid):
-    if grid.getType() in [GridType_Poly, GridType_PolyBoundary]:
+    if grid.getType() in polyGridTypes + bsplineGridTypes + linearGridTypes:
         return grid.getDegree()
     else:
         return 1

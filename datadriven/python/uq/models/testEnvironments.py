@@ -22,8 +22,10 @@ class TestEnvironmentSG(object):
                      maxGridSize=1000,
                      isFull=False,
                      boundaryLevel=None,
+                     balancing=True,
                      epsilon=1e-15,
                      adaptive=None,
+                     refinementTechnique="refinement",
                      adaptPoints=3,
                      adaptRate=None,
                      uqSetting=None,
@@ -66,32 +68,45 @@ class TestEnvironmentSG(object):
 
         if adaptive is not None:
             # specify the refinement
-            samplerSpec.withRefinement()\
-                       .withAdaptThreshold(epsilon)\
-                       .withAdaptPoints(adaptPoints)\
-                       .withBalancing()
+            refinement = samplerSpec.withRefinement()
+            
+            refinement.withAdaptThreshold(epsilon)\
+                      .withAdaptPoints(adaptPoints)
 
+            if balancing:
+                refinement.withBalancing()
+                
             if adaptRate is not None:
-                samplerSpec.withRefinement().withAdaptRate(adaptRate)
+                refinement.withAdaptRate(adaptRate)
 
-            refinement = samplerSpec.withRefinement().refineMostPromisingNodes()
-            refinement.createAllChildrenOnRefinement()
-            if adaptive == "simple":
-                refinement.withSurplusRanking()
-            elif adaptive == "weighted":
-                refinement.withWeightedSurplusRanking()
-            elif adaptive == "l2":
-                refinement.withWeightedL2OptimizationRanking()
-            elif adaptive == "exp":
-                refinement.withExpectationValueOptimizationRanking()
-            elif adaptive == "var":
-                refinement.withVarianceOptimizationRanking()
-            elif adaptive == "mean_squared":
-                refinement.withMeanSquaredOptRanking()
-            elif adaptive == "squared":
-                refinement.withSquaredSurplusRanking()
-            elif adaptive == "anchored_exp":
-                refinement.withAnchoredExpectationValueOptimizationRanking()
+            if refinementTechnique == "refinement":
+                refineNodes = refinement.refineMostPromisingNodes()
+                refineNodes.createAllChildrenOnRefinement()
+                if adaptive == "simple":
+                    refineNodes.withSurplusRanking()
+                elif adaptive == "weighted":
+                    refineNodes.withWeightedSurplusRanking()
+                elif adaptive == "l2":
+                    refineNodes.withWeightedL2OptimizationRanking()
+                elif adaptive == "exp":
+                    refineNodes.withExpectationValueOptimizationRanking()
+                elif adaptive == "var":
+                    refineNodes.withVarianceOptimizationRanking()
+                elif adaptive == "mean_squared":
+                    refineNodes.withMeanSquaredOptRanking()
+                elif adaptive == "squared":
+                    refineNodes.withSquaredSurplusRanking()
+                elif adaptive == "anchored_exp":
+                    refineNodes.withAnchoredExpectationValueOptimizationRanking()
+                else:
+                    raise AttributeError("unknown ranking method")
+            else:
+                addNodes = refinement.addMostPromisingChildren()
+                if adaptive == "weighted":
+                    addNodes.withWeightedSurplusOptimizationRanking()
+                else:
+                    raise AttributeError("unknown ranking method")
+                    
 
             samplerSpec.withStopPolicy().withGridSizeLimit(maxGridSize)
 
