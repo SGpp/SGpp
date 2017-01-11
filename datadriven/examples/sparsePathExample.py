@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
-##############################################################
-# This example generates a regularization path for sparsity- #
-# inducing penalties.                                        #
-# The output format is a comma seperated file.               #
-# It accepts one argument that determines the desired        #
-# regularization penalty.                                    #
-##############################################################
+## \page example_sparsePathExample_py Calculating the regularization path
+##
+## This example generates a regularization path for sparsity-inducing penalties.
+## The output format is a comma seperated file.
+## It accepts one argument that determines the desired
+## regularization penalty.       
+## The weight path calculation follows the discussion in
+## \verbatim
+## "Regularization paths for generalized linear models via coordinate descent."
+## Friedman, Jerome, Trevor Hastie, and Rob Tibshirani, Journal of statistical software, 2010.
+## \endverbatim
 
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
@@ -15,13 +19,14 @@ import sklearn.datasets as data
 from scipy.sparse.linalg import LinearOperator, svds
 import sys
 
+## This function generates the Friedman1 dataset.
 def generate_friedman1(seed):
     (X,y) = data.make_friedman1(n_samples=10000, random_state=seed, noise=1.0)
     y = sg.DataVector(y)   
     X = sg.DataMatrix(X)
     return X, y
 
-# Calculates the design matrix
+## This function calculates the design matrix for the linear model.
 def get_Phi(X_train):
     def eval_op(x, op, size):
         result_vec = sg.DataVector(size)
@@ -51,7 +56,7 @@ def get_Phi(X_train):
     Phi = linop.matmat(np.matrix(np.identity(grid.getSize())))
     return Phi
 
-# Calculates the value of lambda for which weights are zero
+## This function calculates the value of \f$ \lambda \f$ for which all weights are zero.
 def get_max_lambda(Phi, y, num_rows, l1_ratio=1.0):
     max_prod = 0
     for i in range(0, Phi.shape[1]):
@@ -61,12 +66,17 @@ def get_max_lambda(Phi, y, num_rows, l1_ratio=1.0):
     max_lambda = max_prod/(l1_ratio * num_rows)
     return max_lambda
 
+## This function calculates the weights for different lambdas.
+## The result is printed to the standard output; it then resembles
+## a comma seperated value file.
 def calculate_weight_path(X, y, max_lambda,penalty, l1_ratio):
     epsilon=0.001
     num_lambdas=25
     estimator = make_estimator(penalty, max_lambda, l1_ratio) 
     estimator.train(X, y) 
 
+    ## We create a grid such that
+    ## \f$ \lambda \in \{ \varepsilon \cdot \lambda_\text{max} \text{ and } \lambda_\text{max} \}\f$.
     min_lambda = epsilon * max_lambda
     lambda_grid = np.logspace(np.log10(max_lambda), np.log10(min_lambda), num=num_lambdas)
     print "no_learner, lambda, weights"
@@ -77,6 +87,8 @@ def calculate_weight_path(X, y, max_lambda,penalty, l1_ratio):
         estimator.train(X, y)
         print "{}, {:2.6f}, {}".format(i, lamb, np.array2string(estimator.getWeights().array(), separator=',', max_line_width=float('inf')))
 
+## This function returns an estimator that uses the given penalty, l1_ratio
+## and \f$\lambda\f$
 def make_estimator(penalty, l1_ratio, lambda_reg):
     grid = sg.RegularGridConfiguration()
     grid.dim_ = 10
@@ -120,6 +132,7 @@ def main():
 
     X, y = generate_friedman1(123456)    
 
+    ## Create the design matrix, calculate \f$ \lambda_\text{max} \f$ and calculate the weight path.
     Phi = get_Phi(X)
     max_lambda = get_max_lambda(Phi, y.array(), X.array().shape[0], l1_ratio)
     calculate_weight_path(X, y, max_lambda, reg_method, l1_ratio)

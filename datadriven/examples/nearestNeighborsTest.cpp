@@ -8,11 +8,20 @@
 #include <cmath>
 
 /**
- * @brief main prints out all interaction terms for a 64-dimensional
- * image dataset that are in a \f$ 3 \times 3 \f$ neighborhood.
+ * \page example_nearestNeighborsTest_cpp Nearest Neighbors
+ * This example calculates all feature-interactions that arise
+ * from an image with 64 pixels, when one only considers pixels
+ * whose \f$ L_2 \f$ distance is not larger than \f$ \sqrt{2} \f$.
  */
+
 int main(void) {
+    /**
+     * First create the neighbors of all pixels.
+    */
     const auto neigh = sgpp::datadriven::NearestNeighbors(8, 8);
+    /**
+     * Then create all arising interaction terms up to an order of 3.
+    */
     const auto combs = neigh.getAllInteractions(3, std::sqrt(2));
     for (const auto& comb : combs) {
         for (const auto term : comb) {

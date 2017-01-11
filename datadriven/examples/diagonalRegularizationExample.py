@@ -1,10 +1,20 @@
 #!/usr/bin/env python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-######################################################################
-# This examples tests the performance of the diagonal regularization #
-# and the identity matrix for the power plant dataset.               #
-# To do this, it performs a grid search for both Tikhonov matrices.  #
-######################################################################
+## \page example_diagonalRegularizationExample_py Gaussian Weight Priors 
+##
+## This example compares two different Gaussian priors for sparse grid regression.
+## The first one is the standard prior that assumes a constant, identical variance
+## for each weight.
+## The second, improved prior uses the additional assumption that the true distribution
+## function is sufficiently smooth and then imposes a multivariate Gaussian with the
+## covariance matrix
+## \f$\mathbf{\Gamma}_{i,i} = 0.25^{\vert \mathbf{l} \vert_1 - d}\f$, where
+## \f$ d \f$ corresponds to the dimension of the grid and
+## \f$ \mathbf{\vert \mathbf{l} \vert_1} \f$ to the level sum of the ith grid point.
 
 import requests as r
 import numpy as np
@@ -16,6 +26,7 @@ from zipfile import ZipFile
 from StringIO import StringIO
 import pysgpp as sg; sg.omp_set_num_threads(4)
 
+## This function scales all predictors so that they are suitable for sparse grids.
 def scale(df, scaler=None):
     Y = df.ix[:,-1] # save Y (don't need to transform it/useless for cat. data!)
     X = df.values
@@ -30,6 +41,8 @@ def scale(df, scaler=None):
     df.ix[:,-1] = Y
     return scaler, df
 
+## This function performs a Box-Cox transformation, which (hopefully) results in data
+## that is better distributed.
 def transform_cox(df, lambdas):
     scaler = pre.MinMaxScaler()
     for variable in lambdas:
@@ -40,15 +53,17 @@ def transform_cox(df, lambdas):
         df[variable] = scaler.fit_transform(np.array(data_trans[0]).reshape(-1, 1))
     return df
 
+## This function downloads the PowerPlant dataset and performs the necessary preprocessing steps.
 def get_dataset():
+    ## Download and unzip the dataset.
     data_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip"
     print "Loading power plant dataset from the UCI repository."
     resp = r.get(data_url, stream=True)
     data = ZipFile(StringIO(resp.content))
     with data.open('CCPP/Folds5x2_pp.xlsx') as xls:
         df =  pd.read_excel(xls)
-
     print "Preprocessing dataset."
+    ## Then scale and transform it.
     _, df = scale(df)
     lambdas = {'AP': 0,
             'AT': 1.3353837296219406,
@@ -58,6 +73,7 @@ def get_dataset():
     df = transform_cox(df, lambdas)   
     return df
 
+## This function returns a sparse grid regressing learner.
 def make_estimator(lambda_reg, prior):
     grid = sg.RegularGridConfiguration()
     grid.dim_ = 4
@@ -85,6 +101,7 @@ def make_estimator(lambda_reg, prior):
     estimator = sg.RegressionLearner(grid, adapt, solv, final_solv,regular)
     return estimator
 
+## This function returns the testing error for one estimator.
 def evaluate_one(estimator, X, y, train, test):
     train_X = sg.DataMatrix(X[train])
     train_y = sg.DataVector(y[train])
@@ -94,6 +111,7 @@ def evaluate_one(estimator, X, y, train, test):
     error = estimator.getMSE(test_X, test_y)
     return error
 
+## This function returns the cv-error for one estimator.
 def evaluate(estimator, cv, X, y):
     errors = []
     for (train, test) in cv:
@@ -101,6 +119,7 @@ def evaluate(estimator, cv, X, y):
         errors.append(error)
     return np.mean(errors)
 
+## This function performs a grid search for the best regularization parameters.
 def grid_search(X, y, prior):
     cv = KFold(X.shape[0], 10)
     lambda_grid = np.logspace(-9, -4, num=4)
@@ -116,9 +135,10 @@ def main():
     df = get_dataset()
     X = np.array(df.ix[:,0:-1])
     y = (df.ix[:,-1]).values
+    ## A parameter of 1 corresponds to the standard ridge prior, one of 0.25 to the improved prior.
     best_identity = grid_search(X, y, 1.0)
     best_improved = grid_search(X, y, 0.25)
     print "\nThe identity matrix achieved an RMSE of {:3.5f}, the diagonal of {:3.5f}.".format(best_identity, best_improved)
-
+    
 if __name__ == '__main__':
     main()

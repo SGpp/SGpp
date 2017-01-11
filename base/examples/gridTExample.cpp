@@ -3,16 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_gridTExample_cpp Generalised Sparse Grids 
+ * This example creates a generalised grid. The first CLI argument is
+ * the number of dimensions, the second the level and the third the parameter
+ * T. It then prints out the grid size.
+ */
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <cstdlib>
 #include <iostream>
 
-/**
- * @brief main creates a generalised grid. The first CLI argument is
- * the number of dimensions, the second the level and the third the parameter
- * T. It then prints our the new grid size.
- * @return
- */
 int main(int argc, char **argv) {
   if (argc != 4) return 42;
   auto dimensions = std::atoi(argv[1]);
