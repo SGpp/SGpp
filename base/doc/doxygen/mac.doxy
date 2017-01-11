@@ -59,6 +59,8 @@ The following software can be installed for full functionality:
   is optional and generates inheritance diagrams in the Doxygen documentation.
 - <a href="http://www.mathworks.com/" target="_blank">MATLAB</a>,
   if you want to use SG++ within MATLAB.
+- <a href="https://www.gnu.org/software/gsl/" target="_blank">GNU Scientific Library (GSL)</a>,
+  is required for some functionalities of the <tt>SG_DATADRIVEN</tt> module.
 
 @subsection osx_dependencies_installation Installation
 
@@ -74,6 +76,7 @@ In order for things to work propperly, you should keep to the order proposed bel
 - SWIG: @verbatim brew install swig @endverbatim
 - Doxygen: @verbatim brew install doxygen --with-graphviz @endverbatim
 - Dot: @verbatim brew install graphviz @endverbatim
+- Dot: @verbatim brew install gsl @endverbatim
 - NumPy: use the python package manager PIP @verbatim pip install numpy @endverbatim
 - Boost: Here comes the tricky part. In order for boost to be compatible with C++11 headers, we have to compile the Boost package using GCC.
 First @verbatim export HOMEBREW_CC=gcc-5 @endverbatim and @verbatim export HOMEBREW_CXX=g++-5 @endverbatim (may differ from which version your GCC actually is),
