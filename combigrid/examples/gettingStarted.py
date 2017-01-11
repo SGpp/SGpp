@@ -257,12 +257,14 @@ def example5():
     result = operation.evaluate(2, parameters)
     print("Result: " + str(result))
 
-    ##In some applications, you might not want to have a callback function that is called at single
-    ## points, but on a full grid. One of these applications is solving PDEs. This example provides a
-    ##simple framework where a PDE solver can be included. It is also suited for other tasks.
-    ##The core part is a function that computes grid values on a full grid.
 
+## @section combigrid_example_6 Example 6: Using a function operating on grids
+## This example shows how to apply different operators in different dimensions.
 
+##In some applications, you might not want to have a callback function that is called at single
+## points, but on a full grid. One of these applications is solving PDEs. This example provides a
+##simple framework where a PDE solver can be included. It is also suited for other tasks.
+##The core part is a function that computes grid values on a full grid.
 def gf(grid):
     ## We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
     result = pysgpp.DoubleTreeStorage(d)
@@ -281,9 +283,6 @@ def gf(grid):
     return result
 
 
-## @section combigrid_example_6 Example 6: Using a function operating on grids
-##
-## This example shows how to apply different operators in different dimensions.
 def example6():
 
 
