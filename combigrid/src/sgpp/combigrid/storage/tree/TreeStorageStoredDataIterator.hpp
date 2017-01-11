@@ -146,6 +146,8 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
 
   virtual T &value() { return lowestNode->elements[lowestIndex]; }
 
+  virtual void setValue(T const &input) { lowestNode->elements[lowestIndex] = input; }
+
   /**
    * @return returns true if the iterator points to a valid position.
    */
