@@ -410,9 +410,9 @@ void example6() {
    * To create a CombigridOperation, we currently have to use the longer way as in example 5.
    */
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expChebyshev());
+      d, sgpp::combigrid::CombiHierarchies::expUniform());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::cubicSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());
 

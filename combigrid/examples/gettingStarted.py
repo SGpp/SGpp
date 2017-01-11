@@ -288,8 +288,8 @@ def example6():
 
 
     ## To create a CombigridOperation, we currently have to use the longer way as in example 5.
-    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expChebyshev())
-    evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.polynomialInterpolation())
+    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniform())
+    evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.cubicSplineInterpolation())
     levelManager = pysgpp.WeightedRatioLevelManager()
 
 
@@ -307,7 +307,7 @@ def example6():
     result = operation.evaluate(4, parameter)
 
     print("Target function value: " + str(func(parameter)))
-    print("Numerical result:" + str(result))
+    print("Numerical result: " + str(result))
 
 
 # Call the examples
