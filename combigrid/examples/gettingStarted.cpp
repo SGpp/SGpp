@@ -391,7 +391,7 @@ void example6() {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
     auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
 
-    // Creates an iterator that yields all multi-indices of grid points in grid.
+    // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
 
     while (it.isValid()) {

@@ -257,6 +257,58 @@ def example5():
     result = operation.evaluate(2, parameters)
     print("Result: " + str(result))
 
+    ##In some applications, you might not want to have a callback function that is called at single
+    ## points, but on a full grid. One of these applications is solving PDEs. This example provides a
+    ##simple framework where a PDE solver can be included. It is also suited for other tasks.
+    ##The core part is a function that computes grid values on a full grid.
+
+
+def gf(grid):
+    ## We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
+    result = pysgpp.DoubleTreeStorage(d)
+
+    ## Creates an iterator that yields all multi-indices of grid points in the grid.
+    it = pysgpp.MultiIndexIterator(grid.numPoints())
+
+    while (it.isValid()):
+        ## Customize this computation for your algorithm
+        value = func(grid.getGridPoint(it.getMultiIndex()))
+
+        ## Store the result at the multi index encoding the grid point
+        result.set(it.getMultiIndex(), value)
+        it.moveToNext()
+
+    return result
+
+
+## @section combigrid_example_6 Example 6: Using a function operating on grids
+##
+## This example shows how to apply different operators in different dimensions.
+def example6():
+
+
+    ## To create a CombigridOperation, we currently have to use the longer way as in example 5.
+    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expChebyshev())
+    evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.polynomialInterpolation())
+    levelManager = pysgpp.WeightedRatioLevelManager()
+
+
+    ## We have to specify if the function always produces the same value for the same grid points.
+    ## This can make the storage smaller if the grid points are nested. In this implementation, this
+    ## is true. However, it would be false in the PDE case, so we set it to false here.
+    exploitNesting = False
+
+    ## Now create an operation as usual and evaluate the interpolation with a test parameter.
+    operation = pysgpp.CombigridOperation(
+      grids, evaluators, levelManager, pysgpp.gridFunc(gf), exploitNesting)
+
+    parameter = pysgpp.DataVector([0.1, 0.2, 0.3])
+
+    result = operation.evaluate(4, parameter)
+
+    print("Target function value: " + str(func(parameter)))
+    print("Numerical result:" + str(result))
+
 
 # Call the examples
 
@@ -274,3 +326,6 @@ example4()
 
 print("\nExample 5:")
 example5()
+
+print("\nExample 6:")
+example6()
