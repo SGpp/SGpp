@@ -3,6 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_fistaExample_cpp FISTA Solver
+ * This example demonstrates the FISTA solver for a toy dataset using
+ * using the elastic net regularization method with various regularization
+ * penalties.
+ */
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -19,9 +26,15 @@
 int main(int argc, char** argv) {
     using sgpp::base::DataVector;
     using sgpp::base::DataMatrix;
+    /**
+     * Create a two-dimensional grid with level 6.
+     */
     auto grid = sgpp::base::Grid::createModLinearGrid(2);
     grid->getGenerator().regular(6);
 
+    /**
+     * Then create a two dimensional dataset.
+     */
     const auto num_examples = 3000;
     auto dataset = DataMatrix(num_examples, 2);
     auto y = DataVector(num_examples);
@@ -39,19 +52,35 @@ int main(int argc, char** argv) {
     std::cout << "Created grid with size: " << grid->getSize() << std::endl;
     auto op = sgpp::op_factory::createOperationMultipleEval(
                 *grid, dataset);
+    /**
+     * Set up the weights for the grid.
+     */
     auto weights = DataVector(grid->getSize());
     weights.setAll(0.0);
     double lambda = 1.0;
     const double gamma = 0.98;
+    /**
+     * Iterate over a few regularization penalties.
+     */
     for (int i = 0; i < 5; ++i) {
         weights.setAll(0.0);
         lambda /= 10;
+    /**
+    * Create an elastic net function and the corresponding fista solver.
+    */
         auto g = sgpp::solver::ElasticNetFunction(lambda, gamma);
         auto solver = sgpp::solver::Fista<decltype(g)>(g);
         std::cout << "Start solving." << std::endl;
+    /**
+    * Here we solve the penalised linear system.
+    */
         solver.solve(*op, weights, y, 500, 10e-5);
         std::cout << "Finished solving." << std::endl;
         auto prediction = DataVector(num_examples);
+    /**
+    * Finally, we calculate the root-mean-squared error of the prediction
+    * and print it.
+    */
         op->mult(weights, prediction);
         prediction.sub(y);
         prediction.sqr();

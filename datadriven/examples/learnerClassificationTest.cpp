@@ -3,6 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_learnerClassificationTest_cpp Learner Classification Test
+ * 
+ * This represents a small example how to use sparse grids for classification
+ * problems. It uses the artificial Ripley dataset.
+ */
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
@@ -17,8 +24,8 @@
 #include <ostream>
 
 /**
- * @brief getLearner
- * @param dimension the number of new dimensions
+ * @brief getLearner creates a sparse grid classification learner.
+ * @param dimension the number of dimensions.
  * @return a classification for dimension dimension
  */
 sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
@@ -47,7 +54,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
 
 /**
  * @brief main
-   Creates a sparse grid classification learner and returns the training accuracy for the ripley dataset.
+   Creates a sparse grid classification learner and prints the training accuracy for the ripley dataset.
  * @return
  */
 int main(int argc, char** argv) {

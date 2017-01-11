@@ -1,17 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-################################################################
-# This example tests the performance of interaction-term aware #
-# sparse grids for the optical digits datasets.                #
-# It calculates the testing accuracy of both a normal and a    #
-# ia-term aware grid.                                          #
-################################################################
+## \page example_interactionExample_py Interaction Terms Aware Sparse Grids
+##
+## This example compares standard sparse grids with sparse grids that only contain
+## a subset of all possible interaction terms.
+## It uses the optical digits dataset as an example.
 
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
 import pandas as pd
 import sklearn.preprocessing as pre
 
+## This function scales all predictors so that they are suitable for sparse grids.
 def scale(df, scaler=None):
     Y = df.ix[:,-1] # save Y (don't need to transform it/useless for cat. data!)
     X = df.values
@@ -26,6 +30,7 @@ def scale(df, scaler=None):
     df.ix[:,-1] = Y
     return scaler, df
 
+## This function downloads the optical digits dataset and performs the necessary preprocessing steps.
 def get_dataset():
     train_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/optdigits/optdigits.tra"
     test_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/optdigits/optdigits.tes'   
@@ -42,6 +47,10 @@ def get_dataset():
     _, df_test = scale(df_test, scaler)
     return df_train, df_test
 
+## This function evaluates a sparse grid learner for a different set of
+## interaction terms.
+## To do this, it first trains a classification learner with the training set
+## and then evaluates it using the testing part of the dataset.
 def evaluate(X_tr, y_tr, X_te, y_te, interactions=None):
     grid = sg.RegularGridConfiguration()
     grid.dim_ = 64
@@ -85,9 +94,13 @@ def main():
     X_te = np.array(df_te.ix[:,0:-1])
     y_te = (df_te.ix[:,-1]).values
 
+    ## We first create all possible interactions between pixels whose pairwise \f$L_2\f$ distance is
+    ## smaller than \f$\sqrt{2}\f$.
     nn = sg.NearestNeighbors(8,8)
     interactions = nn.getAllInteractions(3, 2**0.5)
 
+    ## We then compare a standard sparse grid with a sparse grid learner that only contains the
+    ## aforementioned interaction terms.
     standard_accuracy = evaluate(X_tr, y_tr, X_te, y_te)
     print "The standard sparse grid achieved an accuracy of {:2.3f}".format(standard_accuracy)
     ia_accuracy = evaluate(X_tr, y_tr, X_te, y_te, interactions)

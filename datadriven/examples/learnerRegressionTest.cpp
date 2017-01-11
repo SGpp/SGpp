@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_learnerRegressionTest_cpp Regression Learner
+ * This example demonstrates sparse grid regression learning.
+ */
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>

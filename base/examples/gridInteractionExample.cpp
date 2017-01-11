@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_gridInteractionExample_cpp Interaction-Term aware sparse grids.
+ * This example shows how grids with more interaction terms differ from simpler grids.
+ */
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
@@ -41,7 +46,7 @@ int main(int argc, char** argv) {
   auto boolCoords = std::vector<bool>(dimensions);
   bool isInserted = false;
 
-  // Add bias.
+  // Add intercept.
   terms.insert(std::vector<bool>(dimensions, false));
 
   // Add all variables, without interaction
@@ -52,6 +57,9 @@ int main(int argc, char** argv) {
   }
 
   {
+    /**
+    * Create our first grid.
+    */
     auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
     auto& storage = grid->getStorage();
     auto generator = sgpp::base::HashGenerator();
@@ -70,7 +78,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  // Add all two-level-interactions
+  /**
+   * Add all two-level-interactions
+   */
   for (auto i = 0; i < dimensions; ++i) {
     for (auto j = 0; j < dimensions; ++j) {
       auto vec = std::vector<bool>(dimensions, false);
@@ -99,7 +109,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  // Add three-level-interaction
+  /**
+   * Add all three-level-interactions
+   */
   auto vec = std::vector<bool>(dimensions, true);
   terms.insert(vec);
 
