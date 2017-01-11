@@ -8,6 +8,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -15,13 +17,26 @@ class TensorGrid {
   std::vector<base::DataVector> onedimGrids;
 
  public:
-  TensorGrid(std::vector<base::DataVector> const &onedimGrids) : onedimGrids(onedimGrids) {}
+  explicit TensorGrid(std::vector<base::DataVector> const &onedimGrids)
+      : onedimGrids(onedimGrids) {}
 
   base::DataVector getGridPoint(MultiIndex const &index) {
     base::DataVector result(onedimGrids.size());  // TODO(holzmudd): dimensionality check?
 
     for (size_t i = 0; i < onedimGrids.size(); ++i) {
       result[i] = onedimGrids[i][index[i]];
+    }
+
+    return result;
+  }
+
+  size_t numPointsInDim(size_t dim) { return onedimGrids[dim].getSize(); }
+
+  MultiIndex numPoints() {
+    MultiIndex result(onedimGrids.size());
+
+    for (size_t i = 0; i < onedimGrids.size(); ++i) {
+      result[i] = onedimGrids[i].getSize();
     }
 
     return result;

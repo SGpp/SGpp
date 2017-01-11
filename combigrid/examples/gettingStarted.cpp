@@ -376,6 +376,68 @@ void example5() {
 }
 
 /**
+ * @section combigrid_example_6 Example 6: Using a function operating on grids
+ *
+ * This example shows how to apply different operators in different dimensions.
+ */
+void example6() {
+  /**
+   * In some applications, you might not want to have a callback function that is called at single
+   * points, but on a full grid. One of these applications is solving PDEs. This example provides a
+   * simple framework where a PDE solver can be included. It is also suited for other tasks.
+   * The core part is a function that computes grid values on a full grid.
+   */
+  sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+    // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
+
+    // Creates an iterator that yields all multi-indices of grid points in grid.
+    sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
+
+    while (it.isValid()) {
+      // Customize this computation for your algorithm
+      double value = func(grid->getGridPoint(it.getMultiIndex()));
+
+      // Store the result at the multi index encoding the grid point
+      result->set(it.getMultiIndex(), value);
+      it.moveToNext();
+    }
+
+    return result;
+  });
+
+  /**
+   * To create a CombigridOperation, we currently have to use the longer way as in example 5.
+   */
+  sgpp::combigrid::CombiHierarchies::Collection grids(
+      d, sgpp::combigrid::CombiHierarchies::expChebyshev());
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+
+  /**
+   * We have to specify if the function always produces the same value for the same grid points.
+   * This can make the storage smaller if the grid points are nested. In this implementation, this
+   * is true. However, it would be false in the PDE case, so we set it to false here.
+   */
+  bool exploitNesting = false;
+
+  /**
+   * Now create an operation as usual and evaluate the interpolation with a test parameter.
+   */
+  auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      grids, evaluators, levelManager, gf, exploitNesting);
+
+  sgpp::base::DataVector parameter(std::vector<double>{0.1, 0.2, 0.3});
+
+  double result = operation->evaluate(4, parameter);
+
+  std::cout << "Target function value: " << func(parameter) << "\n";
+  std::cout << "Numerical result: " << result << "\n";
+}
+
+/**
  * For more information on how to access grid points, compare the results to a full grid etc. please
  * refer to the python tutorials.
  */
@@ -395,4 +457,7 @@ int main() {
 
   std::cout << "\nExample 5: \n";
   example5();
+
+  std::cout << "\nExample 6: \n";
+  example6();
 }  // end of main

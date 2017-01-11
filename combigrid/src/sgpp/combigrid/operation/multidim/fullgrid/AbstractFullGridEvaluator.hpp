@@ -145,7 +145,15 @@ class AbstractFullGridEvaluator {
   }
 
   virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level) {
-    return std::make_shared<TensorGrid>(getGridPoints(level));
+    size_t numDimensions = pointHierarchies.size();
+    std::vector<base::DataVector> grids1D;
+
+    for (size_t d = 0; d < numDimensions; ++d) {
+      bool sorted = false;  // TODO(holzmudd): What if the client wants sorted points?
+      grids1D.push_back(base::DataVector(pointHierarchies[d]->getPoints(level[d], sorted)));
+    }
+
+    return std::make_shared<TensorGrid>(grids1D);
   }
 
   /**
@@ -167,4 +175,5 @@ class AbstractFullGridEvaluator {
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_ABSTRACTFULLGRIDEVALUATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_FULLGRID_ABSTRACTFULLGRIDEVALUATOR_HPP_ \
+          */
