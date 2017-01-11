@@ -12,6 +12,17 @@
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#ifdef USE_GSL
+#include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#endif /* USE_GSL */
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
@@ -26,6 +37,12 @@
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
+#ifdef USE_GSL
+#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#endif /* USE_GSL */
+#include <sgpp/datadriven/application/PrimalDualSVM.hpp>
+#include <sgpp/datadriven/application/LearnerSVM.hpp>
+#include <sgpp/datadriven/application/LearnerSGD.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
