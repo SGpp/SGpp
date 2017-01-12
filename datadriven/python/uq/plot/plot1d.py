@@ -45,16 +45,20 @@ def plotGrid1d(grid, f=lambda x: x):
     plt.scatter(x, nodalValues, marker="o")
 
 
-def plotNodal1d(grid, alpha):
+def plotNodal1d(A):
+    plt.plot(A[:, 0], A[:, 1], " ", marker="o")
+
+def plotSGNodal1d(grid, alpha):
     gs = grid.getStorage()
-    x = np.zeros(gs.getSize())
-    nodalValues = np.zeros(gs.getSize())
+    A = np.ndarray([gs.getSize(), 2])
+
+    p = DataVector(2)
     for i in xrange(gs.getSize()):
-        x[i] = gs.getCoordinate(gs.getPoint(i), 0)
-        nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
+        gs.getCoordinates(gs.getPoint(i), p)
+        A[i, 0] = p[0]
+        A[i, 1] = evalSGFunction(grid, alpha, p.array())
 
-    plt.plot(x, nodalValues, " ", marker="o")
-
+    return plotNodal1d(A), A
 
 def plotSG1d(grid, alpha, n=1000, f=lambda x: x, show_grid_points=False,
              **kws):

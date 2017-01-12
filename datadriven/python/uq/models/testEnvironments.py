@@ -13,8 +13,8 @@ from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 class TestEnvironmentSG(object):
 
     def buildSetting(self,
-                     f,
                      params,
+                     f=None,
                      level=None,
                      gridType=None,
                      grid=None,
@@ -30,7 +30,9 @@ class TestEnvironmentSG(object):
                      adaptRate=None,
                      uqSetting=None,
                      uqSettingRef=None,
-                     knowledgeFilename=None):
+                     knowledgeFilename=None,
+                     qoi=None,
+                     toi=None):
         builder = ASGCUQManagerBuilder()
 
         builder.withParameters(params)\
@@ -39,10 +41,17 @@ class TestEnvironmentSG(object):
                                       KnowledgeTypes.EXPECTATIONVALUE])\
                .useInterpolation()
 
-        builder.defineUQSetting().withSimulation(f)
+        if qoi is not None:
+            builder.withQoI(qoi)
+        if toi is not None:
+            builder.withTimeStepsOfInterest(toi)
+        if uqSetting is not None:
+            builder.asgcUQManager.uqSetting = uqSetting
+        else:
+            builder.defineUQSetting().withSimulation(f)
 
         if uqSetting is not None:
-            build.useUQSetting(uqSetting)
+            builder.useUQSetting(uqSetting)
 
         if uqSettingRef is not None and len(uqSettingRef) > 0:
             builder.withTestSet(uqSettingRef)\

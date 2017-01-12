@@ -387,8 +387,8 @@ class AtanPeridynamicExample(object):
         while True:
             print "-" * 80
             print "level = %i" % level
-            uqManager = TestEnvironmentSG().buildSetting(self.simulation,
-                                                         self.params,
+            uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                         self.simulation,
                                                          level,
                                                          gridType,
                                                          deg=20,
@@ -484,8 +484,8 @@ class AtanPeridynamicExample(object):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
-        uqManager = TestEnvironmentSG().buildSetting(self.simulation,
-                                                     self.params,
+        uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                     self.simulation,
                                                      level,
                                                      gridType,
                                                      deg=20,
