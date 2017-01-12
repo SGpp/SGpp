@@ -120,7 +120,7 @@ class WeightedL2OptRanking(Ranking):
         # update the quadrature operations
         if not self.initialized:
             self._estimationStrategy.initQuadratureStrategy(grid)
-            params.getIndependentJointDistribution()
+            U = params.getIndependentJointDistribution()
             T = params.getJointTransformation()
             self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
             self.initialized = True
@@ -137,7 +137,7 @@ class WeightedL2OptRanking(Ranking):
                                                                      self.W, self.D)
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
-        return np.abs(v[ix]) * np.sqrt(max(0.0, vol * secondMoment))
+        return np.abs(v[ix]) * np.sqrt(max(0.0, self.vol * secondMoment))
 
 
 class AnchoredExpectationValueOptRanking(Ranking):
