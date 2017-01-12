@@ -44,8 +44,8 @@ from pysgpp.extensions.datadriven.tools import writeDataARFF
 
 class KraichnanOrszagTest(object):
 
-    def __init__(self, setting=1, inputSpace="uniform"):
-        if setting not in [1, 3]:
+    def __init__(self, setting=1, qoi="y2", inputSpace="uniform"):
+        if setting not in [1, 2, 3]:
             raise AttributeError("setting '%i' is unknown" % setting)
 
         self.setting = setting
@@ -53,15 +53,13 @@ class KraichnanOrszagTest(object):
 
         # quantities of interest
         self.qois = ['y1', 'y2', 'y3']
+        self.qoi = qoi
+        if qoi not in self.qois:
+            raise AttributeError("quantity of interset '%s' is not known" % qoi)
+            self.qoi = self.qois[0]
 
-        if setting == 1:
-            self.qoi = self.qois[1]
-        else: # setting == 3
-            self.qoi = self.qois[1]
-
-        self.radix = "%s-s%i-qoi%s" % ('kraichnanOrszag',
-                                       self.setting,
-                                       self.qoi)
+        self.radix = "%s-s%i" % ('kraichnanOrszag',
+                                 self.setting)
 
         # --------------------------------------------------------
         # set distributions of the input parameters
@@ -102,7 +100,8 @@ class KraichnanOrszagTest(object):
             self.uqSettings[label].convert(self.params)
 
         # time steps of interest
-        self.toi = range(int(self.t0), int(self.tn))
+        dt = 0.1
+        self.toi = np.arange(self.t0, self.tn + dt, dt)
 
         # compute reference values
         self.computeReferenceValues(self.uqSettings['ref'])
@@ -117,6 +116,10 @@ class KraichnanOrszagTest(object):
             up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1).hasValue(0.0)
+        elif setting == 2:
+            up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
+            up.new().isCalled('y2').withUniformDistribution(-1, 1)
+            up.new().isCalled('y3').withUniformDistribution(-1, 1)
         elif setting == 3:
             up.new().isCalled('y1').withUniformDistribution(-1, 1)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
@@ -167,7 +170,7 @@ class KraichnanOrszagTest(object):
 
         # Simulation setting
         self.t0 = 0.
-        self.tn = 20.
+        self.tn = 30.
         self.dt = .01
 
         self.f = [lambda y, _: y[0] * y[2],
@@ -179,7 +182,7 @@ class KraichnanOrszagTest(object):
         self.postprocessor = postprocessor
 
 
-    def computeReferenceValues(self, uqSetting, n=100000):
+    def computeReferenceValues(self, uqSetting, n=1000):
         # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
@@ -265,6 +268,8 @@ class KraichnanOrszagTest(object):
                    'sampling_strategy': 'latin_hypercube',
                    'num_model_evaluations': self.uqSettings["ref"].getSize(),
                    'time_steps': self.toi,
+                   'setting': self.setting,
+                   'num_dims': self.numDims,
                    'qoi': self.qoi,
                    'results': {}}
 
@@ -310,8 +315,8 @@ class KraichnanOrszagTest(object):
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s_%s.pkl" % (self.radix,
-                                                   label))
+                                    "%s-qoi%s_%s.pkl" % (self.radix, self.qoi,
+                                                         label))
             fd = open(filename, "w")
             pkl.dump(results, fd)
             fd.close()
@@ -461,6 +466,8 @@ class KraichnanOrszagTest(object):
                    'grid_type': gridType,
                    'is_full': False,
                    'time_steps': self.toi,
+                   'setting': self.setting,
+                   'num_dims': self.numDims,
                    'qoi': self.qoi,
                    'max_grid_size': maxGridSize,
                    'boundary_level': boundaryLevel,
@@ -511,29 +518,34 @@ class KraichnanOrszagTest(object):
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s_%s_d%i_%s_Nmax%i_r%i_N%i.pkl" % (self.radix,
-                                                                         "sg" if not isFull else "fg",
-                                                                         self.numDims,
-                                                                         gridTypeStr,
-                                                                         maxGridSize,
-                                                                         False,
-                                                                         uqManager.getGrid().getSize()))
+                                    "%s-qoi%s_%s_d%i_%s_Nmax%i_r%i_N%i.pkl" % (self.radix, self.qoi,
+                                                                               "sg" if not isFull else "fg",
+                                                                               self.numDims,
+                                                                               gridTypeStr,
+                                                                               maxGridSize,
+                                                                               False,
+                                                                               uqManager.getGrid().getSize()))
             fd = open(filename, "w")
             pkl.dump(results, fd)
             fd.close()
 
 
-def run_kraichnanOrszag_mc(out, plot):
-    testSetting = KraichnanOrszagTest()
+def run_kraichnanOrszag_mc(setting, qoi,
+                           out, plot):
+    testSetting = KraichnanOrszagTest(setting, qoi)
     testSetting.run_mc(out=out, plot=plot)
 
-def run_kraichnanOrszag_pce(sampler, expansion, maxNumSamples, out, plot):
-    testSetting = KraichnanOrszagTest()
+def run_kraichnanOrszag_pce(sampler, expansion, maxNumSamples,
+                            setting, qoi,
+                            out, plot):
+    testSetting = KraichnanOrszagTest(setting, qoi)
     return testSetting.run_pce(expansion, sampler, maxNumSamples, out, plot)
 
 def run_kraichnanOrszag_sg(gridType, level, numGridPoints,
-                           boundaryLevel, fullGrid, refinement, out, plot):
-    testSetting = KraichnanOrszagTest()
+                           boundaryLevel, fullGrid, refinement,
+                           setting, qoi,
+                           out, plot):
+    testSetting = KraichnanOrszagTest(setting, qoi)
     if refinement is not None:
         testSetting.run_adaptive_sparse_grid(gridType,
                                              level, numGridPoints, refinement,
@@ -551,7 +563,9 @@ if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
-    parser.add_argument('--numGridPoints', default=100, type=int, help='maximum number of grid points')
+    parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
+    parser.add_argument('--qoi', default="y2", type=str, help="define the quantity of interest")
+    parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=1, type=int, help='level of the sparse grid')
     parser.add_argument('--boundaryLevel', default=1, type=int, help='level of the boundary of the sparse grid')
@@ -569,6 +583,8 @@ if __name__ == "__main__":
         run_kraichnanOrszag_pce(args.sampler,
                                 args.expansion,
                                 args.maxSamples,
+                                args.setting,
+                                args.qoi,
                                 args.out,
                                 args.plot)
     elif args.surrogate == "sg":
@@ -578,8 +594,12 @@ if __name__ == "__main__":
                                args.boundaryLevel,
                                args.fullGrid,
                                args.refinement,
+                               args.setting,
+                               args.qoi,
                                args.out,
                                args.plot)
     else:
-        run_kraichnanOrszag_mc(args.out,
+        run_kraichnanOrszag_mc(args.setting,
+                               args.qoi,
+                               args.out,
                                args.plot)
