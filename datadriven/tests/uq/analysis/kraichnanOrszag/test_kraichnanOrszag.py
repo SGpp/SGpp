@@ -179,7 +179,7 @@ class KraichnanOrszagTest(object):
         self.postprocessor = postprocessor
 
 
-    def computeReferenceValues(self, uqSetting, n=1000):
+    def computeReferenceValues(self, uqSetting, n=100000):
         # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
@@ -262,6 +262,8 @@ class KraichnanOrszagTest(object):
     def run_mc(self, out, plot):
         label = "mc"
         results = {'surrogate': label,
+                   'sampling_strategy': 'latin_hypercube',
+                   'num_model_evaluations': self.uqSettings["ref"].getSize(),
                    'time_steps': self.toi,
                    'qoi': self.qoi,
                    'results': {}}
@@ -307,7 +309,7 @@ class KraichnanOrszagTest(object):
 
         if out:
             # store results
-            filename = os.path.join(self.pathResults, label,
+            filename = os.path.join(self.pathResults,
                                     "%s_%s.pkl" % (self.radix,
                                                    label))
             fd = open(filename, "w")
@@ -456,12 +458,13 @@ class KraichnanOrszagTest(object):
         gridType = Grid.stringToGridType(gridTypeStr)
 
         results = {'surrogate': 'sg',
-                   'gridType': gridType,
+                   'grid_type': gridType,
                    'is_full': False,
                    'time_steps': self.toi,
                    'qoi': self.qoi,
                    'max_grid_size': maxGridSize,
                    'boundary_level': boundaryLevel,
+                   'refinement': None,
                    'results': {}}
 
         while True:
@@ -502,6 +505,9 @@ class KraichnanOrszagTest(object):
 
             level += 1
 
+        # update results
+        results["max_grid_size"] = uqManager.getGrid().getSize()
+
         if out:
             # store results
             filename = os.path.join(self.pathResults,
@@ -511,7 +517,7 @@ class KraichnanOrszagTest(object):
                                                                          gridTypeStr,
                                                                          maxGridSize,
                                                                          False,
-                                                                         uqManager.grid.getSize()))
+                                                                         uqManager.getGrid().getSize()))
             fd = open(filename, "w")
             pkl.dump(results, fd)
             fd.close()
