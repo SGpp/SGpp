@@ -20,6 +20,7 @@ from plot1d import (plotFunction1d,
                     plotSG1d,
                     plotSurplusLevelWise,
                     plotNodal1d,
+                    plotSGNodal1d,
                     plotSGDE1d,
                     plotSobolIndices)
 

@@ -192,8 +192,8 @@ class IshigamiSudret2008(object):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
-        uqManager = TestEnvironmentSG().buildSetting(self.simulation,
-                                                     self.params,
+        uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                     self.simulation,
                                                      level,
                                                      gridType,
                                                      deg=10,
