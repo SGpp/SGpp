@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', default="uniform", type=str, help="define which probabilistic model should be used")
     parser.add_argument('--surrogate', default="both", type=str, help="define which surrogate model should be used (sg, pce)")
     parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
-    parser.add_argument('--qoi', default="y2", type=str, help="define the quantity of interest")
+    parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     args = parser.parse_args()
 
     results = load_results(args.model, args.setting, args.qoi)

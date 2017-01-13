@@ -564,7 +564,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
     parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
-    parser.add_argument('--qoi', default="y2", type=str, help="define the quantity of interest")
+    parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=1, type=int, help='level of the sparse grid')
