@@ -82,6 +82,7 @@ datadriven/tests/uq/analysis/atan/results
 datadriven/tests/uq/analysis/atan/plots
 datadriven/tests/uq/analysis/kraichnanOrszag/results
 datadriven/tests/uq/analysis/kraichnanOrszag/plots
+datadriven/tests/uq/analysis/kraichnanOrszag/*.gz
 
 datadriven/tests/uq/analysis/checkpoints/
 datadriven/tests/uq/analysis/convergence/

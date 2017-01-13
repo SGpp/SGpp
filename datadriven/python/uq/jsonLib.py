@@ -45,7 +45,7 @@ def reprVal(attrValue):
         # hack to make the text json compatible
         return reprString(text.replace('\n', '__'))
     elif attrValue is None:
-        return str(attrValue)
+        return "null"
     else:
         raise AttributeError('jsonLib: reprVal - Unknown type "%s" of "%s"' %
                              (type(attrValue), attrValue))
