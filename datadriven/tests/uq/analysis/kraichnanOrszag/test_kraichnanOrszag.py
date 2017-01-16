@@ -100,7 +100,7 @@ class KraichnanOrszagTest(object):
             self.uqSettings[label].convert(self.params)
 
         # time steps of interest
-        dt = 0.1
+        dt = 1.0  # 0.1
         self.toi = np.arange(self.t0, self.tn + dt, dt)
 
         # compute reference values
@@ -346,10 +346,6 @@ class KraichnanOrszagTest(object):
             analysis.sampleGrids(os.path.join(path, alabel))
 
         # ----------------------------------------------
-        # collect statistics
-        sg_mean, sg_var = analysis.mean(), analysis.var()
-
-        # ----------------------------------------------
         # do some plotting
         # ----------------------------------------------
         ts = uqManager.getKnowledge().getAvailableTimeSteps()
@@ -424,9 +420,23 @@ class KraichnanOrszagTest(object):
             results["results"][t][maxLevel]["surpluses"] = surpluses
             results["results"][t][maxLevel]["sobol_indices"] = me
             results["results"][t][maxLevel]["total_effects"] = te
-            results["results"][t][maxLevel]["mean_estimated"] = sg_mean[t][0]
-            results["results"][t][maxLevel]["var_estimated"] = sg_var[t][0]
             results["results"][t][maxLevel]["stats"] = uqManager.stats
+            
+            results["results"][t][maxLevel]["mean_estimated_per_iteration"] = {}
+            for it, (value, error) in analysis.mean(ts=[t]).items():
+                results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = value
+            # maximum iteration -> final value
+            it = max(results["results"][t][maxLevel]["mean_estimated_per_iteration"].keys())
+            results["results"][t][maxLevel]["mean_estimated"] = \
+                results["results"][t][maxLevel]["mean_estimated_per_iteration"][it]
+
+            results["results"][t][maxLevel]["var_estimated_per_iteration"] = {}
+            for it, (value, error) in analysis.var(ts=[t]).items():
+                results["results"][t][maxLevel]["var_estimated_per_iteration"][it] = value
+            # maximum iteration -> final value
+            it = max(results["results"][t][maxLevel]["var_estimated_per_iteration"].keys())
+            results["results"][t][maxLevel]["var_estimated"] = \
+                results["results"][t][maxLevel]["var_estimated_per_iteration"][it]
         # --------------------------------------------
 
         if out and plot and self.numDims > 1:
@@ -497,6 +507,7 @@ class KraichnanOrszagTest(object):
             oldSize = uqManager.uqSetting.getSize()
             while uqManager.hasMoreSamples():
                 uqManager.runNextSamples()
+
             if oldSize < uqManager.uqSetting.getSize():
                 uqManager.uqSetting.writeToFile()
             # ----------------------------------------------------------
@@ -530,6 +541,84 @@ class KraichnanOrszagTest(object):
             fd.close()
 
 
+    def run_adaptive_sparse_grid(self, gridTypeStr, level, maxGridSize, refinement,
+                                 boundaryLevel=None, out=False,
+                                 plot=False):
+
+        np.random.seed(1234567)
+        gridType = Grid.stringToGridType(gridTypeStr)
+
+        results = {'surrogate': 'asg',
+                   'grid_type': gridType,
+                   'is_full': False,
+                   'time_steps': self.toi,
+                   'setting': self.setting,
+                   'num_dims': self.numDims,
+                   'qoi': self.qoi,
+                   'max_grid_size': maxGridSize,
+                   'boundary_level': boundaryLevel,
+                   'refinement': refinement,
+                   'refinement_technique': 'refinement',
+                   'adaptPoints': 5,
+                   'adaptRate': 0.05,
+                   'adpatEps': 1e-10,
+                   'results': {}}
+
+        # ----------------------------------------------------------
+        # define the learner
+        # ----------------------------------------------------------
+        uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                     level=level,
+                                                     gridType=gridType,
+                                                     deg=20,
+                                                     maxGridSize=maxGridSize,
+                                                     isFull=False,
+                                                     adaptive=refinement,
+                                                     adaptPoints=5,
+#                                                      adaptRate=0.05,
+                                                     epsilon=1e-10,
+                                                     boundaryLevel=boundaryLevel,
+                                                     qoi=self.qoi,
+                                                     toi=self.toi,
+                                                     uqSetting=self.uqSettings['sg'],
+                                                     uqSettingRef=self.uqSettings['ref'])
+        # ----------------------------------------------
+        # first run
+        oldSize = uqManager.uqSetting.getSize()
+        while uqManager.hasMoreSamples():
+            uqManager.runNextSamples()
+
+        if oldSize < uqManager.uqSetting.getSize():
+            uqManager.uqSetting.writeToFile()
+        # ----------------------------------------------------------
+        # specify ASGC estimator
+        analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                        .withAnalyticEstimationStrategy()\
+                                        .andGetResult()
+        analysis.setVerbose(False)
+        # ----------------------------------------------------------
+        label = "asg_l%i_%s" % (level, gridTypeStr)
+        self.runAnalysis(analysis, uqManager, "sg", label,
+                         out, plot, results)
+
+        # update results
+        results["max_grid_size"] = uqManager.getGrid().getSize()
+
+        if out:
+            # store results
+            filename = os.path.join(self.pathResults,
+                                    "%s-qoi%s_%s_d%i_%s_Nmax%i_r%s_N%i.pkl" % (self.radix, self.qoi,
+                                                                               "asg",
+                                                                               self.numDims,
+                                                                               gridTypeStr,
+                                                                               maxGridSize,
+                                                                               refinement,
+                                                                               uqManager.getGrid().getSize()))
+            fd = open(filename, "w")
+            pkl.dump(results, fd)
+            fd.close()
+
+
 def run_kraichnanOrszag_mc(setting, qoi,
                            out, plot):
     testSetting = KraichnanOrszagTest(setting, qoi)
@@ -549,7 +638,7 @@ def run_kraichnanOrszag_sg(gridType, level, numGridPoints,
     if refinement is not None:
         testSetting.run_adaptive_sparse_grid(gridType,
                                              level, numGridPoints, refinement,
-                                             boundaryLevel, fullGrid, out,
+                                             boundaryLevel, out,
                                              plot)
     else:
         testSetting.run_regular_sparse_grid(gridType,
@@ -567,7 +656,7 @@ if __name__ == "__main__":
     parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
-    parser.add_argument('--level', default=1, type=int, help='level of the sparse grid')
+    parser.add_argument('--level', default=2, type=int, help='level of the sparse grid')
     parser.add_argument('--boundaryLevel', default=1, type=int, help='level of the boundary of the sparse grid')
     parser.add_argument('--refinement', default=None, type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
     parser.add_argument('--fullGrid', default=False, action='store_true', help='refine the discretized grid adaptively')
@@ -577,8 +666,8 @@ if __name__ == "__main__":
     parser.add_argument('--plot', default=False, action='store_true', help='plot functions (2d)')
     parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
-    args = parser.parse_args()
 
+    args = parser.parse_args()
     if args.surrogate == "pce":
         run_kraichnanOrszag_pce(args.sampler,
                                 args.expansion,

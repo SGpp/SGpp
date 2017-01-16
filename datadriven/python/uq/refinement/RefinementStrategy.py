@@ -28,9 +28,9 @@ class Ranking(object):
     def update(self, grid, v, gpi, params):
         raise NotImplementedError
 
-    def rank(self, grid, gp, alphas, params, *args, **kws):
+    def rank(self, grid, gp, alphas, params, t=0, *args, **kws):
         # get grid point associated to ix
-        if gp.getHash() not in self._ranking:
+        if (t, gp.getHash()) not in self._ranking:
             self._ranking[gp.getHash()] = self.update(grid, alphas, gp, params)
 
         return self._ranking[gp.getHash()]

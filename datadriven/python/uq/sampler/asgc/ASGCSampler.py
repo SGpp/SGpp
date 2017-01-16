@@ -241,14 +241,11 @@ class ASGCSampler(Sampler):
         """
         @return: string that represents the object
         """
+        raise NotImplementedError()
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
         for attrName in dir(self):
             attrValue = self.__getattribute__(attrName)
-            serializationString += ju.parseAttribute(attrValue, attrName)
-
-        for attrName in dir(self.__specification):
-            attrValue = self.__specification.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
         s = serializationString.rstrip(",\n")

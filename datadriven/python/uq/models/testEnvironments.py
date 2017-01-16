@@ -116,6 +116,8 @@ class TestEnvironmentSG(object):
                 else:
                     raise AttributeError("unknown ranking method")
                     
+            if toi is not None:
+                refinement.withAverageWeightening()
 
             samplerSpec.withStopPolicy().withGridSizeLimit(maxGridSize)
 

@@ -214,6 +214,8 @@ class Dist(object):
             return dists.Beta.fromJson(jsonObject)
         elif 'uq.dists.MultivariateNormal' in jsonObject['module']:
             return dists.MultivariateNormal.fromJson(jsonObject)
+        elif 'uq.dists.SGDEdist' in jsonObject['module']:
+            return dists.SGDEdist.fromJson(jsonObject)
         else:
             raise TypeError('Unknown distribution "%s" => Please register \
                              it in fromJson function' % jsonObject['module'])
