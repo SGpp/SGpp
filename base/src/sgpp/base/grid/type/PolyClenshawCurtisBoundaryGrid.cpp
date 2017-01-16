@@ -16,13 +16,16 @@ namespace sgpp {
 namespace base {
 
 PolyClenshawCurtisBoundaryGrid::PolyClenshawCurtisBoundaryGrid(std::istream& istr)
-    : Grid(istr), generator(storage), boundaryLevel(0) {
-  istr >> boundaryLevel >> degree;
+    : Grid(istr), generator(storage), boundaryLevel(0), degree(0) {
+  istr >> degree;
+  istr >> boundaryLevel;
+
   generator.setBoundaryLevel(boundaryLevel);
   basis_.reset(new SPolyClenshawCurtisBoundaryBase(degree));
 }
 
-PolyClenshawCurtisBoundaryGrid::PolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel)
+PolyClenshawCurtisBoundaryGrid::PolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree,
+                                                               level_t boundaryLevel)
     : Grid(dim),
       generator(storage, boundaryLevel),
       boundaryLevel(boundaryLevel),
@@ -50,6 +53,7 @@ Grid* PolyClenshawCurtisBoundaryGrid::unserialize(std::istream& istr) {
 
 void PolyClenshawCurtisBoundaryGrid::serialize(std::ostream& ostr, int version) {
   this->Grid::serialize(ostr, version);
+  ostr << degree << std::endl;
   ostr << boundaryLevel << std::endl;
 }
 
