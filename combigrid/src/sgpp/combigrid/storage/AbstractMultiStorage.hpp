@@ -28,6 +28,8 @@ class AbstractMultiStorage {
  public:
   virtual ~AbstractMultiStorage() {}
 
+  virtual size_t getNumDimensions() const = 0;
+
   /**
    * @return Returns a reference to the element stored at the given MultiIndex. If the element was
    * not yet in the storage, it is created.

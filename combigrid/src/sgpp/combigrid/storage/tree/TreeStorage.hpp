@@ -63,6 +63,8 @@ class TreeStorage : public AbstractMultiStorage<T> {
 
   virtual ~TreeStorage() {}
 
+  virtual size_t getNumDimensions() const { return context.numDimensions; }
+
   /**
    * Returns the value for the given MultiIndex. If the value is not stored, it is computed using
    * the function and then stored and returned.
