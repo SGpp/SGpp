@@ -50,6 +50,8 @@ class SGDEdist(EstimatedDist):
         self.trainData = trainData
         self.trainData_vec = DataMatrix(trainData)
         self.config = config
+        self.unitIntegrand = unitIntegrand
+        
         if learner is None and trainData is not None:
             self.learner = LearnerSGDE(self.grid, self.alpha_vec, self.trainData_vec)
         else:
@@ -282,10 +284,12 @@ class SGDEdist(EstimatedDist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName, attrValue in [("_SGDEDist__grid", self.grid),
-                                    ("_SGDEDist__alpha", self.alpha),
-                                    ("_SGDEDist__config", self.config),
-                                    ("_SGDEDist__bounds", self.bounds)]:
+        for attrName, attrValue in [("_SGDEdist__grid", self.grid),
+                                    ("_SGDEdist__alpha", self.alpha),
+                                    ("_SGDEdist__trainData", self.trainData),
+                                    ("_SGDEdist__config", self.config),
+                                    ("_SGDEdist__bounds", self.bounds),
+                                    ("_SGDEdist__unitIntegrand", self.unitIntegrand), ]:
             serializationString += ju.parseAttribute(attrValue, attrName)
 
         s = serializationString.rstrip(",\n")
@@ -304,7 +308,7 @@ class SGDEdist(EstimatedDist):
         Return the restored UQSetting object
         """
         # restore surplusses
-        key = '_SGDEDist__grid'
+        key = '_SGDEdist__grid'
         if key in jsonObject:
             # undo the hack that made it json compatible
             gridString = jsonObject[key].replace('__', '\n').encode('utf8')
@@ -313,20 +317,31 @@ class SGDEdist(EstimatedDist):
         else:
             raise AttributeError("SGDEDist: fromJson - grid is missing")
 
-        key = '_SGDEDist__alpha'
+        key = '_SGDEdist__alpha'
         if key in jsonObject:
             alpha = np.array(jsonObject[key])
         else:
             raise AttributeError("SGDEDist: fromJson - coefficients are missing")
 
-        key = '_SGDEDist__bounds'
+        key = '_SGDEdist__trainData'
+        trainData = None
+        if key in jsonObject:
+            trainData = np.array(jsonObject[key])
+
+        key = '_SGDEdist__bounds'
         bounds = None
         if key in jsonObject:
             bounds = np.array(jsonObject[key])
 
-        key = '_SGDEDist__config'
+        key = '_SGDEdist__config'
         config = None
         if key in jsonObject:
             config = jsonObject[key]
 
-        return SGDEdist(grid, alpha, bounds=bounds, config=config)
+        key = '_SGDEdist__unitIntegrand'
+        unitIntegrand = True
+        if key in jsonObject:
+            unitIntegrand = bool(jsonObject[key])
+
+        return SGDEdist(grid, alpha, trainData=trainData, bounds=bounds,
+                        config=config, learner=None, unitIntegrand=unitIntegrand)

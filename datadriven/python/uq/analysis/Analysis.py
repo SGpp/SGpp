@@ -85,8 +85,8 @@ class Analysis(object):
                 # compute mean
                 if self._verbose:
                     print "-" * 60
-                    print "Estimate E[t = %g] (%i/%i), iteration = %s" % \
-                        (t, i + 1, len(self._ts), iteration)
+                    print "Estimate E[t = %g] (%i/%i), iteration = %s:" % \
+                        (t, i + 1, len(self._ts), iteration),
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -95,6 +95,9 @@ class Analysis(object):
                 else:
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'mean')
+
+                if self._verbose:
+                    print "value = %g (err=%g)" % moment
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
@@ -127,12 +130,12 @@ class Analysis(object):
         for iteration in iterations:
             if len(ts) > 1:
                 ans[iteration] = {}
-            for i, t in enumerate(self._ts):
+            for i, t in enumerate(ts):
                 # compute variance
                 if self._verbose:
                     print "-" * 60
-                    print "Estimate V[t = %g] (%i/%i), iteration = %s" % \
-                        (t, i + 1, len(self._ts), iteration)
+                    print "Estimate V[t = %g] (%i/%i), iteration = %s:" % \
+                        (t, i + 1, len(self._ts), iteration),
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)
@@ -141,6 +144,9 @@ class Analysis(object):
                 else:
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'var')
+
+                if self._verbose:
+                    print "value = %g (err=%g)" % moment
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment

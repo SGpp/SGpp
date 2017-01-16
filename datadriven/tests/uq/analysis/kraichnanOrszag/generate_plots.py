@@ -11,8 +11,8 @@ from argparse import ArgumentParser
 def get_key_pce(expansion, sampling_strategy, N):
     return (expansion, sampling_strategy, N)
 
-def get_key_sg(gridType, level, maxGridSize, refinement, isFull):
-    return (gridType, level, maxGridSize, refinement, isFull)
+def get_key_sg(gridType, maxGridSize, refinement, isFull):
+    return (gridType, maxGridSize, refinement, isFull)
 
 
 def get_key_mc(sampling_strategy, N):
@@ -36,12 +36,8 @@ def load_results(inputspace, setting, qoi, path="results"):
                                           currentStats["sampling_strategy"],
                                           currentStats["max_num_samples"])
                         ans["pce"][key] = currentStats
-                    elif currentStats["surrogate"] == "sg":
-                        level = 0
-                        if currentStats["refinement"]:
-                            level = currentStats["level"]
+                    elif "sg" in currentStats["surrogate"]:
                         key = get_key_sg(currentStats["grid_type"],
-                                         level,
                                          currentStats["max_grid_size"],
                                          currentStats["refinement"],
                                          currentStats["is_full"])
@@ -59,7 +55,10 @@ def load_results(inputspace, setting, qoi, path="results"):
 
 
 settings = {'uniform': {'mc': [('latin_hypercube', 1000)],
-                        'sg': [(8, 0, 1025, None, False)],
+                        'sg': [
+                               (8, 1025, None, False),
+                               (8, 3, "simple", False)
+                               ],
                         'pce': [("full_tensor", 'gauss', 4000),
                                 ('total_degree', 'gauss_leja', 4000)]},
             'beta': {'sg': [
@@ -78,7 +77,7 @@ if __name__ == "__main__":
 
     results = load_results(args.model, args.setting, args.qoi)
 
-    for error_type in ["var"]:
+    for error_type in ["mean", "var"]:
         # extract the ones needed for the table
         mc_settings = settings[args.model]["mc"]
         pce_settings = settings[args.model]["pce"]
@@ -89,12 +88,10 @@ if __name__ == "__main__":
         for sampling_strategy, numSamples in mc_settings:
             key = get_key_mc(sampling_strategy, numSamples)
             res = {'t': np.array([]),
-                   'mean': np.array([]),
-                   'var': np.array([])}
+                   error_type: np.array([])}
             for t, values in results["mc"][key]["results"].items():
                 res['t'] = np.append(res["t"], t)
-                res['mean'] = np.append(res["mean"], values["mean_estimated"])
-                res['var'] = np.append(res["var"], values["var_estimated"])
+                res[error_type] = np.append(res[error_type], values["%s_estimated" % error_type])
 
             ixs = np.argsort(res["t"])
             plt.plot(res['t'][ixs], res[error_type][ixs], "-",
@@ -115,15 +112,13 @@ if __name__ == "__main__":
 #                            label=("pce (%s, %s)" % (expansion, sampling_strategy)).replace("_", " "))
 
         if args.surrogate in ["sg", "both"]:
-            for gridType, level, maxGridSize, refinement, isFull in sg_settings:
-                key = get_key_sg(gridType, level, maxGridSize, refinement, isFull)
+            for gridType, maxGridSize, refinement, isFull in sg_settings:
+                key = get_key_sg(gridType, maxGridSize, refinement, isFull)
                 res = {'t': np.array([]),
-                       'mean': np.array([]),
-                       'var': np.array([])}
+                       error_type: np.array([])}
                 for t, values in results["sg"][key]["results"].items():
                     res['t'] = np.append(res["t"], t)
-                    res['mean'] = np.append(res["mean"], values.values()[-1]["mean_estimated"])
-                    res['var'] = np.append(res["var"], values.values()[-1]["var_estimated"])
+                    res[error_type] = np.append(res[error_type], values.values()[-1]["%s_estimated" % error_type])
 
                 ixs = np.argsort(res["t"])
                 plt.plot(res['t'][ixs], res[error_type][ixs], "-",

@@ -169,7 +169,7 @@ class RefinementManager(object):
                 # run over all time steps for current grid point
                 key = (t, gp.getHash())
                 if key not in d:
-                    d[key] = self._criterion.rank(grid, gp, alphas, params)
+                    d[key] = self._criterion.rank(grid, gp, alphas, params, t)
                 v[j, i] = d[key]
 
 #             # get the result
@@ -214,7 +214,7 @@ class RefinementManager(object):
                     for gp in points:
                         key = (t, gp.getHash())
                         if key not in d:
-                            d[key] = self._criterion.rank(grid, gp, alphas, params)
+                            d[key] = self._criterion.rank(grid, gp, alphas, params, t)
                         s += d[key]
                     # and take the mean as ranking
                     v[j, i] = s / len(newGridPoints)
