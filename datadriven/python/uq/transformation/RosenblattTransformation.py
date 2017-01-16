@@ -62,9 +62,9 @@ class RosenblattTransformation(Transformation):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in ("_dist"):
-            attrValue = self.__getattribute__(attrName)
-            serializationString += ju.parseAttribute(attrValue, attrName)
+        attrName = "_dist"
+        attrValue = self._dist
+        serializationString += ju.parseAttribute(attrValue, attrName)
 
         s = serializationString.rstrip(",\n")
 

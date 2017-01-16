@@ -46,6 +46,8 @@ class Transformation(object):
     def fromJson(cls, jsonObject):
         import pysgpp.extensions.datadriven.uq.transformation as transformation
 
+        if 'transformation.JointTransformation' in jsonObject['module']:
+            return transformation.JointTransformation.fromJson(jsonObject)
         if 'transformation.LinearTransformation' in jsonObject['module']:
             return transformation.LinearTransformation.fromJson(jsonObject)
         elif 'transformation.RosenblattTransformation' in jsonObject['module']:
