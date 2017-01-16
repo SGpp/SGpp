@@ -52,29 +52,29 @@ assert params.getStochasticDim() == len(params.getDistributions()) - 2
 
 jsonStr = params.getJointTransformation().toJson()
 jsonObject = json.loads(jsonStr)
-Transformation.fromJson(jsonObject)
+trans = Transformation.fromJson(jsonObject)
 
-# # test transformations
-# ap = params.activeParams()
-# assert params.getStochasticDim() == len(ap)
-# sampler = MCSampler.withNaiveSampleGenerator(params)
-#
-# for sample in sampler.nextSamples(100):
-#     for x in sample.getActiveUnit():
-#         assert 0 <= x <= 1
-#     bounds = params.getBounds()
-#     q = sample.getExpandedProbabilistic()
-#     for xlim1, xlim2, x in np.vstack((bounds.T, q)).T:
-#         assert xlim1 <= x <= xlim2
-#
-# params.removeParam(0)
-# assert params.getStochasticDim() == len(ap) - 1
-# sampler = MCSampler.withNaiveSampleGenerator(params)
-#
-# for sample in sampler.nextSamples(100):
-#     for x in sample.getActiveUnit():
-#         assert 0 <= x <= 1
-#     bounds = params.getBounds()
-#     q = sample.getExpandedProbabilistic()
-#     for xlim1, xlim2, x in np.vstack((bounds.T, q)).T:
-#         assert xlim1 <= x <= xlim2
+# test transformations
+ap = params.activeParams()
+assert params.getStochasticDim() == len(ap)
+sampler = MCSampler.withNaiveSampleGenerator(params)
+
+for sample in sampler.nextSamples(100):
+    for x in sample.getActiveUnit():
+        assert 0 <= x <= 1
+    bounds = params.getBounds()
+    q = sample.getExpandedProbabilistic()
+    for xlim1, xlim2, x in np.vstack((bounds.T, q)).T:
+        assert xlim1 <= x <= xlim2
+
+params.removeParam(0)
+assert params.getStochasticDim() == len(ap) - 1
+sampler = MCSampler.withNaiveSampleGenerator(params)
+
+for sample in sampler.nextSamples(100):
+    for x in sample.getActiveUnit():
+        assert 0 <= x <= 1
+    bounds = params.getBounds()
+    q = sample.getExpandedProbabilistic()
+    for xlim1, xlim2, x in np.vstack((bounds.T, q)).T:
+        assert xlim1 <= x <= xlim2

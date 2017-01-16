@@ -5,7 +5,12 @@ import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 class JointTransformation(Transformation):
 
-    def __init__(self, trans=[], ixs=[], n=0):
+    def __init__(self):
+        self.__trans = []
+        self.__ixs = []
+        self.__n = 0
+
+    def initialize(self, trans, ixs, n):
         self.__trans = trans
         self.__ixs = ixs
         self.__n = n
@@ -97,7 +102,7 @@ class JointTransformation(Transformation):
         # serialize transformations
         attrName = "_JointTransformation__trans"
         attrValue = self.__getattribute__(attrName)
-        x = [dist.toJson() for dist in attrValue]
+        x = [trans.toJson() for trans in attrValue]
         x = ['"' + str(i) + '": ' + str(xi) for i, xi in enumerate(x)]
         serializationString += '"' + attrName + '": {' + ', '.join(x) + '}'
 
@@ -131,4 +136,6 @@ class JointTransformation(Transformation):
         else:
             raise AttributeError("JointTransformation: fromJson - the mandatory keyword '%s' does not exist" % key)
 
-        return JointTransformation(trans, ixs, n)
+        ans = JointTransformation()
+        ans.initialize(trans, ixs, n)
+        return ans
