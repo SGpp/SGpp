@@ -13,8 +13,6 @@
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 #ifdef USE_GSL
@@ -42,6 +40,10 @@
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
 //%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
+
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif /* USE_GSL */
