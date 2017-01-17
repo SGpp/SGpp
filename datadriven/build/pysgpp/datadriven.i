@@ -3,6 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// Shared pointers.
+%shared_ptr(sgpp::datadriven::DMSystemMatrixBase)
+%shared_ptr(sgpp::datadriven::DMSystemMatrix)
+%shared_ptr(sgpp::datadriven::DensitySystemMatrix)
+%shared_ptr(sgpp::datadriven::OperationRegularizationDiagonal)
+
 %{
 #include <sgpp/solver/TypesSolver.hpp>
 %}
@@ -43,6 +49,9 @@
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
 //%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif

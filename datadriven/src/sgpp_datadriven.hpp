@@ -35,6 +35,8 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/ClassificationLearner.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
 #ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #endif /* USE_GSL */
@@ -61,6 +63,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/datadriven/tools/NearestNeighbors.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
