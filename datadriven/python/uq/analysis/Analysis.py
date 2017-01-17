@@ -63,10 +63,13 @@ class Analysis(object):
 
 # -----------------------------------------------------------------------------
 
+    def getIterations(self):
+        return self._iterations
+
     def computeMean(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def mean(self, iterations=None, ts=None):
+    def mean(self, iterations=None, ts=None, reduce=True):
         """
         compute means
         @return: dictionary, {<iteration>: {<time>: (mean, err)}}
@@ -105,7 +108,7 @@ class Analysis(object):
                     ans[iteration] = moment
 
         # remove dict structure if there are just one element
-        if len(iterations) == 1:
+        if not reduce and len(iterations) == 1:
             ans = ans[iterations[0]]
 
         return ans
@@ -115,7 +118,7 @@ class Analysis(object):
     def computeVar(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def var(self, iterations=None, ts=None):
+    def var(self, iterations=None, ts=None, reduce=True):
         """
         Compute the variance
         @return: dictionary, {<iteration>: {<time>: variance}}
@@ -154,7 +157,7 @@ class Analysis(object):
                     ans[iteration] = moment
 
         # remove dict structure if there are just one element
-        if len(iterations) == 1:
+        if not reduce and len(iterations) == 1:
             ans = ans[iterations[0]]
 
         return ans

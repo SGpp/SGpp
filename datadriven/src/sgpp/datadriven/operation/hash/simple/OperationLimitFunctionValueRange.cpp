@@ -91,22 +91,13 @@ void OperationLimitFunctionValueRange::doLimitation(base::Grid& grid, base::Data
   }
 
   size_t oldGridSize = 0;
-  while (true) {
+  while (oldGridSize < grid.getSize()) {
+    // store the current grid size
+    oldGridSize = grid.getSize();
     // limit the function values from below
-    oldGridSize = grid.getSize();
     doLowerLimitation(grid, alpha, ylower, false);
-
-    if (oldGridSize == grid.getSize()) {
-      break;
-    }
-
     // limit the function values from above
-    oldGridSize = grid.getSize();
     doUpperLimitation(grid, alpha, yupper, false);
-
-    if (oldGridSize == grid.getSize()) {
-      break;
-    }
   }
 }
 
