@@ -324,8 +324,7 @@ class UQSetting(object):
             return
         if self._verbose:
             print "Write memento to file..."
-        m = self.createMemento()
-        UQSettingFormatter().serializeToFile(m, filename)
+        UQSettingFormatter().serializeToFile(self.toJson(), filename)
 
     def runSimulations(self):
         """

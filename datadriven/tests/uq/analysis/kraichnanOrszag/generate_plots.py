@@ -54,18 +54,23 @@ def load_results(inputspace, setting, qoi, path="results"):
     return ans
 
 
-settings = {'uniform': {'mc': [('latin_hypercube', 1000)],
-                        'sg': [
-                               (8, 1025, None, False),
-                               (8, 3, "simple", False)
-                               ],
-                        'pce': [("full_tensor", 'gauss', 4000),
-                                ('total_degree', 'gauss_leja', 4000)]},
-            'beta': {'sg': [
-                            ("polyBoundary", 0, 3000, False, False)
-                            ],
-                     'pce': [("full_tensor", 'gauss', 4000),
-                             ('total_degree', 'gauss_leja', 4000)]}}
+settings = {1: {'mc': [('latin_hypercube', 1000)],
+                'sg': [
+                       (8, 1025, None, False),
+                       (8, 57, "simple", False)
+                       ],
+                'pce': [("full_tensor", 'gauss', 4000),
+                        ('total_degree', 'gauss_leja', 4000)]},
+            2: {'mc': [('latin_hypercube', 1000)],
+                'sg': [
+                       (8, 67, 'simple', False),
+                       (8, 235, 'simple', False)
+                       ],
+                'pce': [("full_tensor", 'gauss', 4000),
+                        ('total_degree', 'gauss_leja', 4000)]},
+            3: {'sg': [
+                       (8, 67, 'simple', False)
+                       ]}}
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
@@ -79,9 +84,9 @@ if __name__ == "__main__":
 
     for error_type in ["mean", "var"]:
         # extract the ones needed for the table
-        mc_settings = settings[args.model]["mc"]
-        pce_settings = settings[args.model]["pce"]
-        sg_settings = settings[args.model]["sg"]
+        mc_settings = settings[args.setting]["mc"]
+        pce_settings = settings[args.setting]["pce"]
+        sg_settings = settings[args.setting]["sg"]
         plt.figure()
 
         # plot mc results to compare
@@ -125,7 +130,7 @@ if __name__ == "__main__":
                          linewidth=2,
                          label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
 
-
         plt.title(error_type.replace("_", " "))
-        plt.legend(loc="lower left")
-        plt.show()
+        plt.legend(loc="upper left")
+
+    plt.show()
