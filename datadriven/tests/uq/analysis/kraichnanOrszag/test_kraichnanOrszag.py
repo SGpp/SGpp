@@ -423,7 +423,7 @@ class KraichnanOrszagTest(object):
             results["results"][t][maxLevel]["stats"] = uqManager.stats
             
             results["results"][t][maxLevel]["mean_estimated_per_iteration"] = {}
-            for it, (value, error) in analysis.mean(ts=[t]).items():
+            for it, (value, error) in analysis.mean(ts=[t], reduce=False).items():
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = value
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["mean_estimated_per_iteration"].keys())
@@ -431,7 +431,7 @@ class KraichnanOrszagTest(object):
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it]
 
             results["results"][t][maxLevel]["var_estimated_per_iteration"] = {}
-            for it, (value, error) in analysis.var(ts=[t]).items():
+            for it, (value, error) in analysis.var(ts=[t], reduce=False).items():
                 results["results"][t][maxLevel]["var_estimated_per_iteration"][it] = value
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["var_estimated_per_iteration"].keys())
