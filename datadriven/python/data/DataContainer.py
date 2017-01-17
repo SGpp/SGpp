@@ -194,7 +194,6 @@ class DataContainer(object):
                     self.specifications[self.name] = specification
                     
                 elif 'points' in kwargs and 'values' in kwargs:  # takes (points: DataVector, values: DataVector, name="train", filename=None)
-                    
                     self.name = kwargs.get('name', self.TRAIN_CATEGORY)
                     if isinstance(kwargs['points'], DataMatrix):
                         self.points[self.name] = kwargs['points']
@@ -244,7 +243,13 @@ class DataContainer(object):
         for k in self.points.keys():
             if k != self.name:
                 newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.dataDict[k], self.specifications[k], k)
-        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getPointstoValuesMap(), container.getSpecifiction(), container.getName())
+
+        if container.getName() == self.name:
+            newContainer.__updateContainer(container.getPoints(), container.getValues(), container.getPointstoValuesMap(), container.getSpecifiction(), container.getName())
+        else:
+            newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getPointstoValuesMap(), container.getSpecifiction(), container.getName())
+        
+        return newContainer
     
     
     ## Merges several data containers to one.
@@ -297,6 +302,46 @@ class DataContainer(object):
         self.specifications[name] = specification
         return self
     
+    # #Adds points and values into existing dictionaries
+    #
+    # @param points: DataVector new points
+    # @param values: DataVector new values
+    # @param dataDict: dictionary {(x_1, x_2, ..., x_d): value}
+    # @param name: String category name under which points and values should be stored
+    # @param specification specification
+    # @return: DataContainer itself
+    def __updateContainer(self, points, values, dataDict, specification, name):
+        if name in self.points:
+            currentPoints = self.points[name]
+            n = currentPoints.getNrows()
+            m = points.getNrows()
+            numDims = points.getNcols()
+            currentPoints.resize(n + m)
+            x = DataVector(numDims)
+            for i in xrange(m):
+                points.getRow(i, x)
+                currentPoints.setRow(n + i, x)
+        else:
+            self.points[name] = points
+
+        if name in self.values:
+            currentValues = self.values[name]
+            n = len(currentValues)
+            m = len(values)
+            currentValues.resize(n + m)
+            for i in xrange(m):
+                currentValues[n + i] = values[i]
+        else:
+            self.values[name] = values
+        
+        if name in self.dataDict:
+            for x, value in dataDict.items():
+                self.dataDict[name][x] = value
+        else:
+            self.dataDict[name] = dataDict
+        
+        return self
+
 
     ##Create DataVector of given size and dimension with 0 for all entries
     #

@@ -62,8 +62,7 @@ class Interpolant(Learner):
                 nodalValues[i] = float(points[x])
 
         if cnt > 0:
-            print '%i/%i of the grid points have \
-                   been set to 0' % (cnt, gs.getSize())
+            print '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize())
             pdb.set_trace()
 
         # hierarchization

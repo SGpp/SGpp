@@ -100,7 +100,7 @@ class KraichnanOrszagTest(object):
             self.uqSettings[label].convert(self.params)
 
         # time steps of interest
-        dt = 1.0  # 0.1
+        dt = 0.1
         self.toi = np.arange(self.t0, self.tn + dt, dt)
 
         # compute reference values
@@ -182,7 +182,7 @@ class KraichnanOrszagTest(object):
         self.postprocessor = postprocessor
 
 
-    def computeReferenceValues(self, uqSetting, n=1000):
+    def computeReferenceValues(self, uqSetting, n=2000):
         # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
@@ -190,10 +190,10 @@ class KraichnanOrszagTest(object):
             print "-" * 60
             print "Latin Hypercube sampling"
             print "-" * 60
-            n -= uqSetting.getSize()
-            mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, n)
-            samples = mcSampler.nextSamples(n)
-            uqSetting.runSamples(samples)
+            mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, n - uqSetting.getSize())
+            while uqSetting.getSize() < n:
+                samples = mcSampler.nextSamples(n - uqSetting.getSize())
+                uqSetting.runSamples(samples)
             uqSetting.writeToFile()
 
         res = uqSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
