@@ -8,7 +8,7 @@
 namespace sgpp {
 namespace combigrid {
 
-std::shared_ptr<TreeStorage<uint8_t>> allLevelsInHashGridStorage(base::HashGridStorage* storage) {
+std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage* storage) {
   size_t d = storage->getDimension();
   auto treeStorage = std::make_shared<TreeStorage<uint8_t>>(d);
 
