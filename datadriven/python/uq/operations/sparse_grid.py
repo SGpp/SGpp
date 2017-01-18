@@ -542,51 +542,54 @@ def isRefineable(grid, gp):
     return False
 
 
-def evalSGFunctionMulti(grid, alpha, samples):
+def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     if len(samples.shape) == 1:
         raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
     if samples.shape[1] != grid.getStorage().getDimension():
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
-    samples_matrix = DataMatrix(samples)
-    if grid.getType() in [GridType_Bspline,
-                          GridType_BsplineClenshawCurtis,
-                          GridType_BsplineBoundary,
-                          GridType_ModBsplineClenshawCurtis,
-                          GridType_ModBspline,
-                          GridType_LinearClenshawCurtis,
-                          GridType_LinearClenshawCurtisBoundary,
-                          GridType_ModLinearClenshawCurtis,
-                          GridType_PolyClenshawCurtis,
-                          GridType_PolyClenshawCurtisBoundary,
-                          GridType_ModPolyClenshawCurtis]:
-        opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
-    else:
-        if grid.getType() == GridType_Linear:
-            # use streaming approach for multiple eval
-            evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
-            opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
-        else:
-            # use standard approach
-            opEval = createOperationMultipleEval(grid, samples_matrix)
+    multipleEvalNaiveGridTypes = [GridType_Bspline,
+                                  GridType_BsplineClenshawCurtis,
+                                  GridType_BsplineBoundary,
+                                  GridType_ModBsplineClenshawCurtis,
+                                  GridType_ModBspline,
+                                  GridType_LinearClenshawCurtis,
+                                  GridType_LinearClenshawCurtisBoundary,
+                                  GridType_ModLinearClenshawCurtis,
+                                  GridType_PolyClenshawCurtis,
+                                  GridType_PolyClenshawCurtisBoundary,
+                                  GridType_ModPolyClenshawCurtis]
 
+    samples_matrix = DataMatrix(samples)
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)
-    opEval.mult(alpha_vec, res_vec)
 
-    del opEval
+    if isConsistent:
+        if grid.getType() in multipleEvalNaiveGridTypes:
+            opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+        else:
+            if grid.getType() == GridType_Linear:
+                # use streaming approach for multiple eval
+                evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
+                opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
+            else:
+                # use standard approach
+                opEval = createOperationMultipleEval(grid, samples_matrix)
+    else:
+        opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+
+    opEval.mult(alpha_vec, res_vec)
     return res_vec.array()
 
 
-def evalSGFunction(grid, alpha, p):
+def evalSGFunction(grid, alpha, p, isConsistent=True):
     if grid.getSize() != len(alpha):
         raise AttributeError("grid size differs from length of coefficient vector")
     if len(p.shape) == 1:
         if grid.getStorage().getDimension() != p.shape[0]:
             raise AttributeError("grid dimension differs from dimension of sample")
-        p_vec = DataVector(p)
-        alpha_vec = DataVector(alpha)
-        if grid.getType() in [GridType_Bspline,
+
+        evalNaiveGridTypes = [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
@@ -596,20 +599,24 @@ def evalSGFunction(grid, alpha, p):
                               GridType_ModLinearClenshawCurtis,
                               GridType_PolyClenshawCurtis,
                               GridType_PolyClenshawCurtisBoundary,
-                              GridType_ModPolyClenshawCurtis]:
+                              GridType_ModPolyClenshawCurtis]
+
+        p_vec = DataVector(p)
+        alpha_vec = DataVector(alpha)
+        if isConsistent:
+            if grid.getType() in evalNaiveGridTypes:
+                opEval = createOperationEvalNaive(grid)
+            else:
+                opEval = createOperationEval(grid)
+        else:
             opEval = createOperationEvalNaive(grid)
 
-        else:
-            opEval = createOperationEval(grid)
-
         ans = opEval.eval(alpha_vec, p_vec)
-
-        del opEval
         return ans
     else:
         if grid.getStorage().getDimension() != p.shape[1]:
             raise AttributeError("grid dimension differs from dimension of samples")
-        return evalSGFunctionMulti(grid, alpha, p)
+        return evalSGFunctionMulti(grid, alpha, p, isConsistent)
 
 def hierarchizeEvalHierToTop(grid, nodalValues):
     gs = grid.getStorage()

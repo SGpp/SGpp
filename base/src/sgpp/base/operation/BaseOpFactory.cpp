@@ -105,6 +105,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
@@ -417,6 +418,8 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new base::OperationMultipleEvalModPolyClenshawCurtisNaive(
         grid, dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::Linear) {
+    return new base::OperationMultipleEvalLinearNaive(grid, dataset);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalNaive is not implemented for this grid type.");
