@@ -588,35 +588,36 @@ class KraichnanOrszagTest(object):
         while uqManager.hasMoreSamples():
             uqManager.runNextSamples()
 
+            # ----------------------------------------------------------
+            # specify ASGC estimator
+            analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                            .withAnalyticEstimationStrategy()\
+                                            .andGetResult()
+            analysis.setVerbose(False)
+            # ----------------------------------------------------------
+            label = "asg_l%i_%s" % (level, gridTypeStr)
+            self.runAnalysis(analysis, uqManager, "sg", label,
+                             out, plot, results)
+
+            # update results
+            results["max_grid_size"] = uqManager.getGrid().getSize()
+
+            if out:
+                # store results
+                filename = os.path.join(self.pathResults,
+                                        "%s-qoi%s_%s_d%i_%s_Nmax%i_r%s_N%i.pkl" % (self.radix, self.qoi,
+                                                                                   "asg",
+                                                                                   self.numDims,
+                                                                                   gridTypeStr,
+                                                                                   maxGridSize,
+                                                                                   refinement,
+                                                                                   uqManager.getGrid().getSize()))
+                fd = open(filename, "w")
+                pkl.dump(results, fd)
+                fd.close()
+
         if oldSize < uqManager.uqSetting.getSize():
             uqManager.uqSetting.writeToFile()
-        # ----------------------------------------------------------
-        # specify ASGC estimator
-        analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
-                                        .withAnalyticEstimationStrategy()\
-                                        .andGetResult()
-        analysis.setVerbose(False)
-        # ----------------------------------------------------------
-        label = "asg_l%i_%s" % (level, gridTypeStr)
-        self.runAnalysis(analysis, uqManager, "sg", label,
-                         out, plot, results)
-
-        # update results
-        results["max_grid_size"] = uqManager.getGrid().getSize()
-
-        if out:
-            # store results
-            filename = os.path.join(self.pathResults,
-                                    "%s-qoi%s_%s_d%i_%s_Nmax%i_r%s_N%i.pkl" % (self.radix, self.qoi,
-                                                                               "asg",
-                                                                               self.numDims,
-                                                                               gridTypeStr,
-                                                                               maxGridSize,
-                                                                               refinement,
-                                                                               uqManager.getGrid().getSize()))
-            fd = open(filename, "w")
-            pkl.dump(results, fd)
-            fd.close()
 
 
 def run_kraichnanOrszag_mc(setting, qoi,
