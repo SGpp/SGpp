@@ -108,7 +108,7 @@ class Analysis(object):
                     ans[iteration] = moment
 
         # remove dict structure if there are just one element
-        if not reduce and len(iterations) == 1:
+        if reduce and len(iterations) == 1:
             ans = ans[iterations[0]]
 
         return ans
@@ -157,7 +157,7 @@ class Analysis(object):
                     ans[iteration] = moment
 
         # remove dict structure if there are just one element
-        if not reduce and len(iterations) == 1:
+        if reduce and len(iterations) == 1:
             ans = ans[iterations[0]]
 
         return ans
