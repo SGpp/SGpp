@@ -10,14 +10,13 @@
 namespace sgpp {
 namespace combigrid {
 
-class TrisectionOptimizer {
+class MixedOptimizer {
   SingleFunction f;
 
  public:
-  explicit TrisectionOptimizer(SingleFunction f) : f(f) {}
+  explicit MixedOptimizer(SingleFunction const &f) : f(f) {}
 
-  OptimizationGuess minimize(OptimizationGuess guess, size_t numIterations = 50,
-                           size_t numCandidates = 1);
+  OptimizationGuess minimize(OptimizationGuess const &guess);
 };
 
 } /* namespace combigrid */

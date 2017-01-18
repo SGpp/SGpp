@@ -321,6 +321,34 @@ class FullGridTensorEvaluator : public AbstractFullGridEvaluator<V> {
     return result;
   }
 
+  virtual std::vector<base::DataVector> getGridPoints(MultiIndex const &level) {
+    size_t numDimensions = evaluators.size();
+    std::vector<base::DataVector> result;
+
+    MultiIndex multiBounds(numDimensions);
+    for (size_t d = 0; d < numDimensions; ++d) {
+      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
+    }
+
+    MultiIndexIterator it(multiBounds);
+
+    while (it.isValid()) {
+      auto index = it.getMultiIndex();
+
+      base::DataVector vec(numDimensions);
+
+      for (size_t d = 0; d < numDimensions; ++d) {
+        vec[d] = pointHierarchies[d]->getPoint(level[d], index[d]);
+      }
+
+      result.push_back(vec);
+
+      it.moveToNext();
+    }
+
+    return result;
+  }
+
   /**
    * @return the total number of grid points in a given level.
    */

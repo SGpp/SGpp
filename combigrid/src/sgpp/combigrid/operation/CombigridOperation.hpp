@@ -66,7 +66,6 @@ class CombigridOperation {
       std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractCombigridStorage> storage);
 
-  // TODO(holzmudd): add extra functions, for example for configuring the storage
   void setParameters(base::DataVector const &param = base::DataVector(0));  // clears automatically
 
   double getResult();
@@ -77,8 +76,25 @@ class CombigridOperation {
 
   std::shared_ptr<AbstractCombigridStorage> getStorage();
 
-  // TODO(holzmudd): add static constructor functions
+  /**
+   * @return the number of function values that have been computed via this CombigridOperation
+   * during its lifetime. For a nested grid, this number matches numGridPoints() if only one
+   * computation is performed, i.e. no previous data has been cleared via evaluate() or
+   * setParameters(). Its computation is not optimized, but currently faster than numGridPoints().
+   */
+  size_t numStoredFunctionValues();
+
+  /**
+   * @return the total number of different (multi-dimensional) grid points that have been used for
+   * the current evaluation. This number is reset when clear() is called on the CombigridEvaluator
+   * via evaluate() or setParameters().
+   * This method is currently not optimized and can be slow!
+   */
+  size_t numGridPoints();
+
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpChebyshevPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpLejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
@@ -93,6 +109,8 @@ class CombigridOperation {
   static std::shared_ptr<CombigridOperation> createLinearLejaQuadrature(size_t numDimensions,
                                                                         MultiFunction func,
                                                                         size_t growthFactor = 2);
+  static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
+                                                                               MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformLinearInterpolation(
       size_t numDimensions, MultiFunction func);
 };
