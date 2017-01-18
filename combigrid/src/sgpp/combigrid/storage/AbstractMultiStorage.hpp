@@ -6,10 +6,10 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGE_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_STORAGE_ABSTRACTMULTISTORAGE_HPP_
 
-#include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/storage/IterationPolicy.hpp>
-#include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
+#include <sgpp/combigrid/storage/IterationPolicy.hpp>
 
 #include <memory>
 #include <string>
@@ -27,9 +27,6 @@ template <typename T>
 class AbstractMultiStorage {
  public:
   virtual ~AbstractMultiStorage() {}
-
-  // virtual std::string serialize() const = 0; // TODO(holzmudd): add SerializationStrategy
-  // virtual void deserialize(std::string const &) = 0;
 
   /**
    * @return Returns a reference to the element stored at the given MultiIndex. If the element was

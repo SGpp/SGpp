@@ -6,6 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_ABSTRACTFULLGRIDEVALUATOR_HPP_
 
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 
@@ -35,6 +36,8 @@ class AbstractFullGridEvaluator {
 
   virtual std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level,
                                                       ThreadPool::Task callback) = 0;
+
+  virtual std::vector<base::DataVector> getGridPoints(MultiIndex const &level) = 0;
 
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) = 0;
 };

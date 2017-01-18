@@ -132,7 +132,7 @@ std::string CombigridTreeStorage::serialize() {
   TreeStorageSerializationStrategy<std::shared_ptr<TreeStorage<double>>> outerSerializationStrategy(
       impl->pointHierarchies.size(), innerSerializationStrategy);
 
-  return outerSerializationStrategy.serialize(impl->storage);  // TODO(holzmudd)
+  return outerSerializationStrategy.serialize(impl->storage);
 }
 
 void CombigridTreeStorage::deserialize(const std::string &str) {

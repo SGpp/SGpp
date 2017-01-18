@@ -153,6 +153,17 @@ CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(size_t n
 }
 
 std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpChebyshevPolynomialInterpolation(size_t numDimensions,
+                                                                   MultiFunction func) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expChebyshev()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createLinearClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                            MultiFunction func) {
   return std::make_shared<CombigridMultiOperation>(
@@ -198,6 +209,20 @@ std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearLe
           numDimensions, CombiEvaluators::multiQuadrature()),
       std::make_shared<StandardLevelManager>(), func);
 }
+
+std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createExpClenshawCurtisQuadrature(
+    size_t numDimensions, MultiFunction func) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expClenshawCurtis()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiQuadrature()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+size_t CombigridMultiOperation::numStoredFunctionValues() { return impl->storage->getNumEntries(); }
+
+size_t CombigridMultiOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
 
 std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimensions,
