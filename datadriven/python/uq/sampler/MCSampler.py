@@ -45,7 +45,7 @@ class MCSampler(Sampler):
         return MCSampler(params, None, ScrambledSobolSampleGenerator)
 
     @classmethod
-    def withNumpySampleGeneratr(cls, params):
+    def withNumpySampleGenerator(cls, params):
         return MCSampler(params, None, generator="numpy")
 
     def nextSamples(self, n=1):
