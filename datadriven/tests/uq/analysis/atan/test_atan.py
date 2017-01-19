@@ -602,7 +602,6 @@ def run_atan_sg(inputspace, gridType, level, numGridPoints,
 # ----------------------------------------------------------
 # testing
 # ----------------------------------------------------------
-
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
