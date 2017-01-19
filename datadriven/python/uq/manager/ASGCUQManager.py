@@ -92,8 +92,8 @@ class ASGCUQManager(object):
             for sample in self.uqSetting.getSamplesStats().values():
                 if sample.getActiveUnit() not in dataContainer:
                     ps.append(sample)
-            print dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps)
-            assert dataContainer.getSizeTrain() == self.uqSetting.getSize() - len(ps)
+#             print dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps)
+#             assert dataContainer.getSizeTrain() == self.uqSetting.getSize() - len(ps)
 
         resultsDict = self.uqSetting.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi, ps)
 
