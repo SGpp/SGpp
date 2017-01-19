@@ -57,21 +57,21 @@ def load_results(inputspace, setting, qoi, path="results"):
 settings = {1: {'mc': [('latin_hypercube', 2000)],
                 'sg': [
                        (8, 1025, None, False),
-                       (8, 57, "simple", False)
+                       (8, 617, "simple", False)
                        ],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]},
             2: {'mc': [('latin_hypercube', 2000)],
                 'sg': [
                        (8, 1281, None, False),
-                       (8, 67, 'simple', False),
-                       (8, 235, 'simple', False)
+                       (8, 1023, 'simple', False)
                        ],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]},
             3: {'mc': [('latin_hypercube', 2000)],
                 'sg': [
-                       (8, 1505, None, False)
+                       (8, 1505, None, False),
+                       (8, 1164, 'simple', False)
                        ],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]}}
