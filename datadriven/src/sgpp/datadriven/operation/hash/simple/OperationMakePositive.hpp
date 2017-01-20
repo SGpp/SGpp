@@ -49,7 +49,7 @@ class OperationMakePositive {
    * @param verbose print information or not
    */
   explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-                                     MakePositiveCandidateSearchAlgorithm::Intersections,
+                                     MakePositiveCandidateSearchAlgorithm::IntersectionsJoin,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
                                  bool generateConsistentGrid = true, bool verbose = false);

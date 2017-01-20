@@ -32,6 +32,7 @@ from pysgpp import createOperationFirstMoment, \
     createOperationDensityMargTo1D, \
     createOperationEval
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.pysgpp_swig import LatinHypercubeSampleGenerator
 
 
 class SGDEdist(EstimatedDist):
@@ -40,7 +41,7 @@ class SGDEdist(EstimatedDist):
     """
 
     def __init__(self, grid, alpha, trainData=None, bounds=None, config=None,
-                 learner=None, unitIntegrand=True):
+                 learner=None, unitIntegrand=True, isPositive=True):
         super(SGDEdist, self).__init__(grid.getStorage().getDimension(),
                                        trainData, bounds)
 
@@ -63,7 +64,21 @@ class SGDEdist(EstimatedDist):
             raise AttributeError("the dimensionality of the data differs from the one of the grid")
 
         assert self.grid.getSize() == len(self.alpha)
-        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec) * self.trans.vol()
+        if isPositive:
+            self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec) * self.trans.vol()
+        else:
+            # do monte carlo quadrature to estimate the volume
+            n = 10000
+            numDims = grid.getStorage().getDimension()
+            generator = LatinHypercubeSampleGenerator(numDims, n)
+            samples = np.ndarray((n, numDims))
+            sample = DataVector(numDims)
+            for i in xrange(samples.shape[0]):
+                generator.getSample(sample)
+                samples[i, :] = sample.array()
+            values = evalSGFunction(grid, alpha, samples)
+            self.vol = np.mean([max(0.0, value) for value in values])
+
         if unitIntegrand and self.vol > 1e-13:
             self.alpha /= self.vol
             self.alpha_vec.mult(1. / self.vol)
@@ -115,8 +130,17 @@ class SGDEdist(EstimatedDist):
         alpha = np.array(learner.getSurpluses().array())
 
         # load sgde distribution
-        ans = cls(grid, alpha, samples, bounds, config, learner)
+        isPositive = False
+        if "sgde_makePositive" in config:
+            isPositive = config["sgde_makePositive"]
 
+        ans = cls(grid, alpha,
+                  trainData=samples,
+                  bounds=bounds,
+                  config=config,
+                 learner=learner,
+                 unitIntegrand=True,
+                 isPositive=isPositive)
         return ans
 
 
@@ -158,16 +182,11 @@ class SGDEdist(EstimatedDist):
         # evaluate the sparse grid density
         fx = evalSGFunction(self.grid, self.alpha, x_unit)
 
-#         if self.trans is not None and self.trans.vol() > 1e-14:
-#             fx *= 1. / self.trans.vol()
-
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
             fx = fx[0]
 
-        return fx
-        # return max(0, fx)
-        # return self.vol * (fx + self.fmin) / self.scale
+        return max(0, fx)
 
     def cdf(self, x):
         # convert the parameter to the right format

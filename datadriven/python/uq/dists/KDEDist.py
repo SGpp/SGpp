@@ -93,7 +93,7 @@ class KDEDist(EstimatedDist):
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
-        return self.ppf(DataMatrix(unif))
+        return self.ppf(unif)
 
     def mean(self, n=1e4):
         return self.dist.mean()
