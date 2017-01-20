@@ -127,6 +127,12 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       if ((strcmp(candidateSearchStr.c_str(), "setToZero") == 0)) {
         sgdeConfig.makePositive_interpolationAlgorithm_ =
             datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
+      } else if ((strcmp(candidateSearchStr.c_str(), "interpolateBoundaries1d") == 0)) {
+        sgdeConfig.makePositive_interpolationAlgorithm_ =
+            datadriven::MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
+      } else if ((strcmp(candidateSearchStr.c_str(), "interpolateExp") == 0)) {
+        sgdeConfig.makePositive_interpolationAlgorithm_ =
+            datadriven::MakePositiveInterpolationAlgorithm::InterpolateExp;
       } else {
         throw sgpp::base::application_exception("interpolation algorithm is unknown");
       }

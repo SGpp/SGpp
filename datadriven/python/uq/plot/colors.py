@@ -14,7 +14,6 @@ def rgbTpInt(rgb):
 
 def loadColorSequence(n):
     colors = [None] * n
-    np.random.seed(1234567)
 
     for i in range(n):
         colors[i] = '#%06X' % np.random.randint(0, 0xFFFFFF)
