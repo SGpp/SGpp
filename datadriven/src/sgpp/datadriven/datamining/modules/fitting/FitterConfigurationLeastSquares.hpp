@@ -18,6 +18,9 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Configuration for fitter scenarios using least squares optimization.
+ */
 class FitterConfigurationLeastSquares : public FitterConfiguration {
  public:
   FitterConfigurationLeastSquares() : FitterConfiguration{} {}
