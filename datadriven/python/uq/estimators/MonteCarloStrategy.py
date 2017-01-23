@@ -6,12 +6,14 @@ from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
+from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
 
 
 class MonteCarloStrategy(SparseGridEstimationStrategy):
 
     def __init__(self, samples=None, ixs=None,
-                 n=5000, npaths=10, isPositive=False):
+                 n=5000, npaths=100, isPositive=False,
+                 percentile=1):
         """
         Constructor
         @param samples: ndarray containing monte carlo samples
@@ -35,6 +37,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             self.__ixs = np.array(ixs)
 
         self.__npaths = npaths
+        self.__percentile = percentile
 
         # other stuff
         self.__isPositive = isPositive
@@ -42,31 +45,39 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         self.verbose = True
 
 
-    def __getSamples(self, W, T, n):
+    def __getSamples(self, W, T):
         if self.samples is None:
-            # draw n ans
-            ans = W.rvs(n)
+            # draw n samples
+            ans = W.rvs(self.__n)
 
             # transform them to the unit hypercube
-            return T.probabilisticToUnitMatrix(ans)
+            for i in xrange(ans.shape[0]):
+                # transform them to the unit hypercube
+                ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
+                                      for j in xrange(len(T))])
         else:
             # bootstrapping on the available samples
-            ixs = np.random.randint(0, self.__n, n)
+            ixs = np.random.randint(0, self.__n, self.__n)
             dataSamples = self.samples[ixs, :]
 
             # check if there are samples for just a subset of the random
             # variables. If so, add the missing ones
             if self.__ixs is not None:
-                ans = W.rvs(n)
+                # generate samples for the non existing directions
+                ans = W.rvs(self.__n)
 
-                # transform them to the unit hypercube
+                # replace the entries in the directions where we infact have
+                # data points available using bootstrapping
                 for i, sample in enumerate(dataSamples):
-                    ans[i, :] = T.probabilisticToUnit(ans[i, :])
+                    # transform them to the unit hypercube
+                    ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
+                                          for j in xrange(len(T))])
                     ans[i, self.__ixs] = sample
             else:
                 ans = dataSamples
 
-            return ans
+        return ans
+
 
     def __estimate(self, vol, grid, alpha, U, T, f, npaths):
         n = npaths * self.__n
@@ -148,7 +159,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D, self.__n)
+            samples = self.__getSamples(W, D)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
@@ -156,7 +167,9 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 
         # error statistics
         if self.__npaths > 1:
-            err = np.var(moments, ddof=1)
+            lower_percentile = np.percentile(moments, q=self.__percentile)
+            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
+            err = upper_percentile - lower_percentile
         else:
             err = np.Inf
 
@@ -176,7 +189,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D, self.__n)
+            samples = self.__getSamples(W, D)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
@@ -184,7 +197,9 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 
         # error statistics
         if self.__npaths > 1:
-            err = np.var(moments, ddof=1)
+            lower_percentile = np.percentile(moments, q=self.__percentile)
+            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
+            err = upper_percentile - lower_percentile
         else:
             err = np.Inf
 
