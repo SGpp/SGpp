@@ -25,20 +25,29 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Concrete factory to build an instance of #sgpp::datadriven::SplittingScorer
+ */
 class SplittingScorerFactory : public ScorerFactory {
  public:
-  SplittingScorerFactory() : ScorerFactory(){};
-  virtual ~SplittingScorerFactory(){};
+  /**
+   * Default constructor
+   */
+  SplittingScorerFactory() = default;
 
-  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) {
+  /**
+   * Create an instance of a #sgpp::datadriven::SplittingScorer object based on the configuration
+   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
+   * data from the config file.
+   * @return Fully configured instance of a  #sgpp::datadriven::SplittingScorer object.
+   */
+  Scorer* buildScorer(const DataMiningConfigParser& parser) const override {
     TestingConfiguration config;
     parser.getScorerTestingConfig(config, config);
 
     auto metric = buildMetric(config.metric);
     auto shuffling = buildShuffling(config.shuffling);
-
-    return new SplittingScorer(metric.release(), shuffling.release(), config.randomSeed,
-                               config.testingPortion);
+    return new SplittingScorer(metric, shuffling, config.randomSeed, config.testingPortion);
   };
 };
 

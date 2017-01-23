@@ -21,32 +21,59 @@
 #include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
-#include <memory>
-
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Abstract factory to build all kinds of scorers based on a given configuration.
+ */
 class ScorerFactory {
  public:
-  ScorerFactory(){};
-  virtual ~ScorerFactory(){};
+  /**
+   * Default constructor
+   */
+  ScorerFactory() = default;
 
-  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) = 0;
+  /**
+   * Virtual destructor
+   */
+  virtual ~ScorerFactory() = default;
+
+  /**
+   * Assemble a #sgpp::datadriven::Scorer object based on the configuration
+   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
+   * data from the config file.
+   * @return Fully configured instance of a  #sgpp::datadriven::Scorer object.
+   */
+  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) const = 0;
 
  protected:
-  std::unique_ptr<Metric> buildMetric(ScorerMetricType config) {
+  /**
+   * Build a #sgpp::datadriven::Metric object based on the given metric type enum value.
+   * @param config #sgpp::datadriven::ScorerMetricType describing which #sgpp::datadriven::Metric to
+   * generate.
+   * @return  Fully configured instance of a  #sgpp::datadriven::Metric object.
+   */
+  Metric* buildMetric(ScorerMetricType config) const {
     if (config == ScorerMetricType::MSE) {
-      return std::make_unique<MSE>();
+      return new MSE{};
     } else {
       return nullptr;
     }
   }
 
-  std::unique_ptr<ShufflingFunctor> buildShuffling(ScorerShufflingType config) {
+  /**
+   * Build a #sgpp::datadriven::ShufflingFunctor object based on the the given shuffling type enum
+   * value.
+   * @param config #sgpp::datadriven::ScorerShufflingType describing which
+   * #sgpp::datadriven::ShufflingFunctor to generate.
+   * @return Fully configured instance of a  #sgpp::datadriven::ShufflingFunctor object.
+   */
+  ShufflingFunctor* buildShuffling(ScorerShufflingType config) const {
     if (config == ScorerShufflingType::random) {
-      return std::make_unique<RandomShufflingFunctor>();
+      return new RandomShufflingFunctor{};
     } else if (config == ScorerShufflingType::sequential) {
-      return std::make_unique<SequentialShufflingFunctor>();
+      return new SequentialShufflingFunctor{};
     } else {
       return nullptr;
     }

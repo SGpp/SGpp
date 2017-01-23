@@ -19,20 +19,30 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Concrete factory to build an instance of #sgpp::datadriven::CrossValidation
+ */
 class CrossValidationScorerFactory : public ScorerFactory {
  public:
-  CrossValidationScorerFactory() : ScorerFactory(){};
-  virtual ~CrossValidationScorerFactory(){};
+  /**
+   * Default constructor
+   */
+  CrossValidationScorerFactory() = default;
 
-  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) {
+  /**
+   * Create an instance of a #sgpp::datadriven::CrossValidation object based on the configuration
+   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
+   * data from the config file.
+   * @return Fully configured instance of a  #sgpp::datadriven::CrossValidation object.
+   */
+  Scorer* buildScorer(const DataMiningConfigParser& parser) const override {
     CrossValidationConfiguration config;
     parser.getScorerCrossValidationConfig(config, config);
 
     auto metric = buildMetric(config.metric);
     auto shuffling = buildShuffling(config.shuffling);
 
-    return new CrossValidation(metric.release(), shuffling.release(), config.randomSeed,
-                               config.folds);
+    return new CrossValidation(metric, shuffling, config.randomSeed, config.folds);
   };
 };
 
