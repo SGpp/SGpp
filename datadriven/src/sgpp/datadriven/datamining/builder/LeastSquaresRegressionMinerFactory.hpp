@@ -24,17 +24,53 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Least Squares
+ * Regression
+ */
 class LeastSquaresRegressionMinerFactory : public MinerFactory {
  public:
-  LeastSquaresRegressionMinerFactory();
-  virtual ~LeastSquaresRegressionMinerFactory();
+  /**
+   * Default constructor
+   */
+  LeastSquaresRegressionMinerFactory() = default;
 
-  virtual SparseGridMiner* buildMiner(const std::string& path);
+  /**
+   * Build an instance of #sgpp::datadriven::SparseGridMiner for Least Squares based on
+   * specification from a configuration file.
+   * @param path Path to a configuration file that defines the structure of the miner object.
+   */
+  virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
  private:
-  virtual DataSource* createDataSource(const DataMiningConfigParser& parser);
-  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser);
-  virtual Scorer* createScorer(const DataMiningConfigParser& parser);
+  /**
+   * Build an instance of a #sgpp::datadriven::DataSource object as specified in the configuration
+   * file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured instance of a #sgpp::datadriven::DataSource object as specified in the
+   * configuration file.
+   */
+  virtual DataSource* createDataSource(const DataMiningConfigParser& parser) const;
+
+  /**
+   * Build an instance of a #sgpp::datadriven::ModelFitterBase object as specified in the
+   * configuration
+   * file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured fitter (instance of a #sgpp::datadriven::ModelFittingBase object) as
+   * specified in the
+   * configuration file.
+   */
+  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const;
+
+  /**
+   * Build an instance of a #sgpp::datadriven::Scorer object as specified in the configuration
+   * file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured instance of a #sgpp::datadriven::Scorer object as specified in the
+   * configuration file.
+   */
+  virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
 };
 
 } /* namespace datadriven */
