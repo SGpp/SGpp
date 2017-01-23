@@ -534,21 +534,25 @@ class UQSetting(object):
         Run for multiple samples
         @param samples: list of samples
         """
+        cnt = 0
         for i, sample in enumerate(samples):
             if self._verbose:
                 print "-" * 60
                 print "Run: %i/%i (%i)" % (i + 1, len(samples), self.getSize())
 
-            ret = self.run(sample, *args, **kws)
+            ret = self.run(sample, writeToFile=self.getSaveAfterEachRun(cnt),
+                           *args, **kws)
 
             # check if run was successful
             if ret == 1:
                 print "Warning: invalid sample %s" % sample
+            else:
+                cnt += 1
 
         if self._verbose:
             print "-" * 60
 
-    def run(self, sample, *args, **kws):
+    def run(self, sample, writeToFile=False, *args, **kws):
         """
         Trigger the pipeline from
          1) Transformation p \in [0, 1]^d -> \Gamma*
@@ -570,10 +574,10 @@ class UQSetting(object):
             n2 = len(self.getSimulationStats())
     
             # serialize the UQSetting to file. As this is the expensive
-            # part, this step is important there is any error in the post
+            # part, this step is important if there is any error in the post
             # processing part
-            if n2 > n1 and self.getSaveAfterEachRun():
-                self .writeToFile()
+#             if n2 > n1 and writeToFile:
+#                 self .writeToFile()
     
             n1 = len(self.getPostprocessorStats())
     
@@ -581,7 +585,7 @@ class UQSetting(object):
     
             n2 = len(self.getPostprocessorStats())
             # serialize once more after the post processing has been done
-            if n2 > n1 and self.getSaveAfterEachRun():
+            if n2 > n1 and writeToFile:
                 self.writeToFile()
     
             return 0
