@@ -549,6 +549,9 @@ class UQSetting(object):
             else:
                 cnt += 1
 
+            if self.verbose:
+                sys.out.flush()
+
         if self._verbose:
             print "-" * 60
 
