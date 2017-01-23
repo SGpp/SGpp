@@ -20,10 +20,19 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ *
+ */
 class FitterTypeParser {
  public:
+  /**
+   *
+   */
   static FitterType parse(const std::string& input);
 
+  /**
+   *
+   */
   static const std::string& toString(FitterType type);
 
  private:

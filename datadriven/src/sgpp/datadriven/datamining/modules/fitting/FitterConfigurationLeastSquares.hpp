@@ -20,19 +20,10 @@ namespace datadriven {
 
 class FitterConfigurationLeastSquares : public FitterConfiguration {
  public:
-  FitterConfigurationLeastSquares() : FitterConfiguration() { setupDefaults(); }
+  FitterConfigurationLeastSquares() : FitterConfiguration{} {}
 
-  FitterConfigurationLeastSquares(const DataMiningConfigParser& parser) : FitterConfiguration() {
-    setupDefaults();
-    parser.getFitterGridConfig(gridConfig, gridConfig);
-    parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
-    parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
-    parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
-    parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
-    parser.getFitterLambda(lambda, lambda);
-  }
+  FitterConfiguration* clone() const override { return new FitterConfigurationLeastSquares(*this); }
 
- protected:
   void setupDefaults() override {
     // configure initial grid
     gridConfig.dim_ = 0;
@@ -65,6 +56,17 @@ class FitterConfigurationLeastSquares : public FitterConfiguration {
 
     lambda = 0.0;
   };
+
+  void readParams(const DataMiningConfigParser& parser) override {
+    setupDefaults();
+
+    parser.getFitterGridConfig(gridConfig, gridConfig);
+    parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
+    parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
+    parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
+    parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
+    parser.getFitterLambda(lambda, lambda);
+  }
 };
 
 } /* namespace datadriven */

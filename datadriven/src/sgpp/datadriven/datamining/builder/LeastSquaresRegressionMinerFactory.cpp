@@ -50,7 +50,9 @@ DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
 
 ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
     const DataMiningConfigParser& parser) {
-  FitterConfigurationLeastSquares config(parser);
+  FitterConfigurationLeastSquares config{};
+  config.setupDefaults();
+  config.readParams(parser);
   return new ModelFittingLeastSquares(config);
 }
 
