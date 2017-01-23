@@ -29,16 +29,8 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DataSourceBuilder::DataSourceBuilder() : config() {}
-
-DataSourceBuilder::~DataSourceBuilder() {}
-
-DataSourceBuilder& DataSourceBuilder::withFileType(const std::string& fileType) {
-  if (DataSourceFileTypeParser::parse(fileType) == DataSourceFileType::ARFF) {
-    config.fileType = DataSourceFileType::ARFF;
-  } else {
-    data_exception("Unknown file type");
-  }
+DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType& fileType) {
+  config.fileType = fileType;
   return *this;
 }
 
@@ -65,7 +57,7 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
   return *this;
 }
 
-DataSource* DataSourceBuilder::assemble() {
+DataSource* DataSourceBuilder::assemble() const {
   SampleProvider* sampleProvider;
 
   if (config.fileType == DataSourceFileType::ARFF) {
@@ -102,7 +94,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
     std::transform(t.begin(), t.end(), t.begin(), ::tolower);
   }
   // check if there is gz compression
-  if (tokens.back().compare(gz) == 0) {
+  if (tokens.back().compare("gz") == 0) {
     config.isCompressed = true;
   }
 
