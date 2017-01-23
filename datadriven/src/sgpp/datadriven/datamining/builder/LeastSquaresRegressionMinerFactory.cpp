@@ -24,18 +24,14 @@
 namespace sgpp {
 namespace datadriven {
 
-LeastSquaresRegressionMinerFactory::LeastSquaresRegressionMinerFactory() : MinerFactory() {}
-
-LeastSquaresRegressionMinerFactory::~LeastSquaresRegressionMinerFactory() {}
-
-SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) {
+SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
 }
 
 DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
-    const DataMiningConfigParser& parser) {
+    const DataMiningConfigParser& parser) const {
   DataSourceConfig config;
 
   bool hasSource = parser.getDataSourceConfig(config, config);
@@ -49,14 +45,15 @@ DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
 }
 
 ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
-    const DataMiningConfigParser& parser) {
+    const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
   config.setupDefaults();
   config.readParams(parser);
   return new ModelFittingLeastSquares(config);
 }
 
-Scorer* LeastSquaresRegressionMinerFactory::createScorer(const DataMiningConfigParser& parser) {
+Scorer* LeastSquaresRegressionMinerFactory::createScorer(
+    const DataMiningConfigParser& parser) const {
   std::unique_ptr<ScorerFactory> factory;
 
   if (parser.hasScorerConfigCrossValidation()) {

@@ -16,13 +16,28 @@
 
 namespace sgpp {
 namespace datadriven {
-
+/**
+ * Abstract factory to build different kinds of Miners based on a configuration which is parsed from
+ * a file. A miner consists of a data source, a fitter and a scorer. A concrete Factory class has to
+ * implement the required interfaces.
+ */
 class MinerFactory {
  public:
-  MinerFactory(){};
-  virtual ~MinerFactory(){};
+  /**
+   * Default constructor
+   */
+  MinerFactory() = default;
 
-  virtual SparseGridMiner* buildMiner(const std::string& path) = 0;
+  /**
+   * Virtual destructor
+   */
+  virtual ~MinerFactory() = default;
+
+  /**
+   * Factory method to build a miner object based on a configuration file.
+   * @param path Path to a configuration file that defines the structure of the miner object.
+   */
+  virtual SparseGridMiner* buildMiner(const std::string& path) const = 0;
 };
 
 } /* namespace datadriven */
