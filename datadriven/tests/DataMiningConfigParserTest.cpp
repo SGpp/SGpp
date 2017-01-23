@@ -16,7 +16,6 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>

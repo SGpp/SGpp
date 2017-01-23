@@ -11,20 +11,18 @@
 
 #pragma once
 
-#include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
-#include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-
-#include <sgpp/base/tools/json/JSON.hpp>
 #include <string>
+
+namespace sgpp {
+namespace datadriven {
+struct CrossValidationConfiguration;
+struct DataSourceConfig;
+struct TestingConfiguration;
+} /* namespace datadriven */
+} /* namespace sgpp */
 
 using json::JSON;
 using json::DictNode;
@@ -35,6 +33,9 @@ using sgpp::base::RegularGridConfiguration;
 
 namespace sgpp {
 namespace datadriven {
+
+// forward declaration to break dependency cycle
+enum class FitterType;
 
 class DataMiningConfigParser {
  public:
