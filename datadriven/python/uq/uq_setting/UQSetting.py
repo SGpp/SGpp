@@ -24,6 +24,7 @@ from pysgpp import DataVector, DataMatrix
 import subprocess
 import json
 import os
+import sys
 
 from pysgpp.extensions.datadriven.tools import readDataARFF
 from UQSettingFormatter import UQSettingFormatter
