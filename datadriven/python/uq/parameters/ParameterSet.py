@@ -162,6 +162,15 @@ class ParameterSet(object):
         return [param.getDistribution() for param in self.values()
                 if param.isUncertain()]
 
+    def getParameter(self, name):
+        """
+        """
+        for param in self.__params:
+            if name == param.getName():
+                return param
+        return None
+
+
     def getIndependentJointDistribution(self):
         """
         Creates a multivariate distributions where the marginal distributions

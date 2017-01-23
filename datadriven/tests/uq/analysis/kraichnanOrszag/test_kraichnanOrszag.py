@@ -464,7 +464,9 @@ class KraichnanOrszagTest(object):
 #         plt.plot(t, y3r, 'r--', label='y3r', color='blue')
 #         plt.show()
 
-    def run_regular_sparse_grid(self, gridTypeStr, level, maxGridSize,
+    def run_regular_sparse_grid(self, gridTypeStr,
+                                level,
+                                maxGridSize,
                                 boundaryLevel=1,
                                 isFull=False,
                                 out=False,
