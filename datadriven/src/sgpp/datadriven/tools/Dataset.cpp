@@ -18,42 +18,21 @@ Dataset::Dataset(size_t numberInstances, size_t dimension)
       targets(numberInstances),
       data(numberInstances, dimension) {}
 
-Dataset& Dataset::operator=(const Dataset& set) {
-  if (this->numberInstances != set.numberInstances) {  // numberInstances is different
-    if (this->dimension != set.dimension) {            // dimension is also different
-      this->dimension = set.dimension;
-    }
-    this->numberInstances = set.numberInstances;
-    this->targets.resize(set.numberInstances);
-    this->data.resize(set.numberInstances, set.dimension);
-  } else if (this->dimension != set.dimension) {  // only dimension is different
-    this->dimension = set.dimension;
-    this->data.resize(set.numberInstances, set.dimension);
-  }
-  this->targets = set.targets;
-  this->data = set.data;
-  return *this;
-}
-
 size_t Dataset::getNumberInstances() const { return numberInstances; }
 
 size_t Dataset::getDimension() const { return dimension; }
 
-sgpp::base::DataVector& Dataset::getTargets() { return targets; }
-
-const sgpp::base::DataVector& sgpp::datadriven::Dataset::getTargets() const {
-  return const_cast<sgpp::base::DataVector&>(static_cast<const Dataset&>(*this).getTargets());
+sgpp::base::DataVector& Dataset::getTargets() {
+  return const_cast<sgpp::base::DataVector&>(static_cast<Dataset&>(*this).getTargets());
 }
 
-sgpp::base::DataMatrix& Dataset::getData() { return data; }
-
-const sgpp::base::DataMatrix& sgpp::datadriven::Dataset::getData() const {
-  return const_cast<sgpp::base::DataMatrix&>(static_cast<const Dataset&>(*this).getData());
+sgpp::base::DataMatrix& Dataset::getData() {
+  return const_cast<sgpp::base::DataMatrix&>(static_cast<Dataset&>(*this).getData());
 }
 
-void Dataset::setData(const sgpp::base::DataMatrix& data) { this->data = data; }
+const sgpp::base::DataVector& Dataset::getTargets() const { return targets; }
 
-void Dataset::setTargets(const sgpp::base::DataVector& targets) { this->targets = targets; }
+const sgpp::base::DataMatrix& Dataset::getData() const { return data; }
 
 }  // namespace datadriven
 }  // namespace sgpp
