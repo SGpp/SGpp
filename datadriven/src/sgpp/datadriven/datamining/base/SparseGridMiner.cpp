@@ -21,8 +21,6 @@ namespace datadriven {
 SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer)
     : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
 
-SparseGridMiner::~SparseGridMiner() {}
-
 void SparseGridMiner::learn() {
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   double stdDeviation;
