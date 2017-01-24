@@ -49,12 +49,12 @@ class SGDEdist(EstimatedDist):
         self.alpha = alpha
         self.alpha_vec = DataVector(alpha)
         self.trainData = trainData
-        self.trainData_vec = DataMatrix(trainData)
         self.config = config
         self.unitIntegrand = unitIntegrand
         
         if learner is None and trainData is not None:
-            self.learner = LearnerSGDE(self.grid, self.alpha_vec, self.trainData_vec)
+            trainData_vec = DataMatrix(trainData)
+            self.learner = LearnerSGDE(self.grid, self.alpha_vec, trainData_vec)
         else:
             self.learner = learner
 
