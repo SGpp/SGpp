@@ -16,6 +16,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
+%rename (getConstData) sgpp::datadriven::Dataset::getData() const;
+%include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
