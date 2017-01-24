@@ -42,7 +42,7 @@ const std::string DataMiningConfigParser::fitter = "fitter";
 
 DataMiningConfigParser::DataMiningConfigParser(const std::string& filepath) : configFile(nullptr) {
   try {
-    configFile = std::make_shared<JSON>(filepath);
+    configFile = std::make_unique<JSON>(filepath);
   } catch (json_exception& exception) {
     std::cout << exception.what() << std::endl;
     std::string errorMsg = "can not open file: \"" + filepath + "\"";

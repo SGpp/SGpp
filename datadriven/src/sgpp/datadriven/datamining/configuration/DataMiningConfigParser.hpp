@@ -67,7 +67,7 @@ class DataMiningConfigParser {
   bool getFitterLambda(double& lambda, double defaultValue) const;
 
  private:
-  std::shared_ptr<JSON> configFile;
+  std::unique_ptr<JSON> configFile;
 
   static const std::string dataSource;
   static const std::string scorer;
