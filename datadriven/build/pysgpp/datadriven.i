@@ -17,20 +17,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
-
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
-
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
-
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
-//%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp"
-
-//%include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
@@ -46,6 +33,49 @@
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 // TODO(valentjn): can only include if issue #7 is fixed
 //%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+
+%ignore *::operator=;
+//TODO(lettrich) : parser not wrapable because of unwrapped JSON
+//%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+
+%ignore sgpp::datadriven::DataSource::begin;
+%ignore sgpp::datadriven::DataSource::end;
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+
 #endif
 
 %apply std::string *INPUT { std::string& istr };
