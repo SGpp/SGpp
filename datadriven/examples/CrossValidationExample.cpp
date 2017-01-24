@@ -52,8 +52,9 @@ int main(int argc, char** argv) {
   auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   // regression
-  auto config = FitterConfigurationLeastSquares();
-  // set grid dim
+  auto config = FitterConfigurationLeastSquares{};
+  config.setupDefaults();
+  // setup everything that deviates from defaults.
   auto& gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;
   gridConfig.type_ = GridType::ModLinear;
@@ -61,15 +62,11 @@ int main(int argc, char** argv) {
   config.setLambda(10e-1);
 
   std::cout << "starting 5 fold cross validation with seed 42" << std::endl;
-  auto model = std::make_unique<ModelFittingLeastSquares>(config);
-  auto metric = std::make_unique<MSE>();
-  auto shuffling = std::make_unique<RandomShufflingFunctor>();
-  double stdDeviation;
-  auto scorer = std::make_unique<CrossValidation>(metric.release(), shuffling.release(), 42, 5);
-  // auto scorer = std::make_unique<SplittingScorer>(metric.release(), shuffling.release(), 42,
-  // 0.8);
+  auto model = ModelFittingLeastSquares{config};
+  double stdDeviation = 0;
+  CrossValidation scorer{new MSE{}, new RandomShufflingFunctor{}, 42, 5};
 
-  double score = scorer->calculateScore(*model, *dataset, &stdDeviation);
+  auto score = scorer.calculateScore(model, *dataset, &stdDeviation);
 
   std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
 
