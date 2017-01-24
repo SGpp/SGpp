@@ -23,11 +23,11 @@ size_t Dataset::getNumberInstances() const { return numberInstances; }
 size_t Dataset::getDimension() const { return dimension; }
 
 sgpp::base::DataVector& Dataset::getTargets() {
-  return const_cast<sgpp::base::DataVector&>(static_cast<Dataset&>(*this).getTargets());
+  return const_cast<sgpp::base::DataVector&>(static_cast<const Dataset&>(*this).getTargets());
 }
 
 sgpp::base::DataMatrix& Dataset::getData() {
-  return const_cast<sgpp::base::DataMatrix&>(static_cast<Dataset&>(*this).getData());
+  return const_cast<sgpp::base::DataMatrix&>(static_cast<const Dataset&>(*this).getData());
 }
 
 const sgpp::base::DataVector& Dataset::getTargets() const { return targets; }
