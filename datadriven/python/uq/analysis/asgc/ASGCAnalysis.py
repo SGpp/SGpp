@@ -100,7 +100,7 @@ class ASGCAnalysis(Analysis):
 
     def estimateDensity(self, ts=[0], n=10000, dtype="kde", config={}):
         samples = self.generateUnitSamples(n)
-        time_dependent_values = self.eval(samples, ts=ts)
+        time_dependent_values = np.vstack(self.eval(samples, ts=ts))
 
         if len(ts) == 1:
             return self._estimateDensityByConfig(dtype, time_dependent_values, config)
