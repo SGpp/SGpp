@@ -51,26 +51,43 @@
 /* ************************
  * datamining
  * ************************/
-// configuration
-//#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
-// modules
+#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
+#include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 
-// datasource
-//#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
-//#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
-//#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 
-// fitting
-//#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-//#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
-//
-//// scoring
-//#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-//#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
-//#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
-//#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-//#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
-//#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
+
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+
+#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 
 #endif /* DATADRIVEN_HPP */
