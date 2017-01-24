@@ -6,8 +6,8 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
 from pysgpp.extensions.datadriven.uq.plot.colors import loadColorSequence
 
 
-def plotFunction1d(f, n=1000, **kws):
-    x = np.linspace(0, 1, n, endpoint=True)
+def plotFunction1d(f, n=1000, xlim=[0, 1], **kws):
+    x = np.linspace(xlim[0], xlim[1], n, endpoint=True)
     y = [f(np.array([xi])) for xi in x]
     plt.plot(x, y, **kws)
 

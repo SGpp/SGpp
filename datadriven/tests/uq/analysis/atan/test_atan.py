@@ -206,7 +206,7 @@ class AtanPeridynamicExample(object):
 
 
     def run_mc(self, N, minExp=4, maxExp=12, out=False, plot=False):
-                # ----------------------------------------------------------
+        # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
         np.random.seed(1234567)
