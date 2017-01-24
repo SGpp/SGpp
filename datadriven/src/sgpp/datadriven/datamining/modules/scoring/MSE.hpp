@@ -32,7 +32,7 @@ class MSE : public Metric {
    * @param trueValues actual values as taken from the dataset.
    * @return mean squared error (MSE) - strictly positive such that smaller values are better.
    */
-  double operator()(const DataVector& predictedValues, const DataVector& trueValues) const override;
+  double measure(const DataVector& predictedValues, const DataVector& trueValues) const override;
 };
 
 } /* namespace datadriven */

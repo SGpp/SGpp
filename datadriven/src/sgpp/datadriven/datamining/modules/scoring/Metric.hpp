@@ -78,8 +78,8 @@ class Metric {
    * @param trueValues actual values as taken from the dataset.
    * @return Quantification of the difference. Smaller is better.
    */
-  virtual double operator()(const DataVector& predictedValues,
-                            const DataVector& trueValues) const = 0;
+  virtual double measure(const DataVector& predictedValues,
+                          const DataVector& trueValues) const = 0;
 };
 
 } /* namespace datadriven */

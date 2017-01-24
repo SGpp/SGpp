@@ -90,7 +90,7 @@ double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& te
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
-  return (*metric)(predictedValues, testDataset.getTargets());
+  return metric->measure(predictedValues, testDataset.getTargets());
 }
 
 } /* namespace datadriven */
