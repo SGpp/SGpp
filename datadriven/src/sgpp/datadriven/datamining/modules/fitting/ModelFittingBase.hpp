@@ -5,15 +5,15 @@
 
 #pragma once
 
+#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
 
 namespace sgpp {
 
