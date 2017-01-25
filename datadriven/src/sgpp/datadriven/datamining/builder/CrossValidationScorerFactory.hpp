@@ -12,9 +12,7 @@
 
 #pragma once
 
-#include "ScorerFactory.hpp"
-
-#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -35,15 +33,7 @@ class CrossValidationScorerFactory : public ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::CrossValidation object.
    */
-  Scorer* buildScorer(const DataMiningConfigParser& parser) const override {
-    CrossValidationConfiguration config;
-    parser.getScorerCrossValidationConfig(config, config);
-
-    auto metric = buildMetric(config.metric);
-    auto shuffling = buildShuffling(config.shuffling);
-
-    return new CrossValidation(metric, shuffling, config.randomSeed, config.folds);
-  };
+  Scorer* buildScorer(const DataMiningConfigParser& parser) const override;
 };
 
 } /* namespace datadriven */
