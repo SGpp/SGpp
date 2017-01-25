@@ -9,14 +9,17 @@
  *  	Author: Michael Lettrich
  */
 
-#include "DataMiningConfigParser.hpp"
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
-#include <sgpp/base/tools/GridTypeParser.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
@@ -30,9 +33,7 @@ using json::json_exception;
 using sgpp::base::file_exception;
 using sgpp::base::data_exception;
 using json::DictNode;
-using sgpp::base::GridTypeParser;
 using sgpp::solver::SLESolverConfiguration;
-using sgpp::solver::SolverTypeParser_old;
 
 namespace sgpp {
 namespace datadriven {
@@ -92,7 +93,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
       config.fileType = DataSourceFileTypeParser::parse((*dataSourceConfig)["fileType"].get());
     } else {
       std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
-                << asInteger(defaults.fileType) << "." << std::endl;
+                << DataSourceFileTypeParser::toString(defaults.fileType) << "." << std::endl;
       config.fileType = defaults.fileType;
     }
 
@@ -119,7 +120,7 @@ bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config
           ScorerShufflingTypeParser::parse((*scorerTestingConfig)["shuffling"].get());
     } else {
       std::cout << "# Did not find testing[shuffling]. Setting default value "
-                << asInteger(defaults.shuffling) << "." << std::endl;
+                << ScorerShufflingTypeParser::toString(defaults.shuffling) << "." << std::endl;
       config.shuffling = defaults.shuffling;
     }
 
@@ -130,7 +131,7 @@ bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config
       config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
     } else {
       std::cout << "# Did not find testing[metric]. Setting default value "
-                << asInteger(defaults.metric) << "." << std::endl;
+                << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
     }
 
   } else {
@@ -156,7 +157,7 @@ bool DataMiningConfigParser::getScorerCrossValidationConfig(
           ScorerShufflingTypeParser::parse((*scorerTestingConfig)["shuffling"].get());
     } else {
       std::cout << "# Did not find crossValidation[shuffling]. Setting default value "
-                << asInteger(defaults.shuffling) << "." << std::endl;
+                << ScorerShufflingTypeParser::toString(defaults.shuffling) << "." << std::endl;
       config.shuffling = defaults.shuffling;
     }
     config.randomSeed =
@@ -166,7 +167,7 @@ bool DataMiningConfigParser::getScorerCrossValidationConfig(
       config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
     } else {
       std::cout << "# Did not find crossValidation[metric]. Setting default value "
-                << asInteger(defaults.metric) << "." << std::endl;
+                << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
     }
 
   } else {
@@ -218,7 +219,7 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration& confi
       config.type_ = GridTypeParser::parse((*fitterConfig)["gridType"].get());
     } else {
       std::cout << "# Did not find gridConfig[gridType]. Setting default value "
-                << asInteger(defaults.type_) << "." << std::endl;
+                << GridTypeParser::toString(defaults.type_) << "." << std::endl;
       config.type_ = defaults.type_;
     }
 
@@ -310,7 +311,7 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
           RegularizationTypeParser::parse((*regularizationConfig)["regularizationType"].get());
     } else {
       std::cout << "# Did not find regularizationConfig[regularizationType]. Setting default value "
-                << asInteger(defaults.regType_) << "." << std::endl;
+                << RegularizationTypeParser::toString(defaults.regType_) << "." << std::endl;
       config.regType_ = defaults.regType_;
     }
   }
@@ -428,10 +429,10 @@ void DataMiningConfigParser::parseSLESolverConfig(DictNode& dict, SLESolverConfi
 
   // parse  CG type
   if (dict.contains("solverType")) {
-    config.type_ = SolverTypeParser_old::parse(dict["solverType"].get());
+    config.type_ = SLESolverTypeParser::parse(dict["solverType"].get());
   } else {
     std::cout << "# Did not find " << parentNode << "[solverType]. Setting default value "
-              << asInteger(defaults.type_) << "." << std::endl;
+              << SLESolverTypeParser::toString(defaults.type_) << "." << std::endl;
     config.type_ = defaults.type_;
   }
 }

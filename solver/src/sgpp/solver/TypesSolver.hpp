@@ -6,14 +6,9 @@
 #ifndef TYPESSOLVER_HPP
 #define TYPESSOLVER_HPP
 
-#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include <algorithm>
-#include <cstddef>
-
 namespace sgpp {
-
 namespace solver {
 
 /**
@@ -33,24 +28,6 @@ struct SLESolverSPConfiguration {
   float eps_;
   size_t maxIterations_;
   float threshold_;
-};
-
-class SolverTypeParser {
- public:
-  static SLESolverType parse(const std::string& input) {
-    auto inputLower = input;
-    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
-
-    if (inputLower.compare("cg") == 0) {
-      return sgpp::solver::SLESolverType::CG;
-    } else if (inputLower.compare("bicgstab") == 0) {
-      return sgpp::solver::SLESolverType::BiCGSTAB;
-    } else {
-      std::string errorMsg =
-          "Failed to convert string \"" + input + "\" to any known SLESolverType";
-      throw base::data_exception(errorMsg.c_str());
-    }
-  };
 };
 }  // namespace solver
 }  // namespace sgpp

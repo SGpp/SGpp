@@ -6,11 +6,7 @@
 #ifndef REGULARIZATIONCONFIGURATION_HPP_
 #define REGULARIZATIONCONFIGURATION_HPP_
 
-#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-
-#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -23,25 +19,6 @@ struct RegularizationConfiguration {
   double l1Ratio_;
   double exponentBase_;
 };
-
-class RegularizationTypeParser {
- public:
-  static RegularizationType parse(const std::string& input) {
-    auto inputLower = input;
-    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
-
-    if (inputLower.compare("identity") == 0) {
-      return sgpp::datadriven::RegularizationType::Identity;
-    } else if (inputLower.compare("laplace") == 0) {
-      return sgpp::datadriven::RegularizationType::Laplace;
-    } else {
-      std::string errorMsg =
-          "Failed to convert string \"" + input + "\" to any known RegularizationType";
-      throw base::data_exception(errorMsg.c_str());
-    }
-  }
-};
-
 }  // namespace datadriven
 }  // namespace sgpp
 
