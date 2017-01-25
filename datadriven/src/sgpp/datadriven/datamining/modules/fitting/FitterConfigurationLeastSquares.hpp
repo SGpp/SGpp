@@ -13,7 +13,7 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include "FitterConfiguration.hpp"
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -23,53 +23,17 @@ namespace datadriven {
  */
 class FitterConfigurationLeastSquares : public FitterConfiguration {
  public:
-  FitterConfigurationLeastSquares() : FitterConfiguration{} {}
+  FitterConfigurationLeastSquares() = default;
 
-  FitterConfiguration* clone() const override { return new FitterConfigurationLeastSquares(*this); }
+  FitterConfiguration* clone() const override;
 
-  void setupDefaults() override {
-    // configure initial grid
-    gridConfig.dim_ = 0;
-    gridConfig.level_ = 2;
-    gridConfig.type_ = sgpp::base::GridType::Linear;
-    gridConfig.maxDegree_ = 1;
-    gridConfig.boundaryLevel_ = 0;
+  void setupDefaults() override;
 
-    // configure adaptive refinement
-    adaptivityConfig.maxLevelType_ = false;
-    adaptivityConfig.noPoints_ = 0;
-    adaptivityConfig.numRefinements_ = 0;
-    adaptivityConfig.percent_ = 100.0;
-    adaptivityConfig.threshold_ = 0.0,
-
-    // configure solver
-        solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
-    solverRefineConfig.maxIterations_ = 100;
-    solverRefineConfig.eps_ = 1e-10;
-    solverRefineConfig.threshold_ = 1e-10;
-
-    // configure solver
-    solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
-    solverFinalConfig.maxIterations_ = 100;
-    solverFinalConfig.eps_ = 1e-10;
-    solverFinalConfig.threshold_ = 1e-10;
-
-    // configure regularization
-    regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
-
-    lambda = 0.0;
-  };
-
-  void readParams(const DataMiningConfigParser& parser) override {
-    setupDefaults();
-
-    parser.getFitterGridConfig(gridConfig, gridConfig);
-    parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
-    parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
-    parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
-    parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
-    parser.getFitterLambda(lambda, lambda);
-  }
+  /**
+   * First setup default values, then read new input values from configuration file.
+   * @param parser the parsed configuration file.
+   */
+  void readParams(const DataMiningConfigParser& parser) override;
 };
 
 } /* namespace datadriven */
