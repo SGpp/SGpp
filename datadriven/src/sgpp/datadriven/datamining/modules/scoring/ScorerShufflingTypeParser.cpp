@@ -40,11 +40,10 @@ const std::string& ScorerShufflingTypeParser::stringRepresentation(ScorerShuffli
   return shufflingTypeMap.at(type);
 }
 
-const std::map<ScorerShufflingType, std::string> ScorerShufflingTypeParser::shufflingTypeMap =
+const ScorerShufflingTypeParser::ShufflingTypeMap_t ScorerShufflingTypeParser::shufflingTypeMap =
     []() {
-      return std::map<ScorerShufflingType, std::string>{
-          std::make_pair(ScorerShufflingType::random, "random"),
-          std::make_pair(ScorerShufflingType::sequential, "sequential")};
+      return ShufflingTypeMap_t{std::make_pair(ScorerShufflingType::random, "random"),
+                                std::make_pair(ScorerShufflingType::sequential, "sequential")};
     }();
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -42,11 +42,12 @@ class ScorerShufflingTypeParser {
   static const std::string& stringRepresentation(ScorerShufflingType type);
 
  private:
+  using ShufflingTypeMap_t = std::map<ScorerShufflingType, std::string>;
   /**
    * Map containing all values of  #sgpp::datadriven::ScorerShufflingType and the corresponding
    * string representation.
    */
-  static const std::map<ScorerShufflingType, std::string> shufflingTypeMap;
+  static const ShufflingTypeMap_t shufflingTypeMap;
 };
 
 } /* namespace datadriven */
