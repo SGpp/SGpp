@@ -12,28 +12,28 @@
 #pragma once
 
 #include <cstring>
+#include <iostream>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-// TODO (lettrich): Make the string tokenizer a bit more fancy.
 class StringTokenizer {
  public:
   static void tokenize(const std::string& s, const char* delim, std::vector<std::string>& v) {
-    // to avoid modifying original string
-    // first duplicate the original string and return a char pointer then free the memory
-    char* dup = strdup(s.c_str());
-    char* token = strtok(dup, delim);
-    while (token != NULL) {
-      v.push_back(std::string(token));
-      // the call is treated as a subsequent calls to strtok:
-      // the function continues from where it left in previous invocation
-      token = strtok(NULL, delim);
+    size_t pos = 0;
+    size_t start = 0;
+
+    // for each token
+    while (start != std::string::npos) {
+      // search for the first ocurence of the delimiter
+      pos = s.find(delim, start);
+      v.push_back(s.substr(start, (pos - start)));
+
+      start = pos != std::string::npos ? ++pos : std::string::npos;
     }
-    free(dup);
-  };
+  }
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
