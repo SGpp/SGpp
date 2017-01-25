@@ -26,7 +26,7 @@ if(config.env["USE_ZLIB"]):
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
 
-additionalBoostTestDependencies = []
+additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
