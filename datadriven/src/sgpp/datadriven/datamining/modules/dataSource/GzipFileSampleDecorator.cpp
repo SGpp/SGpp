@@ -9,6 +9,8 @@
  *      Author: Michael Lettrich
  */
 
+#ifdef ZLIB
+
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 
 #include <sgpp/base/exception/file_exception.hpp>
@@ -62,3 +64,4 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName) {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif

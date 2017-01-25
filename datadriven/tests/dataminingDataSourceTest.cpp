@@ -8,6 +8,7 @@
  *  Created on: Jun 9, 2016
  *      Author: Michael Lettrich
  */
+#ifdef ZLIB
 
 #define BOOST_TEST_DYN_LINK
 
@@ -114,3 +115,4 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+#endif

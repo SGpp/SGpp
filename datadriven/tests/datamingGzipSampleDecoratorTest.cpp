@@ -1,13 +1,3 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * datamingGzipSampleDecoratorTest.cpp
- *
- *  Created on: 01.04.2016
- *      Author: Michael Lettrich
- */
 
 /* Copyright (C) 2008-today The SG++ project
  * This file is part of the SG++ project. For conditions of distribution and
@@ -19,6 +9,7 @@
  *  Created on: 01.04.2016
  *      Author: Michael Lettrich
  */
+#ifdef ZLIB
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -77,3 +68,4 @@ BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+#endif
