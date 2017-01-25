@@ -8,16 +8,20 @@
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 
-enum class RegularizationType { Identity, Laplace };
+enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, GroupLasso };
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
+  double lambda_;
+  double l1Ratio_;
+  double exponentBase_;
 };
 
 class RegularizationTypeParser {

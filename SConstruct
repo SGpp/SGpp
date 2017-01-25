@@ -87,8 +87,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
-vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings",
-                      "SG_PYTHON" in languageSupportNames))
+vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
@@ -117,13 +116,15 @@ vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent direct
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
 vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
+vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
+vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
 vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
-                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -137,6 +138,8 @@ vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
+                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files)", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +

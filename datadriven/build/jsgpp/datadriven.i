@@ -13,12 +13,23 @@
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
+
+%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
+#endif /* USE_GSL */
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
@@ -32,8 +43,23 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
-// TODO(valentjn): can only include if issue #7 is fixed
-//%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
+
+#ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
+#endif /* USE_GSL */
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
+%include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"
+
+%include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 
 //TODO(lettrich) : parser not wrapable because of unwrapped JSON
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
@@ -96,8 +122,6 @@
 
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
-
-
 
 #endif
 

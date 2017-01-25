@@ -166,6 +166,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
     for (size_t i = 0; i < devices.size(); i++) {
@@ -188,6 +189,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }
@@ -221,6 +225,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    int oldThreads = omp_get_max_threads();
     omp_set_num_threads(static_cast<int>(devices.size()));
 
 #pragma omp parallel
@@ -240,6 +245,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
+
+    // restore old value of OMP_NUM_THREADS
+    omp_set_num_threads(oldThreads);
 
     this->duration = this->myTimer.stop();
   }

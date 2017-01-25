@@ -8,6 +8,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 %}
 
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -36,6 +37,7 @@
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -56,7 +58,14 @@ struct RegularGridConfiguration {
       size_t dim_;
       /// number of levels
       int level_;
+      /// max. polynomial degree for poly basis
+      size_t maxDegree_;
+      /// level of boundary grid
+      size_t boundaryLevel_;
+      /// subgrid selection value t
+      double t_ = 0.0;
     };
+
 
 struct AdpativityConfiguration {
       /// number of refinements
@@ -103,6 +112,7 @@ enum class GridType {
 class Grid
 {
 public:
+  static Grid* createGrid(RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -151,6 +161,8 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
+  
+  Grid* clone();
 };
 }
 }
@@ -176,7 +188,9 @@ public:
         if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
             return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
         };
-
+        if ($self->getType() == sgpp::base::GridType::ModPoly) {
+            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
+        };
         return 1;
     };
-};	
+};

@@ -10,10 +10,11 @@
  */
 
 #pragma once
-#include <random>
-#include <vector>
 
 #include <sgpp/globaldef.hpp>
+
+#include <random>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

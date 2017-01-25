@@ -126,6 +126,10 @@ namespace sgpp {
 
 namespace op_factory {
 
+base::OperationMatrix* createOperationDiagonal(base::Grid& grid, double multiplicationFactor) {
+  return new base::OperationDiagonal(&(grid.getStorage()), multiplicationFactor);
+}
+
 base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationHierarchisationLinear(grid.getStorage());

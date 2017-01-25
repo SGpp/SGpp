@@ -14,6 +14,8 @@
 
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 

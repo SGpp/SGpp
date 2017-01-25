@@ -106,7 +106,8 @@ void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) 
 
 base::RegularGridConfiguration LearnerScenario::getGridConfig() {
   base::RegularGridConfiguration gridConfig;
-  gridConfig.boundaryLevel_ = (*this)["grid"]["boundaryLevel"].getUInt();
+  gridConfig.boundaryLevel_ =
+      static_cast<base::level_t>((*this)["grid"]["boundaryLevel"].getUInt());
   gridConfig.dim_ = (*this)["grid"]["dim"].getUInt();
   gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getInt());
   gridConfig.maxDegree_ = (*this)["grid"]["maxDegree"].getUInt();
