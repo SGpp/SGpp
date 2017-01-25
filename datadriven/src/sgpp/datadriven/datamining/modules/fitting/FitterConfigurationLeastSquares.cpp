@@ -47,7 +47,7 @@ void FitterConfigurationLeastSquares::setupDefaults() {
   solverFinalConfig.threshold_ = 1e-10;
 
   // configure regularization
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
 
   lambda = 0.0;
 }
