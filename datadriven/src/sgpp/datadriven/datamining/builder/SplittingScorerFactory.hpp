@@ -12,15 +12,9 @@
 
 #pragma once
 
-#include <memory>
-
-#include "ScorerFactory.hpp"
-
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -41,14 +35,7 @@ class SplittingScorerFactory : public ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::SplittingScorer object.
    */
-  Scorer* buildScorer(const DataMiningConfigParser& parser) const override {
-    TestingConfiguration config;
-    parser.getScorerTestingConfig(config, config);
-
-    auto metric = buildMetric(config.metric);
-    auto shuffling = buildShuffling(config.shuffling);
-    return new SplittingScorer(metric, shuffling, config.randomSeed, config.testingPortion);
-  };
+  Scorer* buildScorer(const DataMiningConfigParser& parser) const override;
 };
 
 } /* namespace datadriven */
