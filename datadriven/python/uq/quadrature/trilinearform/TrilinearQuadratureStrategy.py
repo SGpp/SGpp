@@ -80,19 +80,16 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @param basisj: SG++ Basis for grid indices j
         @return numpy array
         """
-        b = np.ones(len(gpsk))
+        b = np.ndarray(len(gpsk))
         err = 0.
         # run over all entries
         for k, gpk in enumerate(gpsk):
-            # run over all dimensions
-            for d in xrange(gpi.getDimension()):
-                # compute trilinear form for one entry
-                value, erri = self.getTrilinearFormEntry(gs,
-                                                         gpk, basisk,
-                                                         gpi, basisi,
-                                                         gpj, basisj)
-                b[k] *= value
-                err += erri
+            # compute trilinear form for one entry
+            b[k], erri = self.getTrilinearFormEntry(gs,
+                                                    gpk, basisk,
+                                                    gpi, basisi,
+                                                    gpj, basisj)
+            err += erri
         return b, err
 
     def getTrilinearFormEntry(self,

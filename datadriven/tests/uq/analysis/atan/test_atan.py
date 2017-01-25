@@ -36,6 +36,8 @@ from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, plotError3d, \
     plotDensity3d
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d, plotSGDE2d
 
 
 class AtanPeridynamicExample(object):
@@ -65,6 +67,45 @@ class AtanPeridynamicExample(object):
         # compute reference values
         self.computeReferenceValues()
 
+    def estimate_density(self, plot=False, c=1.1):
+        # load two moons data set
+        samples = np.loadtxt("data/moon.csv")
+        
+        xmin = c * samples[0, :].min()
+        xmax = c * samples[0, :].max()
+        ymin = c * samples[1, :].min()
+        ymax = c * samples[1, :].max()
+        bounds = np.array([[xmin, xmax], [ymin, ymax]])
+    
+        grid = Grid.createLinearBoundaryGrid(2)
+        grid.getGenerator().regular(0)
+        alpha = np.ones(grid.getSize()) / 3.
+
+        dist = SGDEdist(grid, alpha, bounds=np.array([[-2, 1], [0, 1]]),
+                        unitIntegrand=False, isPositive=True)
+
+#         dist = SGDEdist.byLearnerSGDEConfig(samples.T,
+#                                             bounds=bounds,
+#                                             config={"grid_level": 7,
+#                                                     "grid_type": "linear",
+#                                                     "grid_maxDegree": 1,
+#                                                     "refinement_numSteps": 0,
+#                                                     "refinement_numPoints": 10,
+#                                                     "solver_threshold": 1e-10,
+#                                                     "solver_verbose": False,
+#                                                     "regularization_type": "Laplace",
+#                                                     "crossValidation_enable": False,
+#                                                     "crossValidation_lambda": 3.16228e-06,
+#                                                     "crossValidation_kfold": 5,
+#                                                     "crossValidation_silent": True,
+#                                                     "sgde_makePositive": True,
+#                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
+#                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
+#                                                     "sgde_makePositive_verbose": False,
+#                                                     "sgde_unitIntegrand": True})
+
+        return dist
+
 
     def defineParameters(self, dtype="uniform"):
         # set distributions of the input parameters
@@ -80,6 +121,9 @@ class AtanPeridynamicExample(object):
         elif dtype == "normal":
             up.new().isCalled('x').withNormalDistribution(0.2, 0.1, 0.01)
             up.new().isCalled('y').withNormalDistribution(0.2, 0.1, 0.01)
+        elif dtype == "sgde":
+            sgdeDist = self.estimate_density()
+            up.new().isCalled('x,y').withDistribution(sgdeDist)
         else:
             raise AttributeError("dtype '%s' is unknown" % dtype)
         
@@ -430,9 +474,13 @@ class AtanPeridynamicExample(object):
                                                np.abs(self.V_ana[0] - sg_var[0]))
             # ----------------------------------------------------------
             # estimated anova decomposition
-            anova = analysis.getAnovaDecomposition(nk=len(self.params))
-            sobol_indices = anova.getSobolIndices()
-            total_effects = computeTotalEffects(sobol_indices)
+            if self.inputSpace != "sgde":
+                anova = analysis.getAnovaDecomposition(nk=len(self.params))
+                sobol_indices = anova.getSobolIndices()
+                total_effects = computeTotalEffects(sobol_indices)
+            else:
+                sobol_indices = {}
+                total_effects = {}
             # ----------------------------------------------------------
             stats[level] = {'num_model_evaluations': grid.getSize(),
                             'l2test': l2test,

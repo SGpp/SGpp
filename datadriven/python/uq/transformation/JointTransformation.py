@@ -74,6 +74,9 @@ class JointTransformation(Transformation):
     def vol(self):
         return np.prod([trans.vol() for trans in self.__trans])
 
+    def getSize(self):
+        return np.sum([trans.getSize() for trans in self.__trans])
+
     def getTransformations(self):
         return self.__trans
 

@@ -42,6 +42,12 @@ class Transformation(object):
         """
         raise NotImplementedError
 
+    def getSize(self):
+        """
+        @return: the number of variables which are transformed
+        """
+        raise NotImplementedError()
+
     @classmethod
     def fromJson(cls, jsonObject):
         import pysgpp.extensions.datadriven.uq.transformation as transformation
