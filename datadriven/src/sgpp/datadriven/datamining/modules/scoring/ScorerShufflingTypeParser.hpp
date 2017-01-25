@@ -39,7 +39,7 @@ class ScorerShufflingTypeParser {
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::ScorerShufflingType.
    */
-  static const std::string& stringRepresentation(ScorerShufflingType type);
+  static const std::string& toString(ScorerShufflingType type);
 
  private:
   using ShufflingTypeMap_t = std::map<ScorerShufflingType, std::string>;

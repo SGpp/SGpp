@@ -36,7 +36,7 @@ ScorerShufflingType ScorerShufflingTypeParser::parse(const std::string& input) {
   }
 }
 
-const std::string& ScorerShufflingTypeParser::stringRepresentation(ScorerShufflingType type) {
+const std::string& ScorerShufflingTypeParser::toString(ScorerShufflingType type) {
   return shufflingTypeMap.at(type);
 }
 
