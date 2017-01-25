@@ -42,7 +42,7 @@ class DataSourceFileTypeParser {
   static const std::string& toString(DataSourceFileType type);
 
  private:
-  typedef std::map<DataSourceFileType, std::string> FileTypeMap_t;
+  using FileTypeMap_t = std::map<DataSourceFileType, std::string>;
 
   /**
    * Map containing all values of  #sgpp::datadriven::DataSourceFileType and the corresponding
