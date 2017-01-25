@@ -14,6 +14,8 @@
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 /**

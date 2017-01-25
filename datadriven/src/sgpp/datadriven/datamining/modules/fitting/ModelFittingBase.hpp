@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -14,6 +13,8 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
+#include <memory>
 
 namespace sgpp {
 
@@ -41,7 +42,7 @@ class ModelFittingBase {
    */
   ModelFittingBase();
 
-  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  // TODO(lettrich): fix this as soon as all member variables are copyable.
   /**
    * Copy constructor - we cannot deep copy all member variables yet.
    * @param rhs const reference to the scorer object to copy from.
@@ -54,7 +55,7 @@ class ModelFittingBase {
    */
   ModelFittingBase(ModelFittingBase&& rhs) = default;
 
-  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  // TODO(lettrich): fix this as soon as all member variables are copyable.
   /**
    * Copy assign operator - we cannot deep copy all member variables yet.
    * @param rhs const reference to the scorer object to copy from.
@@ -74,7 +75,7 @@ class ModelFittingBase {
    */
   virtual ~ModelFittingBase() = default;
 
-  // TODO (lettrich): fix this as soon as all member variables are copyable.
+  // TODO(lettrich): fix this as soon as all member variables are copyable.
   /**
    * Polymorphic clone pattern
    * @return deep copy of this object. New object is owned by caller.
