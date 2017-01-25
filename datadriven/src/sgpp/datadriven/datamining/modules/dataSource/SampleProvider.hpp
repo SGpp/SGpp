@@ -24,7 +24,6 @@ namespace datadriven {
  */
 class SampleProvider {
  public:
-  // TODO(lettrich): Ignore unrecognized methods in swig
   SampleProvider() = default;
   SampleProvider(const SampleProvider& rhs) = default;
   SampleProvider(SampleProvider&& rhs) = default;
