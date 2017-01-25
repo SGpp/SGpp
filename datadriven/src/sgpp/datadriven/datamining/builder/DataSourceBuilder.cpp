@@ -11,6 +11,7 @@
 
 #include "DataSourceBuilder.hpp"
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
@@ -29,7 +30,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType& fileType) {
+DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType fileType) {
   config.fileType = fileType;
   return *this;
 }
@@ -46,6 +47,14 @@ DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
 
 DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
   config.isCompressed = isCompressed;
+
+#ifndef ZLIB
+  if (isCompressed) {
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+  }
+#endif
+
   return *this;
 }
 
@@ -58,7 +67,7 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
 }
 
 DataSource* DataSourceBuilder::assemble() const {
-  SampleProvider* sampleProvider;
+  SampleProvider* sampleProvider = nullptr;
 
   if (config.fileType == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider;
@@ -67,7 +76,12 @@ DataSource* DataSourceBuilder::assemble() const {
   }
 
   if (config.isCompressed) {
+#ifndef ZLIB
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+#else
     sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
+#endif
   }
 
   return new DataSource(config, sampleProvider);
@@ -94,8 +108,8 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
     std::transform(t.begin(), t.end(), t.begin(), ::tolower);
   }
   // check if there is gz compression
-  if (tokens.back().compare("gz") == 0) {
-    config.isCompressed = true;
+  if (tokens.back() == "gz") {
+    withCompression(true);
   }
 
   // check if we can find file type
@@ -105,10 +119,10 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
       type = DataSourceFileTypeParser::parse(t);
     } catch (data_exception& e) {
       // wasn't found
-      type = DataSourceFileType::NONE;
+      withFileType(DataSourceFileType::NONE);
     }
     if (type != DataSourceFileType::NONE) {
-      config.fileType = type;
+      withFileType(type);
     }
   }
 }

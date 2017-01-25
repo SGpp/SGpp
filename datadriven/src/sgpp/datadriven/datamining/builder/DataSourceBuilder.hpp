@@ -51,7 +51,7 @@ class DataSourceBuilder {
    * @param fileType value of
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& withFileType(DataSourceFileType& fileType);
+  DataSourceBuilder& withFileType(DataSourceFileType fileType);
 
   /**
    * Optionally Specify the amount of batches if batch learning is used. If no batch learning is

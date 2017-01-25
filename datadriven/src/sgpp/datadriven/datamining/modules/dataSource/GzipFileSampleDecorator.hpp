@@ -8,7 +8,7 @@
  *  Created on: 01.04.2016
  *      Author: Michael Lettrich
  */
-
+#ifdef ZLIB
 #pragma once
 
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
@@ -45,3 +45,4 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif
