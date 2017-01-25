@@ -13,12 +13,9 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
 namespace sgpp {
@@ -54,13 +51,7 @@ class ScorerFactory {
    * generate.
    * @return  Fully configured instance of a  #sgpp::datadriven::Metric object.
    */
-  Metric* buildMetric(ScorerMetricType config) const {
-    if (config == ScorerMetricType::MSE) {
-      return new MSE{};
-    } else {
-      return nullptr;
-    }
-  }
+  Metric* buildMetric(ScorerMetricType config) const;
 
   /**
    * Build a #sgpp::datadriven::ShufflingFunctor object based on the the given shuffling type enum
@@ -69,16 +60,7 @@ class ScorerFactory {
    * #sgpp::datadriven::ShufflingFunctor to generate.
    * @return Fully configured instance of a  #sgpp::datadriven::ShufflingFunctor object.
    */
-  ShufflingFunctor* buildShuffling(ScorerShufflingType config) const {
-    if (config == ScorerShufflingType::random) {
-      return new RandomShufflingFunctor{};
-    } else if (config == ScorerShufflingType::sequential) {
-      return new SequentialShufflingFunctor{};
-    } else {
-      return nullptr;
-    }
-  }
+  ShufflingFunctor* buildShuffling(ScorerShufflingType config) const;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
