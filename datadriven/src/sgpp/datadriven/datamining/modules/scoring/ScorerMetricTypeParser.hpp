@@ -1,4 +1,9 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ *
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * ScorerMetricTypeParser.hpp
  *
  *  Created on: 21.12.2016
@@ -38,11 +43,12 @@ class ScorerMetricTypeParser {
   static const std::string& toString(ScorerMetricType type);
 
  private:
+  using MetricTypeMap_t = std::map<ScorerMetricType, std::string>;
   /**
    * Map containing all values of  #sgpp::datadriven::ScorerMetricType and the corresponding
    * string representation.
    */
-  static const std::map<ScorerMetricType, std::string> metricTypeMap;
+  static const MetricTypeMap_t metricTypeMap;
 };
 
 } /* namespace datadriven */
