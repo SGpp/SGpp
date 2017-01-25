@@ -314,19 +314,15 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
                 << RegularizationTypeParser::toString(defaults.regType_) << "." << std::endl;
       config.regType_ = defaults.regType_;
     }
-  }
 
-  return hasRegularizationConfig;
-}
+    config.lambda_ =
+        parseDouble(*regularizationConfig, "lambda", defaults.lambda_, "regularizationConfig");
 
-bool DataMiningConfigParser::getFitterLambda(double& lambda, double defaultValue) const {
-  bool hasRegularizationConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("regularizationConfig") : false;
+    config.exponentBase_ = parseDouble(*regularizationConfig, "exponentBase",
+                                       defaults.exponentBase_, "regularizationConfig");
 
-  if (hasRegularizationConfig) {
-    auto RegularizationConfig =
-        static_cast<DictNode*>(&(*configFile)[fitter]["regularizationConfig"]);
-    lambda = parseDouble(*RegularizationConfig, "lambda", defaultValue, "regularizationConfig");
+    config.l1Ratio_ =
+        parseDouble(*regularizationConfig, "l1Ratio", defaults.l1Ratio_, "regularizationConfig");
   }
 
   return hasRegularizationConfig;

@@ -48,8 +48,9 @@ void FitterConfigurationLeastSquares::setupDefaults() {
 
   // configure regularization
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
-
-  lambda = 0.0;
+  regularizationConfig.lambda_ = 0.0;
+  regularizationConfig.l1Ratio_ = 0.0;
+  regularizationConfig.exponentBase_ = 0.0;
 }
 
 void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser& parser) {
@@ -60,7 +61,6 @@ void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser& p
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
-  parser.getFitterLambda(lambda, lambda);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

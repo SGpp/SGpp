@@ -146,18 +146,6 @@ class FitterConfiguration {
   datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig();
 
   /**
-   * Get the regularization weight.
-   * @return regularization weight.
-   */
-  double getLambda();
-
-  /**
-   * Set the regularization weight.
-   * @param lambda new regularization weight.
-   */
-  void setLambda(double lambda);
-
-  /**
    * set default values for all members based on the desired scenario.
    */
   virtual void setupDefaults() = 0;
@@ -190,14 +178,10 @@ class FitterConfiguration {
   solver::SLESolverConfiguration solverFinalConfig;
 
   /**
-   * Set the type of regularization operation to use
+   * Set the type of regularization operation to use and specify the influence of the regularization
+   * term vs data term from 0 (no regularization) to 1 (no data term).
    */
   datadriven::RegularizationConfiguration regularizationConfig;
-
-  /**
-   * Influence of regularization term vs data term from 0 (no regularization) to 1 (no data term).
-   */
-  double lambda;
 
   /**
    * Determine implementation (openMP, MPI, GPU) that should be used for

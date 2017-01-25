@@ -59,8 +59,9 @@ void ModelFittingLeastSquares::fit(Dataset& dataset) {
   alpha = DataVector(grid->getSize());
 
   // create sytem matrix
-  systemMatrix = std::unique_ptr<DMSystemMatrixBase>(buildSystemMatrix(
-      *grid, dataset.getData(), config->getLambda(), config->getMultipleEvalConfig()));
+  systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+      buildSystemMatrix(*grid, dataset.getData(), config->getRegularizationConfig().lambda_,
+                        config->getMultipleEvalConfig()));
 
   // create right hand side and system matrix
   auto b = std::make_unique<DataVector>(grid->getSize());
@@ -91,8 +92,9 @@ void ModelFittingLeastSquares::update(Dataset& dataset) {
   if (grid != nullptr) {
     // create sytem matrix
     systemMatrix.reset();
-    systemMatrix = std::unique_ptr<DMSystemMatrixBase>(buildSystemMatrix(
-        *grid, dataset.getData(), config->getLambda(), config->getMultipleEvalConfig()));
+    systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+        buildSystemMatrix(*grid, dataset.getData(), config->getRegularizationConfig().lambda_,
+                          config->getMultipleEvalConfig()));
 
     auto b = std::make_unique<DataVector>(grid->getSize());
     systemMatrix->generateb(dataset.getTargets(), *b);

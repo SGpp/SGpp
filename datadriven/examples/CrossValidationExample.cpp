@@ -80,7 +80,8 @@ int main(int argc, char** argv) {
   gridConfig.level_ = 2;
   gridConfig.type_ = GridType::ModLinear;
   gridConfig.dim_ = dataset->getDimension();
-  config.setLambda(10e-1);
+  auto& regularizationConfig = config.getRegularizationConfig();
+  regularizationConfig.lambda_ = 10e-1;
 
   std::cout << "starting 5 fold cross validation with seed 42" << std::endl;
   /**
