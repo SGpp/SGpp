@@ -1,4 +1,9 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ *
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * RandomShufflingFunctor.hpp
  *
  *  Created on: 31.07.2016
@@ -35,16 +40,14 @@ namespace datadriven {
  */
 class RandomShufflingFunctor : public ShufflingFunctor {
  public:
-  ShufflingFunctor* clone() const override { return new RandomShufflingFunctor{*this}; }
+  ShufflingFunctor* clone() const override;
 
   /**
    * Rearange indices of data samples in a dataset based on a random seed.
    * @param indices vector containing the indices of the data points to be distributed. Vector is
    * modified in place.
    */
-  void shuffle(std::vector<size_t>& indices) override {
-    std::shuffle(indices.begin(), indices.end(), generator);
-  }
+  void shuffle(std::vector<size_t>& indices) override;
 };
 
 } /* namespace datadriven */
