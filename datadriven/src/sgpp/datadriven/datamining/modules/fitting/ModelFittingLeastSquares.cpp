@@ -54,7 +54,7 @@ void ModelFittingLeastSquares::fit(Dataset& dataset) {
   // build grid
   auto& gridConfig = config->getGridConfig();
   gridConfig.dim_ = dataset.getDimension();
-  buildGrid(config->getGridConfig());
+  grid = std::unique_ptr<Grid>{buildGrid(config->getGridConfig())};
   // build surplus vector
   alpha = DataVector(grid->getSize());
 
