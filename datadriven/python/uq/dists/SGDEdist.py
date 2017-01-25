@@ -138,9 +138,9 @@ class SGDEdist(EstimatedDist):
                   trainData=samples,
                   bounds=bounds,
                   config=config,
-                 learner=learner,
-                 unitIntegrand=True,
-                 isPositive=isPositive)
+                  learner=learner,
+                  unitIntegrand=True,
+                  isPositive=isPositive)
         return ans
 
 

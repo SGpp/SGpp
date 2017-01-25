@@ -56,7 +56,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
             else:
                 xcenter = gs.getCoordinate(gpj, d)
 
-            deg = 2 * (gpi.getLevel(d) + 1) + 1
+            deg = 2 * (lid + 1) + 1
             sleft, err1dleft = self.quad(f, xlow, xcenter, deg=deg)
             sright, err1dright = self.quad(f, xcenter, xhigh, deg=deg)
 

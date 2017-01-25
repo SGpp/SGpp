@@ -52,6 +52,9 @@ class RosenblattTransformation(Transformation):
     def vol(self):
         return 1.
 
+    def getSize(self):
+        return 1
+
     def __str__(self):
         return "rosenblattTransformation: %s -> U(0, 1)" % str(dist)
 

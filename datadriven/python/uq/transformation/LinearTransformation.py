@@ -55,6 +55,9 @@ class LinearTransformation(Transformation):
     def getBounds(self):
         return [self.__a, self.__b]
 
+    def getSize(self):
+        return 1
+
     def __str__(self):
         return "LinearTransformation: [%g, %g] -> [%g, %g]" % (self.__a,
                                                                self.__b,

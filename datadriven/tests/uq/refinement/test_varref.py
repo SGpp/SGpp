@@ -28,6 +28,7 @@ from pysgpp.extensions.datadriven.uq.refinement.RefinementStrategy import Varian
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import AdmissibleSetDescriptor
 from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSetGenerator
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.linearform import LinearGaussQuadratureStrategy
 
 # parameters
 level = 4
@@ -82,70 +83,76 @@ print "var : %g" % var
 print "-" * 80
 # drop arbitrary grid points and compute the mean and the variance
 # -> just use leaf nodes for simplicity
-for i in xrange(gs.getSize()):
-    gpi = gs.getPoint(i)
-    if gpi.isLeaf():
-        adm = AdmissibleSetGenerator()
-        for j in xrange(gs.getSize()):
-            gp = gs.getPoint(j)
-            if gp.isLeaf():
-                adm.insertPoint(gp)
+bilinearForm = BilinearGaussQuadratureStrategy(grid.getType())
+bilinearForm.setDistributionAndTransformation(U.getDistributions(),
+                                              T.getTransformations())
+linearForm = LinearGaussQuadratureStrategy(grid.getType())
+linearForm.setDistributionAndTransformation(U.getDistributions(),
+                                            T.getTransformations())
 
-        # --------------------------------------------------------------------------
-        # check refinement criterion
-        ranking = ExpectationValueOptRanking()
-        mean_rank = ranking.rank(grid, gpi, alpha, params)
-        print "rank mean: %g" % (mean_rank,)
-        # --------------------------------------------------------------------------
-        # check refinement criterion
-        ranking = VarianceOptRanking()
-        var_rank = ranking.rank(grid, gpi, alpha, params)
-        print "rank var:  %g" % (var_rank,)
-        # --------------------------------------------------------------------------
-        # remove one grid point and update coefficients
-        toBeRemoved = IndexList()
-        toBeRemoved.push_back(i)
-        ixs = gs.deletePoints(toBeRemoved)
-        gpsj = []
-        new_alpha = np.ndarray(gs.getSize())
-        for j in xrange(gs.getSize()):
-            new_alpha[j] = alpha[ixs[j]]
-            gpsj.append(gs.getPoint(j))
-        # --------------------------------------------------------------------------
-        # compute the mean and the variance of the new grid
-        mean_trunc, _ = quad.mean(grid, new_alpha, U, T)
-        var_trunc, _ = quad.var(grid, new_alpha, U, T, mean_trunc)
-        basis = getBasis(grid)
+i = np.random.randint(0, gs.getSize())
+gpi = gs.getPoint(i)
+adm = AdmissibleSetGenerator()
+for j in xrange(gs.getSize()):
+    gp = gs.getPoint(j)
+    if gp.isLeaf():
+        adm.insertPoint(gp)
 
-        # compute the covariance
-        A, _ = ranking._bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
-        b, _ = ranking._linearForm.computeLinearFormByList(gs, gpsj, basis)
+# --------------------------------------------------------------------------
+# check refinement criterion
+ranking = ExpectationValueOptRanking()
+mean_rank = ranking.rank(grid, gpi, alpha, params)
+print "rank mean: %g" % (mean_rank,)
+# --------------------------------------------------------------------------
+# check refinement criterion
+ranking = VarianceOptRanking()
+var_rank = ranking.rank(grid, gpi, alpha, params)
+print "rank var:  %g" % (var_rank,)
+# --------------------------------------------------------------------------
+# remove one grid point and update coefficients
+toBeRemoved = IndexList()
+toBeRemoved.push_back(i)
+ixs = gs.deletePoints(toBeRemoved)
+gpsj = []
+new_alpha = np.ndarray(gs.getSize())
+for j in xrange(gs.getSize()):
+    new_alpha[j] = alpha[ixs[j]]
+    gpsj.append(gs.getPoint(j))
+# --------------------------------------------------------------------------
+# compute the mean and the variance of the new grid
+mean_trunc, _ = quad.mean(grid, new_alpha, U, T)
+var_trunc, _ = quad.var(grid, new_alpha, U, T, mean_trunc)
+basis = getBasis(grid)
 
-        mean_uwi_phii = np.dot(new_alpha, A[0, :])
-        mean_phii, _ = ranking._linearForm.getLinearFormEntry(gs, gpi, basis)
-        mean_uwi = np.dot(new_alpha, b)
-        cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
+# compute the covariance
+A, _ = bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
+b, _ = linearForm.computeLinearFormByList(gs, gpsj, basis)
 
-        # compute the variance of phi_i
-        firstMoment, _ = ranking._linearForm.getLinearFormEntry(gs, gpi, basis)
-        secondMoment, _ = ranking._bilinearForm.getBilinearFormEntry(gs, gpi, basis, gpi, basis)
-        var_phii = secondMoment - firstMoment ** 2
+mean_uwi_phii = np.dot(new_alpha, A[0, :])
+mean_phii, _ = linearForm.getLinearFormEntry(gs, gpi, basis)
+mean_uwi = np.dot(new_alpha, b)
+cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
 
-        # update the ranking
-        var_estimated = var_trunc + alpha[i] ** 2 * var_phii + 2 * alpha[i] * cov_uwi_phii
+# compute the variance of phi_i
+firstMoment, _ = linearForm.getLinearFormEntry(gs, gpi, basis)
+secondMoment, _ = bilinearForm.getBilinearFormEntry(gs, gpi, basis, gpi, basis)
+var_phii = secondMoment - firstMoment ** 2
 
-        mean_diff = np.abs(mean_trunc - mean)
-        var_diff = np.abs(var_trunc - var)
+# update the ranking
+var_estimated = var_trunc + alpha[i] ** 2 * var_phii + 2 * alpha[i] * cov_uwi_phii
 
-        print "-" * 80
-        print "diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),)
-        print "diff: |var - var_trunc|     = %g = %g = var opt ranking" % (var_diff, var_rank)
-        print "diff: |mean - mean_trunc|   = %g = %g = mean opt ranking" % (mean_diff, mean_rank)
+mean_diff = np.abs(mean_trunc - mean)
+var_diff = np.abs(var_trunc - var)
 
-        assert np.abs(var - var_estimated) < 1e-14
-        assert np.abs(mean_diff - mean_rank) < 1e-14
-        assert np.abs(var_diff - var_rank) < 1e-14
-        # --------------------------------------------------------------------------
+print "-" * 80
+print "diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),)
+print "diff: |var - var_trunc|     = %g = %g = var opt ranking" % (var_diff, var_rank)
+print "diff: |mean - mean_trunc|   = %g = %g = mean opt ranking" % (mean_diff, mean_rank)
+
+assert np.abs(var - var_estimated) < 1e-14
+assert np.abs(mean_diff - mean_rank) < 1e-14
+assert np.abs(var_diff - var_rank) < 1e-14
+# --------------------------------------------------------------------------
 #         if gs.getDimension() == 1:
 #             fig = plt.figure()
 #             plotSG1d(grid, new_alpha, show_grid_points=True)
@@ -160,4 +167,3 @@ for i in xrange(gs.getSize()):
 #             plt.show()
 #         else:
 #             print "DONE"
-        break

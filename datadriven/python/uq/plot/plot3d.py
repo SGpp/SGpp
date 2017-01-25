@@ -39,7 +39,7 @@ def plotDensity3d(U, n=36):
 
 #     fig.colorbar(surf, shrink=0.5, aspect=5)
 
-    return fig, ax
+    return fig, ax, Z
 
 
 def plotSG3d(grid, alpha, n=36, f=lambda x: x):

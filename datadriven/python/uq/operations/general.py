@@ -92,10 +92,34 @@ def cross(grid1, grid2):
     """
     return
 
+def projectList(gps, dims):
+    """
+    Project all grid points to the given dimensions
+
+    @param gps: list of grid points
+    @param dims: list dimensions to which the grid points are projected
+    """
+    # create a new empty grid
+    dim = len(dims)
+    projected_gps = [None] * len(gps)
+
+    # run over all grid points in grid and
+    # project them to the dimensions dims
+    for i, gp in enumerate(gps):
+        projected_gp = HashGridPoint(dim)
+        # copy level index to new grid point
+        for k, d in enumerate(dims):
+            projected_gp.set(k, gp.getLevel(d), gp.getIndex(d))
+        # insert it to the list of projected grid points
+        projected_gps[i] = projected_gp
+
+    return projected_gps
+
 
 def project(grid, dims):
     """
     Project all grid points to the given dimensions
+
     @param grid: Grid sparse grid
     @param dims: list dimensions to which the grid points are projected
     """

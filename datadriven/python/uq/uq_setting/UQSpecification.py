@@ -38,7 +38,7 @@ class UQSpecification(object):
 
         self.__postprocessor = postprocessor
         self.__reachesSteadyState = False
-        self.__save = 0
+        self.__save = 1
 
         self.__interpolants = {}
 

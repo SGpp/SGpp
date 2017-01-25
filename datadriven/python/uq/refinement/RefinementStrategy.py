@@ -125,19 +125,22 @@ class WeightedL2OptRanking(Ranking):
             self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
             self.initialized = True
 
-
         # prepare data
         gs = grid.getStorage()
         basisi = getBasis(grid)
+        gps = [None] * gs.getSize()
+        for i in xrange(gs.getSize()):
+            gps[i] = gs.getPoint(i)
 
         # compute the second moment for the current grid point
-        secondMoment, _ = \
-        self._estimationStrategy.computeSystemMatrixEntryForVariance(grid,
-                                                                     gpi, basisi,
-                                                                     self.W, self.D)
+        secondMoment, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gps, basisi,
+                                                                                      [gpi], basisi,
+                                                                                      self.W, self.D)
+        secondMoment = max(0.0, self.vol * secondMoment)
+
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
-        return np.abs(v[ix]) * np.sqrt(max(0.0, self.vol * secondMoment))
+        return np.abs(v[ix]) * np.sqrt(secondMoment)
 
 
 class AnchoredExpectationValueOptRanking(Ranking):
@@ -167,7 +170,15 @@ class ExpectationValueOptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self._estimationStrategy = AnalyticEstimationStrategy()
+        self.initialized = False
+
         self._linearForm = LinearGaussQuadratureStrategy()
+
+    def compute_mean_phii(self, gs, gpi, basisi):
+        mean_phii, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs, [gpi], basisi,
+                                                                               self.W, self.D)
+        return mean_phii[0]
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -180,31 +191,60 @@ class ExpectationValueOptRanking(Ranking):
         @param admissibleSet: AdmissibleSet
         """
         # update the quadrature operations
-        U = params.getDistributions()
-        T = params.getTransformations()
-        self._linearForm.setGridType(grid.getType())
-        self._linearForm.setDistributionAndTransformation(U, T)
+        if not self.initialized:
+            self._estimationStrategy.initQuadratureStrategy(grid)
+            U = params.getIndependentJointDistribution()
+            T = params.getJointTransformation()
+            self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
+            self.initialized = True
 
         # prepare data
         gs = grid.getStorage()
 
         # compute stiffness matrix for next run
         basis = getBasis(grid)
-        # compute the expectation value term for the new points
-        b, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
-
         ix = gs.getSequenceNumber(gpi)
 
-        return np.abs(v[ix]) * b
+        mean_phii = self.compute_mean_phii(gs, gpi, basis)
+
+        return np.abs(v[ix]) * mean_phii
 
 
 class VarianceOptRanking(Ranking):
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self._linearForm = LinearGaussQuadratureStrategy()
-        self._bilinearForm = BilinearGaussQuadratureStrategy()
-        self._trilinearForm = TrilinearGaussQuadratureStrategy()
+        self._estimationStrategy = AnalyticEstimationStrategy()
+        self.initialized = False
+
+    def compute_mean_uwi_phii(self, gs, gpswi, w, gpi, basis):
+        A, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gs,
+                                                                           gpswi, basis,
+                                                                           [gpi], basis,
+                                                                           self.W, self.D)
+        b, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs,
+                                                                       gpswi, basis,
+                                                                       self.W, self.D)
+        return np.dot(w, A)
+
+    def compute_mean_uwi(self, gs, gpswi, w, basis):
+        b, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs,
+                                                                       gpswi, basis,
+                                                                       self.W, self.D)
+        return np.dot(w, b)
+    
+    def compute_mean_phii(self, gs, gpi, basisi):
+        mean_phii, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs, [gpi], basisi,
+                                                                               self.W, self.D)
+        return mean_phii[0]
+
+    def compute_var_phii(self, gs, gpi, basisi, mean_phii):
+        A_var, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gs,
+                                                                               [gpi], basisi,
+                                                                               [gpi], basisi,
+                                                                               self.W, self.D)
+        return A_var[0, 0] - mean_phii ** 2
+
 
     def update(self, grid, v, gpi, params, *args, **kws):
         """
@@ -217,12 +257,12 @@ class VarianceOptRanking(Ranking):
         @param admissibleSet: AdmissibleSet
         """
         # update the quadrature operations
-        self._linearForm.setGridType(grid.getType())
-        self._bilinearForm.setGridType(grid.getType())
-        U = params.getDistributions()
-        T = params.getTransformations()
-        self._linearForm.setDistributionAndTransformation(U, T)
-        self._bilinearForm.setDistributionAndTransformation(U, T)
+        if not self.initialized:
+            self._estimationStrategy.initQuadratureStrategy(grid)
+            U = params.getIndependentJointDistribution()
+            T = params.getJointTransformation()
+            self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
+            self.initialized = True
 
         # prepare data
         gs = grid.getStorage()
@@ -234,28 +274,24 @@ class VarianceOptRanking(Ranking):
         ix = gs.getSequenceNumber(gpi)
 
         # prepare list of grid points
-        gpsj = []
+        gpswi = []
         jx = 0
         for j in xrange(gs.getSize()):
             gpj = gs.getPoint(j)
             if gpi.getHash() != gpj.getHash():
-                gpsj.append(gpj)
+                gpswi.append(gpj)
                 w[jx] = v[j]
                 jx += 1
 
         # compute the covariance
-        A, _ = self._bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
-        b, _ = self._linearForm.computeLinearFormByList(gs, gpsj, basis)
+        mean_uwi_phii = self.compute_mean_uwi_phii(gs, gpswi, w, gpi, basis)
+        mean_phii = self.compute_mean_phii(gs, gpi, basis)
+        mean_uwi = self.compute_mean_uwi(gs, gpswi, w, basis)
 
-        mean_uwi_phii = np.dot(w, A[0, :])
-        mean_phii, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
-        mean_uwi = np.dot(w, b)
         cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
 
         # compute the variance of phi_i
-        firstMoment, _ = self._linearForm.getLinearFormEntry(gs, gpi, basis)
-        secondMoment, _ = self._bilinearForm.getBilinearFormEntry(gs, gpi, basis, gpi, basis)
-        var_phii = secondMoment - firstMoment ** 2
+        var_phii = self.compute_var_phii(gs, gpi, basis, mean_phii)
 
         # update the ranking
         return np.abs(-v[ix] ** 2 * var_phii - 2 * v[ix] * cov_uwi_phii)
