@@ -24,18 +24,18 @@ using sgpp::base::GridType;
 class GridTypeParser {
  public:
   /**
-   * Convert strings to values #sgpp::datadriven::DataSourceFileType. Throws if there is no valid
+   * Convert strings to values #sgpp::base::GridType. Throws if there is no valid
    * representation
    * @param input case insensitive string representation of a
-   * #sgpp::datadriven::DataSourceFileType.
-   * @return the corresponding #sgpp::datadriven::DataSourceFileType.
+   * #sgpp::base::GridType.
+   * @return the corresponding #sgpp::base::GridType.
    */
   static GridType parse(const std::string& input);
 
   /**
-   * generate string representations for values of #sgpp::datadriven::DataSourceFileType.
+   * generate string representations for values of #sgpp::base::GridType.
    * @param type enum value.
-   * @return string representation of a #sgpp::datadriven::DataSourceFileType.
+   * @return string representation of a #sgpp::base::GridType.
    */
   static const std::string& toString(GridType type);
 
@@ -43,7 +43,7 @@ class GridTypeParser {
   using GridTypeMap_t = std::map<GridType, std::string>;
 
   /**
-   * Map containing all values of  #sgpp::datadriven::DataSourceFileType and the corresponding
+   * Map containing all values of  #sgpp::base::GridType and the corresponding
    * string representation.
    */
   static const GridTypeMap_t gridTypeMap;

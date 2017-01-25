@@ -23,8 +23,8 @@ namespace datadriven {
 using sgpp::solver::SLESolverType;
 
 /**
- * Convenience class to convert strings to #sgpp::datadriven::DataSourceFileType and generate
- * string representations for values of #sgpp::datadriven::DataSourceFileType.
+ * Convenience class to convert strings to #sgpp::solver::SLESolverType and generate
+ * string representations for values of #sgpp::solver::SLESolverType.
  */
 class SLESolverTypeParser {
  public:
@@ -38,9 +38,9 @@ class SLESolverTypeParser {
   static SLESolverType parse(const std::string& input);
 
   /**
-   * generate string representations for values of #sgpp::datadriven::DataSourceFileType.
+   * generate string representations for values of #sgpp::solver::SLESolverType.
    * @param type enum value.
-   * @return string representation of a #sgpp::datadriven::DataSourceFileType.
+   * @return string representation of a #sgpp::solver::SLESolverType.
    */
   static const std::string& toString(SLESolverType type);
 
@@ -48,7 +48,7 @@ class SLESolverTypeParser {
   using SLESolverTypeMap_t = std::map<SLESolverType, std::string>;
 
   /**
-   * Map containing all values of  #sgpp::datadriven::DataSourceFileType and the corresponding
+   * Map containing all values of  #sgpp::solver::SLESolverType and the corresponding
    * string representation.
    */
   static const SLESolverTypeMap_t sleSolverTypeMap;
