@@ -21,8 +21,8 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-const std::map<ScorerMetricType, std::string> ScorerMetricTypeParser::metricTypeMap = []() {
-  return std::map<ScorerMetricType, std::string>{std::make_pair(ScorerMetricType::MSE, "MSE")};
+const ScorerMetricTypeParser::MetricTypeMap_t ScorerMetricTypeParser::metricTypeMap = []() {
+  return MetricTypeMap_t{std::make_pair(ScorerMetricType::MSE, "MSE")};
 }();
 
 const std::string& ScorerMetricTypeParser::toString(ScorerMetricType type) {
