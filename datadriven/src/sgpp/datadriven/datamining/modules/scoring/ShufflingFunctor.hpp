@@ -26,12 +26,7 @@ namespace datadriven {
  */
 class ShufflingFunctor {
  public:
-  ShufflingFunctor() {
-    std::random_device rd;
-    seed = rd();
-    seed = 1;
-    generator = std::mt19937(rd());
-  };
+  ShufflingFunctor();
   ShufflingFunctor(const ShufflingFunctor& rhs) = default;
   ShufflingFunctor(ShufflingFunctor&& rhs) = default;
   ShufflingFunctor& operator=(const ShufflingFunctor& rhs) = default;
@@ -54,16 +49,13 @@ class ShufflingFunctor {
    * Get random seed for randomized operations
    * @return random seed.
    */
-  int64_t getSeed() const { return seed; }
+  int64_t getSeed() const;
 
   /**
    * Set random seed for randomized operations
    * @param seed the new random seed.
    */
-  void setSeed(int64_t seed) {
-    this->seed = seed;
-    generator = std::mt19937(seed);
-  }
+  void setSeed(int64_t seed);
 
  protected:
   /**
