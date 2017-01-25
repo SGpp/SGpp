@@ -39,7 +39,7 @@ enum class FitterType;
 
 class DataMiningConfigParser {
  public:
-  DataMiningConfigParser(const std::string& filepath);
+  explicit DataMiningConfigParser(const std::string& filepath);
   virtual ~DataMiningConfigParser();
 
   bool hasDataSourceConfig() const;

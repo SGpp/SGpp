@@ -64,5 +64,5 @@ class SampleProvider {
    */
   virtual size_t getDim() const = 0;
 };
-}
-}
+} /* namespace datadriven */
+} /* namespace sgpp */

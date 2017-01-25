@@ -38,7 +38,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config);
+  explicit ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by a least
@@ -69,10 +69,10 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
-  virtual void evaluate(DataMatrix& samples, DataVector& results) override;
+  void evaluate(DataMatrix& samples, DataVector& results) override;
 
  private:
-  // TODO (lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
+  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.
   /**
    * Factory function to build the System matrix for least squares regression with identity as
@@ -86,5 +86,5 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    */
   std::unique_ptr<DMSystemMatrixBase> systemMatrix;
 };
-}
-}
+} /* namespace datadriven */
+} /* namespace sgpp */

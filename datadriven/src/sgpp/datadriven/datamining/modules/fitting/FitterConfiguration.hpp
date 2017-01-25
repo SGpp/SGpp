@@ -206,5 +206,5 @@ class FitterConfiguration {
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
 };
 
-}  // namespace base
-}  // namespace sgpp
+} /* namespace datadriven */
+} /* namespace sgpp */
