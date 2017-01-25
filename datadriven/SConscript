@@ -4,20 +4,29 @@
 # sgpp.sparsegrids.org
 
 import ModuleHelper
+import Helper
 
 Import("*")
 
 moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
+additionalBoostTestDependencies = []
 
 
 #zlib needed for datamining
-additionalDependencies = ["z"]
+if(config.env["USE_ZLIB"]):
+    if not config.CheckHeader("zlib.h", language="C++"):
+        Helper.printErrorAndExit("The flag USE_ZLIB was given, but the necessary header 'zlib.h' was not found.")
+    else:
+        additionalDependencies = ["z"]
+        additionalBoostTestDependencies = ["z"]
+        env["CPPDEFINES"]["ZLIB"] = "1"
+        
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
 
-additionalBoostTestDependencies = ["z"]
+additionalBoostTestDependencies = []
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
