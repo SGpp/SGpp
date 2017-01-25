@@ -23,16 +23,14 @@ namespace datadriven {
  */
 class SequentialShufflingFunctor : public ShufflingFunctor {
  public:
-  ShufflingFunctor* clone() const override { return new SequentialShufflingFunctor{*this}; }
+  ShufflingFunctor* clone() const override;
 
   /**
    * Does not permute indices and just returns the same permutation passed as a parameter. To be
    * used on datasets that are already arranged as desired.
    * @param indices vector of indices to permute.
    */
-  void shuffle(std::vector<size_t>& indices) override {
-    // doesn't do any permutation to provided indices, since we're using the entries sequentially
-  }
+  void shuffle(std::vector<size_t>& indices) override;
 };
 
 } /* namespace datadriven */
