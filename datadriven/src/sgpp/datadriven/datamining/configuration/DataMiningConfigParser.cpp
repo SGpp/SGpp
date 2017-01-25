@@ -32,7 +32,7 @@ using sgpp::base::data_exception;
 using json::DictNode;
 using sgpp::base::GridTypeParser;
 using sgpp::solver::SLESolverConfiguration;
-using sgpp::solver::SolverTypeParser;
+using sgpp::solver::SolverTypeParser_old;
 
 namespace sgpp {
 namespace datadriven {
@@ -428,7 +428,7 @@ void DataMiningConfigParser::parseSLESolverConfig(DictNode& dict, SLESolverConfi
 
   // parse  CG type
   if (dict.contains("solverType")) {
-    config.type_ = SolverTypeParser::parse(dict["solverType"].get());
+    config.type_ = SolverTypeParser_old::parse(dict["solverType"].get());
   } else {
     std::cout << "# Did not find " << parentNode << "[solverType]. Setting default value "
               << asInteger(defaults.type_) << "." << std::endl;
