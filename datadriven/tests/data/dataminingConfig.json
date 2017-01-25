@@ -52,7 +52,9 @@
 		},
 		"regularizationConfig": {
 			"regularizationType": "Identity",
-			"lambda": 10e-7
+			"lambda": 10e-7,
+			"exponentBase":3.0,
+			"l1Ratio":4.0
 		}
 	}
 }

@@ -16,7 +16,6 @@ FitterConfiguration::FitterConfiguration()
       solverRefineConfig{},
       solverFinalConfig{},
       regularizationConfig{},
-      lambda{0},
       multipleEvalConfig{} {}
 
 const base::RegularGridConfiguration& FitterConfiguration::getGridConfig() const {
@@ -74,10 +73,5 @@ datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMultiple
   return const_cast<datadriven::OperationMultipleEvalConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getMultipleEvalConfig());
 }
-
-double FitterConfiguration::getLambda() { return lambda; }
-
-void FitterConfiguration::setLambda(double lambda) { this->lambda = lambda; }
-
 }  // namespace datadriven
 }  // namespace sgpp

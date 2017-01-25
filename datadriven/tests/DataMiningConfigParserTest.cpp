@@ -217,22 +217,21 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
 
   RegularizationConfiguration defaults;
   defaults.regType_ = RegularizationType::Laplace;
+  defaults.lambda_ = 1;
+  defaults.exponentBase_ = 2;
+  defaults.l1Ratio_ = 3;
   RegularizationConfiguration config;
   bool hasConfig;
+  double tolerance = 1E-5;
 
   hasConfig = parser.getFitterRegularizationConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.regType_),
                     static_cast<int>(RegularizationType::Identity));
-
-  double lambda;
-  double tolerance = 1E-5;
-
-  hasConfig = parser.getFitterLambda(lambda, 0.0);
-
-  BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_CLOSE(lambda, 10e-7, tolerance);
+  BOOST_CHECK_CLOSE(config.lambda_, 10e-7, tolerance);
+  BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
+  BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
