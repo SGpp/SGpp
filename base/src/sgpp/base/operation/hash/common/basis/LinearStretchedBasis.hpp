@@ -39,18 +39,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
   {
     return 1.0 - fabs((1<<level) * p - index);
   }
-
-   *
-   * Evaluate a basis function.
-   * Has a dependence on the absolute position of grid point and support.
-   *
-   * This version catches errors, that occur if a basis function
-   * is evaluated outside its domain
-
-  double evalSave(LT level, IT index, double p)
-  {
-    return std::max(1.0 - fabs((1<<level) * p - index), 0.0);
-  }*/
+  */
 
   /*
    * evaluate a basis function

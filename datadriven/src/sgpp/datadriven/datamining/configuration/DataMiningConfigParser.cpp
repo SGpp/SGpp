@@ -12,6 +12,7 @@
 #include "DataMiningConfigParser.hpp"
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/tools/GridTypeParser.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
@@ -208,8 +209,8 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration& confi
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");
-    config.boundaryLevel_ =
-        parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig");
+    config.boundaryLevel_ = static_cast<unsigned int>(
+        parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig"));
     config.filename_ = parseString(*fitterConfig, "fileName", defaults.filename_, "gridConfig");
 
     // parse  grid type

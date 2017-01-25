@@ -52,8 +52,8 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 
 #include <iostream>
 
@@ -61,9 +61,7 @@
  * Before starting with the <tt>main</tt> function,
  * the function \f$f\f$, which we want to interpolate, is defined.
  */
-double f(double x0, double x1) {
-  return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
-}
+double f(double x0, double x1) { return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1; }
 
 int main() {
   /**

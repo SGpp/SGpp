@@ -21,7 +21,7 @@ double OperationEvalModPolyNaive::eval(const DataVector& alpha, const DataVector
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.evalSave(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
 
       if (val1d == 0.0) {
         curValue = 0.0;
@@ -54,7 +54,7 @@ void OperationEvalModPolyNaive::eval(const DataMatrix& alpha, const DataVector& 
     double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const double val1d = base.evalSave(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
+      const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
 
       if (val1d == 0.0) {
         curValue = 0.0;

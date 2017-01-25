@@ -4,9 +4,26 @@
 // sgpp.sparsegrids.org
 
 /**
-* \page example_predictiveRefinement_cpp Spatially-Dimension-Adaptive Refinement in C++
-*
-*/
+   * \page example_predictiveRefinement_cpp Spatially-Dimension-Adaptive Refinement in C++
+   *
+   *
+   * We compute the sparse grid interpolant of the function \f$ f(x) =
+   * \sin(\pi x).\f$ We perform spatially-dimension-adaptive
+   * refinement of the sparse grid model, which means we refine a
+   * particular grid point (locality) only in some dimensions
+   * (dimensionality).
+   *
+   * For details on spatially-dimension-adaptive refinement see
+   * \verbatim
+   *  V. Khakhutskyy and M. Hegland: Spatially-Dimension-Adaptive Sparse Grids for Online Learning.
+In D. Pflüger and J. Garcke (ed.), Sparse Grids and Applications - Stuttgart 2014, Volume 109 of
+LNCSE, p. 133–162. Springer International Publishing, March 2016.
+   * \endverbatim
+   *
+   *
+   *
+   * The example can be found in the file `predictiveRefinement.cpp`.
+   */
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -32,9 +49,19 @@ using sgpp::base::OperationEval;
 using sgpp::base::PredictiveRefinement;
 using sgpp::base::PredictiveRefinementIndicator;
 
-// function to interpolate
+/**
+   * We define the function \f$ f(x) =
+   * \sin(\pi x).\f$ to interpolate.
+   **/
+
 double f(double x0, double x1) { return sin(x0 * M_PI); }
 
+/**
+   * Spatially-dimension-adaptive refinement uses squared prediction
+   * error on a dataset to compute refinement indicators. Hence, here
+   * we define a function to compute these squared errors.
+   *
+   */
 DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVector& alpha,
                            DataVector& error) {
   std::cout << "calculating error" << std::endl;
@@ -51,8 +78,15 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVect
   return error;
 }
 
+/**
+   * Start with the main function
+   *
+   */
+
 int main() {
-  // create a two-dimensional piecewise bilinear grid
+  /**
+     * create a two-dimensional piecewise bilinear grid
+     */
   size_t dim = 2;
   std::unique_ptr<Grid> grid(Grid::createModLinearGrid(dim));
   GridStorage& gridStorage = grid->getStorage();
@@ -63,10 +97,10 @@ int main() {
   grid->getGenerator().regular(level);
   std::cout << "number of initial grid points:    " << gridStorage.getSize() << std::endl;
 
-  // create coefficient vector
-  DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
-  std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
+  /**
+     * To create a dataset we use points on a regular 2d grid with a
+     * step size of 1 / rows and 1 / cols.
+     */
 
   int rows = 100;
   int cols = 100;
@@ -74,8 +108,6 @@ int main() {
   DataMatrix dataSet(rows * cols, dim);
   DataVector vals(rows * cols);
 
-  // Create a "List" of points where the error should be calculated.
-  // This represents a regular 2d grid with a step size of 1 / rows and 1 / cols.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       // xcoord
@@ -87,11 +119,20 @@ int main() {
   }
 
   /**
-     * We refine adaptively 20 times
-     */
+   * We refine adaptively 20 times. In every step we recompute the
+   * vector of surpluses `alpha`, the vector with squared errors on
+   * the dataset `errorVector`, and then call the refinement
+   * routines.
+   */
+
+  // create coefficient vector
+  DataVector alpha(gridStorage.getSize());
+  alpha.setAll(0.0);
+  std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
+
   for (int step = 0; step < 20; step++) {
     /**
-       * Now we need to calculate the surplus vector alpha. In data
+       * Step 1: calculate the surplus vector alpha. In data
        * mining with do it by solving a regression problem as shown in
        * example \ref example_classificationRefinementExample_cpp.
        * Here, the function can be evaluated at any point. Hence. we
@@ -111,10 +152,23 @@ int main() {
     // hierarchize
     sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
-    // calculate squared offset
+    /**
+       * Step 2: calculate squared errors.
+       */
     DataVector errorVector(dataSet.getNrows());
     calculateError(dataSet, *grid, alpha, errorVector);
 
+    /**
+       * Step 3: call refinement routines. `PredictiveRefinement`
+       * implements the decorator pattern and extends the
+       * functionality of `HashRefinement`. `PredictiveRefinement`
+       * requires a special kind of refinement functor --
+       * `PredictiveRefinementIndicator` that can access the dataset
+       * and the error vector. The refinement itself if performed by
+       * calling `.free_refine()` same for normal refinement in
+       * `HashRefinement`.
+       *
+       */
     // refinement  stuff
     HashRefinement refinement;
     PredictiveRefinement decorator(&refinement);
@@ -127,9 +181,79 @@ int main() {
     std::cout << "Refinement step " << step + 1 << ", new grid size: " << gridStorage.getSize()
               << std::endl;
 
-    // plot grid
-
     // extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage.getSize());
   }
 }
+
+/**
+   * The output of the program should look like this
+   *
+   * \verbatim
+   * dimensionality:                   2
+number of initial grid points:    1
+length of alpha vector:           1
+calculating error
+Error over all = 2268.65
+Refinement step 1, new grid size: 3
+calculating error
+Error over all = 264.09
+Refinement step 2, new grid size: 5
+calculating error
+Error over all = 125.378
+Refinement step 3, new grid size: 7
+calculating error
+Error over all = 3.48359
+Refinement step 4, new grid size: 9
+calculating error
+Error over all = 1.99757
+Refinement step 5, new grid size: 11
+calculating error
+Error over all = 0.845349
+Refinement step 6, new grid size: 13
+calculating error
+Error over all = 0.464096
+Refinement step 7, new grid size: 15
+calculating error
+Error over all = 0.0828432
+Refinement step 8, new grid size: 17
+calculating error
+Error over all = 0.0828432
+Refinement step 9, new grid size: 19
+calculating error
+Error over all = 0.068976
+Refinement step 10, new grid size: 21
+calculating error
+Error over all = 0.0551672
+Refinement step 11, new grid size: 23
+calculating error
+Error over all = 0.0413584
+Refinement step 12, new grid size: 25
+calculating error
+Error over all = 0.0330229
+Refinement step 13, new grid size: 27
+calculating error
+Error over all = 0.0230578
+Refinement step 14, new grid size: 29
+calculating error
+Error over all = 0.0130926
+Refinement step 15, new grid size: 31
+calculating error
+Error over all = 0.00856834
+Refinement step 16, new grid size: 33
+calculating error
+Error over all = 0.00404405
+Refinement step 17, new grid size: 35
+calculating error
+Error over all = 0.00404405
+Refinement step 18, new grid size: 37
+calculating error
+Error over all = 0.00404405
+Refinement step 19, new grid size: 41
+calculating error
+Error over all = 0.00404405
+Refinement step 20, new grid size: 45
+
+   * \endverbatim
+   *
+   */
