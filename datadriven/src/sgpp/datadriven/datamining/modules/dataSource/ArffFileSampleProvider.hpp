@@ -78,11 +78,10 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   /**
    * Helper member function for #getNextSamples. Linearly walks through dataset, beginning at
-   * #counter and returns a pointer to a new instance of #sgpp::datadriven::Dataset containing the
+   * counter and returns a pointer to a new instance of #sgpp::datadriven::Dataset containing the
    * desired amount of samples (if available - else all remaining samples) and updates counter.
    */
   Dataset* splitDataset(size_t howMany);
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
