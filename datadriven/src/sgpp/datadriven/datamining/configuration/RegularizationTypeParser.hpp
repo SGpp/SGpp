@@ -39,7 +39,7 @@ class RegularizationTypeParser {
   static const std::string& toString(RegularizationType type);
 
  private:
-  using RegularizationTypeMap_t = std::map<RegularizationType, std::string>;
+  typedef std::map<RegularizationType, std::string> RegularizationTypeMap_t;
 
   /**
    * Map containing all values of  #sgpp::datadriven::RegularizationType and the corresponding

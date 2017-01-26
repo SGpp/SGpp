@@ -43,7 +43,7 @@ class FitterTypeParser {
   static const std::string& toString(FitterType type);
 
  private:
-  using FitterTypeMap_t = std::map<FitterType, std::string>;
+  typedef std::map<FitterType, std::string> FitterTypeMap_t;
 
   /**
    * Map containing all values of #sgpp::datadriven::FitterType and the corresponding

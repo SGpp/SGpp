@@ -43,7 +43,7 @@ class ScorerMetricTypeParser {
   static const std::string& toString(ScorerMetricType type);
 
  private:
-  using MetricTypeMap_t = std::map<ScorerMetricType, std::string>;
+  typedef std::map<ScorerMetricType, std::string> MetricTypeMap_t;
   /**
    * Map containing all values of  #sgpp::datadriven::ScorerMetricType and the corresponding
    * string representation.
