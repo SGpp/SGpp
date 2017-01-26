@@ -14,7 +14,7 @@
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
-
+%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
@@ -46,7 +46,6 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
-%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
@@ -61,9 +60,6 @@
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 
-//TODO(lettrich) : parser not wrapable because of unwrapped JSON
-//%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
-
 %ignore  sgpp::datadriven::SampleProvider::operator=(SampleProvider&&);
 %rename(__assign__) sgpp::datadriven::SampleProvider::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
@@ -72,7 +68,9 @@
 %ignore  sgpp::datadriven::FileSampleDecorator::operator=(FileSampleDecorator&&);
 %rename(__assign__) sgpp::datadriven::FileSampleDecorator::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
+#ifdef ZLIB
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
+#endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 
 
@@ -113,6 +111,13 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
+%ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
+
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
@@ -120,8 +125,12 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
 
-%ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
-%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+
+//TODO(lettrich): parser not wrapable because of unwrapped JSON
+//%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
+
+//TODO(lettrich): does not work currently.
+//%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 
 #endif
 
@@ -141,7 +150,6 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
-%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
 
 //-     namespace datadriven ------------------------------------------
