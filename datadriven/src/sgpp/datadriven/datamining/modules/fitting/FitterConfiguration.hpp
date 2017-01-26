@@ -102,7 +102,7 @@ class FitterConfiguration {
 
   /**
    * Get implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::datadriven::OperationMultipleEval.
+   * #sgpp::base::OperationMultipleEval.
    * @return immutable OperationMultipleEvalConfiguration
    */
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
@@ -140,7 +140,7 @@ class FitterConfiguration {
 
   /**
    * Get or set implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::datadriven::OperationMultipleEval.
+   * #sgpp::base::OperationMultipleEval.
    * @return current OperationMultipleEvalConfiguration
    */
   datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig();
@@ -185,10 +185,9 @@ class FitterConfiguration {
 
   /**
    * Determine implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::datadriven::OperationMultipleEval
+   * #sgpp::base::OperationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
