@@ -112,7 +112,7 @@ class WeightedL2OptRanking(Ranking):
         """
         Compute ranking for variance estimation
 
-        \argmax_{i \in \A} |v_i| \sqrt{\varphi_i^2}
+        \argmax_{i \in \A} |v_i| \sqrt{E[\varphi_i^2]}
 
         @param grid: Grid grid
         @param v: numpy array coefficients
@@ -128,16 +128,13 @@ class WeightedL2OptRanking(Ranking):
         # prepare data
         gs = grid.getStorage()
         basisi = getBasis(grid)
-        gps = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
-            gps[i] = gs.getPoint(i)
 
         # compute the second moment for the current grid point
         secondMoment, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gs,
-                                                                                      gps, basisi,
+                                                                                      [gpi], basisi,
                                                                                       [gpi], basisi,
                                                                                       self.W, self.D)
-        secondMoment = max(0.0, self.vol * secondMoment)
+        secondMoment = max(0.0, self.vol * secondMoment[0])
 
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
