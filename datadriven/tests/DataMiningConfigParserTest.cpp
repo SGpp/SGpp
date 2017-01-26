@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {
   defaults.testingPortion = 1.0;
   defaults.shuffling = ScorerShufflingType::sequential;
   defaults.randomSeed = 40;
-  defaults.metric = ScorerMetricType::MSE;
+  defaults.metric = ScorerMetricType::mse;
   TestingConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(ScorerShufflingType::random));
   BOOST_CHECK_EQUAL(config.randomSeed, 42);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::MSE));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
 }
 
 BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
   defaults.folds = 3;
   defaults.shuffling = ScorerShufflingType::sequential;
   defaults.randomSeed = 40;
-  defaults.metric = ScorerMetricType::MSE;
+  defaults.metric = ScorerMetricType::mse;
   CrossValidationConfiguration config;
   bool hasConfig;
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(ScorerShufflingType::random));
   BOOST_CHECK_EQUAL(config.randomSeed, 42);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::MSE));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {

@@ -17,7 +17,7 @@
 namespace sgpp {
 namespace datadriven {
 Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
-  if (config == ScorerMetricType::MSE) {
+  if (config == ScorerMetricType::mse) {
     return new MSE{};
   } else {
     return nullptr;

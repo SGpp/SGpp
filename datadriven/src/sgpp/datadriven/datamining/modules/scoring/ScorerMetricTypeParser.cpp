@@ -22,7 +22,7 @@ namespace datadriven {
 using sgpp::base::data_exception;
 
 const ScorerMetricTypeParser::MetricTypeMap_t ScorerMetricTypeParser::metricTypeMap = []() {
-  return MetricTypeMap_t{std::make_pair(ScorerMetricType::MSE, "MSE")};
+  return MetricTypeMap_t{std::make_pair(ScorerMetricType::mse, "MSE")};
 }();
 
 const std::string& ScorerMetricTypeParser::toString(ScorerMetricType type) {
@@ -33,7 +33,7 @@ ScorerMetricType ScorerMetricTypeParser::parse(const std::string& input) {
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
   if (inputLower == "mse") {
-    return ScorerMetricType::MSE;
+    return ScorerMetricType::mse;
   } else {
     const auto errorMsg = "Failed to convert string \"" + input + "\" to any known ScorerMetric";
     throw data_exception(errorMsg.c_str());
