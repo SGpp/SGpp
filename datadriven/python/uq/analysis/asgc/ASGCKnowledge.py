@@ -247,8 +247,6 @@ class ASGCKnowledge(object):
         """
         Write knowledge object to file
         """
-        if self._verbose:
-            print "Write memento to file..."
         m = self.createMemento()
         ASGCKnowledgeFormatter().serializeToFile(m, filename)
 
