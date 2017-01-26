@@ -52,6 +52,7 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif
@@ -138,6 +139,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
+//TODO(lettrich): this does not work yet. make it work.
 
 
 // --------------------------------------
@@ -181,7 +183,5 @@ public:
 };
 */
 }
-//TODO(lettrich): this does not work yet. make it work.
-//%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 
 //- end namespace datadriven ------------------------------------------
