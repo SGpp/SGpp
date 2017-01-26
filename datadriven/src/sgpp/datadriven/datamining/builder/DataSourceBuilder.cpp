@@ -113,7 +113,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   }
 
   // check if we can find file type
-  DataSourceFileType type;
+  auto type = DataSourceFileType::NONE;
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
