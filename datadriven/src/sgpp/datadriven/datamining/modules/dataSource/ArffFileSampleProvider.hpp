@@ -70,16 +70,16 @@ class ArffFileSampleProvider : public FileSampleProvider {
   Dataset dataset;
 
   /**
-   * Indicates the index in ::dataset where #getNextSamples will start grabbing new samples in its
+   * Indicates the index in dataset where #getNextSamples will start grabbing new samples in its
    * next call. After each call of #getNextSamples, the counter is set to the amount of min(counter
    * + requestedSamplesSize, dataset.getSize()).
    */
   size_t counter;
 
   /**
-   * Helper member function for #getNextSamples. Linearly walks through ::dataset, beginning at
-   * #counter and returns a pointer to a new instance of #sgpp::datadriven::DataSet containing the
-   * desired amount of samples (if available - else all remaining samples) and updates ::counter.
+   * Helper member function for #getNextSamples. Linearly walks through dataset, beginning at
+   * #counter and returns a pointer to a new instance of #sgpp::datadriven::Dataset containing the
+   * desired amount of samples (if available - else all remaining samples) and updates counter.
    */
   Dataset* splitDataset(size_t howMany);
 };
