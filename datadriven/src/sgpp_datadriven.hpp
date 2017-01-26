@@ -37,6 +37,7 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
+#include <sgpp/datadriven/tools/NearestNeighbors.hpp>
 #ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #endif /* USE_GSL */

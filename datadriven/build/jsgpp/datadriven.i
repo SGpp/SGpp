@@ -46,7 +46,7 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
-
+%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif /* USE_GSL */
@@ -129,8 +129,6 @@
 //TODO(lettrich): parser not wrapable because of unwrapped JSON
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
 
-//TODO(lettrich): does not work currently.
-//%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 
 #endif
 
