@@ -133,7 +133,8 @@ class WeightedL2OptRanking(Ranking):
             gps[i] = gs.getPoint(i)
 
         # compute the second moment for the current grid point
-        secondMoment, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gps, basisi,
+        secondMoment, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gs,
+                                                                                      gps, basisi,
                                                                                       [gpi], basisi,
                                                                                       self.W, self.D)
         secondMoment = max(0.0, self.vol * secondMoment)
