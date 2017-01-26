@@ -40,7 +40,7 @@ class GridTypeParser {
   static const std::string& toString(GridType type);
 
  private:
-  using GridTypeMap_t = std::map<GridType, std::string>;
+  typedef std::map<GridType, std::string> GridTypeMap_t;
 
   /**
    * Map containing all values of  #sgpp::base::GridType and the corresponding

@@ -45,7 +45,7 @@ class SLESolverTypeParser {
   static const std::string& toString(SLESolverType type);
 
  private:
-  using SLESolverTypeMap_t = std::map<SLESolverType, std::string>;
+  typedef std::map<SLESolverType, std::string> SLESolverTypeMap_t;
 
   /**
    * Map containing all values of  #sgpp::solver::SLESolverType and the corresponding
