@@ -154,6 +154,7 @@ class ModelFittingBase {
 
   /**
    * Configure solver based on the desired configuration
+   * @param solver the solver object to be modified.
    * @param config configuration updating the for the solver.
    */
   void reconfigureSolver(SLESolver& solver, const SLESolverConfiguration& config) const;

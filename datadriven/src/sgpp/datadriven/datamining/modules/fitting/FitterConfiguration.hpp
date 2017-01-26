@@ -102,7 +102,7 @@ class FitterConfiguration {
 
   /**
    * Get implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::base::operationMultipleEval.
+   * #sgpp::datadriven::operationMultipleEval.
    * @return immutable OperationMultipleEvalConfiguration
    */
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
@@ -140,7 +140,7 @@ class FitterConfiguration {
 
   /**
    * Get or set implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::base::operationMultipleEval.
+   * #sgpp::datadriven::operationMultipleEval.
    * @return current OperationMultipleEvalConfiguration
    */
   datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig();
@@ -152,7 +152,7 @@ class FitterConfiguration {
 
   /**
    * obtain parameters from a parser
-   * @params parser: the parser object to read from
+   * @param parser: the parser object to read from
    */
   virtual void readParams(const DataMiningConfigParser& parser) = 0;
 
@@ -185,7 +185,7 @@ class FitterConfiguration {
 
   /**
    * Determine implementation (openMP, MPI, GPU) that should be used for
-   * #sgpp::base::operationMultipleEval
+   * #sgpp::datadriven::operationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
 };
