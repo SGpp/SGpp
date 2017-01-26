@@ -52,7 +52,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
   virtual DataSource* createDataSource(const DataMiningConfigParser& parser) const;
 
   /**
-   * Build an instance of a #sgpp::datadriven::ModelFitterBase object as specified in the
+   * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
    * configuration
    * file.
    * @param parser parser object that provides methods to query the configuration file.
