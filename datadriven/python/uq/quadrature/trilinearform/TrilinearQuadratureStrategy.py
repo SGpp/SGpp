@@ -44,7 +44,6 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @param basisj: SG++ basis for grid indices gpsj
         @return: DataMatrix
         """
-        print "# evals: %i^2 * %i = %i" % (len(gpsi), len(gpsk), len(gpsi) ** 2 * len(gpsk))
         A = np.ndarray((len(gpsi), len(gpsj)))
         err = 0.
         # run over all rows
