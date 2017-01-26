@@ -24,6 +24,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
+%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
@@ -51,7 +52,6 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
-%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif
@@ -68,8 +68,6 @@
 
 
 %ignore *::operator=;
-//TODO(lettrich) : parser not wrapable because of unwrapped JSON
-//%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
@@ -100,6 +98,12 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
+
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
@@ -107,8 +111,8 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
 
-%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
-
+//TODO(lettrich) : parser not wrapable because of unwrapped JSON, but json parsing inside python is easy.
+//%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
 #endif
 
 %apply std::string *INPUT { std::string& istr };
@@ -132,7 +136,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
-%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
+
 
 // --------------------------------------
 // renaming ambiguous function declarations for python
@@ -175,4 +179,7 @@ public:
 };
 */
 }
+//TODO(lettrich): this does not work yet. make it work.
+//%include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
+
 //- end namespace datadriven ------------------------------------------
