@@ -4,6 +4,7 @@ from pysgpp import DataVector, Grid
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
 
 
 class ASGCKnowledge(object):
@@ -241,6 +242,15 @@ class ASGCKnowledge(object):
         jsonString = self.toJson()
         jsonObject = json.JsonReader().read(jsonString)
         return jsonObject
+
+    def writeToFile(self, filename):
+        """
+        Write knowledge object to file
+        """
+        if self._verbose:
+            print "Write memento to file..."
+        m = self.createMemento()
+        ASGCKnowledgeFormatter().serializeToFile(m, filename)
 
     @classmethod
     def fromJson(cls, jsonObject):
