@@ -96,6 +96,9 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
         gsResult.getCoordinates(gsResult.getPoint(i), p)
         ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
+
+    del p
+
     return nodalValues
 
 
@@ -579,6 +582,11 @@ def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
 
     opEval.mult(alpha_vec, res_vec)
+
+    del opEval
+    del samples_matrix
+    del alpha_vec
+
     return res_vec.array()
 
 
@@ -612,6 +620,11 @@ def evalSGFunction(grid, alpha, p, isConsistent=True):
             opEval = createOperationEvalNaive(grid)
 
         ans = opEval.eval(alpha_vec, p_vec)
+
+        del opEval
+        del alpha_vec
+        del p_vec
+
         return ans
     else:
         if grid.getStorage().getDimension() != p.shape[1]:
@@ -641,6 +654,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
                 ixs[levelsum] = [i]
     
     # run over the grid points by level sum
+    x = DataVector(numDims)
     for levelsum in np.sort(ixs.keys()):
         # add the grid points of the current level to the new grid
         newixs = [None] * len(ixs[levelsum])
@@ -650,10 +664,11 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
         # update the alpha values
         alpha = np.append(alpha, np.zeros(newGs.getSize() - len(alpha)))
         newAlpha = np.copy(alpha)
-        x = DataVector(numDims)
         for ix, nodalValue in newixs:
             gs.getCoordinates(newGs.getPoint(ix), x)
             alpha[ix] = nodalValue - evalSGFunction(newGrid, newAlpha, x.array())
+
+    del x
 
     # store alphas according to indices of grid
     ans = np.ndarray(gs.getSize())
@@ -745,22 +760,28 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 def hierarchize(grid, nodalValues, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
-        alpha = DataVector(nodalValues)
         if grid.getType() in [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline]:
-            createOperationMultipleHierarchisation(grid).doHierarchisation(alpha)
+            opHier = createOperationMultipleHierarchisation(grid)
         elif grid.getType() in [GridType_LinearBoundary,
                                 GridType_LinearClenshawCurtisBoundary,
                                 GridType_PolyBoundary,
                                 GridType_PolyClenshawCurtisBoundary]:
-            createOperationArbitraryBoundaryHierarchisation(grid).doHierarchisation(alpha)
+            opHier = createOperationArbitraryBoundaryHierarchisation(grid)
         else:
-            createOperationHierarchisation(grid).doHierarchisation(alpha)
+            opHier = createOperationHierarchisation(grid)
 
-        return alpha.array()
+        alpha_vec = DataVector(nodalValues)
+        opHier.doHierarchisation(alpha_vec)
+
+        alpha = np.array(alpha_vec.array())
+
+        del alpha_vec
+
+        return alpha
 #         print "using brute force hierarchization"
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)
     except Exception, e:
@@ -796,7 +817,12 @@ def dehierarchizeList(grid, alpha, gps):
     for i, gp in enumerate(gps):
         gs.getCoordinates(gp, p)
         A.setRow(i, p)
-    createOperationMultipleEval(grid, A).mult(alpha, nodalValues)
+    opEval = createOperationMultipleEval(grid, A)
+    opEval.mult(alpha, nodalValues)
+
+    del opEval
+    del A
+
     return nodalValues
 
 

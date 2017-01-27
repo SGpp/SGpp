@@ -96,6 +96,46 @@ class DataDist(Dist):
     def __str__(self):
         return "Data((%i x %i), %s)" % (self.__n, self.__dim, self.__bounds)
 
+    def toJson(self):
+        """
+        Returns a string that represents the object
+
+        Arguments:
+
+        Return A string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+
+        for attrName, attrValue in [("_DataDist__samples", self.samples),
+                                    ("_DataDist__bounds", self.__bounds)]:
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        s = serializationString.rstrip(",\n")
+
+        return "{" + s + "}"
+
     @classmethod
     def fromJson(cls, jsonObject):
-        return Dist.fromJson(cls, jsonObject)
+        """
+        Restores the Beta object from the json object with its
+        attributes.
+
+        Arguments:
+        jsonObject -- json object
+
+        Return the restored UQSetting object
+        """
+        # restore surplusses
+        key = '_DataDist__samples'
+        if key in jsonObject:
+            samples = np.array(jsonObject[key])
+        else:
+            raise AttributeError("DataDist: fromJson - samples are missing")
+
+        key = '_DataDist__bounds'
+        bounds = None
+        if key in jsonObject:
+            bounds = np.array(jsonObject[key])
+
+        return DataDist(samples, bounds)

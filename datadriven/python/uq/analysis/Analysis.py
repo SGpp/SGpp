@@ -164,47 +164,6 @@ class Analysis(object):
 
 # -----------------------------------------------------------------------------
 
-    def confidenceInterval(self, iterations=None, ts=None):
-        """
-        Compute the variance
-        @return: dictionary, {<iteration>: {<time>: variance}}
-        """
-        if iterations is None:
-            iterations = self._iterations
-
-        if ts is None:
-            ts = self._ts
-
-        ans = {}
-        for iteration in iterations:
-            if len(ts) > 1:
-                ans[iteration] = {}
-            for i, t in enumerate(self._ts):
-                # compute variance
-                if self._verbose:
-                    print "-" * 60
-                    print "Estimate confidence interval for t = %g (%i/%i), iteration = %s" % \
-                        (t, i + 1, len(self._ts), iteration)
-
-                confidenceInterval = self.computeConfidenceInterval(iteration, self._qoi, t)
-
-                if len(ts) > 1:
-                    ans[iteration][t] = confidenceInterval
-                else:
-                    ans[iteration] = confidenceInterval
-
-        # remove dict structure if there are just one element
-        if len(iterations) == 1:
-            ans = ans[iterations[0]]
-
-        return ans
-        
-        
-    def computeConfidenceInterval(self, iteration, qoi, t):
-        raise NotImplementedError()
-
-# -----------------------------------------------------------------------------
-
     def computeMoments(self, iterations=None, ts=None):
         raise NotImplementedError()
 
