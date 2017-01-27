@@ -122,13 +122,8 @@ class ASGCAnalysis(Analysis):
         grid, alpha = self.__knowledge.getSparseGridFunction(qoi, t,
                                                              iteration=iteration)
         # do the estimation
-        moment, err = self.__estimationStrategy.mean(grid, alpha,
-                                                     self.__U, self.__T)
-        if self._verbose:
-            print "E(f) = %g, L2 err = %g, size = %i" % \
-                (moment, err, grid.getSize())
-
-        return moment, err
+        return self.__estimationStrategy.mean(grid, alpha,
+                                              self.__U, self.__T)
 
     def computeVar(self, iteration, qoi, t):
         # compute the mean
@@ -151,10 +146,6 @@ class ASGCAnalysis(Analysis):
 
         # accumulate the errors
         err = err1 + err2
-
-        if self._verbose:
-            print "V(f) = %.14f, L2 err = %g, size = %i" % \
-                (moment, err, grid.getSize())
 
         return moment, err
 
@@ -620,10 +611,11 @@ class ASGCAnalysis(Analysis):
             data = np.vstack((data.T, res)).T
 
             # write results
+            data_vec = DataMatrix(data)
             writeDataARFF({'filename': "%s.t%f.samples.arff" % (filename, t),
-                           'data': DataMatrix(data),
+                           'data': data_vec,
                            'names': names})
-
+            del data_vec
             # -----------------------------------------
             # write sparse grid points to file
             # -----------------------------------------
@@ -635,10 +627,11 @@ class ASGCAnalysis(Analysis):
                 data[i, :] = x.array()
 
             # write results
+            data_vec = DataMatrix(data)
             writeDataARFF({'filename': "%s.t%f.gridpoints.arff" % (filename, t),
-                           'data': DataMatrix(data),
+                           'data': data_vec,
                            'names': names})
-
+            del data_vec
             # -----------------------------------------
             # write alpha
             # -----------------------------------------
@@ -723,9 +716,11 @@ class ASGCAnalysis(Analysis):
                         A.set(k + j, i + 1, surplus)
                         A.set(k + j, 0, level)
                     k += len(surpluses)
+
             writeDataARFF({'filename': "%s.t%s.surpluses.arff" % (filename, t),
                            'data': A,
                            'names': names})
+            del A
 
 #     def writeRefinementEvaluation(self, filename):
 #         gs = self.__grid.getStorage()
