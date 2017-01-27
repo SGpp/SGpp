@@ -30,7 +30,7 @@ class FitterConfiguration {
   /**
    * Sets up a Fitter configuration with its default values.
    */
-  FitterConfiguration();
+  FitterConfiguration() = default;
 
   /**
    * Copy constructor
