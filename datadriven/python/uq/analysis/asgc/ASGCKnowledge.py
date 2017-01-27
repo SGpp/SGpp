@@ -219,8 +219,8 @@ class ASGCKnowledge(object):
 
         # store knowledge
         self.__iteration = iteration
-        self.__grids[iteration][qoi] = copyGrid(grid)
-        self.__alphas[iteration][qoi][dtype][t] = alpha
+        self.__grids[iteration][qoi] = grid.clone()
+        self.__alphas[iteration][qoi][dtype][t] = np.array(alpha)
 
     def clearAlphas(self):
         self.__alphas = {}

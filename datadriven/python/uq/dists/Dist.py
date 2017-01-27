@@ -216,6 +216,8 @@ class Dist(object):
             return dists.MultivariateNormal.fromJson(jsonObject)
         elif 'uq.dists.SGDEdist' in jsonObject['module']:
             return dists.SGDEdist.fromJson(jsonObject)
+        elif 'uq.dists.KDEDist' in jsonObject['module']:
+            return dists.KDEDist.fromJson(jsonObject)
         elif 'uq.dists.Datadist' in jsonObject['module']:
             return dists.DataDist.fromJson(jsonObject)
         else:
