@@ -49,8 +49,8 @@ class CrossValidation : public Scorer {
    * @param stdDeviation return standard deviation between different runs.
    * @return average accuracy of all fits as calculated by the #metric provided.
    */
-  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                double* stdDeviation = nullptr);
+  double calculateScore(ModelFittingBase& model, Dataset& dataset,
+                        double* stdDeviation = nullptr) override;
 
  private:
   /**
