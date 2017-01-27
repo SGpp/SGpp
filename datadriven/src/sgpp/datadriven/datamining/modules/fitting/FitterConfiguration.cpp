@@ -10,14 +10,6 @@
 namespace sgpp {
 namespace datadriven {
 
-FitterConfiguration::FitterConfiguration()
-    : gridConfig{},
-      adaptivityConfig{},
-      solverRefineConfig{},
-      solverFinalConfig{},
-      regularizationConfig{},
-      multipleEvalConfig{} {}
-
 const base::RegularGridConfiguration& FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
