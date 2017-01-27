@@ -866,10 +866,7 @@ double* DataMatrix::getPointer() { return data; }
 
 const double* DataMatrix::getPointer() const { return data; }
 
-DataMatrix::~DataMatrix() {
-  std::cout << "destructor" << std::endl;
-  delete[] data;
-}
+DataMatrix::~DataMatrix() { delete[] data; }
 
 size_t DataMatrix::getNumberNonZero() const {
   size_t n = nrows * ncols;

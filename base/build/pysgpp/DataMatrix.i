@@ -47,6 +47,7 @@ namespace sgpp
           } else {
             $3 = PySequence_Size(row);
           }
+          Py_DECREF(row);
         }
 
         // alloc memory
@@ -74,7 +75,10 @@ namespace sgpp
               free((double*) $1);
               return NULL;
             }
+            Py_DECREF(o);
           }
+
+          Py_DECREF(row);
         }
       }
 
