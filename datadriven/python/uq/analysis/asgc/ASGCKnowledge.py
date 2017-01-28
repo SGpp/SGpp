@@ -1,3 +1,5 @@
+import numpy as np
+
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp import DataVector, Grid
