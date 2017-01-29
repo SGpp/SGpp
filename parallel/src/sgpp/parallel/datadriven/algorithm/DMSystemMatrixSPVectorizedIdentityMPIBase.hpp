@@ -6,15 +6,15 @@
 #ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPIBASE_HPP
 #define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPIBASE_HPP
 
-#include <sgpp/datadriven/algorithm/DMSystemMatrixBaseSP.hpp>
-#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
-#include <sgpp/parallel/tools/PartitioningTool.hpp>
-#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBaseSP.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -60,7 +60,7 @@ class DMSystemMatrixSPVectorizedIdentityMPIBase : public sgpp::datadriven::DMSys
     // handle unsupported vector extensions
     if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC &&
         this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL &&
-        this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+        this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
       throw sgpp::base::operation_exception(
           "DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
     }
@@ -73,9 +73,7 @@ class DMSystemMatrixSPVectorizedIdentityMPIBase : public sgpp::datadriven::DMSys
               << std::endl;
     this->tempData = new sgpp::base::DataVectorSP(this->numPatchedTrainingInstances_);
 
-    if (this->vecMode_ != ArBB) {
-      this->dataset_->transpose();
-    }
+    this->dataset_->transpose();
 
     this->result_tmp = new sgpp::base::DataVectorSP(storage_.getSize());
   }

@@ -25,8 +25,8 @@ PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::
     PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sgpp::base::Grid& SparseGrid,
                                                                sgpp::base::DataVector& rhs)
     : sgpp::pde::OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
-  this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
-  this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
+  this->Laplace_Complete.reset(createOperationLaplace(*this->BoundGrid));
+  this->Laplace_Inner.reset(createOperationLaplace(*this->InnerGrid));
 }
 
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::

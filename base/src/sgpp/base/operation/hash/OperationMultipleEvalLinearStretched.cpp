@@ -4,31 +4,29 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretched.hpp>
-
+#include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalLinearStretched::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalLinearStretched::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SLinearStretchedBase> op;
   LinearStretchedBasis<unsigned int, unsigned int> base;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SLinearStretchedBase> op;
   LinearStretchedBasis<unsigned int, unsigned int> base;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalLinearStretched::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

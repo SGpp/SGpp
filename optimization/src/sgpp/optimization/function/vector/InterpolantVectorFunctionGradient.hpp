@@ -10,7 +10,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
@@ -40,7 +40,7 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   InterpolantVectorFunctionGradient(base::Grid& grid, const base::DataMatrix& alpha)
       : VectorFunctionGradient(grid.getDimension(), alpha.getNcols()),
         grid(grid),
-        opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
+        opEvalGradient(op_factory::createOperationEvalGradientNaive(grid)),
         alpha(alpha) {}
 
   /**
@@ -90,7 +90,7 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   /// sparse grid
   base::Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationNaiveEvalGradient> opEvalGradient;
+  std::unique_ptr<base::OperationEvalGradient> opEvalGradient;
   /// coefficient matrix
   base::DataMatrix alpha;
 };

@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEval)
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   const size_t dim = 2;
-  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
   grid->getGenerator().regular(2);
 
   grid->getBoundingBox().setBoundary(0, BoundingBox1D(3.0, 5.0));

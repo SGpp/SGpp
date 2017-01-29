@@ -10,10 +10,9 @@
 namespace sgpp {
 namespace op_factory {
 
-std::unique_ptr<quadrature::OperationQuadratureMCAdvanced> createOperationQuadratureMCAdvanced(
+quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(
     base::Grid& grid, size_t numberOfSamples, std::uint64_t seed) {
-  return std::unique_ptr<quadrature::OperationQuadratureMCAdvanced>(
-      new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed));
+  return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed);
 }
 
 }  // namespace op_factory

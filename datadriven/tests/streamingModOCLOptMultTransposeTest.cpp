@@ -6,38 +6,50 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
 #include <zlib.h>
+#include <boost/test/unit_test.hpp>
 
-#include <random>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "test_datadrivenCommon.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
+#include "test_datadrivenCommon.hpp"
 
 using sgpp::datadriven::OperationMultipleEvalConfiguration;
 using sgpp::datadriven::OperationMultipleEvalType;
 using sgpp::datadriven::OperationMultipleEvalSubType;
 
-BOOST_AUTO_TEST_SUITE(TestStreamingModOCLOptMultTranspose)
+namespace TestStreamingModOCLOptMultTransposeFixture {
+struct FilesNamesAndErrorFixtureTest {
+  FilesNamesAndErrorFixtureTest() {}
+  ~FilesNamesAndErrorFixtureTest() {}
 
-BOOST_AUTO_TEST_CASE(Simple) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-11),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-11)};
+  std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
+      std::tuple<std::string, double>("datadriven/tests/data/friedman2_4d_10000.arff.gz", 1E-16),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman1_10d_2000.arff.gz", 1E-20)};
+
+  std::vector<std::tuple<std::string, double>> fileNamesErrorFloat = {
+      std::tuple<std::string, double>("datadriven/tests/data/friedman2_4d_10000.arff.gz", 1E+5),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman1_10d_2000.arff.gz", 1E-3)};
 
   uint32_t level = 5;
+};
+}  // namespace TestStreamingModOCLOptMultTransposeFixture
 
+BOOST_FIXTURE_TEST_SUITE(TestStreamingModOCLOptMultTranspose,
+                         TestStreamingModOCLOptMultTransposeFixture::FilesNamesAndErrorFixtureTest)
+
+BOOST_AUTO_TEST_CASE(Simple) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -53,20 +65,11 @@ BOOST_AUTO_TEST_CASE(Simple) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(Local) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-11),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-11)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -82,20 +85,11 @@ BOOST_AUTO_TEST_CASE(Local) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(Blocking) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-11),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-11)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -112,20 +106,11 @@ BOOST_AUTO_TEST_CASE(Blocking) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDevice) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-11),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-11)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
@@ -142,20 +127,11 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatform) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-11),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-11)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
@@ -172,20 +148,11 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -201,20 +168,11 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -230,20 +188,11 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
@@ -260,20 +209,11 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
@@ -290,20 +230,11 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
-  std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
-
-  uint32_t level = 5;
-
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
@@ -320,11 +251,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   OperationMultipleEvalConfiguration configuration(
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLOPT, *parameters);
 
-  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear,
-                                             std::get<0>(fileNameError), level, configuration);
-    BOOST_CHECK(mse < std::get<1>(fileNameError));
-  }
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                           configuration);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

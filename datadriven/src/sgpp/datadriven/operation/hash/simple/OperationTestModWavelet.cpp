@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestModWavelet.hpp>
 
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>

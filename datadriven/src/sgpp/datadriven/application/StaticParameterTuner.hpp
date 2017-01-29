@@ -29,7 +29,8 @@ class StaticParameterTuner {
   std::string statisticsFolder;
   std::string scenarioName;
 
-  std::vector<std::tuple<sgpp::base::OCLOperationConfiguration, double, double>> statistics;
+  std::vector<std::tuple<sgpp::base::OCLOperationConfiguration, double, double, double, double>>
+      statistics;
 
   sgpp::base::OCLOperationConfiguration fixedParameters;
 
@@ -39,7 +40,8 @@ class StaticParameterTuner {
 
   double evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
                        sgpp::base::OCLOperationConfiguration &currentParameters,
-                       const std::string &kernelName, double &duration, double &GFlops);
+                       const std::string &kernelName, double &duration, double &durationOperation,
+                       double &durationKernel, double &GFlops);
 
   void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
                              const std::string &deviceName, const std::string &kernelName);

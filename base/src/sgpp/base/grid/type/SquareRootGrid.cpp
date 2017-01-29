@@ -41,8 +41,8 @@ const SBasis& SquareRootGrid::getBasis() {
   return basis;
 }
 
-std::unique_ptr<Grid> SquareRootGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new SquareRootGrid(istr));
+Grid* SquareRootGrid::unserialize(std::istream& istr) {
+  return new SquareRootGrid(istr);
 }
 /**
  * Creates new GridGenerator

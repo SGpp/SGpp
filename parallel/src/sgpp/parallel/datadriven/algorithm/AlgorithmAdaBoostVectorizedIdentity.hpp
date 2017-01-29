@@ -29,7 +29,7 @@ namespace parallel {
  */
 class AlgorithmAdaBoostVectorizedIdentity : public sgpp::datadriven::AlgorithmAdaBoostBase {
  protected:
-  /// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
+  /// Vectorization mode, possible values are SSE, AVX, OCL
   VectorizationType vecMode;
 
   virtual void alphaSolver(double& lambda, sgpp::base::DataVector& weight,
@@ -62,7 +62,7 @@ class AlgorithmAdaBoostVectorizedIdentity : public sgpp::datadriven::AlgorithmAd
    * @param refineNum the Number of refinement with a certain percentage of Grid points
    * @param numberOfAda the number of Grid points to refine
    * @param percentOfAda the percentage of Grid points to refine
-   * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
+   * @param vecMode vectorization mode, possible values are SSE, AVX, OCL
    * @param mode the adaboost type to choose
    */
   AlgorithmAdaBoostVectorizedIdentity(sgpp::base::Grid& SparseGrid, size_t gridType, int gridLevel,

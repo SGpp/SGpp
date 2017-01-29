@@ -6,17 +6,17 @@
 #ifndef OPERATIONMULTIPLEEVALLINEARSTRETCHED_HPP
 #define OPERATIONMULTIPLEEVALLINEARSTRETCHED_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
 /**
- * This class implements OperationB for a grids with linearstretched basis ansatzfunctions without boundaries
+ * This class implements OperationB for a grids with linearstretched basis ansatzfunctions without
+ * boundaries
  */
 class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
  public:
@@ -26,9 +26,8 @@ class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalLinearStretched(Grid& grid, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
-  }
+  OperationMultipleEvalLinearStretched(Grid& grid, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
 
   /**
    * Destructor
@@ -37,6 +36,8 @@ class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// reference to the grid's GridStorage object

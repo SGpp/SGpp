@@ -10,19 +10,19 @@
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalPolyBoundary::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalPolyBoundary::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SPolyBoundaryBase> op;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalPolyBoundary::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalPolyBoundary::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SPolyBoundaryBase> op;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalPolyBoundary::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

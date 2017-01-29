@@ -7,7 +7,7 @@
 
 import random, math
 
-numElements = 1000000
+numElements = 500000
 fileName = "friedman2_4d_" + str(numElements) + ".arff"
 seed = 135
 

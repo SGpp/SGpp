@@ -197,8 +197,8 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(sgpp::base::DataVector& al
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw sgpp::base::application_exception(
@@ -237,8 +237,8 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(sgpp::base::Data
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw sgpp::base::application_exception(
@@ -295,8 +295,8 @@ void PoissonEquationSolverMPI::initGridWithExpHeat(sgpp::base::DataVector& alpha
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw sgpp::base::application_exception(
@@ -340,8 +340,8 @@ void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(sgpp::base::DataVec
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid));
     myHierarchisation->doHierarchisation(alpha);
   } else {
     throw sgpp::base::application_exception(

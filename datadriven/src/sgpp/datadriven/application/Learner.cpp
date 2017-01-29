@@ -38,20 +38,22 @@ Learner::~Learner() {
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
+  std::shared_ptr<sgpp::base::OperationMatrix> C;
   if (this->grid == NULL) return NULL;
 
   // Clean up, if needed
   //  if (C_ != NULL) delete C_;
 
   if (this->CMode == datadriven::RegularizationType::Laplace) {
-    C = sgpp::op_factory::createOperationLaplace(*this->grid);
+    C.reset(sgpp::op_factory::createOperationLaplace(*this->grid));
   } else if (this->CMode == datadriven::RegularizationType::Identity) {
-    C = sgpp::op_factory::createOperationIdentity(*this->grid);
+    C.reset(sgpp::op_factory::createOperationIdentity(*this->grid));
   } else {
     // should not happen
   }
 
-  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset, *C,
+  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset,
+                                                            std::move(C),
                                                             lambda);
 }
 

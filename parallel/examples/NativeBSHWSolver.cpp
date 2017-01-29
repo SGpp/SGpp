@@ -398,7 +398,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
   }
 
   // Test call @ the money
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     //    if (isLogSolve == true)
@@ -412,7 +412,7 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
 
     // take the mean of the given domain
     double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary) / 2.0;
-    point.push_back(point_i);
+    point[i] = point_i;
   }
 
   std::cout << "Optionprice at [" << point[0] << ", " << point[1]
@@ -441,9 +441,9 @@ void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, st
   for (int j = -10; j <= 10; j++) {
     double S = PB + j * dS;
 
-    std::vector<double> point_strike;
-    point_strike.push_back(S);
-    point_strike.push_back(rr);
+    sgpp::base::DataVector point_strike(2);
+    point_strike[0] = S;
+    point_strike[1] = rr;
 
     if (j == 0) {
       std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1]
@@ -727,7 +727,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
   }
 
   // Test call @ the money
-  std::vector<double> point;
+  sgpp::base::DataVector point(d);
 
   for (size_t i = 0; i < d; i++) {
     //    if (isLogSolve == true)
@@ -741,7 +741,7 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
 
     // take the mean of the given domain
     double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary) / 2.0;
-    point.push_back(point_i);
+    point[i] = point_i;
   }
 
   std::cout << "Optionprice at [" << point[0] << ", " << point[1]
@@ -765,9 +765,9 @@ void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string file
     PB = PB + c * PT;
   }
 
-  std::vector<double> point_strike;
-  point_strike.push_back(PB);
-  point_strike.push_back(rr);
+  sgpp::base::DataVector point_strike(2);
+  point_strike[0] = PB;
+  point_strike[1] = rr;
 
   std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1]
             << "] (at-the-money!!): " << ::std::setprecision(12)

@@ -5,32 +5,29 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinear.hpp>
-
-
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalModLinear::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalModLinear::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> base;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalModLinear::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalModLinear::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> base;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalModLinear::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

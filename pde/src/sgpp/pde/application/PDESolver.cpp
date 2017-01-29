@@ -84,7 +84,7 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
     myGridStorage = NULL;
   }
 
-  myGrid = sgpp::base::Grid::unserialize(serializedGrid).release();
+  myGrid = sgpp::base::Grid::unserialize(serializedGrid);
 
   myBoundingBox = &myGrid->getBoundingBox();
   myGridStorage = &myGrid->getStorage();
@@ -247,7 +247,7 @@ void PDESolver::printSparseGridExpTransform(sgpp::base::DataVector& alpha, std::
   myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
-double PDESolver::evaluatePoint(std::vector<double>& evalPoint, sgpp::base::DataVector& alpha) {
+double PDESolver::evaluatePoint(sgpp::base::DataVector& evalPoint, sgpp::base::DataVector& alpha) {
   double result = 0.0;
 
   if (bGridConstructed) {
