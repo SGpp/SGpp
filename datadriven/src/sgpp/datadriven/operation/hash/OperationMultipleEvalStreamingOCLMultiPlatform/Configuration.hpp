@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/globaldef.hpp"
 
 namespace sgpp {

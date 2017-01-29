@@ -6,11 +6,11 @@
 #ifndef OPERATIONMULTIPLEEVALMODPOLY_HPP
 #define OPERATIONMULTIPLEEVALMODPOLY_HPP
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -19,7 +19,7 @@ namespace base {
  * This class implements OperationMultipleEval for a grids with mod poly basis ansatzfunctions
  *
  */
-class OperationMultipleEvalModPoly: public OperationMultipleEval {
+class OperationMultipleEvalModPoly : public OperationMultipleEval {
  public:
   /**
    * Constructor
@@ -28,18 +28,18 @@ class OperationMultipleEvalModPoly: public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModPoly(Grid& grid, size_t degree, DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
-  }
+  OperationMultipleEvalModPoly(Grid& grid, size_t degree, DataMatrix& dataset)
+      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {}
 
   /**
    * Destructor
    */
-  ~OperationMultipleEvalModPoly() override {
-  }
+  ~OperationMultipleEvalModPoly() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
+
+  double getDuration() override;
 
  protected:
   /// Pointer to GridStorage object

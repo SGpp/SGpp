@@ -121,14 +121,14 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // Create needed operations, on inner grid
     this->OpDeltaInner =
-        sgpp::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
     this->OpGammaInner =
-        sgpp::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
     // Create needed operations, on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
   } else {
     // create needed operations that are different in case of a log-transformed Black-Scholoes
     // equation
@@ -137,19 +137,19 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // operations on boundary grid
     this->OpDeltaBound =
-        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
     this->OpGammaBound =
-        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
     // operations on inner grid
     this->OpDeltaInner =
-        sgpp::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
     this->OpGammaInner =
-        sgpp::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
   }
 
   // Create operations, independent bLogTransform
-  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
-  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;

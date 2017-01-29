@@ -84,7 +84,7 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe)
   if (grid_ != NULL) delete grid_;
 
   // can be solved better with a grid copy constructor
-  grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize()).release();
+  grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize());
   alpha_ = new sgpp::base::DataVectorSP(*(copyMe.alpha_));
 }
 
@@ -331,7 +331,7 @@ sgpp::base::DataVectorSP LearnerBaseSP::predict(sgpp::base::DataMatrixSP& testDa
   sgpp::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid_, testDatasetDP).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid_, testDatasetDP);
   MultEval->mult(alphaDP, classesComputedDP);
   delete MultEval;
 

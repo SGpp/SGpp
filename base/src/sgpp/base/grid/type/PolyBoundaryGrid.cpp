@@ -34,8 +34,8 @@ sgpp::base::GridType PolyBoundaryGrid::getType() { return sgpp::base::GridType::
 
 size_t PolyBoundaryGrid::getDegree() const { return this->degree; }
 
-std::unique_ptr<Grid> PolyBoundaryGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new PolyBoundaryGrid(istr));
+Grid* PolyBoundaryGrid::unserialize(std::istream& istr) {
+  return new PolyBoundaryGrid(istr);
 }
 
 void PolyBoundaryGrid::serialize(std::ostream& ostr, int version) {

@@ -35,7 +35,7 @@ namespace op_factory {
  * bilinear form
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationGamma(
+base::OperationMatrix* createOperationGamma(
     base::Grid& grid, base::DataMatrix& coef);
 /**
  * Factory method, returning an OperationGammaLog (OperationMatrix) for the grid at hand.
@@ -51,7 +51,7 @@ std::unique_ptr<base::OperationMatrix> createOperationGamma(
  * bilinear form
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationGammaLog(
+base::OperationMatrix* createOperationGammaLog(
     base::Grid& grid, base::DataMatrix& coef);
 /**
  * Factory method, returning an OperationLB (OperationMatrix) for the grid at hand.
@@ -60,7 +60,7 @@ std::unique_ptr<base::OperationMatrix> createOperationGammaLog(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLB(base::Grid& grid);
+base::OperationMatrix* createOperationLB(base::Grid& grid);
 /**
  * Factory method, returning an OperationLE (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -68,7 +68,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLB(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLE(base::Grid& grid);
+base::OperationMatrix* createOperationLE(base::Grid& grid);
 /**
  * Factory method, returning an OperationLD (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -76,7 +76,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLE(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLD(base::Grid& grid);
+base::OperationMatrix* createOperationLD(base::Grid& grid);
 /**
  * Factory method, returning an OperationLF (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -84,7 +84,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLD(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationLF(base::Grid& grid);
+base::OperationMatrix* createOperationLF(base::Grid& grid);
 /**
  * Factory method, returning an OperationDelta (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -98,7 +98,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLF(base::Grid& grid);
  * bilinear form
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationDelta(
+base::OperationMatrix* createOperationDelta(
     base::Grid& grid, base::DataVector& coef);
 /**
  * Factory method, returning an OperationDeltaLog (OperationMatrix) for the grid at hand.
@@ -113,32 +113,32 @@ std::unique_ptr<base::OperationMatrix> createOperationDelta(
  * bilinear form
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationDeltaLog(
+base::OperationMatrix* createOperationDeltaLog(
     base::Grid& grid, base::DataVector& coef);
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonBLog(
+base::OperationMatrix* createOperationHestonBLog(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonCLog(
+base::OperationMatrix* createOperationHestonCLog(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonDLog(
+base::OperationMatrix* createOperationHestonDLog(
     base::Grid& grid, base::DataVector& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonELog(
+base::OperationMatrix* createOperationHestonELog(
     base::Grid& grid, base::DataVector& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonFLog(
+base::OperationMatrix* createOperationHestonFLog(
     base::Grid& grid, base::DataVector& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonGLog(
+base::OperationMatrix* createOperationHestonGLog(
     base::Grid& grid, base::DataVector& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonHLog(
+base::OperationMatrix* createOperationHestonHLog(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonKLog(
+base::OperationMatrix* createOperationHestonKLog(
     base::Grid& grid, double***** coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonX(
+base::OperationMatrix* createOperationHestonX(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonY(
+base::OperationMatrix* createOperationHestonY(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonW(
+base::OperationMatrix* createOperationHestonW(
     base::Grid& grid, base::DataMatrix& coef);
-std::unique_ptr<base::OperationMatrix> createOperationHestonZ(
+base::OperationMatrix* createOperationHestonZ(
     base::Grid& grid, base::DataVector& coef);
 }  // namespace op_factory
 }  // namespace sgpp

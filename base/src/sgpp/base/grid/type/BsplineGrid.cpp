@@ -30,8 +30,8 @@ const SBasis& BsplineGrid::getBasis() { return *basis_; }
 
 size_t BsplineGrid::getDegree() { return this->degree; }
 
-std::unique_ptr<Grid> BsplineGrid::unserialize(std::istream& istr) {
-  return std::unique_ptr<Grid>(new BsplineGrid(istr));
+Grid* BsplineGrid::unserialize(std::istream& istr) {
+  return new BsplineGrid(istr);
 }
 
 void BsplineGrid::serialize(std::ostream& ostr, int version) {

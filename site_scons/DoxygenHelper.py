@@ -203,7 +203,7 @@ def createLanguageExampleDoxy(examples):
         examplesInLanguageAndModule = [example for example in examplesInLanguage
                                        if example["moduleName"] == moduleName]
         examplesInLanguageAndModule.sort(key=lambda example: example["pageName"].lower())
-        examplesFile.write("\n<b>Module sgpp::{}</b>\n\n".format(moduleName))
+        examplesFile.write("\n@section examples_{1}_module_{0} Module sgpp::{0}\n\n".format(moduleName, language))
         for example in examplesInLanguageAndModule:
           examplesFile.write("- @subpage {}\n".format(example["pageName"]))
 
@@ -219,7 +219,12 @@ def createModuleDoxy(modules):
 
     for moduleName in modules:
       for subpage in glob.glob(os.path.join(moduleName, "doc", "doxygen", "module_*.doxy")):
-        f.write("- @subpage " + os.path.splitext(os.path.split(subpage)[-1])[0] + "\n")
+        short_discription = ''
+        page = open(subpage, 'rt')
+        for line in page.xreadlines():
+          if "@short" in line:
+            short_discription = line.strip().replace('@short', '')
+        f.write("- @subpage %s %s\n"%(os.path.splitext(os.path.split(subpage)[-1])[0], short_discription))
 
     f.write(stub1)
 

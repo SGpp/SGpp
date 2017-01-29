@@ -7,15 +7,24 @@
 #define HASHGENERATOR_HPP
 
 #include <sgpp/base/grid/GridStorage.hpp>
-
 #include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <vector>
 #include <cmath>
+#include <algorithm>
 #include <iostream>
+#include <unordered_set>
+#include <vector>
+#include <iterator>
 
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+  if (!v.empty()) {
+    out << '[';
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+    out << "\b\b]";
+  }
+  return out;
+}
 
 namespace sgpp {
 namespace base {
@@ -43,16 +52,56 @@ class HashGenerator {
    *
    * @param storage Hashmap that stores the grid points
    * @param level Grid level (non-negative value)
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces.
+   *        The effect of T can be seen in: \image html generalisedGrid.svg
    */
-  void regular(GridStorage& storage, level_t level) {
+  void regular(GridStorage& storage, level_t level, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
-
-    this->regular_iter(storage, level);
+    this->regular_iter(storage, level, T);
   }
 
+  /**
+   * @brief Generates a regular sparse grid of level level, without boundaries.
+   * The resulting grid only contains interactions that are in the vector terms.
+   * @param storage Hashmap that stores the grid points
+   * @param level Grid level (non-negative value)
+   * @param terms controls the desired interaction terms.
+   * For example, if we want to include grid points that model an
+   * interaction between the first and the second predictor, we would
+   * include the vector [1,2] in terms.
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces.
+   */
+  void regularInter(GridStorage& storage, level_t level,
+                    const std::vector<std::vector<size_t>>& terms, double T = 0) {
+    if (storage.getSize() > 0) {
+      throw generation_exception("storage not empty");
+    }
+    auto interset = std::unordered_set<std::vector<bool>>();
+    const auto dim = storage.getDimension();
+    for (const auto& interaction : terms) {
+      auto term = std::vector<bool>(dim, false);
+      for (const auto i : interaction) {
+        term[i] = true;
+      }
+      interset.insert(term);
+    }
 
+    this->regular_inter(storage, level, interset, T);
+  }
+
+  void regular_inter(GridStorage& storage, level_t level,
+                     const std::unordered_set<std::vector<bool>>& terms, double T = 0) {
+    if (storage.getSize() > 0) {
+      throw generation_exception("storage not empty");
+    }
+    this->regular_inter_iter(storage, level, terms, T);
+  }
 
   /**
   * Generates a regular sparse grid of level levels, without boundaries
@@ -62,21 +111,21 @@ class HashGenerator {
   * @param storage Hashmap that stores the grid points
   * @param level Grid level (non-negative value)
   * @param clique_size number of dimensions in a clique
+  * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+  *        For further information see Griebel and Knapek's paper
+  *        optimized tensor-product approximation spaces
   */
-  void cliques(GridStorage& storage, level_t level, size_t clique_size) {
+  void cliques(GridStorage& storage, level_t level, size_t clique_size, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
 
     if (storage.getDimension() < clique_size) {
-      throw generation_exception(
-        "clique size should be not greater than grid dimension");
+      throw generation_exception("clique size should be not greater than grid dimension");
     }
 
-
-    this->cliques_iter(storage, level, clique_size);
+    this->cliques_iter(storage, level, clique_size, T);
   }
-
 
   /**
    * Generates a full grid of level @p level, without boundaries.
@@ -114,9 +163,7 @@ class HashGenerator {
    * @param boundaryLevel level at which the boundary points should be
    *                      inserted
    */
-  void regularWithBoundaries(GridStorage& storage,
-                             level_t level,
-                             level_t boundaryLevel = 1) {
+  void regularWithBoundaries(GridStorage& storage, level_t level, level_t boundaryLevel = 1) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
@@ -124,8 +171,7 @@ class HashGenerator {
     GridPoint point(storage.getDimension());
 
     if (boundaryLevel >= 1) {
-      this->regular_boundary_truncated_iter(storage, level,
-                                            boundaryLevel);
+      this->regular_boundary_truncated_iter(storage, level, boundaryLevel);
     } else {
       /* new grid generation
        *
@@ -140,14 +186,16 @@ class HashGenerator {
     }
   }
 
-
   /**
    * Generates a regular sparse grid of level levels with boundaries
    *
    * @param storage Hashmap, that stores the grid points
    * @param level maximum level of the sparse grid (non-negative value)
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  void regularWithPeriodicBoundaries(GridStorage& storage, level_t level) {
+  void regularWithPeriodicBoundaries(GridStorage& storage, level_t level, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
@@ -155,13 +203,11 @@ class HashGenerator {
     GridPoint point(storage.getDimension());
 
     if (level == 0) {
-      throw generation_exception(
-        "Grid generation with maximum level 0 is not supported");
+      throw generation_exception("Grid generation with maximum level 0 is not supported");
     } else {
-      this->regular_periodic_boundary_iter(storage, level);
+      this->regular_periodic_boundary_iter(storage, level, T);
     }
   }
-
 
   /**
    * Generates a regular square root grid of level level with boundaries
@@ -182,7 +228,8 @@ class HashGenerator {
     }
 
     /**
-     * Change here to the following code to take the [n/2]+1 grid as small level for odd numbers(and also change FullGridSet getSquare method)
+     * Change here to the following code to take the [n/2]+1 grid as small level for odd numbers(and
+     * also change FullGridSet getSquare method)
      * int small_level=ceil(level/2);
      * if (level%2==0) level--;
      * */
@@ -224,10 +271,12 @@ class HashGenerator {
    *
    * @param storage pointer to storage object into which the grid points should be stored
    * @param n level of regular sparse grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *        For further information see Griebel and Knapek's paper
+   *        optimized tensor-product approximation spaces
    */
-  void regular_iter(GridStorage& storage, level_t n) {
-    if (storage.getDimension() == 0)
-      return;
+  void regular_iter(GridStorage& storage, level_t n, double T = 0) {
+    if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -243,7 +292,6 @@ class HashGenerator {
         } else {
           idx_1d.push(0, l, i, false);
         }
-
         storage.insert(idx_1d);
       }
     }
@@ -260,11 +308,14 @@ class HashGenerator {
         bool first = true;
         GridPoint idx(storage.getPoint(g));
 
-        // calculate current level-sum - 1
         level_t level_sum = idx.getLevelSum() - 1;
+        level_t level_max = idx.getLevelMax();
 
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum <= n + storage.getDimension() - 1; l++) {
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                            (std::max(l, level_max) <= n);
+             l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
             if (first == false) {
@@ -274,7 +325,6 @@ class HashGenerator {
               } else {
                 idx.push(d, l, i, false);
               }
-
               storage.insert(idx);
             } else {
               // is leaf?
@@ -283,7 +333,6 @@ class HashGenerator {
               } else {
                 idx.push(d, l, i, false);
               }
-
               storage.update(idx, g);
               first = false;
             }
@@ -293,10 +342,93 @@ class HashGenerator {
     }
   }
 
+  void decodeCoords(DataVector& coords, std::vector<bool>& result) {
+    for (size_t i = 0; i < coords.getSize(); ++i) {
+      result[i] = coords[i] != 0.5;
+    }
+  }
 
-  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size) {
-    if (storage.getDimension() == 0)
-      return;
+  void regular_inter_iter(GridStorage& storage, level_t n,
+                          const std::unordered_set<std::vector<bool>>& terms, double T = 0) {
+    if (storage.getDimension() == 0) return;
+
+    auto coords = DataVector(storage.getDimension());
+    auto coordsBool = std::vector<bool>(storage.getDimension());
+
+    GridPoint idx_1d(storage.getDimension());
+
+    for (size_t d = 0; d < storage.getDimension(); d++) {
+      idx_1d.push(d, 1, 1, false);
+    }
+
+    // Generate 1D grid in first dimension
+    for (level_t l = 1; l <= n; l++) {
+      for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+        if (l == n) {
+          idx_1d.push(0, l, i, true);
+        } else {
+          idx_1d.push(0, l, i, false);
+        }
+        storage.insert(idx_1d);
+      }
+    }
+
+    // Generate grid points in all other dimensions:
+    // loop dim times over intermediate grid, take all grid points and
+    // modify them in current dimension d
+    for (size_t d = 1; d < storage.getDimension(); d++) {
+      // current size
+      size_t grid_size = storage.getSize();
+
+      // loop over all current grid points
+      for (size_t g = 0; g < grid_size; g++) {
+        bool first = true;
+        GridPoint idx(storage.getPoint(g));
+
+        level_t level_sum = idx.getLevelSum() - 1;
+        level_t level_max = idx.getLevelMax();
+
+        // add remaining level-index pairs in current dimension d
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                            (std::max(l, level_max) <= n);
+             l++) {
+          for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+            // first grid point is updated, all others inserted
+            if (first == false) {
+              // is leaf?
+              if ((l + level_sum) == n + storage.getDimension() - 1) {
+                idx.push(d, l, i, true);
+              } else {
+                idx.push(d, l, i, false);
+              }
+              idx.getStandardCoordinates(coords);
+              decodeCoords(coords, coordsBool);
+              if (terms.find(coordsBool) != terms.end()) {
+                storage.insert(idx);
+              }
+            } else {
+              // is leaf?
+              if ((l + level_sum) == n + storage.getDimension() - 1) {
+                idx.push(d, l, i, true);
+              } else {
+                idx.push(d, l, i, false);
+              }
+              idx.getStandardCoordinates(coords);
+              decodeCoords(coords, coordsBool);
+              if (terms.find(coordsBool) != terms.end()) {
+                storage.update(idx, g);
+              }
+              first = false;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void cliques_iter(GridStorage& storage, level_t n, size_t clique_size, double T = 0) {
+    if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -350,9 +482,13 @@ class HashGenerator {
           continue;
         }
 
-
+        level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum <= n + storage.getDimension() - 1; l++) {
+        // as mentioned before T adjusts the granularity of the grid
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                            (std::max(l, level_max) <= n);
+             l++) {
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // first grid point is updated, all others inserted
             if (first == false) {
@@ -416,13 +552,15 @@ class HashGenerator {
    * @param storage       pointer to storage object into which
    *                      the grid points should be stored
    * @param n             level of regular sparse grid
-         * @param boundaryLevel 1 + how much levels the boundary is coarser than
-         *                      the main axes, 1 means same level,
-         *                      2 means one level coarser, etc.; must be >= 1
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 1 means same level,
+   *                      2 means one level coarser, etc.; must be >= 1
+   * @param T             modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *                      For further information see Griebel and Knapek's paper
+   *                      optimized tensor-product approximation spaces
    */
-  void regular_boundary_truncated_iter(GridStorage& storage,
-                                       level_t n,
-                                       level_t boundaryLevel = 1) {
+  void regular_boundary_truncated_iter(GridStorage& storage, level_t n, level_t boundaryLevel = 1,
+                                       double T = 0) {
     const size_t dim = storage.getDimension();
 
     if (dim == 0) {
@@ -436,7 +574,7 @@ class HashGenerator {
     }
 
     // generate boundary basis functions
-          {
+    {
       idx_1d.push(0, 0, 0, false);
       storage.insert(idx_1d);
 
@@ -464,8 +602,8 @@ class HashGenerator {
     for (size_t d = 1; d < dim; d++) {
       // current size
       const size_t gridSize = storage.getSize();
-            // curDim is new dimension of the grid points to be inserted
-            const level_t curDim = static_cast<level_t>(d + 1);
+      // curDim is new dimension of the grid points to be inserted
+      const level_t curDim = static_cast<level_t>(d + 1);
 
       // loop over all current grid points
       for (size_t g = 0; g < gridSize; g++) {
@@ -474,24 +612,24 @@ class HashGenerator {
         GridPoint idx(storage.getPoint(g));
         bool firstPoint = true;
 
-              // calculate level sum and count number of zero levels
+        // calculate level sum and count number of zero levels
         for (size_t sd = 0; sd < d; sd++) {
           level_t tmp = idx.getLevel(sd);
 
           if (tmp == 0) {
-                  numberOfZeroLevels++;
+            numberOfZeroLevels++;
           }
 
           levelSum += tmp;
         }
 
-              // generate boundary basis functions,
-              // but only if levelSum <=
-              // n + curDim - boundaryLevel - (numberOfZeroLevels + 1)
-              // (the +1 comes from the fact that the newly generated functions
-              // will have an additional zero in the d-th dimension)
-              if ((levelSum + boundaryLevel + numberOfZeroLevels + 1 <=
-                   n + curDim) || (numberOfZeroLevels == curDim - 1)) {
+        // generate boundary basis functions,
+        // but only if levelSum <=
+        // n + curDim - boundaryLevel - (numberOfZeroLevels + 1)
+        // (the +1 comes from the fact that the newly generated functions
+        // will have an additional zero in the d-th dimension)
+        if ((levelSum + boundaryLevel + numberOfZeroLevels + 1 <= n + curDim) ||
+            (numberOfZeroLevels == curDim - 1)) {
           idx.push(d, 0, 0, false);
           storage.update(idx, g);
 
@@ -501,31 +639,36 @@ class HashGenerator {
           firstPoint = false;
         }
 
-              level_t upperBound;
+        double upperBound;
 
-              // choose upper bound of level sum according whether
-              // the new basis function is an interior or a boundary function
-              // (the loop below skips l = 0 as the boundary points
-              // have been inserted a few lines above)
-              if (numberOfZeroLevels > 0) {
-                // check if upperBound would be negative
-                // (we're working with unsigned integers here)
-                if (n + curDim < boundaryLevel + numberOfZeroLevels) {
-                  continue;
-                } else {
-                  // upper bound for boundary basis functions
-                  upperBound = n + curDim - numberOfZeroLevels - boundaryLevel;
-                }
-              } else {
-                // upper bound for interior basis functions
-                upperBound = n + curDim - 1;
-              }
+        // choose upper bound of level sum according whether
+        // the new basis function is an interior or a boundary function
+        // (the loop below skips l = 0 as the boundary points
+        // have been inserted a few lines above)
+        if (numberOfZeroLevels > 0) {
+          // check if upperBound would be negative
+          // (we're working with unsigned integers here)
+          if (n + curDim < boundaryLevel + numberOfZeroLevels) {
+            continue;
+          } else {
+            // upper bound for boundary basis functions
+            upperBound = static_cast<double>(n + curDim - numberOfZeroLevels - boundaryLevel);
+          }
+        } else {
+          // upper bound for interior basis functions
+          upperBound = static_cast<double>(n + curDim - 1);
+        }
+        upperBound -= T * n;
+        level_t level_max = idx.getLevelMax();
 
-              for (level_t l = 1; l + levelSum <= upperBound; l++) {
+        for (level_t l = 1;
+             (static_cast<double>(l + levelSum) - (T * std::max(l, level_max)) <= upperBound) &&
+             (std::max(l, level_max) <= n);
+             l++) {
           // generate inner basis functions
           for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
             if ((l + levelSum) == n + dim - 1) {
-                    idx.push(d, l, i, (numberOfZeroLevels == 0));
+              idx.push(d, l, i, (numberOfZeroLevels == 0));
             } else {
               idx.push(d, l, i, false);
             }
@@ -542,17 +685,18 @@ class HashGenerator {
     }
   }
 
-
   /**
    * Generate a regular sparse grid iteratively (much faster than recursively)
    * with periodic boundary.
    *
    * @param storage Pointer to storage object into which the grid points should be stored
    * @param n Level of regular sparse grid
+   * @param T modifier for subgrid selection, T = 0 implies standard sparse grid.
+   *           For further information see Griebel and Knapek's paper
+   *           optimized tensor-product approximation spaces
    */
-  void regular_periodic_boundary_iter(GridStorage& storage, level_t n) {
-    if (storage.getDimension() == 0)
-      return;
+  void regular_periodic_boundary_iter(GridStorage& storage, level_t n, double T = 0) {
+    if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -595,14 +739,16 @@ class HashGenerator {
         level_t level_sum = idx.getLevelSum() - 1;
 
         for (size_t sd = 0; sd < d; sd++) {
-          if (idx.getLevel(sd) == 0)
-            level_sum += 1;
+          if (idx.getLevel(sd) == 0) level_sum += 1;
         }
 
-
-
+        level_t level_max = idx.getLevelMax();
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l + level_sum <= n + storage.getDimension() - 1; l++) {
+        // as mentioned before T adjusts the granularity of the grid
+        for (level_t l = 1; (static_cast<double>(l + level_sum) - (T * std::max(l, level_max)) <=
+                             static_cast<double>(n + storage.getDimension() - 1) - (T * n)) &&
+                            (std::max(l, level_max) <= n);
+             l++) {
           if (l == 1) {
             idx.push(d, 0, 0, false);
             storage.insert(idx);
@@ -636,7 +782,6 @@ class HashGenerator {
     }
   }
 
-
   /**
    * Generate a full grid iteratively (much faster than recursively)
    * without grid points on the boundary.
@@ -645,8 +790,7 @@ class HashGenerator {
    * @param n Level of full grid
    */
   void createFullGridIterative(GridStorage& storage, level_t n) {
-    if (storage.getDimension() == 0)
-      return;
+    if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -720,8 +864,7 @@ class HashGenerator {
    * @param n Level of full grid
    */
   void createFullGridTruncatedIterative(GridStorage& storage, level_t n) {
-    if (storage.getDimension() == 0)
-      return;
+    if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -791,8 +934,6 @@ class HashGenerator {
       }
     }
   }
-
-
 
   //  /**
   //   * recursive construction of the spare grid without boundaries
@@ -894,12 +1035,12 @@ class HashGenerator {
    * @param level maximum level of the sparse grid
    * @param bLevelZero specifies if the current index has a level zero component
    */
+
   void boundaries_truncated_rec(GridStorage& storage, GridPoint& index,
                                 size_t current_dim, level_t current_level,
                                 level_t level, bool bLevelZero) {
     if (current_dim == 0) {
-      boundaries_Truncated_rec_1d(storage, index, current_level, level,
-                                  bLevelZero);
+      boundaries_Truncated_rec_1d(storage, index, current_level, level, bLevelZero);
     } else {
       index_t source_index;
       level_t source_level;
@@ -918,35 +1059,30 @@ class HashGenerator {
 
         if (source_level == 1) {
           index.push(current_dim, 0, 0, false);
-          this->boundaries_truncated_rec(storage, index, current_dim - 1,
-                                         current_level,
-                                         level, true);
+          this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level,
+                                         true);
 
           index.push(current_dim, 0, 1, false);
-          this->boundaries_truncated_rec(storage, index, current_dim - 1,
-                                         current_level,
-                                         level, true);
+          this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level,
+                                         true);
 
           index.push(current_dim, source_level, source_index);
         }
 
         // d-1 recursion
         index.setLeaf(bLeafProperty);
-        this->boundaries_truncated_rec(storage, index, current_dim - 1,
-                                       current_level,
-                                       level, bLevelZero);
+        this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level,
+                                       bLevelZero);
       }
 
       if (current_level < level) {
         index.push(current_dim, source_level + 1, 2 * source_index - 1);
-        this->boundaries_truncated_rec(storage, index, current_dim,
-                                       current_level + 1,
-                                       level, bLevelZero);
+        this->boundaries_truncated_rec(storage, index, current_dim, current_level + 1, level,
+                                       bLevelZero);
 
         index.push(current_dim, source_level + 1, 2 * source_index + 1);
-        this->boundaries_truncated_rec(storage, index, current_dim,
-                                       current_level + 1,
-                                       level, bLevelZero);
+        this->boundaries_truncated_rec(storage, index, current_dim, current_level + 1, level,
+                                       bLevelZero);
       }
 
       index.push(current_dim, source_level, source_index);
@@ -963,6 +1099,7 @@ class HashGenerator {
    * @param level maximum level of grid
    * @param bLevelZero specifies if the current index has a level zero component
    */
+
   void boundaries_Truncated_rec_1d(GridStorage& storage, GridPoint& index,
                                    level_t current_level, level_t level,
                                    bool bLevelZero) {
@@ -976,9 +1113,7 @@ class HashGenerator {
           index.push(0, 0, 1, false);
           storage.insert(index);
         } else {
-          for (index_t i = 1;
-               static_cast<int>(i) <= static_cast<int>(1 << (l - 1));
-               i++) {
+          for (index_t i = 1; static_cast<int>(i) <= static_cast<int>(1 << (l - 1)); i++) {
             index.push(0, l, 2 * i - 1, (true && bLevelGreaterZero));
             storage.insert(index);
           }
@@ -990,9 +1125,7 @@ class HashGenerator {
           index.push(0, 0, 1, false);
           storage.insert(index);
         } else {
-          for (index_t i = 1;
-               static_cast<int>(i) <= static_cast<int>(1 << (l - 1));
-               i++) {
+          for (index_t i = 1; static_cast<int>(i) <= static_cast<int>(1 << (l - 1)); i++) {
             index.push(0, l, 2 * i - 1, false);
             storage.insert(index);
           }
@@ -1002,7 +1135,8 @@ class HashGenerator {
   }
 
   /**
-   * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level 0 and 1
+   * recursive construction of the spare grid with boundaries, classic level 0 approach, only for
+   *level 0 and 1
    *
    * @param storage hashmap that stores the grid points
    * @param index point's index
@@ -1010,6 +1144,7 @@ class HashGenerator {
    * @param current_level current level in this construction step
    * @param level maximum level of the sparse grid
    */
+
   void boundaries_rec(GridStorage& storage, GridPoint& index,
                       size_t current_dim,
                       level_t current_level, level_t level) {
@@ -1037,19 +1172,15 @@ class HashGenerator {
           index.push(0, 0, 1, bLeafProperty);
           storage.insert(index);
 
-          index.push(current_dim, source_level, source_index,
-                     bSaveLeafProperty);
+          index.push(current_dim, source_level, source_index, bSaveLeafProperty);
         } else {
           index.push(current_dim, 0, 0, bLeafProperty);
-          this->boundaries_rec(storage, index, current_dim - 1, current_level,
-                               level);
+          this->boundaries_rec(storage, index, current_dim - 1, current_level, level);
 
           index.push(current_dim, 0, 1, bLeafProperty);
-          this->boundaries_rec(storage, index, current_dim - 1, current_level,
-                               level);
+          this->boundaries_rec(storage, index, current_dim - 1, current_level, level);
 
-          index.push(current_dim, source_level, source_index,
-                     bSaveLeafProperty);
+          index.push(current_dim, source_level, source_index, bSaveLeafProperty);
         }
       } else {
         index.setLeaf(bLeafProperty);
@@ -1057,8 +1188,7 @@ class HashGenerator {
         if (current_dim == 0) {
           storage.insert(index);
         } else {
-          this->boundaries_rec(storage, index, current_dim - 1, current_level,
-                               level);
+          this->boundaries_rec(storage, index, current_dim - 1, current_level, level);
         }
 
         index.setLeaf(bSaveLeafProperty);
@@ -1068,16 +1198,13 @@ class HashGenerator {
     if (current_level < level) {
       if (source_level == 0 && source_index == 0) {
         index.push(current_dim, source_level + 1, 1);
-        this->boundaries_rec(storage, index, current_dim, current_level + 1,
-                             level);
+        this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
       } else {
         index.push(current_dim, source_level + 1, 2 * source_index - 1);
-        this->boundaries_rec(storage, index, current_dim, current_level + 1,
-                             level);
+        this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
 
         index.push(current_dim, source_level + 1, 2 * source_index + 1);
-        this->boundaries_rec(storage, index, current_dim, current_level + 1,
-                             level);
+        this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
       }
     }
 
@@ -1094,6 +1221,7 @@ class HashGenerator {
    * @param tail true if there is a level of the index>level/2
    * @param sum sum of all levels
    */
+
   void square_rec(GridStorage& storage, GridPoint& index,
                   size_t current_dim, level_t level, level_t small_level,
                   bool tail, size_t sum) {
@@ -1116,30 +1244,24 @@ class HashGenerator {
       } else {
         // we want all nodes,
         // so we initialize the unassigned levels to start from 0
-        for (size_t d = 0; d < current_dim; d++)
-          index.push(d, 0, 0);
+        for (size_t d = 0; d < current_dim; d++) index.push(d, 0, 0);
 
         index.push(current_dim, 0, 0);
-        this->square_rec(storage, index, current_dim - 1, level, small_level,
-                         newtail,
-                         sum);
+        this->square_rec(storage, index, current_dim - 1, level, small_level, newtail, sum);
 
-
-        for (size_t d = 0; d < current_dim; d++)
-          index.push(d, 0, 0);
+        for (size_t d = 0; d < current_dim; d++) index.push(d, 0, 0);
 
         index.push(current_dim, 0, 1);
 
-        this->square_rec(storage, index, current_dim - 1, level, small_level,
-                         newtail,
-                         sum);
+        this->square_rec(storage, index, current_dim - 1, level, small_level, newtail, sum);
 
         index.push(current_dim, source_level, source_index);
       }
     } else {
       if (current_dim == 0) {
         /**
-         * If a level of the node equals level, and all the others equal small_level, the node is a leaf
+         * If a level of the node equals level, and all the others equal small_level, the node is a
+         * leaf
          * This is equivalent to saying the sum of levels equals small_level*(dim-1)+level
          * */
         if (sum == (small_level * (storage.getDimension() - 1) + level)) {
@@ -1150,31 +1272,27 @@ class HashGenerator {
 
         storage.insert(index);
       } else {
-        for (size_t d = 0; d < current_dim; d++)
-          index.push(d, 0, 0);
+        for (size_t d = 0; d < current_dim; d++) index.push(d, 0, 0);
 
-        this->square_rec(storage, index, current_dim - 1,  level, small_level,
-                         newtail,
-                         sum);
+        this->square_rec(storage, index, current_dim - 1, level, small_level, newtail, sum);
       }
     }
 
-    /**If the level of the node is smaller than small_level or we didn't have yet a level greater than small_level(!tail) and the level is smaller then level then
-    we can then proceed to the next level on this dimension, otherwise we reached the maximum possible level*
+    /**If the level of the node is smaller than small_level or we didn't have yet a level greater
+    than small_level(!tail) and the level is smaller then level then
+    we can then proceed to the next level on this dimension, otherwise we reached the maximum
+    possible level*
     */
     if ((source_level < small_level) || ((!tail) && (source_level < level))) {
       if (source_level == 0 && source_index == 0) {
         index.push(current_dim, source_level + 1, 1);
-        this->square_rec(storage, index, current_dim,  level, small_level, tail,
-                         sum + 1);
+        this->square_rec(storage, index, current_dim, level, small_level, tail, sum + 1);
       } else {
         index.push(current_dim, source_level + 1, 2 * source_index - 1);
-        this->square_rec(storage, index, current_dim,  level, small_level, tail,
-                         sum + 1);
+        this->square_rec(storage, index, current_dim, level, small_level, tail, sum + 1);
 
         index.push(current_dim, source_level + 1, 2 * source_index + 1);
-        this->square_rec(storage, index, current_dim,  level, small_level, tail,
-                         sum + 1);
+        this->square_rec(storage, index, current_dim, level, small_level, tail, sum + 1);
       }
     }
   }
@@ -1186,8 +1304,10 @@ class HashGenerator {
    * @param current_dim current working dimension
    * @param current_level the current level of the gridpoint so far, starts from minlevel*dim
    * @param level the maximum level of the gridpoint
-   * @param minlevel the level limit given by the user(tells us which fullgrids won't be present in the construction of the sparse grid)
+   * @param minlevel the level limit given by the user(tells us which fullgrids won't be present in
+   *the construction of the sparse grid)
    */
+
   void trunc_rec(GridStorage& storage, GridPoint& index,
                  size_t current_dim, level_t current_level,
                  level_t level, level_t minlevel) {
@@ -1216,19 +1336,15 @@ class HashGenerator {
           index.push(0, 0, 1, bLeafProperty);
           storage.insert(index);
 
-          index.push(current_dim, source_level, source_index,
-                     bSaveLeafProperty);
+          index.push(current_dim, source_level, source_index, bSaveLeafProperty);
         } else {
           index.push(current_dim, 0, 0, bLeafProperty);
-          trunc_rec(storage, index, current_dim - 1, current_level, level,
-                    minlevel);
+          trunc_rec(storage, index, current_dim - 1, current_level, level, minlevel);
 
           index.push(current_dim, 0, 1, bLeafProperty);
-          trunc_rec(storage, index, current_dim - 1, current_level, level,
-                    minlevel);
+          trunc_rec(storage, index, current_dim - 1, current_level, level, minlevel);
 
-          index.push(current_dim, source_level, source_index,
-                     bSaveLeafProperty);
+          index.push(current_dim, source_level, source_index, bSaveLeafProperty);
         }
       } else {
         if (current_dim == 0) {
@@ -1238,8 +1354,7 @@ class HashGenerator {
           storage.insert(index);
         } else {
           index.setLeaf(bLeafProperty);
-          trunc_rec(storage, index, current_dim - 1, current_level, level,
-                    minlevel);
+          trunc_rec(storage, index, current_dim - 1, current_level, level, minlevel);
         }
 
         index.setLeaf(bSaveLeafProperty);
@@ -1248,8 +1363,10 @@ class HashGenerator {
 
     if (source_level < minlevel) {
       /**
-       * If the source level of the node is smaller than minlevel we don't increase the variable current_level(since we started with minlevel*dim)
-       * This trick makes it possible to introduce all nodes with source_level&lt;minlevel without a separate treatment
+       * If the source level of the node is smaller than minlevel we don't increase the variable
+       * current_level(since we started with minlevel*dim)
+       * This trick makes it possible to introduce all nodes with source_level&lt;minlevel without a
+       * separate treatment
        * */
       if (source_level == 0 && source_index == 0) {
         index.push(current_dim, source_level + 1, 1);
@@ -1259,25 +1376,23 @@ class HashGenerator {
         trunc_rec(storage, index, current_dim, current_level, level, minlevel);
 
         index.push(current_dim, source_level + 1, 2 * source_index + 1);
-        trunc_rec(storage, index, current_dim, current_level , level, minlevel);
+        trunc_rec(storage, index, current_dim, current_level, level, minlevel);
       }
 
     } else if (current_level < level) {
       /**
-       * if the source_level is already >=minlevel we can proceed naturally and increase the current_level which represents the sum of levels so far
+       * if the source_level is already >=minlevel we can proceed naturally and increase the
+       * current_level which represents the sum of levels so far
        * */
       if (source_level == 0 && source_index == 0) {
         index.push(current_dim, source_level + 1, 1);
-        trunc_rec(storage, index, current_dim, current_level + 1, level,
-                  minlevel);
+        trunc_rec(storage, index, current_dim, current_level + 1, level, minlevel);
       } else {
         index.push(current_dim, source_level + 1, 2 * source_index - 1);
-        trunc_rec(storage, index, current_dim, current_level + 1, level,
-                  minlevel);
+        trunc_rec(storage, index, current_dim, current_level + 1, level, minlevel);
 
         index.push(current_dim, source_level + 1, 2 * source_index + 1);
-        trunc_rec(storage, index, current_dim, current_level + 1, level,
-                  minlevel);
+        trunc_rec(storage, index, current_dim, current_level + 1, level, minlevel);
       }
     }
 

@@ -5,12 +5,12 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
+#include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 #include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
-#include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
-#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
-#include <sgpp/globaldef.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 
 namespace sgpp {
 
@@ -30,11 +30,7 @@ size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType) 
     return OCLKernelImplBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
-
 #endif
-  } else if (vecType == ArBB) {
-    return 16;
-
 #ifdef USEMIC
   } else if (vecType == MIC) {
     return MICKernelBase::getChunkDataPoints();
@@ -64,14 +60,6 @@ size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType
     return OCLKernelImplBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
-
-#endif
-  } else if (vecType == ArBB) {
-    return 16;
-
-#ifdef USECUDA
-  } else if (vecType == CUDA) {
-    return 64;
 
 #endif
 

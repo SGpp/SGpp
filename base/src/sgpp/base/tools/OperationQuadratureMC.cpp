@@ -87,7 +87,7 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
   double* p = new double[dim];
 
   sgpp::base::DataVector point(dim);
-  std::unique_ptr<OperationEval> opEval = sgpp::op_factory::createOperationEval(*grid);
+  std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEval(*grid));
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
 

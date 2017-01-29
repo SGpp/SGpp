@@ -4,12 +4,10 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
-
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -21,13 +19,14 @@ void OperationMultipleEvalLinear::mult(DataVector& alpha, DataVector& result) {
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalLinear::multTranspose(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalLinear::multTranspose(DataVector& alpha, DataVector& result) {
   AlgorithmMultipleEvaluation<SLinearBase> op;
   LinearBasis<unsigned int, unsigned int> base;
 
   op.mult_transpose(storage, base, alpha, this->dataset, result);
 }
+
+double OperationMultipleEvalLinear::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

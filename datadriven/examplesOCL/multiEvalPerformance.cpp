@@ -6,11 +6,11 @@
 #include <random>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
 
 int main(int argc, char** argv) {
   //  std::string fileName = "friedman_4d_2000.arff";
@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
-  std::unique_ptr<sgpp::base::Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<sgpp::base::Grid> grid =
+      std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
   // create regular grid, level 3
@@ -50,7 +51,8 @@ int main(int argc, char** argv) {
       sgpp::datadriven::OperationMultipleEvalSubType::OCL);
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+      std::unique_ptr<sgpp::base::OperationMultipleEval>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   sgpp::base::DataVector result(dataset.getNumberInstances());
 
@@ -67,7 +69,8 @@ int main(int argc, char** argv) {
   std::cout << "calculating comparison values..." << std::endl;
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
+      std::unique_ptr<sgpp::base::OperationMultipleEval>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
   sgpp::base::DataVector resultCompare(dataset.getNumberInstances());
   evalCompare->eval(alpha, resultCompare);
 

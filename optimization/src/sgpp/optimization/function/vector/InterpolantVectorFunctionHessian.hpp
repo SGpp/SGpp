@@ -10,7 +10,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionHessian.hpp>
@@ -41,7 +41,7 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
   InterpolantVectorFunctionHessian(base::Grid& grid, const base::DataMatrix& alpha)
       : VectorFunctionHessian(grid.getDimension(), alpha.getNcols()),
         grid(grid),
-        opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
+        opEvalHessian(op_factory::createOperationEvalHessianNaive(grid)),
         alpha(alpha) {}
 
   /**
@@ -95,7 +95,7 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
   /// sparse grid
   base::Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationNaiveEvalHessian> opEvalHessian;
+  std::unique_ptr<base::OperationEvalHessian> opEvalHessian;
   /// coefficient matrix
   base::DataMatrix alpha;
 };

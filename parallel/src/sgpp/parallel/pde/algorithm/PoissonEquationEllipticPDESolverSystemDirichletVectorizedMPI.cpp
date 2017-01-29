@@ -22,16 +22,16 @@ PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
   if (!strcmp(alg_selector, "X86SIMD")) {
-    this->Laplace_Inner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::X86SIMD);
-    this->Laplace_Complete = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::X86SIMD);
+    this->Laplace_Inner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD));
+    this->Laplace_Complete.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD));
 #ifdef USEOCL
   } else if (!strcmp(alg_selector, "OCL")) {
-    this->Laplace_Inner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::OpenCL);
-    this->Laplace_Complete = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::OpenCL);
+    this->Laplace_Inner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL));
+    this->Laplace_Complete.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL));
 #endif
   } else {
     throw sgpp::base::algorithm_exception(

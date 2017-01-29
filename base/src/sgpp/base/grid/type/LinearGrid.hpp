@@ -51,7 +51,7 @@ class LinearGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  static std::unique_ptr<Grid> unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 };
 
 }  // namespace base

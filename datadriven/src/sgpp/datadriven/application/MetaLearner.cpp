@@ -5,20 +5,20 @@
 
 #include "MetaLearner.hpp"
 
-#include <random>
+#include <cstdio>
 #include <fstream>
 #include <iomanip>
-#include <cstdio>
-#include <utility>
+#include <random>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/application_exception.hpp"
 #include "LearnerLeastSquaresIdentity.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/datadriven/tools/Dataset.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -124,7 +124,8 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
   std::unique_ptr<LearnerLeastSquaresIdentity> referenceLearner =
       std::make_unique<LearnerLeastSquaresIdentity>(isRegression, this->verbose);
   sgpp::datadriven::OperationMultipleEvalConfiguration operationConfiguration(
-      OperationMultipleEvalType::DEFAULT, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
+      OperationMultipleEvalType::DEFAULT, OperationMultipleEvalSubType::DEFAULT,
+      OperationMultipleEvalMPIType::NONE, "STREAMING");
   referenceLearner->setImplementation(operationConfiguration);
   // TODO(pfandedd): reenabled after performance calculator has been adjusted
   referenceLearner->setReuseCoefficients(false);

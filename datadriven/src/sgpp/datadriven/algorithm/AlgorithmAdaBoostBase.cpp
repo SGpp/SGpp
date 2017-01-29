@@ -89,7 +89,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / static_cast<double>(this->numData));
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -139,7 +139,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
 
     if (this->refinement) {
       doRefinement(alpha_train, weight, count + 1);
-      opEval = op_factory::createOperationEval(*this->grid);
+      opEval.reset(op_factory::createOperationEval(*this->grid));
       alpha_learn.resizeZero(alpha_train.getSize());
     }
 
@@ -312,15 +312,15 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim).release();
+        this->grid = base::Grid::createLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim).release();
+        this->grid = base::Grid::createModLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -342,7 +342,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / static_cast<double>(this->numData));
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -386,7 +386,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
 
     if (this->refinement) {
       doRefinement(alpha_train, weight, count + 1);
-      opEval = op_factory::createOperationEval(*this->grid);
+      opEval.reset(op_factory::createOperationEval(*this->grid));
       alpha_learn.resizeZero(alpha_train.getSize());
     }
 
@@ -446,15 +446,15 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim).release();
+        this->grid = base::Grid::createLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim).release();
+        this->grid = base::Grid::createModLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -482,7 +482,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
 
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / static_cast<double>(this->numData));
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -538,7 +538,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
 
     if (this->refinement) {
       doRefinement(alpha_train, weight, count + 1);
-      opEval = op_factory::createOperationEval(*this->grid);
+      opEval.reset(op_factory::createOperationEval(*this->grid));
       alpha_learn.resizeZero(alpha_train.getSize());
     }
 
@@ -642,15 +642,15 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim).release();
+        this->grid = base::Grid::createLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim).release();
+        this->grid = base::Grid::createModLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -683,7 +683,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
 
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / static_cast<double>(this->numData));
-  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -737,7 +737,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
 
     if (this->refinement) {
       doRefinement(alpha_train, weight, count + 1);
-      opEval = op_factory::createOperationEval(*this->grid);
+      opEval.reset(op_factory::createOperationEval(*this->grid));
       alpha_learn.resizeZero(alpha_train.getSize());
     }
 
@@ -826,15 +826,15 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim).release();
+        this->grid = base::Grid::createLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim).release();
+        this->grid = base::Grid::createModLinearGrid(this->dim);
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {

@@ -791,7 +791,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, dou
 }
 
 double HestonSolver::evalOption(std::vector<double>& eval_point, base::DataVector& alpha) {
-  std::vector<double> trans_eval = eval_point;
+  base::DataVector trans_eval(eval_point);
 
   // apply needed coordinate transformations
   if (this->useLogTransform) {
@@ -1248,9 +1248,9 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
 
     for (size_t i = 0; i < points; i++) {
       for (size_t j = 0; j < points; j++) {
-        std::vector<double> point;
-        point.push_back(offset_x + ((static_cast<double>(i)) * inc_x));
-        point.push_back(offset_y + ((static_cast<double>(j)) * inc_y));
+        base::DataVector point(2);
+        point[0] = offset_x + ((static_cast<double>(i)) * inc_x);
+        point[1] = offset_y + ((static_cast<double>(j)) * inc_y);
         fileout << (offset_x + (static_cast<double>(i)) * inc_x) << " "
                 << (offset_y + (static_cast<double>(j)) * inc_y)
                 << " " << (myEval->eval(*solution, point) - myEval->eval(*exact, point))
@@ -1266,9 +1266,9 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
 }
 
 double HestonSolver::EvalSinglePoint1Asset(double s, double v, base::DataVector& alphaVec) {
-  std::vector<double> point;
-  point.push_back(s);
-  point.push_back(v);
+  base::DataVector point(2);
+  point[0] = s;
+  point[1] = v;
   return op_factory::createOperationEval(*myGrid)->eval(alphaVec, point);
 }
 }  // namespace finance

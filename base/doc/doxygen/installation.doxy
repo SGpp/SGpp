@@ -8,5 +8,6 @@ SG++ should at least work with GCC, Clang, or ICC on Linux,
 GCC on OSX, and MinGW on Windows.
 
 - @subpage linux
+- @subpage mac
 - @subpage mingw
 **/

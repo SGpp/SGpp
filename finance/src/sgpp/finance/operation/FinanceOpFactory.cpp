@@ -73,301 +73,253 @@ namespace sgpp {
 
 namespace op_factory {
 
-std::unique_ptr<base::OperationMatrix> createOperationGamma(
+base::OperationMatrix* createOperationGamma(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLinear(&grid.getStorage(), coef));
+    return new finance::OperationGammaLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLinearStretched(&grid.getStorage(), coef));
+    return new finance::OperationGammaLinearStretched(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLinearStretchedBoundary(&grid.getStorage(), coef));
+    return new finance::OperationGammaLinearStretchedBoundary(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationGammaLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationGamma is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationGammaLog(
+base::OperationMatrix* createOperationGammaLog(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLogLinear(&grid.getStorage(), coef));
+    return new finance::OperationGammaLogLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLogLinearStretched(&grid.getStorage(), coef));
+    return new finance::OperationGammaLogLinearStretched(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLogLinearStretchedBoundary(&grid.getStorage(), coef));
+    return new finance::OperationGammaLogLinearStretchedBoundary(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationGammaLogLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationGammaLogLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationGammaLog is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLB(base::Grid& grid) {
+base::OperationMatrix* createOperationLB(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLBLinear(&grid.getStorage()));
+    return new finance::OperationLBLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLBLinearBoundary(&grid.getStorage()));
+    return new finance::OperationLBLinearBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLB is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLE(base::Grid& grid) {
+base::OperationMatrix* createOperationLE(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLELinear(&grid.getStorage()));
+    return new finance::OperationLELinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLELinearBoundary(&grid.getStorage()));
+    return new finance::OperationLELinearBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLE is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLD(base::Grid& grid) {
+base::OperationMatrix* createOperationLD(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLDLinear(&grid.getStorage()));
+    return new finance::OperationLDLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLDLinearBoundary(&grid.getStorage()));
+    return new finance::OperationLDLinearBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLD is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationLF(base::Grid& grid) {
+base::OperationMatrix* createOperationLF(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLFLinear(&grid.getStorage()));
+    return new finance::OperationLFLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationLFLinearBoundary(&grid.getStorage()));
+    return new finance::OperationLFLinearBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLF is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationDelta(
+base::OperationMatrix* createOperationDelta(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLinear(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLinearStretched(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLinearStretched(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLinearStretchedBoundary(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLinearStretchedBoundary(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationDelta is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationDeltaLog(
+base::OperationMatrix* createOperationDeltaLog(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLogLinear(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLogLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLogLinearStretched(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLogLinearStretched(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLogLinearStretchedBoundary(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLogLinearStretchedBoundary(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationDeltaLogLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationDeltaLogLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationDeltaLog is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonBLog(
+base::OperationMatrix* createOperationHestonBLog(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonBLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonBLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonBLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonBLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonB is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonCLog(
+base::OperationMatrix* createOperationHestonCLog(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonCLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonCLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonCLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonCLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonC is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonDLog(
+base::OperationMatrix* createOperationHestonDLog(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonDLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonDLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonDLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonDLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonD is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonELog(
+base::OperationMatrix* createOperationHestonELog(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonELinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonELinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonELinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonELinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonE is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonFLog(
+base::OperationMatrix* createOperationHestonFLog(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonFLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonFLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonFLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonFLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonF is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonGLog(
+base::OperationMatrix* createOperationHestonGLog(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonGLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonGLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonGLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonGLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonG is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonHLog(
+base::OperationMatrix* createOperationHestonHLog(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonHLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonHLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonHLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonHLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonH is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonKLog(
+base::OperationMatrix* createOperationHestonKLog(
     base::Grid& grid, double***** coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonKLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonKLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonKLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonKLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonK is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonX(
+base::OperationMatrix* createOperationHestonX(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonXLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonXLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonXLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonXLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonX is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonY(
+base::OperationMatrix* createOperationHestonY(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonYLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonYLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonYLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonYLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonY is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonW(
+base::OperationMatrix* createOperationHestonW(
     base::Grid& grid, base::DataMatrix& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonWLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonWLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonWLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonWLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonW is not implemented for this grid type.");
   }
 }
 
-std::unique_ptr<base::OperationMatrix> createOperationHestonZ(
+base::OperationMatrix* createOperationHestonZ(
     base::Grid& grid, base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonZLinear(&grid.getStorage(), coef));
+    return new finance::OperationHestonZLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return std::unique_ptr<base::OperationMatrix>(
-        new finance::OperationHestonZLinearBoundary(&grid.getStorage(), coef));
+    return new finance::OperationHestonZLinearBoundary(&grid.getStorage(), coef);
   } else {
     throw base::factory_exception("OperationHestonZ is not implemented for this grid type.");
   }

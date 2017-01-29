@@ -9,28 +9,26 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalPrewavelet::mult(DataVector& alpha,
-    DataVector& result) {
+void OperationMultipleEvalPrewavelet::mult(DataVector& alpha, DataVector& result) {
   AlgorithmDGEMV<SPrewaveletBase> op;
   PrewaveletBasis<unsigned int, unsigned int> base;
 
   op.mult(storage, base, alpha, this->dataset, result);
 }
 
-void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source,
-    DataVector& result) {
+void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source, DataVector& result) {
   AlgorithmDGEMV<SPrewaveletBase> op;
   PrewaveletBasis<unsigned int, unsigned int> base;
 
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
+
+double OperationMultipleEvalPrewavelet::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

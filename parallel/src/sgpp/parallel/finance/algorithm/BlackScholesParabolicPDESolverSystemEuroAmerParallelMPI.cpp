@@ -537,8 +537,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
 
     // check if we are doing an American put -> handle early exercise
     if (this->option_type == "std_amer_put") {
-      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
-          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
+      std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+          sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid));
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
       size_t dim = this->BoundGrid->getStorage().getDimension();
 

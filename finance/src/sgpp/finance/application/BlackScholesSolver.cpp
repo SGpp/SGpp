@@ -1355,10 +1355,10 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
             op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
-          std::vector<double> point;
+          base::DataVector point(2);
 
-          point.push_back(dX);
-          point.push_back(dY);
+          point[0] = dX;
+          point[1] = dY;
 
           double result = myEval->eval(alpha, point);
 
@@ -1575,7 +1575,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
 }
 
 double BlackScholesSolver::evalOption(std::vector<double>& eval_point, base::DataVector& alpha) {
-  std::vector<double> trans_eval = eval_point;
+  base::DataVector trans_eval(eval_point);
 
   // apply needed coordinate transformations
   if (this->useLogTransform) {
@@ -1597,7 +1597,6 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, base::Dat
       }
     }
   }
-
 
   double result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 

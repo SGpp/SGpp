@@ -71,7 +71,7 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
   this->currentRefinementStep = 0;
 
   // TODO(pfandedd): don't use grid serialization to not have to implement a copy constructor!
-  grid = sgpp::base::Grid::unserialize(copyMe.grid->serialize());
+  grid.reset(sgpp::base::Grid::unserialize(copyMe.grid->serialize()));
   alpha = std::make_unique<sgpp::base::DataVector>(*(copyMe.alpha));
 }
 
@@ -347,7 +347,7 @@ void LearnerBase::predict(sgpp::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset);
   MultEval->mult(*alpha, classesComputed);
   delete MultEval;
 }
@@ -357,7 +357,7 @@ void LearnerBase::multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::Dat
   result.resize(grid->getSize());
 
   sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, dataset).release();
+      sgpp::op_factory::createOperationMultipleEval(*grid, dataset);
   MultEval->multTranspose(multiplier, result);
   delete MultEval;
 }

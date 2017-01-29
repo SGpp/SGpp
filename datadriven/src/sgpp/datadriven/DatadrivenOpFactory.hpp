@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_OP_FACTORY_HPP
-#define DATADRIVEN_OP_FACTORY_HPP
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -27,7 +26,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
-#include <sgpp/datadriven/operation/hash/OperationEvalSGKernel/OperationEvalSGKernel.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -43,7 +41,7 @@ namespace op_factory {
  * @param grid Grid which is to be used for OperationTest
  * @return Pointer to the new OperationTest object for the Grid grid
  */
-std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid);
+datadriven::OperationTest* createOperationTest(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRegularizationDiagonal for the grid at hand.
@@ -54,8 +52,8 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
-    base::Grid& grid, int mode, double k);
+base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
+                                                                             int mode, double k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -63,7 +61,7 @@ std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensityMarginalize> createOperationDensityMarginalize(
+datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
     base::Grid& grid);
 
 /**
@@ -72,7 +70,7 @@ std::unique_ptr<datadriven::OperationDensityMarginalize> createOperationDensityM
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensityMargTo1D> createOperationDensityMargTo1D(
+datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
     base::Grid& grid);
 
 /**
@@ -81,7 +79,7 @@ std::unique_ptr<datadriven::OperationDensityMargTo1D> createOperationDensityMarg
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensitySampling1D> createOperationDensitySampling1D(
+datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
     base::Grid& grid);
 
 /**
@@ -90,7 +88,7 @@ std::unique_ptr<datadriven::OperationDensitySampling1D> createOperationDensitySa
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensitySampling> createOperationDensitySampling(
+datadriven::OperationDensitySampling* createOperationDensitySampling(
     base::Grid& grid);
 
 /**
@@ -99,7 +97,7 @@ std::unique_ptr<datadriven::OperationDensitySampling> createOperationDensitySamp
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensityRejectionSampling>
+datadriven::OperationDensityRejectionSampling*
 createOperationDensityRejectionSampling(base::Grid& grid);
 
 /**
@@ -108,7 +106,7 @@ createOperationDensityRejectionSampling(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityConditional for the Grid grid
  */
-std::unique_ptr<datadriven::OperationDensityConditional> createOperationDensityConditional(
+datadriven::OperationDensityConditional* createOperationDensityConditional(
     base::Grid& grid);
 
 /**
@@ -117,7 +115,7 @@ std::unique_ptr<datadriven::OperationDensityConditional> createOperationDensityC
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation for the Grid grid
  */
-std::unique_ptr<datadriven::OperationRosenblattTransformation>
+datadriven::OperationRosenblattTransformation*
 createOperationRosenblattTransformation(base::Grid& grid);
 
 /**
@@ -126,7 +124,7 @@ createOperationRosenblattTransformation(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid
  */
-std::unique_ptr<datadriven::OperationTransformation1D> createOperationRosenblattTransformation1D(
+datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
     base::Grid& grid);
 
 /**
@@ -135,7 +133,7 @@ std::unique_ptr<datadriven::OperationTransformation1D> createOperationRosenblatt
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationInverseRosenblattTransformation for the Grid grid
  */
-std::unique_ptr<datadriven::OperationInverseRosenblattTransformation>
+datadriven::OperationInverseRosenblattTransformation*
 createOperationInverseRosenblattTransformation(base::Grid& grid);
 
 /**
@@ -143,7 +141,7 @@ createOperationInverseRosenblattTransformation(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationInverseRosenblattTransformation1D for the Grid grid
  */
-std::unique_ptr<datadriven::OperationTransformation1D>
+datadriven::OperationTransformation1D*
 createOperationInverseRosenblattTransformation1D(base::Grid& grid);
 
 /**
@@ -152,7 +150,7 @@ createOperationInverseRosenblattTransformation1D(base::Grid& grid);
  * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
  * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
-std::unique_ptr<datadriven::OperationRosenblattTransformationKDE>
+datadriven::OperationRosenblattTransformationKDE*
 createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
 
 /**
@@ -161,7 +159,7 @@ createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
  * @param kde GaussianKDE for which the inverse Rosenblatt transformation should be computed
  * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
-std::unique_ptr<datadriven::OperationInverseRosenblattTransformationKDE>
+datadriven::OperationInverseRosenblattTransformationKDE*
 createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
 
 /**
@@ -170,7 +168,7 @@ createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
  * @param kde kernel density which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalizeKDE
  */
-std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensityMarginalizeKDE(
+datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
     datadriven::GaussianKDE& kde);
 
 /**
@@ -179,18 +177,8 @@ std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> createOperationDensi
  * @param kde kernel density which is to be used for the operation
  * @return Pointer to new OperationDensityConditionalKDE
  */
-std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensityConditionalKDE(
+datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
     datadriven::GaussianKDE& kde);
-	
-/**
- * Factory method, returning an OperationEvalSGKernel for the sparse grid kernel evaluation.
- *
- * @param grid Grid which is to be used for the operation
- * @param dim dimension of input data
- * @return Pointer to new OperationEvalSGKernel
- */
-std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
-    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
@@ -200,11 +188,9 @@ std::unique_ptr<datadriven::OperationEvalSGKernel> createOperationEvalSGKernel(
  * @param configuration configuration to be used (evalType and evalSubType)
  * @return Pointer to new OperationMultipleEval for the Grid grid
  */
-std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
+base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }  // namespace op_factory
 }  // namespace sgpp
-
-#endif /*DATADRIVEN_OP_FACTORY_HPP*/

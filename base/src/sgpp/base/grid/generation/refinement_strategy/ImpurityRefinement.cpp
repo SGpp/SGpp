@@ -3,53 +3,46 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
-
-#include <algorithm>
-#include <limits>
+#include <iterator>
 #include <list>
 #include <vector>
-#include <utility>
-#include <iterator>
-
 
 namespace sgpp {
 namespace base {
 
-
-void ImpurityRefinement::collectRefinablePoints(GridStorage& storage, 
-                                                RefinementFunctor& functor, 
-                                                AbstractRefinement::refinement_container_type& collection) {
-  size_t refinements_num = functor.getRefinementsNum();
+void ImpurityRefinement::collectRefinablePoints(
+    GridStorage& storage, RefinementFunctor& functor,
+    AbstractRefinement::refinement_container_type& collection) {
+  size_t refinementsNum = functor.getRefinementsNum();
   GridStorage::grid_map_iterator end_iter = storage.end();
 
   // start iterating over whole grid
-  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
-    AbstractRefinement::refinement_list_type current_value_list = getIndicator(storage, iter, functor);
-    addElementToCollection(iter, current_value_list, refinements_num, collection);
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
+       iter++) {
+    AbstractRefinement::refinement_list_type current_value_list =
+        getIndicator(storage, iter, functor);
+    addElementToCollection(iter, current_value_list, refinementsNum,
+                           collection);
   }
 }
 
 AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
-  GridStorage& storage,
-  const GridStorage::grid_map_iterator& iter,
-  const RefinementFunctor& functor) const {
+    GridStorage& storage, const GridStorage::grid_map_iterator& iter,
+    const RefinementFunctor& functor) const {
   AbstractRefinement::refinement_list_type list;
 
-  // this refinement algorithm uses the impurity refinement indicator.
-  // dynamic casting is used to maintain the signature of the algorithm,
-  // but still be able to use the
-  // impurity refinement indicator with it.
+  // this refinement algorithm uses the impurity refinement indicator
   const ImpurityRefinementIndicator& impurityIndicator =
-    dynamic_cast<const ImpurityRefinementIndicator&>(functor);
+      dynamic_cast<const ImpurityRefinementIndicator&>(functor);
   refinement_key_type* key;
 
   GridPoint& point = *(iter->first);
   GridStorage::grid_map_iterator child_iter;
-  GridStorage::grid_map_iterator end_iter = storage.end();
 
   double threshold = impurityIndicator.getRefinementThreshold();
   bool isRefinablePoint = false;
@@ -92,51 +85,49 @@ AbstractRefinement::refinement_list_type ImpurityRefinement::getIndicator(
   }
 
   if (isRefinablePoint) {
-    
+    // evaluate indicator
     double impurity = impurityIndicator(point);
 
     if (impurity > threshold) {
       size_t d = 0;
-      key = new refinement_key_type(point, storage.getSequenceNumber(point), d);        // d actually not required now
-      list.emplace_front(std::shared_ptr<AbstractRefinement::refinement_key_type>(key),
-                         impurity); 
+      key = new refinement_key_type(point, storage.getSequenceNumber(point), d);
+      list.emplace_front(
+          std::shared_ptr<AbstractRefinement::refinement_key_type>(key),
+          impurity);
     }
   }
 
   return list;
 }
 
-
 void ImpurityRefinement::addElementToCollection(
-  const GridStorage::grid_map_iterator& iter,
-  AbstractRefinement::refinement_list_type current_value_list,
-  size_t refinements_num,
-  AbstractRefinement::refinement_container_type& collection) {
+    const GridStorage::grid_map_iterator& iter,
+    AbstractRefinement::refinement_list_type current_value_list,
+    size_t refinementsNum,
+    AbstractRefinement::refinement_container_type& collection) {
   for (AbstractRefinement::refinement_list_type::iterator it =
-         current_value_list.begin(); it != current_value_list.end(); it++) {
+           current_value_list.begin();
+       it != current_value_list.end(); it++) {
     collection.push_back(*it);
-    std::push_heap(collection.begin(), collection.end(), AbstractRefinement::compare_pairs);
+    std::push_heap(collection.begin(), collection.end(),
+                   AbstractRefinement::compare_pairs);
 
-    if (collection.size() > refinements_num) {
+    if (collection.size() > refinementsNum) {
       // remove the top (smallest) element
       std::pop_heap(collection.begin(), collection.end(),
                     AbstractRefinement::compare_pairs);
       collection.pop_back();
     }
-
   }
 }
 
-
 void ImpurityRefinement::refineGridpointsCollection(
-  GridStorage& storage, RefinementFunctor& functor,
-  AbstractRefinement::refinement_container_type& collection) {
-
-  // now refine all grid points which satisfy the refinement criteria
+    GridStorage& storage, RefinementFunctor& functor,
+    AbstractRefinement::refinement_container_type& collection) {
   refinement_key_type* key;
 
   ImpurityRefinementIndicator& impurityIndicator =
-    dynamic_cast<ImpurityRefinementIndicator&>(functor);
+      dynamic_cast<ImpurityRefinementIndicator&>(functor);
 
   // check last sequence number
   size_t lastSeqNr = storage.getSize() - 1;
@@ -146,20 +137,24 @@ void ImpurityRefinement::refineGridpointsCollection(
 
     GridPoint& point = key->getPoint();
 
-    //std::cout << "refine point: " << storage.getSequenceNumber(point) << std::endl;
+    // std::cout << "refine point: " << storage.getSequenceNumber(point) <<
+    // std::endl;
     this->refineGridpoint(storage, storage.getSequenceNumber(point));
 
-    point.setLeaf(false); // this is done within refineGridpoint() already    
+    point.setLeaf(false);
   }
-  // if SVM learner -> extend w1 and w2 vectors
-  for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
-    impurityIndicator.update(storage.getPoint(seqNr));
+  // for SVM learner -> extend w1 and w2 vectors
+  if ((impurityIndicator.w1 != nullptr) && (impurityIndicator.w1 != nullptr) &&
+      (impurityIndicator.alphas != nullptr)) {
+    for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
+      impurityIndicator.update(storage.getPoint(seqNr));
+    }
   }
   collection.empty();
 }
 
-
-void ImpurityRefinement::free_refine(GridStorage& storage, ImpurityRefinementIndicator& functor) {
+void ImpurityRefinement::free_refine(GridStorage& storage,
+                                     ImpurityRefinementIndicator& functor) {
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
@@ -172,7 +167,6 @@ void ImpurityRefinement::free_refine(GridStorage& storage, ImpurityRefinementInd
   refineGridpointsCollection(storage, functor, collection);
   collection.clear();
 }
-
 
 }  // namespace base
 }  // namespace sgpp

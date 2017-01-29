@@ -3,320 +3,343 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerSGD.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-
 #include <sgpp/globaldef.hpp>
 
-#include <iostream>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+#include <sgpp/datadriven/application/LearnerSGD.hpp>
+
 #include <cmath>
+#include <string>
+#include <algorithm>
 
 using sgpp::base::GridStorage;
 using sgpp::base::HashRefinement;
 using sgpp::base::PredictiveRefinement;
 using sgpp::base::PredictiveRefinementIndicator;
+using sgpp::base::ImpurityRefinement;
+using sgpp::base::ImpurityRefinementIndicator;
 
 namespace sgpp {
 namespace datadriven {
 
-LearnerSGD::LearnerSGD(sgpp::base::RegularGridConfiguration& gridConfig,
-                       sgpp::base::AdpativityConfiguration& adaptivityConfig
-                       /*sgpp::datadriven::RegularizationType& regularization*/) 
-    : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
-      grid(nullptr),
-      alpha(nullptr),
-      alphaAvg(nullptr),
-      trainData(nullptr),
-      trainLabels(nullptr),
-      testData(nullptr),
-      testLabels(nullptr),
+LearnerSGD::LearnerSGD(base::RegularGridConfiguration& gridConfig,
+                       base::AdpativityConfiguration& adaptivityConfig,
+                       base::DataMatrix& pTrainData,
+                       base::DataVector& pTrainLabels,
+                       base::DataMatrix& pTestData,
+                       base::DataVector& pTestLabels,
+                       base::DataMatrix* pValData,
+                       base::DataVector* pValLabels,
+                       double lambda, double gamma,
+                       size_t batchSize, bool useValidData)
+    : grid(nullptr),
+      alpha(base::DataVector(0)),
+      alphaAvg(base::DataVector(0)),
+      trainData(pTrainData),
+      trainLabels(pTrainLabels),
+      testData(pTestData),
+      testLabels(pTestLabels),
       batchData(nullptr),
       batchLabels(nullptr),
-      batchError(nullptr),
-      currentBatchError(0),
-      lambda(0),
-      gamma(0),
-      currentGamma(0),
-      batchSize(0),
-      smoothedErrorDecline(0),
-      smoothedErrorDeclineBufferSize(0),
-      error(0) {}
+      batchError(base::DataVector(0)),
+      gridConfig(gridConfig),
+      adaptivityConfig(adaptivityConfig),
+      lambda(lambda),
+      gamma(gamma),
+      currentGamma(gamma),
+      batchSize(batchSize),
+      useValidData(useValidData) {
 
+  // if no validation data is provided -> create buffer
+  // which contains already processed data points
+  // (required for computing error contributions used for predictive refinement)
+  if (!useValidData) {
+    batchData = new base::DataMatrix(0, trainData.getNcols());
+    batchData->addSize(batchSize);
+    batchData->setAll(0.0);
+    batchLabels = new base::DataVector(batchSize);
+    batchLabels->setAll(0.0);
+  } else {
+    batchData = pValData;
+    batchLabels = pValLabels;
+  }
+}
 
 LearnerSGD::~LearnerSGD() {}
 
+void LearnerSGD::initialize() {
+  // vector containing error contributions for predictive refinement
+  batchError.resize(batchSize, 0.0);
 
-void LearnerSGD::initialize(sgpp::base::DataMatrix& pTrainData,
-                            sgpp::base::DataVector& pTrainLabels,
-                            sgpp::base::DataMatrix& pTestData,
-                            sgpp::base::DataVector& pTestLabels,
-                            double lambda,
-                            double gamma,
-                            double smoothedErrorDecline,
-                            size_t batchSize,
-                            size_t bufferSize) {
-  trainData = std::make_shared<base::DataMatrix>(pTrainData);
-  trainLabels = std::make_shared<base::DataVector>(pTrainLabels);
-  testData = std::make_shared<base::DataMatrix>(pTestData);
-  testLabels = std::make_shared<base::DataVector>(pTestLabels);
-
-  this->lambda = lambda;
-  this->gamma = gamma;
-  currentGamma = gamma;
-
-  this->batchSize = batchSize;
-
-  //batchData = new base::DataMatrix(0, trainData->getNcols());
-  batchData = std::shared_ptr<base::DataMatrix>(new base::DataMatrix(0, trainData->getNcols()));
-  batchData->addSize(batchSize);
-  batchData->setAll(0.0);
-  //batchLabels = new base::DataVector(batchSize);
-  batchLabels = std::shared_ptr<base::DataVector>(new base::DataVector(batchSize));
-  batchLabels->setAll(0.0);
-  //batchError = new base::DataVector(batchSize);
-  batchError = std::shared_ptr<base::DataVector>(new base::DataVector(batchSize));
-  batchError->setAll(0.0);
-
-  smoothedErrorDeclineBufferSize = bufferSize;
-  this->smoothedErrorDecline = smoothedErrorDecline;
-
-  gridConfig.dim_ = trainData->getNcols();
+  // create sparse grid
+  gridConfig.dim_ = trainData.getNcols();
   grid = createRegularGrid();
-  std::cout << "# grid points: " << grid->getSize() << std::endl;
-
-  //alpha = new base::DataVector(grid->getSize());
-  alpha = std::shared_ptr<base::DataVector>(new base::DataVector(grid->getSize()));
-  alpha->setAll(0.0);
-  //alphaAvg = new base::DataVector(grid->getSize());
-  alphaAvg = std::shared_ptr<base::DataVector>(new base::DataVector(grid->getSize()));
-  alphaAvg->setAll(0.0);
+  std::cout << "# initial grid size: " << grid->getSize() << std::endl;
+  // surplus vector
+  alpha.resize(grid->getSize(), 0.0);
+  // vector for averaged surpluses
+  alphaAvg.resize(grid->getSize(), 0.0);
 }
 
-
-std::shared_ptr<base::Grid> LearnerSGD::createRegularGrid() {
+std::unique_ptr<base::Grid> LearnerSGD::createRegularGrid() {
   // load grid
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.type_ == base::GridType::Linear) {
-    uGrid = base::Grid::createLinearGrid(gridConfig.dim_);
-  } 
-  else if (gridConfig.type_ == base::GridType::ModLinear) {
-    uGrid = base::Grid::createModLinearGrid(gridConfig.dim_);
-  } 
-  else {
-    throw base::application_exception("LearnerSGD::initialize : grid type is not supported");
+    uGrid.reset(base::Grid::createLinearGrid(gridConfig.dim_));
+  } else if (gridConfig.type_ == base::GridType::ModLinear) {
+    uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
+  } else {
+    throw base::application_exception(
+        "LearnerSGD::initialize : grid type is not supported");
   }
-
   uGrid->getGenerator().regular(gridConfig.level_);
 
-  // move the grid to be shared
-  std::shared_ptr<base::Grid> sGrid{std::move(uGrid)};
-
-  return sGrid;
+  return uGrid;
 }
 
+void LearnerSGD::train(size_t maxDataPasses, std::string refType,
+                       std::string refMonitor, size_t refPeriod,
+                       double errorDeclineThreshold,
+                       size_t errorDeclineBufferSize, size_t minRefInterval) {
+  size_t dim = trainData.getNcols();
 
-void LearnerSGD::train(size_t dataNum) {
-  size_t dim = trainData->getNcols();  
-  size_t maxRuns = 2; //ToDo: pass to learner as parameter
-  size_t numRuns = 0;
+  // initialize counter for dataset passes
+  size_t cntDataPasses = 0;
 
+  // refinement variables
   size_t refNum = adaptivityConfig.numRefinements_;
   size_t numPoints = adaptivityConfig.noPoints_;
-  size_t refSteps = 0;
+  size_t refCnt = 0;
   double threshold = adaptivityConfig.threshold_;
-  size_t refPeriod = 15;
+  double currentBatchError = 0.0;
+  double currentTrainError = 0.0;
+  bool doRefine = false;  // set true by convergence monitor
+  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
+      errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
 
-  // refinement monitor variables
-  double oldErrorSum = 0.;
-  double oldErrorLast = 0.;
-  currentBatchError = 0.;
-  double ratio = 1.;
+  // reduction factor for addaptive learning rate
+  // double lGamma = 0.001;
 
-  // for error plotting
-  sgpp::base::DataVector errors;
-  //sgpp::base::DataVector grids;
-  // for plotting only
-  //double acc = getAccuracy(*trainData, *trainLabels, 0.0);
-  double acc = getAccuracy(*testData, *testLabels, 0.0);
-  errors.append(1.0 - acc);
+  // auxiliary variable for accuracy (error) measurement
+  double acc = getAccuracy(testData, testLabels, 0.0);
+  avgErrors.append(1.0 - acc);
 
-  while (numRuns < maxRuns) {			
-    for (size_t curr_it = 0; curr_it < trainData->getNrows(); curr_it++) {
+  // parameters for ADAM
+  /*sgpp::base::DataVector m(alpha.getSize(), 0.0);
+  sgpp::base::DataVector v(alpha.getSize(), 0.0);
+  double beta_1 = 0.25;
+  double beta_2 = 0.95;
+  double epsilon = 1e-8;*/
+
+  // counts total number of processed data points
+  size_t processedPoints = 0;
+  // main loop which performs the learning process
+  while (cntDataPasses < maxDataPasses) {
+    for (size_t currIt = 0; currIt < trainData.getNrows(); currIt++) {
       // get next training sample x and its label y
-      sgpp::base::DataVector x(dim);					
-      trainData->getRow(curr_it, x);
-      double y = trainLabels->get(curr_it);  
-      
-      // store in batch dataset used for checking convergence
-      pushToBatch(x, y);
-      
-      sgpp::base::DataVector delta(alpha->getSize());
+      sgpp::base::DataVector x(dim);
+      trainData.getRow(currIt, x);
+      double y = trainLabels.get(currIt);
+
+      // store data point in batch dataset used for checking
+      // predictive refinement criterion
+      // if validation set is used -> not needed
+      if (!useValidData) {
+        pushToBatch(x, y);
+      }
+
+      sgpp::base::DataVector delta(alpha.getSize());
 
       sgpp::base::DataVector singleAlpha(1);
       singleAlpha[0] = 1.0;
 
       // perform SGD step
       sgpp::base::DataMatrix dm(x.getPointer(), 1, x.getSize());
-      //sgpp::base::OperationMultipleEval* multEval = 
-      //  sgpp::op_factory::createOperationMultipleEval(*grid, dm);
-      std::unique_ptr<base::OperationMultipleEval> multEval(op_factory::createOperationMultipleEval(*grid, dm));
+      std::unique_ptr<base::OperationMultipleEval> multEval(
+          op_factory::createOperationMultipleEval(*grid, dm));
       multEval->multTranspose(singleAlpha, delta);
-      //delete multEval;
 
-      double residual = delta.dotProduct(*alpha) - y;
+      double residual = delta.dotProduct(alpha) - y;
 
-      alpha->mult(1-currentGamma * lambda);
-      alpha->axpy(-currentGamma * residual, delta);
+      // ADAM
+      // gradient
+      /*delta.mult(residual);
+      delta.axpy(lambda, alpha);
+      sgpp::base::DataVector grad_1(delta);
+      sgpp::base::DataVector grad_2(delta);
+      //update biased first and second moment estimates
+      grad_1.mult(1.0-beta_1);
+      m.mult(beta_1);
+      m.add(grad_1);
+      grad_2.sqr();
+      grad_2.mult(1.0-beta_2);
+      v.mult(beta_2);
+      v.add(grad_2);
+      //update bias-corrected first and second moment estimates
+      //m.mult(1.0/(1.0-std::pow(beta_1,currIt+1)));
+      //v.mult(1.0/(1.0-std::pow(beta_2,currIt+1)));
+      m.mult(1.0/(1.0-std::pow(beta_1,processedPoints+1)));
+      v.mult(1.0/(1.0-std::pow(beta_2,processedPoints+1)));
+      //update alpha
+      v.sqrt();
+      sgpp::base::DataVector eps_vec(alpha.getSize(), epsilon);
+      v.add(eps_vec);
+      m.componentwise_div(v);
+      m.mult(currentGamma);
+      alpha.sub(m);*/
 
-      //double mu = 0.1; // boring exponential smoothing
+      // SGD
+      alpha.mult(1 - currentGamma * lambda);
+      alpha.axpy(-currentGamma * residual, delta);
 
-      // L. Bottou exciting smoothing
-      size_t t1 = (curr_it > dim+1) ? curr_it - dim : 1;
-      size_t t2 = (curr_it > trainData->getNrows()+1) ? curr_it - trainData->getNrows() : 1;
-      double mu = (t1>t2) ? static_cast<double>(t1) : static_cast<double>(t2);
-      mu = 1.0/mu;
+      // learning rate according to L. Bottou
+      /*currentGamma =
+          gamma *
+          std::pow(
+              (1 + gamma * lGamma * (static_cast<double>(processedPoints) + 1)),
+              -0.75);*/
+      currentGamma =
+          gamma *
+          std::pow(
+              (1 + gamma * lambda * (static_cast<double>(processedPoints) + 1)),
+              -0.75);
 
-      alphaAvg->mult(1-mu);
-      alphaAvg->axpy(mu, *alpha);
+      // smoothing according to L. Bottou
+      size_t t1 = (processedPoints > dim + 1) ? processedPoints - dim : 1;
+      size_t t2 = (processedPoints > trainData.getNrows() + 1)
+                      ? processedPoints - trainData.getNrows()
+                      : 1;
+      double mu = (t1 > t2) ? static_cast<double>(t1) : static_cast<double>(t2);
+      mu = 1.0 / mu;
 
-      // Calculate smoothed error
-      //currentBatchError = getError(*batchData, *batchLabels, "MSE");
-      if (refSteps < refNum) {
-        currentBatchError = getError(*testData, *testLabels, "MSE");
-      }
-      if (smoothedErrorDeclineBuffer.size() >= smoothedErrorDeclineBufferSize) {
-        // Calculate average of old minibatch errors
-        for (std::list<double>::iterator it = smoothedErrorDeclineBuffer.begin();
-             it != smoothedErrorDeclineBuffer.end();
-             ++it) {
-          oldErrorSum += *it;
+      // average SGD / ADAM
+      alphaAvg.mult(1 - mu);
+      alphaAvg.axpy(mu, alpha);
+
+      // check if refinement should be performed
+      if (refMonitor == "periodic") {
+        // periodic monitor
+        if ((refCnt < refNum) && (processedPoints > 0) &&
+            ((processedPoints + 1) % refPeriod == 0)) {
+          doRefine = true;
         }
-
-        oldErrorLast = smoothedErrorDeclineBuffer.back();
-
-        // Update errorOnMinibatch
-        smoothedErrorDeclineBuffer.pop_back();
-        smoothedErrorDeclineBuffer.push_front(currentBatchError);
-
-        // Update ratio
-        ratio = (oldErrorLast - currentBatchError) / oldErrorSum;
-        ratio *= 1.0 / (double)smoothedErrorDeclineBufferSize;
-
-      } 
-      else {
-        smoothedErrorDeclineBuffer.push_front(currentBatchError);
+      } else if (refMonitor == "convergence") {
+        // check convergence monitor
+        if (refCnt < refNum) {
+          currentBatchError = getError(*batchData, *batchLabels, "MSE");
+          currentTrainError = getError(trainData, trainLabels, "MSE");
+          monitor->pushToBuffer(currentBatchError, currentTrainError);
+          if (monitor->nextRefCnt > 0) {
+            monitor->nextRefCnt--;
+          }
+          if (monitor->nextRefCnt == 0) {
+            doRefine = monitor->checkConvergence();
+          }
+        }
       }
+      if (doRefine) {
+        // acc = getAccuracy(testData, testLabels, 0.0);
+        // avgErrors.append(1.0 - acc);
+        std::cout << "refinement at iteration: " << processedPoints + 1
+                  << std::endl;
 
-      // refinement
-      if ( (refSteps < refNum) && (curr_it > 0 ) && ((curr_it+1) % refPeriod == 0) ) {
-      //if ( (refSteps < refNum) && (ratio <= smoothedErrorDecline) ) {
-        //std::cout << "threshold: " << smoothedErrorDecline << std::endl;
-        //std::cout << "iteration: " << curr_it << std::endl;
-        //std::cout << "ratio: " << ratio << std::endl;
-        double acc_ref = getAccuracy(*testData, *testLabels, 0.0);
-        std::cout << "accuracy before refinement: " << acc_ref << std::endl;
-        // Predictive refinement based on error measurements
         base::GridStorage& gridStorage = grid->getStorage();
+
         HashRefinement refinement;
-        PredictiveRefinement decorator(&refinement);
-        
-        getBatchError(*batchData, *batchLabels, *batchError);
-        //std::cout << "Error over all = "  << batchError->sum() << std::endl;
-        PredictiveRefinementIndicator indicator(*grid, *batchData, *batchError, numPoints);
-        decorator.free_refine(gridStorage, indicator);
 
-        alpha->resizeZero(grid->getSize());
-        alphaAvg->resizeZero(grid->getSize());
+        if (refType == "predictive") {
+          // predictive refinement based on error contributions
+          PredictiveRefinement decorator(&refinement);
+          getBatchError(*batchData, *batchLabels);
+          PredictiveRefinementIndicator indicator(*grid, *batchData,
+                                                  batchError, numPoints);
+          decorator.free_refine(gridStorage, indicator);
+        } else if (refType == "impurity") {
+          // impurity-based refinement
+          ImpurityRefinement decorator(&refinement);
+          sgpp::base::DataVector predictedLabels(batchData->getNrows());
+          predict(*batchData, predictedLabels);
+          ImpurityRefinementIndicator indicator(
+              *grid, *batchData, nullptr, nullptr, nullptr, predictedLabels,
+              threshold, numPoints);
+          decorator.free_refine(gridStorage, indicator);
+        }
+        alpha.resizeZero(grid->getSize());
+        alphaAvg.resizeZero(grid->getSize());
 
-        std::cout << "refinement step: " << refSteps+1 << std::endl;
+        // required for ADAM
+        // m.resizeZero(grid->getSize());
+        // v.resizeZero(grid->getSize());
+
+        std::cout << "refinement step: " << refCnt + 1 << std::endl;
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
-        oldErrorSum = 0.;
-        oldErrorLast = 0.;
-        currentBatchError = 0.;
-        ratio = 1.;
-
-        refSteps++;      
+        refCnt++;
+        doRefine = false;
+        if (refMonitor == "convergence") {
+          monitor->nextRefCnt = monitor->minRefInterval;
+        }
       }
-      acc = getAccuracy(*testData, *testLabels, 0.0);
-      errors.append(1.0 - acc);
-    }
-    numRuns++;
-  }
-  double mse = getError(*testData, *testLabels, "MSE");
-  std::cout << "MSE: " << mse << std::endl;
-  acc = getAccuracy(*testData, *testLabels, 0.0);
-  std::cout << "accuracy: " << acc << std::endl;
 
-  //write error evaluation to .csv
-  std::ofstream output;
-  output.open("SGD_ripley_err_rate_predictive_train_"+std::to_string(dataNum)+".csv");
-  //output.open("ripley_err_rate_measure_train_1.csv");
-  //output.open("ripley_err_rate_impurity_train_1.csv");
-  //output.open("banana_err_rate_measure_train_1.csv");
-  //output.open("banana_err_rate_impurity_train_1.csv");
-  if (output.fail()) {
-    std::cout << "failed to create .csv file!" << std::endl;  
-  }
-  else {
-    for (size_t i = 0; i < errors.getSize(); i++) {					
-      output << errors.get(i) << ";" << std::endl;
-    }
-    output.close();
-  }
+      // save current error
+      if ((processedPoints + 1) % 10 == 0) {
+        acc = getAccuracy(testData, testLabels, 0.0);
+        avgErrors.append(1.0 - acc);
+      }
 
-  error = 1.0 - getAccuracy(*testData, *testLabels, 0.0);
+      processedPoints++;
+    }
+    cntDataPasses++;
+  }
+  std::cout << "# Training finished" << std::endl;
+  std::cout << "final grid size: " << grid->getSize() << std::endl;
+  // double mse = getError(testData, testLabels, "MSE");
+  // std::cout << "MSE: " << mse << std::endl;
+
+  error = 1.0 - getAccuracy(testData, testLabels, 0.0);
 }
 
-
-void LearnerSGD::storeResults(base::DataMatrix& testDataset,
-                              base::DataVector& testLabels,
-                              double threshold) {
-
-  base::DataVector computedLabels(testDataset.getNrows());
-  predict(testDataset, computedLabels);
+void LearnerSGD::storeResults(base::DataMatrix& testDataset) {
+  base::DataVector predictedLabels(testDataset.getNrows());
+  predict(testDataset, predictedLabels);
 
   std::ofstream output;
-  //write computed labels to .csv
-  //output.open("banana_SGD_predicted_train_1.csv");
-  //output.open("banana_SGD_predicted_train_1.csv");
-  output.open("ripley_SGD_predicted.csv");
+  // write predicted class labels to csv file
+  output.open("ASGD_predicted_classes.csv");
   if (output.fail()) {
-    std::cout << "failed to create .csv file!" << std::endl;  
-  }
-  else {
-    for (size_t i = 0; i < computedLabels.getSize(); i++) {
-      base::DataVector x(2);					
+    std::cout << "failed to create csv file!" << std::endl;
+  } else {
+    for (size_t i = 0; i < predictedLabels.getSize(); i++) {
+      base::DataVector x(2);
       testDataset.getRow((size_t)i, x);
-      output << x[0] << ";" << x[1] << ";" << computedLabels[i] << std::endl;
+      output << x[0] << ";" << x[1] << ";" << predictedLabels[i] << std::endl;
     }
     output.close();
   }
-  //write grid to .csv
-  //output.open("banana_impurity_grid_train_1.csv");
-  //output.open("banana_surplus_grid_train_1.csv");
-  output.open("ripley_SGD_grid.csv");
+  // write grid to csv file
+  output.open("ASGD_grid.csv");
   if (output.fail()) {
-    std::cout << "failed to create .csv file!" << std::endl;  
-  }
-  else {
+    std::cout << "failed to create csv file!" << std::endl;
+  } else {
     base::GridStorage& storage = grid->getStorage();
     base::GridStorage::grid_map_iterator end_iter = storage.end();
-    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) { 
+    for (base::GridStorage::grid_map_iterator iter = storage.begin();
+         iter != end_iter; iter++) {
       base::DataVector gpCoord(testDataset.getNcols());
       storage.getCoordinates(*(iter->first), gpCoord);
       for (size_t d = 0; d < gpCoord.getSize(); d++) {
-        if (d < gpCoord.getSize()-1) {
+        if (d < gpCoord.getSize() - 1) {
           output << gpCoord[d] << ";";
-        }
-        else {
+        } else {
           output << gpCoord[d] << std::endl;
         }
       }
@@ -324,15 +347,13 @@ void LearnerSGD::storeResults(base::DataMatrix& testDataset,
     output.close();
   }
 
-  //write function evaluations to .csv
+  // write function evaluations to csv file
   double stepSize = 0.01;
-  base::DataMatrix values(0,2);
-  //std::cout << values.getNrows() << std::endl;
+  base::DataMatrix values(0, 2);
   base::DataVector range(101);
   for (size_t i = 0; i < 101; i++) {
-    range.set(i, stepSize*(static_cast<double>(i)));
+    range.set(i, stepSize * (static_cast<double>(i)));
   }
-  //std::cout << range.getSize() << std::endl;
   for (size_t i = 0; i < range.getSize(); i++) {
     for (size_t j = 0; j < range.getSize(); j++) {
       base::DataVector row(2);
@@ -341,152 +362,135 @@ void LearnerSGD::storeResults(base::DataMatrix& testDataset,
       values.appendRow(row);
     }
   }
-  //std::cout << values.getNrows() << std::endl;
   // evaluate learned function at all points from values
   // and write result to csv file
-  output.open("SGD_fun_evals.csv");
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+  output.open("ASGD_fun_evals.csv");
+  std::unique_ptr<base::OperationEval> opEval(
+      op_factory::createOperationEval(*grid));
   for (size_t i = 0; i < values.getNrows(); i++) {
-    // Get next test sample x 
-    base::DataVector x(2);					
+    // get next test sample x
+    base::DataVector x(2);
     values.getRow(i, x);
-    //std::cout << x[0] << " , " << x[1] << std::endl;
-    double res = opEval->eval(*alphaAvg, x);
+    double res = opEval->eval(alphaAvg, x);
     output << res << ";" << std::endl;
-  }  
+  }
   output.close();
-
 }
 
-
-double LearnerSGD::getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
+double LearnerSGD::getError(sgpp::base::DataMatrix& data,
+                            sgpp::base::DataVector& labels,
                             std::string errorType) {
   size_t numData = data.getNrows();
   sgpp::base::DataVector result(numData);
   sgpp::base::DataVector error(numData);
   error.setAll(0.0);
 
-  //OperationMultipleEval* eval = sgpp::op_factory::createOperationMultipleEval(*grid, data);
-  std::unique_ptr<base::OperationMultipleEval> opEval(op_factory::createOperationMultipleEval(*grid, data));
-  opEval->mult(*alphaAvg, result);
+  std::unique_ptr<base::OperationMultipleEval> opEval(
+      op_factory::createOperationMultipleEval(*grid, data));
+  opEval->mult(alphaAvg, result);
 
   double res = -1.0;
   if (errorType == "MSE") {
     for (size_t i = 0; i < numData; i++) {
-            error.set(i, labels.get(i) - result.get(i));
+      error.set(i, labels.get(i) - result.get(i));
     }
-    // Error
+    // MSE
     double sum = 0;
     for (size_t i = 0; i < numData; i++) {
       sum += error.get(i) * error.get(i);
     }
-    res = (sum / (double)numData);
+    res = (sum / static_cast<double>(numData));
   }
-  /*if (errorType == "ACCURACY") {
-    size_t correct = 0;
+  if (errorType == "Hinge") {
     for (size_t i = 0; i < numData; i++) {
-      correct += (result.get(i) < 0) == (labels.get(i) < 0) ? 1 : 0;
-      error.set(i, labels.get(i) - result.get(i));
+      error.set(i, std::max(0.0, 1.0 - labels.get(i) * result.get(i)));
     }
-    res = static_cast<double>(correct) / static_cast<double>(numData);
-  }*/
+    // Hinge
+    double sum = 0;
+    for (size_t i = 0; i < numData; i++) {
+      sum += error.get(i);
+    }
+    res = (sum / static_cast<double>(numData));
+  }
   return res;
 }
 
-
-void LearnerSGD::getBatchError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels, 
-                               sgpp::base::DataVector& error) {
+void LearnerSGD::getBatchError(sgpp::base::DataMatrix& data,
+                               const sgpp::base::DataVector& labels) {
   size_t numData = data.getNrows();
   sgpp::base::DataVector result(numData);
 
-  //OperationMultipleEval* eval = sgpp::op_factory::createOperationMultipleEval(*grid, data);
-  std::unique_ptr<base::OperationMultipleEval> opEval(op_factory::createOperationMultipleEval(*grid, data));
-  opEval->mult(*alphaAvg, result);
- 
+  std::unique_ptr<base::OperationMultipleEval> opEval(
+      op_factory::createOperationMultipleEval(*grid, data));
+  opEval->mult(alphaAvg, result);
+
   for (size_t i = 0; i < numData; i++) {
-    error.set(i, pow(labels.get(i) - result.get(i), 2));
+    batchError.set(i, pow(labels.get(i) - result.get(i), 2));
   }
 }
 
-
-double LearnerSGD::getAccuracy(sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testLabels, 
-                               double threshold) {
-  sgpp::base::DataVector computedLabels(testData.getNrows());
-  predict(testData, computedLabels);
-
-  return getAccuracy(computedLabels, testLabels, threshold);
-}
-
-
-double LearnerSGD::getAccuracy(sgpp::base::DataVector& computedLabels,
+double LearnerSGD::getAccuracy(sgpp::base::DataMatrix& testData,
                                sgpp::base::DataVector& testLabels,
                                double threshold) {
+  sgpp::base::DataVector predictedLabels(testData.getNrows());
+  predict(testData, predictedLabels);
+
+  return getAccuracy(testLabels, threshold, predictedLabels);
+}
+
+double LearnerSGD::getAccuracy(sgpp::base::DataVector& testLabels,
+                               double threshold,
+                               sgpp::base::DataVector& predictedLabels) {
   double result = -1.0;
 
-  if (computedLabels.getSize() != testLabels.getSize()) {
+  if (predictedLabels.getSize() != testLabels.getSize()) {
     throw base::application_exception(
-        "LearnerSGD::getAccuracy: lengths of classes vectors do not match!");
+        "LearnerSGD::getAccuracy: lengths of label-vectors do not match!");
   }
 
   size_t correct = 0;
-  for (size_t i = 0; i < computedLabels.getSize(); i++) {
-    if ((computedLabels.get(i) >= threshold && testLabels.get(i) >= 0.0) ||
-       (computedLabels.get(i) < threshold && testLabels.get(i) < 0.0)) {
+  for (size_t i = 0; i < predictedLabels.getSize(); i++) {
+    if ((predictedLabels.get(i) >= threshold && testLabels.get(i) >= 0.0) ||
+        (predictedLabels.get(i) < threshold && testLabels.get(i) < 0.0)) {
       correct++;
     }
   }
 
-  result = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  result = static_cast<double>(correct) /
+           static_cast<double>(predictedLabels.getSize());
 
   return result;
 }
 
-void LearnerSGD::predict(sgpp::base::DataMatrix& testData,
-                         sgpp::base::DataVector& computedLabels) {
-  computedLabels.resize(testData.getNrows());
+void LearnerSGD::predict(base::DataMatrix& testData,
+                         base::DataVector& predictedLabels) {
+  predictedLabels.resize(testData.getNrows());
   sgpp::base::DataVector result(testData.getNrows());
-  size_t dim = testData.getNcols();  
 
-  std::unique_ptr<base::OperationMultipleEval> opEval(op_factory::createOperationMultipleEval(*grid, testData));
-  opEval->mult(*alphaAvg, result);
+  std::unique_ptr<base::OperationMultipleEval> opEval(
+      op_factory::createOperationMultipleEval(*grid, testData));
+  opEval->mult(alphaAvg, result);
 
   for (size_t i = 0; i < testData.getNrows(); i++) {
     if (result.get(i) >= 0.0) {
-      computedLabels.set(i, 1.0); 
-    }
-    else {
-      computedLabels.set(i, -1.0);
+      predictedLabels.set(i, 1.0);
+    } else {
+      predictedLabels.set(i, -1.0);
     }
   }
 }
-
 
 void LearnerSGD::pushToBatch(sgpp::base::DataVector& x, double y) {
-  static size_t next_idx = 0;
+  static size_t nextIdx = 0;
   if (batchData->getUnused() > 0) {
     batchData->appendRow(x);
-    (*batchLabels)[next_idx] = y;
+    (*batchLabels)[nextIdx] = y;
+  } else {
+    batchData->setRow(nextIdx, x);
+    (*batchLabels)[nextIdx] = y;
   }
-  else {
-    batchData->setRow(next_idx, x);
-    (*batchLabels)[next_idx] = y;
-  }
-  next_idx = (next_idx + 1) % batchSize;
+  nextIdx = (nextIdx + 1) % batchSize;
 }
-
-
-/*int LearnerSGD::getRandom(int limit) {
-  int divisor = RAND_MAX / (limit + 1);
-  int r;
-
-  do {
-    r = rand() / divisor;
-  } while (r > limit);
-
-  return r;
-}*/
-
 
 }  // namespace datadriven
 }  // namespace sgpp
-

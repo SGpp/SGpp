@@ -25,16 +25,15 @@ namespace base {
  *
  * @version $HEAD$
  */
-template<class LT, class IT>
-class PolyBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class PolyBasis : public Basis<LT, IT> {
  public:
   /**
    * Constructor
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyBasis(size_t degree) :
-    degree(degree) {
+  explicit PolyBasis(size_t degree) : degree(degree) {
     if (degree < 2) {
       throw factory_exception("PolyBasis: degree < 2");
     }
@@ -53,9 +52,7 @@ class PolyBasis: public Basis<LT, IT> {
   /**
    * Destructor
    */
-  ~PolyBasis() override {
-    delete idxtable;
-  }
+  ~PolyBasis() override { delete idxtable; }
 
   /**
    * Evaluates all the hierarchical ancestors of the node defined by level
@@ -87,89 +84,17 @@ class PolyBasis: public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() {
-    return degree;
-  }
+  size_t getDegree() { return degree; }
 
-  /**
-   * Evaluate a basis function.
-   * Has a dependence on the absolute position of grid point and support.
-   *
-   * We compute the roots in units of h = grid spacing at level l = 2 ** -l.
-   *
-   * Due to limited polynomial degree, we compute the roots of the Lagrange
-   * polynomial bottom up.
-   */
   double eval(LT level, IT index, double p) override {
-    // degree of polynomial, limited with level of grid point
-    size_t deg = std::min<size_t>(degree, level + 1);
-    // get the position in units of h of the current maximum level
-    p *= static_cast<double>(1 << level);
-    // start with the current grid point
-    size_t root = index;
-    // copy of index: used to identify the path in the binary tree of grid
-    // points. The binary representation of the index contains the information
-    // in which direction the grid point has been added w.r.t.
-    // the parent node.
-    // 0011 -> left, left, right (last one ignored)
-    size_t id = root;
-    // position where the polynomial is one -> position of grid point:
-    // (level, index)
-    double base = static_cast<double>(root);
-    double eval = 1;
-    // as first parent we choose the right one. In units of h, it is 1 distance
-    // away from the current one.
-    root++;
-    // add it to the Lagrange polynomial and normalize it
-    eval *= (p - static_cast<double>(root)) /
-            (base - static_cast<double>(root));
-    // go to the next left neighbor that must exist due to
-    // minimum degree of 2 of
-    // the polynomial. the reference point is now the last one
-    // stored in root, which
-    // is the right neighbor of p. So here we need to go 2 units
-    // of h to the left.
-    root -= 2;
-
-    // p - 1 runs in this loop: so in total the polynomial has a
-    // degree of p taking
-    // into account that the first root has been added already
-    for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
-      // add the next root to the polynomial
-      eval *= (p - static_cast<double>(root)) /
-              (base - static_cast<double>(root));
-      // take last two indices (id & 3):
-      // this gives you the information where to
-      // look for the next root. The result needs to be scaled
-      // with j due to the fact
-      // that we calculate the roots in units of h.
-      // We go bottom up, therefore the
-      // distance to the next root changes by a factor of +- {1, 2}
-      // depending of the history
-      // of the grid point. We just consider the history in the
-      // last two indices, so the
-      // relation between the current grid point to its first predecessor.
-      // The scaling by j is due to fact that the distance needs to be
-      // computed in units of h.
-      root += idxtable[id & 3] * j;
-      // remove the last index that means that we go one step up in the tree.
-      // Then do the same again until we reach the maximum polynomial degree.
-      id >>= 1;
-    }
-
-    return eval;
-  }
-
-  double evalSave(LT level, IT index, double p) {
     // spacing on current level
     double h = 1.0f / static_cast<double>(1 << level);
 
     // check if p is out of bounds
-    if ((p <= h * static_cast<double>(index - 1)) ||
-        (p >= h * static_cast<double>(index + 1))) {
+    if ((p <= h * static_cast<double>(index - 1)) || (p >= h * static_cast<double>(index + 1))) {
       return 0.0f;
     } else {
-      return eval(level, index, p);
+      return evalBasis(level, index, p);
     }
   }
 
@@ -181,7 +106,7 @@ class PolyBasis: public Basis<LT, IT> {
     // Gauss-Legendre quadrature
     // --------------------------------
     size_t deg = std::min<size_t>(degree, level + 1);
-    size_t n_roots = ((deg + 1) >> 1) + 1;        // ceil((deg + 1) / 2) - 1
+    size_t n_roots = ((deg + 1) >> 1) + 1;  // ceil((deg + 1) / 2) - 1
     base::DataVector roots(n_roots);
     base::DataVector weights(n_roots);
     // getting legendre gauss points and weights in [-1, 1]
@@ -211,6 +136,80 @@ class PolyBasis: public Basis<LT, IT> {
  private:
   /// gauss legendre quadrature rule to compute the integral of the bases
   base::GaussLegendreQuadRule1D quadRule;
+
+  /**
+   * Evaluate a basis function.
+   * Has a dependence on the absolute position of grid point and support.
+   *
+   * We compute the roots in units of h = grid spacing at level l = 2 ** -l.
+   *
+   * Due to limited polynomial degree, we compute the roots of the Lagrange
+   * polynomial bottom up.
+   */
+  double evalBasis(LT level, IT index, double p) {
+    // degree of polynomial, limited with level of grid point
+    size_t deg = std::min<size_t>(degree, level + 1);
+    // get the position in units of h of the current maximum level
+    p *= static_cast<double>(1 << level);
+    // start with the current grid point
+    size_t root = index;
+    // copy of index: used to identify the path in the binary tree of grid
+    // points. The binary representation of the index contains the information
+    // in which direction the grid point has been added w.r.t.
+    // the parent node.
+    // 0011 -> left, left, right (last one ignored)
+    size_t id = root;
+    // position where the polynomial is one -> position of grid point:
+    // (level, index)
+    double base = static_cast<double>(root);
+    double eval = 1;
+    // as first parent we choose the right one. In units of h, it is 1 distance
+    // away from the current one.
+    root++;
+    // add it to the Lagrange polynomial and normalize it
+    eval *= (p - static_cast<double>(root)) / (base - static_cast<double>(root));
+    // go to the next left neighbor that must exist due to
+    // minimum degree of 2 of
+    // the polynomial. the reference point is now the last one
+    // stored in root, which
+    // is the right neighbor of p. So here we need to go 2 units
+    // of h to the left.
+    root -= 2;
+
+    // p - 1 runs in this loop: so in total the polynomial has a
+    // degree of p taking
+    // into account that the first root has been added already
+    for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
+      // add the next root to the polynomial
+      eval *= (p - static_cast<double>(root)) / (base - static_cast<double>(root));
+      // take last two indices (id & 3):
+      // this gives you the information where to
+      // look for the next root. The result needs to be scaled
+      // with j due to the fact
+      // that we calculate the roots in units of h.
+      // We go bottom up, therefore the
+      // distance to the next root changes by a factor of +- {1, 2}
+      // depending of the history
+      // of the grid point. We just consider the history in the
+      // last two indices, so the
+      // relation between the current grid point to its first predecessor.
+      // The scaling by j is due to fact that the distance needs to be
+      // computed in units of h.
+      root += idxtable[id & 3] * j;
+      // remove the last index that means that we go one step up in the tree.
+      // Then do the same again until we reach the maximum polynomial degree.
+      id >>= 1;
+    }
+
+    return eval;
+  }
+
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
+  }
 };
 
 // default type-def (unsigned int for level and index)

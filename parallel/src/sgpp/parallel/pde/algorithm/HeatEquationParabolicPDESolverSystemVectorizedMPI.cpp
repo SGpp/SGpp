@@ -40,32 +40,32 @@ HeatEquationParabolicPDESolverSystemVectorizedMPI::
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
   if (!strcmp(alg_selector, "X86SIMD")) {
-    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::X86SIMD);
-    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::X86SIMD);
+    this->OpLaplaceInner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD));
+    this->OpLaplaceBound.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoInner.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoBound.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoDotLaplaceInner.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD));
+    this->OpLTwoDotLaplaceBound.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD));
 #ifdef USEOCL
   } else if (!strcmp(alg_selector, "OCL")) {
-    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::OpenCL);
-    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, sgpp::parallel::OpenCL);
-    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, sgpp::parallel::OpenCL);
+    this->OpLaplaceInner.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL));
+    this->OpLaplaceBound.reset(sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoInner.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoBound.reset(sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoDotLaplaceInner.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL));
+    this->OpLTwoDotLaplaceBound.reset(sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL));
 #endif
   } else {
     throw sgpp::base::algorithm_exception(
