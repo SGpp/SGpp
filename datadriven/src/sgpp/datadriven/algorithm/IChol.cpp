@@ -20,20 +20,22 @@ void IChol::decompose(DataMatrix& matrix, size_t sweeps) {
     // for each row
     for (auto i = 0u; i < matrix.getNrows(); i++) {
       // in each column until diagonal element
-      for (auto j = 0u; j <= i; j++) {
+      for (auto j = 0u; j < i; j++) {
         // calculate sum;
         auto s = matrix.get(i, j);
         for (auto k = 0u; k < j; k++) {
           s -= matrix.get(i, k) * matrix.get(j, k);
         }
-
-        // Update value;
-        if (i != j) {
-          matrix.set(i, j, s / matrix.get(j, j));
-        } else {
-          matrix.set(j, j, sqrt(s));
-        }
+        matrix.set(i, j, s / matrix.get(j, j));
       }
+
+      // do the diagonal element:
+      // calculate sum;
+      auto s = matrix.get(i, i);
+      for (auto k = 0u; k < i; k++) {
+        s -= matrix.get(i, k) * matrix.get(i, k);
+      }
+      matrix.set(i, i, sqrt(s));
     }
   }
 }
