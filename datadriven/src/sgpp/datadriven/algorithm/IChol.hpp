@@ -12,11 +12,13 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 class IChol {
  public:
@@ -32,6 +34,10 @@ class IChol {
    * do a cholesky update on the last n rows
    */
   static void updateLastNRows(DataMatrix& matrix, size_t numRows, size_t sweeps);
+
+  static void normToUnitDiagonal(DataMatrix& matrix, DataVector& norms);
+
+  static void reaplyDiagonal(DataMatrix& matrix, DataVector& norms);
 };
 
 } /* namespace datadriven */
