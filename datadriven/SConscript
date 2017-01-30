@@ -17,8 +17,8 @@ additionalBoostTestDependencies = []
 
 #zlib needed for datamining
 if(config.env["USE_ZLIB"]):
-    if not config.CheckHeader("zlib.h", language="C++"):
-        Helper.printErrorAndExit("The flag USE_ZLIB was given, but the necessary header 'zlib.h' was not found.")
+    if not config.CheckLibWithHeader("z","zlib.h", language="C++"):
+        Helper.printErrorAndExit("The flag USE_ZLIB was given, but the necessary header 'zlib.h' or library was not found.")
     else:
         additionalDependencies = ["z"]
         additionalBoostTestDependencies = ["z"]
