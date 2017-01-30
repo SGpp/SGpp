@@ -590,6 +590,31 @@ def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     return res_vec.array()
 
 
+def evalSGFunctionBasedOnParents(grid, alpha, gpi):
+    gs = grid.getStorage()
+    basis = getBasis(grid)
+    ux = 0.0
+    p = DataVector(gs.getDimension())
+    gs.getCoordinates(gpi, p)
+    
+    def f(gp, p):
+        ans = 1.0
+        for idim in xrange(p.shape[0]):
+            ans *= basis.eval(gp.getLevel(idim),
+                              gp.getIndex(idim),
+                              p[idim])
+        return ans
+
+    for j in xrange(gs.getSize()):
+        gpp = gs.getPoint(j)
+        if gpp.isHierarchicalAncestor(gpi):
+            ux += alpha[j] * f(gpp, p.array())
+        else:
+            assert f(gpp, p.array()) < 1e-14
+
+    return ux
+
+
 def evalSGFunction(grid, alpha, p, isConsistent=True):
     if grid.getSize() != len(alpha):
         raise AttributeError("grid size differs from length of coefficient vector")

@@ -8,7 +8,7 @@ from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis, \
-    parents
+    parents, evalSGFunction
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.trilinearform.TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy
@@ -99,6 +99,37 @@ class SurplusRatioRanking(Ranking):
 
     def rank(self, grid, gp, alphas, *args, **kws):
         return np.abs(estimateConvergence(grid, gp, alphas))
+
+
+class AnchoredWeightedL2OptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+
+    def update(self, grid, v, gpi, params, *args, **kws):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} |v_i| \sqrt{E[\varphi_i^2]}
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        """
+        # get grid point associated to ix
+        gs = grid.getStorage()
+        p = DataVector(gs.getDimension())
+        gs.getCoordinates(gpi, p)
+
+        # get joint distribution
+        ap = params.activeParams()
+        U = ap.getIndependentJointDistribution()
+        T = ap.getJointTransformation()
+        q = T.unitToProbabilistic(p.array())
+
+        # scale surplus by probability density
+        ix = gs.getSequenceNumber(gpi)
+
+        return np.abs(v[ix]) * np.sqrt(U.pdf(q))
 
 
 class WeightedL2OptRanking(Ranking):
@@ -294,6 +325,41 @@ class VarianceOptRanking(Ranking):
         # update the ranking
         return np.abs(-v[ix] ** 2 * var_phii - 2 * v[ix] * cov_uwi_phii)
 
+
+class AnchoredVarianceOptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+
+    def update(self, grid, v, gpi, params, *args, **kws):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} |v_i| \sqrt{E[\varphi_i^2]}
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        """
+        # get grid point associated to ix
+        gs = grid.getStorage()
+        p = DataVector(gs.getDimension())
+        gs.getCoordinates(gpi, p)
+
+        # get joint distribution
+        ap = params.activeParams()
+        U = ap.getIndependentJointDistribution()
+        T = ap.getJointTransformation()
+        q = T.unitToProbabilistic(p.array())
+
+        # scale surplus by probability density
+        ix = gs.getSequenceNumber(gpi)
+        fx = U.pdf(q)
+        ux = evalSGFunction(grid, v, p.array())
+
+        # update the ranking
+        return np.abs((fx ** 2 - fx) * v[ix] * (2 * ux - v[ix]))
+
+
 class MeanSquaredOptRanking(Ranking):
 
     def __init__(self):
@@ -332,6 +398,38 @@ class MeanSquaredOptRanking(Ranking):
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
         return np.abs(v[ix] * (2 * np.dot(A, v) - v[ix] * A[0, ix]))
+
+class AnchoredMeanSquaredOptRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._dtype = KnowledgeTypes.SQUARED
+
+    def update(self, grid, v, gpi, params, *args, **kws):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} |w_i| f(x_i)
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        @param admissibleSet: AdmissibleSet
+        """
+        # get grid point associated to ix
+        gs = grid.getStorage()
+        p = DataVector(gs.getDimension())
+
+        # get joint distribution
+        ap = params.activeParams()
+        U = ap.getIndependentJointDistribution()
+        T = ap.getJointTransformation()
+        ix = gs.getSequenceNumber(gpi)
+        gs.getCoordinates(gpi, p)
+        q = T.unitToProbabilistic(p.array())
+        fx = U.pdf(q)
+
+        # update the ranking
+        return np.abs(v[ix] * fx)
 
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
