@@ -8,7 +8,6 @@ from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 WeightedSurplusRanking,
                                 WeightedL2OptRanking,
-                                AnchoredExpectationValueOptRanking,
                                 ExpectationValueOptRanking,
                                 VarianceOptRanking,
                                 MeanSquaredOptRanking,
@@ -18,7 +17,11 @@ from RefinementStrategy import (SurplusRanking,
                                 VarianceBFRanking,
                                 SquaredSurplusBFRanking,
                                 WeightedSurplusBFRanking,
-                                PredictiveRanking)
+                                PredictiveRanking,
+                                AnchoredWeightedL2OptRanking,
+                                AnchoredVarianceOptRanking,
+                                AnchoredMeanSquaredOptRanking,
+                                AnchoredExpectationValueOptRanking)
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -121,6 +124,16 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         self._refinement.setRefinementCriterion(ranking)
         return self
 
+    def withAnchoredWeightedL2OptimizationRanking(self):
+        ranking = AnchoredWeightedL2OptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredVarianceOptimizationRanking(self):
+        ranking = AnchoredVarianceOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
     def withAnchoredExpectationValueOptimizationRanking(self):
         ranking = AnchoredExpectationValueOptRanking()
         self._refinement.setRefinementCriterion(ranking)
@@ -138,6 +151,11 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
 
     def withMeanSquaredOptRanking(self):
         ranking = MeanSquaredOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredMeanSquaredOptRanking(self):
+        ranking = AnchoredMeanSquaredOptRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 

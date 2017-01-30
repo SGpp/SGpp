@@ -107,6 +107,12 @@ class TestEnvironmentSG(object):
                     refineNodes.withSquaredSurplusRanking()
                 elif adaptive == "anchored_exp":
                     refineNodes.withAnchoredExpectationValueOptimizationRanking()
+                elif adaptive == "anchored_var":
+                    refineNodes.withAnchoredVarianceOptimizationRanking()
+                elif adaptive == "anchored_l2":
+                    refineNodes.withAnchoredWeightedL2OptimizationRanking()
+                elif adaptive == "anchored_mean_squared":
+                    refineNodes.withAnchoredMeanSquaredOptRanking()
                 else:
                     raise AttributeError("unknown ranking method")
             else:
