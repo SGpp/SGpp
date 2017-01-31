@@ -677,9 +677,11 @@ class ASGCAnalysis(Analysis):
             json.dump(myjson, fd, indent=2)
             fd.close()
 
-    def computeSurplusesLevelWise(self, t=0, dtype=KnowledgeTypes.SIMPLE):
+    def computeSurplusesLevelWise(self, t=0, dtype=KnowledgeTypes.SIMPLE,
+                                  iteration=None):
         gs = self.__knowledge.getGrid(self._qoi).getStorage()
-        alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
+        alpha = self.__knowledge.getAlpha(self._qoi, t, dtype,
+                                          iteration=iteration)
 
         res = {}
         for i in xrange(gs.getSize()):
@@ -720,7 +722,6 @@ class ASGCAnalysis(Analysis):
             writeDataARFF({'filename': "%s.t%s.surpluses.arff" % (filename, t),
                            'data': A,
                            'names': names})
-            del A
 
 #     def writeRefinementEvaluation(self, filename):
 #         gs = self.__grid.getStorage()

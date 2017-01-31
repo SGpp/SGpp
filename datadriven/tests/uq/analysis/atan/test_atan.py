@@ -454,6 +454,7 @@ class AtanPeridynamicExample(object):
             analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
                                             .withAnalyticEstimationStrategy()\
                                             .andGetResult()
+
             analysis.setVerbose(False)
             # ----------------------------------------------------------
             # expectation values and variances

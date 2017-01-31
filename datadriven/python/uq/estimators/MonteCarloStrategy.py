@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 from pysgpp.extensions.datadriven.tools import readGrid, readAlphaARFF, readDataTrivial
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
 from pysgpp import DataVector, DataMatrix
@@ -5,7 +8,6 @@ from scipy.stats import norm
 from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
-import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
 
 
@@ -62,7 +64,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 
             # check if there are samples for just a subset of the random
             # variables. If so, add the missing ones
-            if self.__ixs is not None:
+            if self.__ixs is not None and len(self.__ixs) < W.getDim():
                 # generate samples for the non existing directions
                 ans = W.rvs(self.__n)
 
