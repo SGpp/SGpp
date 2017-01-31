@@ -10,7 +10,7 @@ class MCEstimator(Estimator):
         Constructor
         """
         Estimator.__init__(self)
-        self._npaths = npaths
+        self.__npaths = npaths
         self.__percentile = percentile
 
     def getBootstrap(self, samples):
@@ -22,8 +22,8 @@ class MCEstimator(Estimator):
         Compute the mean
         @param samples: numpy array
         """
-        moments = np.ndarray(self._npaths)
-        for i in xrange(self._npaths):
+        moments = np.ndarray(self.__npaths)
+        for i in xrange(self.__npaths):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.mean(bootstrap)
 
@@ -42,8 +42,8 @@ class MCEstimator(Estimator):
         Compute the variance
         @param samples: numpy array
         """
-        moments = np.ndarray(self._npaths)
-        for i in xrange(self._npaths):
+        moments = np.ndarray(self.__npaths)
+        for i in xrange(self.__npaths):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.var(bootstrap)
 

@@ -57,9 +57,9 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
-                 'meanVarBootstrapping',
+                 'meanConfidenceIntervalBootstrapping',
                  'var',
-                 'varVarBootstrapping']
+                 'varConfidenceIntervalBootstrapping']
         # parameters
         ts = self.__samples.keys()
         nrows = len(ts)
