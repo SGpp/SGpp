@@ -113,7 +113,9 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
     int datainfo[2];
     T *partial_result = NULL;
     int old_partial_size = 0;
+    MPI_Request request;
     bool first_package = true;
+    bool wait = false;
     do {
       if (!prefetching || first_package) {
         // Receive Workpackage
@@ -142,6 +144,10 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         continue;
       } else {
         if (datainfo[1] * packagesize_multiplier != old_partial_size || partial_result == NULL) {
+          if (wait) {
+            MPI_Wait(&request, &stat);
+            wait = false;
+          }
           if (partial_result != NULL)
             delete [] partial_result;
           partial_result = new T[datainfo[1] * packagesize_multiplier];
@@ -164,6 +170,10 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
             }
           }
           // Finish opencl operation
+          if (wait) {
+            MPI_Wait(&request, &stat);
+            wait = false;
+          }
           finalize_opencl_operation(partial_result, datainfo);
         } else {
           if (prefetching) {
@@ -177,13 +187,18 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
                         << std::endl;
             }
           }
+          if (wait) {
+            MPI_Wait(&request, &stat);
+            wait = false;
+          }
           divide_workpackages(datainfo, partial_result);
         }
         std::cerr << "Trying to send back results on "
                   << MPIEnviroment::get_node_rank() << std::endl;
         // Send results back
-        MPI_Send(partial_result, datainfo[1] * packagesize_multiplier, mpi_typ,
-                 0, 1, master_worker_comm);
+        MPI_Isend(partial_result, datainfo[1] * packagesize_multiplier, mpi_typ,
+                  0, 1, master_worker_comm, &request);
+        wait = true;
       }
     }while(true);
     delete [] partial_result;
