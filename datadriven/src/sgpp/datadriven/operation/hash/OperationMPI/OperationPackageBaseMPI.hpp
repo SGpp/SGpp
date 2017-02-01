@@ -108,14 +108,18 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
 
   void start_worker_main(void) {
     MPI_Status stat;
+    MPI_Request request[2];
     receive_and_send_initial_data();
     // Work Loop
     int datainfo[2];
-    T *partial_result = NULL;
-    int old_partial_size = 0;
-    MPI_Request request;
+    T *partial_results[2];
+    partial_results[0] = NULL;
+    partial_results[1] = NULL;
+    int buffersizes[2];
+    buffersizes[0] = 0;
+    buffersizes[1] = 0;
     bool first_package = true;
-    bool wait = false;
+    unsigned int currentbuffer = 0;
     do {
       if (!prefetching || first_package) {
         // Receive Workpackage
@@ -143,17 +147,14 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         MPI_Recv(secondary_workpackage, 2, MPI_INT, 0, stat.MPI_TAG, master_worker_comm, &stat);
         continue;
       } else {
-        if (datainfo[1] * packagesize_multiplier != old_partial_size || partial_result == NULL) {
-          if (wait) {
-            MPI_Wait(&request, &stat);
-            wait = false;
-          }
-          if (partial_result != NULL)
-            delete [] partial_result;
-          partial_result = new T[datainfo[1] * packagesize_multiplier];
+        if (datainfo[1] * packagesize_multiplier != buffersizes[currentbuffer] ||
+            partial_results[currentbuffer] == NULL) {
+          if (partial_results[currentbuffer] != NULL)
+            delete [] partial_results[currentbuffer];
+          partial_results[currentbuffer] = new T[datainfo[1] * packagesize_multiplier];
           if (verbose)
             std::cout << "New Buffer created!" << std::endl;
-          old_partial_size = datainfo[1] * packagesize_multiplier;
+          buffersizes[currentbuffer] = datainfo[1] * packagesize_multiplier;
         }
         if (opencl_node) {
           // Run partial opencl operation
@@ -170,11 +171,7 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
             }
           }
           // Finish opencl operation
-          if (wait) {
-            MPI_Wait(&request, &stat);
-            wait = false;
-          }
-          finalize_opencl_operation(partial_result, datainfo);
+          finalize_opencl_operation(partial_results[currentbuffer], datainfo);
         } else {
           if (prefetching) {
             // Prefetch secondary workpackage
@@ -187,21 +184,23 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
                         << std::endl;
             }
           }
-          if (wait) {
-            MPI_Wait(&request, &stat);
-            wait = false;
-          }
-          divide_workpackages(datainfo, partial_result);
+          divide_workpackages(datainfo, partial_results[currentbuffer]);
         }
         std::cerr << "Trying to send back results on "
                   << MPIEnviroment::get_node_rank() << std::endl;
         // Send results back
-        MPI_Isend(partial_result, datainfo[1] * packagesize_multiplier, mpi_typ,
-                  0, 1, master_worker_comm, &request);
-        wait = true;
+        MPI_Isend(partial_results[currentbuffer], datainfo[1] * packagesize_multiplier, mpi_typ,
+                  0, 1, master_worker_comm, request + currentbuffer);
+        currentbuffer = (currentbuffer + 1) % 2;
+        // Wait for the old message beofre reusing the buffer
+        if (buffersizes[currentbuffer] != 0)
+          MPI_Wait(request + currentbuffer, &stat);
       }
     }while(true);
-    delete [] partial_result;
+    if (partial_results[0] != NULL)
+      delete [] partial_results[0];
+    if (partial_results[1] != NULL)
+      delete [] partial_results[1];
   }
 };
 
