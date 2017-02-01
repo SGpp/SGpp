@@ -58,9 +58,12 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
                   << " with packageid " << chunkid << " on "
                   << MPIEnviroment::get_node_rank() << std::endl;
       }
-      for (size_t i = 0; i < messagesize; i++) {
-        erg[(chunkid - package[0]) * packagesize_multiplier + i] = package_result[i];
-      }
+      // for (size_t i = 0; i < messagesize; i++) {
+      //   erg[(chunkid - package[0]) * packagesize_multiplier + i] = package_result[i];
+      // }
+      memcpy(erg + (chunkid - package[0]) * packagesize_multiplier,
+             package_result, sizeof(T) * messagesize);
+
     }
     delete [] package_result;
   }

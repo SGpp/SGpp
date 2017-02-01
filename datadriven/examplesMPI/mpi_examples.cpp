@@ -45,12 +45,12 @@ int main(int argc, char *argv[]) {
 
   // Create Sample config
   sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
-                                            MPIEnviroment::createMPIConfiguration(2, 4);
+      MPIEnviroment::createMPIConfiguration(2, 4);
   conf.serialize("testconf.cfg");
   sgpp::base::OCLOperationConfiguration ocl_conf("MyOCLConf.cfg");
   sgpp::base::OperationConfiguration conf_ocl = sgpp::datadriven::clusteringmpi::
-                                                MPIEnviroment::createMPIConfiguration(2,
-                                                                                      ocl_conf);
+      MPIEnviroment::createMPIConfiguration(2,
+                                            ocl_conf);
   conf_ocl.serialize("testconf2.cfg");
 
   // MPI_Init(&argc, &argv);
@@ -125,20 +125,22 @@ int main(int argc, char *argv[]) {
   ofs.close();
 
   // Create and prune knn graph
-  /*sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
-    dataset, 12, 0.7);
-    std::vector<int> knn_graph;
-    graph_op.create_graph(knn_graph);
-    std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
-    for (size_t i = 0; i < 100; ++i) {
+  std::cin.get();
+  std::cout << "Graph Creation/Pruning:" << std::endl;
+  sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
+                                                                            dataset, 12, 0.7);
+  std::vector<int> knn_graph;
+  graph_op.create_graph(knn_graph);
+  std::cout << "knn graph size: " << knn_graph.size() / 12 << std::endl;
+  for (size_t i = 0; i < 100; ++i) {
     for (size_t node = 0; node < 12; ++node) {
-    std::cout << knn_graph[i * 12 + node] << " ";
+      std::cout << knn_graph[i * 12 + node] << " ";
     }
     std::cout << "\n";
-    }
-    sgpp::datadriven::DensityOCLMultiPlatform::
-    OperationCreateGraphOCL::find_clusters(knn_graph, 12);
-  */
+  }
+  sgpp::datadriven::DensityOCLMultiPlatform::
+      OperationCreateGraphOCL::find_clusters(knn_graph, 12);
+
 
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
