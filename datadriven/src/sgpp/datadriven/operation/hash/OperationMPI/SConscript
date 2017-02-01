@@ -13,3 +13,5 @@ if (env["USE_OCL"]) and (env["COMPILER"].lower() == "mpich"):
   module.scanSource(".")
 if (env["USE_OCL"]) and (env["COMPILER"].lower() == "intel.mpi"):
   module.scanSource(".")
+if (env["USE_OCL"]) and (env["CXX"].lower() == "mpicxx"):
+  module.scanSource(".")

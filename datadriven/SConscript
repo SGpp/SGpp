@@ -37,12 +37,12 @@ if env["USE_OCL"]:
                                                         "boost_filesystem",
                                                         "boost_system"])
 if (env["COMPILER"].lower() == "openmpi") or (env["COMPILER"].lower() == "mpich") or \
-   (env["COMPILER"].lower() == "intel.mpi"):
+   (env["COMPILER"].lower() == "intel.mpi" or env["CXX"].lower() == "mpicxx"):
     module.buildExamples("examplesMPI")
 if (env["ARCH"].lower() == "avx2"):
     module.buildExamples("examplesAVX")
 if env["USE_HPX"]:
-    module.buildExamples("examplesHPX")  
+    module.buildExamples("examplesHPX")
 
 
 module.runPythonTests()
