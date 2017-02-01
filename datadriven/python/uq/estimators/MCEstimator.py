@@ -35,7 +35,7 @@ class MCEstimator(Estimator):
         else:
             err = np.Inf
 
-        return np.mean(moments), err
+        return np.mean(samples), err
 
     def var(self, samples):
         """
@@ -55,4 +55,4 @@ class MCEstimator(Estimator):
         else:
             err = np.Inf
 
-        return np.mean(moments), err
+        return np.var(samples), err
