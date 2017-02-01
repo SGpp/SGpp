@@ -47,7 +47,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         self.verbose = True
 
 
-    def __getSamples(self, W, T):
+    def __getSamples(self, W, T, bootstrapping=False):
         if self.samples is None:
             # draw n samples
             ans = W.rvs(self.__n)
@@ -59,8 +59,11 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
                                       for j in xrange(len(T))])
         else:
             # bootstrapping on the available samples
-            ixs = np.random.randint(0, self.__n, self.__n)
-            dataSamples = self.samples[ixs, :]
+            if bootstrapping:
+                ixs = np.random.randint(0, self.__n, self.__n)
+                dataSamples = self.samples[ixs, :]
+            else:
+                dataSamples = self.samples
 
             # check if there are samples for just a subset of the random
             # variables. If so, add the missing ones
@@ -72,9 +75,9 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
                 # data points available using bootstrapping
                 for i, sample in enumerate(dataSamples):
                     # transform them to the unit hypercube
+                    ans[i, self.__ixs] = sample
                     ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
                                           for j in xrange(len(T))])
-                    ans[i, self.__ixs] = sample
             else:
                 ans = dataSamples
 
@@ -161,7 +164,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D)
+            samples = self.__getSamples(W, D, bootstrapping=True)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
@@ -176,7 +179,9 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             err = np.Inf
 
         # calculate moment
-        return np.mean(moments), err
+        samples = self.__getSamples(W, D, bootstrapping=False)
+        res = evalSGFunctionMulti(grid, alpha, samples)
+        return np.mean(res), err
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -191,11 +196,11 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D)
+            samples = self.__getSamples(W, D, bootstrapping=True)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
-            moments[i] = np.sum((res - mean) ** 2) / (len(res) - 1.)
+            moments[i] = np.sum((res - np.mean(res)) ** 2) / (len(res) - 1.)
 
         # error statistics
         if self.__npaths > 1:
@@ -206,4 +211,21 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             err = np.Inf
 
         # calculate moment
-        return np.mean(moments), err
+        samples = self.__getSamples(W, D, bootstrapping=False)
+
+#         plt.figure()
+#         plt.hist(samples[:, 0], normed=True, cumulative=False, label="histogram")
+#         plt.title("0: lognormal [%g, %g]" % (samples[:, 0].min(),
+#                                              samples[:, 0].max()))
+#         plt.figure()
+#         plt.hist(samples[:, 1], normed=True, cumulative=False, label="histogram")
+#         plt.title("0: beta [%g, %g]" % (samples[:, 1].min(),
+#                                         samples[:, 1].max()))
+#         plt.figure()
+#         plt.hist(samples[:, 2], normed=True, cumulative=False, label="histogram")
+#         plt.title("0: lognormal [%g, %g]" % (samples[:, 2].min(),
+#                                              samples[:, 2].max()))
+#         plt.show()
+
+        res = evalSGFunctionMulti(grid, alpha, samples)
+        return np.sum((res - mean) ** 2) / (len(res) - 1.), err
