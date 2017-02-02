@@ -23,43 +23,46 @@
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
-// arg 1: grid dimensions
-// arg 2: grid level
-// arg 3: packagesize - master
-// arg 4: packagesize - leutant
-// arg 5: output file
+// arg 1: MPI Config File
+// arg 2: Dataset
+// arg 3: Gridlevel
 int main(int argc, char *argv[]) {
   // Init MPI enviroment - always has to be done first
   sgpp::datadriven::clusteringmpi::MPIEnviroment::init(argc, argv, true);
+  std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+  start = std::chrono::system_clock::now();
 
-  if (argc != 6) {
+  if (argc != 4) {
     std::cout << "Wrong arguments - consult source file for more informations!" << std::endl;
     sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
     return 0;
   }
 
-  int dim = std::stoi(argv[1]);
-  int level = std::stoi(argv[2]);
-  int packagesize_master = std::stoi(argv[3]);
-  int packagesize_leut = std::stoi(argv[4]);
+  // Loading dataset
+  std::string filename = argv[2];
+  std::cout << "Loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& dataset = data.getData();
+  int dim = data.getDimension();
+  int level = std::stoi(argv[3]);
+  // int packagesize_master = std::stoi(argv[3]);
+  // int packagesize_leut = std::stoi(argv[4]);
 
   // Create Sample config
-  sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
-      MPIEnviroment::createMPIConfiguration(2, 4);
-  conf.serialize("testconf.cfg");
-  sgpp::base::OCLOperationConfiguration ocl_conf("MyOCLConf.cfg");
-  sgpp::base::OperationConfiguration conf_ocl = sgpp::datadriven::clusteringmpi::
-      MPIEnviroment::createMPIConfiguration(2,
-                                            ocl_conf);
-  conf_ocl.serialize("testconf2.cfg");
+  // sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
+  //     MPIEnviroment::createMPIConfiguration(2, 4);
+  // conf.serialize("testconf.cfg");
+  // sgpp::base::OCLOperationConfiguration ocl_conf("MyOCLConf.cfg");
+  // sgpp::base::OperationConfiguration conf_ocl = sgpp::datadriven::clusteringmpi::
+  //     MPIEnviroment::createMPIConfiguration(2,
+  //                                           ocl_conf);
+  // conf_ocl.serialize("testconf2.cfg");
 
   // MPI_Init(&argc, &argv);
-  sgpp::base::OperationConfiguration testnode("MPIConf2.cfg");
-  testnode["PREFERED_PACKAGESIZE"].setInt(packagesize_master);
-  sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(testnode);
-
-  // sgpp::datadriven::clusteringmpi::OperationDummy dumdum;
-  // dumdum.start_operation();
+  sgpp::base::OperationConfiguration network_conf(argv[1]);
+  //testnode["PREFERED_PACKAGESIZE"].setInt(packagesize_master);
+  sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(network_conf);
 
   // Create Grid
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dim);
@@ -81,16 +84,6 @@ int main(int argc, char *argv[]) {
   }
   std::cout << std::endl << std::endl;
 
-  std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-  start = std::chrono::system_clock::now();
-  //sgpp::datadriven::clusteringmpi::OperationGridMethod test(testnode, *grid, "grid_dummy");
-  // Loading dataset
-  std::string filename = "dataset2_dim2.arff";
-  std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data =
-      sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& dataset = data.getData();
-
   // Create right hand side vector
   sgpp::base::DataVector rhs(gridsize);
   sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
@@ -106,26 +99,21 @@ int main(int argc, char *argv[]) {
   solver.solve(mult_op, alpha, rhs, false, true);
   double max = alpha.max();
   double min = alpha.min();
+
   for (size_t i = 0; i < gridsize; i++)
     alpha[i] = alpha[i]*1.0/(max-min);
   end = std::chrono::system_clock::now();
 
-  // Calc time
-  std::chrono::duration<double> elapsed_seconds = end-start;
-  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-  std::cout << "finished computation at " << std::ctime(&end_time)
-            << "elapsed time: " << elapsed_seconds.count() << "s\n";
   // Write result into file
-  std::ofstream ofs;
-  ofs.open (argv[5], std::ofstream::out | std::ofstream::app);
-  ofs << dim << ";" << level << ";" << packagesize_master << ";" << packagesize_leut
-      << ";" << elapsed_seconds.count() << ";"
-      << gridsize % ((sgpp::datadriven::clusteringmpi::MPIEnviroment::get_node_count() -1) *
-                     packagesize_master)<< std::endl;
-  ofs.close();
+  // std::ofstream ofs;
+  // ofs.open (argv[5], std::ofstream::out | std::ofstream::app);
+  // ofs << dim << ";" << level << ";" << packagesize_master << ";" << packagesize_leut
+  //     << ";" << elapsed_seconds.count() << ";"
+  //     << gridsize % ((sgpp::datadriven::clusteringmpi::MPIEnviroment::get_node_count() -1) *
+  //                    packagesize_master)<< std::endl;
+  // ofs.close();
 
   // Create and prune knn graph
-  std::cin.get();
   std::cout << "Graph Creation/Pruning:" << std::endl;
   sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
                                                                             dataset, 12, 0.7);
@@ -142,6 +130,11 @@ int main(int argc, char *argv[]) {
       OperationCreateGraphOCL::find_clusters(knn_graph, 12);
 
 
+  // Calc time
+  std::chrono::duration<double> elapsed_seconds = end-start;
+  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+  std::cout << "finished computation at " << std::ctime(&end_time)
+            << "elapsed time: " << elapsed_seconds.count() << "s\n";
   // Cleanup MPI enviroment
   sgpp::datadriven::clusteringmpi::MPIEnviroment::release();
   return 0;
