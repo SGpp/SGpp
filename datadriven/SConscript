@@ -13,17 +13,9 @@ moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
 additionalBoostTestDependencies = []
-
-
-#zlib needed for datamining
-if(config.env["USE_ZLIB"]):
-    if not config.CheckLibWithHeader("z","zlib.h", language="C++"):
-        Helper.printErrorAndExit("The flag USE_ZLIB was given, but the necessary header 'zlib.h' or library was not found.")
-    else:
-        additionalDependencies = ["z"]
-        additionalBoostTestDependencies = ["z"]
-        env["CPPDEFINES"]["ZLIB"] = "1"
         
+if env["USE_ZLIB"]:
+  additionalDependencies += ["z"]
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:
