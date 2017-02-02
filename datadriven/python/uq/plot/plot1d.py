@@ -131,8 +131,9 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
         y0 = np.zeros(sobolIndices.shape[0])
         for i in xrange(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
-            myplot, = plt.plot(ts, y1, lw=4)
-            plt.fill_between(ts, y0, y1, color=colors[i % len(colors)], alpha=.5)
+            color = colors[i % len(colors)]
+            myplot, = plt.plot(ts, y1, color=color, lw=4)
+            plt.fill_between(ts, y0, y1, color=color, alpha=.5)
             y0 = y1
 
             plots = [myplot] + plots

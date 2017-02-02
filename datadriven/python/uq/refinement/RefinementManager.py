@@ -158,8 +158,6 @@ class RefinementManager(object):
 
         v = np.ndarray([len(data), len(ts)], dtype='float')
 
-        d = {}
-
         # run over the coefficients for all time steps
         for i, t in enumerate(ts):
             # get surpluses
@@ -167,10 +165,7 @@ class RefinementManager(object):
             # rank each admissible point
             for j, gp in enumerate(data):
                 # run over all time steps for current grid point
-                key = (t, gp.getHash())
-                if key not in d:
-                    d[key] = self._criterion.rank(grid, gp, alphas, params, t)
-                v[j, i] = d[key]
+                v[j, i] = self._criterion.rank(grid, gp, alphas, params, t)
 
 #             # get the result
 #             r = np.zeros(self._admissibleSet.getSize())
@@ -191,33 +186,33 @@ class RefinementManager(object):
 #                          fontsize=12)
 #             plt.xlim(0, 1)
 
-        # apply a subset ranking if the adding algorithm is used
-        if self._averageWeightening and \
-                isinstance(self._admissibleSet, AdmissibleSparseGridNodeSet):
-            # simulate the refinement and sum over all subgroup values
-            # refine all the points in the admissible set
-            newGridPoints = {}
-            for j, gp in enumerate(data):
-                newGridPoints[j] = self.__refine(learner, [(v[j, i], gp)],
-                                                 simulate=True)
-            for i, t in enumerate(ts):
-                if self.verbose:
-                    print "compute merged ranking: %i/%i" % (i + 1, len(ts))
-
-                # get surpluses
-                alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
-                # rank each admissible point
-                s = 0.
-                # take the refined points for gp in row j
-                for j, points in newGridPoints.items():
-                    # sum up all the rankings
-                    for gp in points:
-                        key = (t, gp.getHash())
-                        if key not in d:
-                            d[key] = self._criterion.rank(grid, gp, alphas, params, t)
-                        s += d[key]
-                    # and take the mean as ranking
-                    v[j, i] = s / len(newGridPoints)
+#         # apply a subset ranking if the adding algorithm is used
+#         if self._averageWeightening and \
+#                 isinstance(self._admissibleSet, AdmissibleSparseGridNodeSet):
+#             # simulate the refinement and sum over all subgroup values
+#             # refine all the points in the admissible set
+#             newGridPoints = {}
+#             for j, gp in enumerate(data):
+#                 newGridPoints[j] = self.__refine(learner, [(v[j, i], gp)],
+#                                                  simulate=True)
+#             for i, t in enumerate(ts):
+#                 if self.verbose:
+#                     print "compute merged ranking: %i/%i" % (i + 1, len(ts))
+#
+#                 # get surpluses
+#                 alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
+#                 # rank each admissible point
+#                 s = 0.
+#                 # take the refined points for gp in row j
+#                 for j, points in newGridPoints.items():
+#                     # sum up all the rankings
+#                     for gp in points:
+#                         key = (t, gp.getHash())
+#                         if key not in d:
+#                             d[key] = self._criterion.rank(grid, gp, alphas, params, t)
+#                         s += d[key]
+#                     # and take the mean as ranking
+#                     v[j, i] = s / len(newGridPoints)
 
 #             # simulate the refinement and sum over all subgroup values
 #             for i, t in enumerate(ts):

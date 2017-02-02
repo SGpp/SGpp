@@ -151,6 +151,7 @@ class ASGCUQManager(object):
             for t, dataContainer in values.items():
                 if self.verbose:
                     print "t = %g, " % t,
+                sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer
@@ -183,7 +184,7 @@ class ASGCUQManager(object):
                 dataContainer = values[t]
                 if self.verbose:
                     print "t = %g, " % t,
-
+                sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer

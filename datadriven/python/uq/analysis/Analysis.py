@@ -87,9 +87,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute mean
                 if self._verbose:
-                    print "-" * 60
-                    print "Estimate E[t = %g] (%i/%i), iteration = %s:" % \
-                        (t, i + 1, len(ts), iteration),
+                    print "-" * 80
+                    print "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -136,9 +136,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute variance
                 if self._verbose:
-                    print "-" * 60
-                    print "Estimate V[t = %g] (%i/%i), iteration = %s:" % \
-                        (t, i + 1, len(ts), iteration),
+                    print "-" * 80
+                    print "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)

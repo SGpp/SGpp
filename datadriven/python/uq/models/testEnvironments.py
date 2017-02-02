@@ -31,14 +31,15 @@ class TestEnvironmentSG(object):
                      uqSetting=None,
                      uqSettingRef=None,
                      knowledgeFilename=None,
+                     knowledgeTypes=[KnowledgeTypes.SIMPLE,
+                                     KnowledgeTypes.SQUARED,
+                                     KnowledgeTypes.EXPECTATIONVALUE],
                      qoi=None,
                      toi=None):
         builder = ASGCUQManagerBuilder()
 
         builder.withParameters(params)\
-               .withTypesOfKnowledge([KnowledgeTypes.SIMPLE,
-                                      KnowledgeTypes.SQUARED,
-                                      KnowledgeTypes.EXPECTATIONVALUE])\
+               .withTypesOfKnowledge(knowledgeTypes)\
                .useInterpolation()
 
         if qoi is not None:

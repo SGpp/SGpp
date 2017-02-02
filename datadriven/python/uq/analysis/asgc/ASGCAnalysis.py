@@ -679,8 +679,8 @@ class ASGCAnalysis(Analysis):
 
     def computeSurplusesLevelWise(self, t=0, dtype=KnowledgeTypes.SIMPLE,
                                   iteration=None):
-        gs = self.__knowledge.getGrid(self._qoi).getStorage()
-        alpha = self.__knowledge.getAlpha(self._qoi, t, dtype,
+        gs = self.__knowledge.getGrid(self._qoi, iteration=iteration).getStorage()
+        alpha = self.__knowledge.getAlpha(qoi=self._qoi, t=t, dtype=dtype,
                                           iteration=iteration)
 
         res = {}
