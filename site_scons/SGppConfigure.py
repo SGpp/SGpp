@@ -186,7 +186,6 @@ def checkGSL(config):
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
 def checkZlib(config):
-
 #zlib needed for datamining
     if(config.env["USE_ZLIB"]):
         if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
