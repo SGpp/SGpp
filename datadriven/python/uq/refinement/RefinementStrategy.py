@@ -31,7 +31,8 @@ class Ranking(object):
     def rank(self, grid, gp, alphas, params, t=0, *args, **kws):
         # get grid point associated to ix
         if (t, gp.getHash()) not in self._ranking:
-            self._ranking[gp.getHash()] = self.update(grid, alphas, gp, params)
+            self._ranking[gp.getHash()] = self.update(grid, alphas, gp,
+                                                      params.activeParams())
 
         return self._ranking[gp.getHash()]
 
