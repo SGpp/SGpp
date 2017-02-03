@@ -21,7 +21,7 @@
 #include <string>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-const auto datasetPath = "..\\datadriven\\tests\\data\\dataminingConfig.json";
+const auto datasetPath = "datadriven\\tests\\data\\dataminingConfig.json";
 
 #else
 const auto datasetPath = "datadriven/tests/data/dataminingConfig.json";

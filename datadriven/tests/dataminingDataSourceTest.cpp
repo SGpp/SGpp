@@ -40,7 +40,7 @@ struct State {
   State()
       :
 #if defined(_WIN32) || defined(__CYGWIN__)
-        path("..\\datadriven\\tests\\datasets\\liver-disorders_normalized.arff"),
+        path("datadriven\\tests\\datasets\\liver-disorders_normalized.arff"),
 #else
         path("datadriven/tests/datasets/liver-disorders_normalized.arff"),
 #endif
