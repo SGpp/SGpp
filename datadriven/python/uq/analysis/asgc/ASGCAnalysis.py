@@ -128,26 +128,21 @@ class ASGCAnalysis(Analysis):
     def computeVar(self, iteration, qoi, t):
         # compute the mean
         if not self._moments.hasMoment(iteration, qoi, t, 'mean'):
-            mean, err1 = self.computeMean(iteration, qoi, t)
+            mean = self.computeMean(iteration, qoi, t)
         else:
-            mean, err1 = self._moments.getMoment(iteration, qoi, t, 'mean')
-
-        # compute the variance
-        def f(_, y):
-            return (y - mean) * (y - mean)
+            mean = self._moments.getMoment(iteration, qoi, t, 'mean')
 
         # get the sparse grid function
         grid, alpha = self.__knowledge.getSparseGridFunction(self._qoi, t,
                                                              iteration=iteration)
         # do the estimation
-        moment, err2 = self.__estimationStrategy.var(grid, alpha,
-                                                     self.__U, self.__T,
-                                                     mean)
+        var = self.__estimationStrategy.var(grid, alpha,
+                                            self.__U, self.__T,
+                                            mean["value"])
 
-        # accumulate the errors
-        err = err1 + err2
-
-        return moment, err
+        return {"value": var["value"],
+                "err": var["err"] + mean["err"],
+                "confidence_interval": var["confidence_interval"]}
 
     # ----------------------------------------------------------------
     # sensitivity analysis
@@ -499,8 +494,10 @@ class ASGCAnalysis(Analysis):
                 v[0] = t
                 v[1] = iteration
                 v[2] = size
-                v[3], v[4] = self.mean(ts=[t], iterations=[iteration])
-                v[5], v[6] = self.var(ts=[t], iterations=[iteration])
+                mean = self.mean(ts=[t], iterations=[iteration])
+                v[3], v[4] = mean["value"], mean["err"]
+                var = self.var(ts=[t], iterations=[iteration])
+                v[5], v[6] = var["value"], var["err"]
 
                 # write results to matrix
                 data.setRow(row, v)

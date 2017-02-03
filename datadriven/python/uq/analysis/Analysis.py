@@ -100,7 +100,8 @@ class Analysis(object):
                                                      t, 'mean')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % moment
+                    print "value = %g (err=%g)" % (moment["value"],
+                                                   moment["err"])
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
@@ -149,7 +150,8 @@ class Analysis(object):
                                                      t, 'var')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % moment
+                    print "value = %g (err=%g)" % (moment["value"],
+                                                   moment["err"])
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
