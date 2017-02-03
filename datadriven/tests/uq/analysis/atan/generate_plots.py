@@ -84,7 +84,7 @@ settings = {'uniform': {'sg': [("polyBoundary", 0, 3000, False, False),
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default="beta", type=str, help="define which probabilistic model should be used")
+    parser.add_argument('--model', default="uniform", type=str, help="define which probabilistic model should be used")
     parser.add_argument('--surrogate', default="both", type=str, help="define which surrogate model should be used (sg, pce)")
     args = parser.parse_args()
 

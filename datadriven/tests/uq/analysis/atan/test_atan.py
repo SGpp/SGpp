@@ -466,13 +466,13 @@ class AtanPeridynamicExample(object):
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test, l1test, maxErrorTest, meanError, varError = \
                 self.getErrors(test_values, test_values_pred,
-                               sg_mean[0], sg_var[0])
+                               sg_mean["value"], sg_var["value"])
             print "-" * 60
             print "test:  |.|_2 = %g" % l2test
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[0],
-                                               np.abs(self.E_ana[0] - sg_mean[0]))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[0],
-                                               np.abs(self.V_ana[0] - sg_var[0]))
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean["value"],
+                                               np.abs(self.E_ana[0] - sg_mean["value"]))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var["value"],
+                                               np.abs(self.V_ana[0] - sg_var["value"]))
             # ----------------------------------------------------------
             # estimated anova decomposition
             if self.inputSpace != "sgde":
@@ -489,8 +489,8 @@ class AtanPeridynamicExample(object):
                             'maxErrorTest': maxErrorTest,
                             'mean_error': meanError,
                             'var_error': varError,
-                            'mean_estimated': sg_mean[0],
-                            'var_estimated': sg_var[0],
+                            'mean_estimated': sg_mean["value"],
+                            'var_estimated': sg_var["value"],
                             'sobol_indices_estimated': sobol_indices,
                             'total_effects_estimated': total_effects}
 
@@ -580,10 +580,10 @@ class AtanPeridynamicExample(object):
 
             print "-" * 60
             print "iteration=%i, N=%i" % (iteration, grid.getSize())
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration][0],
-                                               np.abs(self.E_ana[0] - sg_mean[iteration][0]))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration][0],
-                                               np.abs(self.V_ana[0] - sg_var[iteration][0]))
+            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration]["value"],
+                                               np.abs(self.E_ana[0] - sg_mean[iteration]["value"]))
+            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration]["value"],
+                                               np.abs(self.V_ana[0] - sg_var[iteration]["value"]))
 
             stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
                                      'l2test': l2test,
@@ -591,8 +591,8 @@ class AtanPeridynamicExample(object):
                                      'maxErrorTest': maxErrorTest,
                                      'mean_error': meanError,
                                      'var_error': varError,
-                                     'mean_estimated': sg_mean[iteration][0],
-                                     'var_estimated': sg_var[iteration][0],
+                                     'mean_estimated': sg_mean[iteration]["value"],
+                                     'var_estimated': sg_var[iteration]["value"],
                                      'sobol_indices_estimated': sobol_indices,
                                      'total_effects_estimated': total_effects}
 
