@@ -18,6 +18,7 @@ from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusBFRanking,
                                 WeightedSurplusBFRanking,
                                 PredictiveRanking,
+                                WeightedL2BFRanking,
                                 AnchoredWeightedL2OptRanking,
                                 AnchoredVarianceOptRanking,
                                 AnchoredMeanSquaredOptRanking,
@@ -194,6 +195,11 @@ class MostPromisingChildrenDescriptor(AdmissibleSetDescriptor):
 
     def withWeightedSurplusOptimizationRanking(self):
         ranking = WeightedSurplusBFRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withWeightedL2OptimizationRanking(self):
+        ranking = WeightedL2BFRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 

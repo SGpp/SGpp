@@ -471,6 +471,53 @@ class WeightedSurplusBFRanking(Ranking):
         # scale surplus by probability density
         return np.abs(vi) * U.pdf(q)
 
+
+class WeightedL2BFRanking(Ranking):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._estimationStrategy = AnalyticEstimationStrategy()
+        self.initialized = False
+
+    def update(self, grid, v, gpi, params, *args, **kws):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} |v_i| \sqrt{E[\varphi_i^2]}
+
+        @param grid: Grid grid
+        @param v: numpy array coefficients
+        """
+        # update the quadrature operations
+        if not self.initialized:
+            self._estimationStrategy.initQuadratureStrategy(grid)
+            U = params.getIndependentJointDistribution()
+            T = params.getJointTransformation()
+            self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
+            self.initialized = True
+
+        # get maximum coefficient of ancestors
+        vi = 0.0
+        gs = grid.getStorage()
+        for _, gpp in parents(grid, gpi):
+            if gs.isContaining(gpp):
+                ix = gs.getSequenceNumber(gpp)
+                vi = max(vi, np.abs(v[ix]))
+
+        # prepare data
+        basisi = getBasis(grid)
+
+        # compute the second moment for the current grid point
+        secondMoment, _ = self._estimationStrategy.computeSystemMatrixForVarianceList(gs,
+                                                                                      [gpi], basisi,
+                                                                                      [gpi], basisi,
+                                                                                      self.W, self.D)
+        secondMoment = max(0.0, self.vol * secondMoment[0])
+
+        # update the ranking
+        return np.abs(vi * np.sqrt(secondMoment))
+
+
 class VarianceBFRanking(Ranking):
 
     def __init__(self, strategy):

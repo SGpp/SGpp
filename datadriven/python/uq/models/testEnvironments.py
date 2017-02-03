@@ -120,6 +120,8 @@ class TestEnvironmentSG(object):
                 addNodes = refinement.addMostPromisingChildren()
                 if adaptive == "weighted":
                     addNodes.withWeightedSurplusOptimizationRanking()
+                if adaptive == "l2":
+                    addNodes.withWeightedL2OptimizationRanking()
                 else:
                     raise AttributeError("unknown ranking method")
                     
