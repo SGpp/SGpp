@@ -237,6 +237,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         moment = vol * np.dot(alpha, np.dot(A_var, alpha))
         var = moment - mean ** 2
 
-        return {"value": val,
+        return {"value": var,
                 "err": err,
                 "confidence_interval": (0.0, 0.0)}
