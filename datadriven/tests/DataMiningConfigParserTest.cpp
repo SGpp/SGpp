@@ -21,7 +21,7 @@
 #include <string>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-const auto datasetPath = "..\\datadriven\\tests\\data\\dataminingConfig.json";
+const auto datasetPath = "..\datadriven\tests\data\dataminingConfig.json";
 
 #else
 const auto datasetPath = "datadriven/tests/data/dataminingConfig.json";
@@ -45,14 +45,14 @@ using sgpp::solver::SLESolverConfiguration;
 using sgpp::solver::SLESolverType;
 
 BOOST_AUTO_TEST_CASE(testTopLevel) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
   BOOST_CHECK_EQUAL(parser.hasDataSourceConfig(), true);
   BOOST_CHECK_EQUAL(parser.hasFitterConfig(), true);
   BOOST_CHECK_EQUAL(parser.hasScorerConfig(), true);
 }
 
 BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   DataSourceConfig defaults;
   defaults.filePath = "something/false";
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   TestingConfiguration defaults;
   defaults.testingPortion = 1.0;
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   CrossValidationConfiguration defaults;
   defaults.folds = 3;
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   FitterType defaults = FitterType::RegressionLeastSquares;
   FitterType config;
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   RegularGridConfiguration defaults;
   defaults.type_ = GridType::ModLinear;
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   AdpativityConfiguration defaults;
   defaults.numRefinements_ = 42;
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   SLESolverConfiguration defaults;
   defaults.type_ = SLESolverType::BiCGSTAB;
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterSolverFinalConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   SLESolverConfiguration defaults;
   defaults.type_ = SLESolverType::BiCGSTAB;
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverFinalConfig) {
 }
 
 BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
-  DataMiningConfigParser parser{"datadriven/tests/data/dataminingConfig.json"};
+  DataMiningConfigParser parser{datasetPath};
 
   RegularizationConfiguration defaults;
   defaults.regType_ = RegularizationType::Laplace;
