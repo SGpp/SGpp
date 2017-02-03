@@ -57,9 +57,11 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
-                 'meanConfidenceIntervalBootstrapping',
+                 'meanConfidenceIntervalBootstrapping_lower',
+                 'meanConfidenceIntervalBootstrapping_upper',
                  'var',
-                 'varConfidenceIntervalBootstrapping']
+                 'varConfidenceIntervalBootstrapping_lower',
+                 'varConfidenceIntervalBootstrapping_upper']
         # parameters
         ts = self.__samples.keys()
         nrows = len(ts)
@@ -74,9 +76,9 @@ class MCAnalysis(Analysis):
             v[1] = 0
             v[2] = len(self.__samples[t].values())
             mean = self.mean(ts=[t], iterations=[0])
-            v[3], v[4] = res["value"], res["err"]
+            v[3], v[4], v[5] = mean["value"], mean["confidence_interval_lower"], mean["confidence_interval_upper"]
             var = self.var(ts=[t], iterations=[0])
-            v[5], v[6] = var["value"], res["err"]
+            v[6], v[7], v[8] = var["value"], var["confidence_interval_lower"], var["confidence_interval_upper"]
 
             # write results to matrix
             data.setRow(row, v)
