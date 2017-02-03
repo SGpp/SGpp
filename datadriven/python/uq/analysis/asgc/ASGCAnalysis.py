@@ -494,16 +494,17 @@ class ASGCAnalysis(Analysis):
             for iteration in iterations:
                 size = self.__knowledge.getGrid(qoi=self._qoi,
                                                 iteration=iteration).getSize()
+                mean = self.mean(ts=[t], iterations=[iteration])
+                var = self.var(ts=[t], iterations=[iteration])
+
                 v.setAll(0.0)
                 v[0] = t
                 v[1] = iteration
                 v[2] = size
-                mean = self.mean(ts=[t], iterations=[iteration])
                 v[3], v[4] = mean["value"], mean["err"]
-                v[5], v[6] = mean["confidence_interval_lower"], mean["confidence_interval_upper"]
-                var = self.var(ts=[t], iterations=[iteration])
+                v[5], v[6] = mean["confidence_interval"]
                 v[7], v[8] = var["value"], var["err"]
-                v[9], v[10] = var["confidence_interval_lower"], var["confidence_interval_upper"]
+                v[9], v[10] = var["confidence_interval"]
 
                 # write results to matrix
                 data.setRow(row, v)
