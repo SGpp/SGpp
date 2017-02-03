@@ -73,8 +73,10 @@ class MCAnalysis(Analysis):
             v[0] = t
             v[1] = 0
             v[2] = len(self.__samples[t].values())
-            v[3], v[4] = self.mean(ts=[t], iterations=[0])
-            v[5], v[6] = self.var(ts=[t], iterations=[0])
+            mean = self.mean(ts=[t], iterations=[0])
+            v[3], v[4] = res["value"], res["err"]
+            var = self.var(ts=[t], iterations=[0])
+            v[5], v[6] = var["value"], res["err"]
 
             # write results to matrix
             data.setRow(row, v)

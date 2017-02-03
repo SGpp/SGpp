@@ -216,8 +216,12 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_mean, err = self.getSystemMatrixForMean(grid, W, D)
 
-        moment = np.dot(alpha, A_mean)
-        return vol * moment, err
+        moment = vol * np.dot(alpha, A_mean)
+
+        return {"value": moment,
+                "err": err,
+                "confidence_interval": (0.0, 0.0)}
+
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -233,4 +237,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         moment = vol * np.dot(alpha, np.dot(A_var, alpha))
         var = moment - mean ** 2
 
-        return var, err
+        return {"value": val,
+                "err": err,
+                "confidence_interval": (0.0, 0.0)}

@@ -174,14 +174,18 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         if self.__npaths > 1:
             lower_percentile = np.percentile(moments, q=self.__percentile)
             upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = upper_percentile - lower_percentile
+            err = max(lower_percentile, upper_percentile)
         else:
-            err = np.Inf
+            err = lower_percentile = upper_percentile = np.Inf
 
         # calculate moment
         samples = self.__getSamples(W, D, bootstrapping=False)
         res = evalSGFunctionMulti(grid, alpha, samples)
-        return np.mean(res), err
+
+        return {"value": np.mean(res),
+                "err": err,
+                "confidence_interval": (lower_percentile, upper_percentile)}
+
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -206,9 +210,9 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         if self.__npaths > 1:
             lower_percentile = np.percentile(moments, q=self.__percentile)
             upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = upper_percentile - lower_percentile
+            err = max(lower_percentile, upper_percentile)
         else:
-            err = np.Inf
+            err = lower_percentile = upper_percentile = np.Inf
 
         # calculate moment
         samples = self.__getSamples(W, D, bootstrapping=False)
@@ -228,4 +232,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 #         plt.show()
 
         res = evalSGFunctionMulti(grid, alpha, samples)
-        return np.sum((res - mean) ** 2) / (len(res) - 1.), err
+
+        return {"value": np.sum((res - mean) ** 2) / (len(res) - 1.),
+                "err": err,
+                "confidence_interval": (lower_percentile, upper_percentile)}
