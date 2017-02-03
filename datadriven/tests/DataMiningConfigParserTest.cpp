@@ -20,6 +20,13 @@
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+const auto datasetPath = "..\\datadriven\\tests\\data\\dataminingConfig.json";
+
+#else
+const auto datasetPath = "datadriven/tests/data/dataminingConfig.json";
+#endif
+
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
 using sgpp::datadriven::DataMiningConfigParser;

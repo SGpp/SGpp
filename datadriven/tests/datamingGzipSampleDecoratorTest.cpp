@@ -20,6 +20,8 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 BOOST_AUTO_TEST_SUITE(dataminingGzipSampleDecoratorTest)
 
 using sgpp::datadriven::GzipFileSampleDecorator;
@@ -38,7 +40,15 @@ BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
   GzipFileSampleDecorator sampleProvider = GzipFileSampleDecorator(new ArffFileSampleProvider());
-  sampleProvider.readFile("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+  const auto datasetPath = "..\\datadriven\\tests\\datasets\\liver-disorders_normalized.arff";
+
+#else
+  const auto datasetPath = "datadriven/tests/datasets/liver-disorders_normalized.arff";
+#endif
+
+  sampleProvider.readFile(datasetPath);
   auto dataset = sampleProvider.getAllSamples();
 
   DataVector& classes = dataset->getTargets();
