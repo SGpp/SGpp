@@ -76,16 +76,16 @@ class HDMRAnalytic(object):
     def __computeMean(self):
         if self._verbose:
             print "estimate mean: ",
-        self.__E, _ = self.__estimation.mean(self.__grid, self.__alpha,
-                                             self.__U, self.__T)
+        self.__E = self.__estimation.mean(self.__grid, self.__alpha,
+                                          self.__U, self.__T)["value"]
         if self._verbose:
             print self.__E
 
     def __computeVariance(self):
         if self._verbose:
             print "estimate variance: ",
-        self.__V, _ = self.__estimation.var(self.__grid, self.__alpha,
-                                            self.__U, self.__T, self.__E)
+        self.__V = self.__estimation.var(self.__grid, self.__alpha,
+                                         self.__U, self.__T, self.__E)["value"]
         if self._verbose:
             print self.__V
 
@@ -295,13 +295,15 @@ class HDMRAnalytic(object):
             U = params.getIndependentJointDistribution()
 
             # estimate variance
-            mean, _ = self.__estimation.mean(grid, alpha, U, T)
-            vi, err = self.__estimation.var(grid, alpha, U, T, mean)
+            mean = self.__estimation.mean(grid, alpha, U, T)["value"]
+            res_var = self.__estimation.var(grid, alpha, U, T, mean)
+            vi = res_var["value"]
+            vi_err = res_var["err"]
             # store the variance
             vis[perm] = vi
 
             if self._verbose:
-                print "estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
+                print "estimated V[%s]: %g (err=%g)" % (perm, vi, vi_err)
 
             # add lower order components
             fi = self.__anova_components[perm]
