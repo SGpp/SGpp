@@ -72,13 +72,17 @@ class MCAnalysis(Analysis):
         row = 0
         for t in np.sort(ts):
             v.setAll(0.0)
+            mean = self.mean(ts=[t], iterations=[0])
+            var = self.var(ts=[t], iterations=[0])
+            numSamples = len(self.__samples[t].values())
+
             v[0] = t
             v[1] = 0
-            v[2] = len(self.__samples[t].values())
-            mean = self.mean(ts=[t], iterations=[0])
-            v[3], v[4], v[5] = mean["value"], mean["confidence_interval_lower"], mean["confidence_interval_upper"]
-            var = self.var(ts=[t], iterations=[0])
-            v[6], v[7], v[8] = var["value"], var["confidence_interval_lower"], var["confidence_interval_upper"]
+            v[2] = numSamples
+            v[3] = mean["value"]
+            v[4], v[5] = mean["confidence_interval"]
+            v[6] = var["value"]
+            v[7], v[8] = var["confidence_interval"]
 
             # write results to matrix
             data.setRow(row, v)
