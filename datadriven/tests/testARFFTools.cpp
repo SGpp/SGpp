@@ -32,8 +32,7 @@ BOOST_AUTO_TEST_CASE(testReadARFF) {
 
 #if defined(_WIN32) || defined(__CYGWIN__)
   sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
-      // "..\datadriven\tests\datasets\liver-disorders_normalized.arff");
-      "datadriven/tests/datasets/liver-disorders_normalized.arff");
+      "..\\datadriven\\tests\\datasets\\liver-disorders_normalized.arff");
 #else
   sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
       "datadriven/tests/datasets/liver-disorders_normalized.arff");
