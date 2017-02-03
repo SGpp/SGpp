@@ -307,8 +307,8 @@ class KraichnanOrszagTest(object):
 
             results["results"][t] = {}
             results["results"][t]["num_model_evaluations"] = A.shape[0]
-            results["results"][t]["mean_estimated"] = mc_mean[t][0]
-            results["results"][t]["var_estimated"] = mc_var[t][0]
+            results["results"][t]["mean_estimated"] = mc_mean[t]["value"]
+            results["results"][t]["var_estimated"] = mc_var[t]["value"]
 #             results["results"][t]["confidence_interval"] = mc_confidence_intervals[t][0]
         # --------------------------------------------
 
@@ -423,16 +423,16 @@ class KraichnanOrszagTest(object):
             results["results"][t][maxLevel]["stats"] = uqManager.stats
             
             results["results"][t][maxLevel]["mean_estimated_per_iteration"] = {}
-            for it, (value, error) in analysis.mean(ts=[t], reduce=False).items():
-                results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = value
+            for it, res in analysis.mean(ts=[t], reduce=False).items():
+                results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = res["value"]
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["mean_estimated_per_iteration"].keys())
             results["results"][t][maxLevel]["mean_estimated"] = \
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it]
 
             results["results"][t][maxLevel]["var_estimated_per_iteration"] = {}
-            for it, (value, error) in analysis.var(ts=[t], reduce=False).items():
-                results["results"][t][maxLevel]["var_estimated_per_iteration"][it] = value
+            for it, res in analysis.var(ts=[t], reduce=False).items():
+                results["results"][t][maxLevel]["var_estimated_per_iteration"][it] = res["value"]
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["var_estimated_per_iteration"].keys())
             results["results"][t][maxLevel]["var_estimated"] = \
