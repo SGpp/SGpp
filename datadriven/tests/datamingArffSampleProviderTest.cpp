@@ -50,9 +50,7 @@ using sgpp::datadriven::Dataset;
 BOOST_AUTO_TEST_SUITE(datamingArffSampleProviderTest)
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-// const std::string datasetPath = "..\datadriven\tests\datasets\liver-disorders_normalized.arff";
-
-const std::string datasetPath = "datadriven/tests/datasets/liver-disorders_normalized.arff";
+const std::string datasetPath = "..\\datadriven\\tests\\datasets\\liver-disorders_normalized.arff";
 #else
 const std::string datasetPath = "datadriven/tests/datasets/liver-disorders_normalized.arff";
 #endif
