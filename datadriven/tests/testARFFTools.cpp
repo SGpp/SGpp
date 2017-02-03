@@ -22,21 +22,22 @@
 BOOST_AUTO_TEST_SUITE(testArffTools)
 
 BOOST_AUTO_TEST_CASE(testReadARFF) {
-  double testPoints[10][3] = {{0.307143, 0.130137, 0.050000},
-                              {0.365584, 0.105479, 0.050000},
-                              {0.178571, 0.201027, 0.050000},
-                              {0.272078, 0.145548, 0.050000},
-                              {0.318831, 0.065411, 0.050000},
-                              {0.190260, 0.086986, 0.050000},
-                              {0.190260, 0.062329, 0.072500},
-                              {0.120130, 0.068493, 0.072500},
-                              {0.225325, 0.056164, 0.072500},
-                              {0.213636, 0.050000, 0.072500}};
+  double testPoints[10][3] = {{0.307143, 0.130137, 0.050000}, {0.365584, 0.105479, 0.050000},
+                              {0.178571, 0.201027, 0.050000}, {0.272078, 0.145548, 0.050000},
+                              {0.318831, 0.065411, 0.050000}, {0.190260, 0.086986, 0.050000},
+                              {0.190260, 0.062329, 0.072500}, {0.120130, 0.068493, 0.072500},
+                              {0.225325, 0.056164, 0.072500}, {0.213636, 0.050000, 0.072500}};
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+  sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
+      "..\\datadrive\\tests\\datasets\\liver-disorders_normalized.arff");
+#else
   sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
       "datadriven/tests/datasets/liver-disorders_normalized.arff");
+#endif
+
   sgpp::base::DataVector& classes = dataSet.getTargets();
   sgpp::base::DataMatrix& data = dataSet.getData();
   size_t nrows = data.getNrows();

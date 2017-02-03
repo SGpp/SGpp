@@ -38,7 +38,12 @@ using sgpp::base::DataVector;
 
 struct State {
   State()
-      : path("datadriven/tests/datasets/liver-disorders_normalized.arff.gz"),
+      :
+#if defined(_WIN32) || defined(__CYGWIN__)
+        path("..\\datadrive\\tests\\datasets\\liver-disorders_normalized.arff"),
+#else
+        path("datadriven/tests/datasets/liver-disorders_normalized.arff"),
+#endif
         testPoints({{{0.307143, 0.130137, 0.050000},
                      {0.365584, 0.105479, 0.050000},
                      {0.178571, 0.201027, 0.050000},
@@ -49,7 +54,8 @@ struct State {
                      {0.120130, 0.068493, 0.072500},
                      {0.225325, 0.056164, 0.072500},
                      {0.213636, 0.050000, 0.072500}}}),
-        testValues({{-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.}}) {}
+        testValues({{-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.}}) {
+  }
   ~State() {}
   std::string path;
   std::array<std::array<double, 3>, 10> testPoints;
