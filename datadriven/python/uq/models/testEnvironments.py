@@ -115,7 +115,7 @@ class TestEnvironmentSG(object):
                 elif adaptive == "anchored_mean_squared":
                     refineNodes.withAnchoredMeanSquaredOptRanking()
                 else:
-                    raise AttributeError("unknown ranking method")
+                    raise AttributeError("unknown ranking method: refinement, %s" % adaptive)
             else:
                 addNodes = refinement.addMostPromisingChildren()
                 if adaptive == "weighted":
@@ -123,7 +123,7 @@ class TestEnvironmentSG(object):
                 if adaptive == "l2":
                     addNodes.withWeightedL2OptimizationRanking()
                 else:
-                    raise AttributeError("unknown ranking method")
+                    raise AttributeError("unknown ranking method: predictive, %s" % adaptive)
                     
             if toi is not None:
                 refinement.withAverageWeightening()
