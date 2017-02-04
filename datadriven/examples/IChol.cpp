@@ -11,6 +11,7 @@
 
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 
+#include <math.h>
 #include <iostream>
 
 using sgpp::base::DataMatrix;
@@ -24,7 +25,7 @@ int main(int argc, char** argv) {
       exit(1);
     } else {
       try {
-        return std::stoul(argv[1]);
+        return static_cast<size_t>(std::stoul(argv[1]));
       } catch (std::invalid_argument& e) {
         printf("amount of sweeps could not be parsed.\n%s\n", e.what());
         exit(1);
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 
   // initialize
   double a_val[]{8.0, 4.0, 4.0, 9.0};
-  double b_val[]{2.0 * sqrt(2), 4.0, sqrt(2), sqrt(7)};
+  double b_val[]{2.0 * sqrt(2.0), 4.0, sqrt(2.0), sqrt(7.0)};
 
   DataVector norm{size};
   DataMatrix A{a_val, size, size};
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
   IChol::decompose(A, sweeps);
   IChol::reaplyDiagonal(A, norm);
 
-  printf("Chol\n\n%s", B.toString().c_str());
+  printf("Chol\n\n%s\n", B.toString().c_str());
 
   printf("IChol\n\n%s\n\n", A.toString().c_str());
 }

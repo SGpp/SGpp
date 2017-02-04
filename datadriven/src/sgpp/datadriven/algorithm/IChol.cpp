@@ -11,7 +11,7 @@
 
 #include "IChol.hpp"
 
-#include <omp.h>
+#include <cmath>
 
 namespace sgpp {
 namespace datadriven {
@@ -54,12 +54,20 @@ void IChol::decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweep
 void IChol::updateLastNRows(DataMatrix& matrix, size_t numRows, size_t sweeps) {}
 
 void IChol::normToUnitDiagonal(DataMatrix& matrix, DataVector& norms) {
+  const auto matSize = matrix.getNrows();
+  norms.resize(matSize);
 #pragma omp parallel for
-  for (auto i = 0u; i < matrix.getNrows(); i++) {
-    norms.set(i, matrix.get(i, i));
+  for (auto i = 0u; i < matSize; i++) {
+    norms[i] = 1.0 / std::sqrt(matrix.get(i, i));
+  }
 
+// Calculate (D*A*D)
+#pragma omp parallel for
+  for (auto i = 0u; i < matSize; i++) {
+    const auto leftVecVal = norms[i];
     for (auto j = 0u; j <= i; j++) {
-      matrix.set(i, j, matrix.get(i, j) / norms.get(i));
+      const auto rightVecVal = norms[j];
+      matrix.set(i, j, leftVecVal * matrix.get(i, j) * rightVecVal);
     }
   }
 }
@@ -67,8 +75,10 @@ void IChol::normToUnitDiagonal(DataMatrix& matrix, DataVector& norms) {
 void IChol::reaplyDiagonal(DataMatrix& matrix, DataVector& norms) {
 #pragma omp parallel for
   for (auto i = 0u; i < matrix.getNrows(); i++) {
+    const auto leftVecVal = norms[i];
     for (auto j = 0u; j <= i; j++) {
-      matrix.set(i, j, matrix.get(i, j) * norms.get(i));
+      const auto rightVecVal = norms[j];
+      matrix.set(i, j, leftVecVal / matrix.get(i, j) / rightVecVal);
     }
   }
 }
