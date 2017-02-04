@@ -35,10 +35,10 @@ int main(int argc, char** argv) {
 
   auto size = 2u;
 
-  // initialize
-  double a_val[]{8.0, 4.0, 4.0, 9.0};
-  double b_val[]{2.0 * sqrt(2.0), 4.0, sqrt(2.0), sqrt(7.0)};
+  double a_val[]{9.0, 3.0, 3.0, 16.0};
+  double b_val[]{1.0, 3.0, 1.0 / 4.0, 1.0};
 
+  // initialize
   DataVector norm{size};
   DataMatrix A{a_val, size, size};
   DataMatrix B{b_val, size, size};
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
   IChol::normToUnitDiagonal(A, norm);
   IChol::decompose(A, sweeps);
-  IChol::reaplyDiagonal(A, norm);
+  // IChol::reaplyDiagonal(A, norm);
 
   printf("Chol\n\n%s\n", B.toString().c_str());
 
