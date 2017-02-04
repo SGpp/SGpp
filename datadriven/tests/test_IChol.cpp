@@ -13,6 +13,8 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 
+#include <cmath>
+
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::datadriven::IChol;
@@ -66,7 +68,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
 
   // initialize
   double a_val[]{8.0, 4.0, 4.0, 9.0};
-  double b_val[]{2.0 * sqrt(2), 4.0, sqrt(2), sqrt(7)};
+  double b_val[]{2.0 * std::sqrt(2.0), 4.0, std::sqrt(2.0), std::sqrt(7.0)};
 
   DataMatrix A{a_val, size, size};
   DataMatrix B{b_val, size, size};
@@ -84,9 +86,9 @@ BOOST_AUTO_TEST_CASE(norm) {
   auto size = 2u;
 
   // initialize
-  double a_val[]{10.0, 5.0, 5.0, 20.0};
-  double b_val[]{1.0, 5.0, 0.25, 1};
-  double b_vec[]{10.0, 20.0};
+  double a_val[]{9.0, 3.0, 3.0, 16.0};
+  double b_val[]{1.0, 1.0 / 4.0, 1.0 / 4.0, 1.0};
+  double b_vec[]{1.0 / 3.0, 1.0 / 4.0};
 
   DataMatrix A{a_val, size, size};
   DataVector aNorm{size};
@@ -110,9 +112,9 @@ BOOST_AUTO_TEST_CASE(reaplyNorm) {
   auto size = 2u;
 
   // initialize
-  double b_val[]{10.0, 5.0, 5.0, 20.0};
-  double a_val[]{1.0, 5.0, 0.25, 1};
-  double a_vec[]{10.0, 20.0};
+  double b_val[]{9.0, 3.0, 3.0, 16.0};
+  double a_val[]{1.0, 1.0 / 4.0, 1.0 / 4.0, 1.0};
+  double a_vec[]{1.0 / 3.0, 1.0 / 4.0};
 
   DataMatrix A{a_val, size, size};
   DataVector aNorm{a_vec, size};
