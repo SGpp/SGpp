@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(norm) {
 
   // initialize
   double a_val[]{9.0, 3.0, 3.0, 16.0};
-  double b_val[]{1.0, 1.0 / 4.0, 1.0 / 4.0, 1.0};
+  double b_val[]{1.0, 3.0, 1.0 / 4.0, 1.0};
   double b_vec[]{1.0 / 3.0, 1.0 / 4.0};
 
   DataMatrix A{a_val, size, size};
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(reaplyNorm) {
 
   // initialize
   double b_val[]{9.0, 3.0, 3.0, 16.0};
-  double a_val[]{1.0, 1.0 / 4.0, 1.0 / 4.0, 1.0};
+  double a_val[]{1.0, 3.0, 1.0 / 4.0, 1.0};
   double a_vec[]{1.0 / 3.0, 1.0 / 4.0};
 
   DataMatrix A{a_val, size, size};

@@ -12,6 +12,7 @@
 #include "IChol.hpp"
 
 #include <cmath>
+#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
@@ -61,13 +62,16 @@ void IChol::normToUnitDiagonal(DataMatrix& matrix, DataVector& norms) {
     norms[i] = 1.0 / std::sqrt(matrix.get(i, i));
   }
 
+  std::cout << norms.toString() << std::endl;
+
 // Calculate (D*A*D)
 #pragma omp parallel for
   for (auto i = 0u; i < matSize; i++) {
     const auto leftVecVal = norms[i];
     for (auto j = 0u; j <= i; j++) {
       const auto rightVecVal = norms[j];
-      matrix.set(i, j, leftVecVal * matrix.get(i, j) * rightVecVal);
+      const auto res = leftVecVal * matrix.get(i, j) * rightVecVal;
+      matrix.set(i, j, res);
     }
   }
 }
@@ -78,7 +82,8 @@ void IChol::reaplyDiagonal(DataMatrix& matrix, DataVector& norms) {
     const auto leftVecVal = norms[i];
     for (auto j = 0u; j <= i; j++) {
       const auto rightVecVal = norms[j];
-      matrix.set(i, j, leftVecVal / matrix.get(i, j) / rightVecVal);
+      const auto res = matrix.get(i, j) / (leftVecVal * rightVecVal);
+      matrix.set(i, j, res);
     }
   }
 }
