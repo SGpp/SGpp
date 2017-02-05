@@ -20,7 +20,7 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseDataMatrix::SparseDataMatrix() : nrows{0}, ncols{0}, data{}, colIndex{}, rowPtr{} {}
+SparseDataMatrix::SparseDataMatrix() : nrows{0}, ncols{0}, data{}, colIndex{}, rowPtr{0} {}
 
 SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols)
     : nrows{nrows}, ncols{ncols}, data{}, colIndex{}, rowPtr(ncols, 0) {}
@@ -80,11 +80,11 @@ void SparseDataMatrix::resize(size_t nrows, size_t ncols) {
         }
       }
     }
-
-    // finally adapt matrix size:
-    this->nrows = newNrows;
-    this->ncols = newNcols;
   }
+
+  // finally adapt matrix size:
+  this->nrows = newNrows;
+  this->ncols = newNcols;
 }
 
 const std::vector<size_t>& SparseDataMatrix::getColIndexVector() const { return colIndex; }
@@ -116,12 +116,11 @@ void SparseDataMatrix::fromDataMatrix(const DataMatrix& in, SparseDataMatrix& ou
   out.resize(inRows, inCols);
 
   auto tmpIn = 0.0;
-  // #pragma omp parallel for private(tmpIn);
   for (auto i = 0u; i < inRows; i++) {
     out.getRowPtrVector()[i] = out.getDataVector().size();
     for (auto j = 0u; j < inCols; j++) {
       tmpIn = in.get(i, j);
-      if (tmpIn > threshold) {
+      if (std::abs(tmpIn) > threshold) {
         out.getDataVector().push_back(tmpIn);
         out.getColIndexVector().push_back(j);
       }
