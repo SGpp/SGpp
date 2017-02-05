@@ -35,13 +35,13 @@ class SparseDataMatrix {
 
   const std::vector<double>& getDataVector() const;
 
-  const std::vector<size_t>& getRowIndicatorVector() const;
+  const std::vector<size_t>& getRowPtrVector() const;
 
   std::vector<size_t>& getColIndexVector();
 
   std::vector<double>& getDataVector();
 
-  std::vector<size_t>& getRowIndicatorVector();
+  std::vector<size_t>& getRowPtrVector();
 
   static void fromDataMatrix(const DataMatrix& in, SparseDataMatrix& out,
                              double threshold = std::numeric_limits<double>::epsilon());
@@ -54,7 +54,7 @@ class SparseDataMatrix {
 
   std::vector<double> data;
   std::vector<size_t> colIndex;
-  std::vector<size_t> rowIndicator;
+  std::vector<size_t> rowPtr;
 };
 
 } /* namespace datadriven */

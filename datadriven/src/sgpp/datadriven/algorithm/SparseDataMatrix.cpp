@@ -20,25 +20,61 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseDataMatrix::SparseDataMatrix() : nrows{0}, ncols{0}, data{}, colIndex{}, rowIndicator{} {}
+SparseDataMatrix::SparseDataMatrix() : nrows{0}, ncols{0}, data{}, colIndex{}, rowPtr{} {}
 
 SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols)
-    : nrows{nrows}, ncols{ncols}, data{}, colIndex{}, rowIndicator(ncols) {}
+    : nrows{nrows}, ncols{ncols}, data{}, colIndex{}, rowPtr(ncols, 0) {}
 
 size_t SparseDataMatrix::getNrows() const { return nrows; }
 
 size_t SparseDataMatrix::getNcols() const { return ncols; }
 
 void SparseDataMatrix::resize(size_t nrows, size_t ncols) {
-  const std::string msg{__PRETTY_FUNCTION__, " : not implemented yet.\n"};
-  throw(msg.c_str());
+  const auto oldNrows = this->nrows;
+  // const auto oldNcols = this->ncols;
+
+  const auto newNrows = nrows;
+  const auto newNCols = ncols;
+
+  /**
+   *  rows
+   */
+
+  // add new empty rows
+  if (oldNrows < newNrows) {
+    const auto lastRow = rowPtr.back();
+    rowPtr.resize(newNrows, lastRow);
+
+    // eliminate last rows
+  } else {
+    rowPtr.resize(newNrows);
+    colIndex.resize(rowPtr.back());
+    data.resize(rowPtr.back());
+  }
+
+  /**
+   * columns
+   */
+
+  //  // resizing only required, if new size is smaller then old one.
+  //  if (oldNcols > newNCols) {
+  //    for (auto i = 0u; i < newNrows; i++) {
+  //      const auto upper = i + 1 > rowPtr.size() ? rowPtr[i + 1] : colIndex.size();
+  //      for (auto j = rowPtr[i];j<upper;j++){
+  // }
+  //      }
+  //  }
+
+  // finally adapt matrix size:
+  this->nrows = newNrows;
+  this->ncols = newNCols;
 }
 
 const std::vector<size_t>& SparseDataMatrix::getColIndexVector() const { return colIndex; }
 
 const std::vector<double>& SparseDataMatrix::getDataVector() const { return data; }
 
-const std::vector<size_t>& SparseDataMatrix::getRowIndicatorVector() const { return rowIndicator; }
+const std::vector<size_t>& SparseDataMatrix::getRowPtrVector() const { return rowPtr; }
 
 std::vector<size_t>& SparseDataMatrix::getColIndexVector() {
   return const_cast<std::vector<size_t>&>(
@@ -50,23 +86,23 @@ std::vector<double>& SparseDataMatrix::getDataVector() {
       static_cast<const SparseDataMatrix&>(*this).getDataVector());
 }
 
-std::vector<size_t>& SparseDataMatrix::getRowIndicatorVector() {
+std::vector<size_t>& SparseDataMatrix::getRowPtrVector() {
   return const_cast<std::vector<size_t>&>(
-      static_cast<const SparseDataMatrix&>(*this).getRowIndicatorVector());
+      static_cast<const SparseDataMatrix&>(*this).getRowPtrVector());
 }
 
 void SparseDataMatrix::fromDataMatrix(const DataMatrix& in, SparseDataMatrix& out,
                                       double threshold) {
-  auto rows = in.getNrows();
-  auto cols = in.getNcols();
+  auto inRows = in.getNrows();
+  auto inCols = in.getNcols();
 
-  out.resize(rows, cols);
+  out.resize(inRows, inCols);
 
   auto tmpIn = 0.0;
   // #pragma omp parallel for private(tmpIn);
-  for (auto i = 0u; i < rows; i++) {
-    out.getRowIndicatorVector()[i] = out.getDataVector().size();
-    for (auto j = 0u; j < cols; j++) {
+  for (auto i = 0u; i < inRows; i++) {
+    out.getRowPtrVector()[i] = out.getDataVector().size();
+    for (auto j = 0u; j < inCols; j++) {
       tmpIn = in.get(i, j);
       if (tmpIn > threshold) {
         out.getDataVector().push_back(tmpIn);
@@ -77,19 +113,20 @@ void SparseDataMatrix::fromDataMatrix(const DataMatrix& in, SparseDataMatrix& ou
 }
 
 void SparseDataMatrix::toDataMatrix(const SparseDataMatrix& in, DataMatrix& out) {
-  auto rows = in.getNrows();
-  auto cols = in.getNcols();
+  auto inRows = in.getNrows();
+  auto inCols = in.getNcols();
+  const auto& inRowPtr = in.getRowPtrVector();
+  const auto& inIdx = in.getColIndexVector();
 
-  const auto& rowVec = in.getRowIndicatorVector();
-
-  out.resize(rows, cols);
+  out.resize(inRows, inCols);
   out.setAll(0.0);
 
   // #pragma omp parallel for private(tmpIn);
-  for (auto i = 0u; i < in.getNrows(); i++) {
-    const auto upper = i + 1 > rowVec.size() ? rowVec[i + 1] : in.getColIndexVector().size();
-    for (auto j = rowVec[i]; j < upper; j++) {
-      out.set(i, j, in.getDataVector()[i]);
+  for (auto i = 0u; i < inRows; i++) {
+    const auto upper = i + 1 < inRowPtr.size() ? inRowPtr[i + 1] : inIdx.size();
+    for (auto j = inRowPtr[i]; j < upper; j++) {
+      const auto val = in.getDataVector()[j];
+      out.set(i, inIdx[j], val);
     }
   }
 }
