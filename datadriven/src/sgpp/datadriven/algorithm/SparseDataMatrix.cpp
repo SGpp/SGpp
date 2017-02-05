@@ -31,10 +31,10 @@ size_t SparseDataMatrix::getNcols() const { return ncols; }
 
 void SparseDataMatrix::resize(size_t nrows, size_t ncols) {
   const auto oldNrows = this->nrows;
-  // const auto oldNcols = this->ncols;
+  const auto oldNcols = this->ncols;
 
   const auto newNrows = nrows;
-  const auto newNCols = ncols;
+  const auto newNcols = ncols;
 
   /**
    *  rows
@@ -47,27 +47,44 @@ void SparseDataMatrix::resize(size_t nrows, size_t ncols) {
 
     // eliminate last rows
   } else {
+    // the last elements:
+    const auto lastElem = rowPtr[newNrows];
     rowPtr.resize(newNrows);
-    colIndex.resize(rowPtr.back());
-    data.resize(rowPtr.back());
+    colIndex.resize(lastElem);
+    data.resize(lastElem);
   }
 
-  /**
+  /**-
    * columns
    */
 
-  //  // resizing only required, if new size is smaller then old one.
-  //  if (oldNcols > newNCols) {
-  //    for (auto i = 0u; i < newNrows; i++) {
-  //      const auto upper = i + 1 > rowPtr.size() ? rowPtr[i + 1] : colIndex.size();
-  //      for (auto j = rowPtr[i];j<upper;j++){
-  // }
-  //      }
-  //  }
+  // resizing only required, if new size is smaller then old one.
+  if (oldNcols > newNcols) {
+    // for each row
+    for (auto i = 0u; i < newNrows; i++) {
+      // determine last element in current row
+      const auto upper = i + 1 < rowPtr.size() ? rowPtr[i + 1] : colIndex.size();
+      // for each element in current row
+      for (auto j = rowPtr[i]; j < upper; j++) {
+        if (colIndex[j] >= newNcols) {
+          const auto shift = upper - j - 1;  // index!
 
-  // finally adapt matrix size:
-  this->nrows = newNrows;
-  this->ncols = newNCols;
+          // erase the actual values;
+          data.erase(data.begin() + j, data.begin() + upper);
+          // erase the column indices
+          colIndex.erase(colIndex.begin() + j, colIndex.begin() + upper);
+          // shift the row offset
+          for (auto idx = rowPtr.begin() + i; idx < rowPtr.end(); idx++) {
+            *idx -= shift;
+          }
+        }
+      }
+    }
+
+    // finally adapt matrix size:
+    this->nrows = newNrows;
+    this->ncols = newNcols;
+  }
 }
 
 const std::vector<size_t>& SparseDataMatrix::getColIndexVector() const { return colIndex; }
@@ -121,12 +138,11 @@ void SparseDataMatrix::toDataMatrix(const SparseDataMatrix& in, DataMatrix& out)
   out.resize(inRows, inCols);
   out.setAll(0.0);
 
-  // #pragma omp parallel for private(tmpIn);
+#pragma omp parallel for
   for (auto i = 0u; i < inRows; i++) {
     const auto upper = i + 1 < inRowPtr.size() ? inRowPtr[i + 1] : inIdx.size();
     for (auto j = inRowPtr[i]; j < upper; j++) {
-      const auto val = in.getDataVector()[j];
-      out.set(i, inIdx[j], val);
+      out.set(i, inIdx[j], in.getDataVector()[j]);
     }
   }
 }
