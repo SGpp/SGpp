@@ -51,6 +51,9 @@ if env["PLATFORM"] == "win32":
 
 libs = [flattenedDependencyGraph]
 
+if env["USE_GSL"]:
+  libs += ["gsl", "gslcblas"]
+
 if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])
   # TODO: replace hard-coded "python27"

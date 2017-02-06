@@ -21,6 +21,7 @@
 %include "std_pair.i"
 %include "std_complex.i"
 %include "std_map.i"
+%include "std_shared_ptr.i"
 %include "carrays.i"
 %include "cpointer.i"
 %include "typemaps.i"
@@ -59,9 +60,6 @@ import_array();
 #include "sgpp/globaldef.hpp"
 #include "sgpp_base.hpp"
 #endif
-#ifdef SG_DATADRIVEN
-#include "sgpp_datadriven.hpp"
-#endif
 #ifdef SG_PDE
 #include "sgpp_pde.hpp"
 #endif
@@ -70,6 +68,9 @@ import_array();
 #endif
 #ifdef SG_SOLVER
 #include "sgpp_solver.hpp"
+#endif
+#ifdef SG_DATADRIVEN
+#include "sgpp_datadriven.hpp"
 #endif
 #ifdef SG_PARALLEL
 #include "sgpp_parallel.hpp"
@@ -97,14 +98,6 @@ import_array();
 %include "base/build/pysgpp/base.i"
 #endif
 
-#ifdef SG_DATADRIVEN
-#ifdef PYDOC
-%include "datadriven_doc.i"
-#endif
-
-%include "datadriven/build/pysgpp/datadriven.i"
-#endif
-
 #ifdef SG_PDE
 #ifdef PYDOC
 %include "pde_doc.i"
@@ -127,6 +120,14 @@ import_array();
 #endif
 
 %include "solver/build/pysgpp/solver.i"
+#endif
+
+#ifdef SG_DATADRIVEN
+#ifdef PYDOC
+%include "datadriven_doc.i"
+#endif
+
+%include "datadriven/build/pysgpp/datadriven.i"
 #endif
 
 #ifdef SG_QUADRATURE
