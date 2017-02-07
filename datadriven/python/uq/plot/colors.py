@@ -15,10 +15,12 @@ def rgbTpInt(rgb):
 
 
 def load_color(i):
-    return list(plt.rcParams['axes.prop_cycle'])[i]["color"]
+    colors = list(plt.rcParams['axes.prop_cycle'])
+    return colors[i % len(colors)]["color"]
 
 def load_marker(i):
-    return ["o", "v", "D", "s", "*", "d", "^"][i]
+    markers = ["o", "v", "D", "s", "*", "d", "^"]
+    return markers[i % len(markers)]
 
 
 def load_font():
