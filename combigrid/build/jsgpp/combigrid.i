@@ -87,7 +87,6 @@
 %include "combigrid/src/sgpp/combigrid/storage/tree/TreeStorage.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
-%include "combigrid/src/sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp"
