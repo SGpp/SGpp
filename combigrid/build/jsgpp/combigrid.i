@@ -124,7 +124,6 @@ namespace combigrid {
 
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
     %template(DoubleTreeStorage) TreeStorage<double>;
-    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>;
 
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
