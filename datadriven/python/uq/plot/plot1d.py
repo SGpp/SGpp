@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
-from pysgpp.extensions.datadriven.uq.plot.colors import loadColorSequence
 
 
 def plotFunction1d(f, n=1000, xlim=[0, 1], **kws):
@@ -106,7 +105,6 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
                      names=None):
     fig = plt.figure()
     plots = []
-    colors = loadColorSequence(len(sobolIndices))
 
     if legend and names is None:
         raise Exception("plotSobolIndices - attribute names is not set")
@@ -114,7 +112,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     if ts is None:
         y0 = 0
         for i in xrange(len(sobolIndices)):
-            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0], color=colors[i])
+            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0], color=load_color(i))
             y0 += sobolIndices[i]
             plots = [myplot] + plots
 
@@ -131,7 +129,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
         y0 = np.zeros(sobolIndices.shape[0])
         for i in xrange(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
-            color = colors[i % len(colors)]
+            color = load_color(i % len(colors))
             myplot, = plt.plot(ts, y1, color=color, lw=4)
             plt.fill_between(ts, y0, y1, color=color, alpha=.5)
             y0 = y1
