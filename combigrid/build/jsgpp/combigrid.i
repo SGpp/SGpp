@@ -84,7 +84,6 @@
 %include "combigrid/src/sgpp/combigrid/storage/AbstractMultiStorage.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
-%include "combigrid/src/sgpp/combigrid/storage/FunctionLookupTable.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/tree/TreeStorage.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
@@ -101,8 +100,6 @@
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
-
-%include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp"
