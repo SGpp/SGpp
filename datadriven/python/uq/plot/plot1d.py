@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from colors import load_color
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
@@ -129,7 +130,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
         y0 = np.zeros(sobolIndices.shape[0])
         for i in xrange(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
-            color = load_color(i % len(colors))
+            color = load_color(i)
             myplot, = plt.plot(ts, y1, color=color, lw=4)
             plt.fill_between(ts, y0, y1, color=color, alpha=.5)
             y0 = y1
