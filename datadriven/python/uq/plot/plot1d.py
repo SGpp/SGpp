@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from colors import load_color
+from colors import load_color, load_font_properties
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
@@ -110,6 +110,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     if legend and names is None:
         raise Exception("plotSobolIndices - attribute names is not set")
 
+    lgd = None
     if ts is None:
         y0 = 0
         for i in xrange(len(sobolIndices)):
@@ -121,10 +122,11 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
             plt.xticks([0.5], ('sobol indices',))
             plt.ylim(0, 1)
             plt.xlim(-0.2, 2)
-            plt.legend(plots,
-                       [r"$S_{%s}$ = %.3f" % (name, value)
-                        for (name, value) in zip(names[::-1],
-                                                 sobolIndices[::-1])])
+            lgd = plt.legend(plots,
+                             [r"$S_{%s}$ = %.3f" % (name, value)
+                              for (name, value) in zip(names[::-1],
+                                                       sobolIndices[::-1])],
+                             prop=load_font_properties())
 
     else:
         y0 = np.zeros(sobolIndices.shape[0])
@@ -138,8 +140,18 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
             plots = [myplot] + plots
 
         if legend:
-            plt.xlim(min(ts), max(ts) + (max(ts) - min(ts)) / 6.)
-            plt.legend(plots,
-                       [r"$S_{%s}$" % (name,) for name in names[::-1]],
-                       loc='upper right')
-    return fig
+            plt.xlim(min(ts), max(ts))
+            plt.ylim(0, 1)
+
+            ax = plt.gca()
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
+            lgd = plt.legend(plots,
+                             [r"$S_{%s}$" % (",".join(name),)
+                              for name in names[::-1]],
+                             loc='upper left',
+                             bbox_to_anchor=(1.02, 1),
+                             borderaxespad=0,
+                             prop=load_font_properties())
+
+    return fig, lgd

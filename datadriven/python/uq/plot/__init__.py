@@ -74,7 +74,8 @@ try:
                                 'legend.fontsize': pysgpp_uq_font["size"],
                                 'xtick.labelsize': pysgpp_uq_font["size"],
                                 'ytick.labelsize': pysgpp_uq_font["size"],
-                                'axes.unicode_minus': True
+                                'axes.unicode_minus': True,
+                                'figure.figsize': (6, 4)
                                 }
     mpl.rcParams.update(pgf_with_custom_preamble)
 
