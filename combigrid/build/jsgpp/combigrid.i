@@ -213,18 +213,4 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
 %include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
 
-// experimental
-
-%feature("director") sgpp::combigrid::GeneralFunctionDirector;
-%include "combigrid/src/sgpp/combigrid/GeneralFunctionDirector.hpp"
-
-namespace sgpp {
-namespace combigrid {
-    %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<base::DataVector const &, double>>;
-    %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double, double>>;
-    %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>>;
-
-}
-}
-
 #endif
