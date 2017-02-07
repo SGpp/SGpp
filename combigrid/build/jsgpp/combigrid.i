@@ -100,10 +100,10 @@
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
 
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp"
+// %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
+// %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp"
+// %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp"
+// %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 
@@ -132,7 +132,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
+// %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/Configurations.hpp"
 
@@ -142,25 +142,25 @@ namespace combigrid {
 
 namespace sgpp{
 namespace combigrid {
-    %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
-    %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;
+    // %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
+    // %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;
 
-    %template(ScalarAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatScalarVector>;
-    %template(ArrayAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatArrayVector>;
+    // %template(ScalarAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatScalarVector>;
+    // %template(ArrayAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatArrayVector>;
 
-    %template(ScalarFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatScalarVector>;
-    %template(ArrayFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatArrayVector>;
+    // %template(ScalarFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatScalarVector>;
+    // %template(ArrayFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatArrayVector>;
 
-    %template(ScalarFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatScalarVector>;
-    %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;
+    // %template(ScalarFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatScalarVector>;
+    // %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;
 
-    %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
-    %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
+    // %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
+    // %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
 
-    %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
-    %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
-    %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
-    %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
+    // %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
+    // %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
+    // %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
+    // %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
 
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<uint8_t>>>;
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<uint8_t>;
