@@ -21,6 +21,7 @@
 %include "std_pair.i"
 %include "std_complex.i"
 %include "std_map.i"
+%include "std_shared_ptr.i"
 %include "carrays.i"
 %include "cpointer.i"
 %include "typemaps.i"

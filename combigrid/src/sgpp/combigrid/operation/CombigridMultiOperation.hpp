@@ -7,11 +7,12 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/MultiFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -67,6 +68,16 @@ class CombigridMultiOperation {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractCombigridStorage> storage);
+
+  /**
+   * Constructs a CombigridMultiOperation with the given hierarchies, evaluators, level manager
+   * and grid function together with the information whether the same point on different levels
+   * should be able to have different function values.
+   */
+  CombigridMultiOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
@@ -188,6 +199,8 @@ class CombigridMultiOperation {
   /**
    * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
    * on a Leja grid with linear growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be integrated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -199,6 +212,8 @@ class CombigridMultiOperation {
   /**
    * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
    * on a Clenshaw-Curtis with exponential growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be integrated.
    */

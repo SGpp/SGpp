@@ -155,6 +155,13 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
     return lowestNode->get(permutedIndex, lastDim);
   }
 
+  virtual void setValue(T const &input) {
+    size_t lastDim = internalNodes.size();
+    size_t permutedLowestIndex = policy.value(lastDim, iterator.indexAt(lastDim));
+    permutedIndex[lastDim] = permutedLowestIndex;
+    lowestNode->set(permutedIndex, input, lastDim);
+  }
+
   /**
    * @return returns true if the iterator points to a valid position.
    */

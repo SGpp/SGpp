@@ -125,7 +125,7 @@ LejaPointDistribution::~LejaPointDistribution() {}
 double LejaPointDistribution::compute(size_t numPoints, size_t j) {
   if (points.size() <= j) {
     calc_leja_points(sortedPoints, points, static_cast<int>(j + 1 - points.size()), 0.0, 1.0,
-                     weightFunction.getLambdaExpression());
+                     weightFunction.getStdFunction());
   }
 
   return points[j];

@@ -21,7 +21,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/FullGridTensorEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
@@ -54,7 +54,7 @@ using sgpp::combigrid::IdentityPointOrdering;
 using sgpp::combigrid::LinearGrowthStrategy;
 using sgpp::combigrid::AbstractLinearEvaluator;
 using sgpp::combigrid::PolynomialInterpolationEvaluator;
-using sgpp::combigrid::FullGridTensorEvaluator;
+using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
 using sgpp::combigrid::AveragingLevelManager;
 
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(func));
 
-  auto fullGridEval = std::make_shared<FullGridTensorEvaluator<FloatScalarVector>>(
+  auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatScalarVector>>(
       storage, evaluators, pointHierarchies);
 
   auto combiGridEval =

@@ -118,7 +118,13 @@ def example2():
     levelManager = operation.getLevelManager()
 
     ## It was necessary to use setLevelManager(), because this links the LevelManager to the
-    ## computation. Now, let's add at most 60 more function evaluations adaptively:
+    ## computation. Now, let's add at most 60 more function evaluations adaptively.
+    ## Note that the adaption here is only based on the result at our single evaluation point, which
+    ## might give inaccurate results. The same holds for quadrature.
+    ## In practice, you should probably do an interpolation at a lot of Monte-Carlo points via
+    ## CombigridMultiOperation (cf. Example 3) and then transfer the generated level structure to
+    ## another CombigridOperation or CombigridMultiOperation for your actual evaluation (cf. Example
+    ## 4).
     levelManager.addLevelsAdaptive(60)
     print("Adaptive result: " + str(operation.getResult()))
     print("Total function evaluations: " + str(operation.numGridPoints()))
@@ -252,6 +258,57 @@ def example5():
     print("Result: " + str(result))
 
 
+## @section combigrid_example_6 Example 6: Using a function operating on grids
+## This example shows how to apply different operators in different dimensions.
+
+##In some applications, you might not want to have a callback function that is called at single
+## points, but on a full grid. One of these applications is solving PDEs. This example provides a
+##simple framework where a PDE solver can be included. It is also suited for other tasks.
+##The core part is a function that computes grid values on a full grid.
+def gf(grid):
+    ## We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
+    result = pysgpp.DoubleTreeStorage(d)
+
+    ## Creates an iterator that yields all multi-indices of grid points in the grid.
+    it = pysgpp.MultiIndexIterator(grid.numPoints())
+
+    while (it.isValid()):
+        ## Customize this computation for your algorithm
+        value = func(grid.getGridPoint(it.getMultiIndex()))
+
+        ## Store the result at the multi index encoding the grid point
+        result.set(it.getMultiIndex(), value)
+        it.moveToNext()
+
+    return result
+
+
+def example6():
+
+
+    ## To create a CombigridOperation, we currently have to use the longer way as in example 5.
+    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniform())
+    evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.cubicSplineInterpolation())
+    levelManager = pysgpp.WeightedRatioLevelManager()
+
+
+    ## We have to specify if the function always produces the same value for the same grid points.
+    ## This can make the storage smaller if the grid points are nested. In this implementation, this
+    ## is true. However, it would be false in the PDE case, so we set it to false here.
+    exploitNesting = False
+
+    ## Now create an operation as usual and evaluate the interpolation with a test parameter.
+    operation = pysgpp.CombigridOperation(
+      grids, evaluators, levelManager, pysgpp.gridFunc(gf), exploitNesting)
+
+    parameter = pysgpp.DataVector([0.1, 0.2, 0.3])
+
+    result = operation.evaluate(4, parameter)
+
+    print("Target function value: " + str(func(parameter)))
+    print("Numerical result: " + str(result))
+
+
 # Call the examples
 
 print("Example 1:")
@@ -268,3 +325,6 @@ example4()
 
 print("\nExample 5:")
 example5()
+
+print("\nExample 6:")
+example6()

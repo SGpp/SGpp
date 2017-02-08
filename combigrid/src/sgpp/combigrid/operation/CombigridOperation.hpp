@@ -6,7 +6,7 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/MultiFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
@@ -16,6 +16,7 @@
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/globaldef.hpp>
@@ -48,11 +49,11 @@ class CombigridOperationImpl;
  * - add combigrid levels via getLevelManager()->some_add_levels_function()
  * - fetch the result via getResult().
  *
- * For method documentation, refer to CombigridMultiOperation.
+ * For method documentation, please refer to CombigridMultiOperation.
  */
 class CombigridOperation {
-  std::shared_ptr<CombigridOperationImpl>
-      impl;  // unique_ptr would be possible, but gives SWIG errors
+  // unique_ptr would be possible, but gives SWIG errors
+  std::shared_ptr<CombigridOperationImpl> impl;
 
  public:
   CombigridOperation(
@@ -65,6 +66,11 @@ class CombigridOperation {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractCombigridStorage> storage);
+
+  CombigridOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
 
   void setParameters(base::DataVector const &param = base::DataVector(0));  // clears automatically
 
