@@ -40,7 +40,7 @@ class AbstractMultiStorageIterator {
   /**
    * Sets a value at the current entry
    */
-  virtual void setValue(T const &input);
+  virtual void setValue(T const &input) = 0;
 
   /**
    * @return Returns true iff the iterator points to a valid position.
