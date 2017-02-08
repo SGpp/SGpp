@@ -14,6 +14,7 @@ void sgpp::combigrid::L2LejaPointDistribution::addPoint(double point) {
   for (size_t i = 1; i < sortedPoints.size(); ++i) {
     if (sortedPoints[i] > point) {
       sortedPoints.insert(sortedPoints.begin() + i, point);
+      return;
     }
   }
 }
