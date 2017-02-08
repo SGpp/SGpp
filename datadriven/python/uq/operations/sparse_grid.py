@@ -1086,7 +1086,7 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
         if abs(nodal) > 1e-14:
             rel_error = np.abs(abs_error / nodal)
 
-        if rel_error > epsilon:
+        if abs_error > epsilon:
             spacing = 12
             if head:
                 print
