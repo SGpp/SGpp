@@ -96,7 +96,7 @@ class ASGCUQManager(object):
 #             assert dataContainer.getSizeTrain() == self.uqSetting.getSize() - len(ps)
 
         resultsDict = self.uqSetting.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi, ps)
-
+        print np.mean(resultsDict[0].values())
         # prepare the results as dictionary
         dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
         # set the new dataContainerDict container
