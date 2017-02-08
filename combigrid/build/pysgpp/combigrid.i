@@ -16,6 +16,7 @@
 %shared_ptr(sgpp::combigrid::ClenshawCurtisDistribution)
 %shared_ptr(sgpp::combigrid::UniformPointDistribution)
 %shared_ptr(sgpp::combigrid::LejaPointDistribution)
+%shared_ptr(sgpp::combigrid::L2LejaPointDistribution)
 %shared_ptr(sgpp::combigrid::AbstractPointOrdering)
 %shared_ptr(sgpp::combigrid::ExponentialLevelorderPointOrdering)
 %shared_ptr(sgpp::combigrid::IdentityPointOrdering)
@@ -102,6 +103,7 @@ namespace combigrid {
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp"
+%include "combigrid/src/sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp"

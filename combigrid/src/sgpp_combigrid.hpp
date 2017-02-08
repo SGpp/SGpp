@@ -21,6 +21,7 @@
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
@@ -33,6 +34,9 @@
 #include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
+
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/combigrid/integration/MCIntegrator.hpp>
 
 #include <sgpp/combigrid/numeric/KahanAdder.hpp>
 
