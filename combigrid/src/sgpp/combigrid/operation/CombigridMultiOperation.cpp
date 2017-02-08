@@ -212,6 +212,17 @@ CombigridMultiOperation::createExpLejaPolynomialInterpolation(size_t numDimensio
 }
 
 std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpL2LejaPolynomialInterpolation(size_t numDimensions,
+                                                                MultiFunction func) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expL2Leja()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createLinearLejaPolynomialInterpolation(size_t numDimensions,
                                                                  MultiFunction func,
                                                                  size_t growthFactor) {
@@ -223,11 +234,33 @@ CombigridMultiOperation::createLinearLejaPolynomialInterpolation(size_t numDimen
       std::make_shared<StandardLevelManager>(), func);
 }
 
+std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(size_t numDimensions,
+                                                                   MultiFunction func,
+                                                                   size_t growthFactor) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+          numDimensions, CombiHierarchies::linearL2Leja(growthFactor)),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiPolynomialInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
 std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearLejaQuadrature(
     size_t numDimensions, MultiFunction func, size_t growthFactor) {
   return std::make_shared<CombigridMultiOperation>(
       std::vector<std::shared_ptr<AbstractPointHierarchy>>(
           numDimensions, CombiHierarchies::linearLeja(growthFactor)),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiQuadrature()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createLinearL2LejaQuadrature(
+    size_t numDimensions, MultiFunction func, size_t growthFactor) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+          numDimensions, CombiHierarchies::linearL2Leja(growthFactor)),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiQuadrature()),
       std::make_shared<StandardLevelManager>(), func);
