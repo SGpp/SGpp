@@ -87,7 +87,6 @@ class Parameter(object):
         if key in jsonObject:
             dist = Dist.fromJson(jsonObject[key])
 
-
         if 'parameters.UncertainParameter' in jsonObject['module']:
             from pysgpp.extensions.datadriven.uq.parameters.UncertainParameter import UncertainParameter
             return UncertainParameter(name, dist, trans, value)
