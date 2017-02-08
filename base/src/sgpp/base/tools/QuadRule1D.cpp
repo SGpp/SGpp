@@ -35,5 +35,7 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates
   pweights = *weights[level - 1];
 }
 
+size_t QuadRule1D::getMaxSupportedLevel() const { return maxSupportedLevel; }
+
 }  // namespace base
 }  // namespace sgpp

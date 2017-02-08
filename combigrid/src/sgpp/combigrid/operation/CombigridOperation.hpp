@@ -104,17 +104,24 @@ class CombigridOperation {
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpLejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpL2LejaPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearLejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
+  static std::shared_ptr<CombigridOperation> createLinearL2LejaPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createLinearUniformPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearLejaQuadrature(size_t numDimensions,
                                                                         MultiFunction func,
                                                                         size_t growthFactor = 2);
+  static std::shared_ptr<CombigridOperation> createLinearL2LejaQuadrature(size_t numDimensions,
+                                                                          MultiFunction func,
+                                                                          size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformLinearInterpolation(

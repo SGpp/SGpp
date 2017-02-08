@@ -186,6 +186,15 @@ class CombigridMultiOperation {
       size_t numDimensions, MultiFunction func);
 
   /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a L2Leja grid with
+   * an exponential growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
+  static std::shared_ptr<CombigridMultiOperation> createExpL2LejaPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func);
+
+  /**
    * Returns a CombigridMultiOperation doing polynomial interpolation on a Leja grid with
    * linear growth (nested points).
    * @param numDimensions Dimensionality of the problem.
@@ -194,6 +203,17 @@ class CombigridMultiOperation {
    * points are used.
    */
   static std::shared_ptr<CombigridMultiOperation> createLinearLejaPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
+
+  /**
+   * Returns a CombigridMultiOperation doing polynomial interpolation on a L2Leja grid with
+   * linear growth (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
+   * points are used.
+   */
+  static std::shared_ptr<CombigridMultiOperation> createLinearL2LejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
 
   /**
@@ -207,6 +227,19 @@ class CombigridMultiOperation {
    * points are used.
    */
   static std::shared_ptr<CombigridMultiOperation> createLinearLejaQuadrature(
+      size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
+
+  /**
+   * Returns a CombigridMultiOperation doing quadrature (based on integrals of Lagrange polynomials)
+   * on a L2Leja grid with linear growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be integrated.
+   * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
+   * points are used.
+   */
+  static std::shared_ptr<CombigridMultiOperation> createLinearL2LejaQuadrature(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
 
   /**
