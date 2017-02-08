@@ -7,18 +7,17 @@
 #define REGULARIZATIONCONFIGURATION_HPP_
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, GroupLasso };
+enum class RegularizationType {
+  Identity,
+  Laplace
+};
 
 struct RegularizationConfiguration {
   RegularizationType regType_;
-  double lambda_;
-  double l1Ratio_;
-  double exponentBase_;
 };
 
 }  // namespace datadriven
