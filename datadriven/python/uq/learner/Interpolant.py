@@ -77,11 +77,11 @@ class Interpolant(Learner):
 #         fig, _ = plotSG3d(self.grid, alpha)
 #         fig.show()
 
-        err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-8)
-
-        if len(err) > 0:
-            print "interpolation property not met"
-            pdb.set_trace()
+#         err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-8)
+#
+#         if len(err) > 0:
+#             print "interpolation property not met"
+#             pdb.set_trace()
         # -----------------------------------------
 
         return alpha
