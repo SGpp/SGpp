@@ -67,7 +67,6 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
