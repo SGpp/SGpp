@@ -18,6 +18,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -28,11 +29,18 @@
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
 
-
 namespace sgpp {
 
 namespace op_factory {
-
+/**
+ * Factory method, returning an OperationDiagonal (OperationMatrix) for the grid at hand.
+ *
+ * @param grid Grid which is to be used
+ * @param multiplicationFactor MultiplicationFactor which is to be used
+ * @return Pointer to the new OperationMatrix object for the Grid grid
+ */
+base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
+                                                               double multiplicationFactor = 0.25);
 /**
  * Factory method, returning an OperationHierarchisation for the grid at hand.
  * Note: object has to be freed after use.
@@ -100,6 +108,7 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  * the sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
+
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
     base::DataMatrix& dataset);
 /**
@@ -124,6 +133,7 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalGradient object for the Grid grid
  */
+
 base::OperationEvalGradient* createOperationEvalGradientNaive(
   base::Grid& grid);
 /**
@@ -136,6 +146,7 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalHessian object for the Grid grid
  */
+
 base::OperationEvalHessian* createOperationEvalHessianNaive(
   base::Grid& grid);
 /**

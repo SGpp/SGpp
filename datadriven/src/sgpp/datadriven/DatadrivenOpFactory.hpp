@@ -26,6 +26,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
+
 /*
  * This file contains factory methods for operations.
  */
