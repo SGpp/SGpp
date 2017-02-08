@@ -36,6 +36,7 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    * Is the same as the regular truncated grid
    * */
   void regular(size_t level) override;
+  void regular(std::vector<size_t>& anisotropic_weights, size_t level) override {};
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override {}
   /**

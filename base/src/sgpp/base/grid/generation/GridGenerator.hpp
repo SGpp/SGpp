@@ -39,6 +39,12 @@ class GridGenerator {
    */
   virtual void regular(size_t level) = 0;
 
+    /**
+   * Creates a regular sparse grid for a certain level with anisotropic weights @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{\langle \vec{\xi}, \vec{l} \rangle \leq n} W_{\vec{l}}@f$.
+   *
+   * @param level Grid level
+   */
+  virtual void regular(std::vector<size_t>& anisotropic_weights, size_t level) = 0;
 
   /**
    * Creates a sparse grid with fully connected cliques

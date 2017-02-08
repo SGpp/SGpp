@@ -30,6 +30,11 @@ void StandardGridGenerator::regular(size_t level) {
   gen.regular(this->storage, static_cast<level_t>(level));
 }
 
+void StandardGridGenerator::regular(std::vector<size_t>& anisotropic_weights, size_t level) {
+  HashGenerator gen;
+  gen.regular(this->storage, anisotropic_weights, static_cast<level_t>(level));
+}
+
 void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<level_t>(level),
