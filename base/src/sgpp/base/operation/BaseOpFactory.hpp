@@ -18,16 +18,31 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 #include <sgpp/globaldef.hpp>
 
+/*
+ * This file contains factory methods for operations.
+ */
+
+#include <sgpp/globaldef.hpp>
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
 
+
 namespace sgpp {
 
 namespace op_factory {
-
+/**
+ * Factory method, returning an OperationDiagonal (OperationMatrix) for the grid at hand.
+ *
+ * @param grid Grid which is to be used
+ * @param multiplicationFactor MultiplicationFactor which is to be used
+ * @return Pointer to the new OperationMatrix object for the Grid grid
+ */
+base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
+                                                               double multiplicationFactor = 0.25);
 /**
  * Factory method, returning an OperationHierarchisation for the grid at hand.
  * Note: object has to be freed after use.

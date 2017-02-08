@@ -20,6 +20,7 @@
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -74,6 +75,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::lin
   return std::make_shared<LinearInterpolationEvaluator>();
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
+CombiEvaluators::cubicSplineInterpolation() {
+  return std::make_shared<CubicSplineInterpolationEvaluator>();
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::quadrature() {
   return std::make_shared<QuadratureEvaluator>();
 }
@@ -86,6 +92,11 @@ CombiEvaluators::multiPolynomialInterpolation() {
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::multiLinearInterpolation() {
   return std::make_shared<ArrayEvaluator<LinearInterpolationEvaluator>>(true);
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
+CombiEvaluators::multiCubicSplineInterpolation() {
+  return std::make_shared<ArrayEvaluator<CubicSplineInterpolationEvaluator>>(true);
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature() {

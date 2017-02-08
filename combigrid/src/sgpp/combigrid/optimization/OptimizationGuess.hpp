@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <sgpp/combigrid/SingleFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 namespace sgpp {
 namespace combigrid {

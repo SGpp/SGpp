@@ -20,13 +20,14 @@ class CombigridTreeStorageImpl {
  public:
   CombigridTreeStorageImpl(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
-      MultiFunction p_func)
+      MultiFunction p_func, bool exploitNesting)
       : func(p_func),
         pointHierarchies(p_pointHierarchies),
         storage(new TreeStorage<std::shared_ptr<TreeStorage<double>>>(
             p_pointHierarchies.size(),
             [](MultiIndex const &level) { return std::shared_ptr<TreeStorage<double>>(nullptr); })),
-        mutexPtr(nullptr) {
+        mutexPtr(nullptr),
+        exploitNesting(exploitNesting) {
     setFunctions();
   }
 
@@ -72,12 +73,18 @@ class CombigridTreeStorageImpl {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<TreeStorage<std::shared_ptr<TreeStorage<double>>>> storage;
   std::shared_ptr<std::mutex> mutexPtr;
+  bool exploitNesting;
 };
 
 CombigridTreeStorage::CombigridTreeStorage(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
     MultiFunction p_func)
-    : impl(new CombigridTreeStorageImpl(p_pointHierarchies, p_func)) {}
+    : impl(new CombigridTreeStorageImpl(p_pointHierarchies, p_func, true)) {}
+
+CombigridTreeStorage::CombigridTreeStorage(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
+    bool exploitNesting, MultiFunction p_func)
+    : impl(new CombigridTreeStorageImpl(p_pointHierarchies, p_func, exploitNesting)) {}
 
 CombigridTreeStorage::~CombigridTreeStorage() {}
 
@@ -90,7 +97,7 @@ std::shared_ptr<AbstractMultiStorageIterator<double>> CombigridTreeStorage::getG
   IterationPolicy policy;
 
   for (size_t d = 0; d < numDimensions; ++d) {
-    if (impl->pointHierarchies[d]->isNested()) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
       reducedLevel[d] = 0;
     }
 
@@ -155,15 +162,16 @@ void CombigridTreeStorage::set(const MultiIndex &level, const MultiIndex &index,
   MultiIndex reducedLevel = level;
   size_t numDimensions = impl->pointHierarchies.size();
   for (size_t d = 0; d < numDimensions; ++d) {
-    if (impl->pointHierarchies[d]->isNested()) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
       reducedLevel[d] = 0;
     }
   }
   impl->storage->get(reducedLevel)->set(index, value);
 }
-}  // namespace combigrid
-} /* namespace sgpp*/
 
-void sgpp::combigrid::CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {
+void CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {
   impl->mutexPtr = mutexPtr;
 }
+
+}  // namespace combigrid
+} /* namespace sgpp*/

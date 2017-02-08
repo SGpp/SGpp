@@ -33,9 +33,20 @@ void PrewaveletGridGenerator::regular(size_t level) {
   gen.regular(this->storage, static_cast<level_t>(level));
 }
 
+void PrewaveletGridGenerator::regular(size_t level, double T) {
+  HashGenerator gen;
+  gen.regular(this->storage, static_cast<level_t>(level), T);
+}
+
 void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size);
+}
+
+void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size, double T) {
+  HashGenerator gen;
+  gen.cliques(this->storage, static_cast<level_t>(level),
+              clique_size, T);
 }
 
 void PrewaveletGridGenerator::full(size_t level) {

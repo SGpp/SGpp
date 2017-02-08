@@ -17,7 +17,7 @@ namespace solver {
 /**
  * enum to address different SLE solvers in a standardized way
  */
-enum class SLESolverType { CG, BiCGSTAB };
+enum class SLESolverType { CG, BiCGSTAB, FISTA };
 
 struct SLESolverConfiguration {
   sgpp::solver::SLESolverType type_;
