@@ -112,4 +112,33 @@ BOOST_AUTO_TEST_CASE(testFromDataMatrix) {
                                 std::end(aRowPtr));
 }
 
+BOOST_AUTO_TEST_CASE(testFromDataMatrixTriangular) {
+  double a_vec[]{-2, 1, 0, 0, 0, 1, -2, 1, 0, 0, 0, 1, -2, 1, 0, 0, 0, 1, -2, 1, 0, 0, 0, 1, -2};
+  const std::vector<double> a_sparse{-2, 1, -2, 1, -2, 1, -2, 1, -2};
+  const std::vector<size_t> a_colIdx{0, 0, 1, 1, 2, 2, 3, 3, 4};
+  const std::vector<size_t> a_rowPtr{0, 1, 3, 5, 7};
+
+  DataMatrix B(a_vec, 5, 5);
+  SparseDataMatrix A{};
+
+  SparseDataMatrix::fromDataMatrixTriangular(B, A);
+
+  auto& aData = A.getDataVector();
+  auto& aColIdx = A.getColIndexVector();
+  auto& aRowPtr = A.getRowPtrVector();
+
+  BOOST_CHECK_EQUAL(A.getNrows(), 5);
+  BOOST_CHECK_EQUAL(A.getNcols(), 5);
+
+  BOOST_CHECK_EQUAL(aData.size(), 9);
+  for (auto i = 0u; i < aData.size(); i++) {
+    BOOST_CHECK_CLOSE(a_sparse[i], aData[i], 10e-5);
+  }
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(std::begin(a_colIdx), std::end(a_colIdx), std::begin(aColIdx),
+                                std::end(aColIdx));
+  BOOST_CHECK_EQUAL_COLLECTIONS(std::begin(a_rowPtr), std::end(a_rowPtr), std::begin(aRowPtr),
+                                std::end(aRowPtr));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

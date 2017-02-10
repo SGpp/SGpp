@@ -44,6 +44,8 @@ class SparseDataMatrix {
   std::vector<size_t>& getRowPtrVector();
 
   static void fromDataMatrix(const DataMatrix& in, SparseDataMatrix& out, double threshold = 0.0);
+  static void fromDataMatrixTriangular(const DataMatrix& in, SparseDataMatrix& out,
+                                       double threshold = 0.0);
   static void toDataMatrix(const SparseDataMatrix& in, DataMatrix& out);
 
  private:

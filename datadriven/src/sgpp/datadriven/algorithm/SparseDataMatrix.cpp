@@ -128,6 +128,26 @@ void SparseDataMatrix::fromDataMatrix(const DataMatrix& in, SparseDataMatrix& ou
   }
 }
 
+void SparseDataMatrix::fromDataMatrixTriangular(const DataMatrix& in, SparseDataMatrix& out,
+                                                double threshold) {
+  auto inRows = in.getNrows();
+  auto inCols = in.getNcols();
+
+  out.resize(inRows, inCols);
+
+  auto tmpIn = 0.0;
+  for (auto i = 0u; i < inRows; i++) {
+    out.getRowPtrVector()[i] = out.getDataVector().size();
+    for (auto j = 0u; j <= i; j++) {
+      tmpIn = in.get(i, j);
+      if (std::abs(tmpIn) > threshold) {
+        out.getDataVector().push_back(tmpIn);
+        out.getColIndexVector().push_back(j);
+      }
+    }
+  }
+}
+
 void SparseDataMatrix::toDataMatrix(const SparseDataMatrix& in, DataMatrix& out) {
   auto inRows = in.getNrows();
   auto inCols = in.getNcols();
