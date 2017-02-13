@@ -26,9 +26,9 @@ namespace combigrid {
 class ThreadPool {
  public:
   // typedef std::function<void()> Task;
-  typedef std::function<void(ThreadPool &)> IdleCallback;
+  // typedef std::function<void(ThreadPool &)> IdleCallback;
   typedef GeneralFunction<void()> Task;
-  // typedef GeneralFunction<ThreadPool *, void> IdleCallback;
+  typedef GeneralFunction<void(ThreadPool &)> IdleCallback;
 
  private:
   size_t numThreads;
@@ -84,11 +84,13 @@ class ThreadPool {
    */
   void join();
 
+  static void doTerminateWhenIdle(ThreadPool &tp);
+
   /**
    * This function can be used as a parameter to the constructor if the threads shall terminate as
    * soon as there are no tasks left.
    */
-  static void terminateWhenIdle(ThreadPool &tp);
+  static IdleCallback terminateWhenIdle;
 };
 
 } /* namespace combigrid */

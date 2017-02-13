@@ -62,10 +62,11 @@
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
+#include <sgpp/combigrid/threading/PtrGuard.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
+
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #endif /* COMBIGRID_HPP_ */

@@ -21,10 +21,10 @@ class GeneralFunction;
  * Wrapper for std::function<Out(In)>. This is necessary because SWIG can't
  * handle std::function objects properly.
  */
-template <typename Out, typename... In>
-class GeneralFunction<Out(In...)> {
+template <typename Out, typename In>
+class GeneralFunction<Out(In)> {
  public:
-  typedef std::function<Out(In...)> function_type;
+  typedef std::function<Out(In)> function_type;
   // typedef In input_type;
   typedef Out output_type;
 
@@ -35,7 +35,7 @@ class GeneralFunction<Out(In...)> {
   /**
    * for function pointers
    */
-  explicit GeneralFunction(Out (*ptr)(In...)) : func(ptr) {}
+  explicit GeneralFunction(Out (*ptr)(In)) : func(ptr) {}
 
   /**
    * for lambdas or function objects
@@ -46,17 +46,57 @@ class GeneralFunction<Out(In...)> {
   /**
    * Default constructor, creating a constant zero function.
    */
-  GeneralFunction() : func([](In...) { return Out(); }) {}
+  GeneralFunction() : func([](In) { return Out(); }) {}
 
   /**
    * Evaluates the function.
    */
-  Out operator()(In... in) const { return func(in...); }
+  Out operator()(In in) const { return func(in); }
 
   /**
    * Evaluates the function (for python use etc., does the same as operator()).
    */
-  Out call(In... in) const { return func(in...); }
+  Out call(In in) const { return func(in); }
+
+  function_type getStdFunction() const { return func; }
+};
+
+template <typename Out>
+class GeneralFunction<Out()> {
+ public:
+  typedef std::function<Out()> function_type;
+  // typedef In input_type;
+  typedef Out output_type;
+
+ private:
+  function_type func;
+
+ public:
+  /**
+   * for function pointers
+   */
+  explicit GeneralFunction(Out (*ptr)()) : func(ptr) {}
+
+  /**
+   * for lambdas or function objects
+   */
+  template <typename T>
+  explicit GeneralFunction(T const &f) : func(f) {}
+
+  /**
+   * Default constructor, creating a constant zero function.
+   */
+  GeneralFunction() : func([]() { return Out(); }) {}
+
+  /**
+   * Evaluates the function.
+   */
+  Out operator()() const { return func(); }
+
+  /**
+   * Evaluates the function (for python use etc., does the same as operator()).
+   */
+  Out call() const { return func(); }
 
   function_type getStdFunction() const { return func; }
 };
