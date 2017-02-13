@@ -11,39 +11,44 @@
 
 namespace sgpp {
 namespace combigrid {
+template <typename T>
+class GeneralFunctionDirector;
+
 /**
  * This is a helper class used internally to wrap python functions into GeneralFunction objects.
  * F should be a GeneralFunction<...>
  */
-template <typename F>
-class GeneralFunctionDirector {
+template <typename Out, typename... In>
+class GeneralFunctionDirector<Out(In...)> {
  public:
   virtual ~GeneralFunctionDirector() {}
 
-  virtual typename F::output_type eval(typename F::input_type vec) = 0;
+  virtual Out eval(In... vec) = 0;
 
-  virtual F toFunction();
+  virtual GeneralFunction<Out(In...)> toFunction();
 };
+
+template <typename T>
+class GFDirWrapper;
 
 /**
  * This is a protected helper class used internally to wrap python functions into MultiFunction
  * objects.
  */
-template <typename F>
-class GFDirWrapper {
+template <typename Out, typename... In>
+class GFDirWrapper<Out(In...)> {
  public:
-  GeneralFunctionDirector<F> *ptr;
+  GeneralFunctionDirector<Out(In...)> *ptr;
 
-  explicit GFDirWrapper(GeneralFunctionDirector<F> *ptr) : ptr(ptr) {}
+  explicit GFDirWrapper(GeneralFunctionDirector<Out(In...)> *ptr) : ptr(ptr) {}
 
   ~GFDirWrapper() { delete ptr; }
 };
 
-template <typename F>
-F GeneralFunctionDirector<F>::toFunction() {
-  auto wrapperPtr = std::make_shared<GFDirWrapper<F>>(this);
-  return F([wrapperPtr](typename F::input_type in) ->
-           typename F::output_type { return wrapperPtr->ptr->eval(in); });
+template <typename Out, typename... In>
+GeneralFunction<Out(In...)> GeneralFunctionDirector<Out(In...)>::toFunction() {
+  auto wrapperPtr = std::make_shared<GFDirWrapper<Out(In...)>>(this);
+  return F([wrapperPtr](In... in) -> Out { return wrapperPtr->ptr->eval(in...); });
 }
 
 } /* namespace combigrid */

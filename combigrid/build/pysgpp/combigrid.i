@@ -77,8 +77,8 @@
 namespace sgpp {
 namespace combigrid {
 
-    %template(PyMultiFunction) GeneralFunction<base::DataVector const &, double>;
-    %template(PySingleFunction) GeneralFunction<double, double>;
+    %template(PyMultiFunction) GeneralFunction<double(base::DataVector const &)>;
+    %template(PySingleFunction) GeneralFunction<double(double)>;
 }
 }
 
@@ -139,7 +139,7 @@ namespace combigrid {
     
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
     %template(DoubleTreeStorage) TreeStorage<double>;
-    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>;
+    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>;
     
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
@@ -236,9 +236,9 @@ namespace std {
 
 namespace sgpp {
 namespace combigrid {
-    %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<base::DataVector const &, double>>;
-    %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double, double>>;
-    %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>>;
+    %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(base::DataVector const &)>>;
+    %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(double)>>;
+    %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>>;
     
 }
 }

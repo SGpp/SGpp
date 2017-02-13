@@ -6,6 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_
 
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <deque>
@@ -24,8 +25,10 @@ namespace combigrid {
  */
 class ThreadPool {
  public:
-  typedef std::function<void()> Task;
+  // typedef std::function<void()> Task;
   typedef std::function<void(ThreadPool &)> IdleCallback;
+  typedef GeneralFunction<void()> Task;
+  // typedef GeneralFunction<ThreadPool *, void> IdleCallback;
 
  private:
   size_t numThreads;
