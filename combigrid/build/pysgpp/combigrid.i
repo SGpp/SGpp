@@ -79,10 +79,10 @@
 namespace sgpp {
 namespace combigrid {
 
-    %template(PyMultiFunction) GeneralFunction<double(base::DataVector const &)>;
-    %template(PySingleFunction) GeneralFunction<double(double)>;
-    %template(PyTask) GeneralFunction<void()>;
-    %template(PyIdleFunction) GeneralFunction<void(ThreadPool &)>;
+    %template(PyMultiFunction) GeneralFunction<double, base::DataVector const &>;
+    %template(PySingleFunction) GeneralFunction<double, double>;
+    %template(PyTask) GeneralFunction1<void>;
+    %template(PyIdleFunction) GeneralFunction<void, ThreadPool &>;
 }
 }
 
@@ -143,7 +143,7 @@ namespace combigrid {
     
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
     %template(DoubleTreeStorage) TreeStorage<double>;
-    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>;
+    %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
     
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
@@ -203,7 +203,7 @@ namespace std {
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
 
-    %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction<void()>>;
+    // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
     
     // %template(CombiHierarchiesCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
     // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
@@ -242,11 +242,11 @@ namespace std {
 
 namespace sgpp {
 namespace combigrid {
-    %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(base::DataVector const &)>>;
-    %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(double)>>;
-    %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>>;
-    %template(ThreadPoolTaskDirector) GeneralFunctionDirector<GeneralFunction<void(void)>>;
-    %template(ThreadPoolIdleCallbackDirector) GeneralFunctionDirector<GeneralFunction<void(ThreadPool &)>>;
+    %template(MultiFunctionDirector) GeneralFunctionDirector<double, base::DataVector const &>;
+    %template(SingleFunctionDirector) GeneralFunctionDirector<double, double>;
+    %template(GridFunctionDirector) GeneralFunctionDirector<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
+    %template(ThreadPoolTaskDirector) GeneralFunctionDirector1<void>;
+    %template(ThreadPoolIdleCallbackDirector) GeneralFunctionDirector<void, ThreadPool &>;
 }
 }
 
@@ -302,6 +302,40 @@ def gridFunc(funcObj):
     mf = dir.toFunction()
     dir.__disown__()
     return mf
+    
+class TaskDirectorImpl(ThreadPoolTaskDirector):
+    def __init__(self):
+        super(TaskDirectorImpl, self).__init__()
+
+    def setFuncObj(self, funcObj):
+        self.funcObj = funcObj
+
+    def eval(self):
+        return self.funcObj()
+
+def taskFunc(funcObj):
+    dir = TaskDirectorImpl()
+    dir.setFuncObj(funcObj)
+    f = dir.toFunction()
+    dir.__disown__()
+    return f
+    
+class IdleCallbackDirectorImpl(ThreadPoolIdleCallbackDirector):
+    def __init__(self):
+        super(IdleCallbackDirectorImpl, self).__init__()
+
+    def setFuncObj(self, funcObj):
+        self.funcObj = funcObj
+
+    def eval(self):
+        return self.funcObj()
+
+def idleCallbackFunc(funcObj):
+    dir = IdleCallbackDirectorImpl()
+    dir.setFuncObj(funcObj)
+    f = dir.toFunction()
+    dir.__disown__()
+    return f
 %}
 
 #endif

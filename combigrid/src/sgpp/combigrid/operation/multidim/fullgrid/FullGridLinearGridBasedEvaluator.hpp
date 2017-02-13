@@ -22,7 +22,7 @@
 namespace sgpp {
 namespace combigrid {
 
-typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>
+typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>
     GridFunction;
 
 /**

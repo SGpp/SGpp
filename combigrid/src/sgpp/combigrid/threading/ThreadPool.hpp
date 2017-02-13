@@ -27,8 +27,8 @@ class ThreadPool {
  public:
   // typedef std::function<void()> Task;
   // typedef std::function<void(ThreadPool &)> IdleCallback;
-  typedef GeneralFunction<void()> Task;
-  typedef GeneralFunction<void(ThreadPool &)> IdleCallback;
+  typedef GeneralFunction1<void> Task;
+  typedef GeneralFunction<void, ThreadPool &> IdleCallback;
 
  private:
   size_t numThreads;
