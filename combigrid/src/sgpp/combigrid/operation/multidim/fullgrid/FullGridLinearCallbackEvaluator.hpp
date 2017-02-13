@@ -82,7 +82,7 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
         auto compTask = computationTasks[i];
         auto index = multiIndices[i];
 
-        tasks.push_back([compTask, index, counter, callback, this, level]() {
+        tasks.push_back(ThreadPool::Task([compTask, index, counter, callback, this, level]() {
           auto result = compTask();
 
           CGLOG_SURROUND(PtrGuard guard(this->mutexPtr));
@@ -92,7 +92,7 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
             callback();
           }
           CGLOG("leave guard(this->mutexPtr) in FGEval");
-        });
+        }));
       }
     }
 

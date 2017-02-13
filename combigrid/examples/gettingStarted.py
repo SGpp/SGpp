@@ -68,7 +68,8 @@ def example2():
     ## one level is a subset of the set of grid points at the next level. Nesting can drastically
     ## reduce the number of needed function evaluations. Using these grid points, we will do
     ## polynomial interpolation at a single point.
-    operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
+    #operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
+    operation = pysgpp.CombigridOperation.createExpL2LejaPolynomialInterpolation(d, func)
 
     ## Now create a point where to evaluate the interpolated function:
     evaluationPoint = pysgpp.DataVector([0.1572, 0.6627, 0.2378])

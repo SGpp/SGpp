@@ -248,7 +248,7 @@ void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &level
   auto threadPool = std::make_shared<ThreadPool>(numThreads, ThreadPool::terminateWhenIdle);
   combiEval->setMutex(managerMutex);
   for (auto &level : levels) {
-    threadPool->addTasks(combiEval->getLevelTasks(level, []() {}));
+    threadPool->addTasks(combiEval->getLevelTasks(level, ThreadPool::Task([]() {})));
   }
   threadPool->start();
   threadPool->join();
@@ -360,10 +360,11 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
 
         beforeComputation(entry.level);
         CGLOG("before getLevelTasks()");
-        auto tasks = combiEval->getLevelTasks(entry.level, [this, entry]() {
-          // the mutex will be locked when this callback is called
-          afterComputation(entry.level);
-        });
+        auto tasks = combiEval->getLevelTasks(entry.level, ThreadPool::Task([this, entry]() {
+                                                // the mutex will be locked when this callback is
+                                                // called
+                                                afterComputation(entry.level);
+                                              }));
         CGLOG("before addTasks()");
         tp.addTasks(tasks);
         CGLOG("leave guard(*managerMutex)");
