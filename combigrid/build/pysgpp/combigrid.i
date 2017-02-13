@@ -61,6 +61,7 @@
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
 
 %shared_ptr(sgpp::combigrid::TensorGrid)
+%shared_ptr(sgpp::combigrid::ThreadPool)
 
 %shared_ptr(std::mutex)
 
@@ -73,12 +74,15 @@
 
 
 %include "combigrid/src/sgpp/combigrid/GeneralFunction.hpp"
+%include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 
 namespace sgpp {
 namespace combigrid {
 
     %template(PyMultiFunction) GeneralFunction<double(base::DataVector const &)>;
     %template(PySingleFunction) GeneralFunction<double(double)>;
+    %template(PyTask) GeneralFunction<void()>;
+    %template(PyIdleFunction) GeneralFunction<void(ThreadPool &)>;
 }
 }
 
@@ -198,6 +202,8 @@ namespace std {
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+
+    %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction<void()>>;
     
     // %template(CombiHierarchiesCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
     // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
@@ -239,7 +245,8 @@ namespace combigrid {
     %template(MultiFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(base::DataVector const &)>>;
     %template(SingleFunctionDirector) GeneralFunctionDirector<GeneralFunction<double(double)>>;
     %template(GridFunctionDirector) GeneralFunctionDirector<GeneralFunction<std::shared_ptr<TreeStorage<double>>(std::shared_ptr<TensorGrid>)>>;
-    
+    %template(ThreadPoolTaskDirector) GeneralFunctionDirector<GeneralFunction<void(void)>>;
+    %template(ThreadPoolIdleCallbackDirector) GeneralFunctionDirector<GeneralFunction<void(ThreadPool &)>>;
 }
 }
 
