@@ -49,10 +49,22 @@ class HDMRAnalytic(object):
         self.__U = self.__ap.getIndependentJointDistribution()
         self.__T = self.__ap.getJointTransformation()
         self.__xlim = self.__U.getBounds()
-        self.__dim = len(self.__ap)
+        self.__dim = self.__ap.getStochasticDim()
 
         if self.__dim < 2:
             raise AttributeError('dimensionality has to be > 1')
+
+        distributions = self.__U.getDistributions()
+        margDistList = [] 
+        if len(distributions) != self.__dim:
+            # marginalize the distribution
+            for dist in distributions:
+                if dist.getStochasticDim() == 1:
+                    margDistList.append(dist)
+                else:
+                    for idim in dist.getStochasticDim():
+                        margDistList.append(dist.marginalizeToDimX(idim))
+            self.__U = J(margDistList)
 
         # check if highest order term is required
         self.__has_highest_order_term = not nk or nk > self.__dim - 1

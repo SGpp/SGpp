@@ -98,13 +98,6 @@ class MCAnalysis(Analysis):
 
 # -----------------------------------------------------------------------------
 
-    def computeConfidenceInterval(self, iteration, qoi, t):
-        # do the computation
-        values = np.array(self.__samples[t].values())
-        return self.__estimator.confidenceInterval(values)
-
-# -----------------------------------------------------------------------------
-
     def estimateDensity(self, ts=[0], dtype="kde", config={}):
         if len(ts) == 1:
             return self._estimateDensityByConfig(dtype, self.__samples[ts[0]].values(), config)

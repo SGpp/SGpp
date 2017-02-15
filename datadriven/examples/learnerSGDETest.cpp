@@ -107,9 +107,9 @@ int main(int argc, char** argv) {
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig, sgdeConfig);
 
-  std::string s("/tmp/sgde-config-365135c5-fb8a-4377-9fea-e16ef916a5c5.json");
-  sgpp::datadriven::LearnerSGDEConfiguration config2(s);
-  sgpp::datadriven::LearnerSGDE learner2(config2);
+  //  std::string s("/tmp/sgde-config-365135c5-fb8a-4377-9fea-e16ef916a5c5.json");
+  //  sgpp::datadriven::LearnerSGDEConfiguration config2(s);
+  //  sgpp::datadriven::LearnerSGDE learner2(config2);
   learner.initialize(samples);
 
   std::cout << "# estimating a kde" << std::endl;
@@ -121,25 +121,31 @@ int main(int argc, char** argv) {
     x[i] = 0.5;
   }
 
-  std::cout << "--------------------------------------------------------" << std::endl;
-  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum()
-            << std::endl;
-  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
-            << std::endl;
-  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
-            << std::endl;
-  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
-            << std::endl;
+  //  std::cout << "--------------------------------------------------------" << std::endl;
+  //  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum()
+  //            << std::endl;
+  //  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
+  //            << std::endl;
+  //  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
+  //            << std::endl;
+  //  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " =
+  //  var_KDE(x)"
+  //            << std::endl;
+
+  sgpp::base::DataMatrix* bounds = new DataMatrix(4, 2);
+  for (size_t idim = 0; idim < dataset.getDimension(); idim++) {
+    bounds->set(idim, 0, 0.0);
+    bounds->set(idim, 1, 1.0);
+  }
 
   sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
   std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
-  learner.cov(C);
+  learner.cov(C, bounds);
   std::cout << C.toString() << std::endl;
 
   std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
   kde.cov(C);
   std::cout << C.toString() << std::endl;
-
   std::cout << "------------------------------------------------------" << std::endl;
 
   // inverse Rosenblatt transformation

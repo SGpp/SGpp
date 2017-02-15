@@ -116,6 +116,17 @@ class KDEDist(EstimatedDist):
         self.dist.getBandwidths(bandwidths)
         return bandwidths.array()
 
+    def marginalizeToDimX(self, idim):
+        margLearner = self.dist.margToDimX(idim)
+        return KDEDist(trainData=np.vstack((self.trainData[:, idim])),
+                       kde=margLearner)
+
+
+    def marginalize(self, idim):
+        margLearner = self.dist.marginalize(idim)
+        return KDEDist(trainData=np.delete(self.trainData, idim, axis=1),
+                       kde=margLearner)
+
     def __str__(self):
         ans = "KDE - %s"
 

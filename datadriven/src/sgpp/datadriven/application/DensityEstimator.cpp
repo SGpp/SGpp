@@ -22,9 +22,9 @@ DensityEstimator::~DensityEstimator() {}
 
 double DensityEstimator::std_deviation() { return std::sqrt(variance()); }
 
-void DensityEstimator::corrcoef(base::DataMatrix& corr) {
+void DensityEstimator::corrcoef(base::DataMatrix& corr, base::DataMatrix* bounds) {
   // get covariance matrix and ...
-  cov(corr);
+  cov(corr, bounds);
 
   // ... normalize it
   double corrij = 0.0;

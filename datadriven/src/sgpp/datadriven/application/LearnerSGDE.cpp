@@ -338,10 +338,10 @@ double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
 
 double LearnerSGDE::variance() { return variance(*grid, *alpha); }
 
-void LearnerSGDE::cov(base::DataMatrix& cov) {
+void LearnerSGDE::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
   std::unique_ptr<datadriven::OperationCovariance> opCov(
       op_factory::createOperationCovariance(*grid));
-  opCov->doQuadrature(*alpha, cov);
+  opCov->doQuadrature(*alpha, cov, bounds);
 }
 
 std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {
@@ -649,6 +649,56 @@ void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& stra
       }
     }
   }
+}
+
+LearnerSGDE* LearnerSGDE::margToDimX(size_t idim) {
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
+
+  base::Grid* margGrid = nullptr;
+  base::DataVector* margAlpha = nullptr;
+  opMarg->margToDimX(&(*alpha), margGrid, margAlpha, idim);
+
+  // create new Learner
+  base::DataMatrix margSamples(samples->getNrows(), 1);
+  base::DataVector samples1d(samples->getNrows());
+  samples->getColumn(idim, samples1d);
+  margSamples.setColumn(0, samples1d);
+
+  LearnerSGDE* ans = new LearnerSGDE(*margGrid, *margAlpha, margSamples);
+
+  delete margGrid;
+  delete margAlpha;
+
+  return ans;
+}
+
+LearnerSGDE* LearnerSGDE::marginalize(size_t idim) {
+  std::unique_ptr<datadriven::OperationDensityMarginalize> opMarg(
+      op_factory::createOperationDensityMarginalize(*grid));
+
+  base::Grid* margGrid = nullptr;
+  base::DataVector margAlpha;
+  opMarg->doMarginalize(*alpha, margGrid, margAlpha, static_cast<unsigned int>(idim));
+
+  // create new Learner
+  size_t numDims = samples->getNcols();
+  base::DataMatrix margSamples(samples->getNrows(), numDims - 1);
+  base::DataVector samples1d(samples->getNrows());
+  size_t mdim = 0;
+  for (size_t jdim = 0; jdim < numDims; jdim++) {
+    if (jdim != idim) {
+      samples->getColumn(jdim, samples1d);
+      margSamples.setColumn(mdim, samples1d);
+      mdim++;
+    }
+  }
+
+  LearnerSGDE* ans = new LearnerSGDE(*margGrid, margAlpha, margSamples);
+
+  delete margGrid;
+
+  return ans;
 }
 
 }  // namespace datadriven

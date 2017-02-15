@@ -82,13 +82,13 @@ class KernelDensityEstimator : public DensityEstimator {
   void initializeKernel(KernelType kernelType);
 
   Kernel& getKernel();
-  double mean();
-  double variance();
+  double mean() override;
+  double variance() override;
 
-  void cov(base::DataMatrix& cov);
+  void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr) override;
 
-  double pdf(base::DataVector& x);
-  void pdf(base::DataMatrix& points, base::DataVector& res);
+  double pdf(base::DataVector& x) override;
+  void pdf(base::DataMatrix& points, base::DataVector& res) override;
 
   double evalSubset(base::DataVector& x, std::vector<size_t> skipElements);
 
@@ -105,8 +105,11 @@ class KernelDensityEstimator : public DensityEstimator {
   std::shared_ptr<base::DataVector> getSamples(size_t dim) override;
   void getSample(size_t isample, base::DataVector& sample);
 
-  size_t getDim();
-  size_t getNsamples();
+  KernelDensityEstimator* margToDimX(size_t idim);
+  KernelDensityEstimator* marginalize(size_t idim);
+
+  size_t getDim() override;
+  size_t getNsamples() override;
 
  private:
   double evalKernel(base::DataVector& x, size_t i);

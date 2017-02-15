@@ -64,6 +64,9 @@ class EstimatedDist(Dist):
                 x = np.array([x])
         return x
 
+    def marginalizeToDimX(self):
+        raise NotImplementedError()
+
     def getDistributions(self):
         return [self]
 

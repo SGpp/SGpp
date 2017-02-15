@@ -41,7 +41,10 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
+%newobject sgpp::datadriven::KernelDensityEstimator::margToDimX(size_t idim);
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%newobject sgpp::datadriven::LearnerSGDE::margToDimX(size_t idim);
+
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 #endif

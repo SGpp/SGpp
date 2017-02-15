@@ -580,8 +580,8 @@ class UQSetting(object):
             # serialize the UQSetting to file. As this is the expensive
             # part, this step is important if there is any error in the post
             # processing part
-#             if n2 > n1 and writeToFile:
-#                 self .writeToFile()
+            if n2 > n1 and writeToFile:
+                self .writeToFile()
     
             n1 = len(self.getPostprocessorStats())
     

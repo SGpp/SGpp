@@ -25,7 +25,7 @@ def load_marker(i):
 
 def load_font():
     return {'family':'serif',
-            'size': 12}
+            'size': 20}
 
 def load_font_properties():
     fontP = FontProperties()
