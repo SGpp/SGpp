@@ -33,6 +33,7 @@ from pysgpp import createOperationFirstMoment, \
     createOperationEval
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from pysgpp.pysgpp_swig import LatinHypercubeSampleGenerator
+from pysgpp.extensions.datadriven.uq.sampler.Sample import SampleType
 
 
 class SGDEdist(EstimatedDist):
@@ -40,15 +41,21 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, grid, alpha, trainData=None, bounds=None, config=None,
-                 learner=None, unitIntegrand=True, isPositive=True):
+    def __init__(self, grid,
+                 alpha,
+                 trainData=None,
+                 bounds=None,
+                 config=None,
+                 learner=None,
+                 unitIntegrand=True,
+                 isPositive=True):
         super(SGDEdist, self).__init__(grid.getStorage().getDimension(),
                                        trainData, bounds)
 
-        self.grid = grid
-        self.alpha = alpha
+        self.grid = grid.clone()
+        self.alpha = alpha.copy()
         self.alpha_vec = DataVector(alpha)
-        self.trainData = trainData
+        self.trainData = trainData.copy()
         self.config = config
         self.unitIntegrand = unitIntegrand
         
@@ -64,11 +71,12 @@ class SGDEdist(EstimatedDist):
             raise AttributeError("the dimensionality of the data differs from the one of the grid")
 
         assert self.grid.getSize() == len(self.alpha)
+
         if isPositive:
-            self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec) * self.trans.vol()
+            self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec)
         else:
             # do monte carlo quadrature to estimate the volume
-            n = 10000
+            n = 20000
             numDims = grid.getStorage().getDimension()
             generator = LatinHypercubeSampleGenerator(numDims, n)
             samples = np.ndarray((n, numDims))
@@ -79,12 +87,16 @@ class SGDEdist(EstimatedDist):
             values = evalSGFunction(grid, alpha, samples)
             self.vol = np.mean([max(0.0, value) for value in values])
 
+        self.vol *= self.trans.vol()
+
         if unitIntegrand and self.vol > 1e-13:
+            self.unnormalized_alpha = np.array(self.alpha)
+            self.unnormalized_alpha_vec = DataVector(self.alpha)
             self.alpha /= self.vol
             self.alpha_vec.mult(1. / self.vol)
 
     @classmethod
-    def byLearnerSGDEConfig(cls, samples, bounds=None, config={}):
+    def byLearnerSGDEConfig(cls, samples, grid=None, bounds=None, config={}):
         """
 
         @param cls:
@@ -99,6 +111,15 @@ class SGDEdist(EstimatedDist):
 #         config["sgde_makePositive_verbose"] = True
 #         config["sgde_unitIntegrand"] = True
 #         config["sgde_makePositive_verbose"] = True
+        if grid is not None:
+            # serialize grid and add it to config
+            grid_str = grid.serialize()
+            filename_grid = os.path.join(tempfile.gettempdir(),
+                                         "grid-%s.grid" % str(uuid.uuid4()))
+            fd = open(filename_grid, "w")
+            fd.write(grid_str)
+            fd.close()
+            config["grid_filename"] = filename_grid
 
         # write config to file
         # get temp directory
@@ -258,7 +279,8 @@ class SGDEdist(EstimatedDist):
             firstMoment = opQuad.doQuadrature(self.alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
-            firstMoment = opQuad.doQuadrature(self.alpha_vec, bounds)
+            firstMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
+                                              bounds)
 
         return firstMoment
 
@@ -268,20 +290,22 @@ class SGDEdist(EstimatedDist):
             secondMoment = opQuad.doQuadrature(self.alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
-            secondMoment = opQuad.doQuadrature(self.alpha_vec, bounds)
+            secondMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
+                                               bounds)
 
         return secondMoment - self.mean() ** 2
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.learner.cov(covMatrix)
+        bounds_vec = DataMatrix(self.bounds)
+        self.learner.cov(covMatrix, bounds_vec)
         return covMatrix.array()
 
     def corrcoef(self):
         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.corrcoef(corrMatrix)
+        bounds_vec = DataMatrix(self.bounds)
+        self.learner.corrcoef(corrMatrix, bounds_vec)
         return corrMatrix.array()
-
 
     def rvs(self, n=1):
         # use inverse Rosenblatt transformation to get samples
@@ -291,6 +315,46 @@ class SGDEdist(EstimatedDist):
     def __str__(self):
         return "SGDE"
 
+    def crossEntropy(self, samples,
+                     dtype=SampleType.ACTIVEPROBABILISTIC):
+        if dtype == SampleType.ACTIVEPROBABILISTIC:
+            unit_samples = self.trans.probabilisticToUnitMatrix(samples)
+        else:
+            unit_samples = samples
+
+        assert np.all(unit_samples.min(axis=0) >= 0.0)
+        assert np.all(unit_samples.max(axis=0) <= 1.0)
+        return super(SGDEdist, self).crossEntropy(unit_samples)
+
+    def marginalizeToDimX(self, idim):
+        margLearner = self.learner.margToDimX(idim)
+
+        # copy grid and coefficient vector
+        grid = margLearner.getGrid().clone()
+        alpha = np.array(margLearner.getSurpluses().array())
+
+        return SGDEdist(grid,
+                        alpha,
+                        trainData=np.vstack((self.trainData[:, idim])),
+                        bounds=np.array([self.bounds[idim]]),
+                        config=self.config,
+                        learner=margLearner,
+                        unitIntegrand=self.unitIntegrand)
+
+    def marginalize(self, idim):
+        margLearner = self.learner.marginalize(idim)
+
+        # copy grid and coefficient vector
+        grid = margLearner.getGrid().clone()
+        alpha = np.array(margLearner.getSurpluses().array())
+
+        return SGDEdist(grid,
+                        alpha,
+                        trainData=np.delete(self.trainData, idim, axis=1),
+                        bounds=np.delete(self.bounds, idim, axis=0),
+                        config=self.config,
+                        learner=margLearner,
+                        unitIntegrand=self.unitIntegrand)
 
     def toJson(self):
         """

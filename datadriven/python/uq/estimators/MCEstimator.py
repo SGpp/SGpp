@@ -27,15 +27,18 @@ class MCEstimator(Estimator):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.mean(bootstrap)
 
+        mean = np.mean(samples)
+
         # error statistics
         if self.__npaths > 1:
             lower_percentile = np.percentile(moments, q=self.__percentile)
             upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(lower_percentile, upper_percentile)
+            err = max(np.abs(mean - lower_percentile),
+                      np.abs(upper_percentile - mean))
         else:
             err = lower_percentile = upper_percentile = np.Inf
 
-        return {"value": np.mean(samples),
+        return {"value": mean,
                 "err": err,
                 "confidence_interval": (lower_percentile, upper_percentile)}
 
@@ -49,14 +52,16 @@ class MCEstimator(Estimator):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.var(bootstrap)
 
+        var = np.var(samples)
         # error statistics
         if self.__npaths > 1:
             lower_percentile = np.percentile(moments, q=self.__percentile)
             upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(lower_percentile, upper_percentile)
+            err = max(np.abs(var - lower_percentile),
+                      np.abs(upper_percentile - var))
         else:
             err = lower_percentile = upper_percentile = np.Inf
 
-        return {"value": np.var(samples),
+        return {"value": var,
                 "err": err,
                 "confidence_interval": (lower_percentile, upper_percentile)}

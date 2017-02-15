@@ -284,7 +284,7 @@ double KernelDensityEstimator::evalKernel(base::DataVector& x, size_t i) {
   return cond[i] * res;
 }
 
-void KernelDensityEstimator::cov(base::DataMatrix& cov) {
+void KernelDensityEstimator::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
     // covariance matrix has wrong size -> resize
     cov.resize(ndim, ndim);
@@ -299,7 +299,7 @@ void KernelDensityEstimator::cov(base::DataMatrix& cov) {
 
   std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg(
       op_factory::createOperationDensityMarginalizeKDE(*this));
-  KernelDensityEstimator kdeMarginalized;
+  KernelDensityEstimator kdeMarginalized(kernel->getType(), bandwidthOptimizationType);
 
   for (size_t idim = 0; idim < ndim; idim++) {
     opMarg->margToDimX(idim, kdeMarginalized);
@@ -312,7 +312,7 @@ void KernelDensityEstimator::cov(base::DataMatrix& cov) {
   std::vector<size_t> mdims(2);
   double covij = 0.0;
 
-  KernelDensityEstimator kdeijdim;
+  KernelDensityEstimator kdeijdim(kernel->getType(), bandwidthOptimizationType);
 
   for (size_t idim = 0; idim < ndim; idim++) {
     // diagonal is equal to the variance of the marginalized densities
@@ -437,6 +437,24 @@ void KernelDensityEstimator::updateConditionalizationFactors(base::DataVector& x
 }
 
 Kernel& KernelDensityEstimator::getKernel() { return *kernel; }
+
+KernelDensityEstimator* KernelDensityEstimator::margToDimX(size_t idim) {
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg(
+      op_factory::createOperationDensityMarginalizeKDE(*this));
+  datadriven::KernelDensityEstimator* marginalizedKDE =
+      new datadriven::KernelDensityEstimator(kernel->getType(), bandwidthOptimizationType);
+  opMarg->margToDimX(idim, *marginalizedKDE);
+  return marginalizedKDE;
+}
+
+KernelDensityEstimator* KernelDensityEstimator::marginalize(size_t idim) {
+  std::unique_ptr<datadriven::OperationDensityMarginalizeKDE> opMarg(
+      op_factory::createOperationDensityMarginalizeKDE(*this));
+  datadriven::KernelDensityEstimator* marginalizedKDE =
+      new datadriven::KernelDensityEstimator(kernel->getType(), bandwidthOptimizationType);
+  opMarg->doMarginalize(idim, *marginalizedKDE);
+  return marginalizedKDE;
+}
 
 // ----------------------------------------------------------------------------------
 // kernels

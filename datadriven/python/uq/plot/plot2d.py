@@ -105,7 +105,7 @@ def plotFunction2d(f, addContour=True, n=101,
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
              show_numbers=False,
-             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\vec{x})"):
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\vec{x})$"):
     gs = grid.getStorage()
 
     gpxp = []

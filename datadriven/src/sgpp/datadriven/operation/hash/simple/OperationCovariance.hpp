@@ -41,6 +41,8 @@ class OperationCovariance {
                             base::DataMatrix* bounds = nullptr);
 
  private:
+  base::DataMatrix* loadBounds(size_t numDims, base::DataMatrix* bounds, size_t idim,
+                               size_t jdim = 0);
   double mean(base::Grid& grid, base::DataVector& alpha, base::DataMatrix* bounds = nullptr);
   double variance(base::Grid& grid, base::DataVector& alpha, base::DataMatrix* bounds = nullptr);
 

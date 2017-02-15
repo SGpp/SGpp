@@ -42,7 +42,8 @@ from plotGrid import plotGrid
 
 from scatterplot import scatterplot_matrix
 
-from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, load_font_properties
+from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
+    load_font_properties
 
 try:
     import matplotlib as mpl
@@ -75,7 +76,7 @@ try:
                                 'xtick.labelsize': pysgpp_uq_font["size"],
                                 'ytick.labelsize': pysgpp_uq_font["size"],
                                 'axes.unicode_minus': True,
-                                'figure.figsize': (6, 4)
+                                'figure.figsize': (5, 4.5)
                                 }
     mpl.rcParams.update(pgf_with_custom_preamble)
 
