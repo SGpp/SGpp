@@ -1557,7 +1557,6 @@ class UQSetting(object):
                             newSample.getExpandedProbabilistic())
             # check if something changed in the accuracy of float
             p = tuple(sample.getExpandedUnit())
-
             if p not in self.__stats_samples:
                 self.__stats_samples[p] = sample
                 found = self.findEquivalent(sample, self.__stats_preprocessor)
@@ -1580,7 +1579,6 @@ class UQSetting(object):
                     self.remove(sample)
 
     def remove(self, sample):
-        print "removing content in UQSetting"
         p = tuple(sample.getExpandedUnit())
         q = self.__stats_preprocessor[p]
         del self.__stats_samples[sample]
@@ -1588,3 +1586,47 @@ class UQSetting(object):
         del self.__stats_preprocessor_reverse[q]
         del self.__stats_simulation[q]
         del self.__stats_postprocessor[q]
+
+    def changeParamSetting(self, params):
+        stats_samples = {}
+        stats_preprocessor = {}
+        stats_preprocessor_reverse = {}
+        stats_simulation = {}
+        stats_postprocessor = {}
+
+        for p_old, sample_old in self.__stats_samples.items():
+            # check if something changed in the accuracy of float
+            p_new = np.array(p_old)
+            hx = p_new[1]
+            p_new[1] = p_new[2]
+            p_new[2] = p_new[3]
+            p_new[3] = hx
+            sample_new = Sample(params, p_new, dtype=SampleType.EXPANDEDUNIT)
+            assert np.all(sample_old.getActiveUnit() == sample_new.getActiveUnit())
+
+            # load stats of old sample
+            p_old = tuple(sample_old.getExpandedUnit())
+            q_old = self.__stats_preprocessor[p_old]
+            sim_old = self.__stats_simulation[q_old]
+            post_old = self.__stats_postprocessor[q_old]
+
+            p_new = tuple(sample_new.getExpandedUnit())
+            q_new = np.array(q_old)
+            hx = q_new[1]
+            q_new[1] = q_new[2]
+            q_new[2] = q_new[3]
+            q_new[3] = hx
+            q_new = tuple(q_new)
+
+            # remove old one and add new one with old results
+            stats_samples[p_new] = sample_new
+            stats_preprocessor[p_new] = q_new
+            stats_preprocessor_reverse[q_new] = p_new
+            stats_simulation[q_new] = sim_old
+            stats_postprocessor[q_new] = post_old
+
+        self.__stats_samples = stats_samples
+        self.__stats_preprocessor = stats_preprocessor
+        self.__stats_preprocessor_reverse = stats_preprocessor_reverse
+        self.__stats_simulation = stats_simulation
+        self.__stats_postprocessor = stats_postprocessor
