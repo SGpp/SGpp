@@ -331,7 +331,7 @@ class SGDEdist(EstimatedDist):
 
         # copy grid and coefficient vector
         grid = margLearner.getGrid().clone()
-        alpha = np.array(margLearner.getSurpluses().array())
+        alpha = margLearner.getSurpluses().array().copy()
 
         return SGDEdist(grid,
                         alpha,
@@ -346,7 +346,7 @@ class SGDEdist(EstimatedDist):
 
         # copy grid and coefficient vector
         grid = margLearner.getGrid().clone()
-        alpha = np.array(margLearner.getSurpluses().array())
+        alpha = margLearner.getSurpluses().array().copy()
 
         return SGDEdist(grid,
                         alpha,

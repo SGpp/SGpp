@@ -5,6 +5,10 @@
 # sgpp.sparsegrids.org
 #
 from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+from pysgpp.extensions.datadriven.uq.transformation.RosenblattTransformation import RosenblattTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 """
 @file    hdmr.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -47,7 +51,7 @@ class HDMRAnalytic(object):
         self.__alpha = alpha
         self.__params = params
 
-        self.__ap = self.__params.activeParams()
+        self.__ap = self.__params.activeParams().marginalize()
         self.__U = self.__ap.getIndependentJointDistribution()
         self.__T = self.__ap.getJointTransformation()
         self.__xlim = self.__U.getBounds()
@@ -55,25 +59,6 @@ class HDMRAnalytic(object):
 
         if self.__dim < 2:
             raise AttributeError('dimensionality has to be > 1')
-
-        distributions = self.__U.getDistributions()
-        if len(distributions) != self.__dim:
-            # marginalize the distribution
-            margDistList = []
-            margTransformations = JointTransformation()
-            for i, dist in enumerate(distributions):
-                trans = self.__T.getTransformations()[i]
-                if dist.getDim() == 1:
-                    margDistList.append(dist)
-                    margTransformations.add(trans)
-                else:
-                    trans = trans.getTransformations()
-                    for idim in xrange(dist.getDim()):
-                        margDistList.append(dist.marginalizeToDimX(idim))
-                        margTransformations.add(trans[idim])
-            assert len(margDistList) == self.__dim
-            self.__U = J(margDistList)
-            self.__T = margTransformations
 
         # check if highest order term is required
         self.__has_highest_order_term = not nk or nk > self.__dim - 1
