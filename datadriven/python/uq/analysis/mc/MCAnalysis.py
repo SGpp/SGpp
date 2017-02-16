@@ -57,9 +57,11 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
+                 'mean_err',
                  'meanConfidenceIntervalBootstrapping_lower',
                  'meanConfidenceIntervalBootstrapping_upper',
                  'var',
+                 'var_err',
                  'varConfidenceIntervalBootstrapping_lower',
                  'varConfidenceIntervalBootstrapping_upper']
         # parameters
@@ -79,10 +81,10 @@ class MCAnalysis(Analysis):
             v[0] = t
             v[1] = 0
             v[2] = numSamples
-            v[3] = mean["value"]
-            v[4], v[5] = mean["confidence_interval"]
-            v[6] = var["value"]
-            v[7], v[8] = var["confidence_interval"]
+            v[3], v[4] = mean["value"], mean["err"]
+            v[5], v[6] = mean["confidence_interval"]
+            v[7], v[8] = var["value"], var["err"]
+            v[8], v[9] = var["confidence_interval"]
 
             # write results to matrix
             data.setRow(row, v)
