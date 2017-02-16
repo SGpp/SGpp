@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+try:
+    from matplotlib2tikz import save as tikz_save
+except:
+    pass
 
 def intToRGB(i):
     blue = i & 255
@@ -40,3 +44,23 @@ def load_font_properties():
 #         colors[i] = '#%06X' % np.random.randint(0, 0xFFFFFF)
 #
 #     return colors
+
+def savefig(fig, filename, lgd=None):
+    fig.tight_layout()
+    if lgd is None:
+        fig.savefig("%s.png" % filename, bbox_inches='tight')
+        fig.savefig("%s.pdf" % filename, bbox_inches='tight')
+        tikz_save("%s.tex" % filename)
+    else:
+        fig.savefig("%s.png" % filename,
+                    bbox_extra_artists=(lgd,),
+                    bbox_inches='tight')
+        fig.savefig("%s.pdf" % filename,
+                    bbox_extra_artists=(lgd,),
+                    bbox_inches='tight')
+        try:
+            tikz_save("%s.tex" % filename)
+        except:
+            pass
+
+    plt.close(fig)
