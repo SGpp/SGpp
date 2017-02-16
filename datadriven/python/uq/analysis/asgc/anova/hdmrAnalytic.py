@@ -4,6 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 #
+from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
 """
 @file    hdmr.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -19,6 +20,7 @@ from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrate
                                                         MarginalAnalyticEstimationStrategy)
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                                         isNumerical)
+from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 
 import itertools as it
@@ -55,16 +57,23 @@ class HDMRAnalytic(object):
             raise AttributeError('dimensionality has to be > 1')
 
         distributions = self.__U.getDistributions()
-        margDistList = [] 
         if len(distributions) != self.__dim:
             # marginalize the distribution
-            for dist in distributions:
-                if dist.getStochasticDim() == 1:
+            margDistList = []
+            margTransformations = JointTransformation()
+            for i, dist in enumerate(distributions):
+                trans = self.__T.getTransformations()[i]
+                if dist.getDim() == 1:
                     margDistList.append(dist)
+                    margTransformations.add(trans)
                 else:
-                    for idim in dist.getStochasticDim():
+                    trans = trans.getTransformations()
+                    for idim in xrange(dist.getDim()):
                         margDistList.append(dist.marginalizeToDimX(idim))
+                        margTransformations.add(trans[idim])
+            assert len(margDistList) == self.__dim
             self.__U = J(margDistList)
+            self.__T = margTransformations
 
         # check if highest order term is required
         self.__has_highest_order_term = not nk or nk > self.__dim - 1
