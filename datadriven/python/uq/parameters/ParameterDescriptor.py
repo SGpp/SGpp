@@ -114,6 +114,10 @@ class UncertainParameterDesciptor(ParameterDescriptor):
             raise AttributeError('the distribution of "%s" is not specified yet but it is needed to know to apply the Rosenblatt transformation' % self.__name)
         return self
 
+    def withTransformation(self, trans):
+        self.__trans = trans
+        return self
+
     def andGetResult(self):
         if self._dist is None:
             raise Exception("No distribution specified for parameter '%s'" % self._name)
