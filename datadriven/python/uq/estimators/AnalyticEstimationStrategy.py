@@ -220,7 +220,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
         return {"value": moment,
                 "err": err,
-                "confidence_interval": (0.0, 0.0)}
+                "confidence_interval": (moment, moment)}
 
 
     def var(self, grid, alpha, U, T, mean):
@@ -239,4 +239,4 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
         return {"value": var,
                 "err": err,
-                "confidence_interval": (0.0, 0.0)}
+                "confidence_interval": (var, var)}
