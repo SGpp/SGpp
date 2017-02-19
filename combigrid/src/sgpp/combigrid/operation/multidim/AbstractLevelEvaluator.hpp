@@ -32,6 +32,12 @@ class AbstractLevelEvaluator {
   virtual ~AbstractLevelEvaluator();
 
   virtual bool addLevel(MultiIndex const &level) = 0;
+  /**
+   * @return An upper bound for the number of points (function evaluations) used for the current
+   * computation. This bound is exact if nesting is used or if otherwise each grid point only occurs
+   * in exactly one level.
+   */
+  virtual size_t getUpperPointBound() const = 0;
   virtual std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level,
                                                       ThreadPool::Task callback) = 0;
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) = 0;

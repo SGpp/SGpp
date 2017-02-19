@@ -164,6 +164,14 @@ std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> CombigridMultiOperation:
   return impl->combiEval->differences();
 }
 
+size_t CombigridMultiOperation::numStoredFunctionValues() { return impl->storage->getNumEntries(); }
+
+size_t CombigridMultiOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
+
+size_t CombigridMultiOperation::getUpperPointBound() const {
+  return impl->levelManager->getUpperPointBound();
+}
+
 std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                         MultiFunction func) {
@@ -275,10 +283,6 @@ std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createExpClens
           numDimensions, CombiEvaluators::multiQuadrature()),
       std::make_shared<StandardLevelManager>(), func);
 }
-
-size_t CombigridMultiOperation::numStoredFunctionValues() { return impl->storage->getNumEntries(); }
-
-size_t CombigridMultiOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
 
 std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimensions,
