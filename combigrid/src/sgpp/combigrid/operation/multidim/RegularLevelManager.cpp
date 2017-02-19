@@ -16,7 +16,7 @@ double RegularLevelManager::computePriority(const MultiIndex& level) {
     sum += level[i];
   }
 
-  return pow(0.5, static_cast<double>(sum));
+  return pow(0.5, sum);
 }
 
 RegularLevelManager::RegularLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
