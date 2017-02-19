@@ -114,6 +114,10 @@ size_t CombigridOperation::numStoredFunctionValues() { return impl->storage->get
 
 size_t CombigridOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
 
+size_t CombigridOperation::getUpperPointBound() const {
+  return impl->levelManager->getUpperPointBound();
+}
+
 std::shared_ptr<CombigridOperation>
 CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                    MultiFunction func) {
@@ -251,5 +255,6 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformLinearIn
           numDimensions, CombiEvaluators::linearInterpolation()),
       std::make_shared<StandardLevelManager>(), func);
 }
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
