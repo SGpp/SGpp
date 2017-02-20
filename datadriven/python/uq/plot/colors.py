@@ -64,3 +64,42 @@ def savefig(fig, filename, lgd=None):
             pass
 
     plt.close(fig)
+
+
+def insert_legend(fig, loc="right", ncol=3):
+    if loc == "right":
+        lgd = plt.legend(loc='upper left',
+                         bbox_to_anchor=(1.02, 1),
+                         borderaxespad=0,
+                         prop=load_font_properties())
+    elif loc == "bottom":
+        lgd = plt.legend(loc='upper center',
+                         ncol=ncol,
+                         bbox_to_anchor=(0.5, -0.3),
+                         borderaxespad=0,
+                         prop=load_font_properties())
+    elif loc == "top":
+        lgd = ax.legend(loc='upper center',
+                        bbox_to_anchor=(0.5, 1.25),
+                        ncol=ncol,
+                        borderaxespad=0,
+                        prop=load_font_properties())
+    elif loc == "left":
+        lgd = plt.legend(loc='upper right',
+                         bbox_to_anchor=(-0.1, 1),
+                         borderaxespad=0,
+                         prop=load_font_properties())
+    else:
+        raise AttributeError("loc '%s' not known" % loc)
+
+    plt.setp(lgd.get_title(),
+             multialignment='left')
+    for txt in lgd.get_texts():
+        txt.set_ha('left')  # ha is alias for horizontalalignment
+
+    plt.draw()  # to know size of legend
+    ax = plt.gca()
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.67, box.height])
+
+    return lgd

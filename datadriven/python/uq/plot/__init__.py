@@ -43,7 +43,7 @@ from plotGrid import plotGrid
 from scatterplot import scatterplot_matrix
 
 from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
-    load_font_properties
+    load_font_properties, insert_legend
 
 try:
     import matplotlib as mpl
