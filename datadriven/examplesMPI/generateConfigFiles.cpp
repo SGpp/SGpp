@@ -17,81 +17,32 @@
 
 
 int main(int argc, char **argv) {
-  if (argc != 6) {
+  if (argc == 4) {
+    int packagesize_master = std::stoi(argv[1]);
+    int number_compute_nodes = std::stoi(argv[2]);
+    sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
+        MPIEnviroment::createMPIConfiguration(packagesize_master, number_compute_nodes);
+    conf.serialize(argv[3]);
+    return 0;
+  }
+  if (argc == 6) {
+    int packagesize_master = std::stoi(argv[1]);
+    int number_leutnant_nodes = std::stoi(argv[2]);
+    int packagesize_leutnant = std::stoi(argv[3]);
+    int number_slave_nodes = std::stoi(argv[4]);
+    sgpp::base::OperationConfiguration conf = sgpp::datadriven::clusteringmpi::
+        MPIEnviroment::createMPIConfiguration(packagesize_master, number_leutnant_nodes,
+                                              packagesize_leutnant, number_slave_nodes);
+    conf.serialize(argv[5]);
+    return 0;
+  } else {
     std::cout << "Usage:" << std::endl;
-    std::cout << "./generateConfigFiles <OCL config filename> <MPI config filename> "
-              << "<Number of compute nodes> <Nodes packagesize> <devices packagesize>"
+    std::cout << "./generateConfigFiles <Packagesize> <Number of compute nodes> <Filename>"
+              << std::endl << "OR " << std::endl
+              << "./generateConfigFiles <Packagesize> <Number of leutnant nodes> "
+              << "<Packagesize leutnant nodes> <Number of compute nodes per leutnant> <Filename>"
               << std::endl;
     return 0;
   }
-  // Create opencl config file
-  sgpp::base::OCLManagerMultiPlatform manager(true);
-  auto configuration = manager.getConfiguration();
-  sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationDensity::load_default_parameters(configuration.get());
-  sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationCreateGraphOCL::load_default_parameters(configuration.get());
-  sgpp::datadriven::DensityOCLMultiPlatform::
-      OperationPruneGraphOCL::load_default_parameters(configuration.get());
-  configuration->serialize(argv[1]);
-
-  // Get arguments
-  size_t compute_nodes = 1;
-  bool verbose = false, prefetching = true;
-  int compute_node_packagesize = 20000;
-  int device_packagesize = 4000;
-  compute_nodes = std::stoi(argv[3]);
-  compute_node_packagesize = std::stoi(argv[4]);
-  device_packagesize = std::stoi(argv[5]);
-
-  // Create MPI config file
-  auto opencl_devices = manager.getDevices();
-  sgpp::base::OperationConfiguration conf;
-  conf.addIDAttr("VERBOSE", verbose);
-  conf.addIDAttr("PACKAGE_SIZE", UINT64_C(10240));
-  conf["PACKAGE_SIZE"].setInt(compute_node_packagesize);
-  conf.addIDAttr("PREFETCHING", prefetching);
-  std::unique_ptr<json::Node> workers(new json::DictNode);
-  for (size_t i = 0; i < compute_nodes; ++i) {
-    std::unique_ptr<json::Node> node_worker(new json::DictNode);
-    node_worker->addIDAttr("VERBOSE", verbose);
-    node_worker->addIDAttr("PACKAGE_SIZE", UINT64_C(2560));
-    (*node_worker)["PACKAGE_SIZE"].setInt(device_packagesize);
-    node_worker->addIDAttr("PREFETCHING", prefetching);
-    std::unique_ptr<json::Node> device_workers(new json::DictNode);
-    int node_counter = 0;
-    int platform_counter = 0;
-    int device_counter = 0;
-    cl_device_id old_device_id = opencl_devices[0]->deviceId;
-    cl_platform_id old_platform_id = opencl_devices[0]->platformId;
-    for (std::shared_ptr<sgpp::base::OCLDevice> device : opencl_devices) {
-      if (device->platformId != old_platform_id) {
-        platform_counter++;
-        old_platform_id = device->platformId;
-        device_counter = 0;
-      }
-      if (device->deviceId != old_device_id) {
-        device_counter++;
-        old_device_id = device->deviceId;
-      }
-      std::cout << "device: " << device->platformId << " " << device->deviceId << std::endl;
-      std::cout << "device: " << device->platformName << " " << device->deviceName << std::endl;
-        std::unique_ptr<json::Node> device_worker(new json::DictNode);
-        device_worker->addIDAttr("VERBOSE", verbose);
-        device_worker->addIDAttr("OPENCL_PLATFORM", UINT64_C(0));
-        (*device_worker)["OPENCL_PLATFORM"].setInt(platform_counter);
-        device_worker->addIDAttr("OPENCL_DEVICE", UINT64_C(0));
-        (*device_worker)["OPENCL_DEVICE"].setInt(device_counter);
-        device_worker->addIDAttr("PREFETCHING", prefetching);
-        std::string id = std::string("OPENCL_WORKER_") + std::to_string(node_counter);
-        device_workers->addAttribute(id, std::move(device_worker));
-        node_counter++;
-    }
-    node_worker->addAttribute("SLAVES", std::move(device_workers));
-    std::string id = std::string("COMPUTE_NODE_") + std::to_string(i);
-    workers->addAttribute(id, std::move(node_worker));
-  }
-  conf.addAttribute("SLAVES", std::move(workers));
-  conf.serialize(argv[2]);
   return 0;
 }
