@@ -34,14 +34,14 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
   bool prefetching;
   bool redistribute;
   int secondary_workpackage[2];
+  int size;
 
   int opencl_platform = 0;
   int opencl_device = 0;
 
   void divide_workpackages(int *package, T *erg) {
     // Divide into more work packages
-    int packagesize = static_cast<int>(MPIEnviroment::get_configuration()
-                                       ["PREFERED_PACKAGESIZE"].getInt());
+    int packagesize = size;
     if (redistribute) {
       int logical_package_count = (package[1] /
                                    (packagesize * MPIEnviroment::get_sub_worker_count()));
@@ -104,6 +104,10 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
       overseer_node = false;
       opencl_node = true;
     }
+    if (MPIEnviroment::get_configuration().contains("PREFERED_PACKAGESIZE"))
+      size = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getUInt();
+    else
+      size = 2048;
     if (MPIEnviroment::get_configuration().contains("REDISTRIBUTE"))
       redistribute = MPIEnviroment::get_configuration()["REDISTRIBUTE"].getBool();
     if (MPIEnviroment::get_configuration().contains("PREFETCHING"))

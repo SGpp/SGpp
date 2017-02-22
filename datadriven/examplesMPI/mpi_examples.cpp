@@ -58,7 +58,6 @@ int main(int argc, char *argv[]) {
   gridGen.regular(level);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
-  std::cin.get();
 
   sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
   sgpp::base::DataVector alpha(gridsize);
@@ -82,7 +81,7 @@ int main(int argc, char *argv[]) {
   // Create and prune knn graph
   std::cout << "Graph Creation/Pruning:" << std::endl;
   sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
-                                                                            dataset, 12, 1.4);
+                                                                            dataset, 12, 0.7);
   std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
   sgpp::datadriven::DensityOCLMultiPlatform::

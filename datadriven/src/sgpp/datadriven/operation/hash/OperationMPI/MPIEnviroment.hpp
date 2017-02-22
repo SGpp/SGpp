@@ -156,7 +156,6 @@ class SimpleQueue {
     if (packagesize > workitem_count) {
       commsize = 1;
       packagesize = workitem_count;
-      std::cout << "ITSHAPPENING" << workitem_count << std::endl;
     } else if (packagesize > workitem_count / (commsize * 2)) {
       packagesize = static_cast<int>(workitem_count / (commsize * 2));
     }
