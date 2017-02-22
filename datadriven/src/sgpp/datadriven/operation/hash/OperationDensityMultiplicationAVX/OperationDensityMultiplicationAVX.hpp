@@ -113,11 +113,11 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     else
       throw std::logic_error("Result pointer already bounded!");
     this->alpha = alpha.getPointer();
-    start_partial_mult(alpha.getPointer(), 0, alpha.getSize());
+    start_partial_mult(0, alpha.getSize());
     finish_partial_mult(this->result, 0, result.getSize());
   }
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
-  virtual void start_partial_mult(double *alpha, int start_id, int chunksize) {
+  virtual void start_partial_mult(int start_id, int chunksize) {
     std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // size_t counter = 0;
     // size_t sicherheit = 0;
@@ -282,6 +282,8 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     _mm256_storeu_pd(tmp_result, reg);
     std::cout << tmp_result[0] << " " << tmp_result[1] << " " << tmp_result[2] << " "
               << tmp_result[3] << std::endl;
+  }
+  virtual void initialize_alpha(double *alpha) {
   }
   /// Just a dummy function
   virtual void finish_partial_mult(double *result, int start_id, int chunksize) {

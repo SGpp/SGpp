@@ -177,26 +177,41 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     delete bKernel;
   }
 
-  /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
-  void start_partial_mult(double *alpha, int start_id, int chunksize) override {
-    std::vector<T> alphaVector(gridSize);
-    for (size_t i = 0; i < gridSize; ++i) {
-      alphaVector[i] = static_cast<T>(alpha[i]);
+  /// Use before calling partial_mult directly
+  void initialize_alpha(double *alpha) override {
+    if (std::is_same<T, double>::value) {
+      std::vector<T> alphaVector(alpha, alpha + gridSize);
+      this->multKernel->initialize_alpha_buffer(alphaVector);
+    } else {
+      std::vector<T> alphaVector(gridSize);
+      for (size_t i = 0; i < gridSize; ++i) {
+        alphaVector[i] = static_cast<T>(alpha[i]);
+      }
+      this->multKernel->initialize_alpha_buffer(alphaVector);
     }
+  }
+
+  /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
+  void start_partial_mult(int start_id, int chunksize) override {
     if (verbose)
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
-    this->multKernel->start_mult(alphaVector, start_id, chunksize);
+    this->multKernel->start_mult(start_id, chunksize);
   }
 
   void finish_partial_mult(double *result, int start_id, int chunksize) override {
-    std::vector<T> resultVector(chunksize);
-    for (int i = 0; i < chunksize; i++) {
-      resultVector[i] = static_cast<T>(result[i]);
+    if (std::is_same<T, double>::value) {
+      std::vector<T> resultVector(result, result + chunksize);
+      this->multKernel->finish_mult(resultVector, start_id, chunksize);
+      std::copy(resultVector.begin(), resultVector.end(), result);
+    } else {
+      std::vector<T> resultVector(chunksize);
+      for (int i = 0; i < chunksize; i++) {
+        resultVector[i] = static_cast<T>(result[i]);
+      }
+      this->multKernel->finish_mult(resultVector, start_id, chunksize);
+      std::copy(resultVector.begin(), resultVector.end(), result);
     }
-    this->multKernel->finish_mult(resultVector, start_id, chunksize);
-    for (int i = 0; i < chunksize; i++)
-      result[i] = resultVector[i];
   }
 
   /// Execute one matrix-vector multiplication with the density matrix
@@ -211,7 +226,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
       std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->multKernel->start_mult(alphaVector, 0, 0);
+    this->multKernel->initialize_alpha_buffer(alphaVector);
+    this->multKernel->start_mult(0, 0);
     this->multKernel->finish_mult(resultVector, 0, 0);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;

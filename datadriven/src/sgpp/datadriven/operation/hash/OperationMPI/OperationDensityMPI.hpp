@@ -22,19 +22,19 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
   double lambda;
   DensityOCLMultiPlatform::OperationDensity *op;
   double *alpha;
+  size_t oldgridsize;
 
   void receive_and_send_initial_data(void) {
-    if (alpha != NULL)
-      delete [] alpha;
-    alpha = NULL;
     receive_alpha(&alpha);
+    if (opencl_node)
+      op->initialize_alpha(alpha);
     send_alpha(&alpha);
     if (verbose) {
       std::cout << "Received alpha on " << MPIEnviroment::get_node_rank() << std::endl;
     }
   }
   void begin_opencl_operation(int *workpackage) {
-    op->start_partial_mult(alpha, workpackage[0], workpackage[1]);
+    op->start_partial_mult(workpackage[0], workpackage[1]);
   }
   void finalize_opencl_operation(double *result_buffer, int *workpackage) {
     op->finish_partial_mult(result_buffer, workpackage[0], workpackage[1]);
@@ -45,6 +45,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
         MPIWorkerGridBase("DensityMultiplicationWorker"),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
     alpha = NULL;
+    oldgridsize = 0;
     // Receive lambda
     MPI_Status stat;
     MPI_Probe(0, 1, master_worker_comm, &stat);
@@ -106,7 +107,12 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
                   << buffer_size << " should match!" << std::endl;
       throw std::logic_error(errorString.str());
     }
-    *alpha = new double[gridsize];
+    if (gridsize != oldgridsize) {
+      if (*alpha != NULL)
+        delete [] (*alpha);
+      *alpha = new double[gridsize];
+      oldgridsize = gridsize;
+    }
     MPI_Recv(*alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
              master_worker_comm, &stat);
   }

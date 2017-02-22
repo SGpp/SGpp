@@ -190,9 +190,16 @@ class KernelDensityMult {
     }
   }
 
+  void initialize_alpha_buffer(std::vector<T> &alpha) {
+
+    // Load data into buffers if not already done
+    for (size_t i = 0; i < localSize - gridSize % localSize; i++)
+      alpha.push_back(0.0);
+    deviceAlpha.intializeTo(alpha, 1, 0, alpha.size());
+  }
+
   /// Executes part of one matrix-vector density multiplication from startid to startid + chunksize
-  void start_mult(std::vector<T> &alpha,  size_t startid,
-                    size_t chunksize) {
+  void start_mult(size_t startid, size_t chunksize) {
     if (verbose) {
       std::cout << "entering mult, device: " << device->deviceName << " ("
                 << device->deviceId << ")" << std::endl;
@@ -223,10 +230,6 @@ class KernelDensityMult {
                                               "multdensity");
     }
 
-    // Load data into buffers if not already done
-    for (size_t i = 0; i < localSize - gridSize % localSize; i++)
-      alpha.push_back(0.0);
-    deviceAlpha.intializeTo(alpha, 1, 0, alpha.size());
     if (chunksize == 0)
       deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
     else
