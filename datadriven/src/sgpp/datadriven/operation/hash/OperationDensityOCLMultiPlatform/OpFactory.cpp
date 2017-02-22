@@ -19,7 +19,6 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                                         size_t platform_id, size_t device_id) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
-  parameters->serialize("testdebug.cfg");
 
   DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
@@ -49,7 +48,6 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
   DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
@@ -78,7 +76,6 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
   base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(opencl_conf);
   DensityOCLMultiPlatform::OperationDensity::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
-  parameters->serialize("MyOCLConf.cfg");
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::DensityOCLMultiPlatform::
