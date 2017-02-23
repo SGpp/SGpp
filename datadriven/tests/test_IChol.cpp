@@ -14,118 +14,125 @@
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 
 #include <cmath>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::datadriven::IChol;
+using sgpp::datadriven::SparseDataMatrix;
 
 BOOST_AUTO_TEST_SUITE(test_IChol)
 
 BOOST_AUTO_TEST_CASE(decomp_identity) {
-  auto size = 4u;
-  DataMatrix A{size, size};
+  const std::vector<double> data{1, 1, 1, 1, 1};
+  const std::vector<size_t> colIdx{0, 1, 2, 3, 4};
 
-  // initialize
-  A.setAll(0);
-  for (auto i = 0u; i < size; i++) {
-    A.set(i, i, 1);
-  }
-
-  auto B = A;
+  auto size = 5u;
+  SparseDataMatrix A{size, size, data, colIdx, colIdx};
 
   // decomp:
   IChol::decompose(A, 1);
 
   // test
-  for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+  const auto& aData = A.getDataVector();
+  for (auto i = 0u; i < data.size(); i++) {
+    BOOST_CHECK_CLOSE(aData[i], data[i], 10e-5);
   }
 }
 
 BOOST_AUTO_TEST_CASE(decomp_diag) {
-  auto size = 4u;
-  DataMatrix A{size, size};
+  const std::vector<double> data{1, 4, 9, 16, 25};
+  const std::vector<double> results{1, 2, 3, 4, 5};
+  const std::vector<size_t> colIdx{0, 1, 2, 3, 4};
 
-  // initialize
-  A.setAll(0);
-  auto B = A;
-  for (auto i = 0u; i < size; i++) {
-    A.set(i, i, 4);
-    B.set(i, i, 2);
-  }
+  auto size = 5u;
+  SparseDataMatrix A{size, size, data, colIdx, colIdx};
 
   // decomp:
   IChol::decompose(A, 1);
 
   // test
-  for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+  const auto& aData = A.getDataVector();
+  for (auto i = 0u; i < data.size(); i++) {
+    BOOST_CHECK_CLOSE(aData[i], results[i], 10e-5);
   }
 }
 
 BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
-  auto size = 2u;
+  auto size = 5u;
 
   // initialize
-  double a_val[]{8.0, 4.0, 4.0, 9.0};
-  double b_val[]{2.0 * std::sqrt(2.0), 4.0, std::sqrt(2.0), std::sqrt(7.0)};
+  const std::vector<double> aSparse{2, 2, 6, 1, 6, 1, 6, 1, 4, 2, 16};
+  const std::vector<size_t> colIdx{0, 0, 1, 0, 2, 2, 3, 0, 2, 3, 4};
+  const std::vector<size_t> rowPtr{0, 1, 3, 5, 7};
+  const std::vector<double> results{1.4142, 1.4142, 2.0000, 0.7071, 2.3452, 0.4264,
+                                    2.4121, 0.7071, 1.4924, 0.5653, 3.5990};
 
-  DataMatrix A{a_val, size, size};
-  DataMatrix B{b_val, size, size};
-
+  SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
+  DataVector aNorm(size);
   // decomp:
+  IChol::normToUnitDiagonal(A, aNorm);
   IChol::decompose(A, 1);
+  // IChol::reaplyDiagonal(A, aNorm);
 
   // test
-  for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+  const auto& aData = A.getDataVector();
+  for (auto i = 0u; i < aData.size(); i++) {
+    BOOST_CHECK_CLOSE(aData[i], results[i], 10e-5);
   }
 }
 
 BOOST_AUTO_TEST_CASE(norm) {
-  auto size = 2u;
+  const std::vector<double> aSparse{1, 1, 4, 1, 9, 1, 16, 1, 25};
+  const std::vector<double> bSparse{1.0, 1.0 / 1.0 * 1.0 / 2.0, 1.0, 1.0 / 2.0 * 1.0 / 3.0,
+                                    1.0, 1.0 / 3.0 * 1.0 / 4.0, 1.0, 1.0 / 4.0 * 1.0 / 5.0,
+                                    1.0};
+  const double bVec[]{1.0, 1.0 / 2.0, 1.0 / 3.0, 1.0 / 4.0, 1.0 / 5.0};
+  const std::vector<size_t> colIdx{0, 0, 1, 1, 2, 2, 3, 3, 4};
+  const std::vector<size_t> rowPtr{0, 1, 3, 5, 7};
+
+  auto size = 5u;
 
   // initialize
-  double a_val[]{9.0, 3.0, 3.0, 16.0};
-  double b_val[]{1.0, 3.0, 1.0 / 4.0, 1.0};
-  double b_vec[]{1.0 / 3.0, 1.0 / 4.0};
-
-  DataMatrix A{a_val, size, size};
+  SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
   DataVector aNorm{size};
-  DataMatrix B{b_val, size, size};
-  DataVector bNorm{b_vec, size};
-
-  // decomp:
+  // norm:
   IChol::normToUnitDiagonal(A, aNorm);
 
   // test
-  for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+  const auto& aData = A.getDataVector();
+
+  for (auto i = 0u; i < aData.size(); i++) {
+    BOOST_CHECK_CLOSE(aData[i], bSparse[i], 10e-5);
   }
 
   for (auto i = 0u; i < aNorm.getSize(); i++) {
-    BOOST_CHECK_CLOSE(aNorm[i], bNorm[i], 10e-5);
+    BOOST_CHECK_CLOSE(aNorm[i], bVec[i], 10e3);
   }
 }
 
 BOOST_AUTO_TEST_CASE(reaplyNorm) {
-  auto size = 2u;
+  const std::vector<double> aSparse{1, 1, 4, 1, 9, 1, 16, 1, 25};
+  const std::vector<double> bSparse{1.0, 1.0 / 1.0 * 1.0 / 2.0, 1.0, 1.0 / 2.0 * 1.0 / 3.0,
+                                    1.0, 1.0 / 3.0 * 1.0 / 4.0, 1.0, 1.0 / 4.0 * 1.0 / 5.0,
+                                    1.0};
+  double bVec[]{1.0, 1.0 / 2.0, 1.0 / 3.0, 1.0 / 4.0, 1.0 / 5.0};
+  const std::vector<size_t> colIdx{0, 0, 1, 1, 2, 2, 3, 3, 4};
+  const std::vector<size_t> rowPtr{0, 1, 3, 5, 7};
+
+  auto size = 5u;
 
   // initialize
-  double b_val[]{9.0, 3.0, 3.0, 16.0};
-  double a_val[]{1.0, 3.0, 1.0 / 4.0, 1.0};
-  double a_vec[]{1.0 / 3.0, 1.0 / 4.0};
-
-  DataMatrix A{a_val, size, size};
-  DataVector aNorm{a_vec, size};
-  DataMatrix B{b_val, size, size};
-
-  // decomp:
+  SparseDataMatrix A{size, size, bSparse, colIdx, rowPtr};
+  DataVector aNorm{bVec, size};
+  // norm:
   IChol::reaplyDiagonal(A, aNorm);
 
   // test
-  for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+  const auto& aData = A.getDataVector();
+
+  for (auto i = 0u; i < aData.size(); i++) {
+    BOOST_CHECK_CLOSE(aData[i], aSparse[i], 10e-5);
   }
 }
 

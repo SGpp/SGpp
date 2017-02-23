@@ -24,6 +24,12 @@ class SparseDataMatrix {
  public:
   SparseDataMatrix();
   SparseDataMatrix(size_t nrows, size_t ncols);
+  SparseDataMatrix(size_t nrows, size_t ncols, const std::vector<double>& dataVector,
+                   const std::vector<size_t>& colIndexVector,
+                   const std::vector<size_t>& rowPtrVector);
+
+  SparseDataMatrix(size_t nrows, size_t ncols, std::vector<double>&& dataVector,
+                   std::vector<size_t>&& colIndexVector, std::vector<size_t>&& rowPtrVector);
 
   size_t getNrows() const;
 
