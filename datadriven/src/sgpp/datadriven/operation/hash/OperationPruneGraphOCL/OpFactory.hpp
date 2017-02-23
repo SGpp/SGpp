@@ -22,6 +22,12 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
                                     double *alpha, base::DataMatrix &data, double treshold,
                                     size_t k, std::string opencl_conf, size_t platformid,
                                     size_t deviceid);
+DensityOCLMultiPlatform::OperationPruneGraphOCL*
+pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions,
+                                    double *alpha, base::DataMatrix &data,
+                                    double treshold, size_t k,
+                                    sgpp::base::OCLOperationConfiguration *parameters,
+                                    size_t platformid, size_t deviceid);
 /// Generates the graph pruning operation
 sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,

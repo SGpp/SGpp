@@ -23,6 +23,10 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
                                      size_t dimensions, std::string opencl_conf,
                                      size_t platformid, size_t devicdeid);
+DensityOCLMultiPlatform::OperationCreateGraphOCL*
+createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
+                                     size_t dimensions, sgpp::base::OCLOperationConfiguration *parameters,
+                                     size_t platformid, size_t deviceid);
 /// Generates the k nearest neighbors graph creation
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,

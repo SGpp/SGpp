@@ -82,21 +82,21 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
     // Create opencl operation
     if (opencl_node) {
       op = createNearestNeighborGraphConfigured(dataset, dataset_size, k, dimensions,
-                                                "MyOCLConf.cfg", opencl_platform, opencl_device);
+                                                parameters, opencl_platform, opencl_device);
       op_prune = pruneNearestNeighborGraphConfigured(gridpoints, complete_gridsize /
                                                      (2 * grid_dimensions),
                                                      grid_dimensions, alpha,
                                                      data_matrix, treshold, k,
-                                                     "MyOCLConf.cfg", opencl_platform,
+                                                     parameters, opencl_platform,
                                                      opencl_device);
     }
   }
   PrunedGraphCreationWorker(base::Grid &grid, base::DataVector &alpha, base::DataMatrix &data,
-                            int k, double treshold)
+                            int k, double treshold, std::string ocl_conf_filename)
       : MPIWorkerBase("PrunedGraphCreationWorker"),
         MPIWorkerGridBase("PrunedGraphCreationWorker", grid),
         MPIWorkerGraphBase("PrunedGraphCreationWorker", data, k),
-        MPIWorkerPackageBase("PrunedGraphCreationWorker", k),
+        MPIWorkerPackageBase("PrunedGraphCreationWorker", k, ocl_conf_filename),
         delete_alpha(false) {
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
@@ -120,9 +120,10 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
 class OperationPrunedGraphCreationMPI : public PrunedGraphCreationWorker {
  public:
   OperationPrunedGraphCreationMPI(base::Grid &grid, base::DataVector &alpha,
-                                  base::DataMatrix &data, int k, double treshold) :
+                                  base::DataMatrix &data, int k, double treshold,
+                                  std::string ocl_conf_filename) :
       MPIWorkerBase("PrunedGraphCreationWorker"),
-      PrunedGraphCreationWorker(grid, alpha, data, k, treshold) {
+      PrunedGraphCreationWorker(grid, alpha, data, k, treshold, ocl_conf_filename) {
   }
   virtual ~OperationPrunedGraphCreationMPI() {}
   virtual void create_graph(std::vector<int> &result) {

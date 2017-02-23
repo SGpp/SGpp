@@ -43,6 +43,32 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
   }
   return NULL;
 }
+DensityOCLMultiPlatform::OperationCreateGraphOCL*
+createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
+                                     size_t dimensions,
+                                     sgpp::base::OCLOperationConfiguration *parameters,
+                                     size_t platformid, size_t deviceid) {
+  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
+
+  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationCreateGraphOCLSingleDevice<float>(dataset, dataset_size, dimensions, manager,
+                                                   parameters, k, platformid, deviceid);
+  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationCreateGraphOCLSingleDevice<double>(dataset, dataset_size, dimensions, manager,
+                                                    parameters, k, platformid,
+                                                    deviceid);
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"CreateGraphOCL\": "
+                << " invalid value for parameter \"INTERNAL_PRECISION\"";
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  return NULL;
+}
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL*
 createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,

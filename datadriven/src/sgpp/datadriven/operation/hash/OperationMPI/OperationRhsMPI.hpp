@@ -47,16 +47,16 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
     if (opencl_node) {
       op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                    (2 * grid_dimensions), grid_dimensions,
-                                                   0.0, "MyOCLConf.cfg", opencl_platform,
+                                                   0.0, parameters, opencl_platform,
                                                    opencl_device);
     }
     data_matrix = NULL;
   }
-  DensityRhsWorker(base::Grid &grid, sgpp::base::DataMatrix &data)
+  DensityRhsWorker(base::Grid &grid, sgpp::base::DataMatrix &data, std::string ocl_config_file)
       : MPIWorkerBase("DensityRHSWorker"),
         MPIWorkerGridBase("DensityRHSWorker", grid),
         MPIWorkerGraphBase("DensityRHSWorker", data, 0),
-        MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
+        MPIWorkerPackageBase("DensityMultiplicationWorker", 1, ocl_config_file) {
     data_matrix = NULL;
   }
   virtual ~DensityRhsWorker(void) {
@@ -66,8 +66,8 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
 };
 class OperationDensityRhsMPI : public DensityRhsWorker {
  public:
-  OperationDensityRhsMPI(base::Grid &grid, sgpp::base::DataMatrix &data) :
-      MPIWorkerBase("DensityRHSWorker"), DensityRhsWorker(grid, data) {
+  OperationDensityRhsMPI(base::Grid &grid, sgpp::base::DataMatrix &data, std::string ocl_config_file) :
+      MPIWorkerBase("DensityRHSWorker"), DensityRhsWorker(grid, data, ocl_config_file) {
   }
   virtual ~OperationDensityRhsMPI() {}
   virtual void generate_b(base::DataVector &b) {

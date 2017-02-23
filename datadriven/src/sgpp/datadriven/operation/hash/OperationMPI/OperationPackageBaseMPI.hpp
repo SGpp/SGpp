@@ -39,6 +39,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
   int opencl_platform = 0;
   int opencl_device = 0;
 
+  base::OCLOperationConfiguration *parameters;
+
   void divide_workpackages(int *package, T *erg) {
     // Divide into more work packages
     int packagesize = size;
@@ -84,7 +86,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
       : MPIWorkerBase(operationName),
         opencl_node(false), packagesize_multiplier(multiplier),
         overseer_node(false), master_worker_comm(MPIEnviroment::get_input_communicator()),
-        sub_worker_comm(MPIEnviroment::get_communicator()), prefetching(false), redistribute(true) {
+        sub_worker_comm(MPIEnviroment::get_communicator()), prefetching(false),
+        redistribute(true), parameters(NULL){
     if (std::is_same<T, int>::value) {
       mpi_typ = MPI_INT;
     } else if (std::is_same<T, float>::value) {
@@ -116,6 +119,73 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
       opencl_platform = MPIEnviroment::get_configuration()["OPENCL_PLATFORM"].getUInt();
     if (MPIEnviroment::get_configuration().contains("OPENCL_DEVICE"))
       opencl_device = MPIEnviroment::get_configuration()["OPENCL_DEVICE"].getUInt();
+
+    // receive opencl configuration
+    std::cerr << "waiting for opencl configuration on" << MPIEnviroment::get_node_rank() <<
+    std::endl;
+    MPI_Status stat;
+    int messagesize = 0;
+    MPI_Probe(0, 1, master_worker_comm, &stat);
+    MPI_Get_count(&stat, MPI_CHAR, &messagesize);
+    char *serialized_conf = new char[messagesize];
+    MPI_Recv(serialized_conf, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
+             master_worker_comm, &stat);
+    parameters = new base::OCLOperationConfiguration();
+    parameters->deserialize(serialized_conf);
+    delete [] serialized_conf;
+    std::cerr << "Received ocl config on" << MPIEnviroment::get_node_rank() << std::endl;
+  }
+  MPIWorkerPackageBase(std::string operationName, int multiplier, std::string ocl_conf_filename)
+      : MPIWorkerBase(operationName),
+        opencl_node(false), packagesize_multiplier(multiplier),
+        overseer_node(false), master_worker_comm(MPIEnviroment::get_input_communicator()),
+        sub_worker_comm(MPIEnviroment::get_communicator()), prefetching(false),
+        redistribute(true), parameters(NULL) {
+    if (std::is_same<T, int>::value) {
+      mpi_typ = MPI_INT;
+    } else if (std::is_same<T, float>::value) {
+      mpi_typ = MPI_FLOAT;
+    } else if (std::is_same<T, double>::value) {
+      mpi_typ = MPI_DOUBLE;
+    } else {
+      std::stringstream errorString;
+      errorString << "Unsupported datatyp in class MPIWorkerPackageBase." << std::endl
+                  << "Template class needs to be int, float or double." << std::endl;
+      throw std::logic_error(errorString.str());
+    }
+    if (MPIEnviroment::get_sub_worker_count() > 0) {
+      overseer_node = true;
+      opencl_node = false;
+    } else {
+      overseer_node = false;
+      opencl_node = true;
+    }
+    if (MPIEnviroment::get_configuration().contains("PREFERED_PACKAGESIZE"))
+      size = MPIEnviroment::get_configuration()["PREFERED_PACKAGESIZE"].getUInt();
+    else
+      size = 2048;
+    if (MPIEnviroment::get_configuration().contains("REDISTRIBUTE"))
+      redistribute = MPIEnviroment::get_configuration()["REDISTRIBUTE"].getBool();
+    if (MPIEnviroment::get_configuration().contains("PREFETCHING"))
+      prefetching = MPIEnviroment::get_configuration()["PREFETCHING"].getBool();
+    if (MPIEnviroment::get_configuration().contains("OPENCL_PLATFORM"))
+      opencl_platform = MPIEnviroment::get_configuration()["OPENCL_PLATFORM"].getUInt();
+    if (MPIEnviroment::get_configuration().contains("OPENCL_DEVICE"))
+      opencl_device = MPIEnviroment::get_configuration()["OPENCL_DEVICE"].getUInt();
+
+    std::cerr << "Start sending ocl conf" << MPIEnviroment::get_node_rank() << std::endl;
+    base::OCLOperationConfiguration *parameters = new base::OCLOperationConfiguration(ocl_conf_filename);
+    std::ostringstream sstream;
+    parameters->serialize(sstream, 0);
+    std::string serialized_conf = sstream.str();
+    char *conf_message = new char[serialized_conf.length() + 1];
+    std::copy(serialized_conf.begin(), serialized_conf.end(), conf_message);
+    conf_message[serialized_conf.size()] = '\0';
+      // Send OCL configuration
+    for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
+      MPI_Send(conf_message, static_cast<int>(serialized_conf.size() + 1),
+               MPI_CHAR, dest, 1, sub_worker_comm);
+    delete [] conf_message;
   }
   virtual ~MPIWorkerPackageBase() {}
 

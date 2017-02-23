@@ -60,7 +60,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
     if (opencl_node) {
       op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
                                                    (2 * grid_dimensions), grid_dimensions,
-                                                   lambda, "MyOCLConf.cfg",
+                                                   lambda, parameters,
                                                    opencl_platform, opencl_device);
     }
     if (verbose) {
@@ -72,6 +72,19 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       : MPIWorkerBase("DensityMultiplicationWorker"),
         MPIWorkerGridBase("DensityMultiplicationWorker", grid),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
+    alpha = NULL;
+    // Send lambda to slaves
+    for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
+      MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
+    if (verbose) {
+      std::cout << "Density master node "
+                << MPIEnviroment::get_node_rank() << std::endl;
+    }
+  }
+  DensityWorker(base::Grid &grid, double lambda, std::string ocl_conf_filename)
+      : MPIWorkerBase("DensityMultiplicationWorker"),
+        MPIWorkerGridBase("DensityMultiplicationWorker", grid),
+        MPIWorkerPackageBase("DensityMultiplicationWorker", 1, ocl_conf_filename) {
     alpha = NULL;
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
@@ -120,8 +133,8 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
 
 class OperationDensityMultMPI : public base::OperationMatrix, public DensityWorker {
  public:
-  OperationDensityMultMPI(base::Grid &grid, double lambda) :
-      MPIWorkerBase("DensityMultiplicationWorker"), DensityWorker(grid, lambda) {
+  OperationDensityMultMPI(base::Grid &grid, double lambda, std::string ocl_conf_filename) :
+      MPIWorkerBase("DensityMultiplicationWorker"), DensityWorker(grid, lambda, ocl_conf_filename) {
   }
   virtual ~OperationDensityMultMPI() {}
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {
