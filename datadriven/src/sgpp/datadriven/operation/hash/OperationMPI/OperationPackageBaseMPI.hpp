@@ -132,6 +132,10 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
     char *serialized_conf = new char[messagesize];
     MPI_Recv(serialized_conf, messagesize, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG,
              master_worker_comm, &stat);
+      // Send OCL configuration
+    for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
+      MPI_Send(serialized_conf, messagesize,
+               MPI_CHAR, dest, 1, sub_worker_comm);
     parameters = new base::OCLOperationConfiguration();
     parameters->deserialize(serialized_conf);
     delete [] serialized_conf;
