@@ -193,9 +193,6 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
 
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
   void start_partial_mult(int start_id, int chunksize) override {
-    if (verbose)
-      std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
-    std::chrono::time_point<std::chrono::system_clock> start, end;
     this->multKernel->start_mult(start_id, chunksize);
   }
 
@@ -238,12 +235,21 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     for (size_t i = 0; i < gridSize; i++)
       result[i] = resultVector[i];
   }
-  void start_rhs_generation(base::DataMatrix &dataset, size_t start_id, size_t chunksize) override {
-    std::vector<T> datasetVector(dataset.getSize());
-    double *data_raw = dataset.getPointer();
-    for (size_t i = 0; i < dataset.getSize(); i++)
-      datasetVector[i] = static_cast<T>(data_raw[i]);
-    bKernel->start_rhs_generation(datasetVector, start_id, chunksize);
+  void initialize_dataset(base::DataMatrix &dataset) override {
+    if (std::is_same<T, double>::value) {
+      double *data_raw = dataset.getPointer();
+      std::vector<T> datasetVector(data_raw, data_raw + dataset.getSize());
+      bKernel->initialize_dataset(datasetVector);
+    } else {
+      std::vector<T> datasetVector(dataset.getSize());
+      double *data_raw = dataset.getPointer();
+      for (size_t i = 0; i < dataset.getSize(); i++)
+        datasetVector[i] = static_cast<T>(data_raw[i]);
+      bKernel->initialize_dataset(datasetVector);
+    }
+  }
+  void start_rhs_generation(size_t start_id, size_t chunksize) override {
+    bKernel->start_rhs_generation(start_id, chunksize);
   }
 
   void finalize_rhs_generation(sgpp::base::DataVector &b, size_t start_id,
@@ -271,7 +277,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
       datasetVector[i] = static_cast<T>(data_raw[i]);
     start = std::chrono::system_clock::now();
 
-    bKernel->start_rhs_generation(datasetVector, start_id, chunksize);
+    bKernel->initialize_dataset(datasetVector);
+    bKernel->start_rhs_generation(start_id, chunksize);
     bKernel->finalize_rhs_generation(bVector, start_id, chunksize);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
