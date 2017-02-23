@@ -81,11 +81,16 @@ int main(int argc, char *argv[]) {
   // Create and prune knn graph
   std::cout << "Graph Creation/Pruning:" << std::endl;
   sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
-                                                                            dataset, 12, 0.7);
+                                                                            dataset, 12, 0.2);
   std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
-  sgpp::datadriven::DensityOCLMultiPlatform::
+  std::vector<size_t> cluster_assignments = sgpp::datadriven::DensityOCLMultiPlatform::
       OperationCreateGraphOCL::find_clusters(knn_graph, 12);
+
+  std::ofstream out("cluster_erg.txt");
+  for (size_t datapoint : cluster_assignments) {
+    out << datapoint << " ";
+  }
 
   // Calc time
   end = std::chrono::system_clock::now();
