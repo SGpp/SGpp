@@ -333,10 +333,17 @@ def checkJava(config):
     Helper.printInfo("Java support (SG_JAVA) not enabled.")
 
 def configureGNUCompiler(config):
+  config.env["CC"] = 'CC'
+  config.env["CXX"] = 'CC'
+
+  config.env.Append(CPPPATH = [os.environ['BOOST_ROOT'] + '/include'])
+  config.env.Append(LIBPATH = [os.environ['BOOST_ROOT'] + '/lib'])
+  config.env.Append(CPPFLAGS=["-dynamic"])
+  config.env.Append(LINKFLAGS=["-dynamic"])
   if config.env["COMPILER"] == "openmpi":
-    config.env["CC"] = ("mpicc.openmpi")
-    config.env["LINK"] = ("mpic++.openmpi")
-    config.env["CXX"] = ("mpic++.openmpi")
+    config.env["CC"] = ("mpicc")
+    config.env["LINK"] = ("mpicxx")
+    config.env["CXX"] = ("mpicxx")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
