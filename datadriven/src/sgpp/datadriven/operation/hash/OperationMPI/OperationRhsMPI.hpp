@@ -25,9 +25,11 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
     if (data_matrix != NULL)
       delete data_matrix;
     data_matrix = new base::DataMatrix(dataset, dataset_size / dimensions, dimensions);
+    if (opencl_node)
+      op->initialize_dataset(*data_matrix);
   }
   void begin_opencl_operation(int *workpackage) {
-    op->start_rhs_generation(*data_matrix, workpackage[0], workpackage[1]);
+    op->start_rhs_generation(workpackage[0], workpackage[1]);
   }
   void finalize_opencl_operation(double *result_buffer, int *workpackage) {
     base::DataVector partial_rhs(workpackage[1]);

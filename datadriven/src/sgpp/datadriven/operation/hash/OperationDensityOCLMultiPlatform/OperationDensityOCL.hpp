@@ -32,8 +32,8 @@ class OperationDensity: public base::OperationMatrix {
   /// Generates the right hand side vector for the density equation
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) = 0;
-  virtual void start_rhs_generation(base::DataMatrix &dataset,
-                         size_t start_id,  size_t chunksize) = 0;
+  virtual void initialize_dataset(base::DataMatrix &dataset) = 0;
+  virtual void start_rhs_generation(size_t start_id,  size_t chunksize) = 0;
   virtual void finalize_rhs_generation(sgpp::base::DataVector &b,
                          size_t start_id,  size_t chunksize) = 0;
   /// Generate the default parameters in die json configuration

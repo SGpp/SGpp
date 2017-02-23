@@ -283,7 +283,11 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
     std::cout << tmp_result[0] << " " << tmp_result[1] << " " << tmp_result[2] << " "
               << tmp_result[3] << std::endl;
   }
+  /// Just a dummy function
   virtual void initialize_alpha(double *alpha) {
+  }
+  /// Just a dummy function
+  virtual void initialize_dataset(base::DataMatrix &dataset) {
   }
   /// Just a dummy function
   virtual void finish_partial_mult(double *result, int start_id, int chunksize) {
@@ -292,8 +296,7 @@ class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::Operat
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
                          size_t start_id = 0,  size_t chunksize = 0) {
   }
-  virtual void start_rhs_generation(base::DataMatrix &dataset,
-                                    size_t start_id,  size_t chunksize) {
+  virtual void start_rhs_generation(size_t start_id,  size_t chunksize) {
   }
   virtual void finalize_rhs_generation(sgpp::base::DataVector &b,
                                        size_t start_id,  size_t chunksize) {

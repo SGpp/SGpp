@@ -100,15 +100,18 @@ class KernelDensityB {
     }
   }
 
+  void initialize_dataset(std::vector<T> &data) {
+    this->dataSize = data.size()/dims;
+    if (!deviceData.isInitialized())
+      deviceData.intializeTo(data, 1, 0, data.size());
+  }
+
   /// Generates part of the right hand side density vector
-  void start_rhs_generation(std::vector<T> &data,
-             size_t startid = 0, size_t chunksize = 0) {
+  void start_rhs_generation(size_t startid = 0, size_t chunksize = 0) {
     if (verbose) {
       std::cout << "entering mult, device: " << device->deviceName << " ("
                 << device->deviceId << ")" << std::endl;
     }
-
-    this->dataSize = data.size()/dims;
 
     // Build kernel if not already done
     if (this->kernelB == nullptr) {
@@ -123,8 +126,6 @@ class KernelDensityB {
     }
 
     // Load data into buffers if not already done
-    if (!deviceData.isInitialized())
-      deviceData.intializeTo(data, 1, 0, data.size());
     if (chunksize == 0) {
       std::vector<T> zeros(gridSize);
       for (size_t i = 0; i < gridSize; i++) {
