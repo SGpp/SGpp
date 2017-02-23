@@ -47,6 +47,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
     if (redistribute) {
       int logical_package_count = (package[1] /
                                    (packagesize * MPIEnviroment::get_sub_worker_count()));
+      if (logical_package_count < 1)
+        logical_package_count = 1;
       packagesize += (package[1] % (packagesize * MPIEnviroment::get_sub_worker_count())) /
           (MPIEnviroment::get_sub_worker_count() * (logical_package_count));
     }
