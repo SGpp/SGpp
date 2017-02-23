@@ -11,13 +11,12 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 class IChol {
@@ -25,19 +24,16 @@ class IChol {
   /**
    * decompose in place
    */
-  static void decompose(DataMatrix& matrix, size_t sweeps);
-  /**
-   * decomposition is stored in results matrix
-   */
-  static void decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweeps);
+  static void decompose(SparseDataMatrix& matrix, size_t sweeps);
+
   /**
    * do a cholesky update on the last n rows
    */
-  static void updateLastNRows(DataMatrix& matrix, size_t numRows, size_t sweeps);
+  static void updateLastNRows(SparseDataMatrix& matrix, size_t numRows, size_t sweeps);
 
-  static void normToUnitDiagonal(DataMatrix& matrix, DataVector& norms);
+  static void normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms);
 
-  static void reaplyDiagonal(DataMatrix& matrix, DataVector& norms);
+  static void reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms);
 };
 
 } /* namespace datadriven */
