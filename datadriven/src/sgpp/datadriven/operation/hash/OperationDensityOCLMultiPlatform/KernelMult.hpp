@@ -230,13 +230,14 @@ class KernelDensityMult {
                                               "multdensity");
     }
 
-    if (chunksize == 0)
-      deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
-    else
-      deviceResultData.initializeBuffer(globalworkrange[0] * dataBlockingSize);
-    this->deviceTimingMult = 0.0;
-    clFinish(device->commandQueue);
-
+    if (!deviceResultData.isInitialized()) {
+      if (chunksize == 0)
+        deviceResultData.initializeBuffer(gridSize + localSize - gridSize % localSize);
+      else
+        deviceResultData.initializeBuffer(globalworkrange[0] * dataBlockingSize);
+      this->deviceTimingMult = 0.0;
+      clFinish(device->commandQueue);
+    }
     // Set mandatory kernel arguments
     int argument_counter = 0;
     if (!preprocess_positions) {

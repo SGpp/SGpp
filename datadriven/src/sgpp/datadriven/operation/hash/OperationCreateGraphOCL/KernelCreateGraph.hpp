@@ -142,7 +142,8 @@ class KernelCreateGraph {
                                           "connectNeighbors");
     }
 
-    deviceResultData.initializeBuffer(globalworkrange[0] * k);
+    if (!deviceResultData.isInitialized())
+      deviceResultData.initializeBuffer(globalworkrange[0] * k);
     clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
