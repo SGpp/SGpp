@@ -38,9 +38,7 @@ class PrunedGraphCreationWorker : public MPIWorkerGridBase, public MPIWorkerGrap
     std::vector<int> partial_graph(workpackage[1] * packagesize_multiplier);
     op->finalize_graph_creation(partial_graph, workpackage[0], workpackage[1]);
     op_prune->prune_graph(partial_graph, workpackage[0], workpackage[1]);
-    for (int i = 0; i < workpackage[1] * packagesize_multiplier; ++i) {
-      result_buffer[i] = partial_graph[i];
-    }
+    std::copy(partial_graph.begin(), partial_graph.end(), result_buffer);
   }
  public:
   PrunedGraphCreationWorker()

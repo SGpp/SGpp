@@ -126,20 +126,22 @@ class KernelDensityB {
     }
 
     // Load data into buffers if not already done
-    if (chunksize == 0) {
-      std::vector<T> zeros(gridSize);
-      for (size_t i = 0; i < gridSize; i++) {
-        zeros[i] = 0.0;
+    if (!deviceResultData.isInitialized()) {
+      if (chunksize == 0) {
+        std::vector<T> zeros(gridSize);
+        for (size_t i = 0; i < gridSize; i++) {
+          zeros[i] = 0.0;
+        }
+        deviceResultData.intializeTo(zeros, 1, 0, gridSize);
+      } else {
+        std::vector<T> zeros(chunksize);
+        for (size_t i = 0; i < chunksize; i++) {
+          zeros[i] = 0.0;
+        }
+        deviceResultData.intializeTo(zeros, 1, 0, chunksize);
       }
-      deviceResultData.intializeTo(zeros, 1, 0, gridSize);
-    } else {
-      std::vector<T> zeros(chunksize);
-      for (size_t i = 0; i < chunksize; i++) {
-        zeros[i] = 0.0;
-      }
-      deviceResultData.intializeTo(zeros, 1, 0, chunksize);
+      clFinish(device->commandQueue);
     }
-    clFinish(device->commandQueue);
     this->deviceTimingMult = 0.0;
 
     // Set kernel arguments
