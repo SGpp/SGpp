@@ -79,6 +79,35 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
 }
 
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
+pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions,
+                                    double *alpha, base::DataMatrix &data,
+                                    double treshold, size_t k,
+                                    sgpp::base::OCLOperationConfiguration *parameters,
+                                    size_t platformid, size_t deviceid) {
+  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
+  DensityOCLMultiPlatform::OperationPruneGraphOCL::load_default_parameters(parameters);
+
+  if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationPruneGraphOCLMultiPlatform<float>(gridpoints, gridsize, dimensions, alpha, data,
+                                                   manager, parameters,
+                                                   static_cast<float>(treshold), k,
+                                                   platformid, deviceid);
+  } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    return new DensityOCLMultiPlatform::
+        OperationPruneGraphOCLMultiPlatform<double>(gridpoints, gridsize, dimensions, alpha, data,
+                                                    manager, parameters, treshold, k, platformid,
+                                                    deviceid);
+  } else {
+    std::stringstream errorString;
+    errorString << "Error creating operation\"OperationPruneGraphOCL\": "
+                << " invalid value for parameter \"INTERNAL_PRECISION\"";
+    throw base::factory_exception(errorString.str().c_str());
+  }
+  return NULL;
+}
+DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
                                     base::DataMatrix &data, double treshold, size_t k,
                                     std::string opencl_conf) {

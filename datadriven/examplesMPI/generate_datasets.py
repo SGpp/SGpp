@@ -74,6 +74,6 @@ def generate_dataset(dimensions, clusters, setsize, abweichung, rauschensize):
    print dataset
    return dataset, cluster_npret
 
-dataset1, Y1 = generate_dataset(8, 10, 200000, 0.1, 0)
-np.savetxt("dataset1_dim8.txt", dataset1)
-np.savetxt("dataset1_dim8_erg.txt", Y1)
+dataset1, Y1 = generate_dataset(8, 10, 500000, 0.1, 0)
+np.savetxt("dataset2_dim8.txt", dataset1)
+np.savetxt("dataset2_dim8_erg.txt", Y1)

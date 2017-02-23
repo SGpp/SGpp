@@ -59,14 +59,14 @@ int main(int argc, char *argv[]) {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001);
+  sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001, "MyOCLConf.cfg");
   sgpp::base::DataVector alpha(gridsize);
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
 
   // Create right hand side vector
   sgpp::base::DataVector rhs(gridsize);
-  sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset);
+  sgpp::datadriven::clusteringmpi::OperationDensityRhsMPI rhs_op(*grid, dataset, "MyOCLConf.cfg");
   rhs_op.generate_b(rhs);
 
   // Solve for alpha vector via CG solver
@@ -81,7 +81,8 @@ int main(int argc, char *argv[]) {
   // Create and prune knn graph
   std::cout << "Graph Creation/Pruning:" << std::endl;
   sgpp::datadriven::clusteringmpi::OperationPrunedGraphCreationMPI graph_op(*grid, alpha,
-                                                                            dataset, 12, 0.2);
+                                                                            dataset, 12, 0.2,
+                                                                            "MyOCLConf.cfg");
   std::vector<int> knn_graph;
   graph_op.create_graph(knn_graph);
   std::vector<size_t> cluster_assignments = sgpp::datadriven::DensityOCLMultiPlatform::
