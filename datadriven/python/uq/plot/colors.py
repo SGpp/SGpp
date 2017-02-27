@@ -31,10 +31,11 @@ def load_font():
     return {'family':'serif',
             'size': 20}
 
-def load_font_properties():
+def load_font_properties(size=None,
+                         family=None):
     fontP = FontProperties()
-    fontP.set_size(load_font()['size'])
-    fontP.set_family(load_font()["family"])
+    fontP.set_size(load_font()['size'] if size is None else size)
+    fontP.set_family(load_font()["family"] if family is None else family)
     return fontP
 
 #     colors = [None] * n
