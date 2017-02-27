@@ -39,7 +39,7 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
 
       printf("starting decomp of [%d,%d]= %f \n", row, col, matData[dataIter]);
 
-      auto s = 0.0;
+      auto s = matData[dataIter];
 
       auto upperFirst = colIndices.begin() + rowPtrs[col];
       const auto upperLast =
@@ -69,18 +69,17 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
           // std::cout << *lowerFist << std::endl;
         } else {
           // printf("Match: upper %d == %d lower\n", *upperFirst, *lowerFist);
-          printf("\tcalculating [%d,%d]*[%d,%d] => %f+%f*%f=", col, *upperFirst, row, *lowerFist, s,
+          printf("\tcalculating [%d,%d]*[%d,%d] => %f-%f*%f=", col, *upperFirst, row, *lowerFist, s,
                  matData[upperFirst - colIndices.begin()], matData[lowerFist - colIndices.begin()]);
-          s += matData[upperFirst - colIndices.begin()] * matData[lowerFist - colIndices.begin()];
+          s -= matData[upperFirst - colIndices.begin()] * matData[lowerFist - colIndices.begin()];
           std::cout << s << std::endl;
           ++upperFirst;
           ++lowerFist;
         }
       }
-      s = -s + matData[dataIter];
 
       if (row != col) {
-        const auto index = row + 1 < matSize ? rowPtrs[row + 1] - 1 : matData.size() - 1;
+        const auto index = rowPtrs[col + 1] - 1;
         matData[dataIter] = s / matData[index];
         std::cout << "\t" << matData[dataIter] << " = " << s << " / " << matData[index]
                   << std::endl;
@@ -104,25 +103,39 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
     // in each column until diagonal element
     for (auto j = 0u; j < i; j++) {
       if (A.get(i, j) > 0) {
+        printf("starting decomp of [%d,%d]= %f \n", i, j, A.get(i, j));
         // calculate sum;
         auto s = A.get(i, j);
         for (auto k = 0u; k < j; k++) {
           if (A.get(i, k) > 0 && A.get(j, k) > 0) {
+            printf("\tcalculating [%d,%d]*[%d,%d] => %f-%f*%f=", i, k, j, k, s, A.get(i, k),
+                   A.get(j, k));
             s -= A.get(i, k) * A.get(j, k);
+            std::cout << s << std::endl;
           }
         }
 
         A.set(i, j, s / A.get(j, j));
+        std::cout << "\t" << A.get(i, j) << " = " << s << " / " << A.get(j, j) << std::endl;
       }
     }
 
     // do the diagonal element:
     // calculate sum;
+
+    printf("starting decomp of [%d,%d]= %f \n", i, i, A.get(i, i));
     auto s = A.get(i, i);
     for (auto k = 0u; k < i; k++) {
-      s -= A.get(i, k) * A.get(i, k);
+      if (A.get(i, k) > 0) {
+        printf("\tcalculating [%d,%d]*[%d,%d] => %f-%f*%f=", i, k, i, k, s, A.get(i, k),
+               A.get(i, k));
+        s -= A.get(i, k) * A.get(i, k);
+        std::cout << s << std::endl;
+      }
     }
     A.set(i, i, sqrt(s));
+    std::cout << "\t" << A.get(i, i) << " = "
+              << "sqrt(" << s << ")" << std::endl;
   }
 
   std::cout << "Full:\n" << A.toString() << "\n";
