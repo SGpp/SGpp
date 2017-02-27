@@ -65,15 +65,15 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
   const std::vector<double> aSparse{2, 2, 6, 1, 6, 1, 6, 1, 4, 2, 16};
   const std::vector<size_t> colIdx{0, 0, 1, 0, 2, 2, 3, 0, 2, 3, 4};
   const std::vector<size_t> rowPtr{0, 1, 3, 5, 7};
-  const std::vector<double> results{1.4142, 1.4142, 2.0000, 0.7071, 2.3452, 0.4264,
-                                    2.4121, 0.7071, 1.4924, 0.5653, 3.5990};
+  const std::vector<double> results{1.414213562373095, 1.414213562373095, 2.000000000000000,
+                                    0.707106781186547, 2.345207879911715, 0.426401432711221,
+                                    2.412090756622109, 0.707106781186547, 1.492405014489273,
+                                    0.565333771083307, 3.599045012221992};
 
   SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
   DataVector aNorm(size);
   // decomp:
-  IChol::normToUnitDiagonal(A, aNorm);
   IChol::decompose(A, 1);
-  // IChol::reaplyDiagonal(A, aNorm);
 
   // test
   const auto& aData = A.getDataVector();
