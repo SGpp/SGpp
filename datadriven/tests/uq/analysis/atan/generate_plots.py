@@ -57,15 +57,22 @@ def load_results(inputspace, path="results"):
     return ans
 
 
-settings = {'uniform': {'sg': [("polyBoundary", 0, 3000, False, False),
-                               ("linearBoundary", 0, 3000, False, False),
-                               # ---------------------------------------------
-                               ("linearBoundary", 2, 3000, "var", False),
-                               ("polyBoundary", 2, 3000, "var", False),
-                               ("polyBoundary", 2, 3000, "squared", False),
-                               ("polyBoundary", 2, 3000, "weighted", False),
-                               ("polyBoundary", 2, 3000, "simple", False),
-                               ("polyBoundary", 2, 3000, "exp", False),
+settings = {'uniform': {'sg': [
+#                                ("polyBoundary", 0, 3000, False, False),
+#                                ("linearBoundary", 0, 3000, False, False),
+#                                ("modLinearClenshawCurtis", 0, 3000, False, False),
+#                                ("modlinear", 0, 3000, False, False),
+#                                ("modPolyClenshawCurtis", 0, 3000, False, False),
+#                                ("modpoly", 0, 3000, False, False),
+                                ("linearClenshawCurtisBoundary", 0, 3000, False, False),
+                                ("polyClenshawCurtisBoundary", 0, 3000, False, False)
+#                                # ---------------------------------------------
+#                                ("linearBoundary", 2, 3000, "var", False),
+#                                ("polyBoundary", 2, 3000, "var", False),
+#                                ("polyBoundary", 2, 3000, "squared", False),
+#                                ("polyBoundary", 2, 3000, "weighted", False),
+#                                ("polyBoundary", 2, 3000, "simple", False),
+#                                ("polyBoundary", 2, 3000, "exp", False),
                                ],
                         'pce': [("full_tensor", 'gauss', 4000),
                                 ('total_degree', 'gauss_leja', 4000)]},

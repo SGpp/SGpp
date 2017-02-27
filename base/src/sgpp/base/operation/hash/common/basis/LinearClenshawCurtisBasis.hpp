@@ -38,20 +38,14 @@ class LinearClenshawCurtisBasis : public Basis<LT, IT> {
     // endpoints of support
     const double x0 = clenshawCurtisTable.getPoint(l, i - 1);
     const double x2 = clenshawCurtisTable.getPoint(l, i + 1);
-
-    if ((x <= x0) || (x >= x2)) {
-      // point out of support
-      return 0.0;
-    }
-
     // peak of basis function
     const double x1 = clenshawCurtisTable.getPoint(l, i);
 
     // linear interpolation between (x0, x1, x2), (0, 1, 0)
     if (x < x1) {
-      return 1.0 - (x1 - x) / (x1 - x0);
+      return std::max(0.0, 1.0 - (x1 - x) / (x1 - x0));
     } else {
-      return (x2 - x) / (x2 - x1);
+      return std::max(0.0, (x2 - x) / (x2 - x1));
     }
   }
 

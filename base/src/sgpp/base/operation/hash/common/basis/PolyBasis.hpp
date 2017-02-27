@@ -97,45 +97,6 @@ class PolyBasis : public Basis<LT, IT> {
     }
   }
 
-  double getIntegral(LT level, IT index) {
-    // grid spacing
-    double h = 1.0f / static_cast<double>(1 << level);
-
-    // --------------------------------
-    // Gauss-Legendre quadrature
-    // --------------------------------
-    size_t deg = std::min<size_t>(degree, level + 1);
-    size_t n_roots = ((deg + 1) >> 1) + 1;  // ceil((deg + 1) / 2) - 1
-    base::DataVector roots(n_roots);
-    base::DataVector weights(n_roots);
-    // getting legendre gauss points and weights in [-1, 1]
-    quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
-
-    double sum = 0.0f;
-    double x = 0.0f;
-
-    for (size_t i = 0; i < n_roots; i++) {
-      // scale the roots to the support of the basis:
-      // [-1, 1] -> [0, 1] -> [a, b]
-      x = h * (roots[i] + static_cast<double>(index));
-      // evaluate the polynom and weight it
-      sum += weights[i] * eval(level, index, x);
-    }
-
-    // scale the result with the width of the support
-    return h * sum;
-  }
-
- protected:
-  /// the polynom's max degree
-  size_t degree;
-  // compute values for roots
-  std::vector<int> idxtable;
-
- private:
-  /// gauss legendre quadrature rule to compute the integral of the bases
-  base::GaussLegendreQuadRule1D& quadRule;
-
   /**
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.
@@ -202,6 +163,45 @@ class PolyBasis : public Basis<LT, IT> {
 
     return eval;
   }
+
+  double getIntegral(LT level, IT index) {
+    // grid spacing
+    double h = 1.0f / static_cast<double>(1 << level);
+
+    // --------------------------------
+    // Gauss-Legendre quadrature
+    // --------------------------------
+    size_t deg = std::min<size_t>(degree, level + 1);
+    size_t n_roots = ((deg + 1) >> 1) + 1;  // ceil((deg + 1) / 2) - 1
+    base::DataVector roots(n_roots);
+    base::DataVector weights(n_roots);
+    // getting legendre gauss points and weights in [-1, 1]
+    quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
+
+    double sum = 0.0f;
+    double x = 0.0f;
+
+    for (size_t i = 0; i < n_roots; i++) {
+      // scale the roots to the support of the basis:
+      // [-1, 1] -> [0, 1] -> [a, b]
+      x = h * (roots[i] + static_cast<double>(index));
+      // evaluate the polynom and weight it
+      sum += weights[i] * eval(level, index, x);
+    }
+
+    // scale the result with the width of the support
+    return h * sum;
+  }
+
+ protected:
+  /// the polynom's max degree
+  size_t degree;
+  // compute values for roots
+  std::vector<int> idxtable;
+
+ private:
+  /// gauss legendre quadrature rule to compute the integral of the bases
+  base::GaussLegendreQuadRule1D& quadRule;
 
   double eval(LT level, IT index, double p, double offset, double width) {
     // for bounding box evaluation
