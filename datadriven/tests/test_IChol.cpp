@@ -13,6 +13,7 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 
+#include <omp.h>
 #include <cmath>
 #include <vector>
 
@@ -59,6 +60,16 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
 }
 
 BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
+  // we only get reproducable results if we run on 1 omp thread
+  auto numThreads = 0;
+
+#pragma omp parallel
+  {
+#pragma omp single
+    { numThreads = omp_get_num_threads(); }
+  }
+  omp_set_num_threads(1);
+
   auto size = 5u;
 
   // initialize
@@ -80,6 +91,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
   for (auto i = 0u; i < aData.size(); i++) {
     BOOST_CHECK_CLOSE(aData[i], results[i], 10e-5);
   }
+  omp_set_num_threads(numThreads);
 }
 
 BOOST_AUTO_TEST_CASE(norm) {
