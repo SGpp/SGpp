@@ -93,14 +93,13 @@ class LearnerSGDEOnOff : public DBMatOnline {
   /**
    * Trains the learner with the given data batch
    *
-   * @param trainData The next data batch to process
-   * @param classes The class labels corresponding to the data batch
+   * @param dataset The next data batch to process
    * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(DataMatrix& trainData, DataVector& classes, bool doCv = false,
+  void train(Dataset& dataset, bool doCv = false,
              std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse = nullptr);
 
   /**
@@ -146,14 +145,10 @@ class LearnerSGDEOnOff : public DBMatOnline {
   /**
    * Error evaluation required for convergence-based refinement.
    *
-   * @param data The data points to measure the error on
-   * @param labels The corresponding class labels
-   * @param errorType The error type (only "Acc" possible, i.e. classification
-   * error
-   *        based on accuracy)
+   * @param dataset The data to measure the error on
    * @return The error evaluation
    */
-  double getError(DataMatrix& data, DataVector& labels, std::string errorType);
+  double getError(Dataset& dataset);
 
   /**
    * Stores classified data, grids and density function evaluations to csv
@@ -230,7 +225,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
   // The class labels (e.g -1, 1)
   DataVector classLabels;
   // The total number of different classes
-  size_t classNumber;
+  size_t numClasses;
 
   // Indicates whether the model has been trained or not
   bool trained;

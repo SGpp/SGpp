@@ -44,7 +44,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       testData(testData),
       validationData(validationData),
       classLabels(classLabels),
-      classNumber(classNumber),
+      numClasses(classNumber),
       trained(false),
       initDone(false),
       usePrior(usePrior),
@@ -91,8 +91,8 @@ void LearnerSGDEOnOff::init() {
   if (initDone) {
     return;
   }
-  destFunctions = new std::vector<std::pair<DBMatOnlineDE*, double> >(classNumber);
-  for (size_t idx = 0; idx < classNumber; idx++) {
+  destFunctions = new std::vector<std::pair<DBMatOnlineDE*, double> >(numClasses);
+  for (size_t idx = 0; idx < numClasses; idx++) {
     DBMatOnlineDE* densEst = new DBMatOnlineDE(beta);
     densEst->readOffline(offline);
     std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[idx]);
@@ -120,12 +120,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
                              size_t nextCvStep) {
   // counts total number of processed data points
   size_t totalInstances = 0;
-  // pointer to the next batch (data points + class labels) to be processed
-  std::pair<DataMatrix*, DataVector*> curPair;
   // contains list of removed grid points and number of added grid points
   // (is updated in each refinement/coarsening step)
   std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-      new std::vector<std::pair<std::list<size_t>, size_t> >(classNumber);
+      new std::vector<std::pair<std::list<size_t>, size_t> >(numClasses);
 
   // auxiliary variables
   DataVector* alphaWork;  // required for surplus refinement
@@ -162,7 +160,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
   // print initial grid size
   onlineObjects = getDestFunctions();
-  for (size_t i = 0; i < classNumber; i++) {
+  for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
     Grid* grid = densEst->getOffline()->getGridPointer();
     std::cout << "#Initial grid size of grid " << i << " : " << grid->getSize() << std::endl;
@@ -190,22 +188,21 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         }
       }
       // assemble next batch
-      DataMatrix* batch = new DataMatrix(batchSize, dim);
-      DataVector* batchLabels = new DataVector(batchSize);
+      Dataset currentBatch(batchSize, dim);
       for (size_t j = 0; j < batchSize; j++) {
         DataVector x(dim);
         trainData.getData().getRow(j + cnt, x);
         double y = trainData.getTargets().get(j + cnt);
-        batch->setRow(j, x);
-        batchLabels->set(j, y);
+        currentBatch.getData().setRow(j, x);
+        currentBatch.getTargets().set(j, y);
       }
-      curPair = std::pair<DataMatrix*, DataVector*>(batch, batchLabels);
+      // curPair = std::pair<DataMatrix*, DataVector*>(batch, batchLabels);
       cnt += batchSize;
 
       // train the model with current batch
-      train(*(curPair.first), *(curPair.second), doCv, refineCoarse);
+      train(currentBatch, doCv, refineCoarse);
 
-      totalInstances += (curPair.first)->getNrows();
+      totalInstances += currentBatch.getNumberInstances();
 
       // access DBMatOnlineDE-objects of all classes in order
       // to apply adaptivity to the specific sparse grids later on
@@ -226,12 +223,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         }
         if ((offline->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
             (refCnt < offline->getConfig()->numRefinements_)) {
-          currentValidError =
-              getError(validationData->getData(), validationData->getTargets(), "Acc");
-          currentTrainError = getError(trainData.getData(), trainData.getTargets(),
-                                       "Acc");  // if train dataset is large
-                                                // use a subset for error
-                                                // evaluation
+          currentValidError = getError(*validationData);
+          currentTrainError = getError(trainData);  // if train dataset is large
+                                                    // use a subset for error
+                                                    // evaluation
           monitor->pushToBuffer(currentValidError, currentTrainError);
           if (monitor->nextRefCnt > 0) {
             monitor->nextRefCnt--;
@@ -376,8 +371,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           monitor->nextRefCnt = monitor->minRefInterval;
         }
       }
-      delete curPair.first;
-      delete curPair.second;
 
       // save current error
       if (totalInstances % 10 == 0) {
@@ -397,13 +390,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   delete refineCoarse;
 }
 
-void LearnerSGDEOnOff::train(DataMatrix& trainData, DataVector& trainClasses, bool doCv,
+void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
                              std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse) {
   if (initDone) {
-    if (trainData.getNrows() != trainClasses.getSize()) {
-      throw data_exception("Sizes of train data set and class label vector do not fit!");
-    }
-    size_t dim = trainData.getNcols();
+    size_t dim = dataset.getDimension();
 
     // create an empty matrix for every class:
     std::vector<std::pair<DataMatrix*, double> > trainDataClasses;
@@ -417,10 +407,10 @@ void LearnerSGDEOnOff::train(DataMatrix& trainData, DataVector& trainClasses, bo
       index++;
     }
     // split the data into the different classes:
-    for (size_t i = 0; i < trainData.getNrows(); i++) {
-      double classLabel = trainClasses[i];
+    for (size_t i = 0; i < dataset.getNumberInstances(); i++) {
+      double classLabel = dataset.getTargets()[i];
       DataVector vec(dim);
-      trainData.getRow(i, vec);
+      dataset.getData().getRow(i, vec);
       std::pair<DataMatrix*, double> p = trainDataClasses[classIndices[classLabel]];
       p.first->appendRow(vec);
     }
@@ -526,21 +516,19 @@ int LearnerSGDEOnOff::predict(DataVector& p) {
   return static_cast<int>(r[0]);
 }
 
-double LearnerSGDEOnOff::getError(DataMatrix& data, DataVector& labels, std::string errorType) {
+double LearnerSGDEOnOff::getError(Dataset& dataset) {
   double res = -1.0;
 
-  if (errorType == "Acc") {
-    DataVector computedLabels = predict(data);
-    size_t correct = 0;
-    for (size_t i = 0; i < computedLabels.getSize(); i++) {
-      if (computedLabels.get(i) == labels.get(i)) {
-        correct++;
-      }
+  DataVector computedLabels = predict(dataset.getData());
+  size_t correct = 0;
+  for (size_t i = 0; i < computedLabels.getSize(); i++) {
+    if (computedLabels.get(i) == dataset.getTargets().get(i)) {
+      correct++;
     }
-
-    double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
-    res = 1.0 - acc;
   }
+
+  double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  res = 1.0 - acc;
 
   return res;
 }
@@ -562,7 +550,7 @@ void LearnerSGDEOnOff::storeResults() {
     output.close();
   }
   // write grids to csv file
-  for (size_t i = 0; i < classNumber; i++) {
+  for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*destFunctions)[i].first;
     Grid* grid = densEst->getOffline()->getGridPointer();
     output.open("SGDEOnOff_grid_" + std::to_string((*destFunctions)[i].second) + ".csv");
@@ -649,7 +637,7 @@ void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambd
   return 0.; // TODO
 }*/
 
-size_t LearnerSGDEOnOff::getNumClasses() { return this->classNumber; }
+size_t LearnerSGDEOnOff::getNumClasses() { return this->numClasses; }
 
 std::vector<std::pair<DBMatOnlineDE*, double> >* LearnerSGDEOnOff::getDestFunctions() {
   return destFunctions;
