@@ -16,6 +16,9 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+
 /**
  * Class that captures a density function as an online object
  */
@@ -28,10 +31,6 @@ class DBMatOnlineDE : public DBMatOnline {
    */
 
   explicit DBMatOnlineDE(double beta = 0.);
-  /**
-   * Destructor
-   */
-  virtual ~DBMatOnlineDE();
 
   /**
    * Reads an offline object
@@ -51,9 +50,9 @@ class DBMatOnlineDE : public DBMatOnline {
    * coarsening
    * @param newPoints indicates the amount of added points due to refinement
    */
-  virtual void computeDensityFunction(
-      sgpp::base::DataMatrix& m, bool save_b = false, bool do_cv = false,
-      std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+  virtual void computeDensityFunction(DataMatrix& m, bool save_b = false, bool do_cv = false,
+                                      std::list<size_t>* deletedPoints = nullptr,
+                                      size_t newPoints = 0);
 
   /**
    * Evaluates the density function at a certain point
@@ -62,12 +61,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param force if set, it will even try to evaluate if the internal state
    * recommends otherwise
    */
-  virtual double eval(sgpp::base::DataVector& p, bool force = false);
+  virtual double eval(const DataVector& p, bool force = false);
 
   /**
    * Return a pointer to alpha
    */
-  virtual sgpp::base::DataVector* getAlpha();
+  virtual DataVector* getAlpha();
 
   /**
    * Update alpha vector, i.e. delete entries specified by 'deletedPoints'
@@ -97,12 +96,8 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param logscale Indicates whether the values between lambda_start and
    *        lambda_end are searched using logscale or not
    */
-  virtual void setCrossValidationParameters(int lambda_step,
-                                            double lambda_start,
-                                            double lambda_end,
-                                            sgpp::base::DataMatrix* test,
-                                            sgpp::base::DataMatrix* test_cc,
-                                            bool logscale);
+  virtual void setCrossValidationParameters(int lambda_step, double lambda_start, double lambda_end,
+                                            DataMatrix* test, DataMatrix* test_cc, bool logscale);
 
   /**
    * Returns the last best lamda
@@ -128,24 +123,24 @@ class DBMatOnlineDE : public DBMatOnline {
   virtual double normalize(size_t samples = 1000);
 
  protected:
-  sgpp::base::DataVector* alpha_;
-  bool functionComputed_;
-  sgpp::base::DataVector* b_save;
-  sgpp::base::DataVector* b_totalPoints;
-  double beta_;
-  size_t total_points;
-  bool can_cv;
-  int lambda_step_;
-  double lambda_start_, lambda_end_;
-  sgpp::base::DataMatrix *test_mat, *test_mat_res;
+  DataVector alpha;
+  bool functionComputed;
+  DataVector bSave;
+  DataVector bTotalPoints;
+  double beta;
+  size_t totalPoints;
+  bool canCV;
+  int lambdaStep;
+  double lambdaStart, lambdaEnd;
+  DataMatrix *testMat, *testMatRes;
   double lambda;
-  bool cv_logscale;
+  bool cvLogscale;
   double normFactor;
-  size_t o_dim;
+  size_t oDim;
 
  private:
   double computeL2Error();
-  double resDensity(sgpp::base::DataVector*& alpha);
+  double resDensity(DataVector& alpha);
 };
 
 }  // namespace datadriven

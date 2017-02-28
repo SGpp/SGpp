@@ -29,53 +29,48 @@ namespace sgpp {
 namespace datadriven {
 
 DBMatOnlineDE::DBMatOnlineDE(double beta)
-    : alpha_(nullptr),
-      functionComputed_(false),
-      b_save(nullptr),
-      b_totalPoints(nullptr),
-      beta_(beta),
-      total_points(0),
-      can_cv(false),
-      test_mat(nullptr),
-      test_mat_res(nullptr),
+    : alpha{},
+      functionComputed(false),
+      bSave{},
+      bTotalPoints{},
+      beta(beta),
+      totalPoints(0),
+      canCV(false),
+      lambdaStep(0),
+      lambdaStart(0),
+      lambdaEnd(0),
+      testMat(nullptr),
+      testMatRes(nullptr),
       lambda(0.),
-      cv_logscale(false),
+      cvLogscale(false),
       normFactor(1.),
-      o_dim(0) {}
-
-DBMatOnlineDE::~DBMatOnlineDE() {
-  if (alpha_ != nullptr) delete alpha_;
-  if (b_save != nullptr) delete b_save;
-  if (b_totalPoints != nullptr) delete b_totalPoints;
-}
+      oDim(0) {}
 
 void DBMatOnlineDE::readOffline(DBMatOffline* o) {
   offlineObject = o;
-  functionComputed_ = false;
-  if (b_save != nullptr) delete b_save;
-  b_save = new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols());
-  b_totalPoints =
-      new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
+  functionComputed = false;
+  bSave = DataVector(offlineObject->getDecomposedMatrix()->getNcols());
+  bTotalPoints = DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
   lambda = offlineObject->getConfig()->lambda_;
-  o_dim = offlineObject->getConfig()->grid_dim_;
+  oDim = offlineObject->getConfig()->grid_dim_;
 
-  alpha_ = new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
+  alpha = DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
 }
 
-void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_b, bool do_cv,
+void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_cv,
                                            std::list<size_t>* deletedPoints, size_t newPoints) {
   if (m.getNrows() > 0) {
-    sgpp::base::DataMatrix* lhsMatrix = offlineObject->getDecomposedMatrix();
+    DataMatrix* lhsMatrix = offlineObject->getDecomposedMatrix();
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
-    total_points++;
-    sgpp::base::DataVector b(lhsMatrix->getNcols());
+    totalPoints++;
+    DataVector b(lhsMatrix->getNcols());
     b.setAll(0);
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
         sgpp::op_factory::createOperationMultipleEval(offlineObject->getGrid(), m));
-    sgpp::base::DataVector y(numberOfPoints);
+    DataVector y(numberOfPoints);
     y.setAll(1.0);
     // Bt * 1
     B->multTranspose(y, b);
@@ -86,16 +81,16 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
     // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
-      if (functionComputed_) {
-        // double beta = std::max(beta_, (1./(double)total_points));
-        // b.mult(beta);
-        // b_save->mult(1.-beta);
+      if (functionComputed) {
+        // double tmpBeta = std::max(beta, (1./(double)totalPoints));
+        // b.mult(tmpBeta);
+        // bSave->mult(1.-tmpBeta);
 
-        // Delete indices when grid got coarsend-> reduce 'b_save'
+        // Delete indices when grid got coarsend-> reduce 'bSave'
         if (deletedPoints != nullptr && !deletedPoints->empty()) {
           std::vector<size_t> v{std::begin(*deletedPoints), std::end(*deletedPoints)};
-          std::vector<size_t> v1(b_save->getSize() - deletedPoints->size());
-          size_t old_size = b_save->getSize();
+          std::vector<size_t> v1(bSave.getSize() - deletedPoints->size());
+          size_t old_size = bSave.getSize();
 
           size_t index_coarse = 0;
           size_t index_remain = 0;
@@ -110,25 +105,25 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
               index_remain++;
             }
           }
-          b_save->restructure(v1);
-          b_totalPoints->restructure(v1);
+          bSave.restructure(v1);
+          bTotalPoints.restructure(v1);
         }
 
         // Expand 'b_save' when grid got refined
         if (newPoints > 0) {
-          b_save->resizeZero(b.getSize());
-          b_totalPoints->resizeZero(b.getSize());
+          bSave.resizeZero(b.getSize());
+          bTotalPoints.resizeZero(b.getSize());
         }
 
-        b.add(*b_save);
+        b.add(bSave);
         // b.mult(beta);
       }
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
-        b_save->set(i, b.get(i));
-        b_totalPoints->set(i, static_cast<double>(numberOfPoints) + b_totalPoints->get(i));
-        b.set(i, b_save->get(i) * (1. / b_totalPoints->get(i)));
+        bSave.set(i, b.get(i));
+        bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
+        b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
       }
     } else {
       // 1 / M * Bt * 1
@@ -136,28 +131,27 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
     }
 
     // Solve the system:
-    if (alpha_ != nullptr) delete alpha_;
-    alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
+    alpha = DataVector(lhsMatrix->getNcols());
 
     DBMatDecompostionType type = offlineObject->getConfig()->decomp_type_;
     if (type == DBMatDecompostionType::DBMatDecompLU) {
       DBMatDMSBackSub lusolver;
-      lusolver.solve(*lhsMatrix, *alpha_, b);
+      lusolver.solve(*lhsMatrix, alpha, b);
     } else if (type == DBMatDecompostionType::DBMatDecompEigen) {
       size_t n = lhsMatrix->getNcols();
-      sgpp::base::DataVector e(n);
+      DataVector e(n);
       lhsMatrix->getRow(n, e);
       DBMatDMSEigen esolver;
 
-      if (can_cv && do_cv) {
+      if (canCV && do_cv) {
         double best_crit = 0;
         double cur_lambda;
-        for (int i = 0; i < lambda_step_; i++) {
-          cur_lambda = lambda_start_ + i * (lambda_end_ - lambda_start_) / (lambda_step_ - 1);
-          if (cv_logscale) cur_lambda = exp(cur_lambda);
-          esolver.solve(*lhsMatrix, e, *alpha_, b, cur_lambda);
+        for (int i = 0; i < lambdaStep; i++) {
+          cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
+          if (cvLogscale) cur_lambda = exp(cur_lambda);
+          esolver.solve(*lhsMatrix, e, alpha, b, cur_lambda);
           // double crit = computeL2Error();
-          double crit = resDensity(alpha_);
+          double crit = resDensity(alpha);
           // std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit <<
           // std::endl;
           if (i == 0 || crit < best_crit) {
@@ -166,7 +160,7 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
           }
         }
       }
-      esolver.solve(*lhsMatrix, e, *alpha_, b, lambda);
+      esolver.solve(*lhsMatrix, e, alpha, b, lambda);
     } else if (type == DBMatDecompostionType::DBMatDecompChol) {
       DBMatDMSChol cholsolver;
 
@@ -174,19 +168,19 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
       // Perform cross-validation based on rank one up- and downdates
       // -> SHOULD NOT BE USED FOR LARGER GRID SETTINGS
       // ToDo: May be speed up by parallelization
-      if (can_cv && do_cv) {
+      if (canCV && do_cv) {
         double best_crit = 0;
         double cur_lambda;
-        for (int i = 0; i < lambda_step_; i++) {
-          cur_lambda = lambda_start_ + i * (lambda_end_ - lambda_start_) / (lambda_step_ - 1);
-          if (cv_logscale) cur_lambda = exp(cur_lambda);
+        for (int i = 0; i < lambdaStep; i++) {
+          cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
+          if (cvLogscale) cur_lambda = exp(cur_lambda);
           // std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " <<
           // old_lambda << std::endl;
           // Solve for density declaring coefficients alpha based on changed
           // lambda
-          cholsolver.solve(*lhsMatrix, *alpha_, b, old_lambda, cur_lambda);
+          cholsolver.solve(*lhsMatrix, alpha, b, old_lambda, cur_lambda);
           old_lambda = cur_lambda;
-          double crit = resDensity(alpha_);
+          double crit = resDensity(alpha);
           // std::cout << ", crit: " << crit << std::endl;
           if (i == 0 || crit < best_crit) {
             best_crit = crit;
@@ -196,116 +190,110 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
       }
       // Solve for density declaring coefficients alpha
       // std::cout << "lambda: " << lambda << std::endl;
-      cholsolver.solve(*lhsMatrix, *alpha_, b, old_lambda, lambda);
+      cholsolver.solve(*lhsMatrix, alpha, b, old_lambda, lambda);
 
     } else {
       throw sgpp::base::application_exception("Unsupported decomposition type!");
     }
-    functionComputed_ = true;
+    functionComputed = true;
   }
 }
 
-double DBMatOnlineDE::resDensity(sgpp::base::DataVector*& alpha) {
+double DBMatOnlineDE::resDensity(DataVector& alpha) {
   auto C = std::unique_ptr<sgpp::base::OperationMatrix>(
       sgpp::op_factory::createOperationIdentity(offlineObject->getGrid()));
-  sgpp::base::DataVector rhs(offlineObject->getGrid().getSize());
-  sgpp::base::DataVector res(offlineObject->getGrid().getSize());
-  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject->getGrid(), *test_mat, *C, 0.0);
+  DataVector rhs(offlineObject->getGrid().getSize());
+  DataVector res(offlineObject->getGrid().getSize());
+  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject->getGrid(), *testMat, *C, 0.0);
 
   SMatrix.generateb(rhs);
 
-  SMatrix.mult(*alpha, res);
+  SMatrix.mult(alpha, res);
 
   for (size_t i = 0; i < res.getSize(); i++) res[i] -= rhs[i];
   return res.l2Norm();
 }
 
 double DBMatOnlineDE::computeL2Error() {
-  size_t nRows = test_mat_res->getNrows();
-  sgpp::base::DataVector r(nRows);
-  sgpp::base::DataVector tmp(test_mat->getNcols());
+  size_t nRows = testMatRes->getNrows();
+  DataVector r(nRows);
+  DataVector tmp(testMat->getNcols());
   for (size_t i = 0; i < nRows; i++) {
-    test_mat->getRow(i, tmp);
+    testMat->getRow(i, tmp);
     r[i] = this->eval(tmp, true);
   }
   double l2err = 0;
   for (size_t i = 0; i < nRows; i++) {
-    l2err += (test_mat_res->get(i, 0) - r[i]) * (test_mat_res->get(i, 0) - r[i]);
+    l2err += (testMatRes->get(i, 0) - r[i]) * (testMatRes->get(i, 0) - r[i]);
   }
   return sqrt(l2err) / static_cast<double>(nRows);
 }
 
-double DBMatOnlineDE::eval(sgpp::base::DataVector& p, bool force) {
-  if (functionComputed_ || force == true) {
+double DBMatOnlineDE::eval(const DataVector& p, bool force) {
+  if (functionComputed || force == true) {
     double res;
-    std::unique_ptr<sgpp::base::OperationEval> Eval(
+    std::unique_ptr<sgpp::base::OperationEval> opEval(
         sgpp::op_factory::createOperationEval(offlineObject->getGrid()));
-    res = Eval->eval(*alpha_, p);
+    res = opEval->eval(alpha, p);
     return res * normFactor;
   } else {
     throw sgpp::base::data_exception("Density function not computed, yet!");
   }
 }
 
-sgpp::base::DataVector* DBMatOnlineDE::getAlpha() { return alpha_; }
+DataVector* DBMatOnlineDE::getAlpha() { return &alpha; }
 
 void DBMatOnlineDE::updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints) {
-  if (alpha_ != nullptr && deletedPoints != nullptr && !deletedPoints->empty()) {
+  if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
     std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
-    sgpp::base::DataVector* newAlpha =
-        new sgpp::base::DataVector(alpha_->getSize() - deletedPoints->size() + newPoints);
-    for (size_t i = 0; i < alpha_->getSize(); i++) {
+    DataVector newAlpha{alpha.getSize() - deletedPoints->size() + newPoints};
+    for (size_t i = 0; i < alpha.getSize(); i++) {
       if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
         continue;
       } else {
-        newAlpha->append(alpha_->get(i));
+        newAlpha.append(alpha.get(i));
       }
     }
-    // delete old alpha
-    delete alpha_;
     // set new alpha
-    alpha_ = newAlpha;
+    alpha = std::move(newAlpha);
   }
   if (newPoints > 0) {
-    alpha_->resizeZero(alpha_->getSize() + newPoints);
+    alpha.resizeZero(alpha.getSize() + newPoints);
   }
 }
 
-bool DBMatOnlineDE::isComputed() { return functionComputed_; }
+bool DBMatOnlineDE::isComputed() { return functionComputed; }
 
 void DBMatOnlineDE::setCrossValidationParameters(int lambda_step, double lambda_start,
-                                                 double lambda_end, sgpp::base::DataMatrix* test,
-                                                 sgpp::base::DataMatrix* test_cc, bool logscale) {
-  lambda_step_ = lambda_step;
-  cv_logscale = logscale;
-  if (cv_logscale) {
-    lambda_start_ = std::log(lambda_start);
-    lambda_end_ = std::log(lambda_end);
+                                                 double lambda_end, DataMatrix* test,
+                                                 DataMatrix* test_cc, bool logscale) {
+  lambdaStep = lambda_step;
+  cvLogscale = logscale;
+  if (cvLogscale) {
+    lambdaStart = std::log(lambda_start);
+    lambdaEnd = std::log(lambda_end);
   } else {
-    lambda_start_ = lambda_start;
-    lambda_end_ = lambda_end;
+    lambdaStart = lambda_start;
+    lambdaEnd = lambda_end;
   }
-  if (test != nullptr) test_mat = test;
-  if (test_cc != nullptr) test_mat_res = test_cc;
-  can_cv = true;
+  if (test != nullptr) testMat = test;
+  if (test_cc != nullptr) testMatRes = test_cc;
+  canCV = true;
 }
 
 double DBMatOnlineDE::getBestLambda() { return lambda; }
 
-void DBMatOnlineDE::setBeta(double beta) {
-  beta_ = beta;
-  return;
-}
+void DBMatOnlineDE::setBeta(double newBeta) { beta = newBeta; }
 
-double DBMatOnlineDE::getBeta() { return beta_; }
+double DBMatOnlineDE::getBeta() { return beta; }
 
 double DBMatOnlineDE::normalize(size_t samples) {
   this->normFactor = 1.;
   double sum = 0.;
-  sgpp::base::DataVector p(this->o_dim);
+  DataVector p(this->oDim);
   srand(static_cast<unsigned int>(time(nullptr)));
   for (size_t i = 0; i < samples; i++) {
-    for (size_t j = 0; j < this->o_dim; j++) p[j] = (static_cast<double>(rand()) / RAND_MAX);
+    for (size_t j = 0; j < this->oDim; j++) p[j] = (static_cast<double>(rand()) / RAND_MAX);
     sum += this->eval(p);
   }
   return this->normFactor = static_cast<double>(samples) / sum;
