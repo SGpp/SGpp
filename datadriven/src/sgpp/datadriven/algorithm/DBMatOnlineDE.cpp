@@ -50,22 +50,22 @@ DBMatOnlineDE::~DBMatOnlineDE() {
 }
 
 void DBMatOnlineDE::readOffline(DBMatOffline* o) {
-  offlineObject_ = o;
+  offlineObject = o;
   functionComputed_ = false;
   if (b_save != nullptr) delete b_save;
-  b_save = new sgpp::base::DataVector(offlineObject_->getDecomposedMatrix()->getNcols());
+  b_save = new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols());
   b_totalPoints =
-      new sgpp::base::DataVector(offlineObject_->getDecomposedMatrix()->getNcols(), 0.0);
-  lambda = offlineObject_->getConfig()->lambda_;
-  o_dim = offlineObject_->getConfig()->grid_dim_;
+      new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
+  lambda = offlineObject->getConfig()->lambda_;
+  o_dim = offlineObject->getConfig()->grid_dim_;
 
-  alpha_ = new sgpp::base::DataVector(offlineObject_->getDecomposedMatrix()->getNcols(), 0.0);
+  alpha_ = new sgpp::base::DataVector(offlineObject->getDecomposedMatrix()->getNcols(), 0.0);
 }
 
 void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_b, bool do_cv,
                                            std::list<size_t>* deletedPoints, size_t newPoints) {
   if (m.getNrows() > 0) {
-    sgpp::base::DataMatrix* lhsMatrix = offlineObject_->getDecomposedMatrix();
+    sgpp::base::DataMatrix* lhsMatrix = offlineObject->getDecomposedMatrix();
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
@@ -74,14 +74,14 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
     b.setAll(0);
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
-        sgpp::op_factory::createOperationMultipleEval(offlineObject_->getGrid(), m));
+        sgpp::op_factory::createOperationMultipleEval(offlineObject->getGrid(), m));
     sgpp::base::DataVector y(numberOfPoints);
     y.setAll(1.0);
     // Bt * 1
     B->multTranspose(y, b);
 
     // Perform permutation because of decomposition (LU)
-    offlineObject_->permuteVector(b);
+    offlineObject->permuteVector(b);
 
     // std::cout << b.getSize() << std::endl;
 
@@ -139,7 +139,7 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
     if (alpha_ != nullptr) delete alpha_;
     alpha_ = new sgpp::base::DataVector(lhsMatrix->getNcols());
 
-    DBMatDecompostionType type = offlineObject_->getConfig()->decomp_type_;
+    DBMatDecompostionType type = offlineObject->getConfig()->decomp_type_;
     if (type == DBMatDecompostionType::DBMatDecompLU) {
       DBMatDMSBackSub lusolver;
       lusolver.solve(*lhsMatrix, *alpha_, b);
@@ -207,10 +207,10 @@ void DBMatOnlineDE::computeDensityFunction(sgpp::base::DataMatrix& m, bool save_
 
 double DBMatOnlineDE::resDensity(sgpp::base::DataVector*& alpha) {
   auto C = std::unique_ptr<sgpp::base::OperationMatrix>(
-      sgpp::op_factory::createOperationIdentity(offlineObject_->getGrid()));
-  sgpp::base::DataVector rhs(offlineObject_->getGrid().getSize());
-  sgpp::base::DataVector res(offlineObject_->getGrid().getSize());
-  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject_->getGrid(), *test_mat, *C, 0.0);
+      sgpp::op_factory::createOperationIdentity(offlineObject->getGrid()));
+  sgpp::base::DataVector rhs(offlineObject->getGrid().getSize());
+  sgpp::base::DataVector res(offlineObject->getGrid().getSize());
+  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject->getGrid(), *test_mat, *C, 0.0);
 
   SMatrix.generateb(rhs);
 
@@ -239,7 +239,7 @@ double DBMatOnlineDE::eval(sgpp::base::DataVector& p, bool force) {
   if (functionComputed_ || force == true) {
     double res;
     std::unique_ptr<sgpp::base::OperationEval> Eval(
-        sgpp::op_factory::createOperationEval(offlineObject_->getGrid()));
+        sgpp::op_factory::createOperationEval(offlineObject->getGrid()));
     res = Eval->eval(*alpha_, p);
     return res * normFactor;
   } else {
