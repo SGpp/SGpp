@@ -61,30 +61,19 @@ int main() {
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-      sgpp::base::DataMatrix& trainData = trainDataset.getData();
-      // extract training classes
-      sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-      sgpp::base::DataMatrix& testData = testDataset.getData();
-      // extract test classes
-      sgpp::base::DataVector& testLabels = testDataset.getTargets();
 
-      sgpp::base::DataMatrix* validData = nullptr;
-      sgpp::base::DataVector* validLabels = nullptr;
       // if fixed validation data should be used (required for convergence
       // monitor):
       /*filename = "";  // specify file containing validation data here
       // load validation samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset valDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
-      validData = &valDataset.getData();
-      // extract validation classes
-      validLabels = &valDataset.getTargets();*/
+      sgpp::datadriven::Dataset validationDataset =
+          sgpp::datadriven::ARFFTools::readARFF(filename); */
 
       /**
        * Specify the number of classes and the corresponding class labels.
@@ -185,9 +174,8 @@ int main() {
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainData, trainLabels, testData,
-                                                 testLabels, validData, validLabels, classLabels,
-                                                 classNum, usePrior, beta, lambda);
+      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
+                                                 classLabels, classNum, usePrior, beta, lambda);
 
       /**
        * Configure cross-validation.
@@ -201,7 +189,7 @@ int main() {
       double cvLambdaEnd = 1e-10;
       int cvLambdaSteps = 10;
       bool cvLogScale = true;
-      sgpp::base::DataMatrix* cvTestData = &testData;
+      sgpp::base::DataMatrix* cvTestData = &testDataset.getData();
       sgpp::base::DataMatrix* cvTestDataRes = nullptr;  // needed?
       learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
                                            cvTestDataRes, cvLogScale);

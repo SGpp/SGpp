@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <list>
 #include <map>
@@ -24,6 +25,9 @@
 
 namespace sgpp {
 namespace datadriven {
+
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 /**
  * LearnerSGDEOnOff learns the data using sparse grid density estimation. The
@@ -40,12 +44,9 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * Constructor.
    *
    * @param dconf The configuration of the offline object
-   * @param trainData The training data
-   * @param trainDataLabels The corresponding training labels
-   * @param testData The test data
-   * @param testDataLabels The corresponding test labels
-   * @param validData The validation data
-   * @param validDataLabels The corresponding validation labels
+   * @param trainData The (mandatory) training dataset
+   * @param testData The (mandatory) test dataset
+   * @param validData The (optional) validation dataset
    * @param classLabels The class labels (e.g. -1, 1)
    * @param classNumber Total number of classes
    * @param usePrior Determines if prior probabilities should be used to compute
@@ -53,13 +54,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param beta The initial weighting factor
    * @param lambda The initial regularization parameter
    */
-  LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& dconf,
-                   base::DataMatrix& trainData,
-                   base::DataVector& trainDataLabels,
-                   base::DataMatrix& testData, base::DataVector& testDataLabels,
-                   base::DataMatrix* validData,
-                   base::DataVector* validDataLabels,
-                   base::DataVector& classLabels, size_t classNumber,
+  LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
+                   Dataset* validationData, DataVector& classLabels, size_t classNumber,
                    bool usePrior, double beta, double lambda);
 
   /**
@@ -90,10 +86,9 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * training process or not
    * @param nextCvStep Determines when next cross-validation has to be triggered
    */
-  void train(size_t batchSize, size_t maxDataPasses, std::string refType,
-             std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-             size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-             size_t nextCvStep);
+  void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
+             size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
+             size_t minRefInterval, bool enableCv, size_t nextCvStep);
 
   /**
    * Trains the learner with the given data batch
@@ -105,10 +100,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(base::DataMatrix& trainData, base::DataVector& classes,
-             bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-                 nullptr);
+  void train(DataMatrix& trainData, DataVector& classes, bool doCv = false,
+             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -124,11 +117,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(
-      std::vector<std::pair<base::DataMatrix*, double> >& trainDataClasses,
-      bool doCv = false,
-      std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-          nullptr);
+  void train(std::vector<std::pair<DataMatrix*, double> >& trainDataClasses, bool doCv = false,
+             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse = nullptr);
 
   /**
    * Returns the accuracy of the classifier measured on the test data.
@@ -143,7 +133,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param The test data points
    * @return A vector containing the predicted class labels
    */
-  sgpp::base::DataVector predict(base::DataMatrix& test);
+  DataVector predict(DataMatrix& test);
 
   /**
    * Predicts the class label of the given data point.
@@ -151,7 +141,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param p The data point
    * @return The predicted class label
    */
-  int predict(base::DataVector& p);
+  int predict(DataVector& p);
 
   /**
    * Error evaluation required for convergence-based refinement.
@@ -163,8 +153,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        based on accuracy)
    * @return The error evaluation
    */
-  double getError(base::DataMatrix& data, base::DataVector& labels,
-                  std::string errorType);
+  double getError(DataMatrix& data, DataVector& labels, std::string errorType);
 
   /**
    * Stores classified data, grids and density function evaluations to csv
@@ -178,7 +167,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param point The point for which the density functions should be evaluated
    * @return The function evaluations
    */
-  base::DataVector getDensities(base::DataVector& point);
+  DataVector getDensities(DataVector& point);
 
   /**
    * Sets the cross-validation parameters.
@@ -192,9 +181,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param logscale Indicates whether the values between lambdaStart
    *        and lambdaEnd are searched using logscale or not
    */
-  void setCrossValidationParameters(int lambdaStep, double lambdaStart,
-                                    double lambdaEnd, base::DataMatrix* test,
-                                    base::DataMatrix* testRes, bool logscale);
+  void setCrossValidationParameters(int lambdaStep, double lambdaStart, double lambdaEnd,
+                                    DataMatrix* test, DataMatrix* testRes, bool logscale);
 
   /**
   * In case of crossvalidation, returns the current best lambda.
@@ -229,24 +217,18 @@ class LearnerSGDEOnOff : public DBMatOnline {
   double error;
 
   // A vector to store error evaluations
-  base::DataVector avgErrors;
+  DataVector avgErrors;
 
  protected:
   // The training data
-  base::DataMatrix& trainData;
-  // The corresponding training class labels
-  base::DataVector& trainLabels;
+  Dataset& trainData;
   // The test data
-  base::DataMatrix& testData;
-  // The corresponding test class labels
-  base::DataVector& testLabels;
-  // The validation data
-  base::DataMatrix* validData;
-  // The corresponding validation class labels
-  base::DataVector* validLabels;
+  Dataset& testData;
+  // The (optional) validationData
+  Dataset* validationData;
 
   // The class labels (e.g -1, 1)
-  base::DataVector classLabels;
+  DataVector classLabels;
   // The total number of different classes
   size_t classNumber;
 
@@ -273,8 +255,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
   double cvSaveLambdaEnd;
   bool cvSaveLogscale;
   bool cvSaved;
-  base::DataMatrix* cvSaveTest;
-  base::DataMatrix* cvSaveTestRes;
+  DataMatrix* cvSaveTest;
+  DataMatrix* cvSaveTestRes;
 };
 
 }  // namespace datadriven
