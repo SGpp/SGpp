@@ -18,9 +18,9 @@ DBMatOnline::DBMatOnline(DBMatOffline* o) { readOffline(o); }
 DBMatOnline::~DBMatOnline() {}
 
 void DBMatOnline::setLambda(double lambda) {
-  if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompEigen)
+  if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompEigen)
     offlineObject_->getConfig()->lambda_ = lambda;
-  else if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompChol)
+  else if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol)
     offlineObject_->getConfig()->lambda_ = lambda;
   else
     throw sgpp::base::application_exception(

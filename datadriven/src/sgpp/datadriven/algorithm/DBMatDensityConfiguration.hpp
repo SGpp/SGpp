@@ -13,7 +13,12 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
-enum DBMatDecompostionType { DBMatDecompLU, DBMatDecompEigen, DBMatDecompChol };
+enum class DBMatDecompostionType {
+  DBMatDecompLU,
+  DBMatDecompEigen,
+  DBMatDecompChol,
+  DBMatDecompIChol
+};
 
 /**
  * Class that stores all the configuration information
@@ -39,12 +44,12 @@ class DBMatDensityConfiguration {
    */
   DBMatDensityConfiguration(sgpp::base::RegularGridConfiguration* gc,
                             sgpp::base::AdpativityConfiguration* ac,
-                            sgpp::datadriven::RegularizationType reg,
-                            double lambda, DBMatDecompostionType decomp);
+                            sgpp::datadriven::RegularizationType reg, double lambda,
+                            DBMatDecompostionType decomp);
 
   sgpp::base::GridType grid_type_;  // grid type
   size_t grid_dim_;                 // number of dimensions
-  int grid_level_;  // grid_level (only for hierarchical basis grids)
+  int grid_level_;                  // grid_level (only for hierarchical basis grids)
 
   // REFINEMENT
   size_t numRefinements_;  // number of refinements
@@ -52,9 +57,8 @@ class DBMatDensityConfiguration {
   size_t ref_noPoints_;    // max. number of points to be refined
 
   // REGULARIZATION:
-  sgpp::datadriven::RegularizationType
-      regularization_;  // regularization operator
-  double lambda_;       // regularization parameter lambda
+  sgpp::datadriven::RegularizationType regularization_;  // regularization operator
+  double lambda_;                                        // regularization parameter lambda
 
   // DECOMPOSITION:
   DBMatDecompostionType decomp_type_;  // Type of matrix decomposition
