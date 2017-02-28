@@ -35,7 +35,7 @@ class DBMatOnline {
   /**
    * Destructor
    */
-  virtual ~DBMatOnline();
+  virtual ~DBMatOnline() = default;
 
   /**
    * Reads an offline object
@@ -56,7 +56,7 @@ class DBMatOnline {
   DBMatOffline* getOffline();
 
  protected:
-  DBMatOffline* offlineObject_;
+  DBMatOffline* offlineObject;
 };
 
 }  // namespace datadriven

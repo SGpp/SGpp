@@ -11,26 +11,31 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOnline::DBMatOnline() : offlineObject_(nullptr) {}
+DBMatOnline::DBMatOnline() : offlineObject(nullptr) {}
 
 DBMatOnline::DBMatOnline(DBMatOffline* o) { readOffline(o); }
 
-DBMatOnline::~DBMatOnline() {}
-
 void DBMatOnline::setLambda(double lambda) {
-  if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompEigen)
-    offlineObject_->getConfig()->lambda_ = lambda;
-  else if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol)
-    offlineObject_->getConfig()->lambda_ = lambda;
-  else
-    throw sgpp::base::application_exception(
-        "Lambda can not be changed in the online step for this decomposition "
-        "type!");
+  switch (offlineObject->getConfig()->decomp_type_) {
+    case DBMatDecompostionType::DBMatDecompEigen:
+    case DBMatDecompostionType::DBMatDecompChol:
+      offlineObject->getConfig()->lambda_ = lambda;
+      break;
+    case DBMatDecompostionType::DBMatDecompIChol:
+      sgpp::base::application_exception(
+          "Lambda can not be changed for IChol - not implemented yet");
+      break;
+    case DBMatDecompostionType::DBMatDecompLU:
+    default:
+      throw sgpp::base::application_exception(
+          "Lambda can not be changed in the online step for this decomposition "
+          "type!");
+  }
 }
 
-void DBMatOnline::readOffline(DBMatOffline* o) { offlineObject_ = o; }
+void DBMatOnline::readOffline(DBMatOffline* o) { offlineObject = o; }
 
-DBMatOffline* DBMatOnline::getOffline() { return offlineObject_; }
+DBMatOffline* DBMatOnline::getOffline() { return offlineObject; }
 
 }  // namespace datadriven
 }  // namespace sgpp
