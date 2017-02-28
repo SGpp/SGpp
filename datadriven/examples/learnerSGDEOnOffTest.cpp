@@ -60,8 +60,7 @@ int main() {
       std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -69,8 +68,7 @@ int main() {
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -111,8 +109,7 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ =
-          sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
 
       /**
        * Select the desired decomposition type for the offline step.
@@ -127,7 +124,7 @@ int main() {
       // dt = DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
-      dt = DBMatDecompChol;
+      dt = DBMatDecompostionType::DBMatDecompChol;
       decompType = "Cholesky decomposition";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
@@ -179,8 +176,8 @@ int main() {
       // initial weighting factor
       double beta = 0.0;
       // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(
-          &gridConfig, &adaptConfig, regularizationConfig.regType_, lambda, dt);
+      sgpp::datadriven::DBMatDensityConfiguration dconf(&gridConfig, &adaptConfig,
+                                                        regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
 
@@ -188,9 +185,9 @@ int main() {
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(
-          dconf, trainData, trainLabels, testData, testLabels, validData,
-          validLabels, classLabels, classNum, usePrior, beta, lambda);
+      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainData, trainLabels, testData,
+                                                 testLabels, validData, validLabels, classLabels,
+                                                 classNum, usePrior, beta, lambda);
 
       /**
        * Configure cross-validation.
@@ -206,8 +203,7 @@ int main() {
       bool cvLogScale = true;
       sgpp::base::DataMatrix* cvTestData = &testData;
       sgpp::base::DataMatrix* cvTestDataRes = nullptr;  // needed?
-      learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart,
-                                           cvLambdaEnd, cvTestData,
+      learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
                                            cvTestDataRes, cvLogScale);
 
       // specify batch size
@@ -220,9 +216,8 @@ int main() {
        * Learn the data.
        */
       std::cout << "# start to train the learner" << std::endl;
-      learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod,
-                    accDeclineThreshold, accDeclineBufferSize, minRefInterval,
-                    enableCv, nextCvStep);
+      learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
+                    accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
 
       /**
        * Accuracy on test data.
@@ -237,12 +232,11 @@ int main() {
       avgErrorsFolds.add(learner.avgErrors);
     }
     avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-    if ( (totalSets > 1) && (totalFolds > 1) ) {
+    if ((totalSets > 1) && (totalFolds > 1)) {
       /**
        * Average accuracy on test data reagarding 5-fold cv.
        */
-      std::cout << "Average accuracy on test data (set " +
-                       std::to_string(numSets + 1) + "): "
+      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
                 << (1.0 - avgErrorFolds) << std::endl;
     }
     avgError += avgErrorFolds;

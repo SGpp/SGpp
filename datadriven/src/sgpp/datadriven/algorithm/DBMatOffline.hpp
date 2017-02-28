@@ -14,8 +14,8 @@
 #include <gsl/gsl_permutation.h>
 
 #include <list>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -29,28 +29,6 @@ namespace datadriven {
  */
 
 class DBMatOffline {
- protected:
-  DBMatOffline();
-
-  sgpp::datadriven::DBMatDensityConfiguration*
-      config_;                         // configuration for this offline object
-  sgpp::base::DataMatrix* lhsMatrix_;  // stores the (decomposed) matrix
-  bool constructed_;                   // If the matrix was built
-  bool decomposed_;                    // If the matrix was decomposed
-  bool ownsConfig_;  // If the configuration has to be destroyed with the object
-
-  gsl_permutation* perm_;  // Stores the permutation that was
-  // applied on the matrix during decomposition
-
-  // An offline object either works on a
-  // hierarchical basis grid!
-  sgpp::base::Grid* grid_;
-
-  /**
-   * Method to initialize a sparse grid
-   */
-  void InitializeGrid();
-
  public:
   /**
    * Constructor
@@ -126,8 +104,7 @@ class DBMatOffline {
    * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
    */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                            double lambda);
+  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
 
   /**
    * Updates the cholesky factor when a new grid point is added (e.g. refine)
@@ -176,6 +153,27 @@ class DBMatOffline {
    * Destructor
    */
   virtual ~DBMatOffline();
+
+ protected:
+  DBMatOffline();
+
+  sgpp::datadriven::DBMatDensityConfiguration* config_;  // configuration for this offline object
+  sgpp::base::DataMatrix* lhsMatrix_;                    // stores the (decomposed) matrix
+  bool constructed_;                                     // If the matrix was built
+  bool decomposed_;                                      // If the matrix was decomposed
+  bool ownsConfig_;  // If the configuration has to be destroyed with the object
+
+  gsl_permutation* perm_;  // Stores the permutation that was
+  // applied on the matrix during decomposition
+
+  // An offline object either works on a
+  // hierarchical basis grid!
+  sgpp::base::Grid* grid_;
+
+  /**
+   * Method to initialize a sparse grid
+   */
+  void InitializeGrid();
 
  private:
   /**
