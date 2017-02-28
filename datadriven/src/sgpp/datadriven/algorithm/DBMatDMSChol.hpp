@@ -20,14 +20,9 @@ namespace datadriven {
 class DBMatDMSChol : public DBMatDecompMatrixSolver {
  public:
   /**
-   * (Empty) constructor
+   * Default constructor
    */
-  DBMatDMSChol();
-
-  /**
-   * (Empty) destructor
-   */
-  virtual ~DBMatDMSChol();
+  DBMatDMSChol() = default;
 
   /**
    * Solves a system of equations
@@ -39,9 +34,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param lambda_new the new regularization paramter (e.g. if cross-validation
    * is applied)
    */
-  void solve(sgpp::base::DataMatrix& DecompMatrix,
-             sgpp::base::DataVector& alpha, sgpp::base::DataVector& b,
-             double lambda_old, double lambda_new);
+  void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
+             sgpp::base::DataVector& b, double lambda_old, double lambda_new);
 
   /**
    * Performe a rank one cholesky update
@@ -51,8 +45,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param do_cv indicating if updates are used for cross valdiation
    * (using special structure of update vectors to save runtime)
    */
-  void choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
-                      sgpp::base::DataVector* update, bool do_cv = false);
+  void choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector* update,
+                      bool do_cv = false);
 
   /**
    * Performe a rank one cholesky downdate
@@ -62,8 +56,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param do_cv indicating if updates are used for cross valdiation
    * (using special structure of update vectors to save runtime)
    */
-  void choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
-                        sgpp::base::DataVector* downdate, bool do_cv = false);
+  void choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector* downdate,
+                        bool do_cv = false);
 };
 
 }  // namespace datadriven

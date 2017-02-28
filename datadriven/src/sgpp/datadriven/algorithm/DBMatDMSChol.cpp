@@ -18,14 +18,8 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatDMSChol::DBMatDMSChol() {}
-
-DBMatDMSChol::~DBMatDMSChol() {}
-
-void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix,
-                         sgpp::base::DataVector& alpha,
-                         sgpp::base::DataVector& b, double lambda_old,
-                         double lambda_new) {
+void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
+                         sgpp::base::DataVector& b, double lambda_old, double lambda_new) {
   size_t size = DecompMatrix.getNcols();
   // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
   // rank-One-updates
@@ -34,8 +28,7 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix,
 
   // If regularization paramter is changed enter
   if (lambda_up != 0) {
-    sgpp::base::DataVector* lambdaModification =
-        new sgpp::base::DataVector(size, 0.0);
+    sgpp::base::DataVector* lambdaModification = new sgpp::base::DataVector(size, 0.0);
     // In case lambda is increased apply Cholesky rank one updates
     if (lambda_up > 0) {
       for (size_t i = 0; i < size; i++) {
@@ -94,10 +87,8 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
   }
 
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m =
-      gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
-  gsl_vector_const_view vvec =
-      gsl_vector_const_view_array(update->getPointer(), update->getSize());
+  gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
+  gsl_vector_const_view vvec = gsl_vector_const_view_array(update->getPointer(), update->getSize());
 
   // Define and declare Workingvector, Cosine- and Sinevector
   gsl_vector* wkvec = gsl_vector_calloc(update->getSize());
@@ -113,8 +104,7 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
   bool first_notZero = true;
   for (size_t i = 0; i < size - 1; i++) {
     if (*tbuff == 0.0 && wkvec->data[i] == 0.0) {
-      throw sgpp::base::data_exception(
-          "choleskyUpdate::Matrix not numerical positive definite");
+      throw sgpp::base::data_exception("choleskyUpdate::Matrix not numerical positive definite");
     } else if (wkvec->data[i] == 0.0 && do_cv == true) {
       // If cross validation is applied the first (n-1) entries in
       // the n-th step are zero and therefore can be skipped.
@@ -132,22 +122,18 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
       cvec->data[i] = -cvec->data[i];
       svec->data[i] = -svec->data[i];
     } else if (temp == 0.0) {
-      throw sgpp::base::data_exception(
-          "choleskyUpdate::Matrix not numerical positive definite");
+      throw sgpp::base::data_exception("choleskyUpdate::Matrix not numerical positive definite");
     }
 
     // Access columns to modify via Givens rotations
-    gsl_vector_view mat_sub =
-        gsl_matrix_subcolumn(&m.matrix, i, i + 1, size - i - 1);
-    gsl_vector_view wkvec_sub =
-        gsl_vector_subvector(wkvec, i + 1, size - i - 1);
+    gsl_vector_view mat_sub = gsl_matrix_subcolumn(&m.matrix, i, i + 1, size - i - 1);
+    gsl_vector_view wkvec_sub = gsl_vector_subvector(wkvec, i + 1, size - i - 1);
 
     // Allpy Givens rotation to mat_sub und wkvec_sub
     for (size_t j = 0; j < size - i - 1; j++) {
       double x = mat_sub.vector.data[mat_sub.vector.stride * j];
       double y = wkvec_sub.vector.data[j];
-      mat_sub.vector.data[mat_sub.vector.stride * j] =
-          cvec->data[i] * x + svec->data[i] * y;
+      mat_sub.vector.data[mat_sub.vector.stride * j] = cvec->data[i] * x + svec->data[i] * y;
       wkvec_sub.vector.data[j] = -svec->data[i] * x + cvec->data[i] * y;
     }
     tbuff += (size + 1);
@@ -157,19 +143,16 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
   // Apply changes to N-th (last) diagonal element
   // Is outsourced, since only the diagonal element is modified.
   if (*tbuff != 0.0 || wkvec->data[size - 1] != 0.0) {
-    gsl_blas_drotg(tbuff, wkvec->data + (size - 1), cvec->data + i_N,
-                   svec->data + i_N);
+    gsl_blas_drotg(tbuff, wkvec->data + (size - 1), cvec->data + i_N, svec->data + i_N);
     if ((temp = *tbuff) < 0.0) {
       *tbuff = -temp;
       cvec->data[i_N] = -cvec->data[i_N];
       svec->data[i_N] = -svec->data[i_N];
     } else if (temp == 0.0) {
-      throw sgpp::base::data_exception(
-          "choleskyUpdate::Matrix not numerical positive definite");
+      throw sgpp::base::data_exception("choleskyUpdate::Matrix not numerical positive definite");
     }
   } else {
-    throw sgpp::base::data_exception(
-        "choleskyUpdate::Matrix not numerical positive definite");
+    throw sgpp::base::data_exception("choleskyUpdate::Matrix not numerical positive definite");
   }
   gsl_vector_free(wkvec);
   gsl_vector_free(svec);
@@ -180,8 +163,7 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
 
 // Implement cholesky Downdate for given Decomposition and update vector
 void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
-                                    sgpp::base::DataVector* downdate,
-                                    bool do_cv) {
+                                    sgpp::base::DataVector* downdate, bool do_cv) {
   size_t size = DecompMatrix.getNrows();
 
   if (downdate->getSize() != size) {
@@ -190,10 +172,8 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
         "match...");
   }
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m =
-      gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
-  gsl_vector_view vvec =
-      gsl_vector_view_array(downdate->getPointer(), downdate->getSize());
+  gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
+  gsl_vector_view vvec = gsl_vector_view_array(downdate->getPointer(), downdate->getSize());
 
   // Define and declare Workingvector, Cosine- and Sinevector
   gsl_vector* wkvec = gsl_vector_calloc(downdate->getSize());
@@ -205,8 +185,7 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
   gsl_blas_dcopy(&vvec.vector, wkvec);
 
   // Solve La = downdate and save a in vvec.vector
-  gsl_blas_dtrsv(CblasLower, CblasNoTrans, CblasNonUnit, &m.matrix,
-                 &vvec.vector);
+  gsl_blas_dtrsv(CblasLower, CblasNoTrans, CblasNonUnit, &m.matrix, &vvec.vector);
 
   // Generate Givens rotations
   double rho;
@@ -216,8 +195,7 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
   // Represents first index of downdate vector with entrie unequal to zero
   size_t cv_first_zero = 0;
   if (rho <= 0.0) {
-    throw sgpp::base::data_exception(
-        "choleskyDowndate::Matrix not numerical positive definite");
+    throw sgpp::base::data_exception("choleskyDowndate::Matrix not numerical positive definite");
   } else {
     rho = sqrt(rho);
     for (int i = static_cast<int>(size) - 1; i >= 0; i--) {
@@ -228,8 +206,7 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
         break;
       }
       // Determine Givens rotation
-      gsl_blas_drotg(&rho, vvec.vector.data + i, cvec->data + i,
-                     svec->data + i);
+      gsl_blas_drotg(&rho, vvec.vector.data + i, cvec->data + i, svec->data + i);
       // rho must remain positive
       if (rho < 0.0) {
         rho = -rho;
@@ -247,24 +224,21 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
   // Apply calculated Givens rotations to current Cholesky factor
   for (size_t i = size - 1; i >= cv_first_zero; i--) {
     if (*tbuff <= 0.0) {
-      throw sgpp::base::data_exception(
-          "choleskyDowndate::Matrix not numerical positive definite");
+      throw sgpp::base::data_exception("choleskyDowndate::Matrix not numerical positive definite");
     }
     // Access corresponding columns
     gsl_vector_view mat_sub = gsl_matrix_subcolumn(&m.matrix, i, i, size - i);
     gsl_vector_view wkvec_sub = gsl_vector_subvector(wkvec, i, size - i);
 
     // Apply Givens rotation to mat_sub and wkvec_sub
-    gsl_blas_drot(&wkvec_sub.vector, &mat_sub.vector, cvec->data[i],
-                  svec->data[i]);
+    gsl_blas_drot(&wkvec_sub.vector, &mat_sub.vector, cvec->data[i], svec->data[i]);
     double diag = gsl_matrix_get(&m.matrix, i, i);
     // Ensure diagonal stays positive
     if (diag < 0.0) {
       rho = -1.0;
       gsl_matrix_set(&m.matrix, i, i, rho * diag);
     } else if (diag == 0.0) {
-      throw sgpp::base::data_exception(
-          "choleskyDowndate::Matrix not numerical positive definite");
+      throw sgpp::base::data_exception("choleskyDowndate::Matrix not numerical positive definite");
     }
     tbuff -= (size + 1);
   }
