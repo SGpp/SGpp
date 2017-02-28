@@ -37,7 +37,7 @@ class DBMatOnlineDE : public DBMatOnline {
    *
    * @param o the offline object
    */
-  virtual void readOffline(DBMatOffline* o);
+  void readOffline(DBMatOffline* o) override;
 
   /**
    * Computes the density function for a certain data matrix
@@ -50,9 +50,8 @@ class DBMatOnlineDE : public DBMatOnline {
    * coarsening
    * @param newPoints indicates the amount of added points due to refinement
    */
-  virtual void computeDensityFunction(DataMatrix& m, bool save_b = false, bool do_cv = false,
-                                      std::list<size_t>* deletedPoints = nullptr,
-                                      size_t newPoints = 0);
+  void computeDensityFunction(DataMatrix& m, bool save_b = false, bool do_cv = false,
+                              std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
 
   /**
    * Evaluates the density function at a certain point
@@ -61,12 +60,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param force if set, it will even try to evaluate if the internal state
    * recommends otherwise
    */
-  virtual double eval(const DataVector& p, bool force = false);
+  double eval(const DataVector& p, bool force = false);
 
   /**
-   * Return a pointer to alpha
+   * Return a reference to alpha
    */
-  virtual DataVector* getAlpha();
+  DataVector* getAlpha();
 
   /**
    * Update alpha vector, i.e. delete entries specified by 'deletedPoints'
@@ -77,12 +76,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * points
    * @param newPoints number of added grid points
    */
-  virtual void updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints);
+  void updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints);
 
   /**
    * Returns if the surplus has already been computed
    */
-  virtual bool isComputed();
+  bool isComputed();
 
   /**
    * Sets the crossvalidation parameters
@@ -96,13 +95,13 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param logscale Indicates whether the values between lambda_start and
    *        lambda_end are searched using logscale or not
    */
-  virtual void setCrossValidationParameters(int lambda_step, double lambda_start, double lambda_end,
-                                            DataMatrix* test, DataMatrix* test_cc, bool logscale);
+  void setCrossValidationParameters(int lambda_step, double lambda_start, double lambda_end,
+                                    DataMatrix* test, DataMatrix* test_cc, bool logscale);
 
   /**
    * Returns the last best lamda
    */
-  virtual double getBestLambda();
+  double getBestLambda();
 
   /**
    * Sets the weighting factor
@@ -110,17 +109,17 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param beta the new weighting factor. If set to 0, no plasticity takes
    * place.
    */
-  virtual void setBeta(double beta);
+  void setBeta(double beta);
 
   /**
    * Returns the current weighting factor
    */
-  virtual double getBeta();
+  double getBeta();
 
   /**
    * Normalize the Density
    */
-  virtual double normalize(size_t samples = 1000);
+  double normalize(size_t samples = 1000);
 
  protected:
   DataVector alpha;
