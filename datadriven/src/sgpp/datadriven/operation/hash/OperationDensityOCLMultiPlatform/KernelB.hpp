@@ -112,7 +112,7 @@ class KernelDensityB {
       std::cout << "entering mult, device: " << device->deviceName << " ("
                 << device->deviceId << ")" << std::endl;
     }
-
+    
     // Build kernel if not already done
     if (this->kernelB == nullptr) {
       if (verbose)
@@ -122,6 +122,7 @@ class KernelDensityB {
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
         std::cout << "building kernel" << std::endl;
+      std::cout << std::flush;
       this->kernelB = manager->buildKernel(program_src, device, kernelConfiguration, "cscheme");
     }
 
