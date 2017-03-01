@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
   // Create Grid
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dim);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  std::cout << "level:" << level << std::endl;
   gridGen.regular(level);
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;

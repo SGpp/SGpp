@@ -71,9 +71,18 @@ def generate_dataset(dimensions, clusters, setsize, abweichung, rauschensize):
       cluster_ret.append(-1)
    dataset = normiere_liste(dataset, dimensions)
    cluster_npret = np.array(cluster_ret)
-   print dataset
+   # print dataset
    return dataset, cluster_npret
 
-dataset1, Y1 = generate_dataset(8, 10, 500000, 0.1, 0)
-np.savetxt("dataset2_dim8.txt", dataset1)
-np.savetxt("dataset2_dim8_erg.txt", Y1)
+# dimensions, clusters, setsize, abweichung, rauschensize
+clusters=10
+start_size=20000
+dim=10
+dataset_size=start_size
+for i in range(0, 10):
+   N = pow(2, i)
+   print "creating" + "datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + ".arff"
+   dataset1, Y1 = generate_dataset(dim, clusters, dataset_size, 0.1, 0)
+   np.savetxt("datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + ".arff", dataset1)
+   np.savetxt("datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + "_erg.txt", Y1)
+   dataset_size*=2
