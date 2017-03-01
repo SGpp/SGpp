@@ -49,26 +49,24 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       initDone(false),
       usePrior(usePrior),
       beta(beta),
+      offline(dconf),
       destFunctions(nullptr) {
-  offline = new DBMatOffline(dconf);
-  offline->buildMatrix();
+  offline.buildMatrix();
   // clock_t begin = clock();
-  offline->decomposeMatrix();
+  offline.decomposeMatrix();
   // clock_t end = clock();
   // double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
   // std::cout << "#Decompose matrix: " << elapsed_secs << std::endl;
 
-  readOffline(offline);  // set offlineObject_ of DBMatOnline class
-
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
-  if (offline->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+  if (offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
     destFunctions = new std::vector<std::pair<DBMatOnlineDE*, double> >(classNumber);
     // every class gets his own online object
     for (size_t i = 0; i < classNumber; i++) {
-      DBMatOnlineDE* densEst = new DBMatOnlineDE(beta);
-      DBMatOffline* offlineRead = new DBMatOffline(*offline);
-      densEst->readOffline(offlineRead);
+      DBMatOffline* offlineRead = new DBMatOffline(offline);
+      DBMatOnlineDE* densEst = new DBMatOnlineDE(*offlineRead, beta);
+      // densEst->readOffline(offlineRead);
       std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[i]);
       (*destFunctions)[i] = pdest;
     }
@@ -84,7 +82,9 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
     prior.insert(std::pair<double, double>(classLabels[i], 0.0));
   }
 
-  setLambda(lambda);
+  for (auto iter : *destFunctions) {
+    iter.first->setLambda(lambda);
+  }
 }
 
 void LearnerSGDEOnOff::init() {
@@ -93,8 +93,8 @@ void LearnerSGDEOnOff::init() {
   }
   destFunctions = new std::vector<std::pair<DBMatOnlineDE*, double> >(numClasses);
   for (size_t idx = 0; idx < numClasses; idx++) {
-    DBMatOnlineDE* densEst = new DBMatOnlineDE(beta);
-    densEst->readOffline(offline);
+    DBMatOnlineDE* densEst = new DBMatOnlineDE(offline, beta);
+    // densEst->readOffline(offline);
     std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[idx]);
     (*destFunctions)[idx] = pdest;
   }
@@ -162,7 +162,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   onlineObjects = getDestFunctions();
   for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
-    Grid* grid = densEst->getOffline()->getGridPointer();
+    Grid* grid = densEst->getOfflineObject().getGridPointer();
     std::cout << "#Initial grid size of grid " << i << " : " << grid->getSize() << std::endl;
   }
 
@@ -211,9 +211,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        if ((offline->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+        if ((offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
             (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < offline->getConfig()->numRefinements_)) {
+            (refCnt < offline.getConfig()->numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -221,8 +221,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         if (validationData == nullptr) {
           throw base::data_exception("No validation data for checking convergence provided!");
         }
-        if ((offline->getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
-            (refCnt < offline->getConfig()->numRefinements_)) {
+        if ((offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+            (refCnt < offline.getConfig()->numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large
                                                     // use a subset for error
@@ -249,7 +249,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         std::vector<DataVector*> alphas;
         for (size_t i = 0; i < getNumClasses(); i++) {
           DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
-          grids.push_back(densEst->getOffline()->getGridPointer());
+          grids.push_back(densEst->getOfflineObject().getGridPointer());
           alphas.push_back(densEst->getAlpha());
         }
         bool levelPenalize = false;  // Multiplies penalzing term for fine levels
@@ -259,7 +259,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr =
             *(new sgpp::datadriven::ZeroCrossingRefinementFunctor(
-                grids, alphas, offline->getConfig()->ref_noPoints_, levelPenalize, preCompute));
+                grids, alphas, offline.getConfig()->ref_noPoints_, levelPenalize, preCompute));
 
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
@@ -273,7 +273,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         base::DataVector* trainLabelsRef = &(trainData.getTargets());
         sgpp::datadriven::DataBasedRefinementFunctor funcData =
             *(new sgpp::datadriven::DataBasedRefinementFunctor(
-                grids, alphas, trainDataRef, trainLabelsRef, offline->getConfig()->ref_noPoints_,
+                grids, alphas, trainDataRef, trainLabelsRef, offline.getConfig()->ref_noPoints_,
                 levelPenalize, coeffA));
         if (refType == "zero") {
           func = &funcZrcr;
@@ -287,7 +287,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           // index
           std::cout << "Refinement and coarsening for class: " << idx << std::endl;
           DBMatOnlineDE* densEst = (*onlineObjects)[idx].first;
-          Grid* grid = densEst->getOffline()->getGridPointer();
+          Grid* grid = densEst->getOfflineObject().getGridPointer();
           std::cout << "Size before adaptivity: " << grid->getSize() << std::endl;
 
           GridGenerator& gridGen = grid->getGenerator();
@@ -339,7 +339,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             // perform refinement (surplus based)
             sizeBeforeRefine = grid->getSize();
             // simple refinement based on surpluses
-            SurplusRefinementFunctor srf(alphaWeight, offline->getConfig()->ref_noPoints_);
+            SurplusRefinementFunctor srf(alphaWeight, offline.getConfig()->ref_noPoints_);
             gridGen.refine(srf);
             sizeAfterRefine = grid->getSize();
           } else if ((refType == "data") || (refType == "zero")) {
@@ -360,8 +360,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           newPoints = sizeAfterRefine - sizeBeforeRefine;
           (*refineCoarse)[idx].second = newPoints;
           // apply grid changes to the Cholesky factorization
-          densEst->getOffline()->choleskyModification(newPoints, deletedGridPoints,
-                                                      densEst->getBestLambda());
+          densEst->getOfflineObject().choleskyModification(newPoints, deletedGridPoints,
+                                                           densEst->getBestLambda());
           // update alpha vector
           densEst->updateAlpha(&(*refineCoarse)[idx].first, (*refineCoarse)[idx].second);
         }
@@ -552,7 +552,7 @@ void LearnerSGDEOnOff::storeResults() {
   // write grids to csv file
   for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*destFunctions)[i].first;
-    Grid* grid = densEst->getOffline()->getGridPointer();
+    Grid* grid = densEst->getOfflineObject().getGridPointer();
     output.open("SGDEOnOff_grid_" + std::to_string((*destFunctions)[i].second) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;

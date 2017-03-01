@@ -30,14 +30,14 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param beta The initial weighting factor
    */
 
-  explicit DBMatOnlineDE(double beta = 0.);
+  explicit DBMatOnlineDE(DBMatOffline& offline, double beta = 0.);
 
   /**
    * Reads an offline object
    *
    * @param o the offline object
    */
-  void readOffline(DBMatOffline* o) override;
+  void readOffline(DBMatOffline& o) override;
 
   /**
    * Computes the density function for a certain data matrix
