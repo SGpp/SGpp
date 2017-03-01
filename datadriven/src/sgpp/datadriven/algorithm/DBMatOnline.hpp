@@ -22,41 +22,39 @@ class DBMatOnline {
  public:
   /**
    * Constructor
-   */
-  DBMatOnline();
-
-  /**
-   * Constructor
    *
    * @param o a offline object
    */
-  explicit DBMatOnline(DBMatOffline* o);
+  explicit DBMatOnline(DBMatOffline& o);
 
+  DBMatOnline(const DBMatOnline& rhs) = delete;
+  DBMatOnline(DBMatOnline&& rhs) = default;
+
+  DBMatOnline& operator=(const DBMatOnline& rhs) = delete;
+  DBMatOnline& operator=(DBMatOnline&& rhs) = default;
   /**
    * Destructor
    */
   virtual ~DBMatOnline() = default;
 
-  /**
-   * Reads an offline object
-   *
-   * @param o the offline object
-   */
-  virtual void readOffline(DBMatOffline* o);
+  //  /**
+  //   * Changes the weighting factor for the regularization term,
+  //   * if possible (might depend on the kind of decomposition for classification)
+  //   */
+  void setLambda(double lambda);
+
+  virtual void readOffline(DBMatOffline& o) = 0;
 
   /**
-   * Changes the weighting factor for the regularization term,
-   * if possible (might depend on the kind of decomposition for classification)
+   * Returns a reference to the offline object
+   * @return reference to the stored offline object
    */
-  virtual void setLambda(double lambda);
+  DBMatOffline& getOfflineObject();
 
-  /**
-   * Returns a pointer to the offline object
-   */
-  DBMatOffline* getOffline();
+  const DBMatOffline& getOfflineObject() const;
 
  protected:
-  DBMatOffline* offlineObject;
+  DBMatOffline& offlineObject;
 };
 
 }  // namespace datadriven

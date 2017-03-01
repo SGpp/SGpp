@@ -38,7 +38,7 @@ using sgpp::base::DataVector;
  * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
  */
 
-class LearnerSGDEOnOff : public DBMatOnline {
+class LearnerSGDEOnOff {
  public:
   /**
    * Constructor.
@@ -237,7 +237,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
   double beta;
 
   // The offline object (contains decomposed matrix)
-  DBMatOffline* offline;
+  DBMatOffline offline;
   // The online objects (density functions)
   std::vector<std::pair<DBMatOnlineDE*, double> >* destFunctions;
 
