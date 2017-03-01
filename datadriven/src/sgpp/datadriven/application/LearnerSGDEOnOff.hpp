@@ -29,6 +29,8 @@ namespace datadriven {
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
+typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, double>> ClassDensityConntainer;
+
 /**
  * LearnerSGDEOnOff learns the data using sparse grid density estimation. The
  * system matrix is precomputed and factorized using Eigen-, LU- or
@@ -57,11 +59,6 @@ class LearnerSGDEOnOff {
   LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
                    bool usePrior, double beta, double lambda);
-
-  /**
-   * Destructor.
-   */
-  ~LearnerSGDEOnOff();
 
   /**
    * Trains the learner with the given dataset.
@@ -100,7 +97,7 @@ class LearnerSGDEOnOff {
    * points
    */
   void train(Dataset& dataset, bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse = nullptr);
+             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -116,8 +113,8 @@ class LearnerSGDEOnOff {
    *        removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(std::vector<std::pair<DataMatrix*, double> >& trainDataClasses, bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse = nullptr);
+  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses, bool doCv = false,
+             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Returns the accuracy of the classifier measured on the test data.
@@ -203,7 +200,7 @@ class LearnerSGDEOnOff {
    *
    * @return The density function objects mapped to class labels
    */
-  std::vector<std::pair<DBMatOnlineDE*, double> >& getDestFunctions();
+  ClassDensityConntainer& getDensityFunctions();
 
   // Stores prior values mapped to class labels
   std::map<double, double> prior;
@@ -238,8 +235,9 @@ class LearnerSGDEOnOff {
 
   // The offline object (contains decomposed matrix)
   DBMatOffline offline;
+  std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
-  std::vector<std::pair<DBMatOnlineDE*, double> > destFunctions;
+  ClassDensityConntainer densityFunctions;
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
