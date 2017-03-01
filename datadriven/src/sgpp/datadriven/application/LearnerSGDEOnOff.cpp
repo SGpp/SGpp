@@ -74,8 +74,6 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   } else {
     init();
   }
-
-  cvSaved = false;
   processedPoints = 0;
 
   for (size_t i = 0; i < numClasses; i++) {
@@ -97,10 +95,6 @@ void LearnerSGDEOnOff::init() {
     // densEst->readOffline(offline);
     std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[idx]);
     destFunctions[idx] = pdest;
-  }
-  if (cvSaved) {
-    setCrossValidationParameters(cvSaveLambdaStep, cvSaveLambdaStart, cvSaveLambdaEnd, cvSaveTest,
-                                 cvSaveTestRes, cvSaveLogscale);
   }
   initDone = true;
 }
@@ -615,14 +609,6 @@ void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambd
     destFunction.first->setCrossValidationParameters(lambdaStep, lambdaStart, lambdaEnd, test,
                                                      testRes, logscale);
   }
-  // TODO(lettrich): else -> if not nullptr: fix as soon as possible
-  //    cvSaveLambdaStep = lambdaStep;
-  //    cvSaveLambdaStart = lambdaStart;
-  //    cvSaveLambdaEnd = lambdaEnd;
-  //    cvSaveLogscale = logscale;
-  //    cvSaveTest = test;
-  //    cvSaveTestRes = testRes;
-  //    cvSaved = true;
 }
 
 /*double LearnerSGDEOnOff::getBestLambda() {
