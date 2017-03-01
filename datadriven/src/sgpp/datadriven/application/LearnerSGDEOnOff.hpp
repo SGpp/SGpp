@@ -243,15 +243,6 @@ class LearnerSGDEOnOff {
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
-
-  // Cross-validation parameters
-  int cvSaveLambdaStep;
-  double cvSaveLambdaStart;
-  double cvSaveLambdaEnd;
-  bool cvSaveLogscale;
-  bool cvSaved;
-  DataMatrix* cvSaveTest;
-  DataMatrix* cvSaveTestRes;
 };
 
 }  // namespace datadriven
