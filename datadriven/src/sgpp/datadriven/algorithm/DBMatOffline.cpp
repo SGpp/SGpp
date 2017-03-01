@@ -208,8 +208,6 @@ sgpp::base::DataMatrix* DBMatOffline::getDecomposedMatrix() {
 
 sgpp::base::Grid& DBMatOffline::getGrid() { return *grid_; }
 
-sgpp::base::Grid* DBMatOffline::getGridPointer() { return grid_; }
-
 void DBMatOffline::permuteVector(sgpp::base::DataVector& b) {
   if (decomposed_) {
     if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {

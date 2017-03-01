@@ -69,12 +69,6 @@ class DBMatOffline {
   sgpp::base::Grid& getGrid();
 
   /**
-   * Returns a pointer to the sparse grid
-   * (if this offline object uses a sparse grid, otherwise NULL)
-   */
-  sgpp::base::Grid* getGridPointer();
-
-  /**
    * Builds the right hand side matrix with or without the regularization term
    * depending
    * on the type of decomposition

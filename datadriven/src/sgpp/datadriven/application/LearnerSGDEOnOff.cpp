@@ -162,8 +162,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   onlineObjects = getDestFunctions();
   for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
-    Grid* grid = densEst->getOfflineObject().getGridPointer();
-    std::cout << "#Initial grid size of grid " << i << " : " << grid->getSize() << std::endl;
+    Grid& grid = densEst->getOfflineObject().getGrid();
+    std::cout << "#Initial grid size of grid " << i << " : " << grid.getSize() << std::endl;
   }
 
   // auxiliary variable for accuracy (error) measurement
@@ -249,7 +249,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         std::vector<DataVector*> alphas;
         for (size_t i = 0; i < getNumClasses(); i++) {
           DBMatOnlineDE* densEst = (*onlineObjects)[i].first;
-          grids.push_back(densEst->getOfflineObject().getGridPointer());
+          grids.push_back(&(densEst->getOfflineObject().getGrid()));
           alphas.push_back(densEst->getAlpha());
         }
         bool levelPenalize = false;  // Multiplies penalzing term for fine levels
@@ -287,17 +287,17 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           // index
           std::cout << "Refinement and coarsening for class: " << idx << std::endl;
           DBMatOnlineDE* densEst = (*onlineObjects)[idx].first;
-          Grid* grid = densEst->getOfflineObject().getGridPointer();
-          std::cout << "Size before adaptivity: " << grid->getSize() << std::endl;
+          Grid& grid = densEst->getOfflineObject().getGrid();
+          std::cout << "Size before adaptivity: " << grid.getSize() << std::endl;
 
-          GridGenerator& gridGen = grid->getGenerator();
+          GridGenerator& gridGen = grid.getGenerator();
 
-          size_t sizeBeforeRefine = grid->getSize();
-          size_t sizeAfterRefine = grid->getSize();
+          size_t sizeBeforeRefine = grid.getSize();
+          size_t sizeAfterRefine = grid.getSize();
 
           if (refType == "surplus") {
-            std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(*grid));
-            GridStorage& gridStorage = grid->getStorage();
+            std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
+            GridStorage& gridStorage = grid.getStorage();
             alphaWork = densEst->getAlpha();
             DataVector alphaWeight(alphaWork->getSize());
             // determine surpluses
@@ -337,11 +337,11 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             }*/
 
             // perform refinement (surplus based)
-            sizeBeforeRefine = grid->getSize();
+            sizeBeforeRefine = grid.getSize();
             // simple refinement based on surpluses
             SurplusRefinementFunctor srf(alphaWeight, offline.getConfig()->ref_noPoints_);
             gridGen.refine(srf);
-            sizeAfterRefine = grid->getSize();
+            sizeAfterRefine = grid.getSize();
           } else if ((refType == "data") || (refType == "zero")) {
             if (preCompute) {
               // precompute the evals (needs to be done once per step, before
@@ -350,12 +350,12 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             }
             func->setGridIndex(idx);
             // perform refinement (zero-crossings-based / data-based)
-            sizeBeforeRefine = grid->getSize();
+            sizeBeforeRefine = grid.getSize();
             gridGen.refine(*func);
-            sizeAfterRefine = grid->getSize();
+            sizeAfterRefine = grid.getSize();
           }
 
-          std::cout << "grid size after adaptivity: " << grid->getSize() << std::endl;
+          std::cout << "grid size after adaptivity: " << grid.getSize() << std::endl;
 
           newPoints = sizeAfterRefine - sizeBeforeRefine;
           (*refineCoarse)[idx].second = newPoints;
@@ -552,12 +552,12 @@ void LearnerSGDEOnOff::storeResults() {
   // write grids to csv file
   for (size_t i = 0; i < numClasses; i++) {
     DBMatOnlineDE* densEst = (*destFunctions)[i].first;
-    Grid* grid = densEst->getOfflineObject().getGridPointer();
+    Grid& grid = densEst->getOfflineObject().getGrid();
     output.open("SGDEOnOff_grid_" + std::to_string((*destFunctions)[i].second) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
     } else {
-      GridStorage& storage = grid->getStorage();
+      GridStorage& storage = grid.getStorage();
       GridStorage::grid_map_iterator end_iter = storage.end();
       for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
         DataVector gpCoord(trainData.getDimension());
