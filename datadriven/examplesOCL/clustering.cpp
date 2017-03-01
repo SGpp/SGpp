@@ -61,9 +61,9 @@ int main() {
     std::cout << result[i] << " ";
   }
   out_mult.close();
-  std::cin.get();
+  // std::cin.get();
 
-  std::cout  << "Creating rhs" << std::endl;
+  // std::cout  << "Creating rhs" << std::endl;
   // sgpp::base::DataVector b(gridsize);
   // operation_mult->generateb(dataset, b);
   // for (size_t i = 0; i < 300; i++)
