@@ -121,7 +121,7 @@ class LearnerSGDEOnOff {
    *
    * @return The classification accuracy measured on the test data
    */
-  double getAccuracy();
+  double getAccuracy() const;
 
   /**
    * Predicts the class labels of the test data points.
@@ -129,7 +129,7 @@ class LearnerSGDEOnOff {
    * @param The test data points
    * @return A vector containing the predicted class labels
    */
-  DataVector predict(DataMatrix& test);
+  DataVector predict(DataMatrix& test) const;
 
   /**
    * Predicts the class label of the given data point.
@@ -137,7 +137,7 @@ class LearnerSGDEOnOff {
    * @param p The data point
    * @return The predicted class label
    */
-  int predict(DataVector& p);
+  int predict(DataVector& p) const;
 
   /**
    * Error evaluation required for convergence-based refinement.
@@ -145,7 +145,9 @@ class LearnerSGDEOnOff {
    * @param dataset The data to measure the error on
    * @return The error evaluation
    */
-  double getError(Dataset& dataset);
+  double getError(Dataset& dataset) const;
+
+  void getAvgErrors(DataVector& result) const;
 
   /**
    * Stores classified data, grids and density function evaluations to csv
@@ -159,7 +161,7 @@ class LearnerSGDEOnOff {
    * @param point The point for which the density functions should be evaluated
    * @return The function evaluations
    */
-  DataVector getDensities(DataVector& point);
+  DataVector getDensities(DataVector& point) const;
 
   /**
    * Sets the cross-validation parameters.
@@ -184,16 +186,11 @@ class LearnerSGDEOnOff {
   // double getBestLambda();
 
   /**
-  * Initialization of online objects in case of Eigen- or LU-decomposition.
-  */
-  void init();
-
-  /**
   * Returns the number of existing classes.
   *
   * @return The number of classes
   */
-  size_t getNumClasses();
+  size_t getNumClasses() const;
 
   /**
    * Returns the density functions mapped to class labels.
@@ -202,16 +199,7 @@ class LearnerSGDEOnOff {
    */
   ClassDensityConntainer& getDensityFunctions();
 
-  // Stores prior values mapped to class labels
-  std::map<double, double> prior;
-
-  // The final classification error
-  double error;
-
-  // A vector to store error evaluations
-  DataVector avgErrors;
-
- protected:
+ private:
   // The training data
   Dataset& trainData;
   // The test data
@@ -223,15 +211,14 @@ class LearnerSGDEOnOff {
   DataVector classLabels;
   // The total number of different classes
   size_t numClasses;
-
-  // Indicates whether the model has been trained or not
-  bool trained;
-  // Indicates whether the learner has been initialized or not
-  bool initDone;
   // Specifies whether prior should be used for class prediction or not
   bool usePrior;
+  // Stores prior values mapped to class labels
+  std::map<double, double> prior;
   // Weighting factor
   double beta;
+  // Indicates whether the model has been trained or not
+  bool trained;
 
   // The offline object (contains decomposed matrix)
   DBMatOffline offline;
@@ -241,6 +228,12 @@ class LearnerSGDEOnOff {
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
+
+  // The final classification error
+  // double error;
+
+  // A vector to store error evaluations
+  DataVector avgErrors;
 };
 
 }  // namespace datadriven

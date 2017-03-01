@@ -216,8 +216,10 @@ int main() {
       // store results (classified data, grids, density functions)
       // learner.storeResults();
 
-      avgErrorFolds += learner.error;
-      avgErrorsFolds.add(learner.avgErrors);
+      sgpp::base::DataVector tmp{};
+      avgErrorFolds += 1.0 - learner.getAccuracy();
+      learner.getAvgErrors(tmp);
+      avgErrorsFolds.add(tmp);
     }
     avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
     if ((totalSets > 1) && (totalFolds > 1)) {
