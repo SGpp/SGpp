@@ -40,29 +40,29 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
                                    Dataset& testData, Dataset* validationData,
                                    DataVector& classLabels, size_t numClassesInit, bool usePrior,
                                    double beta, double lambda)
-    : trainData(trainData),
-      testData(testData),
-      validationData(validationData),
-      classLabels(classLabels),
-      numClasses(numClassesInit),
-      trained(false),
-      initDone(false),
-      usePrior(usePrior),
-      beta(beta),
-      offline(dconf),
+    : trainData{trainData},
+      testData{testData},
+      validationData{validationData},
+      classLabels{classLabels},
+      numClasses{numClassesInit},
+      usePrior{usePrior},
+      prior{},
+      beta{beta},
+      trained{false},
+      offline{dconf},
       offlineContainer{},
-      densityFunctions{} {
+      densityFunctions{},
+      processedPoints{0},
+      avgErrors{0} {
+  // initialize offline object
   offline.buildMatrix();
-  // clock_t begin = clock();
   offline.decomposeMatrix();
-  // clock_t end = clock();
-  // double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
-  // std::cout << "#Decompose matrix: " << elapsed_secs << std::endl;
 
+  // initialize density functions for each class
+  densityFunctions.reserve(numClasses);
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
   if (offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
-    densityFunctions.reserve(numClasses);
     offlineContainer.reserve(numClasses);
     // every class gets his own online object
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
@@ -70,32 +70,21 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       auto densEst = std::make_unique<DBMatOnlineDE>(*(offlineContainer.back()), beta);
       densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
-    initDone = true;
   } else {
-    init();
+    densityFunctions.reserve(numClasses);
+    for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
+      auto densEst = std::make_unique<DBMatOnlineDE>(offline, beta);
+      densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
+    }
   }
-  processedPoints = 0;
 
   for (size_t i = 0; i < numClasses; i++) {
-    prior.insert(std::pair<double, double>(classLabels[i], 0.0));
+    prior.emplace(classLabels[i], 0.0);
   }
 
   for (auto& iter : densityFunctions) {
     iter.first->setLambda(lambda);
   }
-}
-
-void LearnerSGDEOnOff::init() {
-  if (initDone) {
-    return;
-  }
-
-  densityFunctions.reserve(numClasses);
-  for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
-    auto densEst = std::make_unique<DBMatOnlineDE>(offline, beta);
-    densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
-  }
-  initDone = true;
 }
 
 void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string refType,
@@ -151,8 +140,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   }
 
   // auxiliary variable for accuracy (error) measurement
-  double acc = 0.0;
-  acc = getAccuracy();
+  double acc = getAccuracy();
   avgErrors.append(1.0 - acc);
 
   // main loop which performs the training process
@@ -367,43 +355,39 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
   std::cout << "#Training finished" << std::endl;
 
-  error = 1.0 - getAccuracy();
-
   // delete offline;
   delete refineCoarse;
 }
 
 void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
                              std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse) {
-  if (initDone) {
-    size_t dim = dataset.getDimension();
+  size_t dim = dataset.getDimension();
 
-    // create an empty matrix for every class:
-    std::vector<std::pair<DataMatrix*, double> > trainDataClasses;
-    std::map<double, int> classIndices;  // maps class labels to indices
-    int index = 0;
-    for (size_t i = 0; i < classLabels.getSize(); i++) {
-      DataMatrix* m = new DataMatrix(0, dim);
-      std::pair<DataMatrix*, double> p(m, classLabels[i]);
-      trainDataClasses.push_back(p);
-      classIndices.insert(std::pair<double, int>(classLabels[i], index));
-      index++;
-    }
-    // split the data into the different classes:
-    for (size_t i = 0; i < dataset.getNumberInstances(); i++) {
-      double classLabel = dataset.getTargets()[i];
-      DataVector vec(dim);
-      dataset.getData().getRow(i, vec);
-      std::pair<DataMatrix*, double> p = trainDataClasses[classIndices[classLabel]];
-      p.first->appendRow(vec);
-    }
-    // compute density functions
-    train(trainDataClasses, doCv, refineCoarse);
+  // create an empty matrix for every class:
+  std::vector<std::pair<DataMatrix*, double> > trainDataClasses;
+  std::map<double, int> classIndices;  // maps class labels to indices
+  int index = 0;
+  for (size_t i = 0; i < classLabels.getSize(); i++) {
+    DataMatrix* m = new DataMatrix(0, dim);
+    std::pair<DataMatrix*, double> p(m, classLabels[i]);
+    trainDataClasses.push_back(p);
+    classIndices.insert(std::pair<double, int>(classLabels[i], index));
+    index++;
+  }
+  // split the data into the different classes:
+  for (size_t i = 0; i < dataset.getNumberInstances(); i++) {
+    double classLabel = dataset.getTargets()[i];
+    DataVector vec(dim);
+    dataset.getData().getRow(i, vec);
+    std::pair<DataMatrix*, double> p = trainDataClasses[classIndices[classLabel]];
+    p.first->appendRow(vec);
+  }
+  // compute density functions
+  train(trainDataClasses, doCv, refineCoarse);
 
-    // delete DataMatrix pointers:
-    for (size_t i = 0; i < trainDataClasses.size(); i++) {
-      delete trainDataClasses[i].first;
-    }
+  // delete DataMatrix pointers:
+  for (size_t i = 0; i < trainDataClasses.size(); i++) {
+    delete trainDataClasses[i].first;
   }
 }
 
@@ -439,7 +423,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double> >& train
   trained = true;
 }
 
-double LearnerSGDEOnOff::getAccuracy() {
+double LearnerSGDEOnOff::getAccuracy() const {
   DataVector computedLabels = predict(testData.getData());
   size_t correct = 0;
   size_t correctLabel1 = 0;
@@ -461,7 +445,7 @@ double LearnerSGDEOnOff::getAccuracy() {
   return acc;
 }
 
-base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) {
+base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
   base::DataVector result(data.getNrows());
 
   /*if(not trained) {
@@ -478,7 +462,7 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) {
     for (size_t j = 0; j < densityFunctions.size(); j++) {
       auto& pair = densityFunctions[j];
       // double density = pair.first->eval(p)*this->prior[pair.second];
-      double density = pair.first->eval(p, true) * this->prior[pair.second];
+      double density = pair.first->eval(p, true) * prior.at(pair.second);
       if (density > max) {
         max = density;
         max_class = pair.second;
@@ -492,14 +476,14 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) {
   return result;
 }
 
-int LearnerSGDEOnOff::predict(DataVector& p) {
+int LearnerSGDEOnOff::predict(DataVector& p) const {
   DataMatrix ptmp(1, p.getSize());
   ptmp.setRow(0, p);
   DataVector r = this->predict(ptmp);
   return static_cast<int>(r[0]);
 }
 
-double LearnerSGDEOnOff::getError(Dataset& dataset) {
+double LearnerSGDEOnOff::getError(Dataset& dataset) const {
   double res = -1.0;
 
   DataVector computedLabels = predict(dataset.getData());
@@ -587,7 +571,7 @@ void LearnerSGDEOnOff::storeResults() {
   }
 }
 
-DataVector LearnerSGDEOnOff::getDensities(DataVector& point) {
+DataVector LearnerSGDEOnOff::getDensities(DataVector& point) const {
   base::DataVector result(densityFunctions.size());
   for (size_t i = 0; i < densityFunctions.size(); i++) {
     auto& pair = densityFunctions[i];
@@ -610,7 +594,9 @@ void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambd
   return 0.; // TODO
 }*/
 
-size_t LearnerSGDEOnOff::getNumClasses() { return numClasses; }
+size_t LearnerSGDEOnOff::getNumClasses() const { return numClasses; }
+
+void LearnerSGDEOnOff::getAvgErrors(DataVector& result) const { result = avgErrors; }
 
 ClassDensityConntainer& LearnerSGDEOnOff::getDensityFunctions() { return densityFunctions; }
 
