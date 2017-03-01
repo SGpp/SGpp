@@ -203,7 +203,7 @@ class LearnerSGDEOnOff {
    *
    * @return The density function objects mapped to class labels
    */
-  std::vector<std::pair<DBMatOnlineDE*, double> >* getDestFunctions();
+  std::vector<std::pair<DBMatOnlineDE*, double> >& getDestFunctions();
 
   // Stores prior values mapped to class labels
   std::map<double, double> prior;
@@ -239,7 +239,7 @@ class LearnerSGDEOnOff {
   // The offline object (contains decomposed matrix)
   DBMatOffline offline;
   // The online objects (density functions)
-  std::vector<std::pair<DBMatOnlineDE*, double> >* destFunctions;
+  std::vector<std::pair<DBMatOnlineDE*, double> > destFunctions;
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
