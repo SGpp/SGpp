@@ -50,7 +50,8 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       usePrior(usePrior),
       beta(beta),
       offline(dconf),
-      destFunctions(numClasses) {
+      offlineContainer{},
+      densityFunctions{} {
   offline.buildMatrix();
   // clock_t begin = clock();
   offline.decomposeMatrix();
@@ -61,14 +62,13 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
   if (offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
-    destFunctions = std::vector<std::pair<DBMatOnlineDE*, double> >(numClasses);
+    densityFunctions.reserve(numClasses);
+    offlineContainer.reserve(numClasses);
     // every class gets his own online object
-    for (size_t i = 0; i < numClasses; i++) {
-      DBMatOffline* offlineRead = new DBMatOffline(offline);
-      DBMatOnlineDE* densEst = new DBMatOnlineDE(*offlineRead, beta);
-      // densEst->readOffline(offlineRead);
-      std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[i]);
-      destFunctions[i] = pdest;
+    for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
+      offlineContainer.emplace_back(std::make_unique<DBMatOffline>(offline));
+      auto densEst = std::make_unique<DBMatOnlineDE>(*(offlineContainer.back()), beta);
+      densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
     initDone = true;
   } else {
@@ -80,7 +80,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
     prior.insert(std::pair<double, double>(classLabels[i], 0.0));
   }
 
-  for (auto iter : destFunctions) {
+  for (auto& iter : densityFunctions) {
     iter.first->setLambda(lambda);
   }
 }
@@ -89,20 +89,13 @@ void LearnerSGDEOnOff::init() {
   if (initDone) {
     return;
   }
-  destFunctions = std::vector<std::pair<DBMatOnlineDE*, double> >(numClasses);
-  for (size_t idx = 0; idx < numClasses; idx++) {
-    DBMatOnlineDE* densEst = new DBMatOnlineDE(offline, beta);
-    // densEst->readOffline(offline);
-    std::pair<DBMatOnlineDE*, double> pdest(densEst, classLabels[idx]);
-    destFunctions[idx] = pdest;
+
+  densityFunctions.reserve(numClasses);
+  for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
+    auto densEst = std::make_unique<DBMatOnlineDE>(offline, beta);
+    densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
   }
   initDone = true;
-}
-
-LearnerSGDEOnOff::~LearnerSGDEOnOff() {
-  for (size_t i = 0; i < destFunctions.size(); i++) {
-    delete destFunctions[i].first;
-  }
 }
 
 void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string refType,
@@ -143,17 +136,18 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   std::list<size_t> deletedGridPoints;
   size_t newPoints = 0;
 
-  auto& onlineObjects = getDestFunctions();
+  auto& onlineObjects = getDensityFunctions();
 
   size_t dim = trainData.getDimension();
   // determine number of batches to process
   size_t numBatch = trainData.getNumberInstances() / batchSize;
 
   // print initial grid size
-  for (size_t i = 0; i < numClasses; i++) {
-    DBMatOnlineDE* densEst = onlineObjects[i].first;
+  for (auto& onlineObject : onlineObjects) {
+    auto densEst = onlineObject.first.get();
     Grid& grid = densEst->getOfflineObject().getGrid();
-    std::cout << "#Initial grid size of grid " << i << " : " << grid.getSize() << std::endl;
+    std::cout << "#Initial grid size of grid for class" << onlineObject.second << " : "
+              << grid.getSize() << std::endl;
   }
 
   // auxiliary variable for accuracy (error) measurement
@@ -237,7 +231,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         std::vector<Grid*> grids;
         std::vector<DataVector*> alphas;
         for (size_t i = 0; i < getNumClasses(); i++) {
-          DBMatOnlineDE* densEst = onlineObjects[i].first;
+          auto densEst = onlineObjects[i].first.get();
           grids.push_back(&(densEst->getOfflineObject().getGrid()));
           alphas.push_back(densEst->getAlpha());
         }
@@ -275,7 +269,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           // perform refinement/coarsening for grid which corresponds to current
           // index
           std::cout << "Refinement and coarsening for class: " << idx << std::endl;
-          DBMatOnlineDE* densEst = onlineObjects[idx].first;
+          auto densEst = onlineObjects[idx].first.get();
           Grid& grid = densEst->getOfflineObject().getGrid();
           std::cout << "Size before adaptivity: " << grid.getSize() << std::endl;
 
@@ -425,7 +419,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double> >& train
 
     if ((*p.first).getNrows() > 0) {
       // update density function for current class
-      destFunctions[i].first->computeDensityFunction(
+      densityFunctions[i].first->computeDensityFunction(
           *p.first, true, doCv, &(*refineCoarse)[i].first, (*refineCoarse)[i].second);
       (*refineCoarse)[i].first.clear();
       (*refineCoarse)[i].second = 0;
@@ -481,8 +475,8 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) {
     // compute the maximum density:
     DataVector p(data.getNcols());
     data.getRow(i, p);
-    for (size_t j = 0; j < destFunctions.size(); j++) {
-      std::pair<DBMatOnlineDE*, double> pair = destFunctions[j];
+    for (size_t j = 0; j < densityFunctions.size(); j++) {
+      auto& pair = densityFunctions[j];
       // double density = pair.first->eval(p)*this->prior[pair.second];
       double density = pair.first->eval(p, true) * this->prior[pair.second];
       if (density > max) {
@@ -540,9 +534,9 @@ void LearnerSGDEOnOff::storeResults() {
   }
   // write grids to csv file
   for (size_t i = 0; i < numClasses; i++) {
-    DBMatOnlineDE* densEst = destFunctions[i].first;
+    auto densEst = densityFunctions[i].first.get();
     Grid& grid = densEst->getOfflineObject().getGrid();
-    output.open("SGDEOnOff_grid_" + std::to_string(destFunctions[i].second) + ".csv");
+    output.open("SGDEOnOff_grid_" + std::to_string(densityFunctions[i].second) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
     } else {
@@ -579,8 +573,8 @@ void LearnerSGDEOnOff::storeResults() {
   }
   // evaluate each density function at all points from values
   // and write result to csv file
-  for (size_t j = 0; j < destFunctions.size(); j++) {
-    std::pair<DBMatOnlineDE*, double> pair = destFunctions[j];
+  for (size_t j = 0; j < densityFunctions.size(); j++) {
+    auto& pair = densityFunctions[j];
     output.open("SGDEOnOff_density_fun_" + std::to_string(pair.second) + "_evals.csv");
     for (size_t i = 0; i < values.getNrows(); i++) {
       // get next test sample x
@@ -594,9 +588,9 @@ void LearnerSGDEOnOff::storeResults() {
 }
 
 DataVector LearnerSGDEOnOff::getDensities(DataVector& point) {
-  base::DataVector result(destFunctions.size());
-  for (size_t i = 0; i < destFunctions.size(); i++) {
-    std::pair<DBMatOnlineDE*, double> pair = destFunctions[i];
+  base::DataVector result(densityFunctions.size());
+  for (size_t i = 0; i < densityFunctions.size(); i++) {
+    auto& pair = densityFunctions[i];
     result[i] = pair.first->eval(point);
   }
   return result;
@@ -605,7 +599,7 @@ DataVector LearnerSGDEOnOff::getDensities(DataVector& point) {
 void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart,
                                                     double lambdaEnd, DataMatrix* test,
                                                     DataMatrix* testRes, bool logscale) {
-  for (auto destFunction : destFunctions) {
+  for (auto& destFunction : densityFunctions) {
     destFunction.first->setCrossValidationParameters(lambdaStep, lambdaStart, lambdaEnd, test,
                                                      testRes, logscale);
   }
@@ -618,9 +612,7 @@ void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambd
 
 size_t LearnerSGDEOnOff::getNumClasses() { return numClasses; }
 
-std::vector<std::pair<DBMatOnlineDE*, double> >& LearnerSGDEOnOff::getDestFunctions() {
-  return destFunctions;
-}
+ClassDensityConntainer& LearnerSGDEOnOff::getDensityFunctions() { return densityFunctions; }
 
 }  // namespace datadriven
 }  // namespace sgpp
