@@ -11,6 +11,3 @@ cd ..
 cd strong-scaling-run-strong_c10_dim10
 bash run.sh
 cd ..
-cd weak-scaling
-bash run.sh
-cd ..
