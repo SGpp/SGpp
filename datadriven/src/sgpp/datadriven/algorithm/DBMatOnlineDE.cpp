@@ -42,34 +42,34 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, double beta)
       cvLogscale(false),
       normFactor(1.) {
   functionComputed = false;
-  bSave = DataVector(offlineObject.getDecomposedMatrix()->getNcols());
-  bTotalPoints = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
+  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
+  bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   lambda = offlineObject.getConfig().lambda_;
   oDim = offlineObject.getConfig().grid_dim_;
 
-  alpha = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
+  alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 }
 
 void DBMatOnlineDE::readOffline(DBMatOffline& o) {
   offlineObject = o;
   functionComputed = false;
-  bSave = DataVector(offlineObject.getDecomposedMatrix()->getNcols());
-  bTotalPoints = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
+  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
+  bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   lambda = offlineObject.getConfig().lambda_;
   oDim = offlineObject.getConfig().grid_dim_;
 
-  alpha = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
+  alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 }
 
 void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_cv,
                                            std::list<size_t>* deletedPoints, size_t newPoints) {
   if (m.getNrows() > 0) {
-    DataMatrix* lhsMatrix = offlineObject.getDecomposedMatrix();
+    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
-    DataVector b(lhsMatrix->getNcols());
+    DataVector b(lhsMatrix.getNcols());
     b.setAll(0);
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
@@ -135,16 +135,16 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     }
 
     // Solve the system:
-    alpha = DataVector(lhsMatrix->getNcols());
+    alpha = DataVector(lhsMatrix.getNcols());
 
     DBMatDecompostionType type = offlineObject.getConfig().decomp_type_;
     if (type == DBMatDecompostionType::DBMatDecompLU) {
       DBMatDMSBackSub lusolver;
-      lusolver.solve(*lhsMatrix, alpha, b);
+      lusolver.solve(lhsMatrix, alpha, b);
     } else if (type == DBMatDecompostionType::DBMatDecompEigen) {
-      size_t n = lhsMatrix->getNcols();
+      size_t n = lhsMatrix.getNcols();
       DataVector e(n);
-      lhsMatrix->getRow(n, e);
+      lhsMatrix.getRow(n, e);
       DBMatDMSEigen esolver;
 
       if (canCV && do_cv) {
@@ -153,7 +153,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
         for (int i = 0; i < lambdaStep; i++) {
           cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
           if (cvLogscale) cur_lambda = exp(cur_lambda);
-          esolver.solve(*lhsMatrix, e, alpha, b, cur_lambda);
+          esolver.solve(lhsMatrix, e, alpha, b, cur_lambda);
           // double crit = computeL2Error();
           double crit = resDensity(alpha);
           // std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit <<
@@ -164,7 +164,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
           }
         }
       }
-      esolver.solve(*lhsMatrix, e, alpha, b, lambda);
+      esolver.solve(lhsMatrix, e, alpha, b, lambda);
     } else if (type == DBMatDecompostionType::DBMatDecompChol) {
       DBMatDMSChol cholsolver;
 
@@ -182,7 +182,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
           // old_lambda << std::endl;
           // Solve for density declaring coefficients alpha based on changed
           // lambda
-          cholsolver.solve(*lhsMatrix, alpha, b, old_lambda, cur_lambda);
+          cholsolver.solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
           old_lambda = cur_lambda;
           double crit = resDensity(alpha);
           // std::cout << ", crit: " << crit << std::endl;
@@ -194,7 +194,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       }
       // Solve for density declaring coefficients alpha
       // std::cout << "lambda: " << lambda << std::endl;
-      cholsolver.solve(*lhsMatrix, alpha, b, old_lambda, lambda);
+      cholsolver.solve(lhsMatrix, alpha, b, old_lambda, lambda);
 
     } else {
       throw sgpp::base::application_exception("Unsupported decomposition type!");
