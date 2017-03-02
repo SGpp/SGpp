@@ -1,0 +1,24 @@
+#!/bin/bash
+start=1
+end=%i
+if ! [ -z " $1" ]
+then
+	start=$1
+fi
+if ! [ -z "$2" ]
+then
+	end=$2
+fi
+for i in `seq $start $end`; do
+	cd Test-$i
+	cat runscript.sh
+	echo
+	read -p "Run test? (y/n)" -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		sbatch runscript.sh
+		read -p "" #Wait for Enter
+	fi
+	cd ..
+done

@@ -10,4 +10,4 @@ set -e
 # Change to the direcotry that the job was submitted from
 cd $PBS_O_WORKDIR
 
-aprun -n %i ./mpi_examples MPIConf.cfg %s 8
+aprun ./mpi_examples MPIConf.cfg %s 8
