@@ -99,7 +99,7 @@ class DBMatOffline {
    *
    * @param b the vector that has to be permuted
    */
-  void permuteVector(DataVector& b);
+  virtual void permuteVector(DataVector& b);
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -108,7 +108,8 @@ class DBMatOffline {
    * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
    */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+  virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
+                                    double lambda);
 
   /**
    * Updates the cholesky factor when a new grid point is added (e.g. refine)
@@ -117,7 +118,7 @@ class DBMatOffline {
    * @param size columns/rows of current Cholesky factor, necessary since the
             allocated memory is increased before the Cholesky factor is modified
    */
-  void choleskyAddPoint(DataVector* newCol, size_t size);
+  virtual void choleskyAddPoint(DataVector* newCol, size_t size);
 
   /**
    * Permutes the rows of the cholesky factor based on permutations
@@ -132,7 +133,7 @@ class DBMatOffline {
    * 	  1,...,k-1,k,k+1, ..., l-1,l,l+1,...size  => 1,...,k-1,l,k,k+1, ...,
    *l-1,l+1,...size
    */
-  void choleskyPermutation(size_t k, size_t l, size_t job);
+  virtual void choleskyPermutation(size_t k, size_t l, size_t job);
 
   /**
    * Prints the matrix onto standard output

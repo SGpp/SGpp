@@ -13,8 +13,7 @@ namespace sgpp {
 namespace datadriven {
 
 class DBMatOfflineGE : public DBMatOffline {
-  DBMatOfflineGE() = default;
-
+ public:
   explicit DBMatOfflineGE(DBMatDensityConfiguration& oc);
 
   /**
