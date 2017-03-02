@@ -45,7 +45,7 @@ class DBMatOffline {
    *
    * @param fname name of the file that stores the matrix + configuration
    */
-  explicit DBMatOffline(std::string fname);
+  explicit DBMatOffline(const std::string& fname);
 
   /**
    * Copy Constructor
@@ -142,7 +142,7 @@ class DBMatOffline {
    *
    * @param fname the file name
    */
-  void store(std::string fname);
+  void store(const std::string& fname);
 
   /**
    * Loads matrix and configuration from a file
