@@ -2,14 +2,7 @@
 set -e
 start=1
 end=%i
-if ! [ -z "$1" ]
-then
-	start=$1
-fi
-if ! [ -z "$2" ]
-then
-	end=$2
-fi
+
 nodes=${start}
 while [ ${nodes} -le ${end} ]; do
 # for i in `seq $start $end`; do
