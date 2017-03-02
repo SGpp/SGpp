@@ -20,6 +20,10 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::Grid;
+using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
+
 /**
  * Class that is used to decompose and store the left-hand-side
  * matrix for the density based classification approach
@@ -46,9 +50,13 @@ class DBMatOffline {
   /**
    * Copy Constructor
    *
+   *
    * The matrix needs to be already decomposed.
    *
    * @param old Object to copy
+   *
+   *TODO(lettrich): there is a bug. grid objects cannot be copied, so refined grids will not be
+   *copied properly.
    */
   DBMatOffline(const DBMatOffline& old);
 
@@ -60,13 +68,13 @@ class DBMatOffline {
   /**
    * Returns a pointer to the decomposed matrix
    */
-  sgpp::base::DataMatrix* getDecomposedMatrix();
+  DataMatrix* getDecomposedMatrix();
 
   /**
    * Returns a reference to the sparse grid
    * (if this offline object uses a sparse grid, otherwise NULL)
    */
-  sgpp::base::Grid& getGrid();
+  Grid& getGrid();
 
   /**
    * Builds the right hand side matrix with or without the regularization term
@@ -89,7 +97,7 @@ class DBMatOffline {
    *
    * @param b the vector that has to be permuted
    */
-  void permuteVector(sgpp::base::DataVector& b);
+  void permuteVector(DataVector& b);
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -107,7 +115,7 @@ class DBMatOffline {
    * @param size columns/rows of current Cholesky factor, necessary since the
             allocated memory is increased before the Cholesky factor is modified
    */
-  void choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size);
+  void choleskyAddPoint(DataVector* newCol, size_t size);
 
   /**
    * Permutes the rows of the cholesky factor based on permutations
@@ -151,18 +159,18 @@ class DBMatOffline {
  protected:
   DBMatOffline();
 
-  sgpp::datadriven::DBMatDensityConfiguration* config_;  // configuration for this offline object
-  sgpp::base::DataMatrix* lhsMatrix_;                    // stores the (decomposed) matrix
-  bool constructed_;                                     // If the matrix was built
-  bool decomposed_;                                      // If the matrix was decomposed
-  bool ownsConfig_;  // If the configuration has to be destroyed with the object
+  sgpp::datadriven::DBMatDensityConfiguration* config;  // configuration for this offline object
+  DataMatrix* lhsMatrix;                                // stores the (decomposed) matrix
+  bool isConstructed;                                   // If the matrix was built
+  bool isDecomposed;                                    // If the matrix was decomposed
+  bool ownsConfig;  // If the configuration has to be destroyed with the object
 
-  gsl_permutation* perm_;  // Stores the permutation that was
+  gsl_permutation* permutation;  // Stores the permutation that was
   // applied on the matrix during decomposition
 
   // An offline object either works on a
   // hierarchical basis grid!
-  sgpp::base::Grid* grid_;
+  sgpp::base::Grid* grid;
 
   /**
    * Method to initialize a sparse grid
