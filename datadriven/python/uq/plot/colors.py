@@ -46,28 +46,37 @@ def load_font_properties(size=None,
 #
 #     return colors
 
-def savefig(fig, filename, lgd=None):
+def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
     fig.tight_layout()
-    if lgd is None:
-        fig.savefig("%s.png" % filename, bbox_inches='tight')
-        fig.savefig("%s.pdf" % filename, bbox_inches='tight')
-        tikz_save("%s.tex" % filename)
+    if mpl3d:
+        fig.savefig("%s.png" % filename)
+        fig.savefig("%s.pdf" % filename)
     else:
-        fig.savefig("%s.png" % filename,
-                    bbox_extra_artists=(lgd,),
-                    bbox_inches='tight')
-        fig.savefig("%s.pdf" % filename,
-                    bbox_extra_artists=(lgd,),
-                    bbox_inches='tight')
-        try:
-            tikz_save("%s.tex" % filename)
-        except:
-            pass
+        if lgd is None:
+            fig.savefig("%s.png" % filename, bbox_inches='tight')
+            fig.savefig("%s.pdf" % filename, bbox_inches='tight')
+            if tikz:
+                try:
+                    tikz_save("%s.tex" % filename)
+                except:
+                    pass
+        else:
+            fig.savefig("%s.png" % filename,
+                        bbox_extra_artists=(lgd,),
+                        bbox_inches='tight')
+            fig.savefig("%s.pdf" % filename,
+                        bbox_extra_artists=(lgd,),
+                        bbox_inches='tight')
+            if tikz:
+                try:
+                    tikz_save("%s.tex" % filename)
+                except:
+                    pass
 
     plt.close(fig)
 
 
-def insert_legend(fig, loc="right", ncol=3):
+def insert_legend(fig, loc="right", ncol=3, has_axis=True):
     if loc == "right":
         lgd = plt.legend(loc='upper left',
                          bbox_to_anchor=(1.02, 1),
@@ -76,7 +85,7 @@ def insert_legend(fig, loc="right", ncol=3):
     elif loc == "bottom":
         lgd = plt.legend(loc='upper center',
                          ncol=ncol,
-                         bbox_to_anchor=(0.5, -0.3),
+                         bbox_to_anchor=(0.5, -0.3) if has_axis else (0.5, -0.08),
                          borderaxespad=0,
                          prop=load_font_properties())
     elif loc == "top":
