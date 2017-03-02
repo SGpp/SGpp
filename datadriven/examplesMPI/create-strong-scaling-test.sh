@@ -72,7 +72,7 @@ elif [[ $machine == "hazelhen" ]]; then
 fi
 
 # Replace placeholders
-printf -v runtemplatefile "$runtemplatefile" "$2"
+printf -v runtemplatefile "$runtemplatefile" "$max_nodes"
 # Print and save to file
 echo "$runtemplatefile"
 echo "$runtemplatefile" > ${test_folder}/run.sh
