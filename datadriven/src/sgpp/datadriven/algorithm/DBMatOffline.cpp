@@ -38,34 +38,45 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::Grid;
+using sgpp::base::GridType;
+using sgpp::base::RegularGridConfiguration;
+using sgpp::base::AdpativityConfiguration;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::operation_exception;
+using sgpp::base::application_exception;
+using sgpp::base::data_exception;
+using sgpp::base::OperationMatrix;
+
 DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
-    : config_(&oc),
-      lhsMatrix_(nullptr),
-      constructed_(false),
-      decomposed_(false),
-      ownsConfig_(false),
-      perm_(nullptr),
-      grid_(nullptr) {}
+    : config(&oc),
+      lhsMatrix(nullptr),
+      isConstructed(false),
+      isDecomposed(false),
+      ownsConfig(false),
+      permutation(nullptr),
+      grid(nullptr) {}
 
 DBMatOffline::DBMatOffline()
-    : config_(nullptr),
-      lhsMatrix_(nullptr),
-      constructed_(false),
-      decomposed_(false),
-      ownsConfig_(false),
-      perm_(nullptr),
-      grid_(nullptr) {}
+    : config(nullptr),
+      lhsMatrix(nullptr),
+      isConstructed(false),
+      isDecomposed(false),
+      ownsConfig(false),
+      permutation(nullptr),
+      grid(nullptr) {}
 
 DBMatOffline::DBMatOffline(std::string fname)
-    : config_(nullptr),
-      lhsMatrix_(nullptr),
-      constructed_(false),
-      decomposed_(false),
-      ownsConfig_(true),
-      perm_(nullptr),
-      grid_(nullptr) {
+    : config(nullptr),
+      lhsMatrix(nullptr),
+      isConstructed(false),
+      isDecomposed(false),
+      ownsConfig(true),
+      permutation(nullptr),
+      grid(nullptr) {
   // std::cout << "START READING MATRIX" << std::endl;
-  // sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
+  // SGppStopwatch* myStopwatch = new SGppStopwatch();
   // myStopwatch->start();
 
   // Read configuration
@@ -93,7 +104,7 @@ DBMatOffline::DBMatOffline(std::string fname)
     exit(-1);
   }
 
-  sgpp::base::GridType grid_type = (sgpp::base::GridType)atoi(tokens[1].c_str());
+  GridType grid_type = (GridType)atoi(tokens[1].c_str());
 
   size_t grid_dim = atoi(tokens[2].c_str());
   int grid_level = atoi(tokens[3].c_str());
@@ -102,12 +113,12 @@ DBMatOffline::DBMatOffline(std::string fname)
   double lambda = atof(tokens[5].c_str());
   DBMatDecompostionType decomp = (DBMatDecompostionType)atoi(tokens[6].c_str());
 
-  sgpp::base::RegularGridConfiguration gconf;
+  RegularGridConfiguration gconf;
   gconf.dim_ = grid_dim;
   gconf.level_ = grid_level;
   gconf.type_ = grid_type;
 
-  config_ = new sgpp::datadriven::DBMatDensityConfiguration(&gconf, nullptr, reg, lambda, decomp);
+  config = new sgpp::datadriven::DBMatDensityConfiguration(&gconf, nullptr, reg, lambda, decomp);
 
   size_t size;
 
@@ -115,9 +126,9 @@ DBMatOffline::DBMatOffline(std::string fname)
   InitializeGrid();
 
   // check if grid was created
-  if (grid_ == nullptr) return;
+  if (grid == nullptr) return;
 
-  size = grid_->getStorage().getSize();  // Size of the (quadratic) matrices A and C
+  size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
 
   // Read matrix
   gsl_matrix* a;
@@ -128,61 +139,61 @@ DBMatOffline::DBMatOffline(std::string fname)
   } else if (decomp == DBMatDecompostionType::DBMatDecompChol) {
     a = gsl_matrix_alloc(size, size);
   } else {
-    throw sgpp::base::application_exception("Unsupported decomposition type!");
+    throw application_exception("Unsupported decomposition type!");
   }
 
   gsl_matrix_fread(f, a);
-  lhsMatrix_ = new sgpp::base::DataMatrix(a->data, a->size1, a->size2);
+  lhsMatrix = new DataMatrix(a->data, a->size1, a->size2);
   // Read permutation
   if (decomp == DBMatDecompostionType::DBMatDecompLU) {
-    perm_ = gsl_permutation_alloc(size);
-    gsl_permutation_fread(f, perm_);
+    permutation = gsl_permutation_alloc(size);
+    gsl_permutation_fread(f, permutation);
   }
 
   fclose(f);
   gsl_matrix_free(a);
 
-  constructed_ = true;
-  decomposed_ = true;
+  isConstructed = true;
+  isDecomposed = true;
 
   // std::cout << "Time: " << myStopwatch->stop() << std::endl;
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& old)
-    : config_(nullptr),
-      lhsMatrix_(nullptr),
-      constructed_(true),
-      decomposed_(true),
-      ownsConfig_(true),
-      perm_(nullptr),
-      grid_(nullptr) {
-  if (!old.decomposed_) {
-    throw sgpp::base::application_exception("Matrix not yet decomposed");
+    : config(nullptr),
+      lhsMatrix(nullptr),
+      isConstructed(true),
+      isDecomposed(true),
+      ownsConfig(true),
+      permutation(nullptr),
+      grid(nullptr) {
+  if (!old.isDecomposed) {
+    throw application_exception("Matrix not yet decomposed");
     return;
   }
 
   // Copy configuration
-  sgpp::base::RegularGridConfiguration gconf;
-  gconf.dim_ = old.config_->grid_dim_;
-  gconf.level_ = old.config_->grid_level_;
-  gconf.type_ = old.config_->grid_type_;
+  RegularGridConfiguration gconf;
+  gconf.dim_ = old.config->grid_dim_;
+  gconf.level_ = old.config->grid_level_;
+  gconf.type_ = old.config->grid_type_;
 
-  sgpp::base::AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = old.config_->numRefinements_;
-  adaptConfig.threshold_ = old.config_->ref_threshold_;
-  adaptConfig.noPoints_ = old.config_->ref_noPoints_;
+  AdpativityConfiguration adaptConfig;
+  adaptConfig.numRefinements_ = old.config->numRefinements_;
+  adaptConfig.threshold_ = old.config->ref_threshold_;
+  adaptConfig.noPoints_ = old.config->ref_noPoints_;
 
-  config_ = new sgpp::datadriven::DBMatDensityConfiguration(
-      &gconf, &adaptConfig, old.config_->regularization_, old.config_->lambda_,
-      old.config_->decomp_type_);
+  config = new sgpp::datadriven::DBMatDensityConfiguration(
+      &gconf, &adaptConfig, old.config->regularization_, old.config->lambda_,
+      old.config->decomp_type_);
 
   // Copy Matrix
-  lhsMatrix_ = new sgpp::base::DataMatrix(*(old.lhsMatrix_));
+  lhsMatrix = new DataMatrix(*(old.lhsMatrix));
 
   // Copy Permutation (if existing)
-  if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    perm_ = gsl_permutation_alloc(old.grid_->getStorage().getSize());
-    gsl_permutation_memcpy(perm_, old.perm_);
+  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+    permutation = gsl_permutation_alloc(old.grid->getStorage().getSize());
+    gsl_permutation_memcpy(permutation, old.permutation);
   }
 
   // Initialize Grid
@@ -190,53 +201,52 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 }
 
 DBMatOffline::~DBMatOffline() {
-  if (lhsMatrix_ != nullptr) delete lhsMatrix_;
-  if (perm_ != nullptr) delete perm_;
-  if (grid_ != nullptr) delete grid_;
-  if (ownsConfig_ && config_ != nullptr) delete config_;
+  if (lhsMatrix != nullptr) delete lhsMatrix;
+  if (grid!= nullptr) delete grid;
+  if (permutation != nullptr) delete permutation;
+  if (ownsConfig && config != nullptr) delete config;
 }
 
-sgpp::datadriven::DBMatDensityConfiguration* DBMatOffline::getConfig() { return config_; }
+sgpp::datadriven::DBMatDensityConfiguration* DBMatOffline::getConfig() { return config; }
 
-sgpp::base::DataMatrix* DBMatOffline::getDecomposedMatrix() {
+DataMatrix* DBMatOffline::getDecomposedMatrix() {
   // if (decomposed_) {
-  return lhsMatrix_;
+  return lhsMatrix;
   /*} else {
-    throw sgpp::base::data_exception("Matrix was not decomposed, yet!");
+    throw data_exception("Matrix was not decomposed, yet!");
   }*/
 }
 
-sgpp::base::Grid& DBMatOffline::getGrid() { return *grid_; }
+Grid& DBMatOffline::getGrid() { return *grid; }
 
-void DBMatOffline::permuteVector(sgpp::base::DataVector& b) {
-  if (decomposed_) {
-    if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-      gsl_permute(perm_->data, b.getPointer(), 1, b.getSize());
+void DBMatOffline::permuteVector(DataVector& b) {
+  if (isDecomposed) {
+    if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+      gsl_permute(permutation->data, b.getPointer(), 1, b.getSize());
     } else {
       // No permutation needed for other decomposition types!
     }
   } else {
-    throw sgpp::base::data_exception("Matrix was not decomposed, yet!");
+    throw data_exception("Matrix was not decomposed, yet!");
   }
 }
 
 void DBMatOffline::InitializeGrid() {
-  if (config_->grid_type_ == sgpp::base::GridType::ModLinear) {
-    grid_ = new sgpp::base::ModLinearGrid(config_->grid_dim_);
-  } else if (config_->grid_type_ == sgpp::base::GridType::Linear) {
-    grid_ = new sgpp::base::LinearGrid(config_->grid_dim_);
+  if (config->grid_type_ == GridType::ModLinear) {
+    grid = Grid::createModLinearGrid(config->grid_dim_);
+  } else if (config->grid_type_ == GridType::Linear) {
+    grid = Grid::createLinearGrid(config->grid_dim_);
   } else {
-    grid_ = nullptr;
-    throw sgpp::base::application_exception(
+    throw application_exception(
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid_->getGenerator().regular(config_->grid_level_);
+  grid->getGenerator().regular(config->grid_level_);
 }
 
 void DBMatOffline::buildMatrix() {
-  if (constructed_) {  // Already constructed, do nothing
+  if (isConstructed) {  // Already constructed, do nothing
     return;
   }
 
@@ -245,56 +255,56 @@ void DBMatOffline::buildMatrix() {
   InitializeGrid();
 
   // check if grid was created
-  if (grid_ == nullptr) return;
+  if (grid == nullptr) return;
 
-  size = grid_->getStorage().getSize();  // Size of the (quadratic) matrices A and C
+  size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
 
   // Construct matrix A
-  lhsMatrix_ = new sgpp::base::DataMatrix(size, size);
+  lhsMatrix = new DataMatrix(size, size);
 
-  std::unique_ptr<sgpp::base::OperationMatrix> op(
-      sgpp::op_factory::createOperationLTwoDotExplicit(lhsMatrix_, *grid_));
+  std::unique_ptr<OperationMatrix> op(
+      sgpp::op_factory::createOperationLTwoDotExplicit(lhsMatrix, *grid));
 
-  if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU ||
-      config_->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU ||
+      config->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
     // Add regularization term:
     // Construct matrix lambda * C (just use identity for C)
-    sgpp::base::DataMatrix lambdaC(size, size);
-    if (config_->regularization_ == sgpp::datadriven::RegularizationType::Identity) {
+    DataMatrix lambdaC(size, size);
+    if (config->regularization_ == sgpp::datadriven::RegularizationType::Identity) {
       lambdaC.setAll(0.);
       for (size_t i = 0; i < size; i++) {
-        lambdaC.set(i, i, config_->lambda_);
+        lambdaC.set(i, i, config->lambda_);
       }
     } else {
-      throw sgpp::base::operation_exception("Unsupported regularization type");
+      throw operation_exception("Unsupported regularization type");
     }
 
     // Compute A + lambda * C:
-    lhsMatrix_->add(lambdaC);
+    lhsMatrix->add(lambdaC);
   }
 
-  constructed_ = true;
+  isConstructed = true;
 }
 
 void DBMatOffline::decomposeMatrix() {
-  if (constructed_) {
-    if (decomposed_) {
+  if (isConstructed) {
+    if (isDecomposed) {
       // Already decomposed => Do nothing
       return;
     } else {
-      size_t n = lhsMatrix_->getNrows();
-      if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix_->getPointer(), n,
+      size_t n = lhsMatrix->getNrows();
+      if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         int* sig = reinterpret_cast<int*>(malloc(sizeof(int)));
-        perm_ = gsl_permutation_alloc(n);  // allocate permutation
+        permutation = gsl_permutation_alloc(n);  // allocate permutation
 
-        gsl_linalg_LU_decomp(&m.matrix, perm_, sig);
+        gsl_linalg_LU_decomp(&m.matrix, permutation, sig);
 
         delete sig;
 
-      } else if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompEigen) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix_->getPointer(), n,
+      } else if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompEigen) {
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
 
         gsl_matrix* q = gsl_matrix_alloc(n, n);  // Stores the eigenvectors
@@ -305,22 +315,22 @@ void DBMatOffline::decomposeMatrix() {
         gsl_eigen_symmv_free(ws);
 
         // Create an (n+1)*n matrix to store eigenvalues and -vectors:
-        delete lhsMatrix_;
-        lhsMatrix_ = new sgpp::base::DataMatrix(n + 1, n);
+        delete lhsMatrix;
+        lhsMatrix = new DataMatrix(n + 1, n);
 
         for (size_t r = 0; r < n; r++) {
           for (size_t c = 0; c < n; c++) {
-            lhsMatrix_->set(r, c, gsl_matrix_get(q, r, c));
+            lhsMatrix->set(r, c, gsl_matrix_get(q, r, c));
           }
         }
         for (size_t c = 0; c < n; c++) {
-          lhsMatrix_->set(n, c, gsl_vector_get(e, c));
+          lhsMatrix->set(n, c, gsl_vector_get(e, c));
         }
 
         delete e;
         delete q;
-      } else if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix_->getPointer(), n,
+      } else if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         // Perform Cholesky decomposition
         gsl_linalg_cholesky_decomp(&m.matrix);
@@ -329,7 +339,7 @@ void DBMatOffline::decomposeMatrix() {
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
             if (i < j) {
-              lhsMatrix_->set(i, j, 0);
+              lhsMatrix->set(i, j, 0);
             }
           }
         }
@@ -337,16 +347,16 @@ void DBMatOffline::decomposeMatrix() {
         // No other decomposition types, yet
         return;
       }
-      decomposed_ = true;
+      isDecomposed = true;
     }
   } else {
-    throw sgpp::base::data_exception("Matrix has to be constructed before it can be decomposed!");
+    throw data_exception("Matrix has to be constructed before it can be decomposed!");
   }
 }
 
 void DBMatOffline::store(std::string fileName) {
-  if (!decomposed_) {
-    throw sgpp::base::application_exception("Matrix not yet decomposed");
+  if (!isDecomposed) {
+    throw application_exception("Matrix not yet decomposed");
     return;
   }
 
@@ -364,23 +374,23 @@ void DBMatOffline::store(std::string fileName) {
   fclose(f);*/
   // Write Matrix
   f = fopen(fileName.c_str(), "ab");
-  gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix_->getPointer(), lhsMatrix_->getNrows(),
-                                            lhsMatrix_->getNcols());
+  gsl_matrix_view m =
+      gsl_matrix_view_array(lhsMatrix->getPointer(), lhsMatrix->getNrows(), lhsMatrix->getNcols());
   gsl_matrix_fwrite(f, &m.matrix);
 
   // Write Permutation (if existing)
-  if (config_->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    gsl_permutation_fwrite(f, perm_);
+  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+    gsl_permutation_fwrite(f, permutation);
   }
 
   fclose(f);
 }
 
 void DBMatOffline::printMatrix() {
-  std::cout << "Size: " << lhsMatrix_->getNrows() << " , " << lhsMatrix_->getNcols() << std::endl;
-  for (size_t r = 0; r < lhsMatrix_->getNrows(); r++) {
-    for (size_t c = 0; c < lhsMatrix_->getNcols(); c++) {
-      std::cout << lhsMatrix_->get(r, c) << ", ";
+  std::cout << "Size: " << lhsMatrix->getNrows() << " , " << lhsMatrix->getNcols() << std::endl;
+  for (size_t r = 0; r < lhsMatrix->getNrows(); r++) {
+    for (size_t c = 0; c < lhsMatrix->getNcols(); c++) {
+      std::cout << lhsMatrix->get(r, c) << ", ";
     }
     std::cout << std::endl;
   }
@@ -413,7 +423,7 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
   // Start coarsening
   // If list 'deletedPoints' is not empty, grid points got removed
   if (deletedPoints.size() > 0) {
-    size_t new_size = grid_->getSize();
+    size_t new_size = grid->getSize();
     size_t old_size = new_size - newPoints + deletedPoints.size();
 
     // 'c' is the threshold to decide what kind of Cholesky modification should
@@ -444,7 +454,7 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
         // Is accessed the first 'index_coarse' is less than 'c'
         start1 = true;
         // Delete last 'coarseCount_2' rows/columns of current Cholesky factor
-        lhsMatrix_->resizeQuadratic(old_size - coarseCount_2);
+        lhsMatrix->resizeQuadratic(old_size - coarseCount_2);
       }
 
       if (start1 == true) {
@@ -456,45 +466,44 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
 
     if (coarseCount_1 > 0) {
       // If some indices have been less than 'c'
-      sgpp::base::DataMatrix* update_matrix =
-          new sgpp::base::DataMatrix(lhsMatrix_->getNrows(), lhsMatrix_->getNcols());
-      update_matrix->copyFrom(*lhsMatrix_);
+      DataMatrix* update_matrix = new DataMatrix(lhsMatrix->getNrows(), lhsMatrix->getNcols());
+      update_matrix->copyFrom(*lhsMatrix);
       // Resize copy of current Cholesky factor to
       // receive a matrix of rank one update vectors
-      update_matrix->resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix_->getNrows(), coarseCount_1);
+      update_matrix->resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix->getNrows(), coarseCount_1);
       // Resize current Cholesky factor to required submatrix
       // for necessary rank one updates
-      lhsMatrix_->resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix_->getNrows(),
-                                    lhsMatrix_->getNrows());
-      sgpp::base::DataVector* temp_col = new sgpp::base::DataVector(update_matrix->getNrows());
+      lhsMatrix->resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix->getNrows(),
+                                   lhsMatrix->getNrows());
+      DataVector* temp_col = new DataVector(update_matrix->getNrows());
 
       // 'coarseCount_1' many rank one updates based on the columns of
       // 'update_matrix' are performed
       DBMatDMSChol cholsolver;
       for (size_t i = 0; i < coarseCount_1; i++) {
         update_matrix->getColumn(i, *temp_col);
-        cholsolver.choleskyUpdate(*lhsMatrix_, temp_col, false);
+        cholsolver.choleskyUpdate(*lhsMatrix, temp_col, false);
       }
       delete update_matrix;
       delete temp_col;
     } else {
       // If no indices have been less than 'c'
-      lhsMatrix_->resizeQuadratic(old_size - coarseCount_2);
+      lhsMatrix->resizeQuadratic(old_size - coarseCount_2);
     }
   }
 
   // Start refinement
   if (newPoints > 0) {
-    size_t gridSize = grid_->getStorage().getSize();
-    size_t gridDim = grid_->getStorage().getDimension();
+    size_t gridSize = grid->getStorage().getSize();
+    size_t gridDim = grid->getStorage().getDimension();
 
     // DataMatrix to collect vectors to append
-    sgpp::base::DataMatrix* mat_refine = new sgpp::base::DataMatrix(gridSize, newPoints);
+    DataMatrix* mat_refine = new DataMatrix(gridSize, newPoints);
 
-    sgpp::base::DataMatrix level(gridSize, gridDim);
-    sgpp::base::DataMatrix index(gridSize, gridDim);
+    DataMatrix level(gridSize, gridDim);
+    DataMatrix index(gridSize, gridDim);
 
-    grid_->getStorage().getLevelIndexArraysForEval(level, index);
+    grid->getStorage().getLevelIndexArraysForEval(level, index);
     double lambda_conf = lambda;
     // Loop to calculate all L2-products of added points based on the
     // hat-function as basis function
@@ -555,10 +564,10 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
     // Resize Cholesky factor to new 'gridSize' before 'choleskyAddPoint' is
     // applied
     // in order to save runtime
-    this->lhsMatrix_->resizeQuadratic(gridSize);
+    this->lhsMatrix->resizeQuadratic(gridSize);
 
     // Now its time to call 'choleskyAddPoint''countNewGridPoints' often
-    sgpp::base::DataVector* temp_col = new sgpp::base::DataVector(gridSize);
+    DataVector* temp_col = new DataVector(gridSize);
     for (size_t j = gridSize - newPoints; j < gridSize; j++) {
       temp_col->resizeZero(gridSize);
       mat_refine->getColumn(j - gridSize + newPoints, *temp_col);
@@ -572,12 +581,12 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
   return;
 }
 
-void DBMatOffline::choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size) {
-  if (!decomposed_) {
-    throw sgpp::base::data_exception("Matrix was not decomposed, yet!");
+void DBMatOffline::choleskyAddPoint(DataVector* newCol, size_t size) {
+  if (!isDecomposed) {
+    throw data_exception("Matrix was not decomposed, yet!");
   }
 
-  sgpp::base::DataMatrix* mat_ = lhsMatrix_;
+  DataMatrix* mat_ = lhsMatrix;
   // Size of provided memory for Cholesky factor,
   // because the allocations take place in 'choleskyModifications'
   size_t size_full = mat_->getNrows();
@@ -585,7 +594,7 @@ void DBMatOffline::choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size)
   size_t size_up = newCol->getSize();
 
   if (size_up != (size + 1)) {
-    throw sgpp::base::data_exception(
+    throw data_exception(
         "Size of update vector newCol needs to be 1 dim larger than the "
         "underlying decomposed matrix!");
   }
@@ -614,8 +623,7 @@ void DBMatOffline::choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size)
   phi = last - phi;
   // Ensure 'phi' is larger 0
   if (phi <= 0) {
-    throw sgpp::base::data_exception(
-        "Resulting matrix is at least not numerical positive definite!");
+    throw data_exception("Resulting matrix is at least not numerical positive definite!");
   } else {
     phi = sqrt(phi);
   }
@@ -623,7 +631,7 @@ void DBMatOffline::choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size)
   // Modify Choleskyfactor m (L)
 
   // DataVector full of zeros
-  sgpp::base::DataVector* zeros = new sgpp::base::DataVector(size_full, 0.0);
+  DataVector* zeros = new DataVector(size_full, 0.0);
 
   // Add 'newCol' and 'zeros' to current Cholesky factor 'lhsMatrix_'
   mat_->setColumn(size, *zeros);
@@ -638,17 +646,17 @@ void DBMatOffline::choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size)
 }
 
 void DBMatOffline::choleskyPermutation(size_t k, size_t l, size_t job) {
-  if (!decomposed_) {
-    throw sgpp::base::data_exception("Matrix was not decomposed, yet!");
+  if (!isDecomposed) {
+    throw data_exception("Matrix was not decomposed, yet!");
   }
 
-  sgpp::base::DataMatrix* mat_ = lhsMatrix_;
+  DataMatrix* mat_ = lhsMatrix;
   size_t size = mat_->getNrows();
 
   if (k > l) {
-    throw sgpp::base::data_exception("l needs to be larger than k");
+    throw data_exception("l needs to be larger than k");
   } else if (l > size) {
-    throw sgpp::base::data_exception("l needs to be smaller than the column size of the matrix");
+    throw data_exception("l needs to be smaller than the column size of the matrix");
   } else if (l == k) {
     return;
   }
