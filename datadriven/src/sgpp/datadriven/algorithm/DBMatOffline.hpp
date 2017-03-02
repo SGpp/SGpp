@@ -60,6 +60,8 @@ class DBMatOffline {
    */
   DBMatOffline(const DBMatOffline& old);
 
+  virtual ~DBMatOffline() = default;
+
   /**
    * Returns a pointer to the configuration
    */
@@ -81,13 +83,13 @@ class DBMatOffline {
    * depending
    * on the type of decomposition
    */
-  void buildMatrix();
+  virtual void buildMatrix();
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  void decomposeMatrix();
+  virtual void decomposeMatrix();
 
   /**
    * Applies the permutation that might be done during the matrix decomposition
@@ -151,7 +153,7 @@ class DBMatOffline {
    */
   /*void load(std::string fname);*/
 
- private:
+ protected:
   DBMatOffline();
 
   DBMatDensityConfiguration config;  // configuration for this offline object
