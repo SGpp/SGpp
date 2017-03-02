@@ -44,8 +44,8 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, double beta)
   functionComputed = false;
   bSave = DataVector(offlineObject.getDecomposedMatrix()->getNcols());
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
-  lambda = offlineObject.getConfig()->lambda_;
-  oDim = offlineObject.getConfig()->grid_dim_;
+  lambda = offlineObject.getConfig().lambda_;
+  oDim = offlineObject.getConfig().grid_dim_;
 
   alpha = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
 }
@@ -55,8 +55,8 @@ void DBMatOnlineDE::readOffline(DBMatOffline& o) {
   functionComputed = false;
   bSave = DataVector(offlineObject.getDecomposedMatrix()->getNcols());
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
-  lambda = offlineObject.getConfig()->lambda_;
-  oDim = offlineObject.getConfig()->grid_dim_;
+  lambda = offlineObject.getConfig().lambda_;
+  oDim = offlineObject.getConfig().grid_dim_;
 
   alpha = DataVector(offlineObject.getDecomposedMatrix()->getNcols(), 0.0);
 }
@@ -137,7 +137,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     // Solve the system:
     alpha = DataVector(lhsMatrix->getNcols());
 
-    DBMatDecompostionType type = offlineObject.getConfig()->decomp_type_;
+    DBMatDecompostionType type = offlineObject.getConfig().decomp_type_;
     if (type == DBMatDecompostionType::DBMatDecompLU) {
       DBMatDMSBackSub lusolver;
       lusolver.solve(*lhsMatrix, alpha, b);

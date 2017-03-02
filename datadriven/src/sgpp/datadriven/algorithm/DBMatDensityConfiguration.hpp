@@ -31,6 +31,7 @@ namespace datadriven {
 
 class DBMatDensityConfiguration {
  public:
+  DBMatDensityConfiguration();
   /**
    * Constructor for hierarchical basis grids
    *
@@ -42,8 +43,8 @@ class DBMatDensityConfiguration {
    * Eigendecompostion)
    * @param decomp the kind of decomposition that should be used
    */
-  DBMatDensityConfiguration(sgpp::base::RegularGridConfiguration* gc,
-                            sgpp::base::AdpativityConfiguration* ac,
+  DBMatDensityConfiguration(const sgpp::base::RegularGridConfiguration& gc,
+                            const sgpp::base::AdpativityConfiguration& ac,
                             sgpp::datadriven::RegularizationType reg, double lambda,
                             DBMatDecompostionType decomp);
 

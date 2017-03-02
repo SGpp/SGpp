@@ -16,10 +16,10 @@ namespace datadriven {
 DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
-  switch (offlineObject.getConfig()->decomp_type_) {
+  switch (offlineObject.getConfig().decomp_type_) {
     case DBMatDecompostionType::DBMatDecompEigen:
     case DBMatDecompostionType::DBMatDecompChol:
-      offlineObject.getConfig()->lambda_ = lambda;
+      offlineObject.getConfig().lambda_ = lambda;
       break;
     case DBMatDecompostionType::DBMatDecompIChol:
       application_exception("Lambda can not be changed for IChol - not implemented yet");

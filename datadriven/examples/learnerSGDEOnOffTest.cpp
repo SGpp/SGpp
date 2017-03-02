@@ -165,7 +165,7 @@ int main() {
       // initial weighting factor
       double beta = 0.0;
       // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(&gridConfig, &adaptConfig,
+      sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
                                                         regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;

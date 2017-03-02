@@ -62,7 +62,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   densityFunctions.reserve(numClasses);
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
-  if (offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+  if (offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
     offlineContainer.reserve(numClasses);
     // every class gets his own online object
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
@@ -182,9 +182,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        if ((offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+        if ((offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
             (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < offline.getConfig()->numRefinements_)) {
+            (refCnt < offline.getConfig().numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -192,8 +192,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         if (validationData == nullptr) {
           throw base::data_exception("No validation data for checking convergence provided!");
         }
-        if ((offline.getConfig()->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
-            (refCnt < offline.getConfig()->numRefinements_)) {
+        if ((offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+            (refCnt < offline.getConfig().numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large
                                                     // use a subset for error
@@ -230,7 +230,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr =
             *(new sgpp::datadriven::ZeroCrossingRefinementFunctor(
-                grids, alphas, offline.getConfig()->ref_noPoints_, levelPenalize, preCompute));
+                grids, alphas, offline.getConfig().ref_noPoints_, levelPenalize, preCompute));
 
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
@@ -244,7 +244,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         base::DataVector* trainLabelsRef = &(trainData.getTargets());
         sgpp::datadriven::DataBasedRefinementFunctor funcData =
             *(new sgpp::datadriven::DataBasedRefinementFunctor(
-                grids, alphas, trainDataRef, trainLabelsRef, offline.getConfig()->ref_noPoints_,
+                grids, alphas, trainDataRef, trainLabelsRef, offline.getConfig().ref_noPoints_,
                 levelPenalize, coeffA));
         if (refType == "zero") {
           func = &funcZrcr;
@@ -310,7 +310,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             // perform refinement (surplus based)
             sizeBeforeRefine = grid.getSize();
             // simple refinement based on surpluses
-            SurplusRefinementFunctor srf(alphaWeight, offline.getConfig()->ref_noPoints_);
+            SurplusRefinementFunctor srf(alphaWeight, offline.getConfig().ref_noPoints_);
             gridGen.refine(srf);
             sizeAfterRefine = grid.getSize();
           } else if ((refType == "data") || (refType == "zero")) {
