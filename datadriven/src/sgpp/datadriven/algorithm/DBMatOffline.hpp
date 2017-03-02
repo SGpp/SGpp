@@ -39,7 +39,7 @@ class DBMatOffline {
    *
    * @param oc configuration for this offline object
    */
-  explicit DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc);
+  explicit DBMatOffline(DBMatDensityConfiguration& oc);
   /**
    * Constructor
    *
@@ -63,7 +63,7 @@ class DBMatOffline {
   /**
    * Returns a pointer to the configuration
    */
-  sgpp::datadriven::DBMatDensityConfiguration& getConfig();
+  DBMatDensityConfiguration& getConfig();
 
   /**
    * Returns a pointer to the decomposed matrix
@@ -159,17 +159,17 @@ class DBMatOffline {
  protected:
   DBMatOffline();
 
-  sgpp::datadriven::DBMatDensityConfiguration config;  // configuration for this offline object
-  DataMatrix lhsMatrix;                                // stores the (decomposed) matrix
-  bool isConstructed;                                  // If the matrix was built
-  bool isDecomposed;                                   // If the matrix was decomposed
+  DBMatDensityConfiguration config;  // configuration for this offline object
+  DataMatrix lhsMatrix;              // stores the (decomposed) matrix
+  bool isConstructed;                // If the matrix was built
+  bool isDecomposed;                 // If the matrix was decomposed
 
   gsl_permutation* permutation;  // Stores the permutation that was
   // applied on the matrix during decomposition
 
   // An offline object either works on a
   // hierarchical basis grid!
-  sgpp::base::Grid* grid;
+  Grid* grid;
 
   /**
    * Method to initialize a sparse grid

@@ -49,7 +49,7 @@ using sgpp::base::application_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
+DBMatOffline::DBMatOffline(DBMatDensityConfiguration& oc)
     : config(oc),
       lhsMatrix(),
       isConstructed(false),
@@ -105,8 +105,7 @@ DBMatOffline::DBMatOffline(const std::string& fname)
 
   size_t grid_dim = atoi(tokens[2].c_str());
   int grid_level = atoi(tokens[3].c_str());
-  sgpp::datadriven::RegularizationType reg =
-      (sgpp::datadriven::RegularizationType)atoi(tokens[4].c_str());
+  RegularizationType reg = (RegularizationType)atoi(tokens[4].c_str());
   double lambda = atof(tokens[5].c_str());
   DBMatDecompostionType decomp = (DBMatDecompostionType)atoi(tokens[6].c_str());
 
@@ -270,7 +269,7 @@ void DBMatOffline::buildMatrix() {
     // Add regularization term:
     // Construct matrix lambda * C (just use identity for C)
     DataMatrix lambdaC(size, size);
-    if (config.regularization_ == sgpp::datadriven::RegularizationType::Identity) {
+    if (config.regularization_ == RegularizationType::Identity) {
       lambdaC.setAll(0.);
       for (size_t i = 0; i < size; i++) {
         lambdaC.set(i, i, config.lambda_);
