@@ -50,29 +50,26 @@ using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
 DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
-    : config(&oc),
+    : config(oc),
       lhsMatrix(nullptr),
       isConstructed(false),
       isDecomposed(false),
-      ownsConfig(false),
       permutation(nullptr),
       grid(nullptr) {}
 
 DBMatOffline::DBMatOffline()
-    : config(nullptr),
+    : config(),
       lhsMatrix(nullptr),
       isConstructed(false),
       isDecomposed(false),
-      ownsConfig(false),
       permutation(nullptr),
       grid(nullptr) {}
 
 DBMatOffline::DBMatOffline(std::string fname)
-    : config(nullptr),
+    : config(),
       lhsMatrix(nullptr),
       isConstructed(false),
       isDecomposed(false),
-      ownsConfig(true),
       permutation(nullptr),
       grid(nullptr) {
   // std::cout << "START READING MATRIX" << std::endl;
@@ -118,7 +115,14 @@ DBMatOffline::DBMatOffline(std::string fname)
   gconf.level_ = grid_level;
   gconf.type_ = grid_type;
 
-  config = new sgpp::datadriven::DBMatDensityConfiguration(&gconf, nullptr, reg, lambda, decomp);
+  base::AdpativityConfiguration adaptivityConfig;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.threshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.percent_ = 0.0;
+
+  config = DBMatDensityConfiguration(gconf, adaptivityConfig, reg, lambda, decomp);
 
   size_t size;
 
@@ -160,11 +164,10 @@ DBMatOffline::DBMatOffline(std::string fname)
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& old)
-    : config(nullptr),
+    : config(),
       lhsMatrix(nullptr),
       isConstructed(true),
       isDecomposed(true),
-      ownsConfig(true),
       permutation(nullptr),
       grid(nullptr) {
   if (!old.isDecomposed) {
@@ -174,24 +177,23 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 
   // Copy configuration
   RegularGridConfiguration gconf;
-  gconf.dim_ = old.config->grid_dim_;
-  gconf.level_ = old.config->grid_level_;
-  gconf.type_ = old.config->grid_type_;
+  gconf.dim_ = old.config.grid_dim_;
+  gconf.level_ = old.config.grid_level_;
+  gconf.type_ = old.config.grid_type_;
 
   AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = old.config->numRefinements_;
-  adaptConfig.threshold_ = old.config->ref_threshold_;
-  adaptConfig.noPoints_ = old.config->ref_noPoints_;
+  adaptConfig.numRefinements_ = old.config.numRefinements_;
+  adaptConfig.threshold_ = old.config.ref_threshold_;
+  adaptConfig.noPoints_ = old.config.ref_noPoints_;
 
-  config = new sgpp::datadriven::DBMatDensityConfiguration(
-      &gconf, &adaptConfig, old.config->regularization_, old.config->lambda_,
-      old.config->decomp_type_);
+  config = DBMatDensityConfiguration{gconf, adaptConfig, old.config.regularization_,
+                                     old.config.lambda_, old.config.decomp_type_};
 
   // Copy Matrix
   lhsMatrix = new DataMatrix(*(old.lhsMatrix));
 
   // Copy Permutation (if existing)
-  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
     permutation = gsl_permutation_alloc(old.grid->getStorage().getSize());
     gsl_permutation_memcpy(permutation, old.permutation);
   }
@@ -202,12 +204,11 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 
 DBMatOffline::~DBMatOffline() {
   if (lhsMatrix != nullptr) delete lhsMatrix;
-  if (grid!= nullptr) delete grid;
+  if (grid != nullptr) delete grid;
   if (permutation != nullptr) delete permutation;
-  if (ownsConfig && config != nullptr) delete config;
 }
 
-sgpp::datadriven::DBMatDensityConfiguration* DBMatOffline::getConfig() { return config; }
+DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
 DataMatrix* DBMatOffline::getDecomposedMatrix() {
   // if (decomposed_) {
@@ -221,7 +222,7 @@ Grid& DBMatOffline::getGrid() { return *grid; }
 
 void DBMatOffline::permuteVector(DataVector& b) {
   if (isDecomposed) {
-    if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+    if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
       gsl_permute(permutation->data, b.getPointer(), 1, b.getSize());
     } else {
       // No permutation needed for other decomposition types!
@@ -232,17 +233,17 @@ void DBMatOffline::permuteVector(DataVector& b) {
 }
 
 void DBMatOffline::InitializeGrid() {
-  if (config->grid_type_ == GridType::ModLinear) {
-    grid = Grid::createModLinearGrid(config->grid_dim_);
-  } else if (config->grid_type_ == GridType::Linear) {
-    grid = Grid::createLinearGrid(config->grid_dim_);
+  if (config.grid_type_ == GridType::ModLinear) {
+    grid = Grid::createModLinearGrid(config.grid_dim_);
+  } else if (config.grid_type_ == GridType::Linear) {
+    grid = Grid::createLinearGrid(config.grid_dim_);
   } else {
     throw application_exception(
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid->getGenerator().regular(config->grid_level_);
+  grid->getGenerator().regular(config.grid_level_);
 }
 
 void DBMatOffline::buildMatrix() {
@@ -265,15 +266,15 @@ void DBMatOffline::buildMatrix() {
   std::unique_ptr<OperationMatrix> op(
       sgpp::op_factory::createOperationLTwoDotExplicit(lhsMatrix, *grid));
 
-  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU ||
-      config->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU ||
+      config.decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
     // Add regularization term:
     // Construct matrix lambda * C (just use identity for C)
     DataMatrix lambdaC(size, size);
-    if (config->regularization_ == sgpp::datadriven::RegularizationType::Identity) {
+    if (config.regularization_ == sgpp::datadriven::RegularizationType::Identity) {
       lambdaC.setAll(0.);
       for (size_t i = 0; i < size; i++) {
-        lambdaC.set(i, i, config->lambda_);
+        lambdaC.set(i, i, config.lambda_);
       }
     } else {
       throw operation_exception("Unsupported regularization type");
@@ -293,7 +294,7 @@ void DBMatOffline::decomposeMatrix() {
       return;
     } else {
       size_t n = lhsMatrix->getNrows();
-      if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+      if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
         gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         int* sig = reinterpret_cast<int*>(malloc(sizeof(int)));
@@ -303,7 +304,7 @@ void DBMatOffline::decomposeMatrix() {
 
         delete sig;
 
-      } else if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompEigen) {
+      } else if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompEigen) {
         gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
 
@@ -329,7 +330,7 @@ void DBMatOffline::decomposeMatrix() {
 
         delete e;
         delete q;
-      } else if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+      } else if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
         gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         // Perform Cholesky decomposition
@@ -379,7 +380,7 @@ void DBMatOffline::store(std::string fileName) {
   gsl_matrix_fwrite(f, &m.matrix);
 
   // Write Permutation (if existing)
-  if (config->decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
     gsl_permutation_fwrite(f, permutation);
   }
 

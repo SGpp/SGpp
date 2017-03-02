@@ -63,7 +63,7 @@ class DBMatOffline {
   /**
    * Returns a pointer to the configuration
    */
-  sgpp::datadriven::DBMatDensityConfiguration* getConfig();
+  sgpp::datadriven::DBMatDensityConfiguration& getConfig();
 
   /**
    * Returns a pointer to the decomposed matrix
@@ -159,11 +159,10 @@ class DBMatOffline {
  protected:
   DBMatOffline();
 
-  sgpp::datadriven::DBMatDensityConfiguration* config;  // configuration for this offline object
-  DataMatrix* lhsMatrix;                                // stores the (decomposed) matrix
-  bool isConstructed;                                   // If the matrix was built
-  bool isDecomposed;                                    // If the matrix was decomposed
-  bool ownsConfig;  // If the configuration has to be destroyed with the object
+  sgpp::datadriven::DBMatDensityConfiguration config;  // configuration for this offline object
+  DataMatrix* lhsMatrix;                               // stores the (decomposed) matrix
+  bool isConstructed;                                  // If the matrix was built
+  bool isDecomposed;                                   // If the matrix was decomposed
 
   gsl_permutation* permutation;  // Stores the permutation that was
   // applied on the matrix during decomposition
