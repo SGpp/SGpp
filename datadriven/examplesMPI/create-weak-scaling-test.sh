@@ -2,13 +2,14 @@
 set -e
 # Create folder for the testrun
 # today=`date +%Y-%m-%d_%H:%M`
-packagesize=$1
-max_nodes=$2
-name=$3
-datasetFolder=$4
-datasetPattern=$5
-walltime_single_node=$6
-dataset_size_single_node=$7
+machine=$1
+packagesize=$2
+max_nodes=$3
+name=$4
+datasetFolder=$5
+datasetPattern=$6
+walltime_single_node=$7
+dataset_size_single_node=$8
 test_folder="weak-scaling"
 echo "Creating testrun for log_2(${max_nodes}) cases into folder ${test_folder}..."
 read -p "Continue? (y/n)" -n 1 -r
@@ -36,22 +37,41 @@ while [ ${nodes} -le ${max_nodes} ]; do
     # Copy executable
     cp ./mpi_examples ${test_folder}/Nodes-${nodes}/mpi_examples
     # Load runscript template (double qoutes preserver newline characters)
-    templatefile="$(cat template)"
+    if [[ $machine == "pizdaint" ]]; then
+        templatefile="$(cat template-pizdaint)"
+    elif [[ $machine == "hazelhen" ]]; then
+        templatefile="$(cat template-hazelhen)"
+    fi
     # Replace placeholders
     procs=$((${nodes}+1))
-    ((sec=walltime%60, walltime_in_min=${walltime}, walltime_in_min/=60, min=walltime_in_min%60, hrs=walltime_in_min/60))
+
+    sec=$((walltime%60))
+    walltime_in_min=${walltime}
+    walltime_in_min=$((walltime_in_min/60))
+    min=$((walltime_in_min%60))
+    hrs=$((walltime_in_min/60))
+    
     formatted_walltime=$(printf "%02d:%02d:%02d" $hrs $min $sec)
-    printf -v templatefile "$templatefile" "Clustering-Run" "$procs" "$formatted_walltime" "$procs" "${datasetFolder}/${dataset}"
+    printf -v templatefile "$templatefile" "Clustering-Weak" "$procs" "$formatted_walltime" "${datasetFolder}/${dataset}"
     # Print and save to file
     echo "$templatefile"
-    echo "$templatefile" > ${test_folder}/Nodes-${nodes}/runscript.pbs
+    if [[ $machine == "pizdaint" ]]; then
+        echo "$templatefile" > ${test_folder}/Nodes-${nodes}/runscript.sh
+    elif [[ $machine == "hazelhen" ]]; then
+        echo "$templatefile" > ${test_folder}/Nodes-${nodes}/runscript.pbs
+    fi
     let nodes=nodes*2
 		let dataset_size=dataset_size*2
     walltime=`echo "s=$walltime; s/1.8" | bc`
     # let walltime=walltime/2
 done
 
-runtemplatefile="$(cat run-template)"
+if [[ $machine == "pizdaint" ]]; then
+    runtemplatefile="$(cat run-template-pizdaint)"
+elif [[ $machine == "hazelhen" ]]; then
+    runtemplatefile="$(cat run-template-hazelhen)"
+fi
+
 # Replace placeholders
 printf -v runtemplatefile "$runtemplatefile" "$2"
 # Print and save to file
