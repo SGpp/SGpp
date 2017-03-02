@@ -169,7 +169,7 @@ class DBMatOffline {
 
   // An offline object either works on a
   // hierarchical basis grid!
-  Grid* grid;
+  std::unique_ptr<Grid> grid;
 
   /**
    * Method to initialize a sparse grid

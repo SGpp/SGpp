@@ -50,17 +50,6 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, double beta)
   alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 }
 
-void DBMatOnlineDE::readOffline(DBMatOffline& o) {
-  offlineObject = o;
-  functionComputed = false;
-  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
-  bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-  lambda = offlineObject.getConfig().lambda_;
-  oDim = offlineObject.getConfig().grid_dim_;
-
-  alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-}
-
 void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_cv,
                                            std::list<size_t>* deletedPoints, size_t newPoints) {
   if (m.getNrows() > 0) {

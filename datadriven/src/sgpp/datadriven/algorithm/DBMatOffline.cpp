@@ -202,7 +202,6 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 }
 
 DBMatOffline::~DBMatOffline() {
-  if (grid != nullptr) delete grid;
   if (permutation != nullptr) delete permutation;
 }
 
@@ -232,9 +231,9 @@ void DBMatOffline::permuteVector(DataVector& b) {
 
 void DBMatOffline::InitializeGrid() {
   if (config.grid_type_ == GridType::ModLinear) {
-    grid = Grid::createModLinearGrid(config.grid_dim_);
+    grid = std::unique_ptr<Grid>{Grid::createModLinearGrid(config.grid_dim_)};
   } else if (config.grid_type_ == GridType::Linear) {
-    grid = Grid::createLinearGrid(config.grid_dim_);
+    grid = std::unique_ptr<Grid>{Grid::createLinearGrid(config.grid_dim_)};
   } else {
     throw application_exception(
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");

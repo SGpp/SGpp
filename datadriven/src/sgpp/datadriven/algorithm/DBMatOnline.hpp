@@ -43,8 +43,6 @@ class DBMatOnline {
   //   */
   void setLambda(double lambda);
 
-  virtual void readOffline(DBMatOffline& o) = 0;
-
   /**
    * Returns a reference to the offline object
    * @return reference to the stored offline object

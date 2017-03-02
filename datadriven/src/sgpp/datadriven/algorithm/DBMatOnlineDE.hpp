@@ -33,13 +33,6 @@ class DBMatOnlineDE : public DBMatOnline {
   explicit DBMatOnlineDE(DBMatOffline& offline, double beta = 0.);
 
   /**
-   * Reads an offline object
-   *
-   * @param o the offline object
-   */
-  void readOffline(DBMatOffline& o) override;
-
-  /**
    * Computes the density function for a certain data matrix
    *
    * @param m the matrix that contains the data points
