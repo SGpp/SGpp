@@ -24,17 +24,20 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 6, k = 6;
-  double lambda = 0.00000, treshold = 1.5;
-  std::string filename = "dataset2_dim10.arff";
+  size_t dimension = 10, tiefe = 5, k = 6; //tiefe 6 for testing
+  double lambda = 0.001, treshold = 0.0;
+  std::string filename = "../examplesMPI/dataset1_dim8.arff";
 
-  // std::cout << "Loading file: " << filename << std::endl;
-  // sgpp::datadriven::Dataset data =
-  //     sgpp::datadriven::ARFFTools::readARFF(filename);
-  // sgpp::base::DataMatrix& dataset = data.getData();
-  // dimension = dataset.getNcols();
-  // std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
-  //           << dataset.getNrows() << " datapoints." << std::endl;
+  std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+  start = std::chrono::system_clock::now();
+
+  std::cout << "Loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset data =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& dataset = data.getData();
+  dimension = dataset.getNcols();
+  std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
+            << dataset.getNrows() << " datapoints." << std::endl;
 
   // Create Grid
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dimension);
@@ -52,20 +55,20 @@ int main() {
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
 
-  operation_mult->mult(alpha, result);
+  // operation_mult->mult(alpha, result);
 
-  std::ofstream out_mult("mult_erg_dim2_depth11.txt");
-  out_mult.precision(17);
-  for (size_t i = 0; i < 100; ++i) {
-    // out_mult << result[i] << " ";
-    std::cout << result[i] << " ";
-  }
-  out_mult.close();
-  std::cin.get();
+  // std::ofstream out_mult("mult_erg_dim2_depth11.txt");
+  // out_mult.precision(17);
+  // for (size_t i = 0; i < 100; ++i) {
+  //   // out_mult << result[i] << " ";
+  //   std::cout << result[i] << " ";
+  // }
+  // out_mult.close();
+  // std::cin.get();
 
   std::cout  << "Creating rhs" << std::endl;
-  // sgpp::base::DataVector b(gridsize);
-  // operation_mult->generateb(dataset, b);
+  sgpp::base::DataVector b(gridsize);
+  operation_mult->generateb(dataset, b);
   // for (size_t i = 0; i < 300; i++)
   //   std::cout << b[i] << " ";
   // std::cout << std::endl;
@@ -76,27 +79,27 @@ int main() {
   // }
   // out_rhs.close();
 
-  // std::cout << "Creating alpha" << std::endl;
-  // solver->solve(*operation_mult, alpha, b, false, true);
-  // double max = alpha.max();
-  // double min = alpha.min();
-  // for (size_t i = 0; i < gridsize; i++)
-  //   alpha[i] = alpha[i]*1.0/(max-min);
+  std::cout << "Creating alpha" << std::endl;
+  solver->solve(*operation_mult, alpha, b, false, true);
+  double max = alpha.max();
+  double min = alpha.min();
+  for (size_t i = 0; i < gridsize; i++)
+    alpha[i] = alpha[i]*1.0/(max-min);
 
-  // std::ofstream out_alpha("alpha_erg_dim2_depth11.txt");
-  // out_alpha.precision(17);
-  // for (size_t i = 0; i < gridsize; ++i) {
-  //   out_alpha << alpha[i] << " ";
-  // }
-  // out_alpha.close();
-  // std::cout << "Starting graph creation..." << std::endl;
-  // sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
-  //     sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
-  //                                                            "MyOCLConf.cfg");
-  // std::vector<int> graph(dataset.getNrows()*k);
-  // operation_graph->create_graph(graph);
+  std::ofstream out_alpha("alpha_erg_dim2_depth11.txt");
+  out_alpha.precision(17);
+  for (size_t i = 0; i < gridsize; ++i) {
+    out_alpha << alpha[i] << " ";
+  }
+  out_alpha.close();
+  std::cout << "Starting graph creation..." << std::endl;
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
+      sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
+                                                             "MyOCLConf.cfg");
+  std::vector<int> graph(dataset.getNrows()*k);
+  operation_graph->create_graph(graph);
 
-  // std::ofstream out("graph_erg_dim2_depth11.txt");
+  std::ofstream out("graph_erg_dim2_depth11.txt");
   // for (size_t i = 0; i < dataset.getNrows(); ++i) {
   //   for (size_t j = 0; j < k; ++j) {
   //     out << graph[i * k + j] << " ";
@@ -105,11 +108,11 @@ int main() {
   // }
   // out.close();
 
-  // std::cout << "Starting graph pruning" << std::endl;
-  // sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
-  //     sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
-  //                                                           treshold, k, "MyOCLConf.cfg");
-  // operation_prune->prune_graph(graph);
+  std::cout << "Starting graph pruning" << std::endl;
+  sgpp::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL* operation_prune =
+      sgpp::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset,
+                                                            treshold, k, "MyOCLConf.cfg");
+  operation_prune->prune_graph(graph);
 
   // out.open("graph_pruned_erg_dim2_depth11.txt");
   // for (size_t i = 0; i < dataset.getNrows(); ++i) {
@@ -119,14 +122,19 @@ int main() {
   //   out << std::endl;
   // }
   // out.close();
-  // std::vector<size_t> cluster_assignments =
-  //     sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
-  // out.open("cluster_erg.txt");
-  // for (size_t datapoint : cluster_assignments) {
-  //   out << datapoint << " ";
-  // }
-  // // cleanup
-  // delete operation_mult;
-  // delete solver;
-  // delete operation_graph;
+  std::vector<size_t> cluster_assignments =
+      sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
+  out.open("cluster_erg.txt");
+  for (size_t datapoint : cluster_assignments) {
+    out << datapoint << " ";
+  }
+  end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end-start;
+  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+  std::cout << "finished computation at " << std::ctime(&end_time)
+            << "elapsed time: " << elapsed_seconds.count() << "s\n";
+  // cleanup
+  delete operation_mult;
+  delete solver;
+  delete operation_graph;
 }
