@@ -65,7 +65,7 @@ DBMatOffline::DBMatOffline()
       permutation(nullptr),
       grid(nullptr) {}
 
-DBMatOffline::DBMatOffline(std::string fname)
+DBMatOffline::DBMatOffline(const std::string& fname)
     : config(),
       lhsMatrix(),
       isConstructed(false),
@@ -353,7 +353,7 @@ void DBMatOffline::decomposeMatrix() {
   }
 }
 
-void DBMatOffline::store(std::string fileName) {
+void DBMatOffline::store(const std::string& fileName) {
   if (!isDecomposed) {
     throw application_exception("Matrix not yet decomposed");
     return;
