@@ -79,7 +79,7 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
+def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -101,14 +101,17 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0):
         gps[i, :] = p.array()
 
     ax.plot_wireframe(xv, yv, Z, color="black")
+    z_min, z_max = min(np.min(Z), z_min), np.max(Z)
+    ax.set_zlim(z_min, z_max)
     if np.any(np.abs(alpha) > 1e-13):
-        cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
+        cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
         cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
         cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
 
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at, c="red", marker="o")
+    ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
+           " ", c="red", marker="o", ms=15)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)

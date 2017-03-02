@@ -48,6 +48,8 @@
 #include <sgpp/base/operation/hash/OperationArbitraryBoundaryHierarchisation.hpp>
 
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentLinearBoundary.hpp>
+
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearClenshawCurtis.hpp>
@@ -296,6 +298,8 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
 base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationFirstMomentLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearBoundary) {
+    return new base::OperationFirstMomentLinearBoundary(grid.getStorage());
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
