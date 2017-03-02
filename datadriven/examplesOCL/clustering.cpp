@@ -24,7 +24,7 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 5, k = 6; //tiefe 6 for testing
+  size_t dimension = 10, tiefe = 5, k = 12; //tiefe 6 for testing
   double lambda = 0.001, treshold = 0.0;
   std::string filename = "../examplesMPI/dataset1_dim8.arff";
 
