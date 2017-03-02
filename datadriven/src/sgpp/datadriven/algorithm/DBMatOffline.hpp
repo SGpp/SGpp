@@ -151,12 +151,7 @@ class DBMatOffline {
    */
   /*void load(std::string fname);*/
 
-  /**
-   * Destructor
-   */
-  virtual ~DBMatOffline();
-
- protected:
+ private:
   DBMatOffline();
 
   DBMatDensityConfiguration config;  // configuration for this offline object
@@ -164,7 +159,7 @@ class DBMatOffline {
   bool isConstructed;                // If the matrix was built
   bool isDecomposed;                 // If the matrix was decomposed
 
-  gsl_permutation* permutation;  // Stores the permutation that was
+  std::unique_ptr<gsl_permutation> permutation;  // Stores the permutation that was
   // applied on the matrix during decomposition
 
   // An offline object either works on a

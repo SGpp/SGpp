@@ -149,8 +149,8 @@ DBMatOffline::DBMatOffline(const std::string& fname)
   lhsMatrix = DataMatrix(a->data, a->size1, a->size2);
   // Read permutation
   if (decomp == DBMatDecompostionType::DBMatDecompLU) {
-    permutation = gsl_permutation_alloc(size);
-    gsl_permutation_fread(f, permutation);
+    permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(size)};
+    gsl_permutation_fread(f, permutation.get());
   }
 
   fclose(f);
@@ -193,16 +193,13 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 
   // Copy Permutation (if existing)
   if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    permutation = gsl_permutation_alloc(old.grid->getStorage().getSize());
-    gsl_permutation_memcpy(permutation, old.permutation);
+    permutation =
+        std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(old.grid->getStorage().getSize())};
+    gsl_permutation_memcpy(permutation.get(), old.permutation.get());
   }
 
   // Initialize Grid
   InitializeGrid();
-}
-
-DBMatOffline::~DBMatOffline() {
-  if (permutation != nullptr) delete permutation;
 }
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
@@ -295,9 +292,10 @@ void DBMatOffline::decomposeMatrix() {
         gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         int* sig = reinterpret_cast<int*>(malloc(sizeof(int)));
-        permutation = gsl_permutation_alloc(n);  // allocate permutation
+        permutation =
+            std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(n)};  // allocate permutation
 
-        gsl_linalg_LU_decomp(&m.matrix, permutation, sig);
+        gsl_linalg_LU_decomp(&m.matrix, permutation.get(), sig);
 
         delete sig;
 
@@ -377,7 +375,7 @@ void DBMatOffline::store(const std::string& fileName) {
 
   // Write Permutation (if existing)
   if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    gsl_permutation_fwrite(f, permutation);
+    gsl_permutation_fwrite(f, permutation.get());
   }
 
   fclose(f);
@@ -443,7 +441,7 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
       // Indicates current row/column to permute
       index_coarse = *it + 1 + coarseCount_1;
 
-      if (index_coarse > c && start1 == false) {
+      if (static_cast<double>(index_coarse) > c && start1 == false) {
         // Is accessed if index is larger than 'c'
         choleskyPermutation(index_coarse, old_size - coarseCount_2, 2);
         coarseCount_2++;
