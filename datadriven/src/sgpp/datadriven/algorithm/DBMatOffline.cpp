@@ -51,7 +51,7 @@ using sgpp::base::OperationMatrix;
 
 DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
     : config(oc),
-      lhsMatrix(nullptr),
+      lhsMatrix(),
       isConstructed(false),
       isDecomposed(false),
       permutation(nullptr),
@@ -59,7 +59,7 @@ DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
 
 DBMatOffline::DBMatOffline()
     : config(),
-      lhsMatrix(nullptr),
+      lhsMatrix(),
       isConstructed(false),
       isDecomposed(false),
       permutation(nullptr),
@@ -67,7 +67,7 @@ DBMatOffline::DBMatOffline()
 
 DBMatOffline::DBMatOffline(std::string fname)
     : config(),
-      lhsMatrix(nullptr),
+      lhsMatrix(),
       isConstructed(false),
       isDecomposed(false),
       permutation(nullptr),
@@ -147,7 +147,7 @@ DBMatOffline::DBMatOffline(std::string fname)
   }
 
   gsl_matrix_fread(f, a);
-  lhsMatrix = new DataMatrix(a->data, a->size1, a->size2);
+  lhsMatrix = DataMatrix(a->data, a->size1, a->size2);
   // Read permutation
   if (decomp == DBMatDecompostionType::DBMatDecompLU) {
     permutation = gsl_permutation_alloc(size);
@@ -165,7 +165,7 @@ DBMatOffline::DBMatOffline(std::string fname)
 
 DBMatOffline::DBMatOffline(const DBMatOffline& old)
     : config(),
-      lhsMatrix(nullptr),
+      lhsMatrix(),
       isConstructed(true),
       isDecomposed(true),
       permutation(nullptr),
@@ -190,7 +190,7 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
                                      old.config.lambda_, old.config.decomp_type_};
 
   // Copy Matrix
-  lhsMatrix = new DataMatrix(*(old.lhsMatrix));
+  lhsMatrix = DataMatrix(old.lhsMatrix);
 
   // Copy Permutation (if existing)
   if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
@@ -203,19 +203,18 @@ DBMatOffline::DBMatOffline(const DBMatOffline& old)
 }
 
 DBMatOffline::~DBMatOffline() {
-  if (lhsMatrix != nullptr) delete lhsMatrix;
   if (grid != nullptr) delete grid;
   if (permutation != nullptr) delete permutation;
 }
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
-DataMatrix* DBMatOffline::getDecomposedMatrix() {
-  // if (decomposed_) {
-  return lhsMatrix;
-  /*} else {
+DataMatrix& DBMatOffline::getDecomposedMatrix() {
+  if (isDecomposed) {
+    return lhsMatrix;
+  } else {
     throw data_exception("Matrix was not decomposed, yet!");
-  }*/
+  }
 }
 
 Grid& DBMatOffline::getGrid() { return *grid; }
@@ -261,10 +260,10 @@ void DBMatOffline::buildMatrix() {
   size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
 
   // Construct matrix A
-  lhsMatrix = new DataMatrix(size, size);
+  lhsMatrix = DataMatrix(size, size);
 
   std::unique_ptr<OperationMatrix> op(
-      sgpp::op_factory::createOperationLTwoDotExplicit(lhsMatrix, *grid));
+      sgpp::op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
 
   if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU ||
       config.decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
@@ -281,7 +280,7 @@ void DBMatOffline::buildMatrix() {
     }
 
     // Compute A + lambda * C:
-    lhsMatrix->add(lambdaC);
+    lhsMatrix.add(lambdaC);
   }
 
   isConstructed = true;
@@ -293,9 +292,9 @@ void DBMatOffline::decomposeMatrix() {
       // Already decomposed => Do nothing
       return;
     } else {
-      size_t n = lhsMatrix->getNrows();
+      size_t n = lhsMatrix.getNrows();
       if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         int* sig = reinterpret_cast<int*>(malloc(sizeof(int)));
         permutation = gsl_permutation_alloc(n);  // allocate permutation
@@ -305,7 +304,7 @@ void DBMatOffline::decomposeMatrix() {
         delete sig;
 
       } else if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompEigen) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
 
         gsl_matrix* q = gsl_matrix_alloc(n, n);  // Stores the eigenvectors
@@ -316,22 +315,21 @@ void DBMatOffline::decomposeMatrix() {
         gsl_eigen_symmv_free(ws);
 
         // Create an (n+1)*n matrix to store eigenvalues and -vectors:
-        delete lhsMatrix;
-        lhsMatrix = new DataMatrix(n + 1, n);
+        lhsMatrix = DataMatrix(n + 1, n);
 
         for (size_t r = 0; r < n; r++) {
           for (size_t c = 0; c < n; c++) {
-            lhsMatrix->set(r, c, gsl_matrix_get(q, r, c));
+            lhsMatrix.set(r, c, gsl_matrix_get(q, r, c));
           }
         }
         for (size_t c = 0; c < n; c++) {
-          lhsMatrix->set(n, c, gsl_vector_get(e, c));
+          lhsMatrix.set(n, c, gsl_vector_get(e, c));
         }
 
         delete e;
         delete q;
       } else if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
-        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix->getPointer(), n,
+        gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                   n);  // Create GSL matrix view for decomposition
         // Perform Cholesky decomposition
         gsl_linalg_cholesky_decomp(&m.matrix);
@@ -340,7 +338,7 @@ void DBMatOffline::decomposeMatrix() {
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
             if (i < j) {
-              lhsMatrix->set(i, j, 0);
+              lhsMatrix.set(i, j, 0);
             }
           }
         }
@@ -376,7 +374,7 @@ void DBMatOffline::store(std::string fileName) {
   // Write Matrix
   f = fopen(fileName.c_str(), "ab");
   gsl_matrix_view m =
-      gsl_matrix_view_array(lhsMatrix->getPointer(), lhsMatrix->getNrows(), lhsMatrix->getNcols());
+      gsl_matrix_view_array(lhsMatrix.getPointer(), lhsMatrix.getNrows(), lhsMatrix.getNcols());
   gsl_matrix_fwrite(f, &m.matrix);
 
   // Write Permutation (if existing)
@@ -388,10 +386,10 @@ void DBMatOffline::store(std::string fileName) {
 }
 
 void DBMatOffline::printMatrix() {
-  std::cout << "Size: " << lhsMatrix->getNrows() << " , " << lhsMatrix->getNcols() << std::endl;
-  for (size_t r = 0; r < lhsMatrix->getNrows(); r++) {
-    for (size_t c = 0; c < lhsMatrix->getNcols(); c++) {
-      std::cout << lhsMatrix->get(r, c) << ", ";
+  std::cout << "Size: " << lhsMatrix.getNrows() << " , " << lhsMatrix.getNcols() << std::endl;
+  for (size_t r = 0; r < lhsMatrix.getNrows(); r++) {
+    for (size_t c = 0; c < lhsMatrix.getNcols(); c++) {
+      std::cout << lhsMatrix.get(r, c) << ", ";
     }
     std::cout << std::endl;
   }
@@ -455,7 +453,7 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
         // Is accessed the first 'index_coarse' is less than 'c'
         start1 = true;
         // Delete last 'coarseCount_2' rows/columns of current Cholesky factor
-        lhsMatrix->resizeQuadratic(old_size - coarseCount_2);
+        lhsMatrix.resizeQuadratic(old_size - coarseCount_2);
       }
 
       if (start1 == true) {
@@ -467,15 +465,15 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
 
     if (coarseCount_1 > 0) {
       // If some indices have been less than 'c'
-      DataMatrix* update_matrix = new DataMatrix(lhsMatrix->getNrows(), lhsMatrix->getNcols());
-      update_matrix->copyFrom(*lhsMatrix);
+      DataMatrix* update_matrix = new DataMatrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
+      update_matrix->copyFrom(lhsMatrix);
       // Resize copy of current Cholesky factor to
       // receive a matrix of rank one update vectors
-      update_matrix->resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix->getNrows(), coarseCount_1);
+      update_matrix->resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix.getNrows(), coarseCount_1);
       // Resize current Cholesky factor to required submatrix
       // for necessary rank one updates
-      lhsMatrix->resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix->getNrows(),
-                                   lhsMatrix->getNrows());
+      lhsMatrix.resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix.getNrows(),
+                                  lhsMatrix.getNrows());
       DataVector* temp_col = new DataVector(update_matrix->getNrows());
 
       // 'coarseCount_1' many rank one updates based on the columns of
@@ -483,13 +481,13 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
       DBMatDMSChol cholsolver;
       for (size_t i = 0; i < coarseCount_1; i++) {
         update_matrix->getColumn(i, *temp_col);
-        cholsolver.choleskyUpdate(*lhsMatrix, temp_col, false);
+        cholsolver.choleskyUpdate(lhsMatrix, temp_col, false);
       }
       delete update_matrix;
       delete temp_col;
     } else {
       // If no indices have been less than 'c'
-      lhsMatrix->resizeQuadratic(old_size - coarseCount_2);
+      lhsMatrix.resizeQuadratic(old_size - coarseCount_2);
     }
   }
 
@@ -565,7 +563,7 @@ void DBMatOffline::choleskyModification(size_t newPoints, std::list<size_t> dele
     // Resize Cholesky factor to new 'gridSize' before 'choleskyAddPoint' is
     // applied
     // in order to save runtime
-    this->lhsMatrix->resizeQuadratic(gridSize);
+    this->lhsMatrix.resizeQuadratic(gridSize);
 
     // Now its time to call 'choleskyAddPoint''countNewGridPoints' often
     DataVector* temp_col = new DataVector(gridSize);
@@ -587,10 +585,10 @@ void DBMatOffline::choleskyAddPoint(DataVector* newCol, size_t size) {
     throw data_exception("Matrix was not decomposed, yet!");
   }
 
-  DataMatrix* mat_ = lhsMatrix;
+  DataMatrix& mat = lhsMatrix;
   // Size of provided memory for Cholesky factor,
   // because the allocations take place in 'choleskyModifications'
-  size_t size_full = mat_->getNrows();
+  size_t size_full = mat.getNrows();
   // Size of Cholesky factor after adding 'newCol'
   size_t size_up = newCol->getSize();
 
@@ -601,7 +599,7 @@ void DBMatOffline::choleskyAddPoint(DataVector* newCol, size_t size) {
   }
 
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m_full = gsl_matrix_view_array(mat_->getPointer(), size_full, size_full);
+  gsl_matrix_view m_full = gsl_matrix_view_array(mat.getPointer(), size_full, size_full);
   // Access submatrx since mat_ has already expanded to save alocations
   // procedures
   gsl_matrix_view m = gsl_matrix_submatrix(&m_full.matrix, 0, 0, size, size);
@@ -635,10 +633,10 @@ void DBMatOffline::choleskyAddPoint(DataVector* newCol, size_t size) {
   DataVector* zeros = new DataVector(size_full, 0.0);
 
   // Add 'newCol' and 'zeros' to current Cholesky factor 'lhsMatrix_'
-  mat_->setColumn(size, *zeros);
+  mat.setColumn(size, *zeros);
   newCol->set(size_up - 1, phi);
   newCol->resizeZero(size_full);
-  mat_->setRow(size, *newCol);
+  mat.setRow(size, *newCol);
 
   gsl_vector_free(wkvec_a);
   delete zeros;
@@ -651,8 +649,8 @@ void DBMatOffline::choleskyPermutation(size_t k, size_t l, size_t job) {
     throw data_exception("Matrix was not decomposed, yet!");
   }
 
-  DataMatrix* mat_ = lhsMatrix;
-  size_t size = mat_->getNrows();
+  DataMatrix& mat = lhsMatrix;
+  size_t size = mat.getNrows();
 
   if (k > l) {
     throw data_exception("l needs to be larger than k");
@@ -665,7 +663,7 @@ void DBMatOffline::choleskyPermutation(size_t k, size_t l, size_t job) {
   // Determine amount of necessary Givens rotations and rows to swap
   size_t count_perm = l - k;
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m = gsl_matrix_view_array(mat_->getPointer(), size, size);
+  gsl_matrix_view m = gsl_matrix_view_array(mat.getPointer(), size, size);
 
   // Define and declare Workingvector, Cosine- and Sinevector
   gsl_vector* svec = gsl_vector_calloc(count_perm);

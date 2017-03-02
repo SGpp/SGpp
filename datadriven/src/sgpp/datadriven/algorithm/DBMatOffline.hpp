@@ -68,7 +68,7 @@ class DBMatOffline {
   /**
    * Returns a pointer to the decomposed matrix
    */
-  DataMatrix* getDecomposedMatrix();
+  DataMatrix& getDecomposedMatrix();
 
   /**
    * Returns a reference to the sparse grid
@@ -160,7 +160,7 @@ class DBMatOffline {
   DBMatOffline();
 
   sgpp::datadriven::DBMatDensityConfiguration config;  // configuration for this offline object
-  DataMatrix* lhsMatrix;                               // stores the (decomposed) matrix
+  DataMatrix lhsMatrix;                                // stores the (decomposed) matrix
   bool isConstructed;                                  // If the matrix was built
   bool isDecomposed;                                   // If the matrix was decomposed
 
