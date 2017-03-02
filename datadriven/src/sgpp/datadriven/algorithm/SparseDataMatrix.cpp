@@ -14,6 +14,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
