@@ -83,57 +83,13 @@ class DBMatOffline {
    * depending
    * on the type of decomposition
    */
-  virtual void buildMatrix();
+  virtual void buildMatrix() = 0;
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  virtual void decomposeMatrix();
-
-  /**
-   * Applies the permutation that might be done during the matrix decomposition
-   * to a vector
-   * (has to be applied to the right hand side vector if the system of equation
-   * should be solved with a decomposed matrix)
-   *
-   * @param b the vector that has to be permuted
-   */
-  virtual void permuteVector(DataVector& b);
-
-  /**
-   * Updates offline cholesky factorization based on coarsed (deletedPoints)
-   * and refined (newPoints) gridPoints
-   *
-   * @param deletedPoints list of indices of last coarsed points
-   * @param newPoints amount of refined points
-   */
-  virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                                    double lambda);
-
-  /**
-   * Updates the cholesky factor when a new grid point is added (e.g. refine)
-   *
-   * @param newCol DataVector with column to add to the system matrix
-   * @param size columns/rows of current Cholesky factor, necessary since the
-            allocated memory is increased before the Cholesky factor is modified
-   */
-  virtual void choleskyAddPoint(DataVector* newCol, size_t size);
-
-  /**
-   * Permutes the rows of the cholesky factor based on permutations
-   * of the system matrix (e.g. coarsening)
-   *
-   * @param k "left" column to permutate
-   * @param l "right" column to permutate
-   * @param job = 2        => left circular shift
-   *	  1,...,k-1,k,k+1, ..., l-1,l,l+1, ..,size  => 1,...,k-1,k+1, ...,
-   *l-1,l,k,l+1,..., size
-   * 	  job = 1       => right circular shift
-   * 	  1,...,k-1,k,k+1, ..., l-1,l,l+1,...size  => 1,...,k-1,l,k,k+1, ...,
-   *l-1,l+1,...size
-   */
-  virtual void choleskyPermutation(size_t k, size_t l, size_t job);
+  virtual void decomposeMatrix() = 0;
 
   /**
    * Prints the matrix onto standard output

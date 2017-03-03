@@ -29,8 +29,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
    */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                            double lambda) override;
+  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
 
   /**
    * Updates the cholesky factor when a new grid point is added (e.g. refine)
@@ -39,7 +38,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param size columns/rows of current Cholesky factor, necessary since the
             allocated memory is increased before the Cholesky factor is modified
    */
-  void choleskyAddPoint(DataVector* newCol, size_t size) override;
+  void choleskyAddPoint(DataVector* newCol, size_t size);
 
   /**
    * Permutes the rows of the cholesky factor based on permutations
@@ -54,7 +53,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * 	  1,...,k-1,k,k+1, ..., l-1,l,l+1,...size  => 1,...,k-1,l,k,k+1, ...,
    *l-1,l+1,...size
    */
-  void choleskyPermutation(size_t k, size_t l, size_t job) override;
+  void choleskyPermutation(size_t k, size_t l, size_t job);
 };
 
 } /* namespace datadriven */

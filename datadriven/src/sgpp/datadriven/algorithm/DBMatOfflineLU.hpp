@@ -18,7 +18,7 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   void decomposeMatrix() override;
 
-  void permuteVector(DataVector& b) override;
+  void permuteVector(DataVector& b);
 };
 
 } /* namespace datadriven */

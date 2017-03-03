@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
@@ -69,7 +70,9 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     B->multTranspose(y, b);
 
     // Perform permutation because of decomposition (LU)
-    offlineObject.permuteVector(b);
+    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+      static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
+    }
 
     // std::cout << b.getSize() << std::endl;
 

@@ -11,6 +11,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
@@ -49,31 +50,32 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       prior{},
       beta{beta},
       trained{false},
-      offline{dconf},
+      offline{nullptr},
       offlineContainer{},
       densityFunctions{},
       processedPoints{0},
       avgErrors{0} {
   // initialize offline object
-  offline.buildMatrix();
-  offline.decomposeMatrix();
+  offline->buildMatrix();
+  offline->decomposeMatrix();
 
   // initialize density functions for each class
   densityFunctions.reserve(numClasses);
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
-  if (offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+  if (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
     offlineContainer.reserve(numClasses);
     // every class gets his own online object
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
-      offlineContainer.emplace_back(std::make_unique<DBMatOffline>(offline));
+      offlineContainer.emplace_back(
+          std::make_unique<DBMatOfflineChol>(static_cast<DBMatOfflineChol&>(*offline)));
       auto densEst = std::make_unique<DBMatOnlineDE>(*(offlineContainer.back()), beta);
       densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
   } else {
     densityFunctions.reserve(numClasses);
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
-      auto densEst = std::make_unique<DBMatOnlineDE>(offline, beta);
+      auto densEst = std::make_unique<DBMatOnlineDE>(*offline, beta);
       densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
   }
@@ -182,9 +184,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        if ((offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+        if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
             (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < offline.getConfig().numRefinements_)) {
+            (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -192,8 +194,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         if (validationData == nullptr) {
           throw base::data_exception("No validation data for checking convergence provided!");
         }
-        if ((offline.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
-            (refCnt < offline.getConfig().numRefinements_)) {
+        if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
+            (refCnt < offline->getConfig().numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large
                                                     // use a subset for error
@@ -230,7 +232,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr =
             *(new sgpp::datadriven::ZeroCrossingRefinementFunctor(
-                grids, alphas, offline.getConfig().ref_noPoints_, levelPenalize, preCompute));
+                grids, alphas, offline->getConfig().ref_noPoints_, levelPenalize, preCompute));
 
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
@@ -244,7 +246,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         base::DataVector* trainLabelsRef = &(trainData.getTargets());
         sgpp::datadriven::DataBasedRefinementFunctor funcData =
             *(new sgpp::datadriven::DataBasedRefinementFunctor(
-                grids, alphas, trainDataRef, trainLabelsRef, offline.getConfig().ref_noPoints_,
+                grids, alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
                 levelPenalize, coeffA));
         if (refType == "zero") {
           func = &funcZrcr;
@@ -310,7 +312,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             // perform refinement (surplus based)
             sizeBeforeRefine = grid.getSize();
             // simple refinement based on surpluses
-            SurplusRefinementFunctor srf(alphaWeight, offline.getConfig().ref_noPoints_);
+            SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
             gridGen.refine(srf);
             sizeAfterRefine = grid.getSize();
           } else if ((refType == "data") || (refType == "zero")) {
@@ -331,8 +333,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           newPoints = sizeAfterRefine - sizeBeforeRefine;
           (*refineCoarse)[idx].second = newPoints;
           // apply grid changes to the Cholesky factorization
-          densEst->getOfflineObject().choleskyModification(newPoints, deletedGridPoints,
-                                                           densEst->getBestLambda());
+          if (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+            static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
+                .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
+          }
           // update alpha vector
           densEst->updateAlpha(&(*refineCoarse)[idx].first, (*refineCoarse)[idx].second);
         }
