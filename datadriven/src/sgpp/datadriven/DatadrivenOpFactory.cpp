@@ -106,12 +106,23 @@ base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, i
 datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityMarginalizeLinear(&grid);
-  else
+  else if (grid.getType() == base::GridType::Poly ||
+           grid.getType() == base::GridType::PolyBoundary ||
+           grid.getType() == base::GridType::LinearBoundary)
     return new datadriven::OperationDensityMarginalize(&grid);
+  else
+    throw base::factory_exception(
+        "OperationDensityMarginalize is not implemented for this grid type.");
 }
 
 datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
-  return new datadriven::OperationDensityMargTo1D(&grid);
+  if (grid.getType() == base::GridType::Linear ||
+      grid.getType() == base::GridType::LinearBoundary || grid.getType() == base::GridType::Poly ||
+      grid.getType() == base::GridType::PolyBoundary)
+    return new datadriven::OperationDensityMargTo1D(&grid);
+  else
+    throw base::factory_exception(
+        "OperationDensityMargTo1D is not implemented for this grid type.");
 }
 
 datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid) {
@@ -142,8 +153,13 @@ datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSa
 datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityConditionalLinear(&grid);
-  else
+  else if (grid.getType() == base::GridType::Poly ||
+           grid.getType() == base::GridType::PolyBoundary ||
+           grid.getType() == base::GridType::LinearBoundary)
     return new datadriven::OperationDensityConditional(&grid);
+  else
+    throw base::factory_exception(
+        "OperationDensityConditional is not implemented for this grid type.");
 }
 
 datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(
