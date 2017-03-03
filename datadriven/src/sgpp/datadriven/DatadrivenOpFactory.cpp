@@ -12,8 +12,10 @@
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalLinear.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSamplingLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1DLinear.hpp>
@@ -105,16 +107,11 @@ datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base:
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityMarginalizeLinear(&grid);
   else
-    throw base::factory_exception(
-        "OperationDensityMarginalize is not implemented for this grid type.");
+    return new datadriven::OperationDensityMarginalize(&grid);
 }
 
 datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
-  if (grid.getType() == base::GridType::Linear)
-    return new datadriven::OperationDensityMargTo1DLinear(&grid);
-  else
-    throw base::factory_exception(
-        "OperationDensityMargTo1D is not implemented for this grid type.");
+  return new datadriven::OperationDensityMargTo1D(&grid);
 }
 
 datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid) {
@@ -146,8 +143,7 @@ datadriven::OperationDensityConditional* createOperationDensityConditional(base:
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityConditionalLinear(&grid);
   else
-    throw base::factory_exception(
-        "OperationDensityConditional is not implemented for this grid type.");
+    return new datadriven::OperationDensityConditional(&grid);
 }
 
 datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(

@@ -121,6 +121,8 @@ class PrewaveletBasis : public Basis<LT, IT> {
     }
   }
 
+  inline double getIntegral(LT level, IT index) { return -1.0; }
+
   inline size_t getDegree() const override { return 1; }
 };
 

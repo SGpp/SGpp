@@ -71,6 +71,7 @@
 #include <sgpp/base/operation/hash/OperationQuadratureModFundamentalSpline.hpp>
 
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentLinearBoundary.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
@@ -104,10 +105,13 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundaryNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
@@ -298,7 +302,9 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
 base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationFirstMomentLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearBoundary) {
+  } else if (grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationFirstMomentLinearBoundary(grid.getStorage());
   } else {
     throw base::factory_exception(
@@ -309,6 +315,10 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
 base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationSecondMomentLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearTruncatedBoundary) {
+    return new base::OperationSecondMomentLinearBoundary(grid.getStorage());
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
@@ -417,6 +427,12 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
     return new base::OperationMultipleEvalLinearClenshawCurtisBoundaryNaive(grid, dataset);
   } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
     return new base::OperationMultipleEvalModLinearClenshawCurtisNaive(grid, dataset);
+  } else if (grid.getType() == base::GridType::Poly) {
+    return new base::OperationMultipleEvalPolyNaive(
+        grid, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::PolyBoundary) {
+    return new base::OperationMultipleEvalPolyBoundaryNaive(
+        grid, dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
     return new base::OperationMultipleEvalPolyClenshawCurtisNaive(
         grid, dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
@@ -428,6 +444,10 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
         grid, dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::Linear) {
     return new base::OperationMultipleEvalLinearNaive(grid, dataset);
+  } else if (grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearTruncatedBoundary) {
+    return new base::OperationMultipleEvalLinearBoundaryNaive(grid, dataset);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalNaive is not implemented for this grid type.");

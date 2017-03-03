@@ -79,7 +79,8 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf):
+def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
+             isConsistent=True):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -90,7 +91,8 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf):
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = f(evalSGFunction(grid, alpha,
-                                       np.array([xv[j, i], yv[j, i]])))
+                                       np.array([xv[j, i], yv[j, i]]),
+                                       isConsistent=isConsistent))
 
     # get grid points
     gs = grid.getStorage()
