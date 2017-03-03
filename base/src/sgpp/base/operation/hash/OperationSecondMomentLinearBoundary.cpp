@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentLinearBoundary.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -11,24 +11,24 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentLinearBoundary::doQuadrature(const DataVector& alpha,
-                                                        DataMatrix* bounds) {
+double OperationSecondMomentLinearBoundary::doQuadrature(DataVector& alpha, DataMatrix* bounds) {
   // handle bounds
   size_t numDims = storage.getDimension();
 
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentLinearBoundary::doQuadrature - bounds matrix has the wrong shape");
+        "OperationSecondMomentLinearBoundary::doQuadrature - bounds matrix has the wrong shape");
   }
 
   double res = 0;
   double tmpres = 1;
   double xlower = 0.0;
   double xupper = 0.0;
-  double value = 0.0;
-  double mean = 0.0;
   double quad = 0.0;
+  double firstMoment = 0.0;
+  double secondMoment = 0.0;
+  double value = 0.0;
 
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != storage.end(); iter++) {
     tmpres = 1.;
@@ -39,34 +39,43 @@ double OperationFirstMomentLinearBoundary::doQuadrature(const DataVector& alpha,
       double index_d = static_cast<double>(index);
       double level_d = static_cast<double>(level);
 
-      // compute the expected value of the basis function
-      if (level == 0) {
-        if (index == 0) {
-          mean = 1. / 3.;
-        } else {
-          mean = 1. / 6.;
-        }
+      // compute the second moment of basis function
+      if (level == 0 && index == 0) {
+        secondMoment = 0.25;
+      } else if (level == 0 && index == 1) {
+        secondMoment = 1. / 12.;
       } else {
-        // evaluate the first moment in the unit hypercube
-        mean = index_d * std::pow(4.0, -level_d);
+        secondMoment = std::pow(8.0, -level_d) * (index_d * index_d + 1. / 6.);
       }
 
-      // compute the integral of the basis function if necessary
-      if (bounds != nullptr) {
+      if (bounds == nullptr) {
+        // the second Moment is equal to the second moment of the basis function
+        value = secondMoment;
+      } else {
         // consider boundaries if given
         xlower = bounds->get(dim, 0);
         xupper = bounds->get(dim, 1);
+        double width = (xupper - xlower);
+
+        // compute the expected value of the basis function
+        if (level == 0 && index == 0) {
+          firstMoment = 1. / 3.;
+        } else if (level == 0 && index == 1) {
+          firstMoment = 1. / 6.;
+        } else {
+          firstMoment = index_d * std::pow(4.0, -level_d);
+        }
+
+        // compute the integral of the basis function
         if (level == 0) {
           quad = 0.5;
         } else {
           quad = std::pow(2.0, -level_d);
         }
 
-        // compute the first moment for the current basis function
-        value = (xupper - xlower) * mean + xlower * quad;
-      } else {
-        // for the unit interval the first moment is equal to the mean
-        value = mean;
+        // compute the second moment of the transformed basis function
+        value = width * width * secondMoment + 2 * width * xlower * firstMoment +
+                xlower * xlower * quad;
       }
 
       tmpres *= value;

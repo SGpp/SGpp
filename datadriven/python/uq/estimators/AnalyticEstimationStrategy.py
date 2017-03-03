@@ -223,20 +223,33 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
                 "confidence_interval": (moment, moment)}
 
 
-    def var(self, grid, alpha, U, T, mean):
+    def secondMoment(self, grid, alpha, U, T):
         r"""
-        Extraction of the expectation the given sparse grid function
+        Extraction of the second moment of the given sparse grid function
         interpolating the product of function value and pdf.
 
-        \int\limits_{[0, 1]^d} (f(x) - E(f))^2 * pdf(x) dx
+        \int\limits_{[0, 1]^d} f(x)^2 * pdf(x) dx
         """
         # extract correct pdf for moment estimation
         vol, W, D = self._extractPDFforMomentEstimation(U, T)
         A_var, err = self.getSystemMatrixForVariance(grid, W, D)
 
         moment = vol * np.dot(alpha, np.dot(A_var, alpha))
-        var = moment - mean ** 2
+
+        return {"value": moment,
+                "err": err,
+                "confidence_interval": (moment, moment)}
+
+    def var(self, grid, alpha, U, T, mean):
+        r"""
+        Extraction of variance of the given sparse grid function
+        interpolating the product of function value and pdf.
+
+        \int\limits_{[0, 1]^d} (f(x) - E(f))^2 * pdf(x) dx
+        """
+        moment = self.secondMoment(grid, alpha, U, T)
+        var = moment["value"] - mean ** 2
 
         return {"value": var,
-                "err": err,
+                "err": moment["err"],
                 "confidence_interval": (var, var)}

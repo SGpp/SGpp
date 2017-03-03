@@ -61,6 +61,14 @@ class LinearBoundaryBasis : public Basis<LT, IT> {
     return eval(l, i, (x - t) / q);
   }
 
+  double getIntegral(LT level, IT index) {
+    if (level == 0) {
+      return 0.5;
+    } else {
+      return 1. / static_cast<double>(static_cast<IT>(1) << level);
+    }
+  }
+
   inline size_t getDegree() const override { return 1; }
 };
 
