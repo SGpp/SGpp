@@ -221,7 +221,7 @@ class LearnerSGDEOnOff {
   bool trained;
 
   // The offline object (contains decomposed matrix)
-  DBMatOffline offline;
+  std::unique_ptr<DBMatOffline> offline;
   std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
   ClassDensityConntainer densityFunctions;
