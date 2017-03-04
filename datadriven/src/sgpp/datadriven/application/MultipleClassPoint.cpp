@@ -3,9 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include "MultipleClassPoint.hpp"
 
 #include <vector>
+#include <unordered_set>
 #include <cmath>
 #include <string>
 #include <sstream>
@@ -24,40 +27,70 @@ MultipleClassPoint::MultipleClassPoint(int classes) {
 	}
 }
 
-MultipleClassPoint::MultipleClassPoint(int classes, int seq, 
-                                       sgpp::datadriven::SimpleMultiClassGenerator gen) {
+MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids, 
+                                       std::vector<base::DataVector*> alphas) {
+                 
 	// init all classes
-    for (int i = 0 ; i < classes ; i++) {
-    	std::tuple<double, int, bool>* c1 =
-    	       new std::tuple<double, int, bool> { gen.getEval(i, seq) , i , true };
-	    insertDensitySorted(c1);
-	    classById.push_back(c1);
-	}
-
+	for (int t =  0 ; t < grids.size() ; t++) {
+        base::DataVector coords(grids.at(t)->getDimension());
+    	std::unique_ptr<base::OperationEval>
+              opEval(op_factory::createOperationEval(*grids.at(t)));
+        gp.getStandardCoordinates(coords);
+        double eval = opEval->eval(*alphas.at(t), coords);
+        std::tuple<double, int, bool>* c1 =
+               new std::tuple<double, int, bool> { eval , t , grids.at(t)->getStorage().isContaining(gp) };
+        insertDensitySorted(c1);
+        classById.push_back(c1);
+    }
 }
 
 MultipleClassPoint::~MultipleClassPoint() {
     // TODO Auto-generated destructor stub
 }
 
-int MultipleClassPoint::getDominateClass() {
+int MultipleClassPoint::getDominateClass() const {
     return std::get<1>(classByDensity.at(0));
 }
 
-double MultipleClassPoint::getDensity(int classId) {
+double MultipleClassPoint::getDensity(int classId) const {
     return std::get<0>(*classById.at(classId));
 }
 
-void MultipleClassPoint::updateClass(int classId, double newDen) {
-    // TODO
+void MultipleClassPoint::updateClass(int classId, double newDen, bool hasPoint) {
+    std::tuple<double, int, bool>* c1 =
+           new std::tuple<double, int, bool> { newDen , classId , hasPoint };
+    struct ClassCompare {
+        std::tuple<double, int, bool> oldClass;
+        public: ClassCompare(std::tuple<double, int, bool> i):oldClass(i){}
+        bool operator()(const std::tuple<double, int, bool>& t1) {
+            return std::get<1>(t1) == std::get<1>(oldClass);
+        }
+    };
+    std::replace_if(classByDensity.begin(), classByDensity.end(), ClassCompare(*c1), *c1);
+    classById.at(classId) = c1;
+    
 }
 
-void MultipleClassPoint::addNeighbor(int neighbor) {
-    neighbors.push_back(neighbor);
+void MultipleClassPoint::addNeighbor(int neighbor, int dim) {
+    std::tuple<int, int> neigh = { neighbor , dim };
+    if (std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end()) {
+        neighbors.push_back(neigh);
+    }
 }
 
-std::vector<int> MultipleClassPoint::getNeighbors() {
+std::vector<std::tuple<int, int>> MultipleClassPoint::getNeighbors() {
     return neighbors;
+}
+
+void MultipleClassPoint::resortClasses() {
+    // resort vector
+    struct ClassCompare {
+        bool operator() (const std::tuple<double, int, bool> & t1,
+                         const std::tuple<double, int, bool> & t2) {
+            return std::get<0>(t1) > std::get<0>(t2);
+        }
+    };
+    std::sort(classByDensity.begin(), classByDensity.end(), ClassCompare());
 }
 
 std::string MultipleClassPoint::toString() {
@@ -65,7 +98,8 @@ std::string MultipleClassPoint::toString() {
     for (unsigned int i = 0 ; i < classById.size() ; i++ ) {
         std::tuple<double, int, bool> tmp = *(classById.at(i));
         s += " - (" + std::to_string(std::get<0>(tmp)) + ",";
-        s += std::to_string(std::get<1>(tmp)) + ")";
+        s += std::to_string(std::get<1>(tmp)) + ",";
+        s += std::to_string(std::get<2>(tmp)) + ")";
     }
     s += "\n";
     for (unsigned int i = 0 ; i < classByDensity.size() ; i++ ) {
@@ -74,8 +108,7 @@ std::string MultipleClassPoint::toString() {
     }
     s += "\n";
     for (unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
-        size_t tmp = neighbors.at(i);
-        s += " - " + std::to_string(tmp);
+        s += " - " + std::to_string(std::get<0>(neighbors.at(i)));
     }
     return s;
 }
@@ -83,7 +116,7 @@ std::string MultipleClassPoint::toString() {
 std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(double percent) {
 	std::vector<std::tuple<double, int, bool>> result;
 	double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
-	for (unsigned int i = 0 ; std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
+	for (unsigned int i = 0 ; i < classByDensity.size() && std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
         result.push_back(classByDensity.at(i));
     }
 	return result;
