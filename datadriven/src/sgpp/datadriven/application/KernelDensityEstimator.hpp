@@ -34,6 +34,7 @@ class Kernel {
   virtual double derivative(double x) = 0;
 
   virtual double norm() = 0;
+  virtual double variance() = 0;
   virtual KernelType getType() = 0;
 };
 
@@ -45,6 +46,7 @@ class GaussianKernel : public Kernel {
   double cdf(double x) override;
   double derivative(double x) override;
   double norm() override;
+  double variance() override;
   KernelType getType() override;
 };
 
@@ -56,6 +58,7 @@ class EpanechnikovKernel : public Kernel {
   double cdf(double x) override;
   double derivative(double x) override;
   double norm() override;
+  double variance() override;
   KernelType getType() override;
 };
 
