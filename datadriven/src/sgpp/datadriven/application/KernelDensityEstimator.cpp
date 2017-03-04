@@ -346,25 +346,21 @@ double KernelDensityEstimator::mean() {
     res += kernelMean;
   }
 
-  return res / static_cast<double>(nsamples);
+  return res / sumCond;
 }
 
 double KernelDensityEstimator::variance() {
   double meansquared = 0, kernelVariance = 1., x = 0.0, sigma = 0.0;
-
   for (size_t isample = 0; isample < nsamples; isample++) {
     kernelVariance = 1.;
-
     for (size_t idim = 0; idim < ndim; idim++) {
       x = samplesVec[idim]->get(isample);
-      sigma = bandwidths[idim];
-      kernelVariance *= sigma * sigma + x * x;
+      kernelVariance *= sigma * sigma * kernel->variance() + x * x;
     }
 
     meansquared += kernelVariance;
   }
-
-  meansquared /= static_cast<double>(nsamples);
+  meansquared /= sumCond;
 
   double mu = mean();
   double var = meansquared - mu * mu;
@@ -466,6 +462,7 @@ double GaussianKernel::eval(double x) { return std::exp(-(x * x) / 2.); }
 double GaussianKernel::cdf(double x) { return 0.5 + 0.5 * std::erf(x / M_SQRT2); }
 double GaussianKernel::derivative(double x) { return x * eval(x); }
 double GaussianKernel::norm() { return 1. / M_SQRT2PI; }
+double GaussianKernel::variance() { return 1.0; }
 KernelType GaussianKernel::getType() { return KernelType::GAUSSIAN; }
 
 EpanechnikovKernel::~EpanechnikovKernel() {}
@@ -497,6 +494,7 @@ double EpanechnikovKernel::derivative(double x) {
 }
 
 double EpanechnikovKernel::norm() { return 0.75; }
+double EpanechnikovKernel::variance() { return 0.2; }
 
 KernelType EpanechnikovKernel::getType() { return KernelType::EPANECHNIKOV; }
 
