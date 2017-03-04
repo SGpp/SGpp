@@ -20,8 +20,6 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
 public:
 	MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
-                                std::vector<sgpp::datadriven::MultipleClassPoint> * pts,
-                                base::GridStorage& store,
                                 size_t refinements_num,
                                 bool level_penalize,
                                 bool pre_compute,
@@ -30,12 +28,15 @@ public:
 	double operator()(base::GridStorage& storage,
                     size_t seq) const override;
                     
+    base::Grid* getCombinedGrid();
+                    
 
 private:
-	std::vector<sgpp::datadriven::MultipleClassPoint>* points;
-	base::GridStorage& storage;
+	std::vector<sgpp::datadriven::MultipleClassPoint> points;
+	base::Grid* multigrid;
 
 	void findCrossings(int leftP, int rightP, int seq, size_t d);
+	bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
 };
 
 } /* namespace datadriven */
