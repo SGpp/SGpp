@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
@@ -27,13 +28,14 @@ namespace datadriven {
 OperationMakePositive::OperationMakePositive(
     MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
-    bool verbose)
+    bool verbose, optimization::ScalarFunction* f)
     : maxLevel(0),
       minimumLevelSum(0),
       maximumLevelSum(0),
       generateConsistentGrid(generateConsistentGrid),
       candidateSearchAlgorithm(candidateSearchAlgorithm),
       interpolationAlgorithm(interpolationAlgorithm),
+      f(f),
       verbose(verbose) {}
 
 OperationMakePositive::~OperationMakePositive() {}
@@ -88,6 +90,9 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
     case MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d:
       interpolation =
           std::make_shared<datadriven::OperationMakePositiveInterpolateBoundaryOfSupport>();
+      break;
+    case MakePositiveInterpolationAlgorithm::InterpolateFunction:
+      interpolation = std::make_shared<datadriven::OperationMakePositiveInterpolateFunction>(f);
       break;
     default:
       interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();

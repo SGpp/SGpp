@@ -30,6 +30,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -202,7 +203,8 @@ datadriven::OperationMakePositive* createOperationMakePositive(
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool generateConsistentGrid = true, bool verbose = false);
+    bool generateConsistentGrid = true, bool verbose = false,
+    optimization::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
@@ -216,7 +218,7 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false);
+    bool verbose = false, optimization::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationCovariance for the grid at hand.

@@ -52,6 +52,8 @@
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
 #endif
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -308,16 +310,17 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose) {
+    bool generateConsistentGrid, bool verbose, optimization::ScalarFunction* f) {
   return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
-                                               generateConsistentGrid, verbose);
+                                               generateConsistentGrid, verbose, f);
 }
 
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose) {
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
+    optimization::ScalarFunction* f) {
   return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
-                                                          interpolationAlgorithm, verbose);
+                                                          interpolationAlgorithm, verbose, f);
 }
 
 datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid) {

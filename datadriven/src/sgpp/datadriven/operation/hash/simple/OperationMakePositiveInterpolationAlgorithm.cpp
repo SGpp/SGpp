@@ -33,7 +33,7 @@ void OperationMakePositiveSetToZero::computeHierarchicalCoefficients(
   // to zero
   base::HashGridStorage& gridStorage = grid.getStorage();
 
-  auto opEval = op_factory::createOperationEvalNaive(grid);
+  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(grid));
   base::DataVector x(gridStorage.getDimension());
 
   for (auto& i : addedGridPoints) {
@@ -54,9 +54,7 @@ void OperationMakePositiveInterpolateExp::computeHierarchicalCoefficients(
   // nodal value from the hierarchical coefficient. This sets the function value at that point
   // to zero. We additionaly add the value from the log interpolant.
   base::HashGridStorage& gridStorage = grid.getStorage();
-
-  auto opEval = op_factory::createOperationEvalNaive(grid);
-
+  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(grid));
   base::DataVector x(gridStorage.getDimension());
 
   for (auto& i : addedGridPoints) {
@@ -137,8 +135,7 @@ void OperationMakePositiveInterpolateBoundaryOfSupport::computeHierarchicalCoeff
   // to zero. We additionaly interpolate the boundary points linearly in each dimension and
   // add the minimum to the current function value.
   base::HashGridStorage& gridStorage = grid.getStorage();
-
-  auto opEval = op_factory::createOperationEvalNaive(grid);
+  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(grid));
 
   base::DataVector x(gridStorage.getDimension());
 
@@ -148,6 +145,29 @@ void OperationMakePositiveInterpolateBoundaryOfSupport::computeHierarchicalCoeff
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
       alpha[i] = alpha[i] - yi + computeMinimum(grid, alpha, gp);
+    } else {
+      alpha[i] = 0.0;
+    }
+  }
+}
+// -------------------------------------------------------------------------------------------
+
+OperationMakePositiveInterpolateFunction::OperationMakePositiveInterpolateFunction(
+    optimization::ScalarFunction* f)
+    : f(f) {}
+OperationMakePositiveInterpolateFunction::~OperationMakePositiveInterpolateFunction() {}
+
+void OperationMakePositiveInterpolateFunction::computeHierarchicalCoefficients(
+    base::Grid& grid, base::DataVector& alpha, std::vector<size_t>& addedGridPoints, double tol) {
+  base::HashGridStorage& gridStorage = grid.getStorage();
+  auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(grid));
+  base::DataVector x(gridStorage.getDimension());
+
+  for (auto& i : addedGridPoints) {
+    gridStorage.getPoint(i).getStandardCoordinates(x);
+    double yi = opEval->eval(alpha, x);
+    if (yi < tol) {
+      alpha[i] = alpha[i] - yi + f->eval(x);
     } else {
       alpha[i] = 0.0;
     }
