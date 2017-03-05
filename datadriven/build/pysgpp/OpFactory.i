@@ -39,9 +39,11 @@
     sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject createOperationMakePositive(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                        sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+                                       sgpp::optimization::ScalarFunction* f,
                                        bool generateConsistentGrid, bool verbose);
 %newobject createOperationLimitFunctionValueRange(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
                                                   sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+                                                  sgpp::optimization::ScalarFunction* f,
                                                   bool generateConsistentGrid, bool verbose);
 %newobject sgpp::op_factory::createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,

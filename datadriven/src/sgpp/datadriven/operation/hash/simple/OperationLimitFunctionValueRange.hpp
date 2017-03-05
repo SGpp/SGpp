@@ -11,6 +11,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+
 #include <vector>
 #include <limits>
 
@@ -24,7 +26,7 @@ class OperationLimitFunctionValueRange {
           MakePositiveCandidateSearchAlgorithm::Intersections,
       datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
           MakePositiveInterpolationAlgorithm::SetToZero,
-      bool verbose = false);
+      bool verbose = false, optimization::ScalarFunction* f = nullptr);
 
   virtual ~OperationLimitFunctionValueRange();
 

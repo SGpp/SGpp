@@ -11,6 +11,8 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+
 #include <vector>
 #include <map>
 
@@ -26,7 +28,8 @@ enum class MakePositiveCandidateSearchAlgorithm {
 enum class MakePositiveInterpolationAlgorithm {
   SetToZero,
   InterpolateExp,
-  InterpolateBoundaries1d
+  InterpolateBoundaries1d,
+  InterpolateFunction
 };
 
 /**
@@ -43,6 +46,7 @@ class OperationMakePositive {
    *
    * @param candidateSearchAlgorithm defines how to generate the full grid candidate set
    * @param interpolationAlgorithm defines how to compute the coefficients for the new grid points
+   * @param f scalar function to be interpolated
    * @param tol tolerance for positivity
    * @param generateConsistentGrid define if the hierarchical ancestors of all new grid points are
    * inserted as well
@@ -52,7 +56,9 @@ class OperationMakePositive {
                                      MakePositiveCandidateSearchAlgorithm::IntersectionsJoin,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
-                                 bool generateConsistentGrid = true, bool verbose = false);
+
+                                 bool generateConsistentGrid = true, bool verbose = false,
+                                 optimization::ScalarFunction* f = nullptr);
 
   /**
    * Descrutor
@@ -179,6 +185,7 @@ class OperationMakePositive {
 
   std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
   std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolation;
+  optimization::ScalarFunction* f;
 
   /// verbosity
   bool verbose;
