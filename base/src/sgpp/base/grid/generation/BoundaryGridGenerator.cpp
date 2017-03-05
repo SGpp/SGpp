@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <vector>
 
 
 namespace sgpp {
@@ -38,6 +39,12 @@ void BoundaryGridGenerator::regular(size_t level) {
   HashGenerator gen;
   gen.regularWithBoundaries(this->storage, static_cast<level_t>(level), boundaryLevel);
 }
+
+void BoundaryGridGenerator::regular(std::vector<size_t>& anisotropic_weights, size_t level) {
+  HashGenerator gen;
+  gen.regularWithBoundaries(this->storage, anisotropic_weights, static_cast<level_t>(level));
+}
+
 
 void BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
   throw generation_exception("Method is not implemented");

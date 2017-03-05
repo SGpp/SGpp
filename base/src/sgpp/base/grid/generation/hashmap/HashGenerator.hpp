@@ -15,6 +15,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include "mex.h"
 
 namespace sgpp {
 namespace base {
@@ -159,6 +160,51 @@ class HashGenerator {
 
             this->boundaries_rec(storage, point, storage.getDimension() - 1, 0,
                     level);
+        }
+    }
+
+    /**
+     * Generates a regular sparse grid of level levels with boundaries
+     *
+     * @param storage Hashmap, that stores the grid points
+     * @param anisotropic_weights Weights \f$\vec{\xi}\f$ (non-negative values) such that
+     * \f$\langle \vec{\xi}, \vec{\i} \rangle \le n\f$
+     * @param boundaryLevel level at which the boundary points should be
+     *                      inserted
+     */
+    void regularWithBoundaries(GridStorage& storage,
+            std::vector<size_t>& anisotropic_weights, level_t level,
+            bool boundaryLevel = 1) {
+        if (storage.getSize() > 0) {
+            throw generation_exception("storage not empty");
+        }
+        auto max = std::max_element(std::begin(anisotropic_weights),
+                std::end(anisotropic_weights));
+
+        size_t dim = storage.getDimension();
+        GridPoint point(dim);
+
+
+        if (boundaryLevel == 1) {
+            for (size_t d = 0; d < dim; d++) {
+                point.push(d, 1, 1, false);
+            }
+            this->boundaries_truncated_rec(storage, point, dim - 1,
+                    anisotropic_weights,
+                    (level + static_cast<level_t>(dim) - 1)
+                            * static_cast<level_t>(*max), boundaryLevel);
+        } else {
+            /* new grid generation
+             *
+             * for all level the same calculation of the level sum is implemented:
+             * |l| <= n
+             */
+            for (size_t d = 0; d < dim; d++) {
+                point.push(d, 0, 0, false);
+            }
+            this->boundaries_rec(storage, point, dim - 1, anisotropic_weights,
+                    (level + static_cast<level_t>(dim) - 1)
+                            * static_cast<level_t>(*max));
         }
     }
 
@@ -1116,6 +1162,130 @@ class HashGenerator {
         }
     }
 
+        /**
+     * recursive construction of the spare grid with boundaries, pentagon cut
+     *
+     * @param storage hashmap that stores the grid points
+     * @param index point's index
+     * @param current_dim current working dimension
+     * @param current_level current level in this construction step
+     * @param level maximum level of the sparse grid
+     * @param bLevelZero specifies if the current index has a level zero component
+     */
+    void boundaries_truncated_rec(GridStorage& storage, GridPoint& index,
+            size_t current_dim, std::vector<size_t>& anisotropic_weights, level_t level,
+            bool bLevelZero) {
+        if (current_dim == 0) {
+            boundaries_Truncated_rec_1d(storage, index, anisotropic_weights, level,
+                    bLevelZero);
+        } else {
+            index_t source_index;
+            level_t source_level, current_level;
+
+            index.get(current_dim, source_level, source_index);
+
+            current_level = 0;
+            for (size_t d = 0; d < storage.getDimension(); d++) {
+                current_level += static_cast<level_t>(anisotropic_weights[d])
+                        * index.getLevel(d);
+            }
+
+            if (current_level <= level) {
+                // set Leaf option of index
+                bool bLeafProperty = false;
+
+                if (current_level == level) {
+                    bLeafProperty = true;
+                } else {
+                    bLeafProperty = false;
+                }
+
+                if (source_level == 1) {
+                    index.push(current_dim, 0, 0, false);
+                    this->boundaries_truncated_rec(storage, index,
+                            current_dim - 1, anisotropic_weights, level, true);
+
+                    index.push(current_dim, 0, 1, false);
+                    this->boundaries_truncated_rec(storage, index,
+                            current_dim - 1, anisotropic_weights, level, true);
+
+                    index.push(current_dim, source_level, source_index);
+                }
+
+                // d-1 recursion
+                index.setLeaf(bLeafProperty);
+                this->boundaries_truncated_rec(storage, index, current_dim - 1,
+                        anisotropic_weights, level, bLevelZero);
+            }
+
+            if (current_level < level) {
+                index.push(current_dim, source_level + 1, 2 * source_index - 1);
+                this->boundaries_truncated_rec(storage, index, current_dim,
+                        anisotropic_weights, level, bLevelZero);
+
+                index.push(current_dim, source_level + 1, 2 * source_index + 1);
+                this->boundaries_truncated_rec(storage, index, current_dim,
+                        anisotropic_weights, level, bLevelZero);
+            }
+
+            index.push(current_dim, source_level, source_index);
+        }
+    }
+
+    /**
+     * generate points of the last dimension (dim == 0), version of pentagon cut in
+     * sub space scheme
+     *
+     * @param storage the hashmap that stores the grid points
+     * @param index point's index that should be created on the grid
+     * @param current_level current level of the grid generation
+     * @param level maximum level of grid
+     * @param bLevelZero specifies if the current index has a level zero component
+     */
+    void boundaries_Truncated_rec_1d(GridStorage& storage, GridPoint& index,
+            std::vector<size_t>& anisotropic_weights, level_t level, bool bLevelZero) {
+        bool bLevelGreaterZero = !bLevelZero;
+        index_t source_index;
+        level_t source_level, current_level, aw;
+        aw = static_cast<level_t>(anisotropic_weights[0]);
+        index.get(0, source_level, source_index);
+
+        current_level = 0;
+        for (size_t d = 0; d < storage.getDimension(); d++) {
+            current_level += static_cast<level_t>(anisotropic_weights[d])
+                    * index.getLevel(d);
+        }
+
+        for (level_t l = 0; l * aw + current_level - aw <= level; l++) {
+            if (l * aw + current_level - aw == level) {
+                if (l == 0) {
+                    index.push(0, 0, 0, false);
+                    storage.insert(index);
+                    index.push(0, 0, 1, false);
+                    storage.insert(index);
+                } else {
+                    for (index_t i = 1; static_cast<int>(i) <= static_cast<int>(1 << (l - 1)); i++) {
+                        index.push(0, l, 2 * i - 1, (true && bLevelGreaterZero));
+                        storage.insert(index);
+                    }
+                }
+            } else {
+                if (l == 0) {
+                    index.push(0, 0, 0, false);
+                    storage.insert(index);
+                    index.push(0, 0, 1, false);
+                    storage.insert(index);
+                } else {
+                    for (index_t i = 1; static_cast<int>(i) <= static_cast<int>(1 << (l - 1)); i++) {
+                        index.push(0, l, 2 * i - 1, false);
+                        storage.insert(index);
+                    }
+                }
+            }
+        }
+        index.push(0, source_level, source_index);
+    }
+
     /**
      * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level 0 and 1
      *
@@ -1197,6 +1367,95 @@ class HashGenerator {
 
         index.push(current_dim, source_level, source_index);
     }
+
+        /**
+     * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level 0 and 1
+     *
+     * @param storage hashmap that stores the grid points
+     * @param index point's index
+     * @param current_dim current working dimension
+     * @param current_level current level in this construction step
+     * @param level maximum level of the sparse grid
+     */
+    void boundaries_rec(GridStorage& storage, GridPoint& index,
+            size_t current_dim, std::vector<size_t>& anisotropic_weights, level_t level) {
+        index_t source_index;
+        level_t source_level, current_level;
+
+        index.get(current_dim, source_level, source_index);
+
+        current_level = 0;
+        for (size_t d = 0; d < storage.getDimension(); d++) {
+            current_level += static_cast<level_t>(anisotropic_weights[d])
+                    * index.getLevel(d);
+        }
+
+        if (current_level <= level) {
+            // set Leaf option of index
+            bool bSaveLeafProperty = index.isLeaf();
+            bool bLeafProperty = false;
+
+            if (current_level == level) {
+                bLeafProperty = true;
+            } else {
+                bLeafProperty = false;
+            }
+
+            // d-1 recursion
+            if (source_level == 0) {
+                if (current_dim == 0) {
+                    index.push(0, 0, 0, bLeafProperty);
+                    storage.insert(index);
+                    index.push(0, 0, 1, bLeafProperty);
+                    storage.insert(index);
+
+                    index.push(current_dim, source_level, source_index,
+                            bSaveLeafProperty);
+                } else {
+                    index.push(current_dim, 0, 0, bLeafProperty);
+                    this->boundaries_rec(storage, index, current_dim - 1,
+                            anisotropic_weights, level);
+
+                    index.push(current_dim, 0, 1, bLeafProperty);
+                    this->boundaries_rec(storage, index, current_dim - 1,
+                            anisotropic_weights, level);
+
+                    index.push(current_dim, source_level, source_index,
+                            bSaveLeafProperty);
+                }
+            } else {
+                index.setLeaf(bLeafProperty);
+
+                if (current_dim == 0) {
+                    storage.insert(index);
+                } else {
+                    this->boundaries_rec(storage, index, current_dim - 1,
+                            anisotropic_weights, level);
+                }
+
+                index.setLeaf(bSaveLeafProperty);
+            }
+        }
+
+        if (current_level < level) {
+            if (source_level == 0 && source_index == 0) {
+                index.push(current_dim, source_level + 1, 1);
+                this->boundaries_rec(storage, index, current_dim,
+                        anisotropic_weights, level);
+            } else {
+                index.push(current_dim, source_level + 1, 2 * source_index - 1);
+                this->boundaries_rec(storage, index, current_dim,
+                        anisotropic_weights, level);
+
+                index.push(current_dim, source_level + 1, 2 * source_index + 1);
+                this->boundaries_rec(storage, index, current_dim,
+                        anisotropic_weights, level);
+            }
+        }
+
+        index.push(current_dim, source_level, source_index);
+    }
+
     /**
      * recursive construction of a square root grid with boundaries
      *
