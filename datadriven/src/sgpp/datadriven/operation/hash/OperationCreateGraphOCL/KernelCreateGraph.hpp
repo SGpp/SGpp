@@ -133,7 +133,10 @@ class KernelCreateGraph {
       if (verbose)
         std::cout << "generating kernel source" << std::endl;
       std::string program_src = kernelSourceBuilder.generateSource(dims, k, datasize,
-                                                                   globalworkrange[0]);
+                                                                   (unpadded_datasize / dims) +
+                                                                   (localSize -
+                                                                    (unpadded_datasize /dims) %
+                                                                    localSize));
       if (verbose)
         std::cout << "Source: " << std::endl << program_src << std::endl;
       if (verbose)
