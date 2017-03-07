@@ -41,12 +41,7 @@ BOOST_AUTO_TEST_CASE(gzipTestReadFile) {
 
   GzipFileSampleDecorator sampleProvider = GzipFileSampleDecorator(new ArffFileSampleProvider());
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-  const auto datasetPath = "datadriven\\tests\\datasets\\liver-disorders_normalized.arff";
-
-#else
   const auto datasetPath = "datadriven/tests/datasets/liver-disorders_normalized.arff";
-#endif
 
   sampleProvider.readFile(datasetPath);
   auto dataset = sampleProvider.getAllSamples();
