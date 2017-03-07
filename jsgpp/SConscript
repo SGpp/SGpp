@@ -47,6 +47,9 @@ javaEnv.AppendUnique(LIBS=flattenedDependencyGraph)
 
 if env["USE_GSL"]:
   javaEnv.AppendUnique(LIBS=["gsl", "gslcblas"])
+  
+if env["USE_ZLIB"]:
+    javaEnv.AppendUnique(LIBS=["z"])
 
 libJava = javaEnv.SharedLibrary(target="jsgpp", source=["jsgpp.i"])
 
