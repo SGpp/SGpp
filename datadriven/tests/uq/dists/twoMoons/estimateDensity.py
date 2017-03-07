@@ -74,6 +74,7 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
     key = 1
     bestCV = float("Inf")
     bestDist = None
+    bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
 
     # stats
     stats = {'config': {'functionName': 'twoMoons',
@@ -94,7 +95,8 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
         for refinementSteps in xrange(0, 6):
             config["grid_level"] = level
             config["refinement_numSteps"] = refinementSteps
-            sgdeDist = SGDEdist.byLearnerSGDEConfig(trainSamples, config=config)
+            sgdeDist = SGDEdist.byLearnerSGDEConfig(trainSamples, config=config,
+                                                    bounds=bounds)
             # -----------------------------------------------------------
             grid, alpha = sgdeDist.grid, sgdeDist.alpha
             cvSgde = sgdeDist.crossEntropy(testSamples)
@@ -117,7 +119,8 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
 
             # scale to unit integrand
             positiveAlpha = positiveAlpha_vec.array()
-            positiveSgdeDist = SGDEdist(positiveGrid, positiveAlpha, trainSamples)
+            positiveSgdeDist = SGDEdist(positiveGrid, positiveAlpha, trainSamples,
+                                        bounds=bounds)
             # -----------------------------------------------------------
             cvPositiveSgde = positiveSgdeDist.crossEntropy(testSamples)
 
@@ -127,7 +130,13 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
                 plt.title("pos: N=%i: vol=%g, log=%g" % (positiveGrid.getSize(),
                                                          doQuadrature(positiveGrid, positiveAlpha),
                                                          cvPositiveSgde))
-                fig.show()
+                plt.tight_layout()
+                if out:
+                    plt.savefig(os.path.join(pathResults, "%s_density_pos_i%i_l%i_r%i.jpg" % (label, iteration, level, refinementSteps)))
+                    plt.savefig(os.path.join(pathResults, "%s_density_pos_i%i_l%i_r%i.pdf" % (label, iteration, level, refinementSteps)))
+                else:
+                    plt.close(fig)
+
 
             # -----------------------------------------------------------
             print "  positive: gs=%i -> CV test = %g" % (positiveGrid.getSize(), cvPositiveSgde)
@@ -176,12 +185,12 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
                     if numDims == 2:
                         fig = plt.figure()
                         plotSG2d(positiveGrid, positiveAlpha, show_negative=True, show_grid_points=False,
-                                 colorbarLabel=r"$\hat{f}_{\mathcal{I}_\text{SG}, \mathcal{I}_\text{ext}}$")
+                                 colorbarLabel=r"$f_{\mathcal{I}^\text{SG} \cup \mathcal{I}^\text{ext}}$")
                         plt.title(r"positive: $N=%i/%i$; \# comparisons$=%i$" % (positiveGrid.getSize(),
                                                                                  (2 ** maxLevel - 1) ** numDims,
                                                                                  numComparisons))
-                        plt.xlabel(r"porosity $\phi$")
-                        plt.ylabel(r"permeability $\log(K_a)$")
+                        plt.xlabel(r"$\xi_1$")
+                        plt.ylabel(r"$\xi_2$")
     #                     plt.title(r"N=%i $\rightarrow$ %i: log=%g $\rightarrow$ %g" % (sgdeDist.grid.getSize(),
     #                                                                                    positiveSgdeDist.grid.getSize(),
     #                                                                                    cvSgde,
@@ -193,7 +202,7 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
                             plt.close(fig)
 
                         fig, ax, _ = plotSG3d(positiveGrid, positiveAlpha)
-                        ax.set_zlabel(r"$\hat{f}_{\mathcal{I}_\text{SG}, \mathcal{I}_\text{ext}}$", fontsize=20)
+                        ax.set_zlabel(r"$f_{\mathcal{I}^{\text{SG}} \cup \mathcal{I}^\text{ext}}$", fontsize=20)
                         ax.set_xlabel(r"$\xi_1$", fontsize=20)
                         ax.set_ylabel(r"$\xi_2$", fontsize=20)
 
@@ -203,7 +212,7 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
                         if out:
                             plt.close(fig)
 
-            if plot:
+            if plot and not out:
                 plt.show()
 
 
@@ -304,8 +313,14 @@ def estimateKDEDensity(trainSamples, testSamples=None, iteration=0, plot=False, 
         fig = plt.figure()
         plotDensity2d(kdeDist)
         plt.title("log=%g" % cvKDE)
-        fig.show()
-        plt.show()
+        if out:
+            plt.tight_layout()
+            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.jpg" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.pdf" % (iteration,)))
+            if out:
+                plt.close(fig)
+        else:
+            plt.show()
 
     print "CV test = %g" % cvKDE
 
@@ -361,6 +376,7 @@ def run_densityEstimation(method,
                           numSamples=1000,
                           candidates="join",
                           out=True,
+                          plot=False,
                           tikz=False):
     if method == "sgde_zero":
         interpolation = "zero"
