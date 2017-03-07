@@ -782,7 +782,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
     return alpha
 
 
-def hierarchize(grid, nodalValues, ignore=None):
+def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
         if grid.getType() in [GridType_Bspline,
@@ -812,7 +812,7 @@ def hierarchize(grid, nodalValues, ignore=None):
     except Exception, e:
         print e
     print "something went wrong during hierarchization"
-    import pdb; pdb.set_trace()
+    import ipdb; ipdb.set_trace()
     return hierarchizeBruteForce(grid, nodalValues, ignore)
 
 

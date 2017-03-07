@@ -144,48 +144,52 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(base::DataMat
 
 void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
     base::DataMatrix& pointsUniform, base::DataMatrix& pointsCdf) {
-  // Work arrays
-  base::DataVector unif(ndim);
-  base::DataVector cdf(ndim);
-  base::DataVector kern(nsamples);
-  std::shared_ptr<base::DataVector> samples1d;
-
-  double xi = 0;
-
-  std::vector<size_t> dims(ndim);
-
-  for (size_t i = 0; i < ndim; i++) {
-    dims[i] = i;
-  }
-
-  for (size_t idata = 0; idata < pointsUniform.getNrows(); idata++) {
-    kern.setAll(1.0);
-    pointsUniform.getRow(idata, unif);
-
-    std::next_permutation(dims.begin(), dims.end());
-
+  // load permutations
+  std::vector<std::vector<size_t>> permutations(pointsCdf.getNrows());
+  for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
+    permutations[idata].resize(ndim);
     for (size_t i = 0; i < ndim; i++) {
-      size_t idim = dims[i];
-      // get samples in current dimension
-      samples1d = kde->getSamples(idim);
-
-      // transform the point in the current dimension
-      cdf[idim] = doTransformation1D(unif[idim], *samples1d, bandwidths[idim], xlimits.get(0, idim),
-                                     xlimits.get(1, idim), ylimits.get(0, idim),
-                                     ylimits.get(1, idim), kern);
-
-      // Update the kernel for the next dimension
-      for (size_t isamples = 0; isamples < nsamples; isamples++) {
-        xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *=
-            kde->getKernel().eval(xi);  // exp(-(xi * xi) / 2.); (bw*sqrt(2*PI)) cancels;
-      }
+      permutations[idata][i] = i;
     }
-
-    // write them to the output
-    pointsCdf.setRow(idata, cdf);
+    std::next_permutation(permutations[idata].begin(), permutations[idata].end());
   }
 
+// apply the inverse rosenblatt transformation
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
+    for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
+      // Work arrays
+      base::DataVector unif(ndim);
+      base::DataVector cdf(ndim);
+      base::DataVector kern(nsamples);
+      std::shared_ptr<base::DataVector> samples1d;
+
+      kern.setAll(1.0);
+      pointsUniform.getRow(idata, unif);
+
+      for (size_t i = 0; i < ndim; i++) {
+        size_t idim = permutations[idata][i];
+        // get samples in current dimension
+        samples1d = kde->getSamples(idim);
+
+        // transform the point in the current dimension
+        cdf[idim] = doTransformation1D(unif[idim], *samples1d, bandwidths[idim],
+                                       xlimits.get(0, idim), xlimits.get(1, idim),
+                                       ylimits.get(0, idim), ylimits.get(1, idim), kern);
+
+        // Update the kernel for the next dimension
+        for (size_t isamples = 0; isamples < nsamples; isamples++) {
+          double xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
+          kern[isamples] *=
+              kde->getKernel().eval(xi);  // exp(-(xi * xi) / 2.); (bw*sqrt(2*PI)) cancels;
+        }
+      }
+
+      // write them to the output
+      pointsCdf.setRow(idata, cdf);
+    }
+  }
   return;
 }
 

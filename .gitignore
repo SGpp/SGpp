@@ -92,7 +92,13 @@ datadriven/tests/uq/analysis/parabola/plots/plots/
 datadriven/tests/uq/analysis/parabola/results/
 datadriven/tests/uq/analysis/parabolaWithSGDE/
 datadriven/tests/uq/analysis/rodetest/
-datadriven/tests/uq/dists
+datadriven/tests/uq/dists/dtrees
+datadriven/tests/uq/dists/libagf
+datadriven/tests/uq/dists/co2
+datadriven/tests/uq/dists/dist
+datadriven/tests/uq/dists/sgde
+datadriven/tests/uq/dists/*.arff
+datadriven/tests/uq/dists/*.csv
 
 # ignoring Windows build directories
 build/
