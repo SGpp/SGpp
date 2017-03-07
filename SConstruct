@@ -141,7 +141,7 @@ vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
-                                     "(relevant for sgpp::datadriven to read compressed dataset files)", False))
+                                     "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))

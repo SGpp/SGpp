@@ -30,13 +30,8 @@ BOOST_AUTO_TEST_CASE(testReadARFF) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-  sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
-      "datadriven\\tests\\datasets\\liver-disorders_normalized.arff");
-#else
   sgpp::datadriven::Dataset dataSet = sgpp::datadriven::ARFFTools::readARFF(
       "datadriven/tests/datasets/liver-disorders_normalized.arff");
-#endif
 
   sgpp::base::DataVector& classes = dataSet.getTargets();
   sgpp::base::DataMatrix& data = dataSet.getData();

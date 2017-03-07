@@ -49,11 +49,7 @@ using sgpp::datadriven::Dataset;
 
 BOOST_AUTO_TEST_SUITE(datamingArffSampleProviderTest)
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-const std::string datasetPath = "datadriven\\tests\\datasets\\liver-disorders_normalized.arff";
-#else
 const std::string datasetPath = "datadriven/tests/datasets/liver-disorders_normalized.arff";
-#endif
 
 const double testPoints[10][3] = {{0.307143, 0.130137, 0.050000}, {0.365584, 0.105479, 0.050000},
                                   {0.178571, 0.201027, 0.050000}, {0.272078, 0.145548, 0.050000},
