@@ -275,7 +275,7 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
           }
           divide_workpackages(datainfo, partial_results[currentbuffer]);
         }
-        std::cerr << "Trying to send back results on "
+        std::cout << "Trying to send back results on "
                   << MPIEnviroment::get_node_rank() << std::endl;
         // Send results back
         MPI_Isend(partial_results[currentbuffer], datainfo[1] * packagesize_multiplier, mpi_typ,
