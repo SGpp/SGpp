@@ -54,7 +54,7 @@ class KDEDist(EstimatedDist):
         else:
             return res
 
-    def cdf(self, x):
+    def cdf(self, x, shuffle=False):
         # transform the samples to the unit hypercube
         x = self._convertEvalPoint(x)
         x_matrix = DataMatrix(x)
@@ -63,7 +63,11 @@ class KDEDist(EstimatedDist):
 
         # do the transformation
         opRosen = createOperationRosenblattTransformationKDE(self.dist)
-        opRosen.doTransformation(x_matrix, res_matrix)
+        if shuffle:
+            opRosen.doShuffledTransformation(x_matrix, res_matrix)
+        else:
+            opRosen.doTransformation(x_matrix, res_matrix)
+
 
         # transform the outcome
         res = res_matrix.array()
@@ -72,7 +76,7 @@ class KDEDist(EstimatedDist):
         else:
             return res
 
-    def ppf(self, x):
+    def ppf(self, x, shuffle=False):
         # transform the samples to the unit hypercube
         x = self._convertEvalPoint(x)
         x_matrix = DataMatrix(x)
@@ -81,7 +85,10 @@ class KDEDist(EstimatedDist):
 
         # do the transformation
         opRosen = createOperationInverseRosenblattTransformationKDE(self.dist)
-        opRosen.doTransformation(x_matrix, res_matrix)
+        if shuffle:
+            opRosen.doShuffledTransformation(x_matrix, res_matrix)
+        else:
+            opRosen.doTransformation(x_matrix, res_matrix)
 
         # transform the outcome
         res = res_matrix.array()
@@ -91,9 +98,9 @@ class KDEDist(EstimatedDist):
             return res
 
 
-    def rvs(self, n=1):
+    def rvs(self, n=1, shuffle=False):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
-        return self.ppf(unif)
+        return self.ppf(unif, shuffle=shuffle)
 
     def mean(self, n=1e4):
         return self.dist.mean()

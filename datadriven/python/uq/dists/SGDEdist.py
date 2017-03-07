@@ -209,7 +209,7 @@ class SGDEdist(EstimatedDist):
 
         return max(0, fx)
 
-    def cdf(self, x):
+    def cdf(self, x, shuffle=True):
         # convert the parameter to the right format
         x = self._convertEvalPoint(x)
 
@@ -236,7 +236,10 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationRosenblattTransformation(self.grid)
-            op.doTransformation(self.alpha_vec, A, B)
+            if shuffle:
+                op.doTransformation(self.alpha_vec, A, B, 0)
+            else:
+                op.doTransformation(self.alpha_vec, A, B)
 
             # extract the outcome
             if x_unit.shape == (1, 1):
@@ -244,7 +247,7 @@ class SGDEdist(EstimatedDist):
             else:
                 return B.array()
 
-    def ppf(self, x):
+    def ppf(self, x, shuffle=True):
         # convert the parameter to the right format
         x = self._convertEvalPoint(x)
 
@@ -265,7 +268,10 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationInverseRosenblattTransformation(self.grid)
-            op.doTransformation(self.alpha_vec, A, B)
+            if shuffle:
+                op.doTransformation(self.alpha_vec, A, B, 0)
+            else:
+                op.doTransformation(self.alpha_vec, A, B)
 
             # extract the outcome
             if x.shape == (1, 1):
@@ -307,10 +313,12 @@ class SGDEdist(EstimatedDist):
         self.learner.corrcoef(corrMatrix, bounds_vec)
         return corrMatrix.array()
 
-    def rvs(self, n=1):
+    def rvs(self, n=1, shuffle=False):
         # use inverse Rosenblatt transformation to get samples
         uniform_samples = np.random.random((n, self.dim))
-        return self.ppf(uniform_samples)
+        unit_samples = self.ppf(uniform_samples, shuffle=shuffle)
+        prob_samples = self.trans.unitToProbabilisticMatrix(unit_samples)
+        return prob_samples
 
     def __str__(self):
         return "SGDE"

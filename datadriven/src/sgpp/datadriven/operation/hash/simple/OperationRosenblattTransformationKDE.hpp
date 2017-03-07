@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <random>
+
 namespace sgpp {
 namespace datadriven {
 
