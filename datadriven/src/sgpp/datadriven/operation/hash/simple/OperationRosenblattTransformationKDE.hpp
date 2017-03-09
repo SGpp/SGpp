@@ -22,7 +22,8 @@ namespace datadriven {
  */
 class OperationRosenblattTransformationKDE {
  public:
-  explicit OperationRosenblattTransformationKDE(KernelDensityEstimator& kde);
+  explicit OperationRosenblattTransformationKDE(KernelDensityEstimator& kde,
+                                                std::uint64_t seed = std::mt19937_64::default_seed);
   virtual ~OperationRosenblattTransformationKDE();
 
   /**
@@ -55,6 +56,9 @@ class OperationRosenblattTransformationKDE {
 
   size_t ndim;
   size_t nsamples;
+
+  /// shuffling devices
+  std::mt19937_64 rng;
 };
 
 }  // namespace datadriven

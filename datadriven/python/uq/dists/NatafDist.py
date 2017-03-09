@@ -1,132 +1,80 @@
 from Dist import Dist
-from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
-from pysgpp import (DataVector, DataMatrix, GaussianKDE)
 import numpy as np
+from probability_cpp import NatafDensity, GAUSSIAN
+from probabilistic_transformations_cpp import NatafTransformationData
+from EstimatedDist import EstimatedDist
+from Normal import Normal
+from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
 
 
-class NatafDist(Dist):
+class NatafDist(EstimatedDist):
     """
     Gaussian KDE using SG++ implementation
     """
 
     def __init__(self,
-                 trainData,
-                 bounds=None,
-                 transformation=None):
-        super(NatafDist, self).__init__()
-        self.trainData = DataMatrix(trainData)
-        self.dist = GaussianKDE(self.trainData)
-        self.bounds = bounds
-        if self.bounds is None:
-            self.bounds = [[0, 1] for _ in xrange(trainData.shape[1])]
-        if len(self.bounds) == 1:
-            self.bounds = self.bounds[0]
-        if transformation is not None:
-            self.bounds = [trans.getBounds()
-                           for trans in transformation.getTransformations()]
-        self.dim = trainData.shape[1]
-        self.bandwidths = DataVector(self.dim)
-        self.dist.getBandwidths(self.bandwidths)
+                 mean, stddev,
+                 corrMatrix,
+                 bounds=None):
+        super(NatafDist, self).__init__(corrMatrix.shape[0],
+                                        bounds=bounds)
+        self.dim = corrMatrix.shape[0]
+        self.corrMatrix = corrMatrix.copy()
+        self.mean = mean
+        self.stddev = stddev
+
+        self.normal = Normal.by_alpha(0, 1, 0.001)
+        self.nataf = NatafDensity()
+        self.nataf.initialize_random_variable_types([GAUSSIAN] * self.dim)
+        self.nataf.initialize_random_variable_parameters([mean] * self.dim,
+                                                         [stddev] * self.dim,
+                                                         [[mean, stddev]] * self.dim)
+        self.nataf.initialize_random_variable_correlations(corrMatrix)
+
+        self.natafTransformation = NatafTransformationData()
+        self.natafTransformation.initialize(self.nataf)
+
 
     def pdf(self, x):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-
-        if isinstance(x, DataMatrix):
-            A = x
-            res = DataVector(A.getNrows())
-            res.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            res = DataVector(1)
-            res.setAll(0)
-
-        self.dist.pdf(A, res)
-
-        if len(res) == 1:
-            return res[0]
-        else:
-            return res.array()
-
-    def cdf(self, x):
+        x = self._convertEvalPoint(x)
+        ans = np.ndarray(x.shape[0])
+        for i, xi in enumerate(x):
+            ans[i] = self.nataf.pdf(xi)
+        return ans
+    
+    def cdf(self, x, *args, **kws):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-        elif isMatrix(x):
-            x = DataMatrix(x)
-
-        if isinstance(x, DataMatrix):
-            A = x
-            B = DataMatrix(A.getNrows(), A.getNcols())
-            B.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            B = DataMatrix(1, len(x))
-            B.setAll(0)
-
+        x = self._convertEvalPoint(x)
         # do the transformation
-        self.dist.cdf(A, B)
+        ans = np.ndarray(x.shape)
+        for i, xi in enumerate(x):
+            ui = self.natafTransformation.trans_X_to_U(xi)
+            ans[i, :] = np.array([self.normal.cdf(uii) for uii in ui])
+        return ans
 
-        # transform the outcome
-        if isNumerical(x) or isinstance(x, DataVector):
-            return B.get(0, 0)
-        elif isinstance(x, DataMatrix):
-            return B.array()
-
-    def ppf(self, x):
+    def ppf(self, x, *args, **kws):
         # convert the parameter to the right format
-        if isList(x):
-            x = DataVector(x)
-        elif isNumerical(x):
-            x = DataVector([x])
-        elif isMatrix(x):
-            x = DataMatrix(x)
-
-        if isinstance(x, DataMatrix):
-            A = x
-            B = DataMatrix(A.getNrows(), A.getNcols())
-            B.setAll(0.0)
-        elif isinstance(x, DataVector):
-            A = DataMatrix(1, len(x))
-            A.setRow(0, x)
-            B = DataMatrix(1, len(x))
-            B.setAll(0)
-
+        x = self._convertEvalPoint(x)
         # do the transformation
-        self.dist.ppf(A, B)
+        ans = np.ndarray(x.shape)
+        for i, ui in enumerate(x):
+            ui = np.array([self.normal.ppf(uii) for uii in ui])
+            ans[i, :] = self.natafTransformation.trans_U_to_X(ui)
+        return ans
 
-        # transform the outcome
-        if isNumerical(x) or isinstance(x, DataVector):
-            return B.get(0, 0)
-        elif isinstance(x, DataMatrix):
-            return B.array()
+    def rvs(self, n=1, *args, **kws):
+        unif = np.random.rand(n, self.dim)
+        return self.ppf(unif)
 
-    def rvs(self, n=1):
-        unif = np.random.rand(self.dim * n).reshape(n, self.dim)
-        return self.ppf(DataMatrix(unif))
-
-    def mean(self, n=1e4):
-        return self.dist.mean()
+    def mean(self):
+        return self.nataf.mean()
 
     def var(self):
-        return self.dist.var()
+        return self.nataf.var()
 
     def cov(self):
-        covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.cov(covMatrix)
-        return covMatrix.array()
-
-    def corrcoeff(self):
-        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.corrcoeff(corrMatrix)
-        return corrMatrix.array()
+        return self.nataf.cov()
 
     def getBounds(self):
         return self.bounds
@@ -140,29 +88,38 @@ class NatafDist(Dist):
     def __str__(self):
         return "NatafDist"
 
-#     def toJson(self):
-#         """
-#         Returns a string that represents the object
-#         """
-#         serializationString = '"module" : "' + \
-#                               self.__module__ + '",\n'
-#         # serialize dists
-#         attrName = "config"
-#         attrValue = self.__getattribute__(attrName)
-#         serializationString += '"' + attrName + '": "' + attrValue + '"'
-#
-#         return "{" + serializationString + "} \n"
-#
-#     @classmethod
-#     def fromJson(cls, jsonObject):
-#         """
-#         Restores the TNormal object from the json object with its
-#         attributes.
-#         @param jsonObject: json object
-#         @return: the restored SGDEdist object
-#         """
-#         key = 'config'
-#         if key in jsonObject:
-#             config = jsonObject[key]
-#
-#         return LibAGFDist(config)
+    def toJson(self):
+        """
+        Returns a string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+        # serialize dists
+        for attrName in ["mean", "stddev", "bounds", "corrMatrix"]:
+            attrValue = self.__getattribute__(attrName)
+            serializationString += '"' + attrName + '": "' + reprVal(attrValue) + '"'
+
+        return "{" + serializationString + "} \n"
+
+    @classmethod
+    def fromJson(cls, jsonObject):
+        """
+        Restores the TNormal object from the json object with its
+        attributes.
+        @param jsonObject: json object
+        @return: the restored NatafDist object
+        """
+        key = 'mean'
+        if key in jsonObject:
+            mean = float(jsonObject[key])
+        key = 'stddev'
+        if key in jsonObject:
+            stddev = float(jsonObject[key])
+        key = 'bounds'
+        if key in jsonObject:
+            bounds = np.array(jsonObject[key])
+        key = 'corrMatrix'
+        if key in jsonObject:
+            corrMatrix = np.array(jsonObject[key])
+
+        return NatafDist(mean, stddev, corrMatrix=corrMatrix, bounds=bounds)

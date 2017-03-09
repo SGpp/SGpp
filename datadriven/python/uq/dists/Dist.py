@@ -91,6 +91,29 @@ class Dist(object):
         """
         raise NotImplementedError()
 
+    def cov(self):
+        """
+        Get covariance matrix
+        """
+        return np.diag(np.ones(self.getDim()) * self.var())
+
+    def corrcoeff(self, covMatrix=None):
+        """
+        """
+        if covMatrix is None:
+            covMatrix = self.cov()
+
+        numDims = covMatrix.shape[0]
+        corr = np.ndarray(covMatrix.shape)
+        for idim in xrange(numDims):
+            sigmai = np.sqrt(covMatrix[idim, idim])
+            for jdim in xrange(idim + 1, numDims):
+                sigmaj = np.sqrt(covMatrix[jdim, jdim])
+                corrij = covMatrix[idim, jdim] / (sigmai * sigmaj)
+                corr[idim, jdim] = corr[jdim, idim] = corrij
+            corr[idim, idim] = 1.0
+        return corr
+
     def discretize(self, *args, **kws):
         """
         discretize the pdf of the current distribution

@@ -113,11 +113,6 @@ class KDEDist(EstimatedDist):
         self.dist.cov(covMatrix)
         return covMatrix.array()
 
-    def corrcoef(self):
-        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.corrcoef(corrMatrix)
-        return corrMatrix.array()
-
     def getBandwidths(self):
         bandwidths = DataVector(self.getDim())
         self.dist.getBandwidths(bandwidths)
