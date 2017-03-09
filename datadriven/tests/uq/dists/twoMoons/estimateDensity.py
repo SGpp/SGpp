@@ -23,13 +23,19 @@ from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
 from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 from pysgpp.extensions.datadriven.uq.dists.J import J
 from pysgpp.pysgpp_swig import BandwidthOptimizationType_MAXIMUMLIKELIHOOD, \
-    createOperationMakePositive, DataVector
+    createOperationMakePositive, DataVector, \
+    BandwidthOptimizationType_RULEOFTHUMB
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
 
 from positivity.plot import plotResults, plotCostsPerIteration
 from argparse import ArgumentParser
 from positivity.helper_functions import strToCandidateSearchAlgorithm, \
-    strToInterpolationAlgorithm
+    strToInterpolationAlgorithm, strTobandwidthOptimizationType
+from scipy.stats.stats import kstest
+from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
+from pysgpp.extensions.datadriven.uq.dists.MultivariateNormal import MultivariateNormal
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.NatafDist import NatafDist
 
 
 def splitset(samples, splitPercentage=0.8):
@@ -46,7 +52,13 @@ def splitset(samples, splitPercentage=0.8):
     return samples[trainSamplesMask], samples[testSamplesMask]
 
 
-def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False, out=True, label="sgde_zero",
+def estimateSGDEDensity(trainSamples,
+                        testSamples=None,
+                        bounds=None,
+                        iteration=0,
+                        plot=False,
+                        out=True,
+                        label="sgde_zero",
                         candidates="intersections", interpolation="setToZero"):
     print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
     if testSamples is not None:
@@ -74,7 +86,6 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
     key = 1
     bestCV = float("Inf")
     bestDist = None
-    bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
 
     # stats
     stats = {'config': {'functionName': 'twoMoons',
@@ -92,7 +103,7 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
     for level in xrange(2, 5):
         print "-" * 60
         print "l=%i" % level
-        for refinementSteps in xrange(0, 6):
+        for refinementSteps in xrange(0, 1):
             config["grid_level"] = level
             config["refinement_numSteps"] = refinementSteps
             sgdeDist = SGDEdist.byLearnerSGDEConfig(trainSamples, config=config,
@@ -291,7 +302,13 @@ def estimateSGDEDensity(trainSamples, testSamples=None, iteration=0, plot=False,
     return bestDist, stats
 
 
-def estimateKDEDensity(trainSamples, testSamples=None, iteration=0, plot=False, out=True, label="kde_gaussian"):
+def estimateKDEDensity(trainSamples,
+                       testSamples=None,
+                       iteration=0,
+                       plot=False,
+                       out=True,
+                       label="kde_gaussian",
+                       bandwidthOptimizationTypeStr="rot"):
     print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
     if testSamples is not None:
         print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
@@ -303,9 +320,10 @@ def estimateKDEDensity(trainSamples, testSamples=None, iteration=0, plot=False, 
     else:
         raise AttributeError("label is unknown")
 
+    bandwidthOptimizationType = strTobandwidthOptimizationType(bandwidthOptimizationTypeStr)
     kdeDist = KDEDist(trainSamples,
                       kernelType=kernelType,
-                      bandwidthOptimizationType=BandwidthOptimizationType_MAXIMUMLIKELIHOOD)
+                      bandwidthOptimizationType=bandwidthOptimizationType)
     # -----------------------------------------------------------
     cvKDE = kdeDist.crossEntropy(testSamples)
 
@@ -371,10 +389,89 @@ def estimateKDEDensity(trainSamples, testSamples=None, iteration=0, plot=False, 
     return kdeDist, stats
 
 
+def estimateNatafDensity(mean,
+                         stddev,
+                         covMatrix,
+                         testSamples=None,
+                         iteration=0,
+                         plot=False,
+                         out=True,
+                         label="nataf"):
+    if testSamples is not None:
+        print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
+
+    # -----------------------------------------------------------
+    corr = Dist().corrcoeff(covMatrix)
+    natafDist = NatafDist(mean, stddev, corr)
+
+    cvNataf = natafDist.crossEntropy(testSamples)
+
+    if plot:
+        fig = plt.figure()
+        plotDensity2d(natafDist)
+        plt.title("log=%g" % cvNataf)
+        if out:
+            plt.tight_layout()
+            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.jpg" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.pdf" % (iteration,)))
+            if out:
+                plt.close(fig)
+        else:
+            plt.show()
+
+    print "CV test = %g" % cvNataf
+
+    # -----------------------------------------------------------
+    if out:
+        pathResults = os.path.join("data", label)
+
+        # serialize cross entropies
+        out_crossEntropies = os.path.join(pathResults, "nataf_cross_entropies.i%i.csv" % iteration)
+        fd = open(out_crossEntropies, 'wb')
+        file_writer = csv.writer(fd)
+        file_writer.writerow(["crossEntropy"])
+        file_writer.writerow([cvNataf])
+        fd.close()
+
+        # serialize samples
+        np.savetxt(os.path.join(pathResults, "nataf_train_samples.i%i.csv" % iteration), trainSamples)
+        np.savetxt(os.path.join(pathResults, "nataf_test_samples.i%i.csv" % iteration), testSamples)
+
+        if plot:
+            # plot density
+            fig = plt.figure()
+            plotDensity2d(natafDist)
+            plt.title("CV = %g" % (cvNataf,))
+            plt.savefig(os.path.join(pathResults, "nataf_pdf.i%i.jpg" % iteration))
+            plt.close(fig)
+
+        # serialize best configuration to json
+        out_bestDist = os.path.join(pathResults, "nataf_best_config.i%i.json" % iteration)
+        text = natafDist.toJson()
+        fd = open(out_bestDist, "w")
+        fd.write(text)
+        fd.close()
+
+    # stats
+    stats = {'config': {'functionName': 'twoMoons',
+                        'numDims': 2,
+                        'label': label,
+                        'mean': mean,
+                        'stddev': stddev,
+                        'cov': covMatrix,
+                        'iteration': iteration},
+             'testSamples': testSamples,
+             'crossEntropyTestNataf': cvNataf,
+             'NatafDist_json': natafDist.toJson()}
+
+    return natafDist, stats
+
+
 def run_densityEstimation(method,
                           kfold=20,
                           numSamples=1000,
                           candidates="join",
+                          bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
                           out=True,
                           plot=False,
                           tikz=False):
@@ -383,7 +480,29 @@ def run_densityEstimation(method,
     else:  # interpolation == "boundaries":
         interpolation = "boundaries"
 
-    samples = np.loadtxt("data/twomoons.csv")
+    data_set = "mult"
+    if "moons" in data_set:
+        samples = np.loadtxt("data/twomoons.csv")[:3000, :  ]
+        bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
+    elif "friedman" in data_set:
+        samples = np.loadtxt("data/friedman2_4d_50000.csv")[:3000, :]
+        bounds = None
+    elif "mult" in data_set:
+        numDims = 6
+        corr = 0.005
+        var = 0.01
+        diag = np.diag(np.ones(numDims) * var)
+        offdiag = (np.ones((numDims, numDims)) - np.diag(np.ones(numDims))) * corr
+        covMatrix = diag + offdiag
+        mean = 0.5
+        stddev = np.sqrt(covMatrix[0, 0])
+        U = MultivariateNormal(np.ones(numDims) * mean, covMatrix, 0, 1)
+        samples = U.rvs(3000)
+        bounds = U.getBounds()
+    else:
+        raise AttributeError()
+
+    numDims = samples.shape[1]
 
     # do kfold cross validation
     crossEntropyValidation = np.zeros((kfold, 2))
@@ -401,10 +520,32 @@ def run_densityEstimation(method,
         trainSamples, testSamples = splitset(learnSamples, splitPercentage=1. - 1. / kfold)
 
         if "sgde" in method:
-            dist, stats[i] = estimateSGDEDensity(trainSamples, testSamples, iteration=i, plot=plot, label=method, out=out,
-                                                 candidates=candidates, interpolation=interpolation)
+            dist, stats[i] = estimateSGDEDensity(trainSamples,
+                                                 testSamples,
+                                                 bounds=bounds,
+                                                 iteration=i,
+                                                 plot=plot,
+                                                 label=method,
+                                                 out=out,
+                                                 candidates=candidates,
+                                                 interpolation=interpolation)
         elif "kde" in method:
-            dist, stats[i] = estimateKDEDensity(trainSamples, testSamples, iteration=i, plot=plot, label=method, out=out)
+            dist, stats[i] = estimateKDEDensity(trainSamples,
+                                                testSamples,
+                                                iteration=i,
+                                                plot=plot,
+                                                label=method,
+                                                out=out,
+                                                bandwidthOptimizationTypeStr=bandwidthOptimizationType)
+        elif "nataf" in method:
+            dist, stats[i] = estimateNatafDensity(mean,
+                                                  stddev,
+                                                  covMatrix,
+                                                  testSamples,
+                                                  iteration=i,
+                                                  plot=plot,
+                                                  label=method,
+                                                  out=out)
         else:
             raise AttributeError("unknown config '%s'" % method)
 
@@ -417,8 +558,26 @@ def run_densityEstimation(method,
                                "not_shuffled": {}}
         stats[i]["samples"]["shuffled"]["rvs"] = dist.rvs(numSamples, shuffle=True)
         stats[i]["samples"]["shuffled"]["uniform_validation"] = dist.cdf(validationSamples, shuffle=True)
+        kstests = [None] * numDims
+
+        for idim in xrange(numDims):
+            samples1d = stats[i]["samples"]["shuffled"]["uniform_validation"][:, idim]
+            kstests[idim] = kstest(samples1d, Uniform(0, 1).cdf).pvalue
+
+        print "-" * 80
+        print "shuffled    ", kstests, np.min(kstests)
+        stats[i]["samples"]["shuffled"]["kstests"] = kstests
         stats[i]["samples"]["not_shuffled"]["rvs"] = dist.rvs(numSamples, shuffle=False)
         stats[i]["samples"]["not_shuffled"]["uniform_validation"] = dist.cdf(validationSamples, shuffle=False)
+        kstests = [None] * numDims
+        for idim in xrange(numDims):
+            samples1d = stats[i]["samples"]["not_shuffled"]["uniform_validation"][:, idim]
+            kstests[idim] = kstest(samples1d, Uniform(0, 1).cdf).pvalue
+            plt.hist(samples1d)
+            plt.title("%i, %g" % (idim, kstests[idim]))
+            plt.show()
+        print "not shuffled", kstests, np.min(kstests)
+        stats[i]["samples"]["not_shuffled"]["kstests"] = kstests
 
         print "CV valid = %g" % crossEntropyValidation[i, 1]
 
@@ -462,12 +621,14 @@ def run_plotRoutine(tikz=False):
 density_configs = ["sgde_zero",
                    "sgde_boundaries",
                    "kde_gaussian",
-                   "kde_epanechnikov"]
+                   "kde_epanechnikov",
+                   "nataf"]
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--method', default="sgde_zero", type=str, help='which method should be used to intepolate the new grid points (zero, log)')
     parser.add_argument('--candidates', default="join", type=str, help='which method should be used to intepolate the new grid points (zero, log)')
+    parser.add_argument('--bandopt', default="rot", type=str, help='which method should be used to intepolate the new grid points (rot, ml)')
     parser.add_argument('--kfold', default=None, type=int, help='run kfold (20)')
     parser.add_argument('--numSamples', default=10000, type=int, help='number of samples that should be drawn from the best distributions')
     parser.add_argument('--plot', default=False, action='store_true', help='plot stuff')
@@ -483,6 +644,7 @@ if __name__ == '__main__':
                               kfold=args.kfold,
                               numSamples=args.numSamples,
                               candidates=args.candidates,
+                              bandwidthOptimizationType=args.bandopt,
                               out=args.out,
                               plot=args.plot,
                               tikz=args.tikz)

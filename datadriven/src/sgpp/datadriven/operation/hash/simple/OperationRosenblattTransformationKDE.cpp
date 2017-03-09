@@ -29,11 +29,12 @@ namespace sgpp {
 namespace datadriven {
 
 OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(
-    KernelDensityEstimator& density)
+    KernelDensityEstimator& density, std::uint64_t seed)
     : kde(&density),
       bandwidths(density.getDim()),
       ndim(density.getDim()),
-      nsamples(density.getNsamples()) {
+      nsamples(density.getNsamples()),
+      rng(seed) {
   // get the bandwidth from the density for optimized
   density.getBandwidths(bandwidths);
 }
@@ -86,7 +87,7 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
     for (size_t i = 0; i < ndim; i++) {
       permutations[idata][i] = i;
     }
-    std::next_permutation(permutations[idata].begin(), permutations[idata].end());
+    std::shuffle(permutations[idata].begin(), permutations[idata].end(), rng);
   }
 
 // apply the rosenblatt transformation

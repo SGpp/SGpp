@@ -64,11 +64,16 @@ class MultivariateNormal(Dist):
 
     def rvs(self, n=1):
         # do a nataf transformation
-        correlated_samples = np.dot(self.L, self.dist.rvs(n).T)
-        ans = np.ndarray(correlated_samples.shape)
-        for idim, sample in enumerate(correlated_samples):
-            ans[idim, :] = self.__mu[idim] + sample * np.sqrt(self.__cov[idim, idim])
-        return ans.T
+        isample = 0
+        ans = np.ndarray((n, self.__dim))
+        while (isample < n):
+            sample = np.dot(self.L, self.dist.rvs(1).reshape((self.__dim, 1))).T[0]
+            for idim in xrange(self.__dim):
+                sample[idim] = self.__mu[idim] + sample[idim] * np.sqrt(self.__cov[idim, idim])
+            if self.__a < sample.min() and sample.max() < self.__b:
+                ans[isample, :] = sample
+                isample += 1
+        return ans
 
     def getBounds(self):
         ans = np.zeros([self.__dim, 2], dtype="float")

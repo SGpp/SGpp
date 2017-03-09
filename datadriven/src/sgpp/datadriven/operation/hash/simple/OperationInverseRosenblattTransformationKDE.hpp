@@ -14,6 +14,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <random>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -24,7 +26,8 @@ class OperationInverseRosenblattTransformationKDE {
  public:
   OperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde,
                                               double sigmaFactor = 6.0,
-                                              double inversionEpsilon = 1e-10);
+                                              double inversionEpsilon = 1e-10,
+                                              std::uint64_t seed = std::mt19937_64::default_seed);
   virtual ~OperationInverseRosenblattTransformationKDE();
 
   /**
@@ -70,6 +73,9 @@ class OperationInverseRosenblattTransformationKDE {
 
   /// maximum allowed inversion error
   double inversionEpsilon;
+
+  /// shuffling devices
+  std::mt19937_64 rng;
 
   /**
    * recalculates the search interval for bisection

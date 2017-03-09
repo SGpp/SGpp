@@ -99,6 +99,7 @@ datadriven/tests/uq/dists/dist
 datadriven/tests/uq/dists/sgde
 datadriven/tests/uq/dists/*.arff
 datadriven/tests/uq/dists/*.csv
+datadriven/tests/uq/dists/twoMoons/data/*
 
 # ignoring Windows build directories
 build/

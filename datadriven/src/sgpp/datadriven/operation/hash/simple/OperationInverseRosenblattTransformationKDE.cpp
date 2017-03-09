@@ -34,12 +34,13 @@ namespace datadriven {
 // ----------------------------------------------------------------------------
 
 OperationInverseRosenblattTransformationKDE::OperationInverseRosenblattTransformationKDE(
-    KernelDensityEstimator& kde, double sigmaFactor, double inversionEpsilon)
+    KernelDensityEstimator& kde, double sigmaFactor, double inversionEpsilon, std::uint64_t seed)
     : kde(&kde),
       bandwidths(kde.getDim()),
       xlimits(2, kde.getDim()),
       ylimits(2, kde.getDim()),
-      inversionEpsilon(inversionEpsilon) {
+      inversionEpsilon(inversionEpsilon),
+      rng(seed) {
   // estimate bandwidth and copy result to local sigma
   kde.getBandwidths(bandwidths);
 
@@ -151,7 +152,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
     for (size_t i = 0; i < ndim; i++) {
       permutations[idata][i] = i;
     }
-    std::next_permutation(permutations[idata].begin(), permutations[idata].end());
+    std::shuffle(permutations[idata].begin(), permutations[idata].end(), rng);
   }
 
 // apply the inverse rosenblatt transformation

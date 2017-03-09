@@ -307,12 +307,6 @@ class SGDEdist(EstimatedDist):
         self.learner.cov(covMatrix, bounds_vec)
         return covMatrix.array()
 
-    def corrcoef(self):
-        corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        bounds_vec = DataMatrix(self.bounds)
-        self.learner.corrcoef(corrMatrix, bounds_vec)
-        return corrMatrix.array()
-
     def rvs(self, n=1, shuffle=False):
         # use inverse Rosenblatt transformation to get samples
         uniform_samples = np.random.random((n, self.dim))
