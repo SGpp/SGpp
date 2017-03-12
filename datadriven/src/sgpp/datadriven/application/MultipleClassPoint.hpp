@@ -7,7 +7,6 @@
 #define MULIPLECLASSHASHGRIDPOINT_HPP
 
 #include <vector>
-#include <unordered_set>
 #include <tuple>
 #include <array>
 #include <sgpp/datadriven/tools/SimpleMultiClassGenerator.hpp>
@@ -15,34 +14,34 @@
 namespace sgpp {
 namespace datadriven {
 class MultipleClassPoint{
-public:
-    MultipleClassPoint(int classes);
-    MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids,
-            std::vector<base::DataVector*> alphas);
-    virtual ~MultipleClassPoint();
+ public:
+  explicit MultipleClassPoint(int classes);
+  MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids,
+                std::vector<base::DataVector*> alphas);
+  virtual ~MultipleClassPoint();
 
-    int getDominateClass() const;
-    void updateClass(int classId, double newDen, bool hasPoint);
-    double getDensity(int classId) const;
+  int getDominateClass() const;
+  void updateClass(int classId, double newDen, bool hasPoint);
+  double getDensity(int classId) const;
 
-    void addNeighbor(int neighbor, int dim);
-    std::vector<std::tuple<int, int>> getNeighbors();
+  void addNeighbor(int neighbor, size_t dim);
+  std::vector<std::tuple<int, size_t>> getNeighbors();
 
-    void resortClasses();
+  void resortClasses();
 
-    std::vector<std::tuple<double, int, bool>> getTopClasses(double percent);
+  std::vector<std::tuple<double, int, bool>> getTopClasses(double percent);
 
-    std::string toString();
+  std::string toString();
 
-private:
-    int classes;
-    // tuple: density, classId, points exits in class
-    std::vector<std::tuple<double, int, bool> *> classById;
-    std::vector<std::tuple<double, int, bool>> classByDensity;
-    // sequence number and dimension of neighbors with a change in dominate classes
-    std::vector<std::tuple<int, int>> neighbors;
+ private:
+  int classes;
+  // tuple: density, classId, points exits in class
+  std::vector<std::tuple<double, int, bool> *> classById;
+  std::vector<std::tuple<double, int, bool>> classByDensity;
+  // sequence number and dimension of neighbors with a change in dominate classes
+  std::vector<std::tuple<int, size_t>> neighbors;
 
-    void insertDensitySorted(std::tuple<double, int, bool>* density);
+  void insertDensitySorted(std::tuple<double, int, bool>* density);
 };
 
 

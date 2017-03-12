@@ -10,42 +10,44 @@
 #include <vector>
 #include <unordered_set>
 #include <cmath>
-#include <string>
 #include <sstream>
 #include <iomanip>
 #include <tuple>
+#include <string>
 #include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 MultipleClassPoint::MultipleClassPoint(int classes) {
-	// init all classes as 0.0
+    // init all classes as 0.0
     for (int i = 0 ; i < classes ; i++) {
-    	std::tuple<double, int, bool>* c1 = new std::tuple<double, int, bool> { 0.0 , i , false };
-	    insertDensitySorted(c1);
-	    classById.push_back(c1);
-	}
+        std::tuple<double, int, bool>* c1 =
+                new std::tuple<double, int, bool> { 0.0 , i , false };
+        insertDensitySorted(c1);
+        classById.push_back(c1);
+    }
 }
 
-MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids, 
-                                       std::vector<base::DataVector*> alphas) {
-                 
-	// init all classes
-	for (int t =  0 ; t < grids.size() ; t++) {
+MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
+                                    std::vector<base::Grid*> grids,
+                                    std::vector<base::DataVector*> alphas) {
+    // init all classes
+    for (size_t t =  0 ; t < grids.size() ; t++) {
         base::DataVector coords(grids.at(t)->getDimension());
-    	std::unique_ptr<base::OperationEval>
+        std::unique_ptr<base::OperationEval>
               opEval(op_factory::createOperationEval(*grids.at(t)));
         gp.getStandardCoordinates(coords);
         double eval = opEval->eval(*alphas.at(t), coords);
         std::tuple<double, int, bool>* c1 =
-               new std::tuple<double, int, bool> { eval , t , grids.at(t)->getStorage().isContaining(gp) };
+               new std::tuple<double, int, bool> { eval, t,
+                    grids.at(t)->getStorage().isContaining(gp) };
         insertDensitySorted(c1);
         classById.push_back(c1);
     }
 }
 
 MultipleClassPoint::~MultipleClassPoint() {
-    // TODO Auto-generated destructor stub
+    // TODO(degelkn): Auto-generated destructor stub
 }
 
 int MultipleClassPoint::getDominateClass() const {
@@ -60,25 +62,25 @@ void MultipleClassPoint::updateClass(int classId, double newDen, bool hasPoint) 
     std::tuple<double, int, bool>* c1 =
            new std::tuple<double, int, bool> { newDen , classId , hasPoint };
     struct ClassCompare {
-        std::tuple<double, int, bool> oldClass;
-        public: ClassCompare(std::tuple<double, int, bool> i):oldClass(i){}
-        bool operator()(const std::tuple<double, int, bool>& t1) {
-            return std::get<1>(t1) == std::get<1>(oldClass);
-        }
+     std::tuple<double, int, bool> oldClass;
+     public: ClassCompare(std::tuple<double, int, bool> i):oldClass(i) {}
+     bool operator()(const std::tuple<double, int, bool>& t1) {
+       return std::get<1>(t1) == std::get<1>(oldClass);
+     }
     };
-    std::replace_if(classByDensity.begin(), classByDensity.end(), ClassCompare(*c1), *c1);
+    std::replace_if(classByDensity.begin(),
+            classByDensity.end(), ClassCompare(*c1), *c1);
     classById.at(classId) = c1;
-    
 }
 
-void MultipleClassPoint::addNeighbor(int neighbor, int dim) {
-    std::tuple<int, int> neigh = { neighbor , dim };
-    if (std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end()) {
+void MultipleClassPoint::addNeighbor(int neighbor, size_t dim) {
+    std::tuple<int, size_t> neigh = { neighbor , dim };
+    if ( std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end() ) {
         neighbors.push_back(neigh);
     }
 }
 
-std::vector<std::tuple<int, int>> MultipleClassPoint::getNeighbors() {
+std::vector<std::tuple<int, size_t>> MultipleClassPoint::getNeighbors() {
     return neighbors;
 }
 
@@ -95,32 +97,32 @@ void MultipleClassPoint::resortClasses() {
 
 std::string MultipleClassPoint::toString() {
     std::string s = "";
-    for (unsigned int i = 0 ; i < classById.size() ; i++ ) {
+    for ( unsigned int i = 0 ; i < classById.size() ; i++ ) {
         std::tuple<double, int, bool> tmp = *(classById.at(i));
         s += " - (" + std::to_string(std::get<0>(tmp)) + ",";
         s += std::to_string(std::get<1>(tmp)) + ",";
         s += std::to_string(std::get<2>(tmp)) + ")";
     }
     s += "\n";
-    for (unsigned int i = 0 ; i < classByDensity.size() ; i++ ) {
+    for ( unsigned int i = 0 ; i < classByDensity.size() ; i++ ) {
         s += " - (" + std::to_string(std::get<0>(classByDensity.at(i))) + ",";
         s += std::to_string(std::get<1>(classByDensity.at(i))) + ")";
     }
     s += "\n";
-    for (unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
+    for ( unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
         s += " - " + std::to_string(std::get<0>(neighbors.at(i)));
     }
     return s;
 }
 
 std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(double percent) {
-	std::vector<std::tuple<double, int, bool>> result;
-	double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
-	for (unsigned int i = 0 ; i < classByDensity.size() && std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
+    std::vector<std::tuple<double, int, bool>> result;
+    double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
+    for ( unsigned int i = 0 ; i < classByDensity.size() &&
+                std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
         result.push_back(classByDensity.at(i));
     }
-	return result;
-	
+    return result;
 }
 
 void MultipleClassPoint::insertDensitySorted(std::tuple<double, int, bool>* ins) {

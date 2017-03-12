@@ -12,31 +12,44 @@
 #include <sgpp/datadriven/application/MultipleClassPoint.hpp>
 #include <vector>
 #include <tuple>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 
 class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
-public:
-	MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
+ public:
+  MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
                                 size_t refinements_num,
                                 bool level_penalize,
                                 bool pre_compute,
                                 double thresh);
-                                
-	double operator()(base::GridStorage& storage,
+
+  double operator()(base::GridStorage& storage,
                     size_t seq) const override;
-                    
-    base::Grid* getCombinedGrid();
-                    
 
-private:
-	std::vector<sgpp::datadriven::MultipleClassPoint> points;
-	base::Grid* multigrid;
+  base::Grid* getCombinedGrid();
 
-	void findCrossings(int leftP, int rightP, int seq, size_t d);
-	bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
+  void prepareGrid(std::vector<base::Grid*> gridsNew,
+                     std::vector<base::DataVector*> alphasNew);
+
+  void printPointsPlott();
+  void printPointsInfo();
+  void printScores();
+  
+  void refine();
+  void refineCombinedGrid();
+
+ private:
+  std::vector<sgpp::datadriven::MultipleClassPoint> points;
+  base::Grid* multigrid;
+  // print different scores
+  mutable std::vector<std::string> scoresToPrint;
+  bool refineMulti;
+
+  void findCrossings(size_t leftP, size_t rightP, size_t seq, size_t d);
+  bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
 };
 
 } /* namespace datadriven */
