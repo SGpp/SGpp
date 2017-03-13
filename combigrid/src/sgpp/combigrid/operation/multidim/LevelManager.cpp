@@ -377,5 +377,15 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   combiEval->setMutex(nullptr);
 }
 
+void LevelManager::addLevelsAdaptiveByNumLevels(){
+   initAdaption();
+
+   QueueEntry entry = queue.top();
+   queue.pop();
+
+   beforeComputation(entry.level);  // successors may be added here
+   afterComputation(entry.level);   // the actual computation is done here
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
