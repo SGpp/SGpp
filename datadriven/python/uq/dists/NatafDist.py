@@ -1,6 +1,6 @@
 from Dist import Dist
 import numpy as np
-from probability_cpp import NatafDensity, GAUSSIAN
+from probability_cpp import NatafDensity, GAUSSIAN, GAMMA, STD_BETA
 from probabilistic_transformations_cpp import NatafTransformationData
 from EstimatedDist import EstimatedDist
 from Normal import Normal
@@ -9,32 +9,84 @@ from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
 
 class NatafDist(EstimatedDist):
     """
-    Gaussian KDE using SG++ implementation
+    Nataf Density using heat implementation
     """
 
     def __init__(self,
-                 mean, stddev,
-                 corrMatrix,
+                 natafDensity,
+                 params,
                  bounds=None):
-        super(NatafDist, self).__init__(corrMatrix.shape[0],
+        super(NatafDist, self).__init__(natafDensity.num_dims(),
                                         bounds=bounds)
-        self.dim = corrMatrix.shape[0]
-        self.corrMatrix = corrMatrix.copy()
-        self.mean = mean
-        self.stddev = stddev
-
+        self.params = params
         self.normal = Normal.by_alpha(0, 1, 0.001)
-        self.nataf = NatafDensity()
-        self.nataf.initialize_random_variable_types([GAUSSIAN] * self.dim)
-        self.nataf.initialize_random_variable_parameters([mean] * self.dim,
-                                                         [stddev] * self.dim,
-                                                         [[mean, stddev]] * self.dim)
-        self.nataf.initialize_random_variable_correlations(corrMatrix)
-
+        self.nataf = natafDensity
         self.natafTransformation = NatafTransformationData()
         self.natafTransformation.initialize(self.nataf)
 
+    @classmethod
+    def by_samples(cls, samples, bounds=None):
+        nataf = NatafDensity()
+        nataf.build(samples)
+        return cls(nataf, bounds=bounds, params={"name": "samples",
+                                                 "samples": samples})
 
+    @classmethod
+    def normal_marginals(cls, mean, stddev, covMatrix, bounds=None):
+        num_dims = covMatrix.shape[0]
+        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+
+        nataf = NatafDensity()
+        nataf.initialize_random_variable_types([GAUSSIAN] * num_dims)
+        nataf.initialize_random_variable_parameters([mean] * num_dims,
+                                                    [stddev] * num_dims,
+                                                    [[mean, stddev]] * num_dims)
+        nataf.initialize_random_variable_correlations(corrMatrix)
+        return cls(nataf, bounds=bounds, params={"name": "normal",
+                                                 "mean": mean,
+                                                 "stddev": stddev,
+                                                 "covMatrix": covMatrix})
+
+    @classmethod
+    def gamma_marginals(cls, alpha, beta, covMatrix, bounds=None):
+        num_dims = covMatrix.shape[0]
+        mean = alpha * beta
+        stddev = np.sqrt(alpha) * beta
+        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+
+        nataf = NatafDensity()
+        nataf.initialize_random_variable_types([GAMMA] * num_dims)
+        nataf.initialize_random_variable_parameters([mean] * num_dims,
+                                                    [stddev] * num_dims,
+                                                    [[alpha, beta]] * num_dims)
+        nataf.initialize_random_variable_correlations(corrMatrix)
+        return cls(nataf, bounds=bounds, params={"name": "gamma",
+                                                 "alpha": alpha,
+                                                 "beta": beta,
+                                                 "covMatrix": covMatrix})
+
+    @classmethod
+    def beta_marginals(cls, lwr, upr, alpha, beta, covMatrix, bounds=None):
+        num_dims = covMatrix.shape[0]
+        
+        range = upr - lwr
+        mean = lwr + alpha / (alpha + beta) * range
+        stddev = np.sqrt(alpha * beta / (alpha + beta + 1.0)) / (alpha + beta) * range
+        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+
+        nataf = NatafDensity()
+        nataf.initialize_random_variable_types([STD_BETA] * num_dims)
+        nataf.initialize_random_variable_parameters([mean] * num_dims,
+                                                    [stddev] * num_dims,
+                                                    [[alpha, beta]] * num_dims)
+        nataf.initialize_random_variable_correlations(corrMatrix)
+        return cls(nataf, bounds=bounds, params={"name": "beta",
+                                                 "lwr": lwr,
+                                                 "upr": upr,
+                                                 "alpha": alpha,
+                                                 "beta": beta,
+                                                 "covMatrix": covMatrix})
+    # ------------------------------------------------------------------------
     def pdf(self, x):
         # convert the parameter to the right format
         x = self._convertEvalPoint(x)
@@ -67,12 +119,6 @@ class NatafDist(EstimatedDist):
         unif = np.random.rand(n, self.dim)
         return self.ppf(unif)
 
-    def mean(self):
-        return self.nataf.mean()
-
-    def var(self):
-        return self.nataf.var()
-
     def cov(self):
         return self.nataf.cov()
 
@@ -95,7 +141,7 @@ class NatafDist(EstimatedDist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
         # serialize dists
-        for attrName in ["mean", "stddev", "bounds", "corrMatrix"]:
+        for attrName in ["bounds", "params"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += '"' + attrName + '": "' + reprVal(attrValue) + '"'
 
@@ -109,17 +155,35 @@ class NatafDist(EstimatedDist):
         @param jsonObject: json object
         @return: the restored NatafDist object
         """
-        key = 'mean'
-        if key in jsonObject:
-            mean = float(jsonObject[key])
-        key = 'stddev'
-        if key in jsonObject:
-            stddev = float(jsonObject[key])
         key = 'bounds'
         if key in jsonObject:
             bounds = np.array(jsonObject[key])
-        key = 'corrMatrix'
-        if key in jsonObject:
-            corrMatrix = np.array(jsonObject[key])
+        else:
+            raise AttributeError("bounds missing for NatafDist")
 
-        return NatafDist(mean, stddev, corrMatrix=corrMatrix, bounds=bounds)
+        key = 'params'
+        if key in jsonObject:
+            if jsonObject[key]["name"] == "samples":
+                samples = jsonObject[key]["samples"]
+                return NatafDist.by_samples(samples, bounds)
+            elif jsonObject[key]["name"] == "normal":
+                mean = jsonObject[key]["mean"]
+                stddev = jsonObject[key]["stddev"]
+                covMatrix = np.array(jsonObject[key]["covMatrix"])
+                return NatafDist.normal_marginals(mean, stddev, covMatrix, bounds)
+            elif jsonObject[key]["name"] == "gamma":
+                alpha = jsonObject[key]["alpha"]
+                beta = jsonObject[key]["beta"]
+                covMatrix = np.array(jsonObject[key]["covMatrix"])
+                return NatafDist.gamma_marginals(alpha, beta, covMatrix, bounds)
+            elif jsonObject[key]["name"] == "beta":
+                alpha = jsonObject[key]["alpha"]
+                beta = jsonObject[key]["beta"]
+                lwr = jsonObject[key]["lwr"]
+                upr = jsonObject[key]["upr"]
+                covMatrix = np.array(jsonObject[key]["covMatrix"])
+                return NatafDist.beta_marginals(lwr, upr, alpha, beta, covMatrix, bounds)
+            else:
+                raise AttributeError("param setting not applicable for NatafDist")
+        else:
+            raise AttributeError("params missing for NatafDist")

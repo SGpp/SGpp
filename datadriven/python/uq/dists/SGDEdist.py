@@ -237,9 +237,9 @@ class SGDEdist(EstimatedDist):
             # do the transformation
             op = createOperationRosenblattTransformation(self.grid)
             if shuffle:
-                op.doTransformation(self.alpha_vec, A, B, 0)
-            else:
                 op.doTransformation(self.alpha_vec, A, B)
+            else:
+                op.doTransformation(self.alpha_vec, A, B, 0)
 
             # extract the outcome
             if x_unit.shape == (1, 1):
@@ -269,9 +269,9 @@ class SGDEdist(EstimatedDist):
             # do the transformation
             op = createOperationInverseRosenblattTransformation(self.grid)
             if shuffle:
-                op.doTransformation(self.alpha_vec, A, B, 0)
-            else:
                 op.doTransformation(self.alpha_vec, A, B)
+            else:
+                op.doTransformation(self.alpha_vec, A, B, 0)
 
             # extract the outcome
             if x.shape == (1, 1):

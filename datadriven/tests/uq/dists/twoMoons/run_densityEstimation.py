@@ -16,18 +16,36 @@ if __name__ == '__main__':
     parser.add_argument('--parallel', default=False, action='store_true', help='run in parallel')
     args = parser.parse_args()
 
-    scenarions = {'configs': density_configs}
+    scenarions = {'density_configs': density_configs,
+                  "function_configs": [("two_moons", 2), ("mult_beta", 4)]}
     processes = []
-    for estimationMethod in scenarions['configs']:
-        print "-" * 80
-        print "scenario: %s" % estimationMethod
-        print "-" * 80
+    for estimationMethod in scenarions['density_configs']:
+        for functionName, numDims in scenarions["function_config"]:
+            print "-" * 80
+            print "scenario: %s, d=%i, %s" % (functionName, numDims, estimationMethod)
+            print "-" * 80
 
-        if args.parallel:
-            myargs = (estimationMethod, 20, 10000, "join", args.out, args.plot)
-            processes.append(Process(target=run_densityEstimation, args=myargs))
-        else:
-            run_densityEstimation(estimationMethod, 20, 10000, "join", args.out, args.plot)
+            if args.parallel:
+                myargs = (functionName,
+                          estimationMethod,
+                          10,
+                          numDims,
+                          20000,
+                          "join",
+                          "ml",
+                          args.out,
+                          args.plot)
+                processes.append(Process(target=run_densityEstimation, args=myargs))
+            else:
+                run_densityEstimation(functionName,
+                                      estimationMethod,
+                                      kfold=10,
+                                      numDims=numDims,
+                                      numSamples=20000,
+                                      candidates="join",
+                                      bandwidthOptimizationType="ml",
+                                      out=args.out,
+                                      plot=args.plot)
 
     # run applications in parallel if there are any available
     for process in processes:
