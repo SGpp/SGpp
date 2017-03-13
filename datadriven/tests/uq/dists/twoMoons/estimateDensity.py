@@ -457,7 +457,8 @@ def estimateNatafDensity(functionName,
         fd.close()
 
         # serialize samples
-        np.savetxt(os.path.join(pathResults, "nataf_train_samples.%s.i%i.csv" % (functionName, iteration)), trainSamples)
+        if "samples" in natafType:
+            np.savetxt(os.path.join(pathResults, "nataf_train_samples.%s.i%i.csv" % (functionName, iteration)), trainSamples)
         np.savetxt(os.path.join(pathResults, "nataf_test_samples.%s.i%i.csv" % (functionName, iteration)), testSamples)
 
         if plot:
