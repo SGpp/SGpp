@@ -564,7 +564,8 @@ def load_data_set(data_set, numSamples, numDims=2):
         if samples.shape[0] > numSamples:
             ixs = np.random.randint(0, samples.shape[0], numSamples)
             samples = samples[ixs, :]
-        natafType = {"samples": samples}
+        natafType = {"name": "samples",
+                     "samples": samples}
 
     return samples, bounds, natafType
 
