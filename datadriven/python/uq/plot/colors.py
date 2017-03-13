@@ -102,10 +102,13 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True):
     else:
         raise AttributeError("loc '%s' not known" % loc)
 
-    plt.setp(lgd.get_title(),
-             multialignment='left')
-    for txt in lgd.get_texts():
-        txt.set_ha('left')  # ha is alias for horizontalalignment
+    try:
+        plt.setp(lgd.get_title(),
+                 multialignment='left')
+        for txt in lgd.get_texts():
+            txt.set_ha('left')  # ha is alias for horizontalalignment
+    except:
+        pass
 
     plt.draw()  # to know size of legend
     ax = plt.gca()

@@ -52,7 +52,8 @@ def splitset(samples, splitPercentage=0.8):
     return samples[trainSamplesMask], samples[testSamplesMask]
 
 
-def estimateSGDEDensity(trainSamples,
+def estimateSGDEDensity(functionName,
+                        trainSamples,
                         testSamples=None,
                         bounds=None,
                         iteration=0,
@@ -88,7 +89,7 @@ def estimateSGDEDensity(trainSamples,
     bestDist = None
 
     # stats
-    stats = {'config': {'functionName': 'twoMoons',
+    stats = {'config': {'functionName': functionName,
                         'numDims': 2,
                         'adaptive': True,
                         'refnums': 0,
@@ -100,7 +101,7 @@ def estimateSGDEDensity(trainSamples,
              'trainSamples': trainSamples,
              'testSamples': testSamples}
 
-    for level in xrange(2, 5):
+    for level in xrange(2, 7):
         print "-" * 60
         print "l=%i" % level
         for refinementSteps in xrange(0, 1):
@@ -135,7 +136,7 @@ def estimateSGDEDensity(trainSamples,
             # -----------------------------------------------------------
             cvPositiveSgde = positiveSgdeDist.crossEntropy(testSamples)
 
-            if plot:
+            if plot and numDims == 2:
                 fig = plt.figure()
                 plotSG2d(grid, alpha, show_negative=True, show_grid_points=True)
                 plt.title("pos: N=%i: vol=%g, log=%g" % (positiveGrid.getSize(),
@@ -192,38 +193,37 @@ def estimateSGDEDensity(trainSamples,
                 stats['costsCandidateSearchPerIteration'] = np.array(candidateSearch.costsComputingCandidatesPerIteration().array(), dtype="int")
                 stats['costsCandidateSearchPerIterationBinomial'] = C
 
-                if plot:
-                    if numDims == 2:
-                        fig = plt.figure()
-                        plotSG2d(positiveGrid, positiveAlpha, show_negative=True, show_grid_points=False,
-                                 colorbarLabel=r"$f_{\mathcal{I}^\text{SG} \cup \mathcal{I}^\text{ext}}$")
-                        plt.title(r"positive: $N=%i/%i$; \# comparisons$=%i$" % (positiveGrid.getSize(),
-                                                                                 (2 ** maxLevel - 1) ** numDims,
-                                                                                 numComparisons))
-                        plt.xlabel(r"$\xi_1$")
-                        plt.ylabel(r"$\xi_2$")
-    #                     plt.title(r"N=%i $\rightarrow$ %i: log=%g $\rightarrow$ %g" % (sgdeDist.grid.getSize(),
-    #                                                                                    positiveSgdeDist.grid.getSize(),
-    #                                                                                    cvSgde,
-    #                                                                                    cvPositiveSgde))
-                        plt.tight_layout()
-                        plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i.jpg" % (label, iteration, level, refinementSteps)))
-                        plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i.pdf" % (label, iteration, level, refinementSteps)))
-                        if out:
-                            plt.close(fig)
+                if plot and numDims == 2:
+                    fig = plt.figure()
+                    plotSG2d(positiveGrid, positiveAlpha, show_negative=True, show_grid_points=False,
+                             colorbarLabel=r"$f_{\mathcal{I}^\text{SG} \cup \mathcal{I}^\text{ext}}$")
+                    plt.title(r"positive: $N=%i/%i$; \# comparisons$=%i$" % (positiveGrid.getSize(),
+                                                                             (2 ** maxLevel - 1) ** numDims,
+                                                                             numComparisons))
+                    plt.xlabel(r"$\xi_1$")
+                    plt.ylabel(r"$\xi_2$")
+#                     plt.title(r"N=%i $\rightarrow$ %i: log=%g $\rightarrow$ %g" % (sgdeDist.grid.getSize(),
+#                                                                                    positiveSgdeDist.grid.getSize(),
+#                                                                                    cvSgde,
+#                                                                                    cvPositiveSgde))
+                    plt.tight_layout()
+                    plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i.jpg" % (label, iteration, level, refinementSteps)))
+                    plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i.pdf" % (label, iteration, level, refinementSteps)))
+                    if out:
+                        plt.close(fig)
 
-                        fig, ax, _ = plotSG3d(positiveGrid, positiveAlpha)
-                        ax.set_zlabel(r"$f_{\mathcal{I}^{\text{SG}} \cup \mathcal{I}^\text{ext}}$", fontsize=20)
-                        ax.set_xlabel(r"$\xi_1$", fontsize=20)
-                        ax.set_ylabel(r"$\xi_2$", fontsize=20)
+                    fig, ax, _ = plotSG3d(positiveGrid, positiveAlpha)
+                    ax.set_zlabel(r"$f_{\mathcal{I}^{\text{SG}} \cup \mathcal{I}^\text{ext}}(\xi_1, \xi_2)$", fontsize=20)
+                    ax.set_xlabel(r"$\xi_1$", fontsize=20)
+                    ax.set_ylabel(r"$\xi_2$", fontsize=20)
 
-                        plt.tight_layout()
-                        plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i_3d.jpg" % (label, iteration, level, refinementSteps)))
-                        plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i_3d.pdf" % (label, iteration, level, refinementSteps)))
-                        if out:
-                            plt.close(fig)
+                    plt.tight_layout()
+                    plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i_3d.jpg" % (label, iteration, level, refinementSteps)))
+                    plt.savefig(os.path.join(pathResults, "%s_pos_i%i_l%i_r%i_3d.pdf" % (label, iteration, level, refinementSteps)))
+                    if out:
+                        plt.close(fig)
 
-            if plot and not out:
+            if plot and numDims == 2 and not out:
                 plt.show()
 
 
@@ -302,7 +302,8 @@ def estimateSGDEDensity(trainSamples,
     return bestDist, stats
 
 
-def estimateKDEDensity(trainSamples,
+def estimateKDEDensity(functionName,
+                       trainSamples,
                        testSamples=None,
                        iteration=0,
                        plot=False,
@@ -327,7 +328,7 @@ def estimateKDEDensity(trainSamples,
     # -----------------------------------------------------------
     cvKDE = kdeDist.crossEntropy(testSamples)
 
-    if plot:
+    if plot and kdeDist.getDim() == 2:
         fig = plt.figure()
         plotDensity2d(kdeDist)
         plt.title("log=%g" % cvKDE)
@@ -374,7 +375,7 @@ def estimateKDEDensity(trainSamples,
         fd.close()
 
     # stats
-    stats = {'config': {'functionName': 'twoMoons',
+    stats = {'config': {'functionName': functionName,
                         'numDims': 2,
                         'label': label,
                         'bandwidth_optimization': BandwidthOptimizationType_MAXIMUMLIKELIHOOD, 
@@ -389,31 +390,53 @@ def estimateKDEDensity(trainSamples,
     return kdeDist, stats
 
 
-def estimateNatafDensity(mean,
-                         stddev,
-                         covMatrix,
+def estimateNatafDensity(functionName,
+                         natafType,
                          testSamples=None,
                          iteration=0,
+                         bounds=None,
                          plot=False,
                          out=True,
                          label="nataf"):
+    if "samples" in natafType:
+        trainSamples = natafType["samples"]
+        print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
     if testSamples is not None:
         print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
 
     # -----------------------------------------------------------
-    corr = Dist().corrcoeff(covMatrix)
-    natafDist = NatafDist(mean, stddev, corr)
+    if natafType["name"] == "samples":
+        natafDist = NatafDist.by_samples(natafType["samples"].T)
+    elif natafType["name"] == "gamma":
+        natafDist = NatafDist.gamma_marginals(natafType["alpha"],
+                                              natafType["beta"],
+                                              natafType["cov"],
+                                              bounds)
+    elif natafType["name"] == "beta":
+        natafDist = NatafDist.beta_marginals(natafType["lwr"],
+                                             natafType["upr"],
+                                             natafType["alpha"],
+                                             natafType["beta"],
+                                             natafType["cov"],
+                                             bounds)
+    elif natafType["name"] == "normal":
+        natafDist = NatafDist.normal_marginals(natafType["mean"],
+                                               natafType["stddev"],
+                                               natafType["cov"],
+                                               bounds)
+    else:
+        raise AttributeError("nataf type '%s' is not supported" % natafType["name"])
 
     cvNataf = natafDist.crossEntropy(testSamples)
 
-    if plot:
+    if plot and natafDist.getDim() == 2:
         fig = plt.figure()
         plotDensity2d(natafDist)
         plt.title("log=%g" % cvNataf)
         if out:
             plt.tight_layout()
-            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.jpg" % (iteration,)))
-            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.pdf" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "nataf_dist.i%i.jpg" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "nataf_dist.i%i.pdf" % (iteration,)))
             if out:
                 plt.close(fig)
         else:
@@ -453,12 +476,10 @@ def estimateNatafDensity(mean,
         fd.close()
 
     # stats
-    stats = {'config': {'functionName': 'twoMoons',
+    stats = {'config': {'functionName': functionName,
                         'numDims': 2,
                         'label': label,
-                        'mean': mean,
-                        'stddev': stddev,
-                        'cov': covMatrix,
+                        'cov': natafDist.cov(),
                         'iteration': iteration},
              'testSamples': testSamples,
              'crossEntropyTestNataf': cvNataf,
@@ -467,8 +488,91 @@ def estimateNatafDensity(mean,
     return natafDist, stats
 
 
-def run_densityEstimation(method,
+
+def load_data_set(data_set, numSamples, numDims=2):
+    natafType = {}
+
+    if "mult" in data_set:
+        corr = 0.005
+        var = 0.01
+        diag = np.diag(np.ones(numDims) * var)
+        offdiag = (np.ones((numDims, numDims)) - np.diag(np.ones(numDims))) * corr
+        covMatrix = diag + offdiag
+
+        natafType["cov"] = covMatrix
+        if "normal" in data_set:
+            mean = 0.5
+            stddev = np.sqrt(covMatrix[0, 0])
+            U = MultivariateNormal(np.ones(numDims) * mean, covMatrix, 0, 1)
+            samples = U.rvs(numSamples)
+            bounds = U.getBounds()
+            natafType["name"] = "normal"
+            natafType["mean"] = mean
+            natafType["stddev"] = stddev
+
+        elif "gamma" in data_set:
+            alpha = 2
+            beta = 3
+            bounds = np.array([[0, 20]] * numDims)
+            U = NatafDist.gamma_marginals(alpha, beta, covMatrix,
+                                          bounds=bounds)
+            rvs_samples = U.rvs(numSamples)
+            # remove all samples which are outside the domain
+            samples = np.array([])
+            for sample in rvs_samples:
+                isValid = True
+                for idim in xrange(numDims):
+                    isValid &= np.all(sample[idim] < bounds[0][1])
+                if isValid:
+                    samples = np.append(samples, sample)
+            samples = samples.reshape(samples.size / numDims, numDims)
+
+            natafType["name"] = "gamma"
+            natafType["alpha"] = alpha
+            natafType["beta"] = beta
+        elif "beta" in data_set:
+            alpha = 5.
+            beta = 10.
+            bounds = np.array([[0, 1]] * numDims)
+            U = NatafDist.beta_marginals(0, 1, alpha, beta, covMatrix,
+                                         bounds=bounds)
+            rvs_samples = U.rvs(numSamples)
+            # remove all samples which are outside the domain
+            samples = np.array([])
+            for sample in rvs_samples:
+                isValid = True
+                for idim in xrange(numDims):
+                    isValid &= np.all(sample[idim] < bounds[0][1])
+                if isValid:
+                    samples = np.append(samples, sample)
+            samples = samples.reshape(samples.size / numDims, numDims)
+
+            natafType["name"] = "beta"
+            natafType["alpha"] = alpha
+            natafType["beta"] = beta
+            natafType["lwr"] = 0
+            natafType["upr"] = 1
+    else:
+        if "moons" in data_set:
+            samples = np.loadtxt("data/twomoons.csv")
+            bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
+        elif "friedman" in data_set:
+            samples = np.loadtxt("data/friedman2_4d_50000.csv")
+            bounds = None
+        else:
+            raise AttributeError()
+        if samples.shape[0] > numSamples:
+            ixs = np.random.randint(0, samples.shape[0], num_samples)
+            samples = samples[ixs, :]
+        natafType = {"samples": samples}
+
+    return samples, bounds, natafType
+
+
+def run_densityEstimation(functionName,
+                          method,
                           kfold=20,
+                          numDims=2,
                           numSamples=1000,
                           candidates="join",
                           bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
@@ -480,33 +584,11 @@ def run_densityEstimation(method,
     else:  # interpolation == "boundaries":
         interpolation = "boundaries"
 
-    data_set = "mult"
-    if "moons" in data_set:
-        samples = np.loadtxt("data/twomoons.csv")[:3000, :  ]
-        bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
-    elif "friedman" in data_set:
-        samples = np.loadtxt("data/friedman2_4d_50000.csv")[:3000, :]
-        bounds = None
-    elif "mult" in data_set:
-        numDims = 6
-        corr = 0.005
-        var = 0.01
-        diag = np.diag(np.ones(numDims) * var)
-        offdiag = (np.ones((numDims, numDims)) - np.diag(np.ones(numDims))) * corr
-        covMatrix = diag + offdiag
-        mean = 0.5
-        stddev = np.sqrt(covMatrix[0, 0])
-        U = MultivariateNormal(np.ones(numDims) * mean, covMatrix, 0, 1)
-        samples = U.rvs(3000)
-        bounds = U.getBounds()
-    else:
-        raise AttributeError()
-
-    numDims = samples.shape[1]
+    np.random.seed(1234567)
+    samples, bounds, natafType = load_data_set(functionName, numSamples, numDims)
 
     # do kfold cross validation
     crossEntropyValidation = np.zeros((kfold, 2))
-    np.random.seed(1234567)
     learnSamples, validationSamples = splitset(samples, splitPercentage=0.7)
 
     stats = {}
@@ -520,7 +602,8 @@ def run_densityEstimation(method,
         trainSamples, testSamples = splitset(learnSamples, splitPercentage=1. - 1. / kfold)
 
         if "sgde" in method:
-            dist, stats[i] = estimateSGDEDensity(trainSamples,
+            dist, stats[i] = estimateSGDEDensity(functionName,
+                                                 trainSamples,
                                                  testSamples,
                                                  bounds=bounds,
                                                  iteration=i,
@@ -530,7 +613,8 @@ def run_densityEstimation(method,
                                                  candidates=candidates,
                                                  interpolation=interpolation)
         elif "kde" in method:
-            dist, stats[i] = estimateKDEDensity(trainSamples,
+            dist, stats[i] = estimateKDEDensity(functionName,
+                                                trainSamples,
                                                 testSamples,
                                                 iteration=i,
                                                 plot=plot,
@@ -538,11 +622,12 @@ def run_densityEstimation(method,
                                                 out=out,
                                                 bandwidthOptimizationTypeStr=bandwidthOptimizationType)
         elif "nataf" in method:
-            dist, stats[i] = estimateNatafDensity(mean,
-                                                  stddev,
-                                                  covMatrix,
+            # estimate nataf density
+            dist, stats[i] = estimateNatafDensity(functionName,
+                                                  natafType,
                                                   testSamples,
                                                   iteration=i,
+                                                  bounds=bounds,
                                                   plot=plot,
                                                   label=method,
                                                   out=out)
@@ -557,26 +642,44 @@ def run_densityEstimation(method,
         stats[i]["samples"] = {"shuffled": {},
                                "not_shuffled": {}}
         stats[i]["samples"]["shuffled"]["rvs"] = dist.rvs(numSamples, shuffle=True)
-        stats[i]["samples"]["shuffled"]["uniform_validation"] = dist.cdf(validationSamples, shuffle=True)
+        stats[i]["samples"]["shuffled"]["uniform_validation"] = dist.cdf(validationSamples,
+                                                                         shuffle=True)
         kstests = [None] * numDims
 
         for idim in xrange(numDims):
             samples1d = stats[i]["samples"]["shuffled"]["uniform_validation"][:, idim]
-            kstests[idim] = kstest(samples1d, Uniform(0, 1).cdf).pvalue
-
+            res_test = kstest(samples1d, Uniform(0, 1).cdf)
+            kstests[idim] = res_test.statistic, res_test.pvalue
+            if plot:
+                plt.figure()
+                plt.hist(samples1d, cumulative=True, normed=True)
+                xs = np.linspace(0, 1, 10)
+                plt.plot(xs, [Uniform(0, 1).cdf(xi) for xi in xs])
+                plt.title("shuffled: %i, %s" % (idim, kstests[idim]))
         print "-" * 80
-        print "shuffled    ", kstests, np.min(kstests)
+        print "shuffled    ", kstests, np.min(kstests), np.max(kstests)
+        if plot:
+            plt.show()
+
         stats[i]["samples"]["shuffled"]["kstests"] = kstests
         stats[i]["samples"]["not_shuffled"]["rvs"] = dist.rvs(numSamples, shuffle=False)
-        stats[i]["samples"]["not_shuffled"]["uniform_validation"] = dist.cdf(validationSamples, shuffle=False)
+        stats[i]["samples"]["not_shuffled"]["uniform_validation"] = dist.cdf(validationSamples,
+                                                                             shuffle=False)
         kstests = [None] * numDims
         for idim in xrange(numDims):
             samples1d = stats[i]["samples"]["not_shuffled"]["uniform_validation"][:, idim]
-            kstests[idim] = kstest(samples1d, Uniform(0, 1).cdf).pvalue
-            plt.hist(samples1d)
-            plt.title("%i, %g" % (idim, kstests[idim]))
+            res_test = kstest(samples1d, Uniform(0, 1).cdf)
+            kstests[idim] = res_test.statistic, res_test.pvalue
+            if plot:
+                plt.figure()
+                plt.hist(samples1d, cumulative=True, normed=True)
+                xs = np.linspace(0, 1, 1000)
+                plt.plot(xs, [Uniform(0, 1).cdf(xi) for xi in xs])
+                plt.title("not shuffled: %i, %s" % (idim, kstests[idim]))
+        print "not shuffled", kstests, np.min(kstests), np.max(kstests)
+        if plot:
             plt.show()
-        print "not shuffled", kstests, np.min(kstests)
+
         stats[i]["samples"]["not_shuffled"]["kstests"] = kstests
 
         print "CV valid = %g" % crossEntropyValidation[i, 1]
@@ -624,12 +727,17 @@ density_configs = ["sgde_zero",
                    "kde_epanechnikov",
                    "nataf"]
 
+function_configs = ["mult_beta", "two_moons", "friedman"]
+
+
 if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser.add_argument('--function', default="mult_beta", type=str, help='which data set should be used (mult_beta, mult_normal, mult_gamma, two_moons)')
     parser.add_argument('--method', default="sgde_zero", type=str, help='which method should be used to intepolate the new grid points (zero, log)')
     parser.add_argument('--candidates', default="join", type=str, help='which method should be used to intepolate the new grid points (zero, log)')
     parser.add_argument('--bandopt', default="rot", type=str, help='which method should be used to intepolate the new grid points (rot, ml)')
     parser.add_argument('--kfold', default=None, type=int, help='run kfold (20)')
+    parser.add_argument('--numDims', default=2, type=int, help='number of dimensions for multivariate distributions')
     parser.add_argument('--numSamples', default=10000, type=int, help='number of samples that should be drawn from the best distributions')
     parser.add_argument('--plot', default=False, action='store_true', help='plot stuff')
     parser.add_argument('--out', default=False, action='store_true', help='write stuff to file')
@@ -640,8 +748,10 @@ if __name__ == '__main__':
         raise Exception("method '%s' is not known" % args.method)
 
     if args.kfold is not None:
-        run_densityEstimation(args.method,
+        run_densityEstimation(args.function,
+                              args.method,
                               kfold=args.kfold,
+                              numDims=args.numDims,
                               numSamples=args.numSamples,
                               candidates=args.candidates,
                               bandwidthOptimizationType=args.bandopt,

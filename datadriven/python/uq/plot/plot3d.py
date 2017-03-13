@@ -3,12 +3,10 @@ from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
-from pysgpp import DataVector
-from scipy.stats import gaussian_kde
+from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp._pysgpp_swig import createOperationEval, createOperationEvalNaive
 
 
 def plotDensity3d(U, n=36):

@@ -10,6 +10,7 @@ __all__ = ["plotSGDE3d", "plotSGDE2d",
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
+
 from plot1d import (plotFunction1d,
                     plotDensity1d,
                     plotCDF,

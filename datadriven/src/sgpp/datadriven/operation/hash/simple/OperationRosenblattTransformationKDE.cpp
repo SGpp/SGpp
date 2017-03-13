@@ -80,14 +80,25 @@ void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCd
 
 void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& pointsCdf,
                                                                     DataMatrix& pointsUniform) {
-  // load permutations
-  std::vector<std::vector<size_t>> permutations(pointsCdf.getNrows());
-  for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
-    permutations[idata].resize(ndim);
-    for (size_t i = 0; i < ndim; i++) {
-      permutations[idata][i] = i;
+  // 1. compute permuations for each sample
+  size_t num_dims = this->kde->getDim();
+  size_t num_samples = pointsCdf.getNrows();
+  std::vector<std::vector<size_t>> permutations(num_samples);
+
+  std::vector<size_t> startindices(num_samples);
+  // change the starting dimension when the bucket_size is arrived
+  // this distributes the error in the projection uniformly to all
+  // dimensions and make it therefore stable
+  size_t dim_start = 0;
+  size_t bucket_size = num_samples / num_dims + 1;
+  for (size_t i = 0; i < num_samples; i++) {
+    if (((i + 1) % bucket_size) == 0 && (i + 1) < num_samples) {
+      ++dim_start;
     }
-    std::shuffle(permutations[idata].begin(), permutations[idata].end(), rng);
+    permutations[i].resize(ndim);
+    for (size_t idim = 0; idim < ndim; idim++) {
+      permutations[i][idim] = (dim_start + idim) % num_dims;
+    }
   }
 
 // apply the rosenblatt transformation
