@@ -101,7 +101,7 @@ def estimateSGDEDensity(functionName,
              'trainSamples': trainSamples,
              'testSamples': testSamples}
 
-    for level in xrange(2, 7):
+    for level in xrange(2, 8):
         print "-" * 60
         print "l=%i" % level
         for refinementSteps in xrange(0, 1):

@@ -16,12 +16,12 @@ from estimateDensity import density_configs
 
 
 def loadDensity(setting):
-    print "-" * 80
-    print "load setting: %s" % setting
-
     stats = None
-    filename = os.path.join("data", setting, "%s.mult_beta.best.stats.pkl" % setting)
-    if os.path.exists(filename):
+    filename = os.path.join("data", setting, "%s.two_moons.best.stats.pkl" % setting)
+    if os.path.exists(filename) and \
+            "sgde" in setting:
+        print "-" * 80
+        print "load setting: %s" % setting
         fd = open(filename, "r")
         stats = pkl.load(fd)
         fd.close()
@@ -33,23 +33,17 @@ def loadDensity(setting):
             elif setting in ["kde_gaussian", "kde_epanechnikov"]:
                 jsonObject = json.loads(values['KDEDist_json'])
             elif setting in ["nataf"]:
-                s = values["NatafDist_json"]
-                print s
-                s = s.replace("params", ', \n "params')
-                s = s.replace('""', '"')
-                s = s.replace('"covMatrix": ', '"covMatrix": "')
-                s = s.replace(']]"', ']]""covMatrix": "')
-                print s
-                jsonObject = json.loads(s)
+                jsonObject = json.loads(values["NatafDist_json"])
 
-            stats[iteration]["dist"] = Dist.fromJson(jsonObject)
+            if jsonObject is not None:
+                stats[iteration]["dist"] = Dist.fromJson(jsonObject)
 
     return stats
 
 
 def plotLogLikelihood(densities):
     numDensities = len(densities)
-    numIterations = len(densities.itervalues().next()) - 1
+    numIterations = len(densities.itervalues().next())
 
     data = np.ndarray((numIterations, numDensities))
     names = [None] * numDensities
@@ -57,16 +51,41 @@ def plotLogLikelihood(densities):
     for i, (setting, stats) in enumerate(densities.items()):
         names[i] = setting.replace("_", "-")
         for j, values in enumerate(stats.values()):
-            if j < 10:
-                data[j, i] = values["crossEntropyValidation"]
-            if j > 10:
-                data[j - 1, i] = values["crossEntropyValidation"]
+            data[j, i] = values["crossEntropyValidation"]
 
     pos = np.arange(0, numDensities)
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.show()
+
+def plotpvalueofKolmogorovSmirnovTest(densities):
+    numDensities = len(densities)
+    numIterations = len(densities.itervalues().next())
+
+    data = np.zeros((numIterations, 2 * numDensities))
+    names = [None] * data.shape[1]
+    i = 0
+    for i, (setting, stats) in enumerate(densities.items()):
+        names[2 * i] = setting.replace("_", "-") + " (shuffled)"
+        names[2 * i + 1] = setting.replace("_", "-") + " (not shuffled)"
+        for j, values in enumerate(stats.values()):
+            numDims = values["config"]["numDims"]
+            pvalues_shuffled = np.zeros(numDims)
+            pvalues_not_shuffled = np.zeros(numDims)
+            for idim in xrange(numDims):
+                pvalues_shuffled[idim] = values["samples"]["shuffled"]["kstests"][idim][1]
+                pvalues_not_shuffled[idim] = values["samples"]["not_shuffled"]["kstests"][idim][1]
+            data[j, 2 * i] = pvalues_shuffled.mean()
+            data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
+
+    pos = np.arange(0, len(names))
+    plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
+                   showextrema=True, showmedians=True, bw_method=0.5)
+    plt.xticks(pos, names)
+    plt.ylabel(r"$p$-value of Kolmogorov-Smirnov test")
+    plt.show()
+
 
 def loadDensities():
     ans = {}
@@ -78,4 +97,5 @@ def loadDensities():
 
 if __name__ == "__main__":
     densities = loadDensities()
-    plotLogLikelihood(densities)
+#     plotLogLikelihood(densities)
+    plotpvalueofKolmogorovSmirnovTest(densities)
