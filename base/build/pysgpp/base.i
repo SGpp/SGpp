@@ -180,7 +180,7 @@ namespace std {
 %template(SLagrangeSplineBaseDeriv1) sgpp::base::LagrangeSplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SLagrangeSplineBaseDeriv2) sgpp::base::LagrangeSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SLagrangeSplineBaseDeriv3) sgpp::base::LagrangeSplineBasisDeriv3<unsigned int, unsigned int>;
-%template(SLagrangeNotAKnotSplineBase) sgpp::base::LagrangeSplineBasis<unsigned int, unsigned int>;
+%template(SLagrangeNotAKnotSplineBase) sgpp::base::LagrangeNotAKnotSplineBasis<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBaseDeriv1) sgpp::base::LagrangeNotAKnotSplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBaseDeriv2) sgpp::base::LagrangeNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBaseDeriv3) sgpp::base::LagrangeNotAKnotSplineBasisDeriv3<unsigned int, unsigned int>;
