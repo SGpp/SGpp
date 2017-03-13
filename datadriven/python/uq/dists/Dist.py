@@ -243,5 +243,7 @@ class Dist(object):
             return dists.KDEDist.fromJson(jsonObject)
         elif 'uq.dists.Datadist' in jsonObject['module']:
             return dists.DataDist.fromJson(jsonObject)
+        elif 'uq.dists.NatafDist' in jsonObject['module']:
+            return dists.NatafDist.fromJson(jsonObject)
         else:
             raise TypeError('Unknown distribution "%s" => Please register it in fromJson function' % jsonObject['module'])
