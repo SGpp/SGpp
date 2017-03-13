@@ -334,8 +334,8 @@ def estimateKDEDensity(functionName,
         plt.title("log=%g" % cvKDE)
         if out:
             plt.tight_layout()
-            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.jpg" % (iteration,)))
-            plt.savefig(os.path.join(pathResults, "kde_dist.i%i.pdf" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "kde_dist.%s.i%i.jpg" % (functionName, iteration)))
+            plt.savefig(os.path.join(pathResults, "kde_dist.%s.i%i.pdf" % (functionName, iteration)))
             if out:
                 plt.close(fig)
         else:
@@ -348,7 +348,7 @@ def estimateKDEDensity(functionName,
         pathResults = os.path.join("data", label)
     
         # serialize cross entropies
-        out_crossEntropies = os.path.join(pathResults, "kde_cross_entropies.i%i.csv" % iteration)
+        out_crossEntropies = os.path.join(pathResults, "kde_cross_entropies.%s.i%i.csv" % (functionName, iteration))
         fd = open(out_crossEntropies, 'wb')
         file_writer = csv.writer(fd)
         file_writer.writerow(["crossEntropy"])
@@ -356,19 +356,19 @@ def estimateKDEDensity(functionName,
         fd.close()
     
         # serialize samples
-        np.savetxt(os.path.join(pathResults, "kde_train_samples.i%i.csv" % iteration), trainSamples)
-        np.savetxt(os.path.join(pathResults, "kde_test_samples.i%i.csv" % iteration), testSamples)
+        np.savetxt(os.path.join(pathResults, "kde_train_samples.%s.i%i.csv" % (functionName, iteration)), trainSamples)
+        np.savetxt(os.path.join(pathResults, "kde_test_samples.%s.i%i.csv" % (functionName, iteration)), testSamples)
 
         if plot:
             # plot density
             fig = plt.figure()
             plotDensity2d(kdeDist)
             plt.title("%s -> CV = %g" % (kdeDist.getBandwidths(), cvKDE))
-            plt.savefig(os.path.join(pathResults, "kde_pdf.i%i.jpg" % iteration))
+            plt.savefig(os.path.join(pathResults, "kde_pdf.%s.i%i.jpg" % (functionName, iteration)))
             plt.close(fig)
 
         # serialize best configuration to json
-        out_bestDist = os.path.join(pathResults, "kde_best_config.i%i.json" % iteration)
+        out_bestDist = os.path.join(pathResults, "kde_best_config.%s.i%i.json" % (functionName, iteration))
         text = kdeDist.toJson()
         fd = open(out_bestDist, "w")
         fd.write(text)
@@ -435,8 +435,8 @@ def estimateNatafDensity(functionName,
         plt.title("log=%g" % cvNataf)
         if out:
             plt.tight_layout()
-            plt.savefig(os.path.join(pathResults, "nataf_dist.i%i.jpg" % (iteration,)))
-            plt.savefig(os.path.join(pathResults, "nataf_dist.i%i.pdf" % (iteration,)))
+            plt.savefig(os.path.join(pathResults, "nataf_dist.%s.i%i.jpg" % (functionName, iteration)))
+            plt.savefig(os.path.join(pathResults, "nataf_dist.%s.i%i.pdf" % (functionName, iteration)))
             if out:
                 plt.close(fig)
         else:
@@ -449,7 +449,7 @@ def estimateNatafDensity(functionName,
         pathResults = os.path.join("data", label)
 
         # serialize cross entropies
-        out_crossEntropies = os.path.join(pathResults, "nataf_cross_entropies.i%i.csv" % iteration)
+        out_crossEntropies = os.path.join(pathResults, "nataf_cross_entropies.%s.i%i.csv" % (functionName, iteration))
         fd = open(out_crossEntropies, 'wb')
         file_writer = csv.writer(fd)
         file_writer.writerow(["crossEntropy"])
@@ -457,19 +457,19 @@ def estimateNatafDensity(functionName,
         fd.close()
 
         # serialize samples
-        np.savetxt(os.path.join(pathResults, "nataf_train_samples.i%i.csv" % iteration), trainSamples)
-        np.savetxt(os.path.join(pathResults, "nataf_test_samples.i%i.csv" % iteration), testSamples)
+        np.savetxt(os.path.join(pathResults, "nataf_train_samples.%s.i%i.csv" % (functionName, iteration)), trainSamples)
+        np.savetxt(os.path.join(pathResults, "nataf_test_samples.%s.i%i.csv" % (functionName, iteration)), testSamples)
 
         if plot:
             # plot density
             fig = plt.figure()
             plotDensity2d(natafDist)
             plt.title("CV = %g" % (cvNataf,))
-            plt.savefig(os.path.join(pathResults, "nataf_pdf.i%i.jpg" % iteration))
+            plt.savefig(os.path.join(pathResults, "nataf_pdf.%s.i%i.jpg" % (functionName, iteration)))
             plt.close(fig)
 
         # serialize best configuration to json
-        out_bestDist = os.path.join(pathResults, "nataf_best_config.i%i.json" % iteration)
+        out_bestDist = os.path.join(pathResults, "nataf_best_config.%s.i%i.json" % (functionName, iteration))
         text = natafDist.toJson()
         fd = open(out_bestDist, "w")
         fd.write(text)
@@ -687,11 +687,11 @@ def run_densityEstimation(functionName,
 
         # write results to file
         if out:
-            out_crossEntropy = os.path.join("data", method, "%s.validation.cross_entropies.csv" % method)
+            out_crossEntropy = os.path.join("data", method, "%s.%s.validation.cross_entropies.csv" % (method, functionName))
             np.savetxt(out_crossEntropy, crossEntropyValidation[:i, :])
 
             # save stats to pickle
-            out_stats = os.path.join("data", method, "%s.best.stats.pkl" % method)
+            out_stats = os.path.join("data", method, "%s.%s.best.stats.pkl" % (method, functionName))
             fd = open(out_stats, "w")
             pkl.dump(stats, fd)
             fd.close()
