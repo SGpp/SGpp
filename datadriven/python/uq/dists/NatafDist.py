@@ -1,11 +1,14 @@
-from Dist import Dist
 import numpy as np
-from probability_cpp import NatafDensity, GAUSSIAN, GAMMA, STD_BETA
-from probabilistic_transformations_cpp import NatafTransformationData
+
 from EstimatedDist import EstimatedDist
 from Normal import Normal
-from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
+from Dist import Dist
 
+from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
+
+from probabilistic_transformations_cpp import NatafTransformationData
+from probability_cpp import NatafDensity, GAUSSIAN, GAMMA, STD_BETA
 
 class NatafDist(EstimatedDist):
     """
@@ -140,12 +143,14 @@ class NatafDist(EstimatedDist):
         """
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
-        # serialize dists
-        for attrName in ["bounds", "params"]:
-            attrValue = self.__getattribute__(attrName)
-            serializationString += '"' + attrName + '": "' + reprVal(attrValue) + '"'
 
-        return "{" + serializationString + "} \n"
+        for attrName, attrValue in [("bounds", self.bounds),
+                                    ("params", self.params), ]:
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        s = serializationString.rstrip(",\n")
+
+        return "{" + s + "}"
 
     @classmethod
     def fromJson(cls, jsonObject):
