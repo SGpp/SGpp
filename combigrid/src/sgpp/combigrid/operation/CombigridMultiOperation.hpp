@@ -150,6 +150,13 @@ class CombigridMultiOperation {
   size_t numGridPoints();
 
   /**
+   * @return An upper bound for the number of points (function evaluations) used for the current
+   * computation. This bound is exact if nesting is used or if otherwise each grid point only occurs
+   * in exactly one level.
+   */
+  size_t getUpperPointBound() const;
+
+  /**
    * Returns a CombigridMultiOperation doing polynomial interpolation on a Clenshaw-Curtis grid with
    * an exponential growth (nested points).
    * @param numDimensions Dimensionality of the problem.
