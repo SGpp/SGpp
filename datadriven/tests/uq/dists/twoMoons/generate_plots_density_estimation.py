@@ -19,21 +19,30 @@ def loadDensity(setting):
     print "-" * 80
     print "load setting: %s" % setting
 
-    filename = os.path.join("data", setting, "%s.best.stats.pkl" % setting)
-    fd = open(filename, "r")
-    stats = pkl.load(fd)
-    fd.close()
+    stats = None
+    filename = os.path.join("data", setting, "%s.mult_beta.best.stats.pkl" % setting)
+    if os.path.exists(filename):
+        fd = open(filename, "r")
+        stats = pkl.load(fd)
+        fd.close()
 
-    for iteration, values in stats.items():
-        jsonObject = None
-        if setting in ["sgde_zero", "sgde_boundaries"]:
-            jsonObject = json.loads(values['posSGDE_json'])
-        elif setting in ["kde_gaussian", "kde_epanechnikov"]:
-            jsonObject = json.loads(values['KDEDist_json'])
-        elif setting == "analytic_lognormalBeta":
-            jsonObject = json.loads(values['Dist_json'])
+        for iteration, values in stats.items():
+            jsonObject = None
+            if setting in ["sgde_zero", "sgde_boundaries"]:
+                jsonObject = json.loads(values['posSGDE_json'])
+            elif setting in ["kde_gaussian", "kde_epanechnikov"]:
+                jsonObject = json.loads(values['KDEDist_json'])
+            elif setting in ["nataf"]:
+                s = values["NatafDist_json"]
+                print s
+                s = s.replace("params", ', \n "params')
+                s = s.replace('""', '"')
+                s = s.replace('"covMatrix": ', '"covMatrix": "')
+                s = s.replace(']]"', ']]""covMatrix": "')
+                print s
+                jsonObject = json.loads(s)
 
-        stats[iteration]["dist"] = Dist.fromJson(jsonObject)
+            stats[iteration]["dist"] = Dist.fromJson(jsonObject)
 
     return stats
 
@@ -62,8 +71,9 @@ def plotLogLikelihood(densities):
 def loadDensities():
     ans = {}
     for setting in density_configs:
-        if "analytic" not in setting:
-            ans[setting] = loadDensity(setting)
+        stats = loadDensity(setting)
+        if stats is not None:
+            ans[setting] = stats
     return ans
 
 if __name__ == "__main__":

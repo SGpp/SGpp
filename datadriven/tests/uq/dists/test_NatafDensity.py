@@ -141,13 +141,12 @@ class NatafDistTest(unittest.TestCase):
         stddev = np.sqrt(C[0, 0])
         U = dists.MultivariateNormal(np.ones(numDims) * mean, C, 0, 1)
 
+        dist = NatafDist.normal_marginals(mean, stddev, C, bounds=U.getBounds())
+
         fig = plt.figure()
         plotDensity2d(U)
         plt.title('true density')
         fig.show()
-
-        corr = dists.Dist().corrcoeff(C)
-        dist = NatafDist(mean, stddev, corr)
         
         fig = plt.figure()
         plotDensity2d(dist)
