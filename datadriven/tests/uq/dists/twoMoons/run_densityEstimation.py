@@ -17,7 +17,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     scenarions = {'density_configs': density_configs,
-                  "function_configs": [("two_moons", 2), ("mult_beta", 4)]}
+                  "function_configs": [("two_moons", 2), ("mult_beta", 2)]}
     processes = []
     for estimationMethod in scenarions['density_configs']:
         for functionName, numDims in scenarions["function_configs"]:
