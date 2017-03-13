@@ -305,6 +305,11 @@ class LevelManager {
    * Calls addLevel() on the underlying CombigridEvaluator.
    */
   void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }
+
+  /**
+   * Queue based addLevel-type function
+   */
+  void addLevelsAdaptiveByNumLevels();
 };
 }  // namespace combigrid
 }  // namespace sgpp
