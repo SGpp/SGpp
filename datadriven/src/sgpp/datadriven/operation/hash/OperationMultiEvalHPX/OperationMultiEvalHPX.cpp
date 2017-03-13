@@ -87,7 +87,7 @@ void OperationMultiEvalHPX::mult(sgpp::base::DataVector& alpha,
     }
 
     hpx::wait_all(finished);
-    std::vector<float> resultVector =
+    std::vector<double> resultVector =
             hpx::async<
                     sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent::get_result_action>(
                     loadBalancer.get_id()).get();

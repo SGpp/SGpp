@@ -18,7 +18,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
                                        "CheckJNI" : Helper.CheckJNI,
-                                       "CheckFlag" : Helper.CheckFlag})
+                                       "CheckFlag" : Helper.CheckFlag,
+                                       "CheckCompiler" : Helper.CheckCompiler})
 
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
@@ -44,6 +45,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     Helper.printErrorAndExit("You must specify a valid value for Compiler.",
                              "Available configurations are:",
                              "gnu, clang, intel, openmpi, mpich, intel.mpi")
+
+  if env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
+    config.env["CPPDEFINES"]["USE_MPI"] = "1"
 
   # special treatment for different platforms
   if env["PLATFORM"] == "darwin":
@@ -163,7 +167,7 @@ def checkCpp11(config):
       Helper.printErrorAndExit("HPX requires a compiler that supports the C++14 standard. Abort!")
       Exit(1)
 
-      config.env.AppendUnique(CPPFLAGS="-std=c++14")
+    config.env.AppendUnique(CPPFLAGS="-std=c++14")
 
 def checkDoxygen(config):
   # check whether Doxygen installed
@@ -341,18 +345,20 @@ def configureGNUCompiler(config):
     config.env.Append(LIBPATH = [os.environ['BOOST_ROOT'] + '/lib'])
     config.env.Append(CPPFLAGS=["-dynamic"])
     config.env.Append(LINKFLAGS=["-dynamic"])
-
   if config.env["COMPILER"] == "openmpi":
     config.env["CC"] = ("mpicc")
     config.env["LINK"] = ("mpicxx")
     config.env["CXX"] = ("mpicxx")
-    config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
+    if config.env["CC"]:
+      config.env.Append(CFLAGS=["-cc=" + config.env["CC"]])
+    if config.env["CXX"]:
+      config.env.Append(CPPFLAGS=["-cxx=" + config.env["CXX"]])
+      config.env.Append(LINKFLAGS=["-cxx=" + config.env["CXX"]])
     config.env["CC"] = ("mpicc.mpich")
-    config.env["LINK"] = ("mpic++.mpich")
-    config.env["CXX"] = ("mpic++.mpich")
-    config.env["CPPDEFINES"]["USE_MPI"] = "1"
+    config.env["LINK"] = ("mpicxx.mpich")
+    config.env["CXX"] = ("mpicxx.mpich")
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
@@ -361,7 +367,10 @@ def configureGNUCompiler(config):
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
-    Helper.printErrorAndExit("Compiler not found!")
+    Helper.printErrorAndExit("Compiler executable not found!")
+
+  if not config.CheckCompiler():
+    Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
   allWarnings = \
       "-Wall -Wextra \
@@ -445,6 +454,9 @@ def configureClangCompiler(config):
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
 
+  if not config.CheckCompiler():
+    Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
+
   allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
 
   # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
@@ -500,6 +512,9 @@ def configureIntelCompiler(config):
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :
     Helper.printErrorAndExit("Compiler not found!")
+
+  if not config.CheckCompiler():
+    Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
 #   if not config.env["USE_HPX"]:
   config.env.AppendUnique(CPPFLAGS=["-qopenmp"])
