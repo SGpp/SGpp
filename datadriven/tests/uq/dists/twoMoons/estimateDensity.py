@@ -562,7 +562,7 @@ def load_data_set(data_set, numSamples, numDims=2):
         else:
             raise AttributeError()
         if samples.shape[0] > numSamples:
-            ixs = np.random.randint(0, samples.shape[0], num_samples)
+            ixs = np.random.randint(0, samples.shape[0], numSamples)
             samples = samples[ixs, :]
         natafType = {"samples": samples}
 
