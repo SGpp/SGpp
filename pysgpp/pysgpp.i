@@ -69,9 +69,6 @@ import_array();
 #ifdef SG_SOLVER
 #include "sgpp_solver.hpp"
 #endif
-#ifdef SG_DATADRIVEN
-#include "sgpp_datadriven.hpp"
-#endif
 #ifdef SG_PARALLEL
 #include "sgpp_parallel.hpp"
 #endif
@@ -83,6 +80,9 @@ import_array();
 #endif
 #ifdef SG_OPTIMIZATION
 #include "sgpp_optimization.hpp"
+#endif
+#ifdef SG_DATADRIVEN
+#include "sgpp_datadriven.hpp"
 #endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
@@ -96,6 +96,14 @@ import_array();
 #endif
 
 %include "base/build/pysgpp/base.i"
+#endif
+
+#ifdef SG_COMBIGRID
+#ifdef PYDOC
+%include "combigrid_doc.i"
+#endif
+
+%include "combigrid/build/pysgpp/combigrid.i"
 #endif
 
 #ifdef SG_PDE
@@ -122,28 +130,12 @@ import_array();
 %include "solver/build/pysgpp/solver.i"
 #endif
 
-#ifdef SG_DATADRIVEN
-#ifdef PYDOC
-%include "datadriven_doc.i"
-#endif
-
-%include "datadriven/build/pysgpp/datadriven.i"
-#endif
-
 #ifdef SG_QUADRATURE
 #ifdef PYDOC
 %include "quadrature_doc.i"
 #endif
 
 %include "quadrature/build/pysgpp/quadrature.i"
-#endif
-
-#ifdef SG_COMBIGRID
-#ifdef PYDOC
-%include "combigrid_doc.i"
-#endif
-
-%include "combigrid/build/pysgpp/combigrid.i"
 #endif
 
 #ifdef SG_OPTIMIZATION
@@ -154,4 +146,10 @@ import_array();
 %include "optimization/build/pysgpp/optimization.i"
 #endif
 
+#ifdef SG_DATADRIVEN
+#ifdef PYDOC
+%include "datadriven_doc.i"
+#endif
 
+%include "datadriven/build/pysgpp/datadriven.i"
+#endif

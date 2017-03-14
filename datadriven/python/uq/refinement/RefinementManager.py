@@ -2,19 +2,24 @@ from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridPoint,
                     SurplusRefinementFunctor,
                     HashGridStorage,
-                    Linear, LinearL0Boundary, LinearBoundary,
-                    ModLinear, Poly, PolyBoundary)
+                    GridType_Linear, GridType_LinearL0Boundary,
+                    GridType_LinearBoundary,
+                    GridType_ModLinear,
+                    GridType_Poly,
+                    GridType_PolyBoundary)
 
 import numpy as np
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, \
+    polyGridTypes, bsplineGridTypes, linearGridTypes
 from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 
 
 class RefinementManager(object):
 
     def __init__(self, admissibleSet=None, criterion=None,
                  localRefinementStrategy=None, red=None,
-                 maxLevel=30):
+                 maxLevel=30, verbose=False):
         """
         Constructor
         @param admissibleSet:
@@ -22,6 +27,7 @@ class RefinementManager(object):
         @param localRefinementStrategy:
         @param red:
         @param maxLevel:
+        @param verbose:
         """
         if not red:
             def red(v):
@@ -43,6 +49,7 @@ class RefinementManager(object):
         self.refOnBorder = True
         self._averageWeightening = False
 
+        self.verbose = verbose
 
     def setAdaptThreshold(self, value):
         self._adaptThreshold = value
@@ -103,7 +110,7 @@ class RefinementManager(object):
     # @param refinablePoints: integer number of points which can be refined
     # @return: integer number of point which should be refined
     def getNumOfPointsToRefine(self, refinablePoints):
-        ratePoints = self._adaptRate * refinablePoints
+        ratePoints = max(1, int(np.round(self._adaptRate * refinablePoints)))
         if self._adaptPoints == 0:
             return ratePoints
         elif self._adaptRate == 0:
@@ -112,19 +119,22 @@ class RefinementManager(object):
             return min(ratePoints, self._adaptPoints)
 
 
-    def refineGrid(self, grid, knowledge, params, qoi="_", refinets=[0]):
+    def refineGrid(self, grid, knowledge, params=None, qoi="_", refinets=[0]):
         # check if this method is used in the right context
-        if grid.getType() not in (Linear,
-                                  LinearL0Boundary,
-                                  LinearBoundary,
-                                  ModLinear,
-                                  Poly,
-                                  PolyBoundary):
+        if grid.getType() not in polyGridTypes + bsplineGridTypes + linearGridTypes:
                 raise AttributeError('Grid type %s is not supported' %
                                      grid.getType())
 
+        if params is None:
+            # define standard uniform params
+            uncertainParams = ParameterBuilder().defineUncertainParameters()
+            for idim in xrange(grid.getStorage().getDimension()):
+                uncertainParams.new().isCalled("x_%i" % idim).withUniformDistribution(0, 1)
+            params = uncertainParams.andGetResult()
+
         # get refinement candidates
-        print "compute ranking"
+        if self.verbose:
+            print "compute ranking"
         B = self.candidates(grid, knowledge, params, qoi, refinets)
 
         # now do the refinement
@@ -134,8 +144,11 @@ class RefinementManager(object):
     def candidates(self, grid, knowledge, params, qoi="_", ts=None):
         """
         Load the candidates for refinement
-        @param learner: Learner
-        @param ts: list of numeric, time steps
+        @param grid: Grid
+        @param knowledge: ASGCKnowledge
+        @param params: Parameter containing the marginal distributions
+        @param qoi: string, quantity of interest
+        @param ts: time steps of interest
         """
         # get knowledge type that is needed by refinement criterion
         dtype = self._criterion.getKnowledgeType()
@@ -145,21 +158,14 @@ class RefinementManager(object):
 
         v = np.ndarray([len(data), len(ts)], dtype='float')
 
-        d = {}
-
         # run over the coefficients for all time steps
         for i, t in enumerate(ts):
             # get surpluses
             alphas = knowledge.getAlpha(qoi, t, dtype)
-            # update refinement criterion
-            self._criterion.update(grid, alphas, self._admissibleSet)
             # rank each admissible point
             for j, gp in enumerate(data):
                 # run over all time steps for current grid point
-                key = (t, gp.hash())
-                if key not in d:
-                    d[key] = self._criterion.rank(grid, gp, alphas, params)
-                v[j, i] = d[key]
+                v[j, i] = self._criterion.rank(grid, gp, alphas, params, t)
 
 #             # get the result
 #             r = np.zeros(self._admissibleSet.getSize())
@@ -172,7 +178,7 @@ class RefinementManager(object):
 #             plotDensity2d(params.getIndependentJointDistribution())
 #             values = self._admissibleSet.values()
 #             for i, ri in enumerate(rix):
-#                 values[ri].getStandardCoordinates(p)
+#                 gs.getCoordinates(values[ri], p)
 #                 while i < len(rix) and.getStandardCoordinate(r[ri] - r[rix[i]]) < 1e-10:
 #                     i += 1
 #                 plt.plot(p[0], p[1], marker="o", color='yellow')
@@ -180,31 +186,33 @@ class RefinementManager(object):
 #                          fontsize=12)
 #             plt.xlim(0, 1)
 
-        # apply a subset ranking if the adding algorithm is used
-        if self._averageWeightening and \
-                isinstance(self._admissibleSet, AdmissibleSparseGridNodeSet):
-            # simulate the refinement and sum over all subgroup values
-            # refine all the points in the admissible set
-            newGridPoints = {}
-            for j, gp in enumerate(data):
-                newGridPoints[j] = self.__refine(learner, [(v[j, i], gp)],
-                                                 simulate=True)
-            for i, t in enumerate(ts):
-                print "compute merged ranking: %i/%i" % (i + 1, len(ts))
-                # get surpluses
-                alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
-                # rank each admissible point
-                s = 0.
-                # take the refined points for gp in row j
-                for j, points in newGridPoints.items():
-                    # sum up all the rankings
-                    for gp in points:
-                        key = (t, gp.hash())
-                        if key not in d:
-                            d[key] = self._criterion.rank(grid, gp, alphas, params)
-                        s += d[key]
-                    # and take the mean as ranking
-                    v[j, i] = s / len(newGridPoints)
+#         # apply a subset ranking if the adding algorithm is used
+#         if self._averageWeightening and \
+#                 isinstance(self._admissibleSet, AdmissibleSparseGridNodeSet):
+#             # simulate the refinement and sum over all subgroup values
+#             # refine all the points in the admissible set
+#             newGridPoints = {}
+#             for j, gp in enumerate(data):
+#                 newGridPoints[j] = self.__refine(learner, [(v[j, i], gp)],
+#                                                  simulate=True)
+#             for i, t in enumerate(ts):
+#                 if self.verbose:
+#                     print "compute merged ranking: %i/%i" % (i + 1, len(ts))
+#
+#                 # get surpluses
+#                 alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
+#                 # rank each admissible point
+#                 s = 0.
+#                 # take the refined points for gp in row j
+#                 for j, points in newGridPoints.items():
+#                     # sum up all the rankings
+#                     for gp in points:
+#                         key = (t, gp.getHash())
+#                         if key not in d:
+#                             d[key] = self._criterion.rank(grid, gp, alphas, params, t)
+#                         s += d[key]
+#                     # and take the mean as ranking
+#                     v[j, i] = s / len(newGridPoints)
 
 #             # simulate the refinement and sum over all subgroup values
 #             for i, t in enumerate(ts):
@@ -257,9 +265,9 @@ class RefinementManager(object):
             vi, gp = B.pop()
 
             # some printing
-            if not simulate:
+            if not simulate and self.verbose:
                 print "refine %i/%i (%i, %i) = %g" % \
-                    (pointsNum, len(B), len(newGridPoints),
+                    (pointsNum, len(B) + 1, len(newGridPoints),
                      len(refinedPoints), vi)
 
             # refine the grid
@@ -272,14 +280,14 @@ class RefinementManager(object):
             # oldgs = HashGridStorage(gs)
             # alpha = DataVector(gs.getSize())
             # alpha.setAll(0.0)
-            # alpha[gs.seq(gp)] = 2.0
+            # alpha[gs.getSequenceNumber(gp)] = 2.0
             # refFunc = SurplusRefinementFunctor(alpha, 1, 1)
             # ## TODO: try refineMaxLevel(refFunc, maxLevel)
             # grid.getGenerator().refine(refFunc)
 
             # nps = []
             # for i in xrange(gs.getSize()):
-            #     if not oldgs.has_key(gs.getPoint(i)):
+            #     if not oldgs.isContaining(gs.getPoint(i)):
             #         nps.append(i)
 
             # check there have been added some new points
@@ -296,35 +304,42 @@ class RefinementManager(object):
         if self._balancing:
             newGridPoints += balance(grid)
 
-        # update admissible set
-        if not simulate:
-            self._admissibleSet.update(grid, newGridPoints)
-
 #         if not simulate:
 #             import matplotlib.pyplot as plt
 #             gs = grid.getStorage()
 #             p = DataVector(gs.getDimension())
 #
+#             fig = plt.figure()
 #             for gp in refinedPoints:
-#                 gp.getStandardCoordinates(p)
+#                 gs.getCoordinates(gp, p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=20,
 #                          linestyle='', color='green')
 #
 #             for i in xrange(gs.getSize()):
-#                 gs.getPoint(i).getStandardCoordinates(p)
-#                 plt.plot(p[0], p[1], marker='o', markersize=10,
-#                          linestyle='', color='blue')
+#                 gpi = gs.getPoint(i)
+#                 gs.getCoordinates(gpi, p)
+#                 if gpi in self._admissibleSet:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='orange')
+#                 else:
+#                     plt.plot(p[0], p[1], marker='o', markersize=10,
+#                              linestyle='', color='blue')
 #
 #             for gp in newGridPoints:
-#                 gp.getStandardCoordinates(p)
+#                 gs.getCoordinates(gp, p)
 #                 plt.plot(p[0], p[1], marker='o', markersize=10,
 #                          linestyle='', color='red')
 #
 #             plt.title("size = %i" % gs.getSize())
 #             plt.xlim(0, 1)
 #             plt.ylim(0, 1)
-#             plt.show()
-#             plt.savefig('%i.png' % learner.iteration)
+# #             plt.show()
+#             plt.savefig('/home/franzefn/Desktop/tmp/var_atan_i%i.png' % gs.getSize())
+#             plt.close(fig)
+
+        # update admissible set
+        if not simulate:
+            self._admissibleSet.update(grid, newGridPoints)
 
         # make sure that I have collected all the new grid points
         assert len(newGridPoints) == gs.getSize() - n1

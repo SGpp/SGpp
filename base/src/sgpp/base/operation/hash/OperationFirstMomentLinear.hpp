@@ -35,8 +35,9 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
    * @f[ \int_{\Omega} x\cdot f(x) dx. @f]
    *
    * @param alpha Coefficient vector for current grid
+   * @param bounds describes the boundaries of the hypercube of the original function
    */
-  double doQuadrature(const DataVector& alpha) override;
+  double doQuadrature(const DataVector& alpha, DataMatrix* bounds = nullptr) override;
 
  protected:
   // Pointer to the grid's GridStorage object
