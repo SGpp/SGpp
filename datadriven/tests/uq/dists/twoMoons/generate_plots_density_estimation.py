@@ -9,6 +9,7 @@ import pickle as pkl
 import json
 import numpy as np
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
@@ -41,10 +42,9 @@ def loadDensity(setting, functionName):
                 jsonObject = json.loads(values['KDEDist_json'])
             elif setting in ["nataf"]:
                 jsonObject = json.loads(values["NatafDist_json"])
-
-            if jsonObject is not None:
-                stats[iteration]["dist"] = Dist.fromJson(jsonObject)
-
+#             if jsonObject is not None:
+#                 stats[iteration]["dist"] = Dist.fromJson(jsonObject)
+        print "done"
     return stats
 
 
@@ -74,6 +74,7 @@ def plotLogLikelihood(densities, functionName, out=False):
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
+    plt.ylabel("cross entropy")
 
     if out:
         savefig(fig,
@@ -118,13 +119,18 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
 
     pos = np.arange(0, len(names))
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 4.5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
-    plt.title("Two moons: \n Kolmogorov-Smirnov test",
-              fontproperties=load_font_properties())
+
+    if "moons" in functionName:
+        plt.title("Two moons: \n Kolmogorov-Smirnov test",
+                  fontproperties=load_font_properties())
+    else:
+        plt.title("Multivariate Beta: \n Kolmogorov-Smirnov test",
+                  fontproperties=load_font_properties())
 
     if out:
         savefig(fig,
