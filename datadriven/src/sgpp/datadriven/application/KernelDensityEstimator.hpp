@@ -13,6 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
