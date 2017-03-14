@@ -102,7 +102,7 @@ class DataContainer(object):
     # @return: DataContainer only with requested data set 
     # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
-        if self.points.has_key(category) and self.values.has_key(category):
+        if category in self.points and category in self.values:
             result = DataContainer(points=DataMatrix(self.points[category]),
                                    values=DataVector(self.values[category]),
                                    name=category)

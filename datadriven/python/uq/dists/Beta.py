@@ -83,7 +83,7 @@ class Beta(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ["_Beta__p", "_Beta__q", "_Beta__l", "_Beta__width"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
@@ -111,12 +111,12 @@ class Beta(Dist):
         if key in jsonObject:
             q = int(jsonObject[key])
 
-        key = '_Beta__accLevel'
+        key = '_Beta__l'
         if key in jsonObject:
-            accLevel = float(jsonObject[key])
+            l = float(jsonObject[key])
 
         key = '_Beta__width'
         if key in jsonObject:
             width = float(jsonObject[key])
 
-        return Beta(p, q, accLevel, width)
+        return Beta(p, q, l, width)
