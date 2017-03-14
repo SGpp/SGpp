@@ -152,6 +152,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
+%ignore sgpp::datadriven::HashGridPointCompare::operator();
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
