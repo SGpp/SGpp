@@ -79,7 +79,7 @@ class Uniform(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ("_Uniform__a", "_Uniform__b"):
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 

@@ -65,7 +65,7 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     ps = DataMatrix(gs.size(), gs.getDimension())
     p = DataVector(gs.getDimension())
     for i in xrange(gs.size()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
         ps.setRow(i, p)
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
     return nodalValues
