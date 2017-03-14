@@ -142,7 +142,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
 //TODO(lettrich): this does not work yet. make it work.
-
+%ignore sgpp::datadriven::HashGridPointCompare::operator();
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
