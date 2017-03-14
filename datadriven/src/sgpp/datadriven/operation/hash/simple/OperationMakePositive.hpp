@@ -46,17 +46,15 @@ class OperationMakePositive {
    *
    * @param candidateSearchAlgorithm defines how to generate the full grid candidate set
    * @param interpolationAlgorithm defines how to compute the coefficients for the new grid points
-   * @param f scalar function to be interpolated
-   * @param tol tolerance for positivity
    * @param generateConsistentGrid define if the hierarchical ancestors of all new grid points are
    * inserted as well
    * @param verbose print information or not
+   * @param f scalar function to be interpolated
    */
   explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::IntersectionsJoin,
                                  MakePositiveInterpolationAlgorithm interpolationAlgorithm =
                                      MakePositiveInterpolationAlgorithm::SetToZero,
-
                                  bool generateConsistentGrid = true, bool verbose = false,
                                  optimization::ScalarFunction* f = nullptr);
 
@@ -76,9 +74,9 @@ class OperationMakePositive {
   /**
    * Make the sparse grid function defined by grid and coefficient vector positive.
    *
-   * @param newGrid Grid where the new grid is stored
-   * @param newAlpha coefficient vector of new grid
-   * @param resetGrid if set, the grid in newGrid is deleted and a copy of the object variable is
+   * @param grid Grid where the new grid is stored
+   * @param alpha coefficient vector of new grid
+   * @param forcePositiveNodalValues set first all nodal values to max(0, value)
    * used
    */
   void makePositive(base::Grid& grid, base::DataVector& alpha,
@@ -91,6 +89,7 @@ class OperationMakePositive {
    *
    * @param grid grid
    * @param alpha coefficient vector
+   * @param tol tolerance for positivity
    */
   void makeCurrentNodalValuesPositive(base::Grid& grid, base::DataVector& alpha,
                                       double tol = -1e-14);
