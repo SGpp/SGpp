@@ -1,10 +1,12 @@
 from pysgpp.extensions.datadriven.uq.dists import Uniform, J
 from pysgpp.extensions.datadriven.uq.operations import discretize
 from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMarginalize
-from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation, \
+    JointTransformation
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 
 class MarginalIntegralStrategy(SparseGridEstimationStrategy):
@@ -19,15 +21,20 @@ class MarginalIntegralStrategy(SparseGridEstimationStrategy):
 
     def __extractPDFforMomentEstimation(self, U, T, dd):
         dists = U.getDistributions()
+        jointTrans = JointTransformation()
         vol = 1.
         # check if importance sampling has been used for some parameters
         for i, trans in enumerate(T.getTransformations()):
             # if this is the case replace them by a uniform distribution
             if isinstance(trans, InverseCDFTransformation):
                 dists[i] = Uniform(0, 1)
-            elif i in dd:
-                vol *= trans.vol()
-        return vol, J(dists)
+                jointTrans.add(LinearTransformation(0.0, 0.1))
+            else:
+                jointTrans.add(trans)
+                if i in dd:
+                    vol *= trans.vol()
+
+        return vol, J(dists), jointTrans
 
     def estimate(self, vol, grid, alpha, f, U, T, dd):
         r"""
@@ -39,7 +46,7 @@ class MarginalIntegralStrategy(SparseGridEstimationStrategy):
         where v(x) := u(x) q(x)
         """
         # extract correct pdf for moment estimation
-        vol, W = self.__extractPDFforMomentEstimation(U, T, dd)
+        vol, W, D = self.__extractPDFforMomentEstimation(U, T, dd)
 
         # check if there are just uniform distributions given
         if all([isinstance(dist, Uniform) for dist in W.getDistributions()]):
@@ -55,7 +62,7 @@ class MarginalIntegralStrategy(SparseGridEstimationStrategy):
                 @param val: sparse grid function value at position p
                 """
                 # extract the parameters we are integrating over
-                q = T.unitToProbabilistic(p)
+                q = D.unitToProbabilistic(p)
                 # compute pdf and take just the dd values
                 marginal_pdf = W.pdf(q, marginal=True)[dd]
                 return f(p, val) * np.prod(marginal_pdf)

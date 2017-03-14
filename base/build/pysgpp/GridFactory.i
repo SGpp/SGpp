@@ -8,7 +8,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 %}
 
-%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -19,7 +19,7 @@
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
 %newobject sgpp::base::Grid::createModLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createWaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createWaveletBoundaryGrid(size_t dim);
@@ -37,6 +37,7 @@
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::createGridOfEquivalentType();
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
@@ -141,7 +142,9 @@ public:
   static Grid* createPeriodicGrid(size_t dim);
 	
   static Grid* unserialize(std::string& istr);
-	
+
+  static sgpp::base::GridType stringToGridType(const std::string& gridType);
+
 protected:
   Grid();
   Grid(Grid& o);
@@ -161,7 +164,10 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
-  
+
+  std::string getTypeAsString();
+
+  Grid* createGridOfEquivalentType();
   Grid* clone();
 };
 }

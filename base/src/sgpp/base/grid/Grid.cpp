@@ -40,6 +40,7 @@
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <utility>
 #include <map>
@@ -49,21 +50,13 @@
 namespace sgpp {
 namespace base {
 
-Grid* Grid::createLinearGridStencil(size_t dim) {
-  return new LinearGridStencil(dim);
-}
+Grid* Grid::createLinearGridStencil(size_t dim) { return new LinearGridStencil(dim); }
 
-Grid* Grid::createModLinearGridStencil(size_t dim) {
-  return new ModLinearGridStencil(dim);
-}
+Grid* Grid::createModLinearGridStencil(size_t dim) { return new ModLinearGridStencil(dim); }
 
-Grid* Grid::createLinearGrid(size_t dim) {
-  return new LinearGrid(dim);
-}
+Grid* Grid::createLinearGrid(size_t dim) { return new LinearGrid(dim); }
 
-Grid* Grid::createLinearStretchedGrid(size_t dim) {
-  return new LinearStretchedGrid(dim);
-}
+Grid* Grid::createLinearStretchedGrid(size_t dim) { return new LinearStretchedGrid(dim); }
 
 Grid* Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
   if (boundaryLevel == 0) {
@@ -77,9 +70,7 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
   return new LinearStretchedBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) {
-  return new LinearClenshawCurtisGrid(dim);
-}
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
 
 Grid* Grid::createModLinearGrid(size_t dim) {
   return new ModLinearGrid(dim);
@@ -133,25 +124,17 @@ Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
   return new ModFundamentalSplineGrid(dim, degree);
 }
 
-Grid* Grid::createSquareRootGrid(size_t dim) {
-  return new SquareRootGrid(dim);
-}
+Grid* Grid::createSquareRootGrid(size_t dim) { return new SquareRootGrid(dim); }
 
-Grid* Grid::createPrewaveletGrid(size_t dim) {
-  return new PrewaveletGrid(dim);
-}
+Grid* Grid::createPrewaveletGrid(size_t dim) { return new PrewaveletGrid(dim); }
 
 Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
   return new LinearTruncatedBoundaryGrid(dim);
 }
 
-Grid* Grid::createModPolyGrid(size_t dim, size_t degree) {
-  return new ModPolyGrid(dim, degree);
-}
+Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGrid(dim, degree); }
 
-Grid* Grid::createPeriodicGrid(size_t dim) {
-  return new PeriodicGrid(dim);
-}
+Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
@@ -218,8 +201,7 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   }
 }
 
-Grid* Grid::clone() {
-  // clone grid of the same type
+Grid* Grid::createGridOfEquivalentType() {
   Grid* newGrid = nullptr;
 
   size_t numDims = storage.getDimension();
@@ -319,7 +301,12 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
+  return newGrid;
+}
 
+Grid* Grid::clone() {
+  // clone grid of the same type
+  Grid* newGrid = createGridOfEquivalentType();
   base::HashGridStorage& newGridStorage = newGrid->getStorage();
 
   // run through grid and add points to newGrid
@@ -330,6 +317,50 @@ Grid* Grid::clone() {
 
   return newGrid;
 }
+
+GridType Grid::getZeroBoundaryType() {
+  switch (getType()) {
+    case GridType::Linear:
+    case GridType::LinearL0Boundary:
+    case GridType::LinearBoundary:
+    case GridType::LinearTruncatedBoundary:
+    case GridType::ModLinear:
+    case GridType::SquareRoot:
+    case GridType::Periodic:
+    case GridType::LinearStencil:
+    case GridType::ModLinearStencil:
+      return GridType::Linear;
+    case GridType::LinearStretched:
+    case GridType::LinearStretchedBoundary:
+      return GridType::LinearStretched;
+    case GridType::Poly:
+    case GridType::PolyBoundary:
+    case GridType::ModPoly:
+      return GridType::Poly;
+    case GridType::ModWavelet:
+    case GridType::Wavelet:
+    case GridType::WaveletBoundary:
+      return GridType::Wavelet;
+    case GridType::Bspline:
+    case GridType::BsplineBoundary:
+    case GridType::ModBspline:
+      return GridType::Bspline;
+    case GridType::Prewavelet:
+      return GridType::Prewavelet;
+    case GridType::LinearClenshawCurtis:
+      return GridType::LinearClenshawCurtis;
+    case GridType::FundamentalSpline:
+    case GridType::ModFundamentalSpline:
+      return GridType::FundamentalSpline;
+    // no non-boundary treatment basis available for the following grids
+    case GridType::BsplineClenshawCurtis:
+    case GridType::ModBsplineClenshawCurtis:
+    default:
+      throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
+  }
+}
+
+std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
 
 Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
@@ -611,6 +642,66 @@ std::vector<size_t> Grid::getAlgorithmicDimensions() { return storage.getAlgorit
 
 void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   this->storage.setAlgorithmicDimensions(newAlgoDims);
+}
+
+GridType Grid::stringToGridType(const std::string& gridType) {
+  if (gridType.compare("linear") == 0) {
+    return sgpp::base::GridType::Linear;
+  } else if (gridType.compare("linearStretched") == 0) {
+    return sgpp::base::GridType::LinearStretched;
+  } else if (gridType.compare("linearL0Boundary") == 0) {
+    return sgpp::base::GridType::LinearL0Boundary;
+  } else if (gridType.compare("linearBoundary") == 0) {
+    return sgpp::base::GridType::LinearBoundary;
+  } else if (gridType.compare("linearStretchedBoundary") == 0) {
+    return sgpp::base::GridType::LinearStretchedBoundary;
+  } else if (gridType.compare("linearTruncatedBoundary") == 0) {
+    return sgpp::base::GridType::LinearTruncatedBoundary;
+  } else if (gridType.compare("modlinear") == 0) {
+    return sgpp::base::GridType::ModLinear;
+  } else if (gridType.compare("poly") == 0) {
+    return sgpp::base::GridType::Poly;
+  } else if (gridType.compare("polyBoundary") == 0) {
+    return sgpp::base::GridType::PolyBoundary;
+  } else if (gridType.compare("modpoly") == 0) {
+    return sgpp::base::GridType::ModPoly;
+  } else if (gridType.compare("modWavelet") == 0) {
+    return sgpp::base::GridType::ModWavelet;
+  } else if (gridType.compare("modBspline") == 0) {
+    return sgpp::base::GridType::ModBspline;
+  } else if (gridType.compare("prewavelet") == 0) {
+    return sgpp::base::GridType::Prewavelet;
+  } else if (gridType.compare("squareRoot") == 0) {
+    return sgpp::base::GridType::SquareRoot;
+  } else if (gridType.compare("periodic") == 0) {
+    return sgpp::base::GridType::Periodic;
+  } else if (gridType.compare("linearClenshawCurtis") == 0) {
+    return sgpp::base::GridType::LinearClenshawCurtis;
+  } else if (gridType.compare("bspline") == 0) {
+    return sgpp::base::GridType::Bspline;
+  } else if (gridType.compare("bsplineBoundary") == 0) {
+    return sgpp::base::GridType::BsplineBoundary;
+  } else if (gridType.compare("bsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::BsplineClenshawCurtis;
+  } else if (gridType.compare("wavelet") == 0) {
+    return sgpp::base::GridType::Wavelet;
+  } else if (gridType.compare("waveletBoundary") == 0) {
+    return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("fundamentalSpline") == 0) {
+    return sgpp::base::GridType::FundamentalSpline;
+  } else if (gridType.compare("modFundamentalSpline") == 0) {
+    return sgpp::base::GridType::ModFundamentalSpline;
+  } else if (gridType.compare("modBsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModBsplineClenshawCurtis;
+  } else if (gridType.compare("linearstencil") == 0) {
+    return sgpp::base::GridType::LinearStencil;
+  } else if (gridType.compare("modlinearstencil") == 0) {
+    return sgpp::base::GridType::ModLinearStencil;
+  } else {
+    std::stringstream errorString;
+    errorString << "grid type '" << gridType << "' is unknown" << std::endl;
+    throw base::application_exception(errorString.str().c_str());
+  }
 }
 
 }  // namespace base

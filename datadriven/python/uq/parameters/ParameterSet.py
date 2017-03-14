@@ -14,7 +14,9 @@
 
 """
 from pysgpp.extensions.datadriven.uq.dists import J
-from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
+                                                            RosenblattTransformation,
+                                                            LinearTransformation)
 from Parameter import Parameter
 
 import numpy as np
@@ -161,6 +163,15 @@ class ParameterSet(object):
         """
         return [param.getDistribution() for param in self.values()
                 if param.isUncertain()]
+
+    def getParameter(self, name):
+        """
+        """
+        for param in self.__params:
+            if name == param.getName():
+                return param
+        return None
+
 
     def getIndependentJointDistribution(self):
         """
@@ -374,6 +385,51 @@ class ParameterSet(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def marginalize(self):
+        """
+        NOTE: jusr returns the marginalized active subset of params
+        """
+        # marginalize the distribution
+        margDistList = []
+        margTransformations = []
+        activeParams = self.activeParams()
+        distributions = activeParams.getIndependentJointDistribution().getDistributions()
+        transformations = activeParams.getJointTransformation().getTransformations()
+        if len(distributions) == len(activeParams):
+            return self
+        else:
+            for dist, trans in zip(distributions,
+                                   transformations):
+                # check if current parameter is independent
+                if dist.getDim() == 1:
+                    margDistList.append(dist)
+                    margTransformations.append(trans)
+                else:
+                    # marginalize the densities and update the transformations
+                    innertrans = trans.getTransformations()
+                    for idim in xrange(dist.getDim()):
+                        margDist = dist.marginalizeToDimX(idim)
+                        margDistList.append(margDist)
+                        # update transformations
+                        if isinstance(innertrans[idim], RosenblattTransformation):
+                            margTransformations.append(RosenblattTransformation(margDist))
+                        else:
+                            a, b = margDist.getBounds()[0]
+                            margTransformations.append(LinearTransformation(a, b))
+
+            assert len(margDistList) == len(margTransformations) == activeParams.getDim()
+
+            # update the parameter setting
+            from ParameterBuilder import ParameterBuilder
+            builder = ParameterBuilder()
+            up = builder.defineUncertainParameters()
+            for name, dist, trans in zip(activeParams.getNames(),
+                                         margDistList,
+                                         margTransformations):
+                up.new().isCalled(name).withDistribution(dist)\
+                                       .withTransformation(trans)
+            return builder.andGetResult()
 
     def toJson(self):
         """

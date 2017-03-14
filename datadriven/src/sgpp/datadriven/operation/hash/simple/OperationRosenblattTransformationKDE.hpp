@@ -8,9 +8,11 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,7 +22,8 @@ namespace datadriven {
  */
 class OperationRosenblattTransformationKDE {
  public:
-  explicit OperationRosenblattTransformationKDE(GaussianKDE& kde);
+  explicit OperationRosenblattTransformationKDE(KernelDensityEstimator& kde,
+                                                std::uint64_t seed = std::mt19937_64::default_seed);
   virtual ~OperationRosenblattTransformationKDE();
 
   /**
@@ -45,14 +48,17 @@ class OperationRosenblattTransformationKDE {
    * @param kern kernel evaluations
    */
   double doTransformation1D(double x, base::DataVector& samples1d, double sigma,
-                             base::DataVector& kern);
+                            base::DataVector& kern);
 
  private:
-  datadriven::GaussianKDE* kde;
+  datadriven::KernelDensityEstimator* kde;
   base::DataVector bandwidths;
 
   size_t ndim;
   size_t nsamples;
+
+  /// shuffling devices
+  std::mt19937_64 rng;
 };
 
 }  // namespace datadriven
