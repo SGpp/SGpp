@@ -74,6 +74,8 @@ struct RegularGridConfiguration {
   level_t boundaryLevel_;
   /// string to serialized grid
   std::string filename_;
+  /// subgrid selection value t
+  double t_ = 0.0;
 };
 
 /**

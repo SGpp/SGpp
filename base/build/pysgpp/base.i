@@ -3,6 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// According to the SWIG documentation, shared pointers should be declared
+// before the classes are declared themselves.
+%shared_ptr(sgpp::base::OperationMatrix)
+%shared_ptr(sgpp::base::OperationIdentity)
+%shared_ptr(sgpp::base::OperationConvert)
+%shared_ptr(sgpp::base::OperationEval)
+%shared_ptr(sgpp::base::OperationEvalGradient)
+%shared_ptr(sgpp::base::OperationHessian)
+%shared_ptr(sgpp::base::OperationEvalPartialDerivative)
+%shared_ptr(sgpp::base::OperationHierachisation)
+%shared_ptr(sgpp::base::OperationQuadrature)
+%shared_ptr(sgpp::base::OperationQuadratureMC)
+%shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemDirichlet)
+%shared_ptr(sgpp::parallel::HeatEquationParabolicPDESolverSystem)
+%shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemFreeBoundaries)
+
 %include "base/src/sgpp/globaldef.hpp"
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
@@ -20,6 +38,8 @@ namespace std {
     // For OnlinePredictiveRefinementDimension
     %template(refinement_key) std::pair<size_t, unsigned int>;
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
+    // For interaction-term-aware sparse grids.
+    %template(VecVecSizeT) vector< vector<size_t> >;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridPoint->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
@@ -64,6 +84,8 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/GridGenerator.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEval.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+
+%include "base/src/sgpp/base/operation/hash/OperationIdentity.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationConvert.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationEvalGradient.hpp"
@@ -88,6 +110,10 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"

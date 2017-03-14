@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// Shared pointers.
+%shared_ptr(sgpp::finance::BlackScholesParabolicPDESolverSystem)
+%shared_ptr(sgpp::finance::BlackScholesParabolicPDESolverSystemEuroAmer)
+%shared_ptr(sgpp::finance::BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP)
+
 // The Good, i.e. without any modifications
 %include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 %include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"

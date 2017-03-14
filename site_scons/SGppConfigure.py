@@ -93,6 +93,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
+  checkZlib(config)
+  checkGSL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
@@ -169,7 +171,31 @@ def checkOpenCL(config):
                                "On debian-like system the package libboost-program-options-dev",
                                "can be installed to solve this issue.")
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    
+
+def checkGSL(config):
+  if config.env["USE_GSL"]:
+    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
+    if "GSL_LIBRARY_PATH" in config.env:
+	  config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
+
+    if not config.CheckCXXHeader("gsl/gsl_version.h"):
+      Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
+    if not config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
+      Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
+
+    config.env["CPPDEFINES"]["USE_GSL"] = "1"
+
+def checkZlib(config):
+#zlib needed for datamining
+    if(config.env["USE_ZLIB"]):
+        if config.env["PLATFORM"] == "win32":
+            Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
+        else:
+            if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
+                Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
+            
+                config.env["CPPDEFINES"]["ZLIB"] = "1"
+        
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -292,14 +318,14 @@ def checkJava(config):
 def configureGNUCompiler(config):
   if config.env["COMPILER"] == "openmpi":
     config.env["CC"] = ("mpicc.openmpi")
-    config.env["LINK"] = ("mpic++.openmpi")
-    config.env["CXX"] = ("mpic++.openmpi")
+    config.env["LINK"] = ("mpicxx.openmpi")
+    config.env["CXX"] = ("mpicxx.openmpi")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     config.env["CC"] = ("mpicc.mpich")
-    config.env["LINK"] = ("mpic++.mpich")
-    config.env["CXX"] = ("mpic++.mpich")
+    config.env["LINK"] = ("mpicxx.mpich")
+    config.env["CXX"] = ("mpicxx.mpich")
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
     Helper.printInfo("Using mpich.")
 
