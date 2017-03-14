@@ -42,7 +42,7 @@
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
+// %include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
