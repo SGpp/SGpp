@@ -227,7 +227,7 @@ class HashGridStorage {
   size_t insert(point_type& index);
 
   /**
-   * insert a new index into map including all its ancestors
+   * insert a new index into map including all its ancestors. Boundary points are not added
    *
    * @param index reference to the index that should be inserted
    * @param vector containing the indices of the new points

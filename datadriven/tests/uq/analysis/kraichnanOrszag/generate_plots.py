@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from pysgpp.extensions.datadriven.uq.helper import sortPermutations
 from argparse import ArgumentParser
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
 
 
 def get_key_pce(expansion, sampling_strategy, N):
@@ -135,6 +136,6 @@ if __name__ == "__main__":
                          label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
 
         plt.title(error_type.replace("_", " "))
-        plt.legend(loc="upper left")
+        lgd = insert_legend(fig, loc="bottom", ncol=2)
 
     plt.show()

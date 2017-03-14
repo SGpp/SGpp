@@ -11,23 +11,25 @@ import numpy as np
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from estimateDensity import load_data_set
 
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 from estimateDensity import density_configs
 from pysgpp.extensions.datadriven.uq.plot.colors import savefig, \
-    load_font_properties
+    load_font_properties, load_color, insert_legend
 from argparse import ArgumentParser
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 
 
 def loadDensity(setting, functionName):
     stats = None
     filename = os.path.join("data", setting, "%s.%s.best.stats.pkl" % (setting, functionName))
     if os.path.exists(filename) and \
-            (("moons" in functionName and (("sgde" in setting and "zero" in setting) or
-                                           "kde" in setting and "gaussian" in setting)) or
-             ("beta" in functionName and (("sgde" in setting and "zero" in setting) or \
+            (("moons" in functionName and (("sgde" in setting) or
+                                           "kde" in setting)) or
+             ("beta" in functionName and (("sgde" in setting) or \
                                           "nataf" in setting or \
-                                          "kde" in setting and "gaussian" in setting))):
+                                          "kde" in setting))):
         print "-" * 80
         print "load setting: %s" % setting
         fd = open(filename, "r")
@@ -42,8 +44,8 @@ def loadDensity(setting, functionName):
                 jsonObject = json.loads(values['KDEDist_json'])
             elif setting in ["nataf"]:
                 jsonObject = json.loads(values["NatafDist_json"])
-#             if jsonObject is not None:
-#                 stats[iteration]["dist"] = Dist.fromJson(jsonObject)
+            if setting != "nataf" and jsonObject is not None:
+                stats[iteration]["dist"] = Dist.fromJson(jsonObject)
         print "done"
     return stats
 
@@ -54,32 +56,69 @@ def plotLogLikelihood(densities, functionName, out=False):
     for i, (setting, stats) in enumerate(densities.items()):
         numIterations = max(numIterations, len(stats))
 
-    data = np.zeros((numIterations, numDensities))
+    data = {"train": np.zeros((numIterations, numDensities)),
+            "test": np.zeros((numIterations, numDensities)),
+            "validation": np.zeros((numIterations, numDensities))}
     names = [None] * numDensities
     i = 0
-    for i, (setting, stats) in enumerate(densities.items()):
+    for i, setting in enumerate(["kde_gaussian",
+                                 "kde_epanechnikov",
+                                 "sgde_zero",
+                                 "sgde_boundaries"]):
+        stats = densities[setting]
         if "sgde" in setting:
             if "zero" in setting:
-                names[i] = "SGDE \n extended"
+                names[i] = "SGDE \n set-to-zero"
+            else:
+                names[i] = "SGDE \n interp. bound."
+            trainkey = "ZeroSGDE"
         elif "nataf" in setting:
             names[i] = "Nataf"
         elif "gaussian" in setting:
             names[i] = "KDE \n Gaussian"
+            trainkey = "KDE"
+        elif "epanechnikov" in setting:
+            names[i] = "KDE \n Epan."
+            trainkey = "KDE"
         for j, values in enumerate(stats.values()):
-            data[j, i] = values["crossEntropyValidation"]
+            data["train"][j, i] = values["crossEntropyTrain%s" % trainkey]
+            data["test"][j, i] = values["crossEntropyTest%s" % trainkey]
+            data["validation"][j, i] = values["crossEntropyValidation"]
 
     pos = np.arange(0, numDensities)
 
-    fig = plt.figure()
-    plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
-                   showextrema=True, showmedians=True, bw_method=0.5)
-    plt.xticks(pos, names)
-    plt.ylabel("cross entropy")
+    fig = plt.figure(figsize=(13, 4.5))
+    ax = fig.add_subplot(111)
+#     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
+#                    showextrema=True, showmedians=True, bw_method=0.5)
+    width = 0.28
+    for i, category in enumerate(["train", "test", "validation"]):
+        values = data[category]
+        yval = np.ndarray(values.shape[1])
+        for j in xrange(values.shape[1]):
+            yval[j] = np.mean(values[:, j])
+        rects = ax.bar(pos + i * width, yval, width, color=load_color(i),
+                       label=category)
+        for rect in rects:
+            h = -rect.get_height()
+            ax.text(rect.get_x() + rect.get_width() / 2., h - 0.2, '%.2f' % h,
+                    ha='center', va='bottom')
+
+#     plt.xticks(pos, names)
+    ax.set_xticks(pos + width)
+    ax.set_xticklabels(names)
+    ax.set_ylabel("cross entropy")
+    yticks = np.arange(-1.5, 0.5, 0.5)
+    ax.set_yticks(yticks)
+    ax.set_yticklabels(yticks)
+    ax.set_ylim(-1.7, 0)
+    lgd = insert_legend(fig, loc="right", ncol=1)
 
     if out:
         savefig(fig,
                 os.path.join("plots", "log_likelihood_%s" % functionName),
-                tikz=True)
+                tikz=True,
+                lgd=lgd)
         plt.close(fig)
     else:
         plt.show()
@@ -94,11 +133,15 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
     data = np.zeros((numIterations, 2 * numDensities))
     names = [None] * data.shape[1]
     i = 0
-    for i, (setting, stats) in enumerate(densities.items()):
+    for i, setting in enumerate(["kde_gaussian",
+                                 "kde_epanechnikov",
+                                 "sgde_zero",
+                                 "sgde_boundaries"]):
+        stats = densities[setting]
         if "sgde" in setting:
             if "zero" in setting:
-                names[2 * i] = "SGDE \n extended \n shuffled"
-                names[2 * i + 1] = "SGDE \n extended \n not shuffled"
+                names[2 * i] = "SGDE \n set-to-zero \n shuffled"
+                names[2 * i + 1] = "SGDE \n set-to-zero \n not shuffled"
             else:
                 names[2 * i] = "SGDE \n interp. bound. \n shuffled"
                 names[2 * i + 1] = "SGDE \n interp. bound. \n not shuffled"
@@ -108,6 +151,9 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
         elif "gaussian" in setting:
             names[2 * i] = "KDE \n Gaussian \n shuffled"
             names[2 * i + 1] = "KDE \n Gaussian \n not shuffled"
+        elif "epanechnikov" in setting:
+            names[2 * i] = "KDE \n Epan. \n shuffled"
+            names[2 * i + 1] = "KDE \n Epan. \n not shuffled"
         for j, values in enumerate(stats.values()):
             numDims = values["config"]["numDims"]
             pvalues_shuffled = np.zeros(numDims)
@@ -119,7 +165,7 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
 
     pos = np.arange(0, len(names))
-    fig = plt.figure(figsize=(8, 4.5))
+    fig = plt.figure(figsize=(16, 4.5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
@@ -140,6 +186,107 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
     else:
         plt.show()
 
+def plotCovarianceConvergence(densities, functionName, out=False):
+    _, _, natafType = load_data_set(functionName, numSamples=0, numDims=2)
+
+    covMatrix = natafType["cov"]
+
+    numDensities = len(densities)
+    numIterations = 0
+    for i, (setting, stats) in enumerate(densities.items()):
+        numIterations = max(numIterations, len(stats))
+
+    data = np.zeros((numIterations, numDensities))
+    names = [None] * numDensities
+    i = 0
+    for i, setting in enumerate(["kde_gaussian",
+                                 "kde_epanechnikov",
+                                 "sgde_zero",
+                                 "sgde_boundaries"]):
+        stats = densities[setting]
+        if "sgde" in setting:
+            if "zero" in setting:
+                names[i] = "SGDE \n set-to-zero"
+            else:
+                names[i] = "SGDE \n interp. bound."
+        elif "nataf" in setting:
+            names[i] = "Nataf"
+        elif "gaussian" in setting:
+            names[i] = "KDE \n Gaussian"
+        elif "epanechnikov" in setting:
+            names[i] = "KDE \n Epan."
+        for j, values in enumerate(stats.values()):
+            data[j, i] = np.linalg.norm(values["dist"].cov() - covMatrix)
+
+    pos = np.arange(0, numDensities)
+
+    fig = plt.figure(figsize=(13, 4.5))
+    ax = fig.add_subplot(111)
+    plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
+                   showextrema=True, showmedians=True, bw_method=0.5)
+    plt.xticks(pos, names)
+    plt.ylabel(r"$||\hat{C} - C||$")
+
+    if out:
+        savefig(fig,
+                os.path.join("plots", "convergence_covariance_%s" % functionName),
+                tikz=True)
+        plt.close(fig)
+    else:
+        plt.show()
+
+
+def plotDataset(functionName, numSamples=10000, numDims=2, out=False):
+    dataset, bounds, _ = load_data_set(functionName, numSamples, numDims=2)
+    fig = plt.figure()
+    plt.plot(dataset[:, 0], dataset[:, 1],
+             "o ",
+             color=load_color(0))
+    plt.xlabel(r"$\xi_1$")
+    plt.ylabel(r"$\xi_2$")
+    plt.xlim(bounds[0])
+    plt.ylim(bounds[1])
+    plt.title("Two-moons dataset",
+              fontproperties=load_font_properties())
+
+    if out:
+        savefig(fig,
+                os.path.join("plots", "%s_dataset" % functionName),
+                tikz=True)
+        plt.close(fig)
+    else:
+        plt.show()
+
+def plotDensities(densities, functionName, out=False):
+    for setting, stats in densities.items():
+        if setting != "nataf":
+            U = stats[0]["dist"]
+            if "kde" in setting:
+                label = r'$f_{\mathcal{S}_M}(\xi_1, \xi_2)$'
+                if "gaussian" in setting:
+                    title = "KDE (Gaussian)"
+                else:
+                    title = "KDE (Epanechnikov)"
+            else:
+                label = r'$f_{\mathcal{I}}(\xi_1, \xi_2)$'
+                if "zero" in setting:
+                    title = "SGDE (set-to-zero)"
+                else:
+                    title = "SGDE (interp. bound.)"
+            fig = plt.figure()
+            plotDensity2d(U, color_bar_label=label)
+            plt.xlabel(r"$\xi_1$")
+            plt.ylabel(r"$\xi_2$")
+            plt.title(title,
+                      fontproperties=load_font_properties())
+            if out:
+                savefig(fig,
+                        os.path.join("plots", "%s_%s" % (functionName, setting)),
+                        tikz=True)
+                plt.close(fig)
+            
+    if not out:
+        plt.show()
 
 def loadDensities(functionName):
     ans = {}
@@ -156,6 +303,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     densities = loadDensities(args.function)
-    plotLogLikelihood(densities, args.function, args.out)
-    plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
-    plt.show()
+    plotCovarianceConvergence(densities, "mult_beta", args.out)
+#     plotLogLikelihood(densities, args.function, args.out)
+#     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
+#     plotDensities(densities, args.function, out=args.out)
+#     plotDataset(args.function, out=args.out)
