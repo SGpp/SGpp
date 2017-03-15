@@ -8,7 +8,6 @@
 
 #include <x86intrin.h>
 #include <malloc.h>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCL.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
@@ -26,7 +25,7 @@ namespace datadriven {
 namespace DensityAVX {
 #define AVX_MULT_MAX_DIMENSIONS 32
 #define AVX_MULT_INNER_BLOCKSIZE 128
-class OperationDensityMultiplicationAVX : public DensityOCLMultiPlatform::OperationDensity {
+    class OperationDensityMultiplicationAVX {
  private:
   size_t actual_gridsize;
   size_t used_gridsize;

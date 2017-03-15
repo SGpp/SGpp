@@ -41,7 +41,7 @@ void OperationMultipleEvalSubspaceSimple::multImpl(sgpp::base::DataVector&
   size_t* intermediates = new size_t[dim + 1];
   intermediates[0] = 0;
 
-  double maxIndex = static_cast<double>(subspaceCount * subspaceSize);
+  size_t maxIndex = subspaceCount * subspaceSize;
 
   //process the next chunk of data tuples in parallel
   for (size_t dataIndex = start_index_data; dataIndex < end_index_data;

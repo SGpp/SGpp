@@ -78,11 +78,8 @@ MICOnlyFiles = [
 ]
 
 excludeFiles = OCLOnlyFiles
-for t in env["CPPDEFINES"]:
-  if t[0] == "USE_MPI":
-    if not t[1]:
-      excludeFiles += MPIOnlyFiles
-    break
+if not "USE_MPI" in env or not env["USE_MPI"]:
+  excludeFiles += MPIOnlyFiles
 
 module = ModuleHelper.Module(moduleDependencies, excludeFiles=excludeFiles)
 
