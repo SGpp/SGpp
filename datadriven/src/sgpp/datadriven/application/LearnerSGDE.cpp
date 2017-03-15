@@ -533,16 +533,18 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
 }
 
 base::OperationMatrix* LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
-  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
-    return op_factory::createOperationLTwoDotExplicit(grid);
-  } else {
-    return op_factory::createOperationLTwoDotProduct(grid);
-  }
+  return op_factory::createOperationLTwoDotProduct(grid);
 }
 
 base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& grid,
                                                                     base::DataMatrix& train) {
-  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
+  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline ||
+      grid.getType() == base::GridType::BsplineBoundary ||
+      grid.getType() == base::GridType::BsplineClenshawCurtis ||
+      grid.getType() == base::GridType::ModBspline ||
+      grid.getType() == base::GridType::PolyClenshawCurtis ||
+      grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||
+      grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return op_factory::createOperationMultipleEvalNaive(grid, train);
   } else {
     return op_factory::createOperationMultipleEval(grid, train);
