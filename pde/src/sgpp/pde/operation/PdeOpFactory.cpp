@@ -81,7 +81,7 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
     return new pde::OperationLaplaceLinearStretchedBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
-    return new pde::OperationLaplacePoly(&grid.getStorage());
+    return new pde::OperationLaplacePoly(&grid);
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }

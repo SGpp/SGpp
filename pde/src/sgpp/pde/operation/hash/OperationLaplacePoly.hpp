@@ -15,7 +15,7 @@ namespace sgpp {
 namespace pde {
 
 /**
- * Implementation for B-spline functions of Laplace Operation, linear grids without boundaries
+ * Implementation for Poly functions of Laplace Operation, linear grids without boundaries
  */
 class OperationLaplacePoly : public sgpp::base::OperationMatrix {
  public:
@@ -39,6 +39,9 @@ class OperationLaplacePoly : public sgpp::base::OperationMatrix {
    * @param result DataVector into which the result of multiplication is stored
    */
   virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
+
+ private:
+  sgpp::base::Grid* grid;
 };
 
 }  // namespace pde

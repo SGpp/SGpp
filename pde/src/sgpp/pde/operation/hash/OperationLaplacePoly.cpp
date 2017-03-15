@@ -20,9 +20,8 @@
 namespace sgpp {
 namespace pde {
 
-OperationLaplacePoly::OperationLaplacePoly(sgpp::base::Grid* grid) {}
-
-OperationLaplacePoly::OperationLaplacePoly(sgpp::base::Grid* grid) {}
+OperationLaplacePoly::OperationLaplacePoly(sgpp::base::Grid* grid):
+		grid(grid) {}
 
 OperationLaplacePoly::~OperationLaplacePoly() {}
 
@@ -82,7 +81,7 @@ void OperationLaplacePoly::mult(sgpp::base::DataVector& alpha,
           double scaling = right - left;
 
           for (size_t c = 0; c < quadOrder; c++) {
-            const double x = offset + scaling * (coordinates[c]);
+            const double x = left + scaling * (coordinates[c]);
             temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
             temp_res_deriv += weights[c] * basis.evalDx(lik, iik, x) *
               basis.evalDx(ljk, ijk, x);
@@ -127,10 +126,9 @@ void OperationLaplacePoly::mult(sgpp::base::DataVector& alpha,
       // multiplication and summation of results
       result[i] += temp_ij * alpha[j];
       if (i != j)
-        result[j] += temp_ij * alpha[i]
+        result[j] += temp_ij * alpha[i];
     }
   }
-
 }
 
 }  // namespace pde

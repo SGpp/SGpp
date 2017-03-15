@@ -54,7 +54,6 @@ def test_LTwoDot(grid, l):
                 print "iik:{} lik:{} ijk:{} ljk:{} error: {}".format(iik, lik, ijk, ljk, error)
                 print "is:{} should:{}".format(m.get(i,j), sol)
 
-
 def test_LTwoDotImplicit(grid, l):
     grid.getGenerator().regular(l)
     gridStorage = grid.getStorage()
@@ -84,16 +83,26 @@ def test_poly_evaldx():
     i = 1
     x = 0.12
     eps = 0.0001
-    b = pysgpp.SPolyBase(3)
+    b = pysgpp.SPolyModifiedClenshawCurtisBase(3)
     tang = b.evalDx(l, i, x)
     sec = (b.eval(l, i, x + eps) -  b.eval(l, i, x - eps)) / (2*eps)
     print "evalDx:{}".format(tang)
     print "sekante:{}".format(sec)
     print "evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) )
-# test_poly_evaldx()
+
+def plot_evaldx():
+    l = 3
+    i = 1
+    xs = np.linspace(0, 1, 50)
+    b = pysgpp.SPolyClenshawCurtisBase(3)
+    plt.plot(xs, [b.evalDx(l, i, x) for x in xs])
+    plt.show()
+    
+test_poly_evaldx()
+# plot_evaldx()
 # test_base()
-d = 1
-l = 5
-grid = pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3)
+# d = 1
+# l = 5
+# grid = pysgpp.Grid.createLinearGrid(d)
 # test_LTwoDot(grid, l)
-test_LTwoDotImplicit(grid, l)
+# test_LTwoDotImplicit(grid, l)
