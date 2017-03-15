@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
 
   // Compare results with correct results
   for (size_t i = 0; i < gridsize; ++i) {
-    BOOST_CHECK_CLOSE(alpha_optimal_result[i], alpha[i], 0.001);
+    BOOST_CHECK_CLOSE(alpha_optimal_result[i], alpha[i], 1.0);
   }
 
   // Cleanup
