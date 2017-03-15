@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef __AVX2__
+
 #ifndef OPERATIONDENSITYMULTIPLICATIONAVX_H
 #define OPERATIONDENSITYMULTIPLICATIONAVX_H
 
@@ -306,3 +308,5 @@ namespace DensityAVX {
 }  // namespace datadriven
 }  // namespace sgpp
 #endif /* OPERATIONDENSITYMULTIPLICATIONAVX_H */
+
+#endif
