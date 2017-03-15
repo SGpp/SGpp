@@ -53,6 +53,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
 
   virtual bool isLeaf() const { return false; }
 
+  /**
+   * @param index Index of the value to get.
+   * @depth Depth of the node, starting from zero.
+   */
   virtual T &get(MultiIndex const &index, size_t depth = 0) {
     size_t currentIndex = index[depth];
     size_t remainingDimensions = context.numDimensions - depth - 1;
@@ -67,6 +71,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
     return children[currentIndex]->get(index, depth + 1);
   }
 
+  /**
+   * @param index Index of the value to set.
+   * @param value Value to set.
+   */
   virtual void set(MultiIndex const &index, T const &value, size_t depth = 0) {
     size_t currentIndex = index[depth];
     size_t remainingDimensions = context.numDimensions - depth - 1;

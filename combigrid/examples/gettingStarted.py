@@ -32,7 +32,7 @@ func = pysgpp.multiFunc(f)
 d = 3
 
 
-## @section combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
+## @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
 ##
 ## Here comes the first and very simple example.
 def example1():
@@ -59,7 +59,7 @@ def example1():
     ## which stores computed function values:
     print("Number of function evaluations: " + str(operation.numGridPoints()))
 
-## @section combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
+## @section py_combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
 ## The next example uses interpolation.
 def example2():
@@ -143,7 +143,7 @@ def example2():
     plt.show()
 
 
-## @section combigrid_example_3 Example 3: Evaluation at multiple points
+## @section py_combigrid_example_3 Example 3: Evaluation at multiple points
 ##
 ## Now, we want to do interpolation at multiple evaluation points efficiently.
 def example3():
@@ -213,7 +213,7 @@ def example4():
     result = operation3.evaluate(2)
     print("Result computed (3rd time): " + str(result))
 
-## @section combigrid_example_5 Example 5: Using different operations in each dimension
+## @section py_combigrid_example_5 Example 5: Using different operations in each dimension
 ##
 ## This example shows how to apply different operators in different dimensions.
 def example5():
@@ -259,7 +259,7 @@ def example5():
     print("Result: " + str(result))
 
 
-## @section combigrid_example_6 Example 6: Using a function operating on grids
+## @section py_combigrid_example_6 Example 6: Using a function operating on grids
 ## This example shows how to apply different operators in different dimensions.
 
 ##In some applications, you might not want to have a callback function that is called at single
