@@ -271,6 +271,40 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
   }
 }
 
+// test for ModPolyClenshawCurtis
+BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
+  const size_t d = 3;
+  const size_t l = 3;
+  const size_t p = 3;
+  sgpp::base::Grid* grid(sgpp::base::Grid::createModPolyClenshawCurtisGrid(d, p));
+  grid->getGenerator().regular(l);
+
+  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::OperationMatrix* opExplicit =
+    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+
+  // test Explicit correctness
+  for (size_t i = 0; i < grid->getSize(); i++) {
+    for (size_t j = i; j < grid->getSize(); j++) {
+      double approx = uniform_distributed_approximation(grid, i, j);
+      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+    }
+  }
+
+  // test if explicit equals implicit
+  sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
+  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector resultImplicit(grid->getSize());
+  sgpp::base::DataVector resultExplicit(grid->getSize());
+
+  opExplicit->mult(alpha, resultExplicit);
+  opImplicit->mult(alpha, resultImplicit);
+  for (size_t i = 0; i < grid->getSize(); i++) {
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+  }
+}
+
 // test for Bspline
 BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
   const size_t d = 3;
