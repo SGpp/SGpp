@@ -42,7 +42,9 @@ class ShufflingFunctor {
   virtual ShufflingFunctor* clone() const = 0;
 
   /**
-   * Create a permutation from a vector of indices. The indices can then be mapped back to samples.
+   * Create a permutation of a Dataset from a vector of indices. The indices can then be mapped back
+   * to the samples.
+   * @param data: Dataset to be permuted.
    * @param indices: vector containing indices. Will permute indices in place.
    */
   virtual void shuffle(const Dataset& data, std::vector<size_t>& indices) = 0;
