@@ -97,6 +97,32 @@ class PolyBasis : public Basis<LT, IT> {
     }
   }
 
+  double evalDx(LT level, IT index, double x) {
+    // uses the logarithmic derivative method from the second answer
+    // http://math.stackexchange.com/questions/809927/first-derivative-of-lagrange-polynomial
+
+    double hInvDbl = static_cast<double>(1 << level);
+    double h = 1 / hInvDbl;
+    size_t deg = std::min<size_t>(degree, level + 1);
+    double result = eval(level, index, x);
+    if (result == 0.0) return 0.0;
+
+    double sum = 0.0;
+    // see eval-function for explanation of traversal code
+    size_t root = index;
+    size_t id = root;
+    double base = static_cast<double>(root);
+    root++;
+    sum += 1 / (x - h * static_cast<double>(root));
+    root -= 2;
+    for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
+      sum += 1 / (x - h * static_cast<double>(root));
+      root += idxtable[id & 3] * j;
+      id >>= 1;
+    }
+    return result * sum;
+  }
+
   /**
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.

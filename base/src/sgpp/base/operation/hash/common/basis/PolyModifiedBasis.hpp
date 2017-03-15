@@ -64,6 +64,22 @@ class PolyModifiedBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
+  double evalDx(LT level, IT index, double x) {
+    double hInvDbl = static_cast<double>(1 << level);
+    const IT hInv = static_cast<IT>(1) << level;
+    if (level == 1) {
+      // first level
+      return 0.0;
+    } else if (index == 1) {
+      return ((x <= 2.0 / hInvDbl) ? -hInvDbl : 0.0);
+    } else if (index == hInv - 1) {
+      return ((x >= 1.0 - 2.0 / hInvDbl) ? hInvDbl : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.evalDx(level, index, x);
+    }
+  }
+
   double getIntegral(LT level, IT index) {
     const IT hInv = static_cast<IT>(1) << level;
 
