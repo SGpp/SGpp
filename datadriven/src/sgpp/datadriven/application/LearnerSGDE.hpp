@@ -129,11 +129,9 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   virtual double variance();
 
   /**
-   * Computes the covariance of the density function
-   * @param cov DataMatrix (num dims x num dims)where the covariance is stored
-   * @param bounds DataMatrix (num dims x 2) boundaries of hypercube
+   * WARNING: Not yet implemented
    */
-  void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr) override;
+  virtual void cov(base::DataMatrix& cov);
 
   /**
    * returns the samples in the given dimension

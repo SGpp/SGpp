@@ -19,7 +19,7 @@ class SetGridPointsToZero(InterpolationAlgorithm):
 
         for newGp in newGridPoints:
             # run over all grid points of current level
-            i = newGs.getSequenceNumber(newGp)
+            i = newGs.seq(newGp)
             nodalValues[i] = 0.
 
         return hierarchize(grid, nodalValues)

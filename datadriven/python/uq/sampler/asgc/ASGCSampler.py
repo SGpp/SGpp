@@ -3,6 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
+from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 """
 @file    ASGCSampler.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -19,16 +20,12 @@ from pysgpp.extensions.datadriven.uq.dists import Dist
 from pysgpp.extensions.datadriven.uq.parameters import ParameterSet
 from pysgpp.extensions.datadriven.uq.sampler import SampleType, Samples
 from pysgpp.extensions.datadriven.uq.sampler.Sampler import Sampler
-from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
-
 from pysgpp import DataVector
 
 from ASGCSamplerSpecification import ASGCSamplerSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
-
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class ASGCSampler(Sampler):
@@ -45,7 +42,7 @@ class ASGCSampler(Sampler):
 
         self.__samples = None
         self.__iteration = 0
-        self.__verbose = False
+        self.__verbose = True
 
     def getGrid(self):
         return self.__grid
@@ -62,10 +59,10 @@ class ASGCSampler(Sampler):
         Create a set of all collocation nodes
         """
         gs = self.__grid.getStorage()
-        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float')
+        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
-            gs.getCoordinates(gs.getPoint(i), p)
+            gs.getPoint(i).getStandardCoordinates(p)
             ps[i, :] = p.array()
 
         return ps
@@ -85,7 +82,6 @@ class ASGCSampler(Sampler):
 
         # print some information
         if self.__verbose:
-            print "-" * 70
             print "iteration: %i" % self.__iteration
             print "old grid size: %i" % oldGridSize
             print "old AS size: %i" % oldAdmissibleSetSize
@@ -94,23 +90,20 @@ class ASGCSampler(Sampler):
             print "new AS size: %i" % self.__refinementManager\
                                           .getAdmissibleSet()\
                                           .getSize()
-            print "-" * 70
 
-#         fig = plt.figure()
-#         plotGrid(self.__grid, knowledge.getAlpha(),
-#                  self.__refinementManager.getAdmissibleSet().values(),
-#                  self.__params, newCollocationNodes)
-#
+#         fig = plotGrid(self.__grid, self.__learner.getKnowledge().getAlpha(self.getQoI()),
+#                        self.getRefinement().getAdmissibleSet(),
+#                        self.__params, newCollocationNodes)
 # #         fig.savefig('%i.png' % self._learner.iteration)
 #         fig.show()
-#         plt.show()
+#         import pdb; pdb.set_trace()
 
         # parse them to a numpy array
         gs = self.__grid.getStorage()
         p = DataVector(gs.getDimension())
         ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float')
         for i, gp in enumerate(newCollocationNodes):
-            gs.getCoordinates(gp, p)
+            gp.getStandardCoordinates(p)
             ans[i, :] = p.array()
 
         return ans
@@ -241,11 +234,14 @@ class ASGCSampler(Sampler):
         """
         @return: string that represents the object
         """
-        raise NotImplementedError()
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
         for attrName in dir(self):
             attrValue = self.__getattribute__(attrName)
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        for attrName in dir(self.__specification):
+            attrValue = self.__specification.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
         s = serializationString.rstrip(",\n")

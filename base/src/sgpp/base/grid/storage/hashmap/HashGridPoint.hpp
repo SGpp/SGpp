@@ -17,7 +17,6 @@
 #include <cmath>
 #include <algorithm>
 #include <map>
-#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -305,14 +304,18 @@ class HashGridPoint {
    *
    * @param dim the dimension in which the modification is taken place
    */
-  inline void getLeftLevelZero(size_t dim) { set(dim, 0, 0); }
+  inline void getLeftLevelZero(size_t dim) {
+    set(dim, 0, 0);
+  }
 
   /**
    * Sets the index to the right level zero parent
    *
    * @param dim the dimension in which the modification is taken place
    */
-  inline void getRightLevelZero(size_t dim) { set(dim, 0, 1); }
+  inline void getRightLevelZero(size_t dim) {
+    set(dim, 0, 1);
+  }
 
   /**
    * Sets the index to the left child
@@ -343,107 +346,9 @@ class HashGridPoint {
    *
    * @param d the dimension in which the modification is taken place
    */
-  inline void getRoot(size_t d) { set(d, 1, 1); }
-
-  /**
-   * Sets the index to the parent
-   *
-   * @param dim the dimension in which the modification is taken place
-   */
-  inline void getParent(size_t dim) {
-    level_type l;
-    index_type i;
-    get(dim, l, i);
-    if (l > 1) {
-      set(dim, l - 1, (i >> 1) | 1);
-    } else {
-      set(dim, 0, 0);
-    }
+  inline void getRoot(size_t d) {
+    set(d, 1, 1);
   }
-
-  /**
-   * Sets the index to the grid point at the right boundary of the support
-   * For details see ´http://graphics.stanford.edu/~seander/bithacks.html´ and
-   * ´http://supertech.csail.mit.edu/papers/debruijn.pdf´
-   * WARNING: this just works for grids with non-overlapping basis functions at the same level
-   *          and for uint32_t as index_type
-   * @param dim the dimension in which the modification is taken place
-   */
-  inline void getRightBoundaryPoint(size_t dim) {
-    static_assert(sizeof(index_type) == 4, "this implementation is limited to 32bit indices");
-    index_type rindex = index[dim] + 1;
-    level_type n =
-        multiplyDeBruijnBitPosition[(static_cast<level_type>((rindex & -rindex) * 0x077CB531U)) >>
-                                    27];
-    // check whether the ancestor is a boundary point or not
-    if (n == 0 || n >= level[dim]) {
-      set(dim, 0, 1);
-    } else {
-      set(dim, level[dim] - n, rindex >> n);
-    }
-  }
-
-  /**
-   * Sets the index to the grid point at the left boundary of the support
-   * For details see ´http://graphics.stanford.edu/~seander/bithacks.html´ and
-   * ´http://supertech.csail.mit.edu/papers/debruijn.pdf´
-   * WARNING: this just works for grids with non-overlapping basis functions at the same level
-   *          and for uint32_t as index_type
-   * @param dim the dimension in which the modification is taken place
-   */
-  inline void getLeftBoundaryPoint(size_t dim) {
-    static_assert(sizeof(index_type) == 4, "this implementation is limited to 32bit indices");
-    index_type lindex = index[dim] - 1;
-    level_type n =
-        multiplyDeBruijnBitPosition[(static_cast<level_type>((lindex & -lindex) * 0x077CB531U)) >>
-                                    27];
-    // check whether the ancestor is a boundary point or not
-    if (n == 0 || n >= level[dim]) {
-      set(dim, 0, 0);
-    } else {
-      set(dim, level[dim] - n, lindex >> n);
-    }
-  }
-
-  /**
-   * Sets the index to the grid point at the left boundary of the support
-   * For details see ´http://graphics.stanford.edu/~seander/bithacks.html´ and
-   * ´http://supertech.csail.mit.edu/papers/debruijn.pdf´
-   * WARNING: this just works for grids with non-overlapping basis functions at the same level
-   *          and for uint32_t as index_type
-   * @param dim the dimension in which the modification is taken place
-   */
-  inline void setAsHierarchicalGridPoint(size_t dim, level_type level, index_type index) {
-    static_assert(sizeof(index_type) == 4, "this implementation is limited to 32bit indices");
-    level_type n =
-        multiplyDeBruijnBitPosition[(static_cast<level_type>((index & -index) * 0x077CB531U)) >>
-                                    27];
-    // check whether the ancestor is a boundary point or not
-    if (n == 0) {
-      set(dim, level, index);
-    } else if (n <= level) {
-      set(dim, level - n, index >> n);
-    } else if (index <= 0) {
-      set(dim, 0, 0);
-    } else {
-      set(dim, 0, 1);
-    }
-  }
-
-  /**
-   * checks if this is a hierarchical ancestor of gpj
-   * @param gpj
-   * @return
-   */
-  bool isHierarchicalAncestor(HashGridPoint& gpj);
-
-  /**
-   * checks if this is a hierarchical ancestor of gpj in dimension dim
-   * @param gpj
-   * @param dim
-   * @return
-   */
-  bool isHierarchicalAncestor(HashGridPoint& gpj, size_t dim);
 
  private:
   /// the dimension of the gridpoint
@@ -458,10 +363,6 @@ class HashGridPoint {
   bool leaf;
   /// stores the hashvalue of the gridpoint
   size_t hash;
-
-  /// helper array to find the lowest significant bit efficiently for 32 bit unsigned ints
-  /// -> needed for finding the grid point at the boundary of the support
-  static std::vector<level_type> multiplyDeBruijnBitPosition;
 
   friend struct HashGridPointPointerHashFunctor;
   friend struct HashGridPointPointerEqualityFunctor;

@@ -8,8 +8,7 @@ from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import 
 from pysgpp import Grid, DataVector
 from pysgpp.extensions.datadriven.uq.operations.discretization import discretize
 from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize, \
-    getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
 
 
 class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
@@ -26,7 +25,12 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         super(self.__class__, self).__init__()
         self._U = U
 
-    def computeBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
+    def computeBilinearFormEntry(self, gpi, basisi, gpj, basisj):
+        # check if this entry already exists
+        for key in [self.getKey(gpi, gpj), self.getKey(gpj, gpi)]:
+            if key in self._map:
+                return self._map[key]
+
         # if not, compute it
         ans = 1
         err = 0.
@@ -35,7 +39,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         ngrid = Grid.createPolyBoundaryGrid(1, 2)
         ngrid.getGenerator().regular(2)
         ngs = ngrid.getStorage()
-        nodalValues = DataVector(ngs.getSize())
+        nodalValues = DataVector(ngs.size())
 
         for d in xrange(gpi.getDimension()):
             # get level index
@@ -44,8 +48,8 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
 
             # compute left and right boundary of the support of both
             # basis functions
-            xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
-            xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
+            xlowi, xhighi = self.getBounds(lid, iid)
+            xlowj, xhighj = self.getBounds(ljd, ijd)
 
             xlow = max(xlowi, xlowj)
             xhigh = min(xhighi, xhighj)
@@ -61,8 +65,8 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
                 # do the 1d interpolation ...
                 # define transformation function
                 T = LinearTransformation(xlow, xhigh)
-                for k in xrange(ngs.getSize()):
-                    x = ngs.getCoordinate(ngs.getPoint(k), 0)
+                for k in xrange(ngs.size()):
+                    x = ngs.getPoint(k).getStandardCoordinate(0)
                     x = T.unitToProbabilistic(x)
                     nodalValues[k] = basisi.eval(lid, iid, x) * \
                         basisj.eval(ljd, ijd, x)

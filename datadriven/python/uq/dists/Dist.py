@@ -91,29 +91,6 @@ class Dist(object):
         """
         raise NotImplementedError()
 
-    def cov(self):
-        """
-        Get covariance matrix
-        """
-        return np.diag(np.ones(self.getDim()) * self.var())
-
-    def corrcoeff(self, covMatrix=None):
-        """
-        """
-        if covMatrix is None:
-            covMatrix = self.cov()
-
-        numDims = covMatrix.shape[0]
-        corr = np.ndarray(covMatrix.shape)
-        for idim in xrange(numDims):
-            sigmai = np.sqrt(covMatrix[idim, idim])
-            for jdim in xrange(idim + 1, numDims):
-                sigmaj = np.sqrt(covMatrix[jdim, jdim])
-                corrij = covMatrix[idim, jdim] / (sigmai * sigmaj)
-                corr[idim, jdim] = corr[jdim, idim] = corrij
-            corr[idim, idim] = 1.0
-        return corr
-
     def discretize(self, *args, **kws):
         """
         discretize the pdf of the current distribution
@@ -223,27 +200,22 @@ class Dist(object):
     @classmethod
     def fromJson(cls, jsonObject):
         import pysgpp.extensions.datadriven.uq.dists as dists
-        if 'uq.dists.J' in jsonObject['module']:
+        if jsonObject['module'] == 'bin.uq.dists.J':
             return dists.J.fromJson(jsonObject)
-        elif 'uq.dists.Uniform' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.Corr':
+            return dists.Corr.fromJson(jsonObject)
+        elif jsonObject['module'] == 'bin.uq.dists.Uniform':
             return dists.Uniform.fromJson(jsonObject)
-        elif 'uq.dists.TNormal' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.TNormal':
             return dists.TNormal.fromJson(jsonObject)
-        elif 'uq.dists.Normal' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.Normal':
             return dists.Normal.fromJson(jsonObject)
-        elif 'uq.dists.Lognormal' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.Lognormal':
             return dists.Lognormal.fromJson(jsonObject)
-        elif 'uq.dists.Beta' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.Beta':
             return dists.Beta.fromJson(jsonObject)
-        elif 'uq.dists.MultivariateNormal' in jsonObject['module']:
+        elif jsonObject['module'] == 'bin.uq.dists.MultivariateNormal':
             return dists.MultivariateNormal.fromJson(jsonObject)
-        elif 'uq.dists.SGDEdist' in jsonObject['module']:
-            return dists.SGDEdist.fromJson(jsonObject)
-        elif 'uq.dists.KDEDist' in jsonObject['module']:
-            return dists.KDEDist.fromJson(jsonObject)
-        elif 'uq.dists.Datadist' in jsonObject['module']:
-            return dists.DataDist.fromJson(jsonObject)
-        elif 'uq.dists.NatafDist' in jsonObject['module']:
-            return dists.NatafDist.fromJson(jsonObject)
         else:
-            raise TypeError('Unknown distribution "%s" => Please register it in fromJson function' % jsonObject['module'])
+            raise TypeError('Unknown distribution "%s" => Please register \
+                             it in fromJson function' % jsonObject['module'])
