@@ -107,7 +107,8 @@ void quadrature() {
   fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
-  combiGridEval->addRegularLevels(maxLevelSum);
+  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>(combiGridEval);
+  levelManager->addRegularLevels(maxLevelSum);
 
   // ----- EVAL FUNCTION
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
@@ -130,7 +131,9 @@ void quadrature() {
       std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realFullGridEval);
 
   realFullGridEval->setParameters(parameters);
-  realCombiGridEval->addRegularLevels(maxLevelSum);
+  auto realLevelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>(realCombiGridEval);
+  realLevelManager->addRegularLevels(maxLevelSum);
 
   FloatArrayVector result = realCombiGridEval->getValue();
 
