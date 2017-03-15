@@ -20,7 +20,8 @@
 namespace sgpp {
 namespace pde {
 
-OperationMatrixLTwoDotExplicitModPolyClenshawCurtis::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(
+OperationMatrixLTwoDotExplicitModPolyClenshawCurtis::
+  OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(
     sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
   : ownsMatrix_(false),
     clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {

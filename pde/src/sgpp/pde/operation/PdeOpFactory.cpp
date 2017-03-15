@@ -18,7 +18,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
-#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
@@ -33,6 +33,7 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModPolyClenshawCurtis.hpp>
 
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotBsplineBoundary.hpp>
@@ -46,14 +47,11 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModPolyClenshawCurtis.hpp>
 
+#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -133,7 +131,6 @@ base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
     return new pde::OperationLTwoDotProductLinearStretchedBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotPeriodic(&grid.getStorage());
-    // ab hier evtl aendern
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationMatrixLTwoDotModLinear(&grid);
   } else if (grid.getType() == base::GridType::Poly) {

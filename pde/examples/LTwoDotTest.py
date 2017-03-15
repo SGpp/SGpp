@@ -19,7 +19,7 @@ def test_base():
                 print "error: {}".format(epsilon)
 
 def test_LTwoDot(grid, l):
-    res = 100000
+    res = 10000
     b = grid.getBasis();
     grid.getGenerator().regular(l)
     gridStorage = grid.getStorage()
@@ -42,14 +42,14 @@ def test_LTwoDot(grid, l):
                 ljk = gpj.getLevel(k)
                 ijk = gpj.getIndex(k)
                 # print "i l,i: {},{}   j l,i: {},{}".format(lik, iik, ljk, ijk)
-                xs = np.linspace(0,1,res)
+                xs = np.linspace(0, 1, res)
                 tmp = sum([b.eval(lik, iik, x)*b.eval(ljk, ijk, x) for x in xs])/res
                 sol *= tmp
                 # print("lik:{} iik:{} ljk:{} ijk:{} k:{} tmp: {}".format(lik, iik, ljk, ijk, k,tmp))
             # print(sol)
             error = abs(m.get(i,j) - sol)
             # print error
-            if(error >= 10**-5):
+            if(error >= 10**-4):
                 print "i:{} j:{} error: {}".format(i, j, error)
                 print "iik:{} lik:{} ijk:{} ljk:{} error: {}".format(iik, lik, ijk, ljk, error)
                 print "is:{} should:{}".format(m.get(i,j), sol)
@@ -90,10 +90,10 @@ def test_poly_evaldx():
     print "evalDx:{}".format(tang)
     print "sekante:{}".format(sec)
     print "evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) )
-test_poly_evaldx()
+# test_poly_evaldx()
 # test_base()
-# d = 1
-# l = 7
-# grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)
+d = 1
+l = 5
+grid = pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3)
 # test_LTwoDot(grid, l)
-# test_LTwoDotImplicit(grid, l)
+test_LTwoDotImplicit(grid, l)
