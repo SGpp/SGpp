@@ -3,6 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+  * \page example_interpolation_example_cpp Interpolation Example
+ * This tutorial shows with two simple example functions in two respectively three dimensions how
+ * interpolation with combigrids can be done. These functions are
+ * \f[
+ *   f_{2D}\colon [0, 1]^2 \to \mathbb{R},\quad
+ *   f(x_0, x_1) := 4 x_0^2  (x_1-x_1^2)
+ * \f]
+ * and
+  * \f[
+ *   f_{3D}\colon [0, 1]^3 \to \mathbb{R},\quad
+ *   f(x_0, x_1, x_2) := 1+ \sum_{i=0}^2 (\frac{(x_i - 0.7)^2}{4} +2)
+ * \f].
+ */
+
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 #include <sgpp/combigrid/combischeme/CombiS_CT.hpp>
 
@@ -11,13 +26,7 @@
 #include <vector>
 
 /**
- * \page example_interpolation_example_cpp Interpolation Example
- * This tutorial shows with two simple example functions in two respectively three dimensions how
- * interpolation with combigrids can be done.
- */
-
-/**
- * The exemplary objective functions. This is the three dimensional one.
+ * The exemplary objective function \f$f_{3D}\f$
 */
 double f_3D(const std::vector<double> &coords) {
   return 1.0 + (0.25 * (coords[0] - 0.7) * (coords[0] - 0.7) + 2.0) +
@@ -26,17 +35,17 @@ double f_3D(const std::vector<double> &coords) {
 }
 
 /**
- * This is the two dimensional exemplary objective function.
+ * The exemplary objective function \f$f_{2D} \f$
  */
 double f_2D(const std::vector<double> &coords) {
   return 4.0 * (coords[0] * coords[0]) * (coords[1] - coords[1] * coords[1]);
 }
 
+/**
+ * The main function starts by setting the function pointer func either to the two or three
+ * dimensional function. The default dimension is two.
+ */
 int main() {
-  /**
-   *Set the function pointer func either to the two or three dimensional function. The default
-   *dimension is two.
-   */
   int dim = 2;
   double (*func)(const std::vector<double> &);
 
