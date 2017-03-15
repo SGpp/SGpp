@@ -1,4 +1,5 @@
 scons -j 4 ^
+  VERBOSE=0 ^
   SG_ALL=0 ^
   SG_BASE=1 ^
   SG_OPTIMIZATION=1 ^
@@ -11,6 +12,7 @@ scons -j 4 ^
   PYDOC=0 ^
   ARCH=sse3 ^
   BUILD_STATICLIB=yes ^
+  COMPILE_BOOST_TESTS=0 ^
   CPPPATH=E:\MATLAB\SharedSourceCode\Development\Mex\matlab\include,E:\MATLAB\SharedSourceCode\Development\Mex ^
   LIBPATH=E:\MATLAB\SharedSourceCode\Development\Mex\matlab\bin ^
   RPATH=E:\MATLAB\SharedSourceCode\Development\Mex\matlab\bin
