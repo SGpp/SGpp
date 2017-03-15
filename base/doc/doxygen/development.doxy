@@ -13,10 +13,67 @@ On this page, we describe best coding practices for SG++.
 
 <!-- ############################################################# -->
 @section development_overview Overview
+- @ref development_eclipse
 - @ref development_testing
 - @ref development_doxygen
 - @ref development_coding
 - @ref development_newmodules
+
+<!-- ############################################################# -->
+@section development_eclipse Eclipse
+
+@subsection development_eclipse_setup Setup
+- Select <i>File</i> &rarr; <i>Import...</i> &rarr; <i>Git</i> &rarr; <i>Project from Git</i>.
+
+@image html Import__014.png
+
+- Select <i>Clone URI</i>.
+- Enter URI (SSH or HTTPS) and authentication details.
+- Select branches to clone locally.
+- Choose destination folder (preferably inside current workspace).
+- Wait for clone operation to finish, select "Import as general project" and finish.
+- Right-click newly created project &rarr; <i>New</i> &rarr; <i>Convert to a C/C++ Project (Adds C/C++ nature)</i>.
+- Select <i>Makefile project</i> and <i>Linux GCC</i> as toolchain.
+
+@image html Convert_to_a_C-C___Project__018.png
+
+@subsection development_eclipse_header Fix C++11 header indexing
+
+- Right-click project &rarr; <i>Properties</i> &rarr; <i>C/C++ General</i> &rarr; <i>Preprocessor Include Paths, Macros etc.</i> &rarr; <i>Providers</i> (Tab).
+- Select only <i>CDT User Settings</i> and <i>CDT GCC Built-in Compiler Settings</i>.
+- Move the latter to the top of the list.
+- Add "-std=c++11" to the <i>Command to get compiler specs</i> field.
+
+@image html Properties_for_SGpp__019.png
+
+- Right-click project &rarr; <i>Index</i> &rarr; <i>Rebuild</i>.
+
+@subsection development_eclipse_scons Configure SCons build
+Either overwrite Eclipse build or install SConsolidator plugin.
+
+@subsubsection development_eclipse_scons_overwrite Overwrite Eclipse Build
+- Right-click project &rarr; <i>C/C++ Build</i>.
+- Deselect <i>Use default build command</i> and enter "scons".
+- Switch to <i>Behavior</i> tab.
+- Enter scons parameters (e.g. "-j4 SG_ALL=0 SG_BASE=1") in <i>Build (Incremental build)</i>.
+- Enter "-c" in <i>Clean</i>.
+
+@image html Properties_for_SGpp__020.png
+
+- Optionally add different build configurations.
+
+@subsubsection development_eclipse_scons_sconsolidator Install SConsolidator
+- SConsolidator is an Eclipse plugin that Introduces native support for SCons scripts in Eclipse and provides nice features like dependency visualization.
+- Install SConsolidator from update page as proposed in <a href="http://www.sconsolidator.com/projects/sconsolidator/wiki/Installation" target="_blank">Sconsolidator Wiki</a>.
+- Restart Eclipse.
+- Right click on your project &rarr; <i>SCons</i> &rarr; <i>Use self-provided SCons build</i>.
+- Add your desired SCons options e.g. ("SG_ALL=0 SG_BASE=1"). DO NOT specify parallel building. (e.g. "-j 4"). This is done automatically by SConsolidator.
+- SConsolidator rebuilds the project.
+- Build will from now on automatically use Sconsolidator.
+
+NOTE: Sometimes "Converting projects to SCons projects" hangs. Then use the above method overriding Eclipse build.
+
+
 
 <!-- ############################################################# -->
 @section development_testing Testing
