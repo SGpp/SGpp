@@ -5,16 +5,6 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
-// -------------------------------------------------------
-// shared pointer declarations
-// this needs to be done before the declarations of the types themselves
-//%include <std_shared_ptr.i>
-//%shared_ptr(sgpp::base::Grid)
-//%shared_ptr(sgpp::base::DataVector)
-//%shared_ptr(sgpp::base::DataMatrix)
-// TODO(valentjn): the above code breaks SWIG's director feature (see issue #7)
-// -------------------------------------------------------
-
 namespace std {
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
@@ -101,6 +91,10 @@ namespace std {
 %rename(operatorParentheses) sgpp::base::PredictiveRefinementIndicator::operator();
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp"
+%include "base/src/sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
@@ -141,7 +135,6 @@ namespace std {
 %include "base/src/sgpp/base/algorithm/AlgorithmEvaluation.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp"
 %include "base/src/sgpp/base/algorithm/sweep.hpp"
-//%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 //%include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"

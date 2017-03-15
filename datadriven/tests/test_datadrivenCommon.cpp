@@ -4,20 +4,21 @@
 // sgpp.sparsegrids.org
 
 #include <zlib.h>
-#include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/test/unit_test.hpp>
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <random>
 #include <fstream>
+#include <iostream>
+#include <random>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <vector>
 
-#include "test_datadrivenCommon.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "test_datadrivenCommon.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -110,8 +111,8 @@ void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp:
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alpha, adaptConfig.noPoints_, adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -135,8 +136,8 @@ void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp:
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alphaRefine, adaptConfig.noPoints_, adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -156,7 +157,7 @@ double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& r
   double valueReference = 0.0;
 
   for (size_t i = 0; i < resultsCompare.getSize(); i++) {
-    double diff = (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
+    double diff = (results[i] - resultsCompare[i]);
 
     if (diff > largestDifference) {
       anyDifferentValue = true;
@@ -165,9 +166,7 @@ double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& r
       valueReference = resultsCompare[i];
     }
 
-    //        BOOST_TEST_MESSAGE("i: " << i << " mine: " << results[i] << " ref: " <<
-    //        resultsCompare[i]);
-    mse += (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
+    mse += diff * diff;
   }
 
   if (anyDifferentValue) {
@@ -181,13 +180,23 @@ double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& r
   return mse;
 }
 
-double compareToReference(sgpp::base::GridType gridType, std::string fileName, size_t level,
-                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
-                          size_t numRefinements) {
+void compareDatasets(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                     sgpp::base::GridType gridType, size_t level,
+                     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse = compareToReference(gridType, std::get<0>(fileNameError), level, configuration);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << std::endl;
+  }
+}
+
+double compareToReference(sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = numRefinements;
+  adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
@@ -247,8 +256,20 @@ double compareToReference(sgpp::base::GridType gridType, std::string fileName, s
   return mse;
 }
 
+void compareDatasetsTranspose(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                              sgpp::base::GridType gridType, size_t level,
+                              sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse =
+        compareToReferenceTranspose(gridType, std::get<0>(fileNameError), level, configuration);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << " (transposed)" << std::endl;
+  }
+}
+
 double compareToReferenceTranspose(
-    sgpp::base::GridType gridType, std::string fileName, size_t level,
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;

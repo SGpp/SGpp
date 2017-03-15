@@ -27,7 +27,7 @@ namespace parallel {
  * This class defines an interface similar to OperationMultipleEval in order to support SIMD
  * architectures
  * for datadriven task (multiple function evaluations, classification, regression). Target
- * architectures may be Intel SSE, Intel AVX, nVidia CUDA, OpenCL.
+ * architectures may be Intel SSE, Intel AVX, OpenCL.
  */
 class OperationMultipleEvalVectorized {
  protected:

@@ -4,13 +4,13 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp_base.hpp>
-#include <sgpp_parallel.hpp>
 #include <sgpp_datadriven.hpp>
+#include <sgpp_parallel.hpp>
 
-#include <string>
-#include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
+#include <string>
 
 // print grid in gnuplot readable format (1D and 2D only)
 // #define GNUPLOT
@@ -97,8 +97,6 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
     std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl
               << std::endl;
 #endif
-  } else if (vecType == sgpp::parallel::CUDA) {
-    std::cout << "Vectorized: NVIDIA CUDA" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
   } else if (vecType == sgpp::parallel::Hybrid_X86SIMD_MIC) {
@@ -430,8 +428,6 @@ int main(int argc, char* argv[]) {
       vecType = sgpp::parallel::OpenCL;
     } else if (vectorization == "HYBRID_X86SIMD_OCL") {
       vecType = sgpp::parallel::Hybrid_X86SIMD_OpenCL;
-    } else if (vectorization == "CUDA") {
-      vecType = sgpp::parallel::CUDA;
     } else if (vectorization == "MIC") {
       vecType = sgpp::parallel::MIC;
     } else if (vectorization == "HYBRID_X86SIMD_MIC") {
