@@ -304,5 +304,16 @@ CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimension
       std::make_shared<StandardLevelManager>(), func);
 }
 
+std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpUniformNoBoundaryLinearInterpolation(size_t numDimensions,
+                                                                       MultiFunction func) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+          numDimensions, CombiHierarchies::expUniformNoBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiLinearInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/

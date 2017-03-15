@@ -268,6 +268,15 @@ class CombigridMultiOperation {
    */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformLinearInterpolation(
       size_t numDimensions, MultiFunction func);
+
+  /**
+   * Returns a CombigridMultiOperation doing (multi-)linear interpolation
+   * on a uniform grid without boundary using an exponential growth strategy (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   */
+  static std::shared_ptr<CombigridMultiOperation> createExpUniformNoBoundaryLinearInterpolation(
+      size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/
