@@ -39,7 +39,7 @@ void OperationMultipleEvalSubspaceSimple::multTransposeImpl(
   size_t* intermediates = new size_t[dim + 1];
 
   //double maxIndex = sizeof(allSubspaces) / (subspaceSize * sizeof(size_t));
-  double maxIndex = static_cast<double>(subspaceCount * subspaceSize);
+  size_t maxIndex = subspaceCount * subspaceSize;
 
   for (size_t dataIndex = start_index_data; dataIndex < end_index_data;
        dataIndex++) {

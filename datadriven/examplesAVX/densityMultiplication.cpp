@@ -9,11 +9,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp>
-#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -25,7 +21,7 @@
 
 int main() {
   size_t dimension = 4, tiefe = 10;
-  double lambda = 0.00001;
+  // double lambda = 0.00001;
 
   // Create Grid
   sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dimension);
