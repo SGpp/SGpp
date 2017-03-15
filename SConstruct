@@ -115,7 +115,7 @@ vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
 vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
-vars.Add(BoolVariable("USE_HPX", "Enable HPX support", False))
+vars.Add(BoolVariable("USE_HPX", "Enable HPX support (implies USE_OCL)", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
@@ -125,13 +125,15 @@ vars.Add("HPX_RELEASE_LIBRARY_PATH", "Sets the path to the HPX release libraries
 vars.Add("HPX_SHARED_INCLUDE_PATH", "Sets the path to the HPX shared headers", None)
 vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", None)
 vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
+vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
+vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
 vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
-                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -145,6 +147,8 @@ vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
+                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
@@ -167,6 +171,10 @@ else:
 
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
 finalMessagePrinter.env = env
+
+# USE_HPX implies USE_OCL
+if env["USE_HPX"]:
+  env["USE_OCL"] = True
 
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
