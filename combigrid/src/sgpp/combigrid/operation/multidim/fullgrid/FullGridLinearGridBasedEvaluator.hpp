@@ -50,15 +50,16 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
 
  public:
   /**
-     * Constructor.
-     *
-     * @param storage Storage that stores and provides the function values for each grid point.
-     * @param evaluatorPrototypes prototype objects for the evaluators that are cloned to get an
-     * evaluator for each dimension and each level.
-     * @param pointHierarchies PointHierarchy objects for each dimension providing the points for
-   * each
-     * level and information about their ordering.
-     */
+   * Constructor.
+   *
+   * @param storage Storage that stores and provides the function values for each grid point.
+   * @param evaluatorPrototypes prototype objects for the evaluators that are cloned to get an
+   * evaluator for each dimension and each level.
+   * @param pointHierarchies PointHierarchy objects for each dimension providing the points for
+   * each level and information about their ordering.
+   * @param gridFunction callback function that is called with a grid as parameters and should
+   * return a TreeStorage that contains the values at these grid points
+   */
   FullGridLinearGridBasedEvaluator(
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,

@@ -50,6 +50,10 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
     }
   }
 
+  /**
+   * @param index Index of the value to get.
+   * @param depth Depth of the node, starting from zero.
+   */
   virtual T &get(MultiIndex const &index, size_t depth = 0) {
     size_t currentIndex = index[depth];
     ensureVectorEntry(currentIndex);
@@ -60,6 +64,11 @@ class LowestTreeStorageNode : public AbstractTreeStorageNode<T> {
     return elements[currentIndex];
   }
 
+  /**
+   * @param index Index of the value to set.
+   * @param value Value to set.
+   * @param depth Depth of the node, starting from zero.
+   */
   virtual void set(MultiIndex const &index, T const &value, size_t depth = 0) {
     size_t currentIndex = index[depth];
     ensureVectorEntry(currentIndex);
