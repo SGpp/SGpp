@@ -40,6 +40,8 @@ class TreeStorageSerializationStrategy
    * DefaultSerializationStrategy<T> will be used. The serialization strategy may use any
    * characters, this class will use escaping to deal with it.
    * @param numDimensions Dimension of the tree storage.
+   * @param innerStrategy Strategy that should be used to serialize the contained objects of the
+   * TreeStorage.
    */
   TreeStorageSerializationStrategy(
       size_t numDimensions,

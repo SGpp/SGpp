@@ -5,7 +5,7 @@
 
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
@@ -305,11 +305,11 @@ CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimension
 }
 
 std::shared_ptr<CombigridMultiOperation>
-CombigridMultiOperation::createExpUniformNoBoundaryLinearInterpolation(size_t numDimensions,
-                                                                       MultiFunction func) {
+CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(size_t numDimensions,
+                                                                     MultiFunction func) {
   return std::make_shared<CombigridMultiOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-          numDimensions, CombiHierarchies::expUniformNoBoundary()),
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiLinearInterpolation()),
       std::make_shared<StandardLevelManager>(), func);
