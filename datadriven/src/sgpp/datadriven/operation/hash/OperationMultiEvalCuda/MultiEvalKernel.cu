@@ -5,7 +5,8 @@
 #include "consts.hpp"
 
 /// Wrapper for kernel call of the stream boundary limitation
-void streamboundCuda (double* pos, gridnode_t* node, limit_t* limit, uint32_t M, uint32_t N) {
+void streamboundCuda (double* pos, gridnode_t* node, limit_t* limit, uint32_t M, uint32_t _M,
+    uint32_t N) {
   uint64_t *idx_p;
 	cudaMalloc((void**)&idx_p,sizeof(uint64_t)*M);
   cudaDeviceSynchronize();
@@ -15,7 +16,7 @@ void streamboundCuda (double* pos, gridnode_t* node, limit_t* limit, uint32_t M,
  	cudaDeviceSynchronize();
   CudaCheckError();
   // Compute lower and upper boundaries
-  gpu_zbound<<<N/CUDA_BLOCKSIZE,CUDA_BLOCKSIZE>>>(idx_p, node, limit, M);
+  gpu_zbound<<<N/CUDA_BLOCKSIZE,CUDA_BLOCKSIZE>>>(idx_p, node, limit, _M);
  	cudaDeviceSynchronize();
   CudaCheckError();
   cudaFree(idx_p);
@@ -38,14 +39,14 @@ void evalCuda (double* res, double *a, gridnode_t* node, double* pos, uint32_t M
 
 /// Wrapper for kernel call of transposed eval with additional FMA
 void transposedCuda (double* a, gridnode_t* node, double* pos, double* y,
-    limit_t* limit, double* b, double c, uint32_t M, uint32_t N) {
-  gpu_transevel<<<N,CUDA_BLOCKSIZE>>>(a, node, pos, y, limit, b, c, 1.0/double(M));
+    limit_t* limit, double* b, double c, uint32_t M, uint32_t _M, uint32_t N) {
+  gpu_transevel<<<N,CUDA_BLOCKSIZE>>>(a, node, pos, y, limit, b, c, 1.0/double(_M));
   cudaDeviceSynchronize();
 }
 
 /// Wrapper for kernel call of transposed eval
 void transposedCuda (double* a, gridnode_t* node, double* pos, double* y,
-    limit_t* limit, uint32_t M, uint32_t N) {
+    limit_t* limit, uint32_t N) {
   gpu_transevel<<<N,CUDA_BLOCKSIZE>>>(a, node, pos, y, limit);
   cudaDeviceSynchronize();
 }

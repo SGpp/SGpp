@@ -54,13 +54,13 @@ public:
 		_size = 0;
 		_ref = false;
 	}
-	
+
 	/// Destructor frees memory on host and device if allocated
 	~HostDevPtr () {
 		if (_host && !_ref) delete[](_host);
 		if (_dev) cudaFree(_dev);
 	}
-	
+
 	/// Frees memory if allocated and sets size to 0
 	void Free () {
 		if (_host && !_ref) {
@@ -74,7 +74,7 @@ public:
 			_dev = NULL;
 		}
 	}
-	
+
 	/// Copies data from host to device
 	void CopyToDev () {
 		if (_host && _dev)
@@ -121,7 +121,9 @@ public:
 	}
 	/// Returns the number of elements
 	const size_t& size () const { return _size; }
+	/// Returns the pointer to the host memory
 	_dtype* host () const { return _host; }
+	/// Returns the pointer to the device memory
 	_dtype* dev () const { return _dev; }
 	/// Writes the host data to a binary file
 	void Save (const char* file) {

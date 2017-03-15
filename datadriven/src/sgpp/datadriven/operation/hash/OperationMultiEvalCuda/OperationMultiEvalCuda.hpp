@@ -9,6 +9,7 @@
 
 #include "cudaHelper.hpp"
 #include "basicCuda.hpp"
+#include "MortonOrder.hpp"
 #include <stdint.h>
 
 namespace sgpp {
@@ -17,9 +18,11 @@ namespace datadriven {
 /// OperationMultipleEval for polynomial basis functions (grad >= 2) using CUDA on grids without boundary nodes
 class OperationMultiEvalCuda: public base::OperationMultipleEval {
  protected:
+  MortonOrder* zorder;
+
   sgpp::base::SGppStopwatch myTimer;
   double duration;
- 
+
   HostDevPtr<gridnode_t> node;
   HostDevPtr<double> alpha;
   HostDevPtr<double> pos;
@@ -28,11 +31,12 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   HostDevPtr<uint32_t> levellimit;
   HostDevPtr<uint32_t> subs;
   uint32_t maxlevel;
-  
+
   uint32_t DIM;
   uint32_t N;
   uint32_t _N;
   uint32_t M;
+  uint32_t _M;
   const bool _ordered;
   uint32_t polygrad;
  public:
@@ -46,13 +50,13 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   void mult(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override;
   /// Transposed evaluation
   void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override;
-  
+
   /// Does all preprocessing for given grid and dataset and copies data to the GPU
   void prepare() override;
-  
+
   /// Returns time in s of last mult, multTransposed, multTransposedFMA
   double getDuration() override;
-  
+
   /// Transposed evaluation with additional FMA. result = 1/M * B*source + lambda * prev
   void multTransposeFMA(sgpp::base::DataVector& source, sgpp::base::DataVector& prev, double lambda, sgpp::base::DataVector& result);
 };
