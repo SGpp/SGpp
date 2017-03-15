@@ -172,10 +172,6 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   }
 }
 
-base::OperationHierarchisation* createOperationArbitraryBoundaryHierarchisation(base::Grid& grid) {
-  return new base::OperationArbitraryBoundaryHierarchisation(grid);
-}
-
 base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationQuadratureLinear(grid.getStorage());
