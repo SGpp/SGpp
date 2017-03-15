@@ -170,14 +170,14 @@ def eval_fullGrid(level, dim, border=True):
 
     grid.getGenerator().full(level)
     gs = grid.getStorage()
-    ans = np.ndarray((gs.getSize(), dim))
+    ans = DataMatrix(gs.getSize(), dim)
     p = DataVector(dim)
 
     for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
-        ans[i, :] = p.array()
+        gs.getPoint(i).getStandardCoordinates(p)
+        ans.setRow(i, p)
 
-    return ans
+    return ans.array()
 
 
 def writeCSV(filename, samples, delim=' '):

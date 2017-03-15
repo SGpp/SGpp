@@ -1,33 +1,29 @@
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
-
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
-from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
+from pysgpp import DataVector
+from scipy.stats import gaussian_kde
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plotDensity3d(U, n=36):
+def plotDensity3d(U, n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     xlim = U.getBounds()[0]
     ylim = U.getBounds()[1]
-    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
-    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
-    Z = np.zeros((n + 1, n + 1))
+    x = np.linspace(xlim[0], xlim[1], n)
+    y = np.linspace(ylim[0], ylim[1], n)
+    Z = np.zeros(n * n).reshape(n, n)
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
-
+    ax.plot_wireframe(xv, yv, Z)
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
 #                            cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
@@ -37,15 +33,15 @@ def plotDensity3d(U, n=36):
 
 #     fig.colorbar(surf, shrink=0.5, aspect=5)
 
-    return fig, ax, Z
+    return fig, ax
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x):
+def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x = np.linspace(0, 1, n + 1, endpoint=True)
-    y = np.linspace(0, 1, n + 1, endpoint=True)
-    Z = np.zeros((n + 1, n + 1))
+    x = np.linspace(0, 1, n)
+    y = np.linspace(0, 1, n)
+    Z = np.zeros((n, n))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
@@ -58,17 +54,13 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
+        gs.getPoint(i).getStandardCoordinates(p)
         gps[i, :] = p.array()
 
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
-
+    ax.plot_wireframe(xv, yv, Z)
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gps.shape[0]), c="red", marker="o")
+    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gs.getSize()), color="red")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
@@ -77,66 +69,21 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
-             isConsistent=True):
+def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x = np.linspace(0, 1, n + 1, endpoint=True)
-    y = np.linspace(0, 1, n + 1, endpoint=True)
-    Z = np.zeros((n + 1, n + 1))
-
+    x = np.linspace(xlim[0], xlim[1], n)
+    y = np.linspace(ylim[0], ylim[1], n)
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
-            Z[j, i] = f(evalSGFunction(grid, alpha,
-                                       np.array([xv[j, i], yv[j, i]]),
-                                       isConsistent=isConsistent))
-
-    # get grid points
-    gs = grid.getStorage()
-    gps = np.zeros([gs.getSize(), 2])
-    p = DataVector(2)
-    for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
-        gps[i, :] = p.array()
-
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    z_min, z_max = min(np.min(Z), z_min), np.max(Z)
-    ax.set_zlim(z_min, z_max)
-    if np.any(np.abs(alpha) > 1e-13):
-        cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
-
-#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-#                            linewidth=0, antialiased=False)
-    ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
-           " ", c="red", marker="o", ms=15)
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    # ax.set_zlim(0, 2)
-
-#     fig.colorbar(surf, shrink=0.5, aspect=5)
-    return fig, ax, Z
-
-
-
-def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
-    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
-    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    Z = np.zeros((n + 1, n + 1))
+    Z = np.zeros((n, n))
 
     for i in xrange(len(x)):
         for j in xrange(len(y)):
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
+    ax.plot_wireframe(xv, yv, Z)
+#     surf = ax.plot_surface(xv, xv, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+#                            linewidth=0, antialiased=False)
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
@@ -153,10 +100,10 @@ def plotSGNodal3d(grid, alpha):
 
     p = DataVector(2)
     for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
+        gs.getPoint(i).getStandardCoordinates(p)
         A[i, 0] = p[0]
         A[i, 1] = p[1]
-        A[i, 2] = evalSGFunction(grid, alpha, p.array())
+        A[i, 2] = evalSGFunction(grid, alpha, p)
 
     return plotNodal3d(A), A
 
@@ -178,30 +125,3 @@ def plotKDE3d(values):
     x, y = values
     ax.scatter(x, y, density, color='red')
     return fig, ax
-
-def plotError3d(f1, f2, xlim=[0, 1], ylim=[0, 1], n=32):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
-    y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
-    Z = np.zeros((n + 1, n + 1))
-
-    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
-            xi = np.array([xv[j, i], yv[j, i]])
-            Z[j, i] = np.abs(f1(xi) - f2(xi))
-
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
-
-#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-#                            linewidth=0, antialiased=False)
-    ax.set_xlim(xlim[0], xlim[1])
-    ax.set_ylim(ylim[0], ylim[1])
-    # ax.set_zlim(0, 2)
-
-#     fig.colorbar(surf, shrink=0.5, aspect=5)
-    return fig, ax, Z
