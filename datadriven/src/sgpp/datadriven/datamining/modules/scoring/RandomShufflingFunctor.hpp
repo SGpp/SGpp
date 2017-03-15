@@ -47,6 +47,7 @@ class RandomShufflingFunctor : public ShufflingFunctor {
 
   /**
    * Rearange indices of data samples in a dataset based on a random seed.
+   * @param data: Dataset to be permuted.
    * @param indices vector containing the indices of the data points to be distributed. Vector is
    * modified in place.
    */
