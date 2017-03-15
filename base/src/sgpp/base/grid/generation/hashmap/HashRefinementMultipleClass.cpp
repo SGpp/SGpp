@@ -6,6 +6,8 @@
  */
 
 #include "HashRefinementMultipleClass.hpp"
+#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sgpp {
 namespace base {
@@ -28,8 +30,8 @@ void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
 }
 
 void HashRefinementMultipleClass::refineGridpointsCollection(GridStorage& storage,
-    RefinementFunctor& functor,
-    AbstractRefinement::refinement_container_type& collection) {
+            RefinementFunctor& functor,
+            AbstractRefinement::refinement_container_type& collection) {
     // TODO (degel_kn): override source: HashRefinement
     // is this method needed?
     // only "calls" refine for gridpoints 
@@ -42,6 +44,23 @@ void HashRefinementMultipleClass::refineGridpointsCollection(GridStorage& storag
     }
   }
 }
+
+void HashRefinementMultipleClass::setCombineGridInfo(Grid* grid,
+        std::vector<sgpp::datadriven::MultipleClassPoint> pts,
+        std::vector<Grid*> classGrids) {
+    grids = classGrids;
+    multigrid = grid;
+    points = pts;
+}
+
+// setClass? multigrid?
+// or independent because only score is important...
+// always insert into all affected classes
+// get seq num of multigrid to get neighbors from points
+// add points for every neighbor
+    // -> at point if not set for one of the points (this - neighbor)
+    // if both already set, set point in between
+    
 
 
 } /* namespace base */

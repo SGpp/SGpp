@@ -5,17 +5,17 @@
 
 #include "MultipleClassRefinementFunctor.hpp"
 
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementMultipleClass.hpp>
 
 #include <iostream>
 #include <tuple>
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementMultipleClass.hpp>
 
 
 namespace sgpp {
@@ -53,7 +53,7 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     
     sgpp::datadriven::MultipleClassPoint mcp = points.at(seq);
     base::HashGridPoint& gp = multigrid->getStorage().getPoint(seq);
-    std::vector<std::tuple<int, size_t>> neighbors = mcp.getNeighbors();
+    std::vector<std::tuple<int, size_t, bool>> neighbors = mcp.getNeighbors();
 
     double score = 0.0;
     /* redesign for class dependent score
@@ -107,7 +107,12 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
         // std::cout << "con " << seq<< "-"<< nextPoint <<": ";
         // std::cout << sCon << "    levelDim  " << (1.0 /maxD) << std::endl;
     }
-    scoresToPrint.at(seq).append(std::to_string(score) + "  |  ");
+    if (refineMulti) {
+        scoresToPrint.at(seq).append("m");
+    } else {
+        scoresToPrint.at(seq).append(std::to_string(current_grid_index));
+    }
+    scoresToPrint.at(seq).append(": " + std::to_string(score) + " | ");
 
     // std::cout << "Point: " << seq << " end score: " << score <<  std::endl;
     return score;
@@ -178,8 +183,8 @@ void MultipleClassRefinementFunctor::findCrossings(
         if ( d == dim && seq < points.size() && leftP < points.size() ) {
             if (points.at(seq).getDominateClass() !=
                         points.at(leftP).getDominateClass()) {
-                points.at(leftP).addNeighbor(seq, d);
-                points.at(seq).addNeighbor(leftP, d);
+                points.at(leftP).addNeighbor(seq, d, true);
+                points.at(seq).addNeighbor(leftP, d, false);
             }
          }
       }
@@ -199,8 +204,8 @@ void MultipleClassRefinementFunctor::findCrossings(
         if ( d == dim && seq < points.size() && rightP < points.size() ) {
             if ( points.at(seq).getDominateClass() !=
                         points.at(rightP).getDominateClass() ) {
-                points.at(seq).addNeighbor(rightP, d);
-                points.at(rightP).addNeighbor(seq, d);
+                points.at(seq).addNeighbor(rightP, d, true);
+                points.at(rightP).addNeighbor(seq, d, false);
             }
         }
       }
@@ -210,7 +215,7 @@ void MultipleClassRefinementFunctor::findCrossings(
 void MultipleClassRefinementFunctor::refine() {
     // Settings: local for now
     // points to refine in combine grid, smaller than refinements_num
-    int partComined = 0;
+    int partComined = 0; // 0-3 for now
     // TODO (degel_kn): update refine generall?
     // refine methode
     // insert in both combined and classgrid
@@ -237,7 +242,7 @@ void MultipleClassRefinementFunctor::refine() {
     // refine combined grid
     refineMulti = true;
     refinements_num = partComined;
-    refineCombinedGrid();
+    refine.free_refine(multigrid->getStorage(), *this);
 
     printPointsInfo();
     printScores();
@@ -245,11 +250,7 @@ void MultipleClassRefinementFunctor::refine() {
 }
 
 void MultipleClassRefinementFunctor::refineCombinedGrid() {
-    // TODO (degel_kn): update refine class
-
-    //multigrid->getGenerator().refine(*this);
-    base::HashRefinementMultipleClass refine;
-    refine.free_refine(multigrid->getStorage(), *this);
+    // TODO (degel_kn): seperate mulitgrid?
 }
 
 base::Grid* MultipleClassRefinementFunctor::getCombinedGrid() {
@@ -284,14 +285,13 @@ void MultipleClassRefinementFunctor::printPointsPlott() {
 void MultipleClassRefinementFunctor::printPointsInfo() {
     for (size_t i = 0; i < points.size() ; i++) {
         std::cout << "Point " << i << ": ";
-        std::cout << points.at(i).getDominateClass();
+        std::cout << points.at(i).getDominateClass() << " ~ ";
 
         sgpp::base::GridPoint& gp = multigrid->getStorage().getPoint(i);
-        std::cout << " leaf " << gp.isLeaf() << " ~ ";
         for (size_t d = 0; d < multigrid->getStorage().getDimension(); d++) {
             std::cout << gp.getStandardCoordinate(d) << " - ";
         }
-        std::cout << std::endl <<  points.at(i).toString() << std::endl;
+        std::cout << points.at(i).toString() << std::endl;
     }
 }
 

@@ -104,7 +104,7 @@ int main() {
         learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
     }
 
-    size_t numSteps = 1;
+    size_t numSteps = 3;
     std::vector<std::string> eval = doClassification(grids2, alphas2, dataTrain, targetTrain);
 
     std::cout << std::endl << "Start" << std::endl;

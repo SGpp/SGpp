@@ -45,11 +45,11 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
         classById.push_back(c1);
     }
 }
-
+/*
 MultipleClassPoint::~MultipleClassPoint() {
     // TODO(degelkn): Auto-generated destructor stub
 }
-
+*/
 int MultipleClassPoint::getDominateClass() const {
     return std::get<1>(classByDensity.at(0));
 }
@@ -73,14 +73,14 @@ void MultipleClassPoint::updateClass(int classId, double newDen, bool hasPoint) 
     classById.at(classId) = c1;
 }
 
-void MultipleClassPoint::addNeighbor(int neighbor, size_t dim) {
-    std::tuple<int, size_t> neigh = { neighbor , dim };
+void MultipleClassPoint::addNeighbor(int neighbor, size_t dim, bool isLeft) {
+    std::tuple<int, size_t, bool> neigh = { neighbor, dim, isLeft };
     if ( std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end() ) {
         neighbors.push_back(neigh);
     }
 }
 
-std::vector<std::tuple<int, size_t>> MultipleClassPoint::getNeighbors() {
+std::vector<std::tuple<int, size_t, bool>> MultipleClassPoint::getNeighbors() {
     return neighbors;
 }
 
@@ -95,8 +95,26 @@ void MultipleClassPoint::resortClasses() {
     std::sort(classByDensity.begin(), classByDensity.end(), ClassCompare());
 }
 
+bool MultipleClassPoint::isClassSet(int classId) {
+    return std::get<2>(*(classById.at(classId)));
+}
+
+std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(double percent) {
+    std::vector<std::tuple<double, int, bool>> result;
+    double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
+    for ( unsigned int i = 0 ; i < classByDensity.size() &&
+                std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
+        result.push_back(classByDensity.at(i));
+    }
+    return result;
+}
+
 std::string MultipleClassPoint::toString() {
-    std::string s = "";
+    std::string s = "-> ";
+    for ( unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
+        s += std::to_string(std::get<0>(neighbors.at(i)))+ ", ";
+    }
+    s += "\n";
     for ( unsigned int i = 0 ; i < classById.size() ; i++ ) {
         std::tuple<double, int, bool> tmp = *(classById.at(i));
         s += " - (" + std::to_string(std::get<0>(tmp)) + ",";
@@ -108,21 +126,7 @@ std::string MultipleClassPoint::toString() {
         s += " - (" + std::to_string(std::get<0>(classByDensity.at(i))) + ",";
         s += std::to_string(std::get<1>(classByDensity.at(i))) + ")";
     }
-    s += "\n";
-    for ( unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
-        s += " - " + std::to_string(std::get<0>(neighbors.at(i)));
-    }
     return s;
-}
-
-std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(double percent) {
-    std::vector<std::tuple<double, int, bool>> result;
-    double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
-    for ( unsigned int i = 0 ; i < classByDensity.size() &&
-                std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
-        result.push_back(classByDensity.at(i));
-    }
-    return result;
 }
 
 void MultipleClassPoint::insertDensitySorted(std::tuple<double, int, bool>* ins) {

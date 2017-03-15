@@ -9,7 +9,7 @@
 #include <vector>
 #include <tuple>
 #include <array>
-#include <sgpp/datadriven/tools/SimpleMultiClassGenerator.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -18,17 +18,18 @@ class MultipleClassPoint{
   explicit MultipleClassPoint(int classes);
   MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids,
                 std::vector<base::DataVector*> alphas);
-  virtual ~MultipleClassPoint();
+  virtual ~MultipleClassPoint() {};
 
   int getDominateClass() const;
-  void updateClass(int classId, double newDen, bool hasPoint);
   double getDensity(int classId) const;
+  void updateClass(int classId, double newDen, bool hasPoint);
 
-  void addNeighbor(int neighbor, size_t dim);
-  std::vector<std::tuple<int, size_t>> getNeighbors();
+
+  void addNeighbor(int neighbor, size_t dim, bool isLeft);
+  std::vector<std::tuple<int, size_t, bool>> getNeighbors();
 
   void resortClasses();
-
+  bool isClassSet(int classId);
   std::vector<std::tuple<double, int, bool>> getTopClasses(double percent);
 
   std::string toString();
@@ -39,7 +40,7 @@ class MultipleClassPoint{
   std::vector<std::tuple<double, int, bool> *> classById;
   std::vector<std::tuple<double, int, bool>> classByDensity;
   // sequence number and dimension of neighbors with a change in dominate classes
-  std::vector<std::tuple<int, size_t>> neighbors;
+  std::vector<std::tuple<int, size_t, bool>> neighbors;
 
   void insertDensitySorted(std::tuple<double, int, bool>* density);
 };
