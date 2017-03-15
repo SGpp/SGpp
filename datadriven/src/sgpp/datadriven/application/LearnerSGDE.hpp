@@ -101,13 +101,13 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param samples DataMatrix (nrows = number of samples, ncols =
    * dimensionality)
    */
-  void initialize(base::DataMatrix& samples) override;
+  virtual void initialize(base::DataMatrix& samples);
 
   /**
    * This methods evaluates the sparse grid density at a single point
    * @param x DataVector length equal to dimensionality
    */
-  double pdf(base::DataVector& x) override;
+  virtual double pdf(base::DataVector& x);
 
   /**
    * Evaluation of the sparse grid density at a set of points.
@@ -116,17 +116,17 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param res DataVector (size = number of samples) where the results are
    * stored
    */
-  void pdf(base::DataMatrix& points, base::DataVector& res) override;
+  virtual void pdf(base::DataMatrix& points, base::DataVector& res);
 
   /**
    * This method computes the mean of the density function
    */
-  double mean() override;
+  virtual double mean();
 
   /**
    * Computes the variance of the density function
    */
-  double variance() override;
+  virtual double variance();
 
   /**
    * Computes the covariance of the density function
@@ -139,22 +139,22 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * returns the samples in the given dimension
    * @param dim
    */
-  std::shared_ptr<base::DataVector> getSamples(size_t dim) override;
+  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim);
 
   /**
    * returns the complete sample set
    */
-  std::shared_ptr<base::DataMatrix> getSamples() override;
+  virtual std::shared_ptr<base::DataMatrix> getSamples();
 
   /**
    * get number of dimensions
    */
-  size_t getDim() override;
+  virtual size_t getDim();
 
   /**
    * get number of samples
    */
-  size_t getNsamples() override;
+  virtual size_t getNsamples();
 
   /**
   * returns the surpluses
