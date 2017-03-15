@@ -39,7 +39,9 @@
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
 %shared_ptr(sgpp::combigrid::AbstractMultiStorage<double>)
+%shared_ptr(sgpp::combigrid::AbstractMultiStorage<uint8_t>)
 %shared_ptr(sgpp::combigrid::TreeStorage<double>)
+%shared_ptr(sgpp::combigrid::TreeStorage<uint8_t>)
 
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
@@ -140,11 +142,13 @@ namespace combigrid {
     %template(FloatScalarVectorMultiStorage) AbstractMultiStorage<FloatScalarVector>;
     %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatArrayVector>;
     %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
-    
+
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
+    %template(Uint8AbstractMultiStorage) AbstractMultiStorage<uint8_t>;
     %template(DoubleTreeStorage) TreeStorage<double>;
+    %template(Uint8TreeStorage) TreeStorage<uint8_t>;
     %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
-    
+
     // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
     // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
 }
@@ -168,16 +172,16 @@ namespace sgpp{
 namespace combigrid {
     %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;
-    
+
     %template(ScalarAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatArrayVector>;
 
     %template(ScalarFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatScalarVector>;
     %template(ArrayFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatArrayVector>;
-    
+
     %template(ScalarFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatScalarVector>;
-    %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;    
-    
+    %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;
+
     %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
     %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
 
@@ -204,7 +208,7 @@ namespace std {
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
-    
+
     // %template(CombiHierarchiesCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
     // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
     // %template(CombiEvaluatorsMultiCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
@@ -214,6 +218,8 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/common/AbstractPermutationIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/MultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp"
+%include "combigrid/src/sgpp/combigrid/common/GridConversion.hpp"
+
 %include "combigrid/src/sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp"
@@ -268,7 +274,7 @@ def multiFunc(funcObj):
     mf = dir.toFunction()
     dir.__disown__()
     return mf
-    
+
 class SFDirectorImpl(SingleFunctionDirector):
     def __init__(self):
         super(SFDirectorImpl, self).__init__()
@@ -302,7 +308,7 @@ def gridFunc(funcObj):
     mf = dir.toFunction()
     dir.__disown__()
     return mf
-    
+
 class TaskDirectorImpl(ThreadPoolTaskDirector):
     def __init__(self):
         super(TaskDirectorImpl, self).__init__()
@@ -319,7 +325,7 @@ def taskFunc(funcObj):
     f = dir.toFunction()
     dir.__disown__()
     return f
-    
+
 class IdleCallbackDirectorImpl(ThreadPoolIdleCallbackDirector):
     def __init__(self):
         super(IdleCallbackDirectorImpl, self).__init__()
