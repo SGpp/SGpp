@@ -35,8 +35,6 @@
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
 
-#include <sgpp/base/operation/hash/OperationArbitraryBoundaryHierarchisation.hpp>
-
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
