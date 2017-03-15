@@ -17,6 +17,7 @@ namespace pde {
 double uniform_distributed_approximation(sgpp::base::Grid* grid, size_t i, size_t j) {
   const size_t d = grid->getDimension();
   const size_t resolution = 10000;
+  const double h = 1.0 / static_cast<double>(resolution);
   sgpp::base::GridStorage& storage = grid->getStorage();
   sgpp::base::SBasis& basis = const_cast<sgpp::base::SBasis&>(grid->getBasis());
   double res = 1.0;
@@ -26,11 +27,17 @@ double uniform_distributed_approximation(sgpp::base::Grid* grid, size_t i, size_
     const sgpp::base::index_t iik = storage.getPoint(i).getIndex(k);
     const sgpp::base::index_t ijk = storage.getPoint(j).getIndex(k);
     double temp_res = 0.0;
-    for (size_t c = 0; c < resolution; c++) {
-      double x = static_cast<double>(c)/static_cast<double>(resolution);
+
+    // --------------------------------------------------------------------------
+    // apply trapezoidal rule
+    temp_res += basis.eval(lik, iik, 0.0) * basis.eval(ljk, ijk, 0.0) / 2.;
+    for (size_t c = 1; c < resolution; c++) {
+      double x = static_cast<double>(c) * h;
       temp_res += basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
     }
-    res *= temp_res/static_cast<double>(resolution);
+    temp_res += basis.eval(lik, iik, 1.0) * basis.eval(ljk, ijk, 1.0) / 2.;
+    // --------------------------------------------------------------------------
+    res *= temp_res * h;
   }
   return res;
 }
@@ -52,7 +59,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -84,7 +91,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModLinear) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -118,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPoly) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -152,7 +159,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyBoundary) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -186,7 +193,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -220,7 +227,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -254,7 +261,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -288,7 +295,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -321,7 +328,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -354,7 +361,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineBoundary) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -387,7 +394,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModBspline) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
@@ -420,7 +427,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(grid, i, j);
       // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 0.001);
+      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
     }
   }
 
