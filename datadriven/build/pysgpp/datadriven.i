@@ -48,10 +48,8 @@
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
-%newobject sgpp::datadriven::KernelDensityEstimator::margToDimX(size_t idim);
+%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
-%newobject sgpp::datadriven::LearnerSGDE::margToDimX(size_t idim);
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
@@ -142,10 +140,6 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
 //TODO(lettrich): this does not work yet. make it work.
-
-%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
 
 // --------------------------------------

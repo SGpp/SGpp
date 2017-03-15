@@ -17,8 +17,6 @@ inverse of a given distrubution function
 
 from Transformation import Transformation
 
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
-
 
 class RosenblattTransformation(Transformation):
     """
@@ -52,32 +50,14 @@ class RosenblattTransformation(Transformation):
     def vol(self):
         return 1.
 
-    def getSize(self):
-        return 1
-
     def __str__(self):
         return "rosenblattTransformation: %s -> U(0, 1)" % str(dist)
-
-    def toJson(self):
-        """
-        Returns a string that represents the object
-        """
-        serializationString = '"module" : "' + \
-                              self.__module__ + '",\n'
-
-        attrName = "_dist"
-        attrValue = self._dist
-        serializationString += ju.parseAttribute(attrValue, attrName)
-
-        s = serializationString.rstrip(",\n")
-
-        return "{" + s + "}"
 
     @classmethod
     def fromJson(cls, jsonObject):
         from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
-        key = '_dist'
+        key = '_RosenblattTransformation__dist'
         if key in jsonObject:
             dist = Dist.fromJson(jsonObject[key])
 

@@ -3,6 +3,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder import GridDescriptor
 
 from ASGCSampler import ASGCSampler
 from ASGCSamplerSpecification import ASGCSamplerSpecification
+from ASGCSamplerStopPolicyDescriptor import ASGCSamplerStopPolicyDescriptor
 
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
 from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerStopPolicy import ASGCSamplerStopPolicy
@@ -29,13 +30,11 @@ class ASGCSamplerBuilder(object):
         """
         Define if spatially adaptive refinement should be done and how...
         """
-        if self.__refinementManagerBuilder is None:
-            self.__refinementManagerBuilder = RefinementManagerDescriptor()
+        self.__refinementManagerBuilder = RefinementManagerDescriptor()
         return self.__refinementManagerBuilder
 
     def withStopPolicy(self):
-        if self.__stopPolicyDescriptor is None:
-            self.__stopPolicyDescriptor = ASGCSamplerStopPolicyDescriptor()
+        self.__stopPolicyDescriptor = ASGCSamplerStopPolicyDescriptor()
         return self.__stopPolicyDescriptor
 
     def __collectGrid(self):
@@ -54,16 +53,19 @@ class ASGCSamplerBuilder(object):
             refinementManager = self.__refinementManagerBuilder.create(grid)
             # check sanity
             if refinementManager.getAdmissibleSet() is None:
-                raise AttributeError('You need to specify an admissible set for refinement.')
+                raise AttributeError('You need to specify an admissible set \
+                                    for refinement.')
             if refinementManager.getRefinementCriterion() is None:
-                raise AttributeError('You need to specify the refinement criterion.')
+                raise AttributeError('You need to specify the refinement \
+                                    criterion.')
             return refinementManager
         else:
             return None
 
     def __collectStopPolicy(self):
         if self.__refinementManagerBuilder is not None and self.__stopPolicyDescriptor is None:
-            raise AttributeError('Refinement is enabled but stop policy is missing')
+            raise AttributeError('Refinement is enabled but stop policy\
+                                 is missing')
         if self.__stopPolicyDescriptor is not None:
             return self.__stopPolicyDescriptor.create()
         else:

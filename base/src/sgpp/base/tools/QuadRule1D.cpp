@@ -9,7 +9,9 @@
 namespace sgpp {
 namespace base {
 
-QuadRule1D::QuadRule1D() : coordinates(maxSupportedLevel), weights(maxSupportedLevel) {}
+QuadRule1D::QuadRule1D() :
+  coordinates(maxSupportedLevel), weights(maxSupportedLevel) {
+}
 
 QuadRule1D::~QuadRule1D() {
   for (size_t i = 0; i < coordinates.size(); i++) {
@@ -23,12 +25,12 @@ QuadRule1D::~QuadRule1D() {
 
 // -------------------------------------------------------------------------
 
-void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates,
-                                          DataVector& pweights) {
+void QuadRule1D::getLevelPointsAndWeights(size_t level,
+    DataVector& pcoordinates, DataVector& pweights) {
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
-        "QuadRule1D::getLevelPointsAndWeights : "
-        "order of gauss quadrature has to be within {1, ..., 50}");
+      "QuadRule1D::getLevelPointsAndWeights : "
+      "order of gauss quadrature has to be within {1, ..., 20}");
   }
 
   pcoordinates = *coordinates[level - 1];
@@ -37,3 +39,4 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates
 
 }  // namespace base
 }  // namespace sgpp
+

@@ -340,13 +340,6 @@ class Grid {
    */
   static Grid* unserialize(std::istream& istr);
 
-  /**
-   * converts a string to a grid type
-   * @param gridType std::string string representation of a grid type
-   * @return GridType grid type to the corresponding string
-   */
-  static GridType stringToGridType(const std::string& gridType);
-
  protected:
   /**
    * This constructor creates a new GridStorage out of the stream.
@@ -393,11 +386,6 @@ class Grid {
   Grid* clone();
 
   /**
-   * creates an equivalent grid without copying the grid points
-   */
-  Grid* createGridOfEquivalentType();
-
-  /**
    * gets a reference to the GridStorage object
    *
    * @return reference to the GridStorage obeject
@@ -438,25 +426,11 @@ class Grid {
   virtual GridGenerator& getGenerator() = 0;
 
   /**
-   * Returns the grid type
-   *
-   * @return value that identifies the grid type uniquely
-   */
-  virtual sgpp::base::GridType getType() = 0;
-
-  /**
-   * Returns the grid type that corresponds to the actual type but does no boundary treatment
-   *
-   * @return grid type
-   */
-  sgpp::base::GridType getZeroBoundaryType();
-
-  /**
    * Returns a string that identifies the grid type uniquely
    *
    * @return string that identifies the grid type uniquely
    */
-  std::string getTypeAsString();
+  virtual sgpp::base::GridType getType() = 0;
 
   /**
    * Returns the Basis class associated with the grid

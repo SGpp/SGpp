@@ -1,6 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
 from pysgpp.extensions.datadriven.tools import readGrid, readAlphaARFF, readDataTrivial
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
 from pysgpp import DataVector, DataMatrix
@@ -8,14 +5,13 @@ from scipy.stats import norm
 from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
-from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+import numpy as np
 
 
 class MonteCarloStrategy(SparseGridEstimationStrategy):
 
     def __init__(self, samples=None, ixs=None,
-                 n=5000, npaths=100, isPositive=False,
-                 percentile=1):
+                 n=5000, npaths=10, isPositive=False):
         """
         Constructor
         @param samples: ndarray containing monte carlo samples
@@ -39,7 +35,6 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             self.__ixs = np.array(ixs)
 
         self.__npaths = npaths
-        self.__percentile = percentile
 
         # other stuff
         self.__isPositive = isPositive
@@ -47,42 +42,31 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         self.verbose = True
 
 
-    def __getSamples(self, W, T, bootstrapping=False):
+    def __getSamples(self, W, T, n):
         if self.samples is None:
-            # draw n samples
-            ans = W.rvs(self.__n)
+            # draw n ans
+            ans = W.rvs(n)
 
             # transform them to the unit hypercube
-            for i in xrange(ans.shape[0]):
-                # transform them to the unit hypercube
-                ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
-                                      for j in xrange(len(T))])
+            return T.probabilisticToUnitMatrix(ans)
         else:
             # bootstrapping on the available samples
-            if bootstrapping:
-                ixs = np.random.randint(0, self.__n, self.__n)
-                dataSamples = self.samples[ixs, :]
-            else:
-                dataSamples = self.samples
+            ixs = np.random.randint(0, self.__n, n)
+            dataSamples = self.samples[ixs, :]
 
             # check if there are samples for just a subset of the random
             # variables. If so, add the missing ones
-            if self.__ixs is not None and len(self.__ixs) < W.getDim():
-                # generate samples for the non existing directions
-                ans = W.rvs(self.__n)
+            if self.__ixs is not None:
+                ans = W.rvs(n)
 
-                # replace the entries in the directions where we infact have
-                # data points available using bootstrapping
+                # transform them to the unit hypercube
                 for i, sample in enumerate(dataSamples):
-                    # transform them to the unit hypercube
+                    ans[i, :] = T.probabilisticToUnit(ans[i, :])
                     ans[i, self.__ixs] = sample
-                    ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
-                                          for j in xrange(len(T))])
             else:
                 ans = dataSamples
 
-        return ans
-
+            return ans
 
     def __estimate(self, vol, grid, alpha, U, T, f, npaths):
         n = npaths * self.__n
@@ -128,15 +112,15 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # bordergs = borderGrid.getStorage()
         # p = DataVector(gs.getDimension())
         # for i in xrange(gs.size()):
-        #     gs.getCoordinates(gs.getPoint(i), p)
+        #     gs.getPoint(i).getStandardCoordinates(p)
         #     nodalValues[i] -= evalSGFunction(borderGrid, borderAlpha, p)
         # nalpha = hierarchize(grid, nodalValues)
         # # # check if interpolation criterion is fulfilled for splitted grid
         # # p = DataVector(gs.getDimension())
         # # for i in xrange(gs.size()):
         # #     gp = gs.getPoint(i)
-        # #     if bordergs.isContaining(gp):
-        # #         gs.getCoordinates(gp, p)
+        # #     if bordergs.has_key(gp):
+        # #         gp.getStandardCoordinates(p)
         # #         res1 = evalSGFunction(grid, alpha, p)
         # #         res2 = evalSGFunction(grid, nalpha, p) + evalSGFunction(borderGrid, borderAlpha, p)
         # #         print res1, res2, abs(res1 - res2)
@@ -161,10 +145,10 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         @return: (mean, error of bootstrapping)
         """
         # init
-        _, W, D = self._extractPDFforMomentEstimation(U, T)
+        _, W = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D, bootstrapping=True)
+            samples = self.__getSamples(W, T, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
@@ -172,20 +156,12 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 
         # error statistics
         if self.__npaths > 1:
-            lower_percentile = np.percentile(moments, q=self.__percentile)
-            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(lower_percentile, upper_percentile)
+            err = np.var(moments, ddof=1)
         else:
-            err = lower_percentile = upper_percentile = np.Inf
+            err = np.Inf
 
         # calculate moment
-        samples = self.__getSamples(W, D, bootstrapping=False)
-        res = evalSGFunctionMulti(grid, alpha, samples)
-
-        return {"value": np.mean(res),
-                "err": err,
-                "confidence_interval": (lower_percentile, upper_percentile)}
-
+        return np.mean(moments), err
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -197,42 +173,20 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         @return: (variance, error of bootstrapping)
         """
         # init
-        _, W, D = self._extractPDFforMomentEstimation(U, T)
+        _, W = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
         for i in xrange(self.__npaths):
-            samples = self.__getSamples(W, D, bootstrapping=True)
+            samples = self.__getSamples(W, T, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
-            moments[i] = np.sum((res - np.mean(res)) ** 2) / (len(res) - 1.)
+            moments[i] = np.sum((res - mean) ** 2) / (len(res) - 1.)
 
         # error statistics
         if self.__npaths > 1:
-            lower_percentile = np.percentile(moments, q=self.__percentile)
-            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(lower_percentile, upper_percentile)
+            err = np.var(moments, ddof=1)
         else:
-            err = lower_percentile = upper_percentile = np.Inf
+            err = np.Inf
 
         # calculate moment
-        samples = self.__getSamples(W, D, bootstrapping=False)
-
-#         plt.figure()
-#         plt.hist(samples[:, 0], normed=True, cumulative=False, label="histogram")
-#         plt.title("0: lognormal [%g, %g]" % (samples[:, 0].min(),
-#                                              samples[:, 0].max()))
-#         plt.figure()
-#         plt.hist(samples[:, 1], normed=True, cumulative=False, label="histogram")
-#         plt.title("0: beta [%g, %g]" % (samples[:, 1].min(),
-#                                         samples[:, 1].max()))
-#         plt.figure()
-#         plt.hist(samples[:, 2], normed=True, cumulative=False, label="histogram")
-#         plt.title("0: lognormal [%g, %g]" % (samples[:, 2].min(),
-#                                              samples[:, 2].max()))
-#         plt.show()
-
-        res = evalSGFunctionMulti(grid, alpha, samples)
-
-        return {"value": np.sum((res - mean) ** 2) / (len(res) - 1.),
-                "err": err,
-                "confidence_interval": (lower_percentile, upper_percentile)}
+        return np.mean(moments), err

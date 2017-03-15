@@ -50,8 +50,6 @@
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
 #endif
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -188,22 +186,22 @@ datadriven::OperationTransformation1D* createOperationInverseRosenblattTransform
 }
 
 datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde) {
+createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde) {
   return new datadriven::OperationInverseRosenblattTransformationKDE(kde);
 }
 
 datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
-    datadriven::KernelDensityEstimator& kde) {
+    datadriven::GaussianKDE& kde) {
   return new datadriven::OperationRosenblattTransformationKDE(kde);
 }
 
 datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
-    datadriven::KernelDensityEstimator& kde) {
+    datadriven::GaussianKDE& kde) {
   return new datadriven::OperationDensityMarginalizeKDE(kde);
 }
 
 datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
-    datadriven::KernelDensityEstimator& kde) {
+    datadriven::GaussianKDE& kde) {
   return new datadriven::OperationDensityConditionalKDE(kde);
 }
 
@@ -294,26 +292,5 @@ base::OperationMultipleEval* createOperationMultipleEval(
 
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
 }
-
-datadriven::OperationMakePositive* createOperationMakePositive(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose, optimization::ScalarFunction* f) {
-  return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
-                                               generateConsistentGrid, verbose, f);
-}
-
-datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
-    optimization::ScalarFunction* f) {
-  return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
-                                                          interpolationAlgorithm, verbose, f);
-}
-
-datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid) {
-  return new datadriven::OperationCovariance(grid);
-}
-
 }  // namespace op_factory
 }  // namespace sgpp

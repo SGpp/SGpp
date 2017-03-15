@@ -1,6 +1,5 @@
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from scipy.integrate import quad, dblquad
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport
 
 
 class DiscreteBilinearScipyQuadratureStrategy(BilinearQuadratureStrategy):
@@ -14,7 +13,7 @@ class DiscreteBilinearScipyQuadratureStrategy(BilinearQuadratureStrategy):
         """
         super(self.__class__, self).__init__()
 
-    def computeBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
+    def computeBilinearFormEntry(self, gpi, basisi, gpj, basisj):
         # if not, compute it
         val = 1
         err = 0.
@@ -28,11 +27,8 @@ class DiscreteBilinearScipyQuadratureStrategy(BilinearQuadratureStrategy):
 
             # compute left and right boundary of the support of both
             # basis functions
-            xlowi, xhighi = getBoundsOfSupport(gs, lid, iid)
-            xlowj, xhighj = getBoundsOfSupport(gs, ljd, ijd)
-
-            xlow = max(xlowi, xlowj)
-            xhigh = min(xhighi, xhighj)
+            xlow = max([(iid - 1) * 2 ** -lid, (ijd - 1) * 2 ** -ljd])
+            xhigh = min([(iid + 1) * 2 ** -lid, (ijd + 1) * 2 ** -ljd])
 
             # same level, different index
             if lid == ljd and iid != ijd and lid > 0:

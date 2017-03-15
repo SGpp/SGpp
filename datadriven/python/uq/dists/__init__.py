@@ -42,7 +42,6 @@ from MultivariateNormal import MultivariateNormal
 from SGDEdist import SGDEdist
 from LibAGFDist import LibAGFDist
 from DTreesDist import DTreesDist
-from KDEDist import KDEDist
-from NatafDist import NatafDist
+from GaussianKDEDist import GaussianKDEDist
 
-# import optimization
+import optimization

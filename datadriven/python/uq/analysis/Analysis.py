@@ -3,9 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
-from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
-from scipy.stats.mstats_basic import moment
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -17,7 +14,7 @@ from scipy.stats.mstats_basic import moment
 
 """
 from pysgpp.extensions.datadriven.uq.tools import writeDataARFF
-import numpy as np
+
 
 class AnalysisHash(object):
 
@@ -27,20 +24,27 @@ class AnalysisHash(object):
     def reset(self):
         self._moments = {}
 
-    def getKey(self, iteration, qoi, t, idd):
-        return (iteration, qoi, t, idd)
-
     def hasMoment(self, iteration, qoi, t, idd='mean'):
-        return self.getKey(iteration, qoi, t, idd) in self._moments
+        return iteration in self._moments and \
+            qoi in self._moments[iteration] and \
+            t in self._moments[iteration][qoi] and \
+            idd in self._moments[iteration][qoi][t]
 
     def setMoment(self, iteration, qoi, t, idd, value):
-        key = self.getKey(iteration, qoi, t, idd)
-        self._moments[key] = value
+        # check if dictionary is available
+        if iteration not in self._moments:
+            self._moments[iteration] = {}
+        if qoi not in self._moments[iteration]:
+            self._moments[iteration][qoi] = {}
+        if t not in self._moments[iteration][qoi]:
+            self._moments[iteration][qoi][t] = {}
+
+        # store the value in the dictionary
+        self._moments[iteration][qoi][t][idd] = value
 
     def getMoment(self, iteration, qoi, t, idd):
-        key = self.getKey(iteration, qoi, t, idd)
         if self.hasMoment(iteration, qoi, t, idd):
-            return self._moments[key]
+            return self._moments[iteration][qoi][t][idd]
         else:
             return None
 
@@ -63,33 +67,31 @@ class Analysis(object):
 
 # -----------------------------------------------------------------------------
 
-    def getIterations(self):
-        return self._iterations
-
     def computeMean(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def mean(self, iterations=None, ts=None, reduce=True):
+    def mean(self, iterations=None, ts=None):
         """
         compute means
         @return: dictionary, {<iteration>: {<time>: (mean, err)}}
         """
+        dropDict = True
         if iterations is None:
             iterations = self._iterations
-
+            dropDict = False
         if ts is None:
             ts = self._ts
+            dropDict = False
 
         ans = {}
         for iteration in iterations:
-            if len(ts) > 1:
-                ans[iteration] = {}
-            for i, t in enumerate(ts):
+            ans[iteration] = {}
+            for i, t in enumerate(self._ts):
                 # compute mean
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
+                    print "-" * 60
+                    print "Estimate E[t = %g] (%i/%i), iteration = %s" % \
+                        (t, i + 1, len(self._ts), iteration)
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -99,18 +101,14 @@ class Analysis(object):
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'mean')
 
-                if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                ans[iteration][t] = moment
 
-                if len(ts) > 1:
-                    ans[iteration][t] = moment
-                else:
-                    ans[iteration] = moment
-
-        # remove dict structure if there are just one element
-        if reduce and len(iterations) == 1:
-            ans = ans[iterations[0]]
+        if dropDict:
+            # remove dict structure if there are just one element
+            if len(iterations) == 1:
+                ans = ans[iterations[0]]
+            if len(ts) == 1:
+                ans = ans[ts[0]]
 
         return ans
 
@@ -119,27 +117,28 @@ class Analysis(object):
     def computeVar(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def var(self, iterations=None, ts=None, reduce=True):
+    def var(self, iterations=None, ts=None):
         """
         Compute the variance
         @return: dictionary, {<iteration>: {<time>: variance}}
         """
+        dropDict = True
         if iterations is None:
             iterations = self._iterations
-
+            dropDict = False
         if ts is None:
             ts = self._ts
+            dropDict = False
 
         ans = {}
         for iteration in iterations:
-            if len(ts) > 1:
-                ans[iteration] = {}
-            for i, t in enumerate(ts):
+            ans[iteration] = {}
+            for i, t in enumerate(self._ts):
                 # compute variance
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
+                    print "-" * 60
+                    print "Estimate V[t = %g] (%i/%i), iteration = %s" % \
+                        (t, i + 1, len(self._ts), iteration)
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)
@@ -149,18 +148,14 @@ class Analysis(object):
                     moment = self._moments.getMoment(iteration, self._qoi,
                                                      t, 'var')
 
-                if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                ans[iteration][t] = moment
 
-                if len(ts) > 1:
-                    ans[iteration][t] = moment
-                else:
-                    ans[iteration] = moment
-
-        # remove dict structure if there are just one element
-        if reduce and len(iterations) == 1:
-            ans = ans[iterations[0]]
+        if dropDict:
+            # remove dict structure if there are just one element
+            if len(iterations) == 1:
+                ans = ans[iterations[0]]
+            if len(ts) == 1:
+                ans = ans[ts[0]]
 
         return ans
 
@@ -173,21 +168,3 @@ class Analysis(object):
         stats = self.computeMoments(*args, **kws)
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
-
-# -----------------------------------------------------------------------------
-
-    def _estimateDensityByConfig(self, dtype, samples, config={}):
-        if dtype == "kde":
-            # compute bounds of samples
-            bounds = np.ndarray((1, 2))
-            bounds[:, 0] = np.min(samples)
-            bounds[:, 1] = np.max(samples)
-            return KDEDist(samples, bounds=bounds)
-        elif dtype == "sgde":
-            # compute bounds of samples
-            bounds = np.ndarray((1, 2))
-            bounds[:, 0] = np.min(samples)
-            bounds[:, 1] = np.max(samples)
-            return SGDEdist.byLearnerSGDEConfig(samples, bounds, config=config)
-        else:
-            raise AttributeError("density estimation type %s is not known. Select one in [gaussianKDE, sgde]")
