@@ -98,6 +98,17 @@ class PolyBoundaryBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
+  double evalDx(LT level, IT index, double x) {
+    if ((level == 0) && (index == 0)) {
+      return ((0.0 < x && x < 1.0) ? -1.0 : 0.0);
+    } else if ((level == 0) && (index == 1)) {
+      return ((0.0 < x && x < 1.0) ? 1.0 : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.evalDx(level, index, x);
+    }
+  }
+
   double getIntegral(LT level, IT index) {
     if (level == 0) {
       return 0.5;
