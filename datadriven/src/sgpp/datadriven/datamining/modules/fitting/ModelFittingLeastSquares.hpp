@@ -80,6 +80,15 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    */
   DMSystemMatrixBase* buildSystemMatrix(Grid& grid, DataMatrix& trainDataset, double lambda,
                                         OperationMultipleEvalConfiguration& config) const;
+
+  /**
+   * based on the current dataset and grid, assemble a system of linear equations and solve for the
+   * hierarchical surplus vector alpha.
+   * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
+   * sure the vector size is equal to the amount of grid points.
+   */
+  void assembleSystemAndSolve(const SLESolverConfiguration& solverConfig, DataVector& alpha) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
