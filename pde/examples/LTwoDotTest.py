@@ -1,4 +1,5 @@
 import pysgpp
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -83,12 +84,12 @@ def test_laplace(grid, lmax):
     pointnr = 0
     grid.getGenerator().regular(lmax)
     gridStorage = grid.getStorage()
-    gp = gridStorage.get(1)
+    gp = gridStorage.getPoint(1)
     size = gridStorage.getSize()
     op = pysgpp.createOperationLaplace(grid)
     alpha = pysgpp.DataVector(size)
     result = pysgpp.DataVector(size)
-    b = grid.getBasis()
+    b = getBasis(grid)
     for i in range(0, size):
         alpha[i] = 0
     alpha[pointnr] = 1
@@ -123,7 +124,7 @@ def plot_evaldx():
 # test_base()
 d = 1
 l = 5
-grid = pysgpp.Grid.createPolyGrid(d)
+grid = pysgpp.Grid.createPolyGrid(d, 5)
 test_laplace(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
