@@ -262,7 +262,7 @@ class CombigridMultiOperation {
 
   /**
    * Returns a CombigridMultiOperation doing (multi-)linear interpolation
-   * on a uniform grid with boundary using an exponential growth strategy (nested points).
+   * on a uniform grid without boundary using an exponential growth strategy (nested points).
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -271,11 +271,11 @@ class CombigridMultiOperation {
 
   /**
    * Returns a CombigridMultiOperation doing (multi-)linear interpolation
-   * on a uniform grid without boundary using an exponential growth strategy (nested points).
+   * on a uniform grid with boundary using an exponential growth strategy (nested points).
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
-  static std::shared_ptr<CombigridMultiOperation> createExpUniformNoBoundaryLinearInterpolation(
+  static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryLinearInterpolation(
       size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */
