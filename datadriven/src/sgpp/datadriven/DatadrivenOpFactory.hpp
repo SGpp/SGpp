@@ -202,11 +202,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * Factory method, returning an OperationMakePositive for the grid at hand.
  * Note: object has to be freed after use.
  *
- * @param candidateSearchAlgorithm defines the algorithm to build the candidate set
- * @param interpolationAlgorithm defines the algorithm to compute the nodal values at the new points
- * @param generateConsistentGrid whether hierarchical ancestors are added or not
- * @param verbose verbosity on or off
- * @param f function to be interpolated
+ * @param grid Grid which is to be used
  * @return Pointer to the new OperationMakePositive object for the Grid grid
  */
 datadriven::OperationMakePositive* createOperationMakePositive(
@@ -221,10 +217,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
  * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
  * Note: object has to be freed after use.
  *
- * @param candidateSearchAlgorithm defines the algorithm to build the candidate set
- * @param interpolationAlgorithm defines the algorithm to compute the nodal values at the new points
- * @param verbose verbosity on or off
- * @param f function to be interpolated
+ * @param grid Grid which is to be used
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
  */
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
