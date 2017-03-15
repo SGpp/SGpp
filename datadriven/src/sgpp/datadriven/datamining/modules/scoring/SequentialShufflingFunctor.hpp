@@ -14,6 +14,8 @@
 
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
+#include <sgpp/datadriven/tools/Dataset.hpp>
+
 #include <vector>
 
 namespace sgpp {
@@ -32,7 +34,7 @@ class SequentialShufflingFunctor : public ShufflingFunctor {
    * used on datasets that are already arranged as desired.
    * @param indices vector of indices to permute.
    */
-  void shuffle(std::vector<size_t>& indices) override;
+  void shuffle(const Dataset& data, std::vector<size_t>& indices) override;
 };
 
 } /* namespace datadriven */

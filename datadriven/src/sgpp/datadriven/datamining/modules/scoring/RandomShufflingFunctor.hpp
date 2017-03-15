@@ -13,6 +13,8 @@
 
 #include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
+#include <sgpp/datadriven/tools/Dataset.hpp>
+
 #include <algorithm>
 #include <vector>
 
@@ -48,7 +50,7 @@ class RandomShufflingFunctor : public ShufflingFunctor {
    * @param indices vector containing the indices of the data points to be distributed. Vector is
    * modified in place.
    */
-  void shuffle(std::vector<size_t>& indices) override;
+  void shuffle(const Dataset& dataset, std::vector<size_t>& indices) override;
 };
 
 } /* namespace datadriven */

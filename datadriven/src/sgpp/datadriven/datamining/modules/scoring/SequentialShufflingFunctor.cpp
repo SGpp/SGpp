@@ -17,7 +17,7 @@ ShufflingFunctor* SequentialShufflingFunctor::clone() const {
   return new SequentialShufflingFunctor{*this};
 }
 
-void SequentialShufflingFunctor::shuffle(std::vector<size_t>& indices) {
+void SequentialShufflingFunctor::shuffle(const Dataset& data, std::vector<size_t>& indices) {
   // doesn't do any permutation to provided indices, since we're using the entries sequentially
 }
 } /* namespace datadriven */
