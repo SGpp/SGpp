@@ -15,6 +15,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplacePrewavelet.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretchedBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplacePoly.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
@@ -79,6 +80,8 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
     return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
     return new pde::OperationLaplaceLinearStretchedBoundary(&grid.getStorage());
+  } else if (grid.getType() == base::GridType::Poly) {
+    return new pde::OperationLaplacePoly(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
