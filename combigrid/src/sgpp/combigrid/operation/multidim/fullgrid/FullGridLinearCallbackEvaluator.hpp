@@ -19,6 +19,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/**
+ * Implementation of the AbstractFullGridLinearEvaluator class using a callback function that takes
+ * a single point and returns a function value at that point.
+ */
 template <typename V>
 class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V> {
  public:

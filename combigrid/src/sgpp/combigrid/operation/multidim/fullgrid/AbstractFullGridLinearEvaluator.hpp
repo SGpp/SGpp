@@ -188,14 +188,27 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       auto &prototype = evaluatorPrototypes[d];
 
       if (prototype->needsParameter()) {
+        if (paramIndex >= params.size()) {
+          throw std::runtime_error(
+              "AbstractFullGridLinearEvaluator::setParameters(): parameter dimensionality is too "
+              "low.");
+        }
         // prototype->setParameter(params[paramIndex]); <- this is useless, see above
         for (auto &eval : evaluators[d]) {
           eval->setParameter(params[paramIndex]);
         }
 
-        ++paramIndex;  // TODO(holzmudd): check bounds
+        ++paramIndex;
       }
     }
+
+    // can occur for quadrature, since a "default parameter"
+    // may be passed
+    /*if (paramIndex < params.size()) {
+      throw std::runtime_error(
+          "AbstractFullGridLinearEvaluator::setParameters(): parameter dimensionality is too "
+          "high.");
+    } */
   }
 };
 

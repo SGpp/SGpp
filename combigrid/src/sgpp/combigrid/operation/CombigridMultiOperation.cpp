@@ -91,12 +91,21 @@ CombigridMultiOperation::CombigridMultiOperation(
           gridFunc)) {}
 
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
-  // TODO(holzmudd): check dimensionalities and sizes...
-  std::vector<FloatArrayVector> vecs(params[0].getSize());
+  if (params.size() == 0) {
+    throw std::runtime_error("CombigridMultiOperation::setParameters(): params.size() == 0");
+  }
+  size_t numParametersPerEvaluation = params[0].getSize();
+  std::vector<FloatArrayVector> vecs(numParametersPerEvaluation);
 
   for (size_t i = 0; i < params.size(); ++i) {
     auto &param = params[i];
-    for (size_t j = 0; j < param.getSize(); ++j) {
+
+    if (param.getSize() != numParametersPerEvaluation) {
+      throw std::runtime_error(
+          "CombigridMultiOperation::setParameters(): not all parameter vectors have the same "
+          "length");
+    }
+    for (size_t j = 0; j < numParametersPerEvaluation; ++j) {
       vecs[j].at(i) = param[j];
     }
   }

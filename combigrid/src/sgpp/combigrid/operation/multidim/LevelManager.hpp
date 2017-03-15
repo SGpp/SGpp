@@ -261,10 +261,23 @@ class LevelManager {
   void addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage);
 
   /**
+   * Does the same as addLevelsFromStructure(), but with parallel precomputation of function values
+   * using numThreads threads.
+   */
+  void addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
+                                      size_t numThreads);
+
+  /**
    * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
    * "Inverse" operation to getSerializedLevelStructure().
    */
   void addLevelsFromSerializedStructure(std::string serializedStructure);
+
+  /**
+   * Does the same as addLevelsFromSerializedStructure(), but with parallel precomputation of
+   * function values using numThreads threads.
+   */
+  void addLevelsFromSerializedStructureParallel(std::string serializedStructure, size_t numThreads);
 
   /**
    * Adds levels in an adaptive manner, such that the given maximum number of function evaluations
@@ -309,7 +322,7 @@ class LevelManager {
   /**
    * Queue based addLevel-type function
    */
-  void addLevelsAdaptiveByNumLevels();
+  void addLevelsAdaptiveByNumLevels(size_t numLevels = 1);
 
   /**
    * @return An upper bound for the number of points (function evaluations) used for the current
