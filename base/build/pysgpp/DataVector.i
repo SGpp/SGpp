@@ -116,6 +116,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void normalize(double border);
   
   std::string toString() const;
+  void toFile(const std::string& fileName) const;
+  static DataVector fromFile(const std::string& fileName);
   
   %extend {
     // Create a ndarray view from the DataVector data
