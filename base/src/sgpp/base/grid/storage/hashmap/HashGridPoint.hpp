@@ -412,8 +412,6 @@ class HashGridPoint {
    * WARNING: this just works for grids with non-overlapping basis functions at the same level
    *          and for uint32_t as index_type
    * @param dim the dimension in which the modification is taken place
-   * @param level level of dimension dim
-   * @param index index of dimension dim
    */
   inline void setAsHierarchicalGridPoint(size_t dim, level_type level, index_type index) {
     static_assert(sizeof(index_type) == 4, "this implementation is limited to 32bit indices");

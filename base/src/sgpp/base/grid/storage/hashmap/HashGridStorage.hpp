@@ -230,7 +230,7 @@ class HashGridStorage {
    * insert a new index into map including all its ancestors. Boundary points are not added
    *
    * @param index reference to the index that should be inserted
-   * @param insertedPoints containing the indices of the new points
+   * @param vector containing the indices of the new points
    *
    * @return
    */
