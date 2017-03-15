@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
   }
 }
 
