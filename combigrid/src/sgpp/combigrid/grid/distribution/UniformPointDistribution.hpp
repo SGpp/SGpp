@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMPOINTDISTRIBUTION_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMPOINTDISTRIBUTION_HPP_
+#pragma once
 
 #include "AbstractPointDistribution.hpp"
 
@@ -12,7 +11,7 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * provides uniform points, i. e. {k/(n-1) for k = 0, ..., n-1} if n >= 2 or {0.5} if n = 1.
+ * provides uniform points, i. e. {(k + 1)/(n + 1) for k = 0, ..., n-1}
  */
 class UniformPointDistribution : public AbstractPointDistribution {
  public:
@@ -23,5 +22,3 @@ class UniformPointDistribution : public AbstractPointDistribution {
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_UNIFORMPOINTDISTRIBUTION_HPP_ */

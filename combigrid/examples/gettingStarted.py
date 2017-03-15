@@ -232,7 +232,7 @@ def example5():
     ## interpolation. To make them nested, again the slowest possible exponential growth is selected
     ## by the CombiHierarchies class.
     grids.push_back(pysgpp.CombiHierarchies.linearLeja(3))
-    grids.push_back(pysgpp.CombiHierarchies.expUniform())
+    grids.push_back(pysgpp.CombiHierarchies.expUniformBoundary())
 
     ## The next thing we have to configure is the linear operation that is performed in those
     ## directions. We will use polynomial interpolation in the 0th dimension, quadrature in the 1st
@@ -288,7 +288,7 @@ def example6():
 
 
     ## To create a CombigridOperation, we currently have to use the longer way as in example 5.
-    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniform())
+    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniformBoundary())
     evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.cubicSplineInterpolation())
     levelManager = pysgpp.WeightedRatioLevelManager()
 
