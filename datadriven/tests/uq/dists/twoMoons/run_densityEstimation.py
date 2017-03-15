@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('--parallel', default=False, action='store_true', help='run in parallel')
     args = parser.parse_args()
 
-    scenarions = {'density_configs': density_configs,
+    scenarions = {'density_configs': ["sgde_zero"], #density_configs,
                   "function_configs": [("two_moons", 2), ("mult_beta", 2)]}
     processes = []
     for estimationMethod in scenarions['density_configs']:
