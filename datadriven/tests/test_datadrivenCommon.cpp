@@ -343,7 +343,8 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice(
   // filter all devices except for the first
   bool firstPlatform = true;
   bool firstDevice = true;
-  for (std::string& platformName : (*parameters)["PLATFORMS"].keys()) {
+  std::vector<std::string> platformNames = (*parameters)["PLATFORMS"].keys();
+  for (std::string& platformName : platformNames) {
     if (firstPlatform) {
       firstPlatform = false;
     } else {
@@ -353,7 +354,8 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice(
 
     json::Node& platformNode = (*parameters)["PLATFORMS"][platformName];
 
-    for (std::string& deviceName : platformNode["DEVICES"].keys()) {
+    std::vector<std::string> deviceNames = platformNode["DEVICES"].keys();
+    for (std::string& deviceName : deviceNames) {
       if (firstDevice) {
         firstDevice = false;
       } else {
@@ -366,7 +368,7 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice(
       deviceNode.addIDAttr("COUNT", UINT64_C(1));
     }
   }
-
+  
   return parameters;
 }
 
@@ -377,7 +379,8 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsMultiDevice()
 
   // filter all devices except for the first
   bool firstPlatform = true;
-  for (std::string& platformName : (*parameters)["PLATFORMS"].keys()) {
+    std::vector<std::string> platformNames = (*parameters)["PLATFORMS"].keys();
+  for (std::string& platformName : platformNames) {
     if (firstPlatform) {
       firstPlatform = false;
     } else {
