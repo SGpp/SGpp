@@ -185,12 +185,84 @@ BOOST_AUTO_TEST_CASE(testSeq) {
   i.getLeftChild(0);
 
   size_t seq = s.getSequenceNumber(i);
-  BOOST_CHECK(!(s.isValidSequenceNumber(seq)));
+  BOOST_CHECK(!(s.isInvalidSequenceNumber(seq)));
 
   i.getLeftChild(0);
 
   seq = s.getSequenceNumber(i);
-  BOOST_CHECK(s.isValidSequenceNumber(seq));
+  BOOST_CHECK(s.isInvalidSequenceNumber(seq));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(TestHashGridStorageWithT)
+
+BOOST_AUTO_TEST_CASE(testLevelZeroWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftLevelZero(0);
+
+  HashGridPoint::level_type l, l2 = 0;
+  HashGridPoint::index_type ind, ind2 = 0;
+
+  i.get(0, l, ind);
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+
+  ind2 = 1;
+  i.set(0, 1, 1);
+  i.getRightLevelZero(0);
+  i.get(0, l, ind);
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+}
+
+BOOST_AUTO_TEST_CASE(testTopWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftChild(0);
+
+  i.getRoot(0);
+
+  HashGridPoint::level_type l, l2 = 1;
+  HashGridPoint::index_type ind, ind2 = 1;
+  i.get(0, l, ind);
+
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+}
+
+BOOST_AUTO_TEST_CASE(testSeqWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftChild(0);
+
+  size_t seq = s.getSequenceNumber(i);
+  BOOST_CHECK(!(s.isInvalidSequenceNumber(seq)));
+
+  i.getLeftChild(0);
+
+  seq = s.getSequenceNumber(i);
+  BOOST_CHECK(s.isInvalidSequenceNumber(seq));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -367,6 +439,127 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
 
   g.regularWithBoundaries(s, 2, 1);
   BOOST_CHECK_EQUAL(s.getSize(), 81U);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(TestHashGeneratorWithT)
+
+BOOST_AUTO_TEST_CASE(testPeriodic1DWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regularWithPeriodicBoundaries(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 4U);
+}
+
+BOOST_AUTO_TEST_CASE(testPeriodic2DWithT) {
+  HashGridStorage s(2);
+  HashGenerator g;
+
+  g.regularWithPeriodicBoundaries(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 12U);
+
+  HashGridStorage s2(2);
+  g.regularWithPeriodicBoundaries(s2, 3);
+  BOOST_CHECK_EQUAL(s2.getSize(), 32U);
+
+  HashGridPoint i(2);
+  i.set(0, 0, 0);
+  i.set(1, 0, 0);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(1, 1, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(1, 2, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 2, 3);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 3, 5);
+  BOOST_CHECK(!(s2.isContaining(i)));
+
+  i.set(1, 1, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 1, 1);
+  i.set(1, 1, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(1, 2, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 2, 3);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 3, 5);
+  BOOST_CHECK(!(s2.isContaining(i)));
+
+  i.set(1, 1, 1);
+  BOOST_CHECK(s2.isContaining(i));
+}
+
+BOOST_AUTO_TEST_CASE(testPeriodic3DWithT) {
+  HashGridStorage s(3);
+  HashGenerator g;
+
+  g.regularWithPeriodicBoundaries(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 32U);
+}
+
+BOOST_AUTO_TEST_CASE(testRegular1DWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 3U);
+}
+
+BOOST_AUTO_TEST_CASE(testRegular2DWithT) {
+  HashGridStorage s(2);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 5U);
+
+  HashGridStorage s2(2);
+  g.regular(s2, 3);
+
+  BOOST_CHECK_EQUAL(s2.getSize(), 17U);
+
+  HashGridPoint i(2);
+  i.set(0, 1, 1);
+  i.set(1, 1, 1);
+
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(1, 2, 1);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 2, 3);
+  BOOST_CHECK(s2.isContaining(i));
+
+  i.set(0, 3, 5);
+  BOOST_CHECK(!(s2.isContaining(i)));
+
+  i.set(1, 1, 1);
+  BOOST_CHECK(s2.isContaining(i));
+}
+
+BOOST_AUTO_TEST_CASE(testRegular3DWithT) {
+  HashGridStorage s(3);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  BOOST_CHECK_EQUAL(s.getSize(), 7U);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
