@@ -14,8 +14,8 @@ namespace sgpp {
 namespace datadriven {
 
 DMSystemMatrix::DMSystemMatrix(sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData,
-                               sgpp::base::OperationMatrix& C, double lambdaRegression)
-    : DMSystemMatrixBase(trainData, lambdaRegression), C(C), grid(grid) {
+                               std::shared_ptr<base::OperationMatrix> C, double lambdaRegression)
+    : DMSystemMatrixBase(trainData, lambdaRegression), grid(grid), C(std::move(C)) {
   // this->B = sgpp::op_factory::createOperationMultiEval(grid);
   this->B.reset(sgpp::op_factory::createOperationMultipleEval(grid, this->dataset_));
 }
@@ -69,7 +69,7 @@ void DMSystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector&
   op->multTranspose(temp, result);
 
   sgpp::base::DataVector temptwo(alpha.getSize());
-  this->C.mult(alpha, temptwo);
+  this->C->mult(alpha, temptwo);
   result.axpy(static_cast<double>(M) * this->lambda_, temptwo);
 }
 
