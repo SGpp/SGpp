@@ -12,18 +12,26 @@
 namespace sgpp {
 namespace datadriven {
 
+/// Constructor. Generates the identity
+MortonOrder::MortonOrder(size_t size) {
+  permutation.resize(size);
+  for (size_t i=0; i < size; ++i) {
+    permutation[i] = i;
+  }
+}
 /// Constructor. Generates the permuation list on the GPU
-MortonOrder::MortonOrder (sgpp::base::DataMatrix& matrix) {
-  uint32_t DIM = matrix.getNcols();
+MortonOrder::MortonOrder(sgpp::base::DataMatrix& matrix) {
+  size_t DIM = matrix.getNcols();
   HostDevPtr<size_t> perm;
   HostDevPtr<double> pos;
-  perm.HostAlloc(matrix.getNrows());
-  pos.HostAlloc(matrix.getSize());
+  size_t N = matrix.getNrows();
+  perm.HostAlloc(N);
+  pos.HostAlloc(N*DIM);
   // Init permuation list without any permuation
-  for (uint32_t i=0;i<matrix.getNrows();++i) {
-    for (uint32_t d=0;d<DIM;++d) {
+  for (size_t i=0; i < N; ++i) {
+    for (size_t d=0; d < DIM; ++d) {
       perm[i] = i;
-      pos[i*DIM + d] = matrix.get(i,d);
+      pos[i*DIM + d] = matrix.get(i, d);
     }
   }
   perm.DevAlloc();
@@ -31,15 +39,15 @@ MortonOrder::MortonOrder (sgpp::base::DataMatrix& matrix) {
   perm.CopyToDev();
   pos.CopyToDev();
   CudaCheckError();
-  
+
   // Compute permuation
-  zorder(pos.dev(), perm.dev(), matrix.getNrows(), DIM);
+  zorder(pos.dev(), perm.dev(), N, DIM);
   CudaCheckError();
-  
+
   // Copy back to host
   perm.CopyToHost();
-  permutation.resize(matrix.getNrows());
-  for (uint32_t i=0;i<matrix.getNrows();++i) {
+  permutation.resize(N);
+  for (size_t i=0; i < N; ++i) {
     permutation[i] = perm[i];
   }
 }
@@ -49,9 +57,19 @@ void MortonOrder::orderDataMatrix(sgpp::base::DataMatrix& matrix) const {
   if (matrix.getNrows() != permutation.size())
     throw sgpp::base::operation_exception("dimensions do not match!");
   sgpp::base::DataMatrix origin(matrix);
-  for (uint32_t i=0;i<matrix.getNrows();++i) {
-    for (uint32_t d=0;d<matrix.getNcols();++d) {
-      matrix(i,d) = origin(permutation[i],d);
+  for (size_t i=0; i < matrix.getNrows(); ++i) {
+    for (size_t d=0; d < matrix.getNcols(); ++d) {
+      matrix(i, d) = origin(permutation[i], d);
+    }
+  }
+}
+/// Apply permuation list
+void MortonOrder::orderDataMatrix(sgpp::base::DataMatrix& matrix, double* dest) const {
+  if (matrix.getNrows() != permutation.size())
+    throw sgpp::base::operation_exception("dimensions do not match!");
+  for (size_t i=0; i < matrix.getNrows(); ++i) {
+    for (size_t d=0; d < matrix.getNcols(); ++d) {
+      dest[i*matrix.getNcols() + d] = matrix(permutation[i], d);
     }
   }
 }
@@ -60,8 +78,16 @@ void MortonOrder::orderDataVector(sgpp::base::DataVector& data) const {
   if (data.getSize() != permutation.size())
     throw sgpp::base::operation_exception("dimensions do not match!");
   sgpp::base::DataVector origin(data);
-  for (uint32_t i=0;i<data.getSize();++i) {
+  for (size_t i=0; i < data.getSize(); ++i) {
     data[i] = origin[permutation[i]];
+  }
+}
+/// Apply permuation list
+void MortonOrder::orderDataVector(sgpp::base::DataVector& data, double* dest) const {
+  if (data.getSize() != permutation.size())
+    throw sgpp::base::operation_exception("dimensions do not match!");
+  for (size_t i=0; i < data.getSize(); ++i) {
+    dest[i] = data[permutation[i]];
   }
 }
 
@@ -70,9 +96,19 @@ void MortonOrder::restoreDataMatrix(sgpp::base::DataMatrix& matrix) const {
   if (matrix.getNrows() != permutation.size())
     throw sgpp::base::operation_exception("dimensions do not match!");
   sgpp::base::DataMatrix origin(matrix);
-  for (uint32_t i=0;i<matrix.getNrows();++i) {
-    for (uint32_t d=0;d<matrix.getNcols();++d) {
-      matrix(permutation[i],d) = origin(i,d);
+  for (size_t i=0; i < matrix.getNrows(); ++i) {
+    for (size_t d=0; d < matrix.getNcols(); ++d) {
+      matrix(permutation[i],d) = origin(i, d);
+    }
+  }
+}
+/// Apply permuation list in reverse
+void MortonOrder::restoreDataMatrix(sgpp::base::DataMatrix& matrix, double* src) const {
+  if (matrix.getNrows() != permutation.size())
+    throw sgpp::base::operation_exception("dimensions do not match!");
+  for (size_t i=0; i < matrix.getNrows(); ++i) {
+    for (size_t d=0; d < matrix.getNcols(); ++d) {
+      matrix(permutation[i], d) = src[i*matrix.getNcols() + d];
     }
   }
 }
@@ -81,10 +117,18 @@ void MortonOrder::restoreDataVector(sgpp::base::DataVector& data) const {
   if (data.getSize() != permutation.size())
     throw sgpp::base::operation_exception("dimensions do not match!");
   sgpp::base::DataVector origin(data);
-  for (uint32_t i=0;i<data.getSize();++i) {
+  for (size_t i=0; i < data.getSize(); ++i) {
     data[permutation[i]] = origin[i];
   }
 }
+/// Apply permuation list in reverse
+void MortonOrder::restoreDataVector(sgpp::base::DataVector& data, double* src) const {
+  if (data.getSize() != permutation.size())
+    throw sgpp::base::operation_exception("dimensions do not match!");
+  for (size_t i=0; i < data.getSize(); ++i) {
+    data[permutation[i]] = src[i];
+  }
+}
 
-}  // datadriven
-}  // sgpp
+}  // namespace datadriven
+}  // namespace sgpp
