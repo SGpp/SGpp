@@ -96,6 +96,8 @@ void toHashGridStorage(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
 
     it->moveToNext();
   }
+
+  storage.recalcLeafProperty();
 }
 
 } /* namespace combigrid */

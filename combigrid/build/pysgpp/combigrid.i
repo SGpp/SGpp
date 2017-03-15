@@ -39,9 +39,9 @@
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
 %shared_ptr(sgpp::combigrid::AbstractMultiStorage<double>)
-%shared_ptr(sgpp::combigrid::AbstractMultiStorage<uint8_t>)
+%shared_ptr(sgpp::combigrid::AbstractMultiStorage<std::uint8_t>)
 %shared_ptr(sgpp::combigrid::TreeStorage<double>)
-%shared_ptr(sgpp::combigrid::TreeStorage<uint8_t>)
+%shared_ptr(sgpp::combigrid::TreeStorage<std::uint8_t>)
 
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
@@ -144,13 +144,10 @@ namespace combigrid {
     %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
 
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
-    %template(Uint8AbstractMultiStorage) AbstractMultiStorage<uint8_t>;
+    %template(Uint8AbstractMultiStorage) AbstractMultiStorage<std::uint8_t>;
     %template(DoubleTreeStorage) TreeStorage<double>;
-    %template(Uint8TreeStorage) TreeStorage<uint8_t>;
+    %template(Uint8TreeStorage) TreeStorage<std::uint8_t>;
     %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
-
-    // %template(AbstractMultiStorage_uint8_t) AbstractMultiStorage<uint8_t>;
-    // %template(TreeStorage_uint8_t) TreeStorage<uint8_t>;
 }
 }
 
@@ -190,10 +187,10 @@ namespace combigrid {
     %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
     %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
 
-    // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<uint8_t>>>;
-    // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<uint8_t>;
-    // %template(DefaultSerializationStrategy_uint8_t) DefaultSerializationStrategy<uint8_t>;
-    // %template(LevelStructureSerializationStrategy) TreeStorageSerializationStrategy<uint8_t>;
+    // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<std::uint8_t>>>;
+    // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::uint8_t>;
+    // %template(DefaultSerializationStrategy_uint8_t) DefaultSerializationStrategy<std::uint8_t>;
+    // %template(LevelStructureSerializationStrategy) TreeStorageSerializationStrategy<std::uint8_t>;
 
 }
 }
