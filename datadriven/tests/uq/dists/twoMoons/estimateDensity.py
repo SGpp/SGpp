@@ -491,6 +491,7 @@ def estimateNatafDensity(functionName,
 
 
 def load_data_set(data_set, numSamples, numDims=2):
+    np.random.seed(1234567)
     natafType = {}
 
     if "mult" in data_set:
@@ -586,7 +587,6 @@ def run_densityEstimation(functionName,
     else:  # interpolation == "boundaries":
         interpolation = "boundaries"
 
-    np.random.seed(1234567)
     samples, bounds, natafType = load_data_set(functionName, numSamples, numDims)
 
     # do kfold cross validation

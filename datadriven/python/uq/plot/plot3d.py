@@ -40,19 +40,10 @@ def plotDensity3d(U, n=36):
     return fig, ax, Z
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    x = np.linspace(0, 1, n + 1, endpoint=True)
-    y = np.linspace(0, 1, n + 1, endpoint=True)
-    Z = np.zeros((n + 1, n + 1))
-
-    xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
-            Z[j, i] = f(evalSGFunction(grid, alpha,
-                                       np.array([xv[j, i], yv[j, i]])))
-
+def plotGrid3d(grid, grid_points_at=0, ax=None):
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
     # get grid points
     gs = grid.getStorage()
     gps = np.zeros([gs.getSize(), 2])
@@ -61,24 +52,12 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x):
         gs.getCoordinates(gs.getPoint(i), p)
         gps[i, :] = p.array()
 
-    ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
-
-#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-#                            linewidth=0, antialiased=False)
-    ax.scatter(gps[:, 0], gps[:, 1], np.zeros(gps.shape[0]), c="red", marker="o")
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    # ax.set_zlim(0, 2)
-
-#     fig.colorbar(surf, shrink=0.5, aspect=5)
-    return fig, ax, Z
+    ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
+           " ", c="red", marker="o", ms=15)
 
 
 def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
-             isConsistent=True):
+             isConsistent=True, show_grid=True):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -110,8 +89,9 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
 
 #     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
 #                            linewidth=0, antialiased=False)
-    ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
-           " ", c="red", marker="o", ms=15)
+    if show_grid:
+        ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
+               " ", c="red", marker="o", ms=15)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
