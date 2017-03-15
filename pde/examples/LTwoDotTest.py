@@ -81,23 +81,25 @@ def test_LTwoDotImplicit(grid, l):
 
 def test_laplace(grid, lmax):
     resolution = 10000
-    pointnr = 0
     grid.getGenerator().regular(lmax)
     gridStorage = grid.getStorage()
-    gp = gridStorage.getPoint(1)
     size = gridStorage.getSize()
     op = pysgpp.createOperationLaplace(grid)
-    alpha = pysgpp.DataVector(size)
-    result = pysgpp.DataVector(size)
-    b = getBasis(grid)
-    for i in range(0, size):
-        alpha[i] = 0
-    alpha[pointnr] = 1
-    op.mult(alpha, result)
-    xs = np.linspace(0, 1, resolution)
-    approx = sum([b.evalDx(gp.getLevel(0), gp.getIndex(0), x) for x in xs]) / resolution
-    print approx
-    print result.get(pointnr)
+    for pointnr in range(size):
+        gp = gridStorage.getPoint(pointnr)
+        alpha = pysgpp.DataVector(size)
+        result = pysgpp.DataVector(size)
+        b = getBasis(grid)
+        for i in range(0, size):
+            alpha[i] = 0
+        alpha[pointnr] = 1
+        op.mult(alpha, result)
+        xs = np.linspace(0, 1, resolution)
+        approx = sum([b.evalDx(gp.getLevel(0), gp.getIndex(0), x) * b.evalDx(gp.getLevel(0), gp.getIndex(0), x) for x in xs]) / resolution
+        if(abs(result.get(pointnr) - approx) > 1e-1):
+            print "point:{}".format(pointnr)
+            print "approx:{}".format(approx)
+            print "result:{}".format(result.get(pointnr))
 
 def test_poly_evaldx():
     l = 3
