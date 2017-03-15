@@ -333,12 +333,11 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
 # @param grid Grid
 def writeGnuplotGrid(filename, grid):
     dim = grid.getDimension()
-    gs = grid.getStorage()
     if dim == 2:
         p = DataVector(dim)
         fout = file(filename, "w")
         for i in range(grid.getSize()):
-            gp = gs.getCoordinates(gs.getPoint(i), p)
+            grid.getStorage().getPoint(i).getStandardCoordinates(p)
             fout.write("%f %f\n" % (p[0],p[1]))
     # can't plot anything else
     else:
@@ -1092,7 +1091,7 @@ class Matrix:
             gi = GridPoint(gridStorage.getDimension())
             for d in range(gridStorage.getDimension()):
                 gi.set(d, 1, 1)
-            i = gridStorage.getSequenceNumber(gi)
+            i = gridStorage.seq(gi)
             result[i] = result[i] - M*self.l*alpha[i]
             
 #        elif self.CMode == "levelsum":

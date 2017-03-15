@@ -1,24 +1,10 @@
+from pysgpp import DataVector
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
+
 import numpy as np
 import matplotlib.pyplot as plt
-from colors import load_color, load_font_properties
-from pysgpp import DataVector, DataMatrix
-from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
 
-
-def plotFunction1d(f, n=1000, xlim=[0, 1], **kws):
-    x = np.linspace(xlim[0], xlim[1], n, endpoint=True)
-    y = [f(np.array([xi])) for xi in x]
-    plt.plot(x, y, **kws)
-
-def plotCDF1d(U, n=1000, *args, **kws):
-    bounds = U.getBounds()
-    if len(bounds) == 1:
-        bounds = bounds[0]
-    x = np.linspace(bounds[0], bounds[1], n)
-    y = [U.cdf(xi) for xi in x]
-
-    plt.plot(x, y, *args, **kws)
 
 def plotDensity1d(U, n=1000, *args, **kws):
     bounds = U.getBounds()
@@ -35,44 +21,23 @@ def plotSGDE1d(U, n=1000):
     plt.plot(x, y)
 
 
-def plotGrid1d(grid, f=lambda x: x):
+def plotNodal1d(grid, alpha):
     gs = grid.getStorage()
-    x = np.zeros(gs.getSize())
-    nodalValues = np.zeros(gs.getSize())
-    for i in xrange(gs.getSize()):
-        x[i] = f(gs.getCoordinate(gs.getPoint(i), 0))
+    x = np.zeros(gs.size())
+    nodalValues = np.zeros(gs.size())
+    for i in xrange(gs.size()):
+        x[i] = gs.getPoint(i).getStandardCoordinate(0)
+        nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
 
-    plt.scatter(x, nodalValues, marker="o")
+    plt.plot(x, nodalValues, " ", marker="o")
 
 
-def plotNodal1d(A):
-    plt.plot(A[:, 0], A[:, 1], " ", marker="o")
-
-def plotSGNodal1d(grid, alpha):
-    gs = grid.getStorage()
-    A = np.ndarray([gs.getSize(), 2])
-
-    p = DataVector(2)
-    for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
-        A[i, 0] = p[0]
-        A[i, 1] = evalSGFunction(grid, alpha, p.array())
-
-    return plotNodal1d(A), A
-
-def plotSG1d(grid, alpha, n=1000, f=lambda x: x, show_grid_points=False,
-             **kws):
+def plotSG1d(grid, alpha, n=1000, f=lambda x: x, **kws):
     x = np.linspace(0, 1, n)
     y = [f(evalSGFunction(grid, alpha, np.array([xi])))
          for xi in x]
 
     plt.plot(x, y, **kws)
-
-    if show_grid_points:
-        gs = grid.getStorage()
-        for i in xrange(gs.getSize()):
-            x = gs.getCoordinate(gs.getPoint(i), 0)
-            plt.scatter(x, 0, color="black")
 
 
 def plotCDF(p, buckets):
@@ -103,18 +68,18 @@ def plotSurplusLevelWise(data, maxLevel):
 
 
 def plotSobolIndices(sobolIndices, ts=None, legend=False,
-                     names=None):
+                     names=None,
+                     colors=['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']):
     fig = plt.figure()
     plots = []
 
     if legend and names is None:
         raise Exception("plotSobolIndices - attribute names is not set")
 
-    lgd = None
     if ts is None:
         y0 = 0
         for i in xrange(len(sobolIndices)):
-            myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0], color=load_color(i))
+            myplot = plt.bar([0], [sobolIndices[i]], 1, color=colors[i], bottom=[y0])
             y0 += sobolIndices[i]
             plots = [myplot] + plots
 
@@ -122,36 +87,24 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
             plt.xticks([0.5], ('sobol indices',))
             plt.ylim(0, 1)
             plt.xlim(-0.2, 2)
-            lgd = plt.legend(plots,
-                             [r"$S_{%s}$ = %.3f" % (name, value)
-                              for (name, value) in zip(names[::-1],
-                                                       sobolIndices[::-1])],
-                             prop=load_font_properties())
+            plt.legend(plots,
+                       [r"$S_{%s}$ = %.3f" % (name, value)
+                        for (name, value) in zip(names[::-1],
+                                                 sobolIndices[::-1])])
 
     else:
         y0 = np.zeros(sobolIndices.shape[0])
         for i in xrange(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
-            color = load_color(i)
-            myplot, = plt.plot(ts, y1, color=color, lw=4)
-            plt.fill_between(ts, y0, y1, color=color, alpha=.5)
+            myplot, = plt.plot(ts, y1, lw=4)
+            plt.fill_between(ts, y0, y1, color=colors[i % len(colors)], alpha=.5)
             y0 = y1
 
             plots = [myplot] + plots
 
         if legend:
-            plt.xlim(min(ts), max(ts))
-            plt.ylim(0, 1)
-
-            ax = plt.gca()
-            box = ax.get_position()
-            ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
-            lgd = plt.legend(plots,
-                             [r"$S_{%s}$" % (",".join(name),)
-                              for name in names[::-1]],
-                             loc='upper left',
-                             bbox_to_anchor=(1.02, 1),
-                             borderaxespad=0,
-                             prop=load_font_properties())
-
-    return fig, lgd
+            plt.xlim(min(ts), max(ts) + (max(ts) - min(ts)) / 6.)
+            plt.legend(plots,
+                       [r"$S_{%s}$" % (name,) for name in names[::-1]],
+                       loc='upper right')
+    return fig

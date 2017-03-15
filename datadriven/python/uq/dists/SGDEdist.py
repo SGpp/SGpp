@@ -28,12 +28,9 @@ from pysgpp.extensions.datadriven.uq.operations.general import isMatrix
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 from pysgpp import createOperationFirstMoment, \
-    createOperationSecondMoment, \
-    createOperationDensityMargTo1D, \
+    createOperationSecondMoment
+from pysgpp._pysgpp_swig import createOperationDensityMargTo1D, \
     createOperationEval
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
-from pysgpp.pysgpp_swig import LatinHypercubeSampleGenerator
-from pysgpp.extensions.datadriven.uq.sampler.Sample import SampleType
 
 
 class SGDEdist(EstimatedDist):
@@ -41,62 +38,26 @@ class SGDEdist(EstimatedDist):
     The Sparse Grid Density Estimation (SGDE) distribution
     """
 
-    def __init__(self, grid,
-                 alpha,
-                 trainData=None,
-                 bounds=None,
-                 config=None,
-                 learner=None,
-                 unitIntegrand=True,
-                 isPositive=True):
-        super(SGDEdist, self).__init__(grid.getStorage().getDimension(),
-                                       trainData, bounds)
+    def __init__(self, grid, alpha, trainData=None, bounds=None):
+        super(SGDEdist, self).__init__(trainData, bounds)
 
-        self.grid = grid.clone()
-        self.alpha = alpha.copy()
-        self.alpha_vec = DataVector(alpha)
-        self.trainData = trainData.copy()
-        self.config = config
-        self.unitIntegrand = unitIntegrand
-        
-        if learner is None and trainData is not None:
-            trainData_vec = DataMatrix(trainData)
-            self.learner = LearnerSGDE(self.grid, self.alpha_vec, trainData_vec)
-        else:
-            self.learner = learner
+        self.grid = grid
+        self.alpha = DataVector(alpha)
 
         if trainData is None:
             self.dim = grid.getStorage().getDimension()
+            if bounds is None:
+                self.bounds = [[0, 1]] * self.dim
         elif self.dim != grid.getStorage().getDimension():
             raise AttributeError("the dimensionality of the data differs from the one of the grid")
 
         assert self.grid.getSize() == len(self.alpha)
-
-        if isPositive:
-            self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha_vec)
-        else:
-            # do monte carlo quadrature to estimate the volume
-            n = 20000
-            numDims = grid.getStorage().getDimension()
-            generator = LatinHypercubeSampleGenerator(numDims, n)
-            samples = np.ndarray((n, numDims))
-            sample = DataVector(numDims)
-            for i in xrange(samples.shape[0]):
-                generator.getSample(sample)
-                samples[i, :] = sample.array()
-            values = evalSGFunction(grid, alpha, samples)
-            self.vol = np.mean([max(0.0, value) for value in values])
-
-        self.vol *= self.trans.vol()
-
-        if unitIntegrand and self.vol > 1e-13:
-            self.unnormalized_alpha = np.array(self.alpha)
-            self.unnormalized_alpha_vec = DataVector(self.alpha)
-            self.alpha /= self.vol
-            self.alpha_vec.mult(1. / self.vol)
+        self.vol = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
+        if abs(self.vol) > 1e-13:
+            self.alpha.mult(1. / self.vol)
 
     @classmethod
-    def byLearnerSGDEConfig(cls, samples, grid=None, bounds=None, config={}):
+    def byLearnerSGDEConfig(cls, samples, bounds=None, config={}):
         """
 
         @param cls:
@@ -104,23 +65,6 @@ class SGDEdist(EstimatedDist):
         @param learnerSGDEConfig: dict
         """
         # --------------------------------------------------------------------
-#         config["sgde_makePositive"] = True
-#         config["sgde_makePositive_candidateSearchAlgorithm"] = "intersections"
-#         config["sgde_makePositive_interpolationAlgorithm"] = "setToZero"
-#         config["sgde_makePositive_generateConsistentGrid"] = True
-#         config["sgde_makePositive_verbose"] = True
-#         config["sgde_unitIntegrand"] = True
-#         config["sgde_makePositive_verbose"] = True
-        if grid is not None:
-            # serialize grid and add it to config
-            grid_str = grid.serialize()
-            filename_grid = os.path.join(tempfile.gettempdir(),
-                                         "grid-%s.grid" % str(uuid.uuid4()))
-            fd = open(filename_grid, "w")
-            fd.write(grid_str)
-            fd.close()
-            config["grid_filename"] = filename_grid
-
         # write config to file
         # get temp directory
         filename_config = os.path.join(tempfile.gettempdir(),
@@ -146,49 +90,7 @@ class SGDEdist(EstimatedDist):
         learner = LearnerSGDE(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)
 
-        # copy grid and coefficient vector
-        grid = learner.getGrid().clone()
-        alpha = np.array(learner.getSurpluses().array())
-
-        # load sgde distribution
-        isPositive = False
-        if "sgde_makePositive" in config:
-            isPositive = config["sgde_makePositive"]
-
-        ans = cls(grid, alpha,
-                  trainData=samples,
-                  bounds=bounds,
-                  config=config,
-                  learner=learner,
-                  unitIntegrand=True,
-                  isPositive=isPositive)
-        return ans
-
-
-    @classmethod
-    def byFiles(cls, gridfile, alphafile, samplesfile, bounds=None, config=None):
-        if os.path.exists(gridFile):
-            grid = readGrid(gridFile)
-        else:
-            raise Exception('The grid file "%s" does not exist' % gridFile)
-
-        if os.path.exists(alphaFile):
-            alpha = readAlphaARFF(alphaFile)
-        else:
-            raise Exception('The alpha file "%s" does not exist' % alphaFile)
-
-        trainData = None
-        if trainDataFile is not None:
-            if os.path.exists(trainDataFile):
-                trainData = readDataTrivial(trainDataFile, delim=' ',
-                                            hasclass=False)['data']
-            else:
-                raise Exception('The data file "%s" does not exist' % trainDataFile)
-
-        return cls(grid, alpha, trainData, bounds, config)
-    
-    def getJointTransformation(self):
-        return self.computeLinearTransformation(self.bounds)
+        return cls(learner.getGrid(), learner.getSurpluses(), samples, bounds)
 
     def pdf(self, x):
         # convert the parameter to the right format
@@ -203,13 +105,18 @@ class SGDEdist(EstimatedDist):
         # evaluate the sparse grid density
         fx = evalSGFunction(self.grid, self.alpha, x_unit)
 
+        if self.trans is not None:
+            fx *= 1. / self.trans.vol()
+
         # if there is just one value given, extract it from the list
         if len(fx) == 1:
             fx = fx[0]
 
-        return max(0, fx)
+        return fx
+        # return max(0, fx)
+        # return self.vol * (fx + self.fmin) / self.scale
 
-    def cdf(self, x, shuffle=True):
+    def cdf(self, x):
         # convert the parameter to the right format
         x = self._convertEvalPoint(x)
 
@@ -224,7 +131,7 @@ class SGDEdist(EstimatedDist):
             op = createOperationRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
             for i, xi in enumerate(x_unit[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
+                ans[i] = op.doTransformation1D(self.alpha, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
@@ -236,10 +143,7 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationRosenblattTransformation(self.grid)
-            if shuffle:
-                op.doTransformation(self.alpha_vec, A, B)
-            else:
-                op.doTransformation(self.alpha_vec, A, B, 0)
+            op.doTransformation(self.alpha, A, B)
 
             # extract the outcome
             if x_unit.shape == (1, 1):
@@ -247,7 +151,7 @@ class SGDEdist(EstimatedDist):
             else:
                 return B.array()
 
-    def ppf(self, x, shuffle=True):
+    def ppf(self, x):
         # convert the parameter to the right format
         x = self._convertEvalPoint(x)
 
@@ -256,7 +160,7 @@ class SGDEdist(EstimatedDist):
             op = createOperationInverseRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
             for i, xi in enumerate(x[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
+                ans[i] = op.doTransformation1D(self.alpha, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
@@ -268,10 +172,7 @@ class SGDEdist(EstimatedDist):
 
             # do the transformation
             op = createOperationInverseRosenblattTransformation(self.grid)
-            if shuffle:
-                op.doTransformation(self.alpha_vec, A, B)
-            else:
-                op.doTransformation(self.alpha_vec, A, B, 0)
+            op.doTransformation(self.alpha, A, B)
 
             # extract the outcome
             if x.shape == (1, 1):
@@ -280,153 +181,57 @@ class SGDEdist(EstimatedDist):
                 return B.array()
 
     def mean(self):
-        opQuad = createOperationFirstMoment(self.grid)
         if self.trans is None:
-            firstMoment = opQuad.doQuadrature(self.alpha_vec)
+            return createOperationFirstMoment(self.grid).doQuadrature(self.alpha)
         else:
-            bounds = DataMatrix(self.trans.getBounds())
-            firstMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
-                                              bounds)
+            first_moment = 0.0
+            gs = self.grid.getStorage()
+            for i in xrange(gs.getSize()):
+                gp = gs.getPoint(i)
+                p = 1.0
+                for idim in xrange(gs.getDimension()):
+                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    index, level = gp.getIndex(idim), gp.getLevel(idim)
+                    p *= (b - a) * index * 4 ** -level + a * 2 ** -level
 
-        return firstMoment
+                first_moment += self.alpha[i] * p
+
+            return first_moment
 
     def var(self):
-        opQuad = createOperationSecondMoment(self.grid)
         if self.trans is None:
-            secondMoment = opQuad.doQuadrature(self.alpha_vec)
+            return createOperationSecondMoment(self.grid).doQuadrature(self.alpha) - self.mean() ** 2
         else:
-            bounds = DataMatrix(self.trans.getBounds())
-            secondMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
-                                               bounds)
+            # compute the second moment
+            second_moment = 0.0
+            gs = self.grid.getStorage()
+            for i in xrange(gs.getSize()):
+                gp = gs.getPoint(i)
+                p = 1.0
+                for idim in xrange(gs.getDimension()):
+                    a, b = self.trans.getTransformations()[idim].getBounds()
+                    index, level = gp.getIndex(idim), gp.getLevel(idim)
+                    p *= (b - a) ** 2 * (index * index + 1. / 6.) * 8 ** -level + 2 * (b - a) * a * index * 4 ** -level + a * a * 2 ** -level
 
-        return secondMoment - self.mean() ** 2
+                second_moment += self.alpha[i] * p
+
+            # compute the variance
+            return second_moment - self.mean() ** 2
 
     def cov(self):
-        covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        bounds_vec = DataMatrix(self.bounds)
-        self.learner.cov(covMatrix, bounds_vec)
-        return covMatrix.array()
+        raise NotImplementedError
 
-    def rvs(self, n=1, shuffle=False):
+    def corrcoef(self):
+        raise NotImplementedError
+#         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
+#         self.dist.corrcoef(corrMatrix)
+#         return corrMatrix.array()
+
+
+    def rvs(self, n=1):
         # use inverse Rosenblatt transformation to get samples
         uniform_samples = np.random.random((n, self.dim))
-        unit_samples = self.ppf(uniform_samples, shuffle=shuffle)
-        prob_samples = self.trans.unitToProbabilisticMatrix(unit_samples)
-        return prob_samples
+        return self.ppf(uniform_samples)
 
     def __str__(self):
         return "SGDE"
-
-    def crossEntropy(self, samples,
-                     dtype=SampleType.ACTIVEPROBABILISTIC):
-        if dtype == SampleType.ACTIVEPROBABILISTIC:
-            unit_samples = self.trans.probabilisticToUnitMatrix(samples)
-        else:
-            unit_samples = samples
-
-        assert np.all(unit_samples.min(axis=0) >= 0.0)
-        assert np.all(unit_samples.max(axis=0) <= 1.0)
-        return super(SGDEdist, self).crossEntropy(unit_samples)
-
-    def marginalizeToDimX(self, idim):
-        margLearner = self.learner.margToDimX(idim)
-
-        # copy grid and coefficient vector
-        grid = margLearner.getGrid().clone()
-        alpha = margLearner.getSurpluses().array().copy()
-
-        return SGDEdist(grid,
-                        alpha,
-                        trainData=np.vstack((self.trainData[:, idim])),
-                        bounds=np.array([self.bounds[idim]]),
-                        config=self.config,
-                        learner=margLearner,
-                        unitIntegrand=self.unitIntegrand)
-
-    def marginalize(self, idim):
-        margLearner = self.learner.marginalize(idim)
-
-        # copy grid and coefficient vector
-        grid = margLearner.getGrid().clone()
-        alpha = margLearner.getSurpluses().array().copy()
-
-        return SGDEdist(grid,
-                        alpha,
-                        trainData=np.delete(self.trainData, idim, axis=1),
-                        bounds=np.delete(self.bounds, idim, axis=0),
-                        config=self.config,
-                        learner=margLearner,
-                        unitIntegrand=self.unitIntegrand)
-
-    def toJson(self):
-        """
-        Returns a string that represents the object
-
-        Arguments:
-
-        Return A string that represents the object
-        """
-        serializationString = '"module" : "' + \
-                              self.__module__ + '",\n'
-
-        for attrName, attrValue in [("_SGDEdist__grid", self.grid),
-                                    ("_SGDEdist__alpha", self.alpha),
-                                    ("_SGDEdist__trainData", self.trainData),
-                                    ("_SGDEdist__config", self.config),
-                                    ("_SGDEdist__bounds", self.bounds),
-                                    ("_SGDEdist__unitIntegrand", self.unitIntegrand), ]:
-            serializationString += ju.parseAttribute(attrValue, attrName)
-
-        s = serializationString.rstrip(",\n")
-
-        return "{" + s + "}"
-
-    @classmethod
-    def fromJson(cls, jsonObject):
-        """
-        Restores the Beta object from the json object with its
-        attributes.
-
-        Arguments:
-        jsonObject -- json object
-
-        Return the restored UQSetting object
-        """
-        # restore surplusses
-        key = '_SGDEdist__grid'
-        if key in jsonObject:
-            # undo the hack that made it json compatible
-            gridString = jsonObject[key].replace('__', '\n').encode('utf8')
-            # deserialize ...
-            grid = Grid.unserialize(gridString)
-        else:
-            raise AttributeError("SGDEDist: fromJson - grid is missing")
-
-        key = '_SGDEdist__alpha'
-        if key in jsonObject:
-            alpha = np.array(jsonObject[key])
-        else:
-            raise AttributeError("SGDEDist: fromJson - coefficients are missing")
-
-        key = '_SGDEdist__trainData'
-        trainData = None
-        if key in jsonObject:
-            trainData = np.array(jsonObject[key])
-
-        key = '_SGDEdist__bounds'
-        bounds = None
-        if key in jsonObject:
-            bounds = np.array(jsonObject[key])
-
-        key = '_SGDEdist__config'
-        config = None
-        if key in jsonObject:
-            config = jsonObject[key]
-
-        key = '_SGDEdist__unitIntegrand'
-        unitIntegrand = True
-        if key in jsonObject:
-            unitIntegrand = bool(jsonObject[key])
-
-        return SGDEdist(grid, alpha, trainData=trainData, bounds=bounds,
-                        config=config, learner=None, unitIntegrand=unitIntegrand)

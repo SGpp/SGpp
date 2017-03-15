@@ -12,7 +12,7 @@ from scipy.stats import norm
 
 class LibAGFDist(Dist):
     """
-    The Gaussian KDE from the LibAGF library
+    The Sparse Grid Density Estimation (SGDE) distribution
     """
 
     def __init__(self,

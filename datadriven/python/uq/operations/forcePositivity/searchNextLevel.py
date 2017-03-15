@@ -22,14 +22,14 @@ class SearchLevelWiseForCandidates(CandidateSet):
             if gp.getLevel(idim) < maxLevel:
                 self.costs += 1
                 gpl = HashGridPoint(gp)
-                gp.getLeftChild(idim)
+                gs.left_child(gpl, idim)
                 level, index = tuple(getLevel(gpl)), tuple(getIndex(gpl))
                 children[level, index] = gpl
 
                 # get right child
                 self.costs += 1
                 gpr = HashGridPoint(gp)
-                gpr.getRightChild(idim)
+                gs.right_child(gpr, idim)
                 level, index = tuple(getLevel(gpr)), tuple(getIndex(gpr))
                 children[level, index] = gpr
         return children
@@ -89,6 +89,6 @@ class SearchLevelWiseForCandidates(CandidateSet):
             children = self.getAllChildrenNodesUpToMaxLevel(gp, maxLevel, grid)
             for (level, index), ngp in children.items():
                 if (level, index) not in self.newCandidates:
-                    if not gs.isContaining(ngp):
+                    if not gs.has_key(ngp):
                         self.candidates.append(ngp)
                     self.newCandidates[level, index] = ngp

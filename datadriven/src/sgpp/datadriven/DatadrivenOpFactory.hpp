@@ -18,19 +18,14 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
-#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -152,21 +147,20 @@ createOperationInverseRosenblattTransformation1D(base::Grid& grid);
 /**
  * Factory method, returning an OperationRosenblattTransformationKDE for the kde.
  *
- * @param kde KernelDensityEstimator for which the Rosenblatt transformation should be computed
+ * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
  * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
-datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
-    datadriven::KernelDensityEstimator& kde);
+datadriven::OperationRosenblattTransformationKDE*
+createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformationKDE for the kde.
  *
- * @param kde KernelDensityEstimator for which the inverse Rosenblatt transformation should be
- * computed
+ * @param kde GaussianKDE for which the inverse Rosenblatt transformation should be computed
  * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
 datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde);
+createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationDensityMarginalizeKDE for the kernel density.
@@ -175,7 +169,7 @@ createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstim
  * @return Pointer to new OperationDensityMarginalizeKDE
  */
 datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
-    datadriven::KernelDensityEstimator& kde);
+    datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationDensityConditionalKDE for the kernel density.
@@ -184,7 +178,7 @@ datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE
  * @return Pointer to new OperationDensityConditionalKDE
  */
 datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
-    datadriven::KernelDensityEstimator& kde);
+    datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
@@ -197,44 +191,6 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
 base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
-
-/**
- * Factory method, returning an OperationMakePositive for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationMakePositive object for the Grid grid
- */
-datadriven::OperationMakePositive* createOperationMakePositive(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool generateConsistentGrid = true, bool verbose = false,
-    optimization::ScalarFunction* f = nullptr);
-
-/**
- * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
- */
-datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
-    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
-        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
-        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false, optimization::ScalarFunction* f = nullptr);
-
-/**
- * Factory method, returning an OperationCovariance for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationCovariance object for the Grid grid
- */
-datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid);
 
 }  // namespace op_factory
 }  // namespace sgpp

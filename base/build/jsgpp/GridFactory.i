@@ -5,7 +5,7 @@
 
 %include "std_string.i"
 
-%newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
@@ -151,9 +151,7 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
-
-  std::string getTypeAsString();
-
+  
   Grid* clone();
 };
 }

@@ -325,10 +325,61 @@ double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
 
 double LearnerSGDE::variance() { return variance(*grid, *alpha); }
 
-void LearnerSGDE::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
-  std::unique_ptr<datadriven::OperationCovariance> opCov(
-      op_factory::createOperationCovariance(*grid));
-  opCov->doQuadrature(*alpha, cov, bounds);
+void LearnerSGDE::cov(base::DataMatrix& cov) {
+  size_t ndim = grid->getStorage().getDimension();
+
+  if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
+    // covariance matrix has wrong size -> resize
+    cov.resize(ndim, ndim);
+  }
+
+  // prepare covariance marix
+  cov.setAll(0.0);
+
+  // generate 1d densities and compute means and variances
+  base::DataVector means(ndim);
+  base::DataVector variances(ndim);
+
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
+
+  base::Grid* marginalizedGrid = NULL;
+  base::DataVector* marginalizedAlpha = new base::DataVector(0);
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    opMarg->margToDimX(&*alpha, marginalizedGrid, marginalizedAlpha, idim);
+    // store moments
+    means[idim] = mean(*marginalizedGrid, *marginalizedAlpha);
+    variances[idim] = variance(*marginalizedGrid, *marginalizedAlpha);
+
+    delete marginalizedGrid;
+  }
+
+  // helper variables
+  std::vector<size_t> mdims(2);
+  double covij = 0.0;
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    // diagonal is equal to the variance of the marginalized densities
+    cov.set(idim, idim, variances[idim]);
+
+    for (size_t jdim = idim + 1; jdim < ndim; jdim++) {
+      // marginalize the density
+      mdims[0] = idim;
+      mdims[1] = jdim;
+      opMarg->margToDimXs(&*alpha, marginalizedGrid, marginalizedAlpha, mdims);
+      // -----------------------------------------------------
+      // compute the covariance of Cov(X_i, X_j)
+      covij = mean(*marginalizedGrid, *marginalizedAlpha) -
+              means[idim] * means[jdim];
+      cov.set(idim, jdim, covij);
+      cov.set(jdim, idim, covij);
+      // -----------------------------------------------------
+      delete marginalizedGrid;
+    }
+  }
+
+  delete marginalizedAlpha;
 }
 
 std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {

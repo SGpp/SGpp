@@ -22,13 +22,6 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         super(self.__class__, self).__init__()
         self._U = params.getIndependentJointDistribution()
 
-    def getKey(self, gps):
-        """
-        Generates a unique key for a given list of grid points
-        @param gps: list of HashGridPoint
-        """
-        return tuple([(gp.getLevel(d), gp.getIndex(d)) for gp in gps for d in xrange(gp.getDimension())])
-
     def computeBilinearForm(self, grid):
         """
         Compute bilinear form for the current grid
@@ -37,26 +30,29 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         """
         # create bilinear form of the grid
         gs = grid.getStorage()
-        A = DataMatrix(gs.getSize(), gs.getSize())
+        A = DataMatrix(gs.size(), gs.size())
         A.setAll(0.)
         createOperationLTwoDotExplicit(A, grid)
 
+        gs = grid.getStorage()
+        A = DataMatrix(gs.size(), gs.size())
+        createOperationLTwoDotExplicit(A, grid)
         # multiply the entries with the pdf at the center of the support
         p = DataVector(gs.getDimension())
         q = DataVector(gs.getDimension())
 
-        for i in xrange(gs.getSize()):
+        for i in xrange(gs.size()):
             gpi = gs.getPoint(i)
-            gs.getCoordinates(gpi, p)
-            for j in xrange(gs.getSize()):
+            gpi.getStandardCoordinates(p)
+            for j in xrange(gs.size()):
                 gpj = gs.getPoint(j)
-                gs.getCoordinates(gpj, q)
+                gpj.getStandardCoordinates(q)
                 y = float(A.get(i, j) * self._U.pdf(p))
                 A.set(i, j, y)
                 A.set(j, i, y)
-                self._map[self.getKey([gpi, gpj])] = A.get(i, j)
+                self._map[self.getKey(gpi, gpj)] = A.get(i, j)
 
         return A
 
     def computeBilinearFormEntry(self, basis, gpi, gpj):
-        return self._map[self.getKey([gpi, gpj])], 0.
+        return self._map[self.getKey(gpi, gpj)], 0.

@@ -8,8 +8,6 @@ class ASGCStatistics(object):
 
         self.testMSE = {}
         self.testL2Norm = {}
-        self.testL1Norm = {}
-        self.testMaxError = {}
         self.testCount = {}
 
         self.numberPoints = {}
@@ -23,8 +21,6 @@ class ASGCStatistics(object):
 
             self.testMSE[dtype] = {}
             self.testL2Norm[dtype] = {}
-            self.testL1Norm[dtype] = {}
-            self.testMaxError[dtype] = {}
             self.testCount[dtype] = {}
 
             self.numberPoints[dtype] = []
@@ -37,8 +33,6 @@ class ASGCStatistics(object):
 
             self.testMSE[dtype][t] = []
             self.testL2Norm[dtype][t] = []
-            self.testL1Norm[dtype][t] = []
-            self.testMaxError[dtype][t] = []
             self.testCount[dtype][t] = []
     
     def updateResults(self, dtype, t, learner):
@@ -55,8 +49,6 @@ class ASGCStatistics(object):
             # L2 error and MSE
             self.testMSE[dtype][t].append(learner.getMSE("test"))
             self.testL2Norm[dtype][t].append(learner.getL2NormError("test"))
-            self.testL1Norm[dtype][t].append(learner.getL1NormError("test"))
-            self.testMaxError[dtype][t].append(learner.getMaxError("test"))
             self.testCount[dtype][t].append(learner.getSize("test"))
 
         # update other stats

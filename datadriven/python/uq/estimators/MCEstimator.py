@@ -5,13 +5,14 @@ from scipy.stats import norm
 
 class MCEstimator(Estimator):
 
-    def __init__(self, npaths=100, percentile=1):
+    def __init__(self, npaths=10):
         """
         Constructor
+        @param n: number of samples
         """
         Estimator.__init__(self)
-        self.__npaths = npaths
-        self.__percentile = percentile
+        self._npaths = npaths
+#         self._c = norm.ppf(1. - beta / 2.)
 
     def getBootstrap(self, samples):
         ixs = np.random.randint(0, len(samples), len(samples))
@@ -22,46 +23,27 @@ class MCEstimator(Estimator):
         Compute the mean
         @param samples: numpy array
         """
-        moments = np.ndarray(self.__npaths)
-        for i in xrange(self.__npaths):
-            bootstrap = self.getBootstrap(samples)
-            moments[i] = np.mean(bootstrap)
-
-        mean = np.mean(samples)
+        moments = np.ndarray(self._npaths)
+        for i in xrange(self._npaths):
+            moments[i] = np.mean(self.getBootstrap(samples))
 
         # error statistics
-        if self.__npaths > 1:
-            lower_percentile = np.percentile(moments, q=self.__percentile)
-            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(np.abs(mean - lower_percentile),
-                      np.abs(upper_percentile - mean))
+        if self._npaths > 1:
+            err = np.var(moments, ddof=1)
         else:
-            err = lower_percentile = upper_percentile = np.Inf
+            err = np.Inf
 
-        return {"value": mean,
-                "err": err,
-                "confidence_interval": (lower_percentile, upper_percentile)}
+        return np.mean(moments), err
 
     def var(self, samples):
-        """
-        Compute the variance
-        @param samples: numpy array
-        """
-        moments = np.ndarray(self.__npaths)
-        for i in xrange(self.__npaths):
-            bootstrap = self.getBootstrap(samples)
-            moments[i] = np.var(bootstrap)
+        moments = np.ndarray(self._npaths)
+        for i in xrange(self._npaths):
+            moments[i] = np.var(self.getBootstrap(samples), ddof=1)
 
-        var = np.var(samples)
         # error statistics
-        if self.__npaths > 1:
-            lower_percentile = np.percentile(moments, q=self.__percentile)
-            upper_percentile = np.percentile(moments, q=100 - self.__percentile)
-            err = max(np.abs(var - lower_percentile),
-                      np.abs(upper_percentile - var))
+        if self._npaths > 1:
+            err = np.var(moments, ddof=1)
         else:
-            err = lower_percentile = upper_percentile = np.Inf
+            err = np.Inf
 
-        return {"value": var,
-                "err": err,
-                "confidence_interval": (lower_percentile, upper_percentile)}
+        return np.mean(moments), err
