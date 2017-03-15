@@ -81,19 +81,19 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
                            // temp-variables, thus skip the calculation
       // Ramp up
       _seql2 = index.seq();
-      _vall2 = storage->isValidSequenceNumber(_seql2) ? 0.0 : source[_seql2];
+      _vall2 = storage->isInvalidSequenceNumber(_seql2) ? 0.0 : source[_seql2];
 
       index.stepRight(dim);
       _seql1 = index.seq();
-      _vall1 = storage->isValidSequenceNumber(_seql1) ? 0.0 : source[_seql1];
+      _vall1 = storage->isInvalidSequenceNumber(_seql1) ? 0.0 : source[_seql1];
 
       index.stepRight(dim);
       _seqr1 = index.seq();
-      _valr1 = storage->isValidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
+      _valr1 = storage->isInvalidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
 
       index.stepRight(dim);
       _seqr2 = index.seq();
-      _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
+      _valr2 = storage->isInvalidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
 
       temp_current[0] = 2.4 * h * _vall2     // sgpp::base::Grid-point
                         + 0.8 * h * _vall1;  // right neighbor
@@ -124,7 +124,7 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
             _valr1 = _valr2;
             index.stepRight(dim);
             _seq = index.seq();
-            _valr2 = storage->isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
+            _valr2 = storage->isInvalidSequenceNumber(_seq) ? 0.0 : source[_seq];
           }
         }
       }
@@ -144,32 +144,32 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     // Ramp-up
     index.set(dim, l, 1);
     _seql2 = index.seq();
-    _vall2 = storage->isValidSequenceNumber(_seql2) ? 0.0 : source[_seql2];
+    _vall2 = storage->isInvalidSequenceNumber(_seql2) ? 0.0 : source[_seql2];
 
     index.stepRight(dim);
     _seql1 = index.seq();
-    _vall1 = storage->isValidSequenceNumber(_seql1) ? 0.0 : source[_seql1];
+    _vall1 = storage->isInvalidSequenceNumber(_seql1) ? 0.0 : source[_seql1];
 
     index.stepRight(dim);
     _seq = index.seq();
-    _val = storage->isValidSequenceNumber(_seq) ? 0.0 : source[_seq];
+    _val = storage->isInvalidSequenceNumber(_seq) ? 0.0 : source[_seq];
 
     index.stepRight(dim);
     _seqr1 = index.seq();
-    _valr1 = storage->isValidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
+    _valr1 = storage->isInvalidSequenceNumber(_seqr1) ? 0.0 : source[_seqr1];
 
     if (l != 3) {
       index.stepRight(dim);
       _seqr2 = index.seq();
-      _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
+      _valr2 = storage->isInvalidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
     }
 
-    if (!storage->isValidSequenceNumber(_seql2))
+    if (!storage->isInvalidSequenceNumber(_seql2))
       result[_seql2] = -0.6 * temp_old[0] + 3.56 * h * _vall2  // current point
                        + 2.42 * h * _vall1                     // right neighbor
                        + 0.14 * h * _val;                      // right-right neighbor
 
-    if (!storage->isValidSequenceNumber(_seql1))
+    if (!storage->isInvalidSequenceNumber(_seql1))
       result[_seql1] = -0.6 * (temp_old[0] + temp_old[1])  //
                        + 6.12 * h * _vall1                 // current point
                        + 2.42 * h * _vall2                 // left neighbor
@@ -194,7 +194,7 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
       _seql1 = _seql2;
     } else {
       for (i = 5; static_cast<int>(i) < (1 << l) - 4; i += 2) {
-        if (!storage->isValidSequenceNumber(_seq))
+        if (!storage->isInvalidSequenceNumber(_seq))
           result[_seq] = -0.6 * (temp_old[(i - 3) / 2] + temp_old[(i - 1) / 2])  //
                          + 6.12 * h * _val                                       // current point
                          + 2.56 * h * (_vall1 + _valr1)   // left and right neighbor
@@ -210,20 +210,20 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
           _seqr1 = _seqr2;
           index.stepRight(dim);
           _seqr2 = index.seq();
-          _valr2 = storage->isValidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
+          _valr2 = storage->isInvalidSequenceNumber(_seqr2) ? 0.0 : source[_seqr2];
         }
       }
     }
 
     // Again, two points left
-    if (!storage->isValidSequenceNumber(_seqr1))
+    if (!storage->isInvalidSequenceNumber(_seqr1))
       result[_seqr1] = -0.6 * (temp_old[(1 << (l - 1)) - 3] + temp_old[(1 << (l - 1)) - 2])  //
                        + 6.12 * h * _valr1   // current point
                        + 2.42 * h * _valr2   // right neighbor
                        + 2.56 * h * _val     // left neighbor
                        + 0.14 * h * _vall1;  // left-left neighbor
 
-    if (!storage->isValidSequenceNumber(_seqr2))
+    if (!storage->isInvalidSequenceNumber(_seqr2))
       result[_seqr2] = -0.6 * temp_old[(1 << (l - 1)) - 2]  //
                        + 3.56 * h * _valr2                  // current point
                        + 2.42 * h * _valr1                  // left neighbor

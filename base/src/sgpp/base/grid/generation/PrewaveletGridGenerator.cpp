@@ -33,9 +33,20 @@ void PrewaveletGridGenerator::regular(size_t level) {
   gen.regular(this->storage, static_cast<level_t>(level));
 }
 
+void PrewaveletGridGenerator::regular(size_t level, double T) {
+  HashGenerator gen;
+  gen.regular(this->storage, static_cast<level_t>(level), T);
+}
+
 void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size);
+}
+
+void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size, double T) {
+  HashGenerator gen;
+  gen.cliques(this->storage, static_cast<level_t>(level),
+              clique_size, T);
 }
 
 void PrewaveletGridGenerator::full(size_t level) {
@@ -102,8 +113,8 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
     this->storage.getPoint(iter.seq()).setLeaf(false);
 
     // Ok, point is neither in storage, nor in shadowstorage ...
-    if (storage.isValidSequenceNumber(iter.seq()) &&
-        shadowstorage.isValidSequenceNumber(shadowIter.seq())) {
+    if (storage.isInvalidSequenceNumber(iter.seq()) &&
+        shadowstorage.isInvalidSequenceNumber(shadowIter.seq())) {
       GridStorage::point_pointer new_index = new GridStorage::point_type(
         storage.getDimension());
 
@@ -144,8 +155,8 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
     GridStorage::point_pointer new_index = new GridStorage::point_type(
       storage.getDimension());
 
-    if (storage.isValidSequenceNumber(iter.seq()) &&
-        shadowstorage.isValidSequenceNumber(shadowIter.seq())) {
+    if (storage.isInvalidSequenceNumber(iter.seq()) &&
+        shadowstorage.isInvalidSequenceNumber(shadowIter.seq())) {
       // Ok, point is neither in storage, nor in shadowstorage ...
       // check if the border of index and iter touching
       for (size_t d = 0; d < storage.getDimension(); ++d) {
