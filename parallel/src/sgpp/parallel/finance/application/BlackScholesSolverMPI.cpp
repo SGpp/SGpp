@@ -985,7 +985,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(base::DataVector& a
 
 double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point,
                                          sgpp::base::DataVector& alpha) {
-  std::vector<double> trans_eval = eval_point;
+  sgpp::base::DataVector trans_eval(eval_point);
 
   // apply needed coordinate transformations
   if (this->useLogTransform) {

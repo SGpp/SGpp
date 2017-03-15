@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
-
 
 namespace sgpp {
 namespace base {
@@ -19,14 +19,13 @@ namespace base {
  * And here we have another implicit dependence on tensor products
  *
  */
-template<class LT, class IT>
-class LinearPeriodicBasis: public Basis<LT, IT>  {
+template <class LT, class IT>
+class LinearPeriodicBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearPeriodicBasis() override {
-  }
+  ~LinearPeriodicBasis() override {}
 
   /**
    * Evaluate a basis function.
@@ -40,12 +39,8 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
     if (l == 0) {
       return fabs(2 * x - 1);
     } else {
-      return 1.0 - fabs(static_cast<double>(1 << l) * x -
-                        static_cast<double>(i));
+      return std::max(1.0 - fabs(static_cast<double>(1 << l) * x - static_cast<double>(i)), 0.0);
     }
-
-    // should not happen
-    return 0.0;
   }
 
   /**
@@ -62,11 +57,10 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
     if (level == 0) {
       return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
     } else {
-      return 1.0 - ((1.0 / q) * (fabs(((1 << level) * (p - t)) - (q * index))));
+      return std::max(1.0 - ((1.0 / q) * (fabs((static_cast<double>(1 << level) * (p - t)) -
+                                               (q * static_cast<double>(index))))),
+                      0.0);
     }
-
-    // should not happen
-    return 0.0;
   }
 };
 

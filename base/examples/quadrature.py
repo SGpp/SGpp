@@ -4,7 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_quadrature_py quadrature.py
+## \page example_quadrature_py Quadrature in Python
 ##
 ## The following example shows how to integrate in SG++, using both
 ## direct integration of a sparse grid function and the use of
@@ -23,6 +23,8 @@
 ##
 ## The function, which sgpp::base::OperationQuadratureMC takes, has one parameter,
 ## a sequence (C++ provides a tuple) with the coordinates of the grid point \f$\in [0,1]^d\f$.
+##
+## This example can be found in the file quadrature.py 
 
 # import pysgpp library
 import pysgpp
@@ -34,7 +36,8 @@ def f(x):
     res *= 4.0*x[i]*(1.0-x[i])
   return res
 
-# create a two-dimensional piecewise bi-linear grid
+
+## Create a two-dimensional piecewise bi-linear grid with level 3
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
@@ -46,12 +49,22 @@ gridGen = grid.getGenerator()
 gridGen.regular(level)
 print "number of grid points: {}".format(gridStorage.getSize())
 
+
+## Calculate the surplus vector alpha for the interpolant of \f$
+## f(x)\f$.  Since the function can be evaluated at any
+## point. Hence. we simply evaluate it at the coordinates of the
+## grid points to obtain the nodal values. Then we use
+## hierarchization to obtain the surplus value.
+
 # create coefficient vector
 alpha = pysgpp.DataVector(gridStorage.getSize())
 for i in xrange(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
   alpha[i] = f((gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)))
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
+
+
+## Now we compute and compare the quadrature using four different methods available in SG++.
 
 # direct quadrature
 opQ = pysgpp.createOperationQuadrature(grid)

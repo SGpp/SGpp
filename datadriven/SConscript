@@ -3,15 +3,23 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import Helper
 import ModuleHelper
+import Helper
 
 Import("*")
 
 moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
+additionalBoostTestDependencies = []
+        
+if env["USE_ZLIB"]:
+  additionalDependencies += ["z"]
 if env["USE_OCL"]:
-    additionalDependencies += ["OpenCL"]
+  additionalDependencies += ["OpenCL"]
+if env["USE_GSL"]:
+  additionalDependencies += ["gsl", "gslcblas"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"

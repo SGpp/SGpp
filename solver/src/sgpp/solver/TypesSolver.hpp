@@ -8,16 +8,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <cstddef>
-
 namespace sgpp {
-
 namespace solver {
 
 /**
  * enum to address different SLE solvers in a standardized way
  */
-enum class SLESolverType { CG, BiCGSTAB };
+enum class SLESolverType { CG, BiCGSTAB, FISTA };
 
 struct SLESolverConfiguration {
   sgpp::solver::SLESolverType type_;
@@ -32,7 +29,6 @@ struct SLESolverSPConfiguration {
   size_t maxIterations_;
   float threshold_;
 };
-
 }  // namespace solver
 }  // namespace sgpp
 
