@@ -156,7 +156,7 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
                                                    std::vector<base::DataVector> const &params) {
   setParameters(params);
 
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }
@@ -164,7 +164,7 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
 base::DataVector CombigridMultiOperation::evaluate(size_t q, base::DataMatrix const &params) {
   setParameters(params);
 
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }

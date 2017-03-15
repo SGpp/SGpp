@@ -96,7 +96,7 @@ double CombigridOperation::getResult() { return impl->combiEval->getValue().valu
 
 double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   setParameters(param);
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }
