@@ -26,31 +26,32 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   # as they can make the checks invalid, e.g., by setting "-Werror"
 
   if env["OPT"] == True:
-    env.Append(CPPFLAGS=["-O3", "-g"])
+    config.env.Append(CPPFLAGS=["-O3", "-g"])
 
   else:
-    env.Append(CPPFLAGS=["-g", "-O0"])
+    config.env.Append(CPPFLAGS=["-g", "-O0"])
 
   # make settings case-insensitive
-  env["COMPILER"] = env["COMPILER"].lower()
-  env["ARCH"] = env["ARCH"].lower()
+  config.env["COMPILER"] = config.env["COMPILER"].lower()
+  config.env["ARCH"] = config.env["ARCH"].lower()
 
-  if env["COMPILER"] in ("gnu", "openmpi", "mpich"):
+  if config.env["COMPILER"] in ("gnu", "openmpi", "mpich"):
     configureGNUCompiler(config)
-  elif env["COMPILER"] == "clang":
+  elif config.env["COMPILER"] == "clang":
     configureClangCompiler(config)
-  elif env["COMPILER"] in ("intel", "intel.mpi"):
+  elif config.env["COMPILER"] in ("intel", "intel.mpi"):
     configureIntelCompiler(config)
   else:
     Helper.printErrorAndExit("You must specify a valid value for Compiler.",
                              "Available configurations are:",
                              "gnu, clang, intel, openmpi, mpich, intel.mpi")
 
-  if env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
+  if config.env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
+    config.env["USE_MPI"] = "1"
 
   # special treatment for different platforms
-  if env["PLATFORM"] == "darwin":
+  if config.env["PLATFORM"] == "darwin":
     # the "-undefined dynamic_lookup"-switch is required to actually build a shared library
     # in OSX. "-dynamiclib" alone results in static linking of
     # all further dependent shared libraries
@@ -60,18 +61,18 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # the python binding (pysgpp) requires lpython and a flat namespace
     # also for the python binding, the library must be suffixed with '*.so' even
     # though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
-    env.AppendUnique(LINKFLAGS=["-flat_namespace", "-undefined", "dynamic_lookup", "-lpython"])
+    config.env.AppendUnique(LINKFLAGS=["-flat_namespace", "-undefined", "dynamic_lookup", "-lpython"])
     # The GNU assembler (GAS) is not supported in Mac OS X.
     # A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
     # From the man pages for as (version 1.38):
     # -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
     # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and
     # -q is the relevant flag to make it use integrated assembler
-    env.AppendUnique(CPPFLAGS=["-Wa,-q"])
-    env.AppendUnique(CPPPATH="/usr/local/include")
-    env.AppendUnique(LIBPATH="/usr/local/lib")
-    env["SHLIBSUFFIX"] = ".dylib"
-  elif env["PLATFORM"] == "cygwin":
+    config.env.AppendUnique(CPPFLAGS=["-Wa,-q"])
+    config.env.AppendUnique(CPPPATH="/usr/local/include")
+    config.env.AppendUnique(LIBPATH="/usr/local/lib")
+    config.env["SHLIBSUFFIX"] = ".dylib"
+  elif config.env["PLATFORM"] == "cygwin":
     # required to find the static libraries compiled before the shared libraries
     # the static libraries are required as the linker on windows cannot ignore undefined symbols
     # (as is done on linux automatically and is done on OSX with the settings above)
@@ -80,18 +81,18 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   # will lead to a warning on cygwin and win32
   # ("all code is position independent")
-  if env["PLATFORM"] not in ["cygwin", "win32"]:
-    env.AppendUnique(CPPFLAGS=["-fPIC"])
+  if config.env["PLATFORM"] not in ["cygwin", "win32"]:
+    config.env.AppendUnique(CPPFLAGS=["-fPIC"])
 
   # setup the include base folder
   # env.Append(CPPPATH=["#/src/sgpp"])
   for moduleFolder in moduleFolders:
-    if (moduleFolder in languageWrapperFolders) or (not env["SG_" + moduleFolder.upper()]):
+    if (moduleFolder in languageWrapperFolders) or (not config.env["SG_" + moduleFolder.upper()]):
       continue
-    env.AppendUnique(CPPPATH=["#/" + moduleFolder + "/src/"])
+    config.env.AppendUnique(CPPPATH=["#/" + moduleFolder + "/src/"])
 
   # detour compiler output
-  env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
+  config.env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCpp11(config)
   if "doxygen" in SCons.Script.BUILD_TARGETS:
@@ -104,7 +105,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkPython(config)
   checkJava(config)
 
-  if env["USE_CUDA"] == True:
+  if config.env["USE_CUDA"] == True:
     config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
     config.env['CUDA_SDK_PATH'] = ''
     config.env.Tool('cuda')
@@ -115,16 +116,16 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config.env['NVCCFLAGS'] = "-ccbin " + config.env["CXX"] + " -std=c++11 -Xcompiler -fpic,-Wall "# + flagsToForward
     # config.env.AppendUnique(LIBPATH=['/usr/local.nfs/sw/cuda/cuda-7.5/'])
 
-  if env["USE_HPX"]:
+  if config.env["USE_HPX"]:
     hpxLibs = ["dl", "rt", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options", "boost_regex" ,
                "boost_system", "boost_thread", "boost_context", "boost_random", "boost_atomic", "tcmalloc_minimal", "hwloc"]
-    if env["OPT"]:
+    if config.env["OPT"]:
       hpxLibs += ["hpx", "hpx_init", "hpx_iostreams"]
-      if "HPX_RELEASE_LIBRARY_PATH" in env:
-        config.env.AppendUnique(LIBPATH=env["HPX_RELEASE_LIBRARY_PATH"])
+      if "HPX_RELEASE_LIBRARY_PATH" in config.env:
+        config.env.AppendUnique(LIBPATH=config.env["HPX_RELEASE_LIBRARY_PATH"])
     else:
       if "HPX_DEBUG_LIBRARY_PATH" in env:
-        config.env.AppendUnique(LIBPATH=env["HPX_DEBUG_LIBRARY_PATH"])
+        config.env.AppendUnique(LIBPATH=config.env["HPX_DEBUG_LIBRARY_PATH"])
       hpxLibs += ["hpxd", "hpx_initd", "hpx_iostreamsd"]
 
     for lib in hpxLibs:
@@ -134,16 +135,16 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config.env["CPPDEFINES"]["USE_HPX"] = "1"
 
 
-    if 'HPX_SHARED_INCLUDE_PATH' in env:
-      config.env.AppendUnique(CPPPATH=env['HPX_SHARED_INCLUDE_PATH'])
-    if env["OPT"]:
-      env.AppendUnique(CPPDEFINES=["HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
-      if 'HPX_RELEASE_INCLUDE_PATH' in env:
-        config.env.AppendUnique(CPPPATH=env['HPX_RELEASE_INCLUDE_PATH'])
+    if 'HPX_SHARED_INCLUDE_PATH' in config.env:
+      config.env.AppendUnique(CPPPATH=config.env['HPX_SHARED_INCLUDE_PATH'])
+    if config.env["OPT"]:
+      config.env.AppendUnique(CPPDEFINES=["HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_RELEASE_INCLUDE_PATH' in config.env:
+        config.env.AppendUnique(CPPPATH=config.env['HPX_RELEASE_INCLUDE_PATH'])
     else:
-      env.AppendUnique(CPPDEFINES=["HPX_DEBUG", "HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
-      if 'HPX_DEBUG_INCLUDE_PATH' in env:
-        config.env.AppendUnique(CPPPATH=env['HPX_DEBUG_INCLUDE_PATH'])
+      config.env.AppendUnique(CPPDEFINES=["HPX_DEBUG", "HPX_APPLICATION_EXPORTS", "HPX_ENABLE_ASSERT_HANDLER"]);
+      if 'HPX_DEBUG_INCLUDE_PATH' in config.env:
+        config.env.AppendUnique(CPPPATH=config.env['HPX_DEBUG_INCLUDE_PATH'])
 
     if not config.CheckCXXHeader("hpx/hpx_init.hpp"):
       Helper.printErrorAndExit("hpx/hpx_init.hpp not found, but required for HPX")
