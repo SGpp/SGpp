@@ -111,7 +111,6 @@ class PolyBasis : public Basis<LT, IT> {
     // see eval-function for explanation of traversal code
     size_t root = index;
     size_t id = root;
-    double base = static_cast<double>(root);
     root++;
     sum += 1 / (x - h * static_cast<double>(root));
     root -= 2;
