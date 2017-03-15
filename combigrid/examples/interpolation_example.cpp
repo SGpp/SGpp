@@ -3,31 +3,40 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/combischeme/CombiS_CT.hpp>
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
+#include <sgpp/combigrid/combischeme/CombiS_CT.hpp>
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
-/*
- * The 3D function to be interpolated
+/**
+ * \page example_interpolation_example_cpp Interpolation Example
+ * This tutorial shows with two simple example functions in two respectively three dimensions how
+ * interpolation with combigrids can be done.
  */
+
+/**
+ * The exemplary objective functions. This is the three dimensional one.
+*/
 double f_3D(const std::vector<double> &coords) {
   return 1.0 + (0.25 * (coords[0] - 0.7) * (coords[0] - 0.7) + 2.0) +
          (0.25 * (coords[1] - 0.7) * (coords[1] - 0.7) + 2.0) +
          (0.25 * (coords[2] - 0.7) * (coords[2] - 0.7) + 2.0);
 }
 
-/*
- * The 2D function to be interpolated
+/**
+ * This is the two dimensional exemplary objective function.
  */
 double f_2D(const std::vector<double> &coords) {
   return 4.0 * (coords[0] * coords[0]) * (coords[1] - coords[1] * coords[1]);
 }
 
 int main() {
-  // Fix dimension
+  /**
+   *Set the function pointer func either to the two or three dimensional function. The default
+   *dimension is two.
+   */
   int dim = 2;
   double (*func)(const std::vector<double> &);
 
@@ -36,62 +45,84 @@ int main() {
   else
     func = &f_3D;
 
-  // resolution level vector
+  /**
+   * Initialize level to default value of five and create two vectors. One for levels and one for
+   * coordinates.
+   */
   int level = 5;
   std::vector<int> levels(dim, level);
-  // coordinates
   std::vector<double> coord(dim, 0.0);
-  //
 
-  // Create Combination Scheme which shall be used for combination
+  /**
+   * Create Combination Scheme which shall be used for combination.
+   */
   combigrid::AbstractCombiScheme<double> *scheme = new combigrid::CombiS_CT<double>(levels);
 
-  // set bool vector if boundary points are considered
+  /**
+   * Set bool vector if boundary points are considered.
+   */
   std::vector<bool> boundary_points(dim, true);
 
-  // set the domain of the computation
+  /**
+   * Set the domain of the computation.
+   */
   std::vector<double> min(dim, 0.0);
   std::vector<double> max(dim, 1.0);
-  // set the stretching of the domain --> in the simplest case the grid is not
-  // stretched
+
+  /**
+   *  Set the stretching of the domain --> in the simplest case the grid is not stretched.
+   */
   combigrid::AbstractStretchingMaker *stretching = new combigrid::CombiEquidistantStretching();
 
-  // now the combination grid can be initialized (boundary fixed)
+  /**
+   * Now the combination grid can be initialized (boundary fixed).
+   */
   combigrid::CombiGrid<double> *grid = new combigrid::SerialCombiGrid<double>(dim, boundary_points);
 
-  // a scheme can be attached, governing which grids are combined
+  /**
+   * A scheme governing which grids are combined can be attached.
+   */
   grid->attachCombiScheme(scheme);
 
-  // compute the combination coefficients for the current combination scheme
+  /**
+   *  Compute the combination coefficients for the current combination scheme.
+   */
   grid->re_init();
 
-  // assign the stretching
+  /**
+   * Assign the stretching.
+   */
   grid->initializeActiveGridsDomain(min, max, stretching);
 
-  // initialize the grid storage, which is filled with data later
+  /**
+   * Initialize the grid storage, which will be filled with data in the next step.
+   */
   grid->createFullGrids();
 
-  // fill the grids
-  // get number of grids
+  /**
+   * Get the number of grids and loop over all of them. In the outer loop get the respective full
+   * grid. In the inner loop compute the coordinates of the grid point in the domain and fill the
+   * full grid with the data at these coordinates.
+   */
   unsigned int n_grids = grid->getNrFullGrids();
-
-  // loop over all grids
   for (unsigned int i = 0; i < n_grids; i++) {
-    // get the respective full grid
     combigrid::FullGrid<double> *fg = grid->getFullGrid(i)->fg();
-
     for (int j = 0; j < fg->getNrElements(); j++) {
-      // compute the position of the grid point in the domain
       fg->getStandardCoordinates(j, coord);
-      // fill the fullgrid with the data at the position
       fg->getElementVector()[j] = func(coord);
     }
   }
 
+  /**
+   * Default evaluation coordinate is the midpoint. Evaluate there and print the
+   * evaluation coordinates and the function value.
+   */
   std::vector<double> eval_coord(dim, 0.5);
-
   std::cout << grid->eval(eval_coord) << '\t' << func(eval_coord) << std::endl;
 
+  /**
+   * Print the combination coefficients and the status of all grids.
+   */
   std::vector<std::vector<int>> levels_vect = grid->getLevelsVector();
   std::vector<double> coeffs = grid->getCoefs();
 
