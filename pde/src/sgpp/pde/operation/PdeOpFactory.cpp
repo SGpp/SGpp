@@ -31,6 +31,7 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModPoly.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPolyClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModPolyClenshawCurtis.hpp>
 
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotBspline.hpp>
@@ -188,6 +189,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new pde::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
