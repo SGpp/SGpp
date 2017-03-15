@@ -120,48 +120,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
    * @param i     index of the grid point
    * @return      i-th Clenshaw-Curtis grid point with level l
    */
-  inline double clenshawCurtisPoint(LT l, IT i) const {
-    const IT hInv = static_cast<IT>(1) << l;
-    return clenshawCurtisPoint(l, i, hInv);
-  }
-
-  /**
-   * @param l     level of the grid point
-   * @param i     index of the grid point
-   * @param hInv  2^l
-   * @return      i-th Clenshaw-Curtis grid point with level l
-   */
-  inline double clenshawCurtisPoint(LT l, IT i, IT hInv) const {
-    if (l == 1) {
-      return static_cast<double>(i) / 2.0;
-    } else if (i == 0) {
-      // = x_{l,1} - (x_{l,2} - x_{l,1})
-      return 2.0 * clenshawCurtisTable.getPoint(l, 1, hInv) -
-             clenshawCurtisTable.getPoint(l, 2, hInv);
-    } else if (i >= hInv) {
-      const double x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
-      const double x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
-      const double hBoundary = x2 - x1;
-
-      return (1.0 - x1) + hBoundary * static_cast<double>(i - hInv + 1);
-    } else {
-      return clenshawCurtisTable.getPoint(l, i, hInv);
-    }
-  }
-
-  /**
-   * @param l     level of the grid point
-   * @param ni    negative index -i of the grid point
-   * @param hInv  2^l
-   * @return      (-ni)-th Clenshaw-Curtis grid point with level l
-   */
-  inline double clenshawCurtisPointNegativeIndex(LT l, IT ni, IT hInv) const {
-    const double x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
-    const double x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
-    const double hBoundary = x2 - x1;
-
-    return x1 - hBoundary * static_cast<double>(ni + 1);
-  }
+  inline double clenshawCurtisPoint(LT l, IT i) const { return clenshawCurtisTable.getPoint(l, i); }
 
   /**
    * Construct the (p+2) Clenshaw-Curtis knots of a
@@ -169,17 +128,53 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
    *
    * @param l     level of basis function
    * @param i     index of basis function
-   * @param hInv  2^l
    */
-  inline void constructKnots(LT l, IT i, IT hInv) {
-    const size_t degree = bsplineBasis.getDegree();
-    const IT degreePlusOneHalved = static_cast<IT>(degree + 1) / 2;
+  inline void constructKnots(LT l, IT i) {
+    const IT hInv = static_cast<IT>(1) << l;
+    const size_t& p = bsplineBasis.getDegree();
 
-    for (IT k = 0; k < degree + 2; k++) {
-      if (i + k >= degreePlusOneHalved) {
-        xi[k] = clenshawCurtisPoint(l, i + k - degreePlusOneHalved, hInv);
-      } else {
-        xi[k] = clenshawCurtisPointNegativeIndex(l, degreePlusOneHalved - i - k, hInv);
+    xi[(p + 1) / 2] = clenshawCurtisTable.getPoint(l, i);
+
+    if (i < (p + 1) / 2) {
+      // grid point index is too far on the left
+      // ==> extrapolate grid points linearly
+      size_t a = (p + 1) / 2 - i;
+
+      for (size_t j = a; j < (p + 1) / 2; j++) {
+        xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(j - a));
+      }
+
+      double h = xi[a + 1] - xi[a];
+
+      // equivalent to "for (int j = a-1; j >= 0; j--)"
+      for (size_t j = a; j-- > 0;) {
+        xi[j] = xi[j + 1] - h;
+      }
+    } else {
+      // all grid points on the left can be calculated
+      for (size_t j = 0; j < (p + 1) / 2; j++) {
+        xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(i - (p + 1) / 2 + j));
+      }
+    }
+
+    if (i + (p + 1) / 2 > hInv) {
+      // grid point index is too far on the right
+      // ==> extrapolate grid points linearly
+      size_t b = hInv + (p + 1) / 2 - i;
+
+      for (size_t j = (p + 1) / 2 + 1; j <= b; j++) {
+        xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(i - (p + 1) / 2 + j));
+      }
+
+      double h = xi[b] - xi[b - 1];
+
+      for (size_t j = b + 1; j < p + 2; j++) {
+        xi[j] = xi[j - 1] + h;
+      }
+    } else {
+      // all grid points on the right can be calculated
+      for (size_t j = (p + 1) / 2 + 1; j < p + 2; j++) {
+        xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(i - (p + 1) / 2 + j));
       }
     }
   }
@@ -196,8 +191,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
-      const IT hInv = static_cast<IT>(1) << l;
-      constructKnots(l, i, hInv);
+      constructKnots(l, i);
       return nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
     }
   }
@@ -215,8 +209,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
-      const IT hInv = static_cast<IT>(1) << l;
-      constructKnots(l, i, hInv);
+      constructKnots(l, i);
       return nonUniformBSplineDx(x, bsplineBasis.getDegree(), 0);
     }
   }
@@ -234,8 +227,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
-      const IT hInv = static_cast<IT>(1) << l;
-      constructKnots(l, i, hInv);
+      constructKnots(l, i);
       return nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
     }
   }
@@ -264,7 +256,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
       integrationInitialized = true;
     }
-    constructKnots(l, i, hInv);
+    constructKnots(l, i);
     double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double left = std::max(0.0, xi[j]);

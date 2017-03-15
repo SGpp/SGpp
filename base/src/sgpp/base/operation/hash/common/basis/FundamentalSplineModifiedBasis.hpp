@@ -465,7 +465,8 @@ class FundamentalSplineModifiedBasis : public Basis<LT, IT> {
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double temp_res = 0.0;
       for (size_t c = 0; c < quadLevel; c++) {
-        double x = h * (coordinates[c] + (i - co_len + j));
+        double x = h * (coordinates[c] + (static_cast<double>(i) - static_cast<double>(co_len) +
+                                          static_cast<double>(j)));
         temp_res += weights[c] * eval(l, i, x);
       }
       res += h * temp_res;
