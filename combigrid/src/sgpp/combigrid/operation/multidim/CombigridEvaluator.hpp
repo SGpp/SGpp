@@ -55,6 +55,11 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    */
   std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval;
 
+  /**
+   * Upper bound for the number of points (function evaluations) used.
+   */
+  size_t upperPointBound = 0;
+
   void initPartialDifferences() {
     partialDifferences.clear();
     for (size_t d = 0; d <= numDimensions; ++d) {
@@ -84,7 +89,8 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * For some reason, SWIG cannot convert the shared_ptr into the more abstract type, so we need
    * this 'duplicate'
    */
-  CombigridEvaluator(size_t numDimensions, std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
+  CombigridEvaluator(size_t numDimensions,
+                     std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
       : sum(V::zero()),
         numDimensions(numDimensions),
         partialDifferences(),
@@ -105,6 +111,8 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     if (containsLevel(level)) {
       return true;
     }
+
+    upperPointBound += maxNewPoints(level);
 
     CGLOG("addLevel(): add previous levels");
     // ensure that preceding indices are already computed
@@ -143,6 +151,13 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
       return true;
     }
   }
+
+  /**
+   * @return An upper bound for the number of points (function evaluations) used for the current
+   * computation. This bound is exact if nesting is used or if otherwise each grid point only occurs
+   * in exactly one level.
+   */
+  size_t getUpperPointBound() const { return upperPointBound; }
 
   /**
    * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
@@ -303,6 +318,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    */
   void clear() {
     sum = V::zero();
+    upperPointBound = 0;
     initPartialDifferences();
   }
 

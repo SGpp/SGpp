@@ -7,6 +7,7 @@
 
 #include <sgpp/combigrid/grid/distribution/ChebyshevDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformNoBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
@@ -35,9 +36,23 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearLeja(size_t grow
                                               false));
 }
 
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearL2Leja(size_t growthFactor) {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<L2LejaPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              false));
+}
+
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expLeja() {
   return std::make_shared<NestedPointHierarchy>(
       std::make_shared<LejaPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<ExponentialGrowthStrategy>(),
+                                              false));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expL2Leja() {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<L2LejaPointDistribution>(),
       std::make_shared<IdentityPointOrdering>(std::make_shared<ExponentialGrowthStrategy>(),
                                               false));
 }

@@ -12,6 +12,8 @@
 namespace sgpp {
 namespace combigrid {
 
+ThreadPool::IdleCallback ThreadPool::terminateWhenIdle((ThreadPool::doTerminateWhenIdle));
+
 ThreadPool::ThreadPool(size_t numThreads)
     : numThreads(numThreads),
       threads(),
@@ -108,7 +110,7 @@ void ThreadPool::join() {
 }
 
 // static
-void ThreadPool::terminateWhenIdle(ThreadPool& tp) { tp.triggerTermination(); }
+void ThreadPool::doTerminateWhenIdle(ThreadPool& tp) { tp.triggerTermination(); }
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

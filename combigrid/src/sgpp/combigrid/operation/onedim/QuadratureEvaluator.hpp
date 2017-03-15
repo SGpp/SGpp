@@ -28,12 +28,21 @@ class QuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   std::vector<FloatScalarVector> weights;
   sgpp::combigrid::SingleFunction weight_function;
   bool normalizeWeights;
+  bool isCustomWeightFunction;
+  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
+
+  double getWeight(std::vector<double> &points, size_t point);
+  void calculateWeights(std::vector<double> &points, std::vector<FloatScalarVector> &weights);
 
  public:
-  QuadratureEvaluator(
-      sgpp::combigrid::SingleFunction weight_function =
-          sgpp::combigrid::SingleFunction(constantFunction<double>(static_cast<double>(1.0))),
-      bool normalizeWeights = false);
+  QuadratureEvaluator();
+  /**
+   * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
+   * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
+   * This number should be higher if the weight function is hard to integrate.
+   */
+  QuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights = true,
+                      size_t numAdditionalPoints = 10);
   QuadratureEvaluator(QuadratureEvaluator const &other);
   virtual ~QuadratureEvaluator();
 

@@ -4,20 +4,20 @@
 // sgpp.sparsegrids.org
 
 #include <boost/test/unit_test.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include <sgpp/combigrid/threading/ThreadPool.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <memory>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <vector>
-#include <algorithm>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::ThreadPool;
@@ -29,10 +29,10 @@ std::mutex dataMutex;
 void idleCallback(ThreadPool &tp) {
   if (counter < 100) {
     int local_counter = counter;
-    tp.addTask([local_counter]() {
+    tp.addTask(ThreadPool::Task([local_counter]() {
       std::lock_guard<std::mutex> guard(dataMutex);
       data.push_back(local_counter);
-    });
+    }));
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     ++counter;
   } else {
@@ -59,10 +59,10 @@ BOOST_AUTO_TEST_CASE(testThreading) {
   data.clear();
 
   for (int i = 0; i < 100; ++i) {
-    tp->addTask([i]() {
+    tp->addTask(ThreadPool::Task([i]() {
       std::lock_guard<std::mutex> guard(dataMutex);
       data.push_back(i);
-    });
+    }));
   }
 
   tp->start();
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(testThreading) {
 }
 
 BOOST_AUTO_TEST_CASE(testThreadingWithCallback) {
-  auto tp = std::make_shared<ThreadPool>(4, idleCallback);
+  auto tp = std::make_shared<ThreadPool>(4, ThreadPool::IdleCallback(idleCallback));
   data.clear();
   tp->start();
   tp->join();

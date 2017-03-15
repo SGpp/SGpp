@@ -18,11 +18,11 @@ namespace combigrid {
  * Wrapper for std::function<Out(In)>. This is necessary because SWIG can't
  * handle std::function objects properly.
  */
-template <typename In, typename Out>
+template <typename Out, typename In>
 class GeneralFunction {
  public:
   typedef std::function<Out(In)> function_type;
-  typedef In input_type;
+  // typedef In input_type;
   typedef Out output_type;
 
  private:
@@ -58,7 +58,47 @@ class GeneralFunction {
   function_type getStdFunction() const { return func; }
 };
 
-typedef GeneralFunction<base::DataVector const &, double> MultiFunction;
+template <typename Out>
+class GeneralFunction1 {
+ public:
+  typedef std::function<Out()> function_type;
+  // typedef In input_type;
+  typedef Out output_type;
+
+ private:
+  function_type func;
+
+ public:
+  /**
+   * for function pointers
+   */
+  explicit GeneralFunction1(Out (*ptr)()) : func(ptr) {}
+
+  /**
+   * for lambdas or function objects
+   */
+  template <typename T>
+  explicit GeneralFunction1(T const &f) : func(f) {}
+
+  /**
+   * Default constructor, creating a constant zero function.
+   */
+  GeneralFunction1() : func([]() { return Out(); }) {}
+
+  /**
+   * Evaluates the function.
+   */
+  Out operator()() const { return func(); }
+
+  /**
+   * Evaluates the function (for python use etc., does the same as operator()).
+   */
+  Out call() const { return func(); }
+
+  function_type getStdFunction() const { return func; }
+};
+
+typedef GeneralFunction<double, base::DataVector const &> MultiFunction;
 typedef GeneralFunction<double, double> SingleFunction;
 
 } /* namespace combigrid */

@@ -6,6 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_THREADING_THREADPOOL_HPP_
 
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <deque>
@@ -24,8 +25,10 @@ namespace combigrid {
  */
 class ThreadPool {
  public:
-  typedef std::function<void()> Task;
-  typedef std::function<void(ThreadPool &)> IdleCallback;
+  // typedef std::function<void()> Task;
+  // typedef std::function<void(ThreadPool &)> IdleCallback;
+  typedef GeneralFunction1<void> Task;
+  typedef GeneralFunction<void, ThreadPool &> IdleCallback;
 
  private:
   size_t numThreads;
@@ -81,11 +84,13 @@ class ThreadPool {
    */
   void join();
 
+  static void doTerminateWhenIdle(ThreadPool &tp);
+
   /**
    * This function can be used as a parameter to the constructor if the threads shall terminate as
    * soon as there are no tasks left.
    */
-  static void terminateWhenIdle(ThreadPool &tp);
+  static IdleCallback terminateWhenIdle;
 };
 
 } /* namespace combigrid */

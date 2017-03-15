@@ -5,6 +5,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 
@@ -35,41 +36,18 @@ struct LagrangePolynom {
   size_t degree() { return points.size(); }
 };
 
-double doGaussLegendreQuadrature(double a, double b, LagrangePolynom& f) {
-  // load gauss weights and roots for Gauss Legendre quadrature
-  size_t level = f.degree() + 1;
-  base::DataVector roots;
-  base::DataVector weights;
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  quadRule.getLevelPointsAndWeightsNormalized(level, roots, weights);
-
-  // evaluate the Lagrange polynomial at the roots of the
-  // Legendre polynomials
-  double width = b - a;
-  double sum = 0.0;
-  for (size_t i = 0; i < roots.getSize(); ++i) {
-    sum += weights[i] * f.evaluate(width * roots[i] + a);
-  }
-  return width * sum;
-}
-
-/**
- * Integrates the polynom
- */
-double integrate(LagrangePolynom polynom) {
-  // return romberg2(polynom);
-  return doGaussLegendreQuadrature(0.0, 1.0, polynom);
-}
-
 /**
  * Calculates the weight for the specific point
  */
-double getWeight(std::vector<double>& points, size_t point) {
+double QuadratureEvaluator::getWeight(std::vector<double>& points, size_t point) {
   LagrangePolynom p;
   p.points = points;
   p.point = point;
+  size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return integrate(p);
+  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
+    return p.evaluate(x) * this->weight_function(x);
+  });
 }
 
 /**
@@ -81,7 +59,8 @@ double getWeight(std::vector<double>& points, size_t point) {
  * weights are at the same position
  * as their points
  */
-void calculateWeights(std::vector<double>& points, std::vector<FloatScalarVector>& weights) {
+void QuadratureEvaluator::calculateWeights(std::vector<double>& points,
+                                           std::vector<FloatScalarVector>& weights) {
   // calc weight for each point
   for (size_t i = 0; i < points.size(); ++i) {
     weights.push_back(FloatScalarVector(getWeight(points, i)));
@@ -125,15 +104,26 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> > QuadratureEvaluator
       new QuadratureEvaluator(*this));
 }
 
+QuadratureEvaluator::QuadratureEvaluator()
+    : weight_function(constantFunction<double>(1.0)),
+      normalizeWeights(false),
+      isCustomWeightFunction(false),
+      numAdditionalPoints(0) {}
+
 QuadratureEvaluator::QuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function,
-                                         bool normalizeWeights)
-    : weight_function(weight_function), normalizeWeights(normalizeWeights) {}
+                                         bool normalizeWeights, size_t numAdditionalPoints)
+    : weight_function(weight_function),
+      normalizeWeights(normalizeWeights),
+      isCustomWeightFunction(true),
+      numAdditionalPoints(numAdditionalPoints) {}
 
 QuadratureEvaluator::QuadratureEvaluator(QuadratureEvaluator const& other)
     : xValues(other.xValues),
       weights(other.weights),
       weight_function(other.weight_function),
-      normalizeWeights(other.normalizeWeights) {}
+      normalizeWeights(other.normalizeWeights),
+      isCustomWeightFunction(other.isCustomWeightFunction),
+      numAdditionalPoints(other.numAdditionalPoints) {}
 
 void QuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
 
