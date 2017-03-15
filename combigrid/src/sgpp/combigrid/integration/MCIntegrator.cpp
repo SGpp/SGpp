@@ -29,7 +29,8 @@ MCIntegrator::MCIntegrator(
 double MCIntegrator::average(std::vector<std::pair<double, double> > domain, size_t num_samples) {
   // static std::default_random_engine
   // generator(std::chrono::system_clock::now().time_since_epoch().count());
-  static std::default_random_engine generator(std::mt19937_64::default_seed);  // TODO(holzmudd): deterministic
+  static std::default_random_engine generator(
+      std::mt19937_64::default_seed);  // TODO(holzmudd): deterministic
 
   double sum = 0.0;
 
