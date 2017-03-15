@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include "MortonOrder.hpp"
 #include <sgpp/base/exception/operation_exception.hpp>
 
@@ -98,7 +103,7 @@ void MortonOrder::restoreDataMatrix(sgpp::base::DataMatrix& matrix) const {
   sgpp::base::DataMatrix origin(matrix);
   for (size_t i=0; i < matrix.getNrows(); ++i) {
     for (size_t d=0; d < matrix.getNcols(); ++d) {
-      matrix(permutation[i],d) = origin(i, d);
+      matrix(permutation[i], d) = origin(i, d);
     }
   }
 }
@@ -128,6 +133,13 @@ void MortonOrder::restoreDataVector(sgpp::base::DataVector& data, double* src) c
   for (size_t i=0; i < data.getSize(); ++i) {
     data[permutation[i]] = src[i];
   }
+}
+/// Check if permutation is identity
+bool MortonOrder::isIdentity() const {
+  for (size_t i=0; i < permutation.size(); ++i)
+    if (permutation[i] != i)
+      return false;
+  return true;
 }
 
 }  // namespace datadriven

@@ -1,6 +1,14 @@
-#include "OperationMultiEvalCuda.hpp"
-#include <sgpp/base/exception/operation_exception.hpp>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
+#include "OperationMultiEvalCuda.hpp"
+
+#include <stdint.h>
+
+
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include "cudaHelper.hpp"
@@ -8,33 +16,44 @@
 #include "MultiEvalKernel.hpp"
 #include "MortonOrderKernel.hpp"
 #include "consts.hpp"
-#include <stdint.h>
 
 namespace sgpp {
 namespace datadriven {
 
 /// Construct the class
 OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset,
-    const uint32_t& grad) : base::OperationMultipleEval(grid, dataset), _ordered(false) {
+    const uint32_t& grad) : base::OperationMultipleEval(grid, dataset) {
   polygrad = grad;
-  zorder = NULL;
+  zorder = new MortonOrder(dataset);
+  _ordered = true;
+  if (zorder->isIdentity()) {
+    delete zorder;
+    zorder = NULL;
+  }
   prepare();
 }
 
 /// Construct the class
 OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset,
-    const uint32_t& grad, bool ordered) : base::OperationMultipleEval(grid, dataset), _ordered(ordered) {
+    const uint32_t& grad, bool autocheck) : base::OperationMultipleEval(grid, dataset) {
   polygrad = grad;
-  if (ordered)
+  if (autocheck) {
     zorder = new MortonOrder(dataset);
-  else
+    _ordered = true;
+    if (zorder->isIdentity()) {
+      delete zorder;
+      zorder = NULL;
+    }
+  } else {
+    _ordered = false;
     zorder = NULL;
+  }
   prepare();
 }
 
 /// Destroy everything ;)
 OperationMultiEvalCuda::~OperationMultiEvalCuda() {
-  if(zorder) delete zorder;
+  if (zorder) delete zorder;
 }
 
 /// Standard evaluation
@@ -50,30 +69,32 @@ void OperationMultiEvalCuda::mult(sgpp::base::DataVector& source, sgpp::base::Da
 
   myTimer.start();
   // Call eval kernel
-  evalCuda(data.dev(),alpha.dev(),node.dev(),pos.dev(),M,maxlevel,levellimit.dev(),_b[maxlevel][DIM],
-    subs.dev());
+  evalCuda(data.dev(), alpha.dev(), node.dev(), pos.dev(),
+           M, maxlevel, levellimit.dev(), _b[maxlevel][DIM], subs.dev());
   duration = myTimer.stop();
   // Copy result back to host
   CudaCheckError();
   data.CopyToHost();
-  if (_ordered)
-    zorder->restoreDataVector(result,data.host());
-  else
+  if (zorder) {
+    zorder->restoreDataVector(result, data.host());
+  } else {
     for (uint32_t j = 0; j < _M; ++j) {
       result[j] = data[j];
     }
+  }
 }
 
 /// Transposed evaluation
 void OperationMultiEvalCuda::multTranspose(sgpp::base::DataVector& source,
     sgpp::base::DataVector& result) {
   // Copy stuff to device
-  if (_ordered)
-    zorder->orderDataVector(source,data.host());
-  else
+  if (zorder) {
+    zorder->orderDataVector(source, data.host());
+  } else {
     for (uint32_t j = 0; j < _M; ++j) {
       data[j] = source[j];
     }
+  }
   for (uint32_t j = _M; j < M; ++j) {
     data[j] = 0;
   }
@@ -98,12 +119,13 @@ void OperationMultiEvalCuda::multTransposeFMA(sgpp::base::DataVector& source,
   // Copy stuff to device
   HostDevPtr<double> b;
   b.HostAlloc(N);
-  if (_ordered)
-    zorder->orderDataVector(source,data.host());
-  else
+  if (zorder) {
+    zorder->orderDataVector(source, data.host());
+  } else {
     for (uint32_t j = 0; j < _M; ++j) {
-     data[j] = source[j];
+      data[j] = source[j];
     }
+  }
   for (uint32_t i = 0; i < _N; ++i) {
      b[i] = prev[i];
   }
@@ -136,9 +158,9 @@ void OperationMultiEvalCuda::multTransposeFMA(sgpp::base::DataVector& source,
 void OperationMultiEvalCuda::prepare() {
   // Prepare grid
   sgpp::base::GridStorage gs(grid.getStorage());
-  DIM = gs.getDimension();
-  _N = gs.getSize();
-  _M = dataset.getNrows();
+  DIM = static_cast<uint32_t>(gs.getDimension());
+  _N = static_cast<uint32_t>(gs.getSize());
+  _M = static_cast<uint32_t>(dataset.getNrows());
   M = (_M + CUDA_BLOCKSIZE - 1)&(0xFFFFFFFF - CUDA_BLOCKSIZE + 1);
   N = (_N + CUDA_BLOCKSIZE - 1)&(0xFFFFFFFF - CUDA_BLOCKSIZE + 1);
 
@@ -158,18 +180,18 @@ void OperationMultiEvalCuda::prepare() {
       ml += gp.getLevel(d);
       node[i*DIM + d].level = gp.getLevel(d);
       node[i*DIM + d].index = gp.getIndex(d);
-      node[i*DIM + d].grad = (gp.getLevel(d)>=polygrad?polygrad - 1:gp.getLevel(d));
-      node[i*DIM + d].level2 = double(1<<gp.getLevel(d));
-      node[i*DIM + d].x = double(gp.getIndex(d))/node[i*DIM + d].level2;
+      node[i*DIM + d].grad = (gp.getLevel(d) >= polygrad ? polygrad - 1 : gp.getLevel(d));
+      node[i*DIM + d].level2 = static_cast<double>(1 << gp.getLevel(d));
+      node[i*DIM + d].x = static_cast<double>(gp.getIndex(d))/node[i*DIM + d].level2;
       gp.getLeftChild(d);
       if (gs.isContaining(gp))
-        node[i*DIM + d].child[0] = gs.getSequenceNumber(gp);
+        node[i*DIM + d].child[0] = static_cast<uint32_t>(gs.getSequenceNumber(gp));
       else
         node[i*DIM + d].child[0] = GRID_END;
       gp = gs.getPoint(i);
       gp.getRightChild(d);
       if (gs.isContaining(gp))
-        node[i*DIM + d].child[1] = gs.getSequenceNumber(gp);
+        node[i*DIM + d].child[1] = static_cast<uint32_t>(gs.getSequenceNumber(gp));
       else
         node[i*DIM + d].child[1] = GRID_END;
     }
@@ -195,41 +217,42 @@ void OperationMultiEvalCuda::prepare() {
   // Prepare subspace index
   // Computes all subspaces with levelsum = maxlevel + d - 1
   subs.HostAlloc(_b[maxlevel][DIM]*DIM);
-  uint32_t gnode[DIM];
-	uint32_t sum = 1;
-	uint32_t cnt = 0;
-	for (uint32_t d=0;d<DIM;++d) gnode[d] = 1;
-	for (uint32_t s=0;s<_b[maxlevel][DIM+1];++s) {
-		if (sum == maxlevel) {
-      for (uint32_t d=0;d<DIM;++d)
+  uint32_t *gnode = new uint32_t[DIM];
+  uint32_t sum = 1;
+  uint32_t cnt = 0;
+  for (uint32_t d = 0; d < DIM; ++d) gnode[d] = 1;
+  for (uint32_t s = 0; s < _b[maxlevel][DIM+1] ; ++s) {
+    if (sum == maxlevel) {
+      for (uint32_t d = 0; d < DIM; ++d)
         subs[cnt*DIM + d] = gnode[d];
       cnt++;
     }
-    for (uint32_t d=0;d<DIM;++d) {
+    for (uint32_t d = 0; d < DIM; ++d) {
       ++gnode[d];
       ++sum;
       if (sum <= maxlevel) break;
       sum -= gnode[d] - 1;
       gnode[d] = 1;
     }
-	}
+  }
 
   // Prepare data
   pos.HostAlloc(DIM*M);
   data.HostAlloc(M);
   levellimit.HostAlloc(DIM*M);
 
-  if (_ordered)
-    zorder->orderDataMatrix(dataset,pos.host());
-  else
+  if (zorder) {
+    zorder->orderDataMatrix(dataset, pos.host());
+  } else {
     for (uint32_t j = 0; j < _M; ++j) {
       for (uint32_t d = 0; d < DIM; ++d) {
-        pos[j*DIM + d] = dataset.get(j,d);
+        pos[j*DIM + d] = dataset.get(j, d);
       }
     }
+  }
   for (uint32_t j = _M; j < M; ++j) {
     for (uint32_t d = 0; d < DIM; ++d) {
-      pos[j*DIM + d] = 0;//dataset.get(j,d);
+      pos[j*DIM + d] = 0;
     }
   }
 
@@ -261,7 +284,7 @@ void OperationMultiEvalCuda::prepare() {
   if (_ordered) {
     // Compute stream boundary limitations
     streamlimit.CopyToDev();
-    //streamboundCuda(pos.dev(), node.dev(), streamlimit.dev(), M, _M, N);
+    streamboundCuda(pos.dev(), node.dev(), streamlimit.dev(), M, _M, N);
     CudaCheckError();
   }
 
@@ -269,6 +292,7 @@ void OperationMultiEvalCuda::prepare() {
   levellimit.CopyToHost();
 
   isPrepared = true;
+  delete[] gnode;
 }
 
 /// Returns last measured time
@@ -276,5 +300,5 @@ double OperationMultiEvalCuda::getDuration() {
   return duration;
 }
 
-}  // datadriven
-}  // sgpp
+}  // namespace datadriven
+}  // namespace sgpp
