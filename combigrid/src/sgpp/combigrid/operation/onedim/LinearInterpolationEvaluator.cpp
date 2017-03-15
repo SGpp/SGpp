@@ -23,8 +23,7 @@ LinearInterpolationEvaluator::LinearInterpolationEvaluator(
 void LinearInterpolationEvaluator::computeBasisCoefficients() {
   size_t numPoints = xValues.size();
 
-  basisCoefficients = std::vector<FloatScalarVector>(
-      numPoints, FloatScalarVector(0.0));  // TODO(holzmudd): could be optimized
+  basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
 
   if (numPoints == 0) {
     return;

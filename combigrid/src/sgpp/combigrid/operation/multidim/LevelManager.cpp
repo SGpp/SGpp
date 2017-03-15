@@ -302,10 +302,31 @@ void LevelManager::addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> 
   }
 }
 
-// TODO(holzmudd): also provide a parallel version
+void LevelManager::addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
+                                                  size_t numThreads) {
+  auto it = storage->getStoredDataIterator();
+
+  std::vector<MultiIndex> levels;
+
+  while (it->isValid()) {
+    levels.push_back(it->getMultiIndex());
+    it->moveToNext();
+  }
+
+  precomputeLevelsParallel(levels, numThreads);
+  addLevels(levels);
+}
+
 void LevelManager::addLevelsFromSerializedStructure(std::string serializedStructure) {
   addLevelsFromStructure(
       TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
+}
+
+void LevelManager::addLevelsFromSerializedStructureParallel(std::string serializedStructure,
+                                                            size_t numThreads) {
+  addLevelsFromStructureParallel(
+      TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure),
+      numThreads);
 }
 
 void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
@@ -377,14 +398,16 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   combiEval->setMutex(nullptr);
 }
 
-void LevelManager::addLevelsAdaptiveByNumLevels(){
-   initAdaption();
+void LevelManager::addLevelsAdaptiveByNumLevels(size_t numLevels) {
+  initAdaption();
 
-   QueueEntry entry = queue.top();
-   queue.pop();
+  for (size_t i = 0; i < numLevels; ++i) {
+    QueueEntry entry = queue.top();
+    queue.pop();
 
-   beforeComputation(entry.level);  // successors may be added here
-   afterComputation(entry.level);   // the actual computation is done here
+    beforeComputation(entry.level);  // successors may be added here
+    afterComputation(entry.level);   // the actual computation is done here
+  }
 }
 
 } /* namespace combigrid */

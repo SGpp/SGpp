@@ -26,6 +26,7 @@ typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<Te
     GridFunction;
 
 /**
+ * Implementation of the AbstractFullGridLinearEvaluator class using a callback function that
  * If you want to be able to use different function values at the same point in different levels
  * (for example because you are implementing a PDE solver), set exploitNesting to false in the
  * constructor of CombigridTreeStorage.
