@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
   std::ifstream rhs_in( "datadriven/tests/data/clustering_test_data/rhs_erg_dim2_depth11.txt");
   if (rhs_in) {
     double value;
-    int counter;
+    int counter = 0;
     while (rhs_in >> value) {
       b[counter] = value;
       counter++;

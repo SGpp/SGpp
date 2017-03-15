@@ -125,7 +125,6 @@ class KernelCreateGraph {
     } else {
       globalworkrange[0] = chunksize;
     }
-    size_t real_count = globalworkrange[0];
     globalworkrange[0] = globalworkrange[0] + (localSize - globalworkrange[0] % localSize);
 
     // Build kernel if not already done
