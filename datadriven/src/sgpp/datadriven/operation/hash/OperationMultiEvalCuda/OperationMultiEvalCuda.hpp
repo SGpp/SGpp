@@ -5,20 +5,31 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <stdint.h>
+
 #include <sgpp/globaldef.hpp>
 
 #include "cudaHelper.hpp"
 #include "basicCuda.hpp"
 #include "MortonOrder.hpp"
-#include <stdint.h>
 
 namespace sgpp {
 namespace datadriven {
 
-/// OperationMultipleEval for polynomial basis functions (grad >= 2) using CUDA on grids without boundary nodes
+/** OperationMultipleEval for polynomial basis functions (grad >= 2) using CUDA on grids
+ *  without boundary nodes
+ */
 class OperationMultiEvalCuda: public base::OperationMultipleEval {
+ private:
+  bool _ordered;
+
  protected:
-  MortonOrder* zorder;
+  MortonOrder *zorder;
 
   sgpp::base::SGppStopwatch myTimer;
   double duration;
@@ -37,13 +48,14 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   uint32_t _N;
   uint32_t M;
   uint32_t _M;
-  const bool _ordered;
   uint32_t polygrad;
+
  public:
-  /// Constructor for datasets without a specific order
+  /// Constructor. Autocheck dataset for Morton order and turn on permutation if not
   OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset, const uint32_t& grad);
-  /// Constructor for datasets that are aligned along a Morton order curve
-  OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset, const uint32_t& grad, bool ordered);
+  /// Constructor. Autocheck for Morton order can be disabled
+  OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset, const uint32_t& grad,
+                         bool autocheck);
   /// Destructor
   ~OperationMultiEvalCuda();
   /// Standard evaluation
@@ -58,10 +70,11 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   double getDuration() override;
 
   /// Transposed evaluation with additional FMA. result = 1/M * B*source + lambda * prev
-  void multTransposeFMA(sgpp::base::DataVector& source, sgpp::base::DataVector& prev, double lambda, sgpp::base::DataVector& result);
+  void multTransposeFMA(sgpp::base::DataVector& source, sgpp::base::DataVector& prev,
+                        double lambda, sgpp::base::DataVector& result);
 };
 
-}  // datadriven
-}  // sgpp
+}  // namespace datadriven
+}  // namespace sgpp
 
-#endif // OPERATIONMULTIEVALCUDA_HPP
+#endif  // OPERATIONMULTIEVALCUDA_HPP

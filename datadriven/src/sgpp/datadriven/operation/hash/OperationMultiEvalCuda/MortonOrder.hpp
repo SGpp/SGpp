@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef MORTONORDER_HPP
 #define MORTONORDER_HPP
 
@@ -16,9 +21,9 @@ namespace datadriven {
 class MortonOrder {
  public:
   /// Generates the identic permutation list
-  MortonOrder (size_t size);
+  explicit MortonOrder(size_t size);
   /// Generates the permutation list according to the given dataset. The computation is done on GPU
-  MortonOrder (sgpp::base::DataMatrix& matrix);
+  explicit MortonOrder(sgpp::base::DataMatrix& matrix);
 
   /// Re-arrange a DataMatrix object inplace
   void orderDataMatrix(sgpp::base::DataMatrix& matrix) const;
@@ -36,11 +41,15 @@ class MortonOrder {
   void restoreDataVector(sgpp::base::DataVector& data) const;
   /// Restores the original order of a DataVector object with other source
   void restoreDataVector(sgpp::base::DataVector& data, double* src) const;
+
+  /// Check if permutation is identity
+  bool isIdentity() const;
+
  protected:
   std::vector<size_t> permutation;
 };
 
-}  // datadriven
-}  // sgpp
+}  // namespace datadriven
+}  // namespace sgpp
 
-#endif // MORTONORDER_HPP
+#endif  // MORTONORDER_HPP
