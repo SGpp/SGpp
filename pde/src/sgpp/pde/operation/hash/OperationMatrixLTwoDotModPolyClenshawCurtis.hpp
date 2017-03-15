@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONMATRIXLTWODOTPOLYCLENSHAWCURTIS_HPP
-#define OPERATIONMATRIXLTWODOTPOLYCLENSHAWCURTIS_HPP
+#ifndef OPERATIONMATRIXLTWODOTMODPOLYCLENSHAWCURTIS_HPP
+#define OPERATIONMATRIXLTWODOTMODPOLYCLENSHAWCURTIS_HPP
 
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -47,4 +47,4 @@ class OperationMatrixLTwoDotModPolyClenshawCurtis : public sgpp::base::Operation
 }  // namespace pde
 }  // namespace sgpp
 
-#endif /* OPERATIONMATRIXLTWODOTPOLYCLENSHAWCURTIS_HPP */
+#endif /* OPERATIONMATRIXLTWODOTMODPOLYCLENSHAWCURTIS_HPP */
