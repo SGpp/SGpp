@@ -78,6 +78,17 @@ class PolyClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
 
   size_t getDegree() const override { return polyBasis.getDegree(); }
 
+  double evalDx(LT level, IT index, double x) {
+    if ((level == 0) && (index == 0)) {
+      return ((0.0 < x && x < 1.0) ? -1.0 : 0.0);
+    } else if ((level == 0) && (index == 1)) {
+      return ((0.0 < x && x < 1.0) ? 1.0 : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.evalDx(level, index, x);
+    }
+  }
+
   double eval(LT level, IT index, double p) override {
     // make sure that the point is inside the unit interval
     if (p < 0.0 || p > 1.0) {

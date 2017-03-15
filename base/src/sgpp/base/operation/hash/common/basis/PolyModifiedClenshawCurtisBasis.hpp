@@ -116,6 +116,27 @@ class PolyModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 
   size_t getDegree() const override { return polyBasis.getDegree(); }
 
+  double evalDx(LT level, IT index, double x) {
+    const IT hInv = static_cast<IT>(1) << level;
+    if (level == 1) {
+      // first level
+      return 0.0;
+    } else if (index == 1) {
+      // left modified basis function
+      double xr = clenshawCurtisTable.getPoint(level, index + 1);
+      double xc = clenshawCurtisTable.getPoint(level, index);
+      return ((x < xr) ? (-1.0 / (xr - xc)) : 0.0);
+    } else if (index == hInv - 1) {
+      // right modified basis function
+      double xl = clenshawCurtisTable.getPoint(level, index - 1);
+      double xc = clenshawCurtisTable.getPoint(level, index);
+      return ((x > xl) ? (1.0 / (xc - xl)) : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.eval(level, index, x);
+    }
+  }
+
  private:
   /**
    * Evaluate a basis function.
