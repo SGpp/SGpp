@@ -44,6 +44,7 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModPoly.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPolyClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModPolyClenshawCurtis.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
@@ -145,6 +146,8 @@ base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new pde::OperationMatrixLTwoDotPolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new pde::OperationMatrixLTwoDotModPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationMatrixLTwoDotBspline(&grid);
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
@@ -227,6 +230,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtis(m, &grid);
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary(m, &grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new pde::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(m, &grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
