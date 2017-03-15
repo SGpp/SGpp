@@ -34,7 +34,8 @@ using sgpp::solver::ConjugateGradients;
 using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
-ModelFittingBase::ModelFittingBase() : config{nullptr}, grid{nullptr}, alpha{}, solver{nullptr} {}
+ModelFittingBase::ModelFittingBase()
+    : config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
 
 const Grid& ModelFittingBase::getGrid() const { return *grid; }
 

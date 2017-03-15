@@ -29,80 +29,95 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
-    : ModelFittingBase{}, systemMatrix{nullptr} {
+    : ModelFittingBase{} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
 }
 
+// TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingLeastSquares::evaluate(const DataVector& sample) const {
   auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
   return opEval->eval(alpha, sample);
 }
 
+// TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results) {
   auto opMultEval = std::unique_ptr<base::OperationMultipleEval>{
       op_factory::createOperationMultipleEval(*grid, samples, config->getMultipleEvalConfig())};
   opMultEval->eval(alpha, results);
 }
 
-void ModelFittingLeastSquares::fit(Dataset& dataset) {
+void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   // clear model
   grid.reset();
-  systemMatrix.reset();
+  dataset = &newDataset;
 
   // build grid
   auto& gridConfig = config->getGridConfig();
-  gridConfig.dim_ = dataset.getDimension();
+  gridConfig.dim_ = dataset->getDimension();
   grid = std::unique_ptr<Grid>{buildGrid(config->getGridConfig())};
   // build surplus vector
-  alpha = DataVector(grid->getSize());
+  alpha = DataVector{grid->getSize()};
 
   // create sytem matrix
-  systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
-      buildSystemMatrix(*grid, dataset.getData(), config->getRegularizationConfig().lambda_,
+  auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+      buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
                         config->getMultipleEvalConfig()));
 
   // create right hand side and system matrix
-  auto b = std::make_unique<DataVector>(grid->getSize());
-  systemMatrix->generateb(dataset.getTargets(), *b);
+  DataVector b{grid->getSize()};
+  systemMatrix->generateb(dataset->getTargets(), b);
 
+  // solve SLE
   reconfigureSolver(*solver, config->getSolverFinalConfig());
-  solver->solve(*systemMatrix, alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
 void ModelFittingLeastSquares::refine() {
   if (grid != nullptr) {
-    // create refinement functor
-    SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
-                                               config->getRefinementConfig().threshold_);
-    // refine grid
-    grid->getGenerator().refine(refinementFunctor);
+    for (size_t refinementStep = 0; refinementStep < config->getRefinementConfig().numRefinements_;
+         refinementStep++) {
+      // create refinement functor
+      SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
+                                                 config->getRefinementConfig().threshold_);
+      // refine grid
+      grid->getGenerator().refine(refinementFunctor);
 
-    // tell the SLE manager that the grid changed (for interal data structures)
-    // systemMatrix->prepareGrid(); -> empty statement!
-    alpha.resizeZero(grid->getSize());
+      // tell the SLE manager that the grid changed (for interal data structures)
+      alpha.resizeZero(grid->getSize());
 
+      auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+          buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
+                            config->getMultipleEvalConfig()));
+
+      DataVector b{grid->getSize()};
+      systemMatrix->generateb(dataset->getTargets(), b);
+
+      reconfigureSolver(*solver, config->getSolverRefineConfig());
+      solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+    }
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
   }
 }
 
-void ModelFittingLeastSquares::update(Dataset& dataset) {
+void ModelFittingLeastSquares::update(Dataset& newDataset) {
   if (grid != nullptr) {
+    // reassign dataset
+    dataset = &newDataset;
     // create sytem matrix
-    systemMatrix.reset();
-    systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
-        buildSystemMatrix(*grid, dataset.getData(), config->getRegularizationConfig().lambda_,
+    auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+        buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
                           config->getMultipleEvalConfig()));
 
-    auto b = std::make_unique<DataVector>(grid->getSize());
-    systemMatrix->generateb(dataset.getTargets(), *b);
+    DataVector b{grid->getSize()};
+    systemMatrix->generateb(dataset->getTargets(), b);
 
     reconfigureSolver(*solver, config->getSolverRefineConfig());
-    solver->solve(*systemMatrix, alpha, *b, true, true, DEFAULT_RES_THRESHOLD);
+    solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
   } else {
-    fit(dataset);
+    fit(newDataset);
   }
 }
 
