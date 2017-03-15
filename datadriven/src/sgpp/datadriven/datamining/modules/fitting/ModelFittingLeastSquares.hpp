@@ -80,11 +80,6 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    */
   DMSystemMatrixBase* buildSystemMatrix(Grid& grid, DataMatrix& trainDataset, double lambda,
                                         OperationMultipleEvalConfiguration& config) const;
-
-  /**
-   * System matrix for least squares regression.
-   */
-  std::unique_ptr<DMSystemMatrixBase> systemMatrix;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

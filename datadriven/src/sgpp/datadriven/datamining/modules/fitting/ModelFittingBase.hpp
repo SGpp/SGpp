@@ -175,6 +175,13 @@ class ModelFittingBase {
   DataVector alpha;
 
   /**
+   * Pointer to #sgpp::base::Dataset. The initial grid is fitted on the given data. Adaptive
+   * refinement is then performed on the very same data. The used dataset used for refinement
+   * overwritten once either fit() or update() introduce a new dataset.
+   */
+  Dataset* dataset;
+
+  /**
    * Solver for the learning problem
    */
   std::unique_ptr<SLESolver> solver;
