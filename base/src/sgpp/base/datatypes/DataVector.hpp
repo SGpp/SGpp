@@ -6,8 +6,6 @@
 #ifndef DATAVECTOR_HPP
 #define DATAVECTOR_HPP
 
-#include <sgpp/base/datatypes/DataVectorDefinition.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <string>
@@ -23,12 +21,17 @@ namespace base {
  * of a data point at which a sparse grid function should be
  * evaluated.
  */
-class DataVector {
+class DataVector : public std::vector<double> {
  public:
   /**
    * Create a empty DataVector.
    */
-  DataVector();
+  DataVector() = default;
+  DataVector(const DataVector&) = default;
+  DataVector(DataVector&&) = default;
+  DataVector& operator=(const DataVector&) = default;
+  DataVector& operator=(DataVector&&) = default;
+  ~DataVector() = default;
 
   /**
    * Create a DataVector with @em size elements (uninitialized values).
@@ -45,13 +48,6 @@ class DataVector {
    * @param value Value for all entries
    */
   DataVector(size_t size, double value);
-
-  /**
-   * Create a new DataVector that is a copy of vec.
-   *
-   * @param vec Reference to another instance of DataVector
-   */
-  DataVector(const DataVector& vec);
 
   /**
    * Create a new DataVector from a double array with size elements.
@@ -75,39 +71,9 @@ class DataVector {
    */
   explicit DataVector(std::vector<int> input);
 
-  /**
-   * Constructor that constructs a DataVector from a DataVectorDefinition structure
-   *
-   * @param DataVectorDef reference to a DataVectorDefinition structure
-   */
-  explicit DataVector(DataVectorDefinition& DataVectorDef);
-
   static DataVector fromFile(const std::string& fileName);
 
   static DataVector fromString(const std::string& serializedVector);
-
-  /**
-   * Fill DataVectorDefintion with data from the current DataVector
-   *
-   * @param DataVectorDef reference to a DataVectorDefinition struct
-   */
-  void getDataVectorDefinition(DataVectorDefinition& DataVectorDef);
-  /**
-   * Set DataVectorDefintion for current DataVector
-   *
-   * @param DataVectorDef reference to a DataVectorDefinition struct
-   */
-  void setDataVectorDefinition(DataVectorDefinition& DataVectorDef);
-
-  /**
-   * Resizes the DataVector to size elements.
-   * All new additional entries are uninitialized.
-   * If nrows is smaller than the current number of rows,
-   * all superfluous entries are removed.
-   *
-   * @param size New number of elements of the DataVector
-   */
-  void resize(size_t size);
 
   /**
    * Resizes the DataVector to size elements.
@@ -120,34 +86,12 @@ class DataVector {
   void resizeZero(size_t nrows);
 
   /**
-   * Resizes the DataVector to size elements.
-   * All new additional entries are set to a specified initial value.
-   * If nrows is smaller than the current number of rows,
-   * all superfluous entries are removed.
-   *
-   * @param size New number of rows of the DataVector
-   * @param value Initial value for the new entries
-   */
-  void resize(size_t size, double value);
-
-  /**
    * Resizes the DataVector by removing entries. Throws an exception
    * if boundaries a violated.
    *
    * @param remainingIndex vector that contains the remaining indices of the DataVector
    */
   void restructure(std::vector<size_t>& remainingIndex);
-
-  /**
-   * Add add potentially new elements to the DataVector. The size remains unchanged
-   * Reserves memory for potentially inc_elems new elements;
-   * the actual number of elements remains unchanged.
-   * Corresponds to a resize to size+inc_elems new elements while leaving
-   * the current vector's size unchanged.
-   *
-   * @param inc_elems Number of additional elements for which storage is to be reserved.
-   */
-  void addSize(size_t inc_elems);
 
   /**
    * Appends a new element and returns index of it.
@@ -168,6 +112,7 @@ class DataVector {
    */
   size_t append(double value);
 
+  using std::vector<double>::insert;
   /**
    * Inserts a new element at the given index.
    * If the new element does not fit into the reserved memory,
@@ -186,6 +131,22 @@ class DataVector {
   void setAll(double value);
 
   /**
+   * Returns the i-th element.
+   *
+   * @param i position of the element
+   * @return data[i]
+   */
+  inline double get(size_t i) const { return (*this)[i]; }
+
+  /**
+   * Sets the element at index i to value.
+   *
+   * @param i Index
+   * @param value New value for element
+   */
+  void set(size_t i, double value);
+
+  /**
    * Copies the data from another DataVector vec.
    * Disregards the number of entries set for the two vectors,
    * i.e., just copies the data entry by entry.
@@ -196,56 +157,6 @@ class DataVector {
    * @param vec The source DataVector containing the data
    */
   void copyFrom(const DataVector& vec);
-
-  /**
-   * Copies the data from another, smaller DataVector vec.
-   * Has no effect, if vec has more elements than the current
-   * vector. If it has the same or smaller size, the first
-   * vec.size() elements of the current vector are overwritten.
-   *
-   * @param vec the DataVector containing the data
-   * @return *this
-   */
-  //  void copySmall(const DataVector& vec);
-  /**
-   * Copies the data from another DataVector.
-   * Dimensions have to match.
-   *
-   * @param vec the DataVector containing the data
-   */
-  DataVector& operator=(const DataVector& vec);
-
-  /**
-   * Returns a reference to the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline double& operator[](size_t i) { return data[i]; }
-
-  /**
-   * Returns a constant reference to the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline const double& operator[](size_t i) const { return data[i]; }
-
-  /**
-   * Returns the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline double get(size_t i) const { return data[i]; }
-
-  /**
-   * Sets the element at index i to value.
-   *
-   * @param i Index
-   * @param value New value for element
-   */
-  void set(size_t i, double value);
 
   /**
    * Adds the values from another DataVector to the current values.
@@ -300,6 +211,15 @@ class DataVector {
    * @param vec the DataVector which the current DataVector is divided by
    */
   void componentwise_div(const DataVector& vec);
+
+  /**
+   * Returns the dot product of the two vectors.
+   *
+   * @param vec Reference to another vector
+   *
+   * @return The dot-product
+   */
+  double dotProduct(const DataVector& vec) const;
 
   /**
    * multiplies all elements by a constant factor
@@ -388,15 +308,6 @@ class DataVector {
   void axpy(double a, DataVector& x);
 
   /**
-   * Returns the dot product of the two vectors.
-   *
-   * @param vec Reference to another vector
-   *
-   * @return The dot-product
-   */
-  double dotProduct(const DataVector& vec) const;
-
-  /**
    * gets a pointer to the data array
    *
    * @return pointer to the data array
@@ -412,17 +323,11 @@ class DataVector {
 
   /**
    * gets the elements stored in the vector
+   * \deprecated in favour of the equivalent size() method
    *
    * @return elements stored in the vector
    */
-  inline size_t getSize() const { return size; }
-
-  /**
-   * Returns the number of unused elements.
-   *
-   * @return number of unused elements
-   */
-  inline size_t getUnused() const { return unused; }
+  inline size_t getSize() const { return this->size(); }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -430,23 +335,6 @@ class DataVector {
    * @return The number of non-zero elements
    */
   size_t getNumberNonZero() const;
-
-  /**
-   * Get the current number of elements by which the DataVector is extended,
-   * if append() or insert() is called and no unused rows are left
-   *
-   * @return Increment
-   */
-  inline size_t getInc() const { return inc_elems; }
-
-  /**
-   * Sets the current number of elements by which the DataVector is extended,
-   * if append() or insert() is called and no unused elements are left.
-   * Defaults to 100.
-   *
-   * @param inc_elems Increment
-   */
-  void setInc(size_t inc_elems) { this->inc_elems = inc_elems; }
 
   /**
    * Partitions vector into two classes using a choosen border.
@@ -475,8 +363,6 @@ class DataVector {
    */
   void toString(std::string& text) const;
 
-  void toFile(const std::string& fileName) const;
-
   /**
    * Returns a description of the DataVector as a string.
    *
@@ -484,27 +370,11 @@ class DataVector {
    */
   std::string toString() const;
 
-  /**
-   * Destructor
-   */
-  virtual ~DataVector();
+  void toFile(const std::string& fileName) const;
 
  private:
-  /// Array to store the data
-  double* data;
-
-  /// Array of  correction for Kahan's summation in accumulate()
-  double* correction;
-
-  /// Number of elements of the data vector
-  size_t size;
-  /// Number of additional rows for which memory has already been reserved
-  size_t unused;
-  /**
-   * Number of elements by which the reserved memory is increased,
-   * if adding a row would exceed the storage reserved so far.
-   */
-  size_t inc_elems;
+  /// Corrections for Kahan's summation in accumulate()
+  std::vector<double> correction;
 };
 
 }  // namespace base

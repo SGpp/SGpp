@@ -35,7 +35,6 @@ namespace std {
 %ignore sgpp::base::DataMatrixSP::operator();
 %ignore sgpp::base::DataMatrix::getPointer const;
 %ignore sgpp::base::DataMatrixSP::getPointer const;
-%include "base/src/sgpp/base/datatypes/DataVectorDefinition.hpp"
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataVector.hpp"

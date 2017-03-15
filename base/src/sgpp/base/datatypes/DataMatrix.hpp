@@ -70,7 +70,7 @@ class DataMatrix {
    * @param nrows number of rows
    * @param ncols number of columns
    */
-  DataMatrix(double* input, size_t nrows, size_t ncols);
+  DataMatrix(const double* input, size_t nrows, size_t ncols);
 
   static DataMatrix fromFile(const std::string& fileName);
 
