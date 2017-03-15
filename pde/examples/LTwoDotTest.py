@@ -78,6 +78,26 @@ def test_LTwoDotImplicit(grid, l):
             print "result:{}".format(result[i])
             print "resultExplicit:{}".format(resultExplicit[i])
 
+def test_laplace(grid, lmax):
+    resolution = 10000
+    pointnr = 0
+    grid.getGenerator().regular(lmax)
+    gridStorage = grid.getStorage()
+    gp = gridStorage.get(1)
+    size = gridStorage.getSize()
+    op = pysgpp.createOperationLaplace(grid)
+    alpha = pysgpp.DataVector(size)
+    result = pysgpp.DataVector(size)
+    b = grid.getBasis()
+    for i in range(0, size):
+        alpha[i] = 0
+    alpha[pointnr] = 1
+    op.mult(alpha, result)
+    xs = np.linspace(0, 1, resolution)
+    approx = sum([b.evalDx(gp.getLevel(0), gp.getIndex(0), x) for x in xs]) / resolution
+    print approx
+    print result.get(pointnr)
+
 def test_poly_evaldx():
     l = 3
     i = 1
@@ -97,12 +117,13 @@ def plot_evaldx():
     b = pysgpp.SPolyClenshawCurtisBase(3)
     plt.plot(xs, [b.evalDx(l, i, x) for x in xs])
     plt.show()
-    
-test_poly_evaldx()
+
+# test_poly_evaldx()
 # plot_evaldx()
 # test_base()
-# d = 1
-# l = 5
-# grid = pysgpp.Grid.createLinearGrid(d)
+d = 1
+l = 5
+grid = pysgpp.Grid.createPolyGrid(d)
+test_laplace(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
