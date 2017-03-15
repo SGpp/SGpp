@@ -9,7 +9,7 @@
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/UniformNoBoundaryPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
@@ -59,8 +59,8 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expL2Leja() {
 
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniform() {
   return std::make_shared<NestedPointHierarchy>(
-      std::make_shared<UniformPointDistribution>(),
-      std::make_shared<ExponentialLevelorderPointOrdering>());
+      std::make_shared<UniformBoundaryPointDistribution>(),
+      std::make_shared<ExponentialNoBoundaryPointOrdering>());
 }
 
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expClenshawCurtis() {
@@ -75,10 +75,10 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expChebyshev() {
       std::make_shared<ExponentialChebyshevPointOrdering>());
 }
 
-std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniformNoBoundary() {
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniformBoundary() {
   return std::make_shared<NestedPointHierarchy>(
-      std::make_shared<UniformNoBoundaryPointDistribution>(),
-      std::make_shared<ExponentialNoBoundaryPointOrdering>());
+      std::make_shared<UniformBoundaryPointDistribution>(),
+      std::make_shared<ExponentialLevelorderPointOrdering>());
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>

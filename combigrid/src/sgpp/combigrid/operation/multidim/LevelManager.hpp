@@ -225,8 +225,9 @@ class LevelManager {
 
   /**
    * Does the same as addRegularLevels(), but with parallel precomputation of function values.
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * @param q  Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
+   * @param numThreads number of threads that should be used for computation
    * If you have a norm w with levels starting from 1, simply use q = w - dim().
    */
   void addRegularLevelsParallel(size_t q, size_t numThreads);
