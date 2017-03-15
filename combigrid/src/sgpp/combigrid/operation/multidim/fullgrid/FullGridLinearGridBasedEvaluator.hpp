@@ -22,7 +22,7 @@
 namespace sgpp {
 namespace combigrid {
 
-typedef GeneralFunction<std::shared_ptr<TensorGrid>, std::shared_ptr<TreeStorage<double>>>
+typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>
     GridFunction;
 
 /**
@@ -81,7 +81,7 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
 
     std::vector<ThreadPool::Task> tasks;
 
-    tasks.push_back([grid, level, this, callback]() {
+    tasks.push_back(ThreadPool::Task([grid, level, this, callback]() {
       auto results = gridFunction(grid);
 
       // now we need locking
@@ -89,7 +89,7 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
       addResults(level, results);
       precomputedLevels->set(level, 1);
       callback();
-    });
+    }));
 
     return tasks;
   }

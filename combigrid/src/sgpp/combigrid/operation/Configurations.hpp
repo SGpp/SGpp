@@ -23,7 +23,9 @@ namespace combigrid {
 class CombiHierarchies {
  public:
   static std::shared_ptr<AbstractPointHierarchy> linearLeja(size_t growthFactor = 2);
+  static std::shared_ptr<AbstractPointHierarchy> linearL2Leja(size_t growthFactor = 2);
   static std::shared_ptr<AbstractPointHierarchy> expLeja();
+  static std::shared_ptr<AbstractPointHierarchy> expL2Leja();
   static std::shared_ptr<AbstractPointHierarchy> expUniform();
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();

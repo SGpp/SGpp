@@ -37,7 +37,7 @@ class SGDEdistTest(unittest.TestCase):
         # build parameter set
         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                             config={"grid_level": 3,
-                                                    "grid_type": "polyClenshawCurtisBoundary",
+                                                    "grid_type": "modpoly",
                                                     "grid_maxDegree": 6,
                                                     "refinement_numSteps": 0,
                                                     "refinement_numPoints": 10,

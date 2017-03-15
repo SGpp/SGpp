@@ -22,6 +22,7 @@ QuadRule1D::~QuadRule1D() {
 }
 
 // -------------------------------------------------------------------------
+size_t QuadRule1D::getMaxSupportedLevel() { return maxSupportedLevel; }
 
 void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates,
                                           DataVector& pweights) {

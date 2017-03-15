@@ -11,39 +11,65 @@
 
 namespace sgpp {
 namespace combigrid {
+
 /**
  * This is a helper class used internally to wrap python functions into GeneralFunction objects.
  * F should be a GeneralFunction<...>
  */
-template <typename F>
+template <typename Out, typename In>
 class GeneralFunctionDirector {
  public:
   virtual ~GeneralFunctionDirector() {}
 
-  virtual typename F::output_type eval(typename F::input_type vec) = 0;
+  virtual Out eval(In vec) = 0;
 
-  virtual F toFunction();
+  virtual GeneralFunction<Out, In> toFunction();
+};
+
+template <typename Out>
+class GeneralFunctionDirector1 {
+ public:
+  virtual ~GeneralFunctionDirector1() {}
+
+  virtual Out eval() = 0;
+
+  virtual GeneralFunction1<Out> toFunction();
 };
 
 /**
  * This is a protected helper class used internally to wrap python functions into MultiFunction
  * objects.
  */
-template <typename F>
+template <typename Out, typename In>
 class GFDirWrapper {
  public:
-  GeneralFunctionDirector<F> *ptr;
+  GeneralFunctionDirector<Out, In> *ptr;
 
-  explicit GFDirWrapper(GeneralFunctionDirector<F> *ptr) : ptr(ptr) {}
+  explicit GFDirWrapper(GeneralFunctionDirector<Out, In> *ptr) : ptr(ptr) {}
 
   ~GFDirWrapper() { delete ptr; }
 };
 
-template <typename F>
-F GeneralFunctionDirector<F>::toFunction() {
-  auto wrapperPtr = std::make_shared<GFDirWrapper<F>>(this);
-  return F([wrapperPtr](typename F::input_type in) ->
-           typename F::output_type { return wrapperPtr->ptr->eval(in); });
+template <typename Out>
+class GFDirWrapper1 {
+ public:
+  GeneralFunctionDirector1<Out> *ptr;
+
+  explicit GFDirWrapper1(GeneralFunctionDirector1<Out> *ptr) : ptr(ptr) {}
+
+  ~GFDirWrapper1() { delete ptr; }
+};
+
+template <typename Out, typename In>
+GeneralFunction<Out, In> GeneralFunctionDirector<Out, In>::toFunction() {
+  auto wrapperPtr = std::make_shared<GFDirWrapper<Out, In>>(this);
+  return GeneralFunction<Out, In>([wrapperPtr](In in) -> Out { return wrapperPtr->ptr->eval(in); });
+}
+
+template <typename Out>
+GeneralFunction1<Out> GeneralFunctionDirector1<Out>::toFunction() {
+  auto wrapperPtr = std::make_shared<GFDirWrapper1<Out>>(this);
+  return GeneralFunction1<Out>([wrapperPtr]() -> Out { return wrapperPtr->ptr->eval(); });
 }
 
 } /* namespace combigrid */
