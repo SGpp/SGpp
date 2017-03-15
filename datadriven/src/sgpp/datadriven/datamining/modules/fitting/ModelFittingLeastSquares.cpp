@@ -60,18 +60,7 @@ void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
-  // create sytem matrix
-  auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
-      buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
-                        config->getMultipleEvalConfig()));
-
-  // create right hand side and system matrix
-  DataVector b{grid->getSize()};
-  systemMatrix->generateb(dataset->getTargets(), b);
-
-  // solve SLE
-  reconfigureSolver(*solver, config->getSolverFinalConfig());
-  solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
 
 void ModelFittingLeastSquares::refine() {
@@ -87,15 +76,7 @@ void ModelFittingLeastSquares::refine() {
       // tell the SLE manager that the grid changed (for interal data structures)
       alpha.resizeZero(grid->getSize());
 
-      auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
-          buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
-                            config->getMultipleEvalConfig()));
-
-      DataVector b{grid->getSize()};
-      systemMatrix->generateb(dataset->getTargets(), b);
-
-      reconfigureSolver(*solver, config->getSolverRefineConfig());
-      solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+      assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
     }
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
@@ -107,15 +88,7 @@ void ModelFittingLeastSquares::update(Dataset& newDataset) {
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix
-    auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
-        buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
-                          config->getMultipleEvalConfig()));
-
-    DataVector b{grid->getSize()};
-    systemMatrix->generateb(dataset->getTargets(), b);
-
-    reconfigureSolver(*solver, config->getSolverRefineConfig());
-    solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+    assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
   } else {
     fit(newDataset);
   }
@@ -128,6 +101,19 @@ DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
   systemMatrix->setImplementation(mutipleEvalconfig);
 
   return systemMatrix;
+}
+
+void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration& solverConfig,
+                                                      DataVector& alpha) const {
+  auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+      buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
+                        config->getMultipleEvalConfig()));
+
+  DataVector b{grid->getSize()};
+  systemMatrix->generateb(dataset->getTargets(), b);
+
+  reconfigureSolver(*solver, solverConfig);
+  solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
 }
 
 }  // namespace datadriven
