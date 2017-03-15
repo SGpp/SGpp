@@ -32,6 +32,34 @@ from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 class SGDEdistTest(unittest.TestCase):
 
+    def testExpPoly2d(self):
+        trainSamples = np.loadtxt("/home/franzefn/Promotion/UQ/matlab/sgpp/exp_2d.csv").T
+        # build parameter set
+        dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
+                                            config={"grid_level": 3,
+                                                    "grid_type": "polyClenshawCurtisBoundary",
+                                                    "grid_maxDegree": 6,
+                                                    "refinement_numSteps": 0,
+                                                    "refinement_numPoints": 10,
+                                                    "solver_threshold": 1e-10,
+                                                    "solver_verbose": False,
+                                                    "regularization_type": "Identity",
+                                                    "crossValidation_lambda": 0.000562341,
+                                                    "crossValidation_enable": True,
+                                                    "crossValidation_kfold": 5,
+                                                    "crossValidation_silent": False,
+                                                    "sgde_makePositive": False,
+                                                    "sgde_makePositive_candidateSearchAlgorithm": "joined",
+                                                    "sgde_makePositive_interpolationAlgorithm": "setToZero",
+                                                    "sgde_makePositive_verbose": True,
+                                                    "sgde_unitIntegrand": True})
+
+        fig = plt.figure()
+        plotSG2d(dist.grid, dist.alpha, show_grid_points=True)
+        plt.scatter(trainSamples[:, 0], trainSamples[:, 1], np.zeros(trainSamples.shape[0]))
+        plt.title("%.12f" % dist.vol)
+        plt.show()
+
 #     def testExp2d(self):
 #         trainSamples = np.loadtxt("/home/franzefn/Promotion/UQ/matlab/sgpp/exp_2d.csv").T
 #         # build parameter set
@@ -156,75 +184,75 @@ class SGDEdistTest(unittest.TestCase):
 #         print "CE = %g" % dist.crossEntropy(testSamples)
 #         print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
 
-    def test2DNormalMoments(self):
-        mean = 0
-        var = 0.5
-
-        U = dists.J([dists.Normal(mean, var, -2, 2),
-                     dists.Normal(mean, var, -2, 2)])
-
-        np.random.seed(1234567)
-        trainSamples = U.rvs(1000)
-        dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
-                                            config={"grid_level": 5,
-                                                    "grid_type": "linear",
-                                                    "refinement_numSteps": 0,
-                                                    "refinement_numPoints": 10,
-                                                    "regularization_type": "Laplace",
-                                                    "crossValidation_lambda": 0.000562341,
-                                                    "crossValidation_enable": False,
-                                                    "crossValidation_kfold": 5,
-                                                    "crossValidation_silent": True,
-                                                    "sgde_makePositive": True},
-                                            bounds=U.getBounds())
-        samples_dist = dist.rvs(1000, shuffle=True)
-        kde = KDEDist(trainSamples)
-        samples_kde = kde.rvs(1000, shuffle=True)
-        # -----------------------------------------------
-        self.assertTrue(np.abs(U.mean() - dist.mean()) < 1e-2, "SGDE mean wrong")
-        self.assertTrue(np.abs(U.var() - dist.var()) < 4e-2, "SGDE variance wrong")
-        # -----------------------------------------------
-
-        # print the results
-        print "E(x) ~ %g ~ %g" % (kde.mean(), dist.mean())
-        print "V(x) ~ %g ~ %g" % (kde.var(), dist.var())
-        print "log  ~ %g ~ %g" % (kde.crossEntropy(trainSamples),
-                                  dist.crossEntropy(trainSamples))
-        print "-" * 60
-
-        print dist.cov()
-        print kde.cov()
-
-        sgde_x1 = dist.marginalizeToDimX(0)
-        kde_x1 = kde.marginalizeToDimX(0)
-
-        plt.figure()
-        plotDensity1d(U.getDistributions()[0], label="analytic")
-        plotDensity1d(sgde_x1, label="sgde")
-        plotDensity1d(kde_x1, label="kde")
-        plt.title("mean: sgde=%g, kde=%g; var: sgde=%g, kde=%g" % (sgde_x1.mean(),
-                                                                   kde_x1.mean(),
-                                                                   sgde_x1.var(),
-                                                                   kde_x1.var()))
-        plt.legend()
-
-        fig = plt.figure()
-        plotDensity2d(U, addContour=True)
-        plt.title("analytic")
-
-        fig = plt.figure()
-        plotDensity2d(kde, addContour=True)
-        plt.scatter(samples_kde[:, 0], samples_kde[:, 1])
-        plt.title("kde")
-
-        fig = plt.figure()
-        plotDensity2d(dist, addContour=True)
-        plt.scatter(samples_dist[:, 0], samples_dist[:, 1])
-        plt.title("sgde (I(f) = %g)" % (np.prod(U.getBounds()) * doQuadrature(dist.grid, dist.alpha),))
-
-        plt.show()
-#         print dist.toJson()
-#         print SGDEdist.fromJson(json.loads(dist.toJson()))
+#     def test2DNormalMoments(self):
+#         mean = 0
+#         var = 0.5
+#
+#         U = dists.J([dists.Normal(mean, var, -2, 2),
+#                      dists.Normal(mean, var, -2, 2)])
+#
+#         np.random.seed(1234567)
+#         trainSamples = U.rvs(1000)
+#         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
+#                                             config={"grid_level": 5,
+#                                                     "grid_type": "linear",
+#                                                     "refinement_numSteps": 0,
+#                                                     "refinement_numPoints": 10,
+#                                                     "regularization_type": "Laplace",
+#                                                     "crossValidation_lambda": 0.000562341,
+#                                                     "crossValidation_enable": False,
+#                                                     "crossValidation_kfold": 5,
+#                                                     "crossValidation_silent": True,
+#                                                     "sgde_makePositive": True},
+#                                             bounds=U.getBounds())
+#         samples_dist = dist.rvs(1000, shuffle=True)
+#         kde = KDEDist(trainSamples)
+#         samples_kde = kde.rvs(1000, shuffle=True)
+#         # -----------------------------------------------
+#         self.assertTrue(np.abs(U.mean() - dist.mean()) < 1e-2, "SGDE mean wrong")
+#         self.assertTrue(np.abs(U.var() - dist.var()) < 4e-2, "SGDE variance wrong")
+#         # -----------------------------------------------
+#
+#         # print the results
+#         print "E(x) ~ %g ~ %g" % (kde.mean(), dist.mean())
+#         print "V(x) ~ %g ~ %g" % (kde.var(), dist.var())
+#         print "log  ~ %g ~ %g" % (kde.crossEntropy(trainSamples),
+#                                   dist.crossEntropy(trainSamples))
+#         print "-" * 60
+#
+#         print dist.cov()
+#         print kde.cov()
+#
+#         sgde_x1 = dist.marginalizeToDimX(0)
+#         kde_x1 = kde.marginalizeToDimX(0)
+#
+#         plt.figure()
+#         plotDensity1d(U.getDistributions()[0], label="analytic")
+#         plotDensity1d(sgde_x1, label="sgde")
+#         plotDensity1d(kde_x1, label="kde")
+#         plt.title("mean: sgde=%g, kde=%g; var: sgde=%g, kde=%g" % (sgde_x1.mean(),
+#                                                                    kde_x1.mean(),
+#                                                                    sgde_x1.var(),
+#                                                                    kde_x1.var()))
+#         plt.legend()
+#
+#         fig = plt.figure()
+#         plotDensity2d(U, addContour=True)
+#         plt.title("analytic")
+#
+#         fig = plt.figure()
+#         plotDensity2d(kde, addContour=True)
+#         plt.scatter(samples_kde[:, 0], samples_kde[:, 1])
+#         plt.title("kde")
+#
+#         fig = plt.figure()
+#         plotDensity2d(dist, addContour=True)
+#         plt.scatter(samples_dist[:, 0], samples_dist[:, 1])
+#         plt.title("sgde (I(f) = %g)" % (np.prod(U.getBounds()) * doQuadrature(dist.grid, dist.alpha),))
+#
+#         plt.show()
+# #         print dist.toJson()
+# #         print SGDEdist.fromJson(json.loads(dist.toJson()))
 
 
 #     def test1DCDFandPPF(self):

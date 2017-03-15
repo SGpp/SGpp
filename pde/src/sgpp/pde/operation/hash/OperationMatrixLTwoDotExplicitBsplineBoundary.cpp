@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBsplineBoundary.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -19,35 +19,33 @@
 namespace sgpp {
 namespace pde {
 
-OperationMatrixLTwoDotExplicitModBspline::OperationMatrixLTwoDotExplicitModBspline(
+OperationMatrixLTwoDotExplicitBsplineBoundary::OperationMatrixLTwoDotExplicitBsplineBoundary(
     sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
     : ownsMatrix_(false) {
   m_ = m;
   buildMatrix(grid);
 }
 
-OperationMatrixLTwoDotExplicitModBspline::OperationMatrixLTwoDotExplicitModBspline(
-    sgpp::base::Grid* grid)
+OperationMatrixLTwoDotExplicitBsplineBoundary::OperationMatrixLTwoDotExplicitBsplineBoundary(
+  sgpp::base::Grid* grid)
     : ownsMatrix_(true) {
   m_ = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
   buildMatrix(grid);
 }
 
-void OperationMatrixLTwoDotExplicitModBspline::buildMatrix(sgpp::base::Grid* grid) {
+void OperationMatrixLTwoDotExplicitBsplineBoundary::buildMatrix(base::Grid* grid) {
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
-  const size_t p = dynamic_cast<sgpp::base::ModBsplineGrid*>(grid)->getDegree();
-  const size_t pp1h = (p + 1) / 2;
+  const size_t p = dynamic_cast<base::BsplineBoundaryGrid*>(grid)->getDegree();
+  const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
-  base::SBsplineModifiedBase& basis =
-    const_cast<base::SBsplineModifiedBase&>(
-      dynamic_cast<const base::SBsplineModifiedBase&>(grid->getBasis()));
-  sgpp::base::GridStorage& storage = grid->getStorage();
+  base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
+  base::GridStorage& storage = grid->getStorage();
 
-  sgpp::base::DataVector coordinates;
-  sgpp::base::DataVector weights;
-  sgpp::base::GaussLegendreQuadRule1D gauss;
+  base::DataVector coordinates;
+  base::DataVector weights;
+  base::GaussLegendreQuadRule1D gauss;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
 
   for (size_t i = 0; i < gridSize; i++) {
@@ -55,12 +53,12 @@ void OperationMatrixLTwoDotExplicitModBspline::buildMatrix(sgpp::base::Grid* gri
       double res = 1.;
 
       for (size_t k = 0; k < gridDim; k++) {
-        const sgpp::base::level_t lik = storage[i].getLevel(k);
-        const sgpp::base::level_t ljk = storage[j].getLevel(k);
-        const sgpp::base::index_t iik = storage[i].getIndex(k);
-        const sgpp::base::index_t ijk = storage[j].getIndex(k);
-        const sgpp::base::index_t hInvik = 1 << lik;
-        const sgpp::base::index_t hInvjk = 1 << ljk;
+        const base::level_t lik = storage[i].getLevel(k);
+        const base::level_t ljk = storage[j].getLevel(k);
+        const base::index_t iik = storage[i].getIndex(k);
+        const base::index_t ijk = storage[j].getIndex(k);
+        const base::index_t hInvik = 1 << lik;
+        const base::index_t hInvjk = 1 << ljk;
         const double hik = 1.0 / static_cast<double>(hInvik);
         const double hjk = 1.0 / static_cast<double>(hInvjk);
 
@@ -74,7 +72,6 @@ void OperationMatrixLTwoDotExplicitModBspline::buildMatrix(sgpp::base::Grid* gri
         } else {
           double temp_res = 0.0;
 
-          // Use formula for different overlapping ansatz functions:
           double offset;
           double scaling;
           size_t start;
@@ -102,24 +99,23 @@ void OperationMatrixLTwoDotExplicitModBspline::buildMatrix(sgpp::base::Grid* gri
           res *= scaling * temp_res;
         }
       }
-
       m_->set(i, j, res);
       m_->set(j, i, res);
     }
   }
 }
 
-OperationMatrixLTwoDotExplicitModBspline::~OperationMatrixLTwoDotExplicitModBspline() {
+OperationMatrixLTwoDotExplicitBsplineBoundary::~OperationMatrixLTwoDotExplicitBsplineBoundary() {
   if (ownsMatrix_) delete m_;
 }
 
-void OperationMatrixLTwoDotExplicitModBspline::mult(sgpp::base::DataVector& alpha,
-                                                    sgpp::base::DataVector& result) {
+void OperationMatrixLTwoDotExplicitBsplineBoundary::mult(base::DataVector& alpha,
+                                                 base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
   if (alpha.getSize() != ncols || result.getSize() != nrows) {
-    throw sgpp::base::data_exception("Dimensions do not match!");
+    throw base::data_exception("Dimensions do not match!");
   }
 
   double* data = m_->getPointer();
