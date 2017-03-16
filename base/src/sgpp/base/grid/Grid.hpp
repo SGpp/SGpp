@@ -128,7 +128,14 @@ class Grid {
   static Grid* createModLinearGridStencil(size_t dim);
 
   /**
-   * creates a linear grid without boundaries
+   * Creates and returns a grid without grid points on the boundary (zero boundary conditions) with piecewise linear basis functions.
+   * 
+   * <table border="0"><tr>
+   * <td><div class="image"><img src="createLinearGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image"><img src="hiba_createLinearGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
